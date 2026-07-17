@@ -19,9 +19,8 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, Tag, TagList } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PivotNavigationOptions } from '../CaseManager/PivotsPanel/PivotNavigationOptions';
 import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseInvestigation';
 import { CaseStatusBadgeV2 } from '../Cases';
 import { EditCaseAssignee } from '../Cases/EditAssignee';
@@ -29,8 +28,10 @@ import { EditCaseInbox } from '../Cases/EditCaseInbox';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
+import { pageLayoutGutter } from '../Page/page-layout';
 import { DataExplorerPanel } from './DataExplorerPanel';
 import { EscalateCaseButton } from './EscalateCaseButton';
+import { NavigationOptions } from './NavigationOptions';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
 import { getClientDisplayInfo } from './utils/client';
 
@@ -85,88 +86,87 @@ export function CaseManagerPrincipalPage({
 
   return (
     <>
-      <div className="flex flex-col gap-lg">
-        <div className="flex flex-col gap-sm">
-          <div className="text-default font-medium">{t('cases:case_detail.pivot_panel.informations')}</div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-            <Card className="flex flex-col gap-sm text-small self-start">
-              <div className="flex items-center gap-xs">
-                <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
-                <tagsForm.Field name="tagIds">
-                  {(field) => (
-                    <TagList
-                      editable
-                      placeholder={t('cases:manager.principal.add_tag_placeholder')}
-                      tags={orgTags}
-                      value={field.state.value}
-                      onChange={(tags) => {
-                        tagsForm.setFieldValue('tagIds', tags);
-                        tagsForm.handleSubmit();
-                      }}
-                    />
-                  )}
-                </tagsForm.Field>
-                {caseDetail.status !== 'closed' ? (
-                  <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ms-auto" />
-                ) : null}
-              </div>
-              <div className="grid grid-cols-2 gap-sm">
-                <div className="flex flex-col gap-sm">
-                  <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
-                  <EditCaseAssignee
-                    disabled={false}
-                    id={caseDetail.id}
-                    assigneeId={caseDetail.assignedTo}
-                    currentUser={currentUser}
+      <div className={cn('grid grid-cols-1 lg:grid-cols-2', pageLayoutGutter.gap)}>
+        <div className="flex flex-col gap-lg">
+          <Card className="flex flex-col gap-sm text-small">
+            <div className="flex items-center gap-xs">
+              <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
+              <tagsForm.Field name="tagIds">
+                {(field) => (
+                  <TagList
+                    editable
+                    placeholder={t('cases:manager.principal.add_tag_placeholder')}
+                    tags={orgTags}
+                    value={field.state.value}
+                    onChange={(tags) => {
+                      tagsForm.setFieldValue('tagIds', tags);
+                      tagsForm.handleSubmit();
+                    }}
                   />
-                  <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
-                </div>
+                )}
+              </tagsForm.Field>
+              {caseDetail.status !== 'closed' ? (
+                <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ms-auto" />
+              ) : null}
+            </div>
+            <div className="grid grid-cols-[2fr_1fr] gap-sm">
+              <div className="grid grid-cols-[6rem_1fr] gap-y-sm gap-x-md items-center">
+                <span className="text-grey-secondary">{t('cases:case.id')}</span>
+                <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
+
+                <span className="text-grey-secondary">{t('cases:assigned_to')}</span>
+                <EditCaseAssignee
+                  disabled={false}
+                  id={caseDetail.id}
+                  assigneeId={caseDetail.assignedTo}
+                  currentUser={currentUser}
+                />
+
+                <span className="text-grey-secondary">{t('cases:case.inbox')}</span>
+                <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
               </div>
-            </Card>
-            {mainPivotObject ? (
-              <ClientCard
-                caseId={caseDetail.id}
-                pivotObject={mainPivotObject}
-                dataModel={dataModel}
-                client360Tables={client360Tables}
-                userScoringAccess={userScoringAccess}
-              />
-            ) : (
-              <Card className="flex flex-col items-center justify-center gap-sm text-small text-center">
-                <span className="text-grey-secondary">
-                  {isAdmin(currentUser)
-                    ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
-                    : t('cases:case_detail.pivot_panel.missing_pivot')}
-                </span>
-                {isAdmin(currentUser) ? (
-                  <Link to="/data" className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}>
-                    {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
-                  </Link>
-                ) : null}
-              </Card>
-            )}
+            </div>
+          </Card>
+
+          <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
+
+          <div className="flex flex-col justify-start gap-sm">
+            <div className="text-default text-grey-primary flex items-center justify-between px-2xs font-medium">
+              <span>{t('cases:alerts')}</span>
+              {hasRuleHits ? (
+                <Button variant="secondary" onClick={() => handleDisplaySnoozePanel()}>
+                  <Icon icon="snooze" className="size-3.5" />
+                  {t('cases:decisions.snooze_rules')}
+                </Button>
+              ) : null}
+            </div>
+            <CaseAlerts caseDecisionsQuery={caseDecisionsQuery} dataModel={dataModel} />
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_minmax(500px,_1fr)] gap-lg">
-          <div className="flex flex-col gap-md">
-            <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
-
-            <div className="flex flex-col justify-start gap-xs">
-              <div className="text-default text-grey-primary flex items-center justify-between px-2xs font-medium">
-                <span>{t('cases:alerts')}</span>
-                {hasRuleHits ? (
-                  <Button variant="secondary" onClick={() => handleDisplaySnoozePanel()}>
-                    <Icon icon="snooze" className="size-3.5" />
-                    {t('cases:decisions.snooze_rules')}
-                  </Button>
-                ) : null}
-              </div>
-              <CaseAlerts caseDecisionsQuery={caseDecisionsQuery} dataModel={dataModel} />
-            </div>
-          </div>
-          <div className="flex flex-col gap-md">
-            <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
-          </div>
+        <div className="flex flex-col gap-lg">
+          {mainPivotObject ? (
+            <ClientCard
+              caseId={caseDetail.id}
+              pivotObject={mainPivotObject}
+              dataModel={dataModel}
+              client360Tables={client360Tables}
+              userScoringAccess={userScoringAccess}
+            />
+          ) : (
+            <Card className="flex flex-col items-center justify-center gap-sm text-small text-center">
+              <span className="text-grey-secondary">
+                {isAdmin(currentUser)
+                  ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
+                  : t('cases:case_detail.pivot_panel.missing_pivot')}
+              </span>
+              {isAdmin(currentUser) ? (
+                <Link to="/data" className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}>
+                  {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
+                </Link>
+              ) : null}
+            </Card>
+          )}
+          <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
         </div>
       </div>
       <Panel.Root open={snoozePanelOpen} onOpenChange={setSnoozePanelOpen}>
@@ -239,19 +239,18 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
       </div>
       <div>
         <DataFields
-          options={{ layout: '2-columns' }}
+          options={{ layout: '2-columns', maxVisibleFields: 6, displayExpandButton: false }}
           object={pivotObject.pivotObjectData as DataModelObject}
           table={pivotObject.pivotObjectName}
         />
         {currentTable ? (
           <DataModelExplorerProvider>
-            <PivotNavigationOptions
+            <NavigationOptions
               currentUser={currentUser}
               pivotObject={pivotObject}
               table={currentTable}
               dataModel={dataModel}
               onExplore={() => setExplorationOpen(true)}
-              options={{ layout: '2-columns' }}
             />
             <DataExplorerPanel dataModel={dataModel} open={explorationOpen} onOpenChange={setExplorationOpen} />
           </DataModelExplorerProvider>

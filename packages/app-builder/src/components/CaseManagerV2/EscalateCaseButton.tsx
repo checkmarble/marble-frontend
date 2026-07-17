@@ -57,12 +57,12 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
             <Button
               variant="secondary"
               size="small"
-              mode="icon"
               className={className}
               disabled={!canEscalate}
               aria-label={t('cases:escalate-button.label')}
             >
               <Icon icon="arrow-up" className="size-4" />
+              <span>{t('cases:escalate-button.label')}</span>
             </Button>
           </Modal.Trigger>
         </TooltipV2.TooltipTrigger>
