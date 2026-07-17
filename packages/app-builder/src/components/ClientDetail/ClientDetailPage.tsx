@@ -70,7 +70,6 @@ export const ClientDetailPage = ({
   const monitoringHitsQuery = useRelatedCasesByObjectQuery(objectType, objectId);
   const monitoringHitsCount = monitoringHitsQuery.data?.cases.length ?? 0;
   const activeConfigsQuery = useActiveConfigsForObjectQuery(objectType, objectId);
-  const activeConfigurations = activeConfigsQuery.data ?? [];
   const [showAlertHitsPanel, setShowAlertHitsPanel] = useState(false);
   const alertHitsQuery = useGetObjectCasesQuery(objectType, objectId);
   const alertHitsCount = alertHitsQuery.data?.cases.length ?? 0;
@@ -88,8 +87,6 @@ export const ClientDetailPage = ({
   }
 
   const handleScoreClick = () => setShowScorePanel(true);
-
-  const hasActiveMonitoring = activeConfigurations.length > 0;
 
   return (
     <DataModelExplorerProvider>
@@ -203,41 +200,61 @@ export const ClientDetailPage = ({
                     ) : null}
                   </div>
                   <div className="flex items-center gap-sm bg-grey-background-light border border-grey-border py-sm px-md rounded-md mb-sm">
-                    <div
-                      className={cn(
-                        'flex items-center gap-xs  shrink-0',
-                        hasActiveMonitoring ? 'text-green-primary' : 'text-grey-secondary',
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'size-2 rounded-full',
-                          hasActiveMonitoring ? 'bg-green-primary' : 'bg-grey-secondary',
-                        )}
-                      />
-                      <span className="text-s font-medium">
-                        {hasActiveMonitoring
-                          ? t('client360:client_detail.monitoring_hits.active_monitoring')
-                          : t('client360:client_detail.monitoring_hits.no_active_monitoring')}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-xs grow items-center">
-                      {activeConfigurations.map((config) => (
-                        <Tag key={config.stableId} color="purple" size="small">
-                          {config.name}
-                        </Tag>
-                      ))}
-                      {isAdmin ? (
-                        <ConfigureMonitoringForObjectId
-                          objectType={objectType}
-                          objectId={objectId}
-                          activeConfigurations={activeConfigurations}
-                          label={
-                            hasActiveMonitoring ? undefined : t('client360:client_detail.monitoring_hits.configure')
-                          }
-                        />
-                      ) : null}
-                    </div>
+                    {match(activeConfigsQuery)
+                      .with({ isPending: true }, () => (
+                        <div className="flex justify-center items-center grow py-xs">
+                          <Spinner className="size-4" />
+                        </div>
+                      ))
+                      .with({ isError: true }, () => (
+                        <span className="text-s text-grey-secondary">{t('common:generic_fetch_data_error')}</span>
+                      ))
+                      .with({ isSuccess: true }, ({ data: activeConfigurations }) => {
+                        const hasActiveMonitoring = activeConfigurations.length > 0;
+
+                        return (
+                          <>
+                            <div
+                              className={cn(
+                                'flex items-center gap-xs shrink-0',
+                                hasActiveMonitoring ? 'text-green-primary' : 'text-grey-secondary',
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  'size-2 rounded-full',
+                                  hasActiveMonitoring ? 'bg-green-primary' : 'bg-grey-secondary',
+                                )}
+                              />
+                              <span className="text-s font-medium">
+                                {hasActiveMonitoring
+                                  ? t('client360:client_detail.monitoring_hits.active_monitoring')
+                                  : t('client360:client_detail.monitoring_hits.no_active_monitoring')}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-xs grow items-center">
+                              {activeConfigurations.map((config) => (
+                                <Tag key={config.stableId} color="purple" size="small">
+                                  {config.name}
+                                </Tag>
+                              ))}
+                              {isAdmin ? (
+                                <ConfigureMonitoringForObjectId
+                                  objectType={objectType}
+                                  objectId={objectId}
+                                  activeConfigurations={activeConfigurations}
+                                  label={
+                                    hasActiveMonitoring
+                                      ? undefined
+                                      : t('client360:client_detail.monitoring_hits.configure')
+                                  }
+                                />
+                              ) : null}
+                            </div>
+                          </>
+                        );
+                      })
+                      .exhaustive()}
                   </div>
 
                   <MonitoringHitsList monitoringHitsQuery={monitoringHitsQuery} />

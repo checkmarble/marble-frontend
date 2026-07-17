@@ -1,6 +1,8 @@
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningConfigurationsQuery } from '@app-builder/queries/continuous-screening/configurations';
 import { useUpdateObjectMonitoringMutation } from '@app-builder/queries/continuous-screening/update-object-monitoring';
+import { handleSubmit } from '@app-builder/utils/form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { toggle } from 'radash';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -23,11 +25,33 @@ export const ConfigureMonitoringForObjectId = ({
 }: ConfigureMonitoringForObjectIdProps) => {
   const { t } = useTranslation(['common', 'client360']);
   const [open, setOpen] = useState(false);
-  const [selectedStableIds, setSelectedStableIds] = useState<string[]>([]);
   const configurationsQuery = useContinuousScreeningConfigurationsQuery();
   const updateMutation = useUpdateObjectMonitoringMutation();
 
   const activeStableIds = useMemo(() => activeConfigurations.map((config) => config.stableId), [activeConfigurations]);
+
+  const form = useForm({
+    defaultValues: {
+      configStableIds: activeStableIds,
+    },
+    onSubmit: async ({ value }) => {
+      await updateMutation.mutateAsync(
+        {
+          objectType,
+          objectId,
+          configStableIds: value.configStableIds,
+        },
+        {
+          onSuccess: () => toast.success(t('common:success.save')),
+          onError: () => toast.error(t('common:errors.unknown')),
+        },
+      );
+      setOpen(false);
+    },
+  });
+
+  const selectedStableIds = useStore(form.store, (state) => state.values.configStableIds);
+  const isDirty = useStore(form.store, (state) => state.isDirty);
 
   const eligibleConfigurations = useMemo(() => {
     const configs = configurationsQuery.data ?? [];
@@ -44,28 +68,13 @@ export const ConfigureMonitoringForObjectId = ({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
-      setSelectedStableIds(activeStableIds);
+      form.reset({ configStableIds: activeStableIds });
     }
     setOpen(nextOpen);
   };
 
   const handleToggleConfig = (stableId: string) => {
-    setSelectedStableIds((current) => toggle(current, stableId));
-  };
-
-  const handleValidate = async () => {
-    await updateMutation.mutateAsync(
-      {
-        objectType,
-        objectId,
-        configStableIds: selectedStableIds,
-      },
-      {
-        onSuccess: () => toast.success(t('common:success.save')),
-        onError: () => toast.error(t('common:errors.unknown')),
-      },
-    );
-    setOpen(false);
+    form.setFieldValue('configStableIds', toggle(selectedStableIds, stableId));
   };
 
   return (
@@ -78,76 +87,78 @@ export const ConfigureMonitoringForObjectId = ({
       </Modal.Trigger>
       <Modal.Content size="small">
         <Modal.Title>{t('client360:client_detail.monitoring_hits.put_under_monitoring')}</Modal.Title>
-        <div className="flex flex-col gap-lg p-lg">
-          <div className="flex flex-col gap-sm">
-            <span className="text-s font-medium">{t('client360:client_detail.monitoring_hits.configurations')}</span>
-            <MenuCommand.Menu persistOnSelect>
-              <MenuCommand.Trigger>
-                <button
-                  type="button"
-                  className={cn(
-                    'border-grey-border bg-grey-background-light flex min-h-10 w-full items-center gap-sm rounded-md border px-sm py-xs text-start',
-                    'hover:border-grey-secondary focus-visible:ring-purple-primary focus-visible:ring-2 focus-visible:outline-hidden',
-                  )}
+        <form id="configure-monitoring-form" onSubmit={handleSubmit(form)}>
+          <div className="flex flex-col gap-lg p-lg">
+            <div className="flex flex-col gap-sm">
+              <span className="text-s font-medium">{t('client360:client_detail.monitoring_hits.configurations')}</span>
+              <MenuCommand.Menu persistOnSelect>
+                <MenuCommand.Trigger>
+                  <button
+                    type="button"
+                    className={cn(
+                      'border-grey-border bg-grey-background-light flex min-h-10 w-full items-center gap-sm rounded-md border px-sm py-xs text-start',
+                      'hover:border-grey-secondary focus-visible:ring-purple-primary focus-visible:ring-2 focus-visible:outline-hidden',
+                    )}
+                  >
+                    <div className="flex flex-1 flex-wrap gap-xs">
+                      {selectedConfigurations.map((config) => (
+                        <RemovableConfigTag
+                          key={config.stableId}
+                          label={config.name}
+                          onRemove={() => handleToggleConfig(config.stableId)}
+                        />
+                      ))}
+                    </div>
+                    <Icon
+                      icon="caret-down"
+                      className="text-grey-secondary size-4 shrink-0 group-radix-state-open:rotate-180 transition-transform duration-200"
+                    />
+                  </button>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content
+                  className="w-[var(--radix-popover-trigger-width)]"
+                  side="bottom"
+                  align="start"
+                  sideOffset={8}
                 >
-                  <div className="flex flex-1 flex-wrap gap-xs">
-                    {selectedConfigurations.map((config) => (
-                      <RemovableConfigTag
-                        key={config.stableId}
-                        label={config.name}
-                        onRemove={() => handleToggleConfig(config.stableId)}
-                      />
-                    ))}
-                  </div>
-                  <Icon
-                    icon="caret-down"
-                    className="text-grey-secondary size-4 shrink-0 group-radix-state-open:rotate-180 transition-transform duration-200"
-                  />
-                </button>
-              </MenuCommand.Trigger>
-              <MenuCommand.Content
-                className="w-[var(--radix-popover-trigger-width)]"
-                side="bottom"
-                align="start"
-                sideOffset={8}
-              >
-                <MenuCommand.List>
-                  {eligibleConfigurations.map((config) => {
-                    const isSelected = selectedStableIds.includes(config.stableId);
-                    return (
-                      <MenuCommand.Item
-                        key={config.stableId}
-                        value={config.name}
-                        className="cursor-pointer"
-                        onSelect={() => handleToggleConfig(config.stableId)}
-                      >
-                        <span className="grow truncate">{config.name}</span>
-                        {isSelected ? <Icon icon="tick" className="text-purple-primary size-5 shrink-0" /> : null}
-                      </MenuCommand.Item>
-                    );
-                  })}
-                  <MenuCommand.Empty>
-                    <div className="text-grey-secondary px-md py-xs text-xs">{t('common:no_data_to_display')}</div>
-                  </MenuCommand.Empty>
-                </MenuCommand.List>
-              </MenuCommand.Content>
-            </MenuCommand.Menu>
+                  <MenuCommand.List>
+                    {eligibleConfigurations.map((config) => {
+                      const isSelected = selectedStableIds.includes(config.stableId);
+                      return (
+                        <MenuCommand.Item
+                          key={config.stableId}
+                          value={config.name}
+                          className="cursor-pointer"
+                          onSelect={() => handleToggleConfig(config.stableId)}
+                        >
+                          <span className="grow truncate">{config.name}</span>
+                          {isSelected ? <Icon icon="tick" className="text-purple-primary size-5 shrink-0" /> : null}
+                        </MenuCommand.Item>
+                      );
+                    })}
+                    <MenuCommand.Empty>
+                      <div className="text-grey-secondary px-md py-xs text-xs">{t('common:no_data_to_display')}</div>
+                    </MenuCommand.Empty>
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
+            </div>
+            <div className="flex items-center gap-sm">
+              <Switch id="skip-initial-screening" checked disabled />
+              <label htmlFor="skip-initial-screening" className="text-s text-grey-secondary">
+                {t('client360:client_detail.monitoring_hits.skip_initial_screening')}
+              </label>
+            </div>
           </div>
-          <div className="flex items-center gap-sm">
-            <Switch id="skip-initial-screening" checked disabled />
-            <label htmlFor="skip-initial-screening" className="text-s text-grey-secondary">
-              {t('client360:client_detail.monitoring_hits.skip_initial_screening')}
-            </label>
-          </div>
-        </div>
+        </form>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('common:cancel')} />
           <Modal.FooterButton
-            type="button"
+            form="configure-monitoring-form"
+            type="submit"
             label={t('common:validate')}
-            onClick={handleValidate}
             isLoading={updateMutation.isPending}
-            disabled={updateMutation.isPending}
+            disabled={!isDirty || updateMutation.isPending}
           />
         </Modal.Footer>
       </Modal.Content>
