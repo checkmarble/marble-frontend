@@ -214,6 +214,8 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
           onOpenChange(false);
           form.setFieldValue('reportId', res.data?.id);
           queryClient.invalidateQueries({ queryKey: ['sar-reports', caseId] });
+
+          form.reset();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
