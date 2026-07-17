@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "marble-front",
@@ -64,7 +65,7 @@
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
         "country-flag-emojis": "^1.0.4",
-        "cronstrue": "^2.56.0",
+        "cronstrue": "^3.24.0",
         "currency-codes": "^2.2.0",
         "date-fns": "^4.1.0",
         "decode-formdata": "^0.9.0",
@@ -1566,7 +1567,7 @@
 
     "crc32-stream": ["crc32-stream@6.0.0", "", { "dependencies": { "crc-32": "^1.2.0", "readable-stream": "^4.0.0" } }, "sha512-piICUB6ei4IlTv1+653yq5+KoqfBYmj9bw6LqXoOneTMDXk5nM1qt12mFW1caG3LlJXEKW1Bp0WggEmIfQB34g=="],
 
-    "cronstrue": ["cronstrue@2.61.0", "", { "bin": { "cronstrue": "bin/cli.js" } }, "sha512-ootN5bvXbIQI9rW94+QsXN5eROtXWwew6NkdGxIRpS/UFWRggL0G5Al7a9GTBFEsuvVhJ2K3CntIIVt7L2ILhA=="],
+    "cronstrue": ["cronstrue@3.24.0", "", { "bin": { "cronstrue": "bin/cli.js" } }, "sha512-t/Ji3Ur2c/pzhIAWNwC0ftl3JAE4dLfCjAdZoTZXmPDZwcispnS1PaMcMS4OmIIXyIVouAz+yw+mfQiE3hz5OQ=="],
 
     "cross-spawn": ["cross-spawn@7.0.6", "", { "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } }, "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="],
 
