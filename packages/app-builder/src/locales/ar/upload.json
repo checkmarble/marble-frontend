@@ -1,4 +1,5 @@
 {
+  "active_screenings": "تفعيل الفحص:",
   "download_template_cta": "تنزيل قالب ‎.csv‎",
   "drop_file_cta": "أسقط ملف ‎.csv‎ المكتمل هنا",
   "errors.request_timeout": "انتهت مهلة الطلب. يُرجى المحاولة مجددًا أو تقسيم الملف إلى أجزاء أصغر.",
@@ -12,6 +13,7 @@
   "record_vs_ingested": "السجلات المستلمة vs السجلات التي تم استيرادها: {{linesProcessed}}/{{total}}",
   "refresh": "تحديث",
   "results": "النتائج",
+  "select_one_table": "حدد جدولاً واحدًا لتحميل ملف .csv:",
   "started_at": "بدأ في",
   "started_at_date": "بدأ في {{date}}",
   "status_failure": "فشل",

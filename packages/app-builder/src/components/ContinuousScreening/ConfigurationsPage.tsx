@@ -7,7 +7,7 @@ import {
 import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening';
 import { ContinuousScreeningConfiguration } from '@app-builder/queries/continuous-screening/configurations';
 import QueryString from 'qs';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 import { Button, ExpandableGroupTagLine, Tag } from 'ui-design-system';
@@ -40,6 +40,21 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets, isAdmin 
   const [editingConfig, setEditingConfig] = useState<ContinuousScreeningConfig | null>(null);
   const [draft, setDraft] = useState<PartialCreateContinuousScreeningConfig | null>(null);
   const [updatedConfig, setUpdatedConfig] = useState<PrevalidationCreateContinuousScreeningConfig | null>(null);
+
+  const configsPerObjectType = useMemo(() => {
+    const map = new Map<string, ContinuousScreeningConfiguration[]>();
+    for (const config of configurations) {
+      for (const objectType of config.objectTypes) {
+        const existing = map.get(objectType);
+        if (existing) {
+          existing.push(config);
+        } else {
+          map.set(objectType, [config]);
+        }
+      }
+    }
+    return map;
+  }, [configurations]);
 
   const handlePanelOpenChange = () => {
     setEditingConfig(null);
@@ -153,7 +168,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets, isAdmin 
                     </GridTable.Cell>
                     <GridTable.Cell>{item.inbox?.name}</GridTable.Cell>
                     <GridTable.Cell>
-                      <PanelAddCsv configuration={item} />
+                      <PanelAddCsv configuration={item} configsPerObjectType={configsPerObjectType} />
                     </GridTable.Cell>
                   </GridTable.Row>
                 ))}
