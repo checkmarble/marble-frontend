@@ -1,4 +1,5 @@
 {
+  "active_screenings": "Dépistage activé:",
   "download_template_cta": "Télécharger le modèle CSV",
   "drop_file_cta": "Déposer votre fichier CSV ici",
   "errors.request_timeout": "La requête a expiré. Veuillez réessayer ou diviser votre fichier en parties plus petites.",
@@ -9,9 +10,12 @@
   "num_rows_ingested": "Nombre d'enregistrements importés",
   "past_uploads": "Imports précédents",
   "pick_file_cta": "Sélectionner un fichier",
+  "record_vs_ingested": "Enregistrements reçus vs enregistrements importés: {{linesProcessed}}/{{total}}",
   "refresh": "Rafraîchir",
   "results": "Résultats",
+  "select_one_table": "Sélectionnez une table à télécharger au format .csv :",
   "started_at": "Commencé le",
+  "started_at_date": "Commencé le {{date}}",
   "status_failure": "Échec",
   "status_pending": "En attente",
   "status_processing": "En cours",
@@ -20,5 +24,6 @@
   "upload_callout_1": "Vous pouvez ajouter manuellement des {{objectType}} à votre instance Marble en important un fichier CSV depuis cette page (<DocLink>en savoir plus</DocLink>).",
   "upload_callout_2": "Le fichier CSV doit suivre le schéma défini dans votre modèle de données. Nous avons créé un modèle pour vous aider à démarrer.",
   "upload_cta": "Importer {{objectType}}",
-  "upload_status": "Statut"
+  "upload_status": "Statut",
+  "uploaded_at_date": "Mis en ligne à {{date}}"
 }

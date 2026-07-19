@@ -7,7 +7,7 @@ import {
 import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening';
 import { ContinuousScreeningConfiguration } from '@app-builder/queries/continuous-screening/configurations';
 import QueryString from 'qs';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 import { Button, ExpandableGroupTagLine, Tag, Typo } from 'ui-design-system';
@@ -21,6 +21,7 @@ import { ConfigurationPanel } from './ConfigurationPanel';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
+import { PanelAddCsv } from './PanelAddCsv';
 
 type ConfigurationsPageProps = {
   canEdit: boolean;
@@ -37,6 +38,21 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
   const [editingConfig, setEditingConfig] = useState<ContinuousScreeningConfig | null>(null);
   const [draft, setDraft] = useState<PartialCreateContinuousScreeningConfig | null>(null);
   const [updatedConfig, setUpdatedConfig] = useState<PrevalidationCreateContinuousScreeningConfig | null>(null);
+
+  const configsPerObjectType = useMemo(() => {
+    const map = new Map<string, ContinuousScreeningConfiguration[]>();
+    for (const config of configurations) {
+      for (const objectType of config.objectTypes) {
+        const existing = map.get(objectType);
+        if (existing) {
+          existing.push(config);
+        } else {
+          map.set(objectType, [config]);
+        }
+      }
+    }
+    return map;
+  }, [configurations]);
 
   const handlePanelOpenChange = () => {
     setEditingConfig(null);
@@ -95,12 +111,13 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
                 ) : null}
               </div>
             ) : (
-              <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(3,_1fr)]">
-                <GridTable.Row className="font-semibold border-b border-grey-border">
+              <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(4,_1fr)]">
+                <GridTable.Row isHeader>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.name')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.datasets')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.object_types')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.target_inbox')}</GridTable.Cell>
+                  <GridTable.Cell>{''}</GridTable.Cell>
                 </GridTable.Row>
                 {configurations.map((item) => (
                   <GridTable.Row
@@ -143,6 +160,9 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
                       </div>
                     </GridTable.Cell>
                     <GridTable.Cell>{item.inbox?.name}</GridTable.Cell>
+                    <GridTable.Cell>
+                      <PanelAddCsv configuration={item} configsPerObjectType={configsPerObjectType} />
+                    </GridTable.Cell>
                   </GridTable.Row>
                 ))}
               </GridTable.Table>

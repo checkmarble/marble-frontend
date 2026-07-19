@@ -9,6 +9,7 @@ import {
   ContinuousScreeningMatchBaseDto,
   ContinuousScreeningMatchMarbleDto,
   ContinuousScreeningMatchScreeningEntityDto,
+  ContinuousScreeningObjectDto,
   ContinuousScreeningRequestDto,
   CreateContinuousScreeningConfigDto,
   FtmEntity,
@@ -53,6 +54,24 @@ export function adaptContinuousScreeningConfig(config: ContinuousScreeningConfig
     matchThreshold: config.match_threshold,
     matchLimit: config.match_limit,
     enabled: config.enabled,
+  };
+}
+
+export type ContinuousScreeningObject = {
+  id: string;
+  objectType: string;
+  objectId: string;
+  configStableId: string;
+  createdAt: string;
+};
+
+export function adaptContinuousScreeningObject(object: ContinuousScreeningObjectDto): ContinuousScreeningObject {
+  return {
+    id: object.id,
+    objectType: object.object_type,
+    objectId: object.object_id,
+    configStableId: object.config_stable_id,
+    createdAt: object.created_at,
   };
 }
 

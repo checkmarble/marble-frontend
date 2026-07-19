@@ -1,4 +1,5 @@
 {
+  "active_screenings": "Activate screening:",
   "download_template_cta": "Download template .csv",
   "drop_file_cta": "Drop your filled .csv here",
   "errors.request_timeout": "The request timed out. Please try again, or try to cut your file into smaller parts.",
@@ -9,9 +10,12 @@
   "num_rows_ingested": "Number of records ingested",
   "past_uploads": "Past uploads",
   "pick_file_cta": "Pick a file",
+  "record_vs_ingested": "Records vs ingested: {{linesProcessed}}/{{total}}",
   "refresh": "Refresh",
   "results": "Results",
+  "select_one_table": "Select one table to upload .csv:",
   "started_at": "Started at",
+  "started_at_date": "Started at {{date}}",
   "status_failure": "Failed",
   "status_pending": "Pending",
   "status_processing": "Processing",
@@ -20,5 +24,6 @@
   "upload_callout_1": "You can manually add {{objectType}} to your Marble instance from this page by uploading a .csv file here. (<DocLink>learn more</DocLink>)",
   "upload_callout_2": "The .csv file must follow the schema defined in your data model. We have created a template to help you get started.",
   "upload_cta": "Upload {{objectType}}",
-  "upload_status": "Status"
+  "upload_status": "Status",
+  "uploaded_at_date": "Uploaded at {{date}}"
 }
