@@ -39,7 +39,7 @@ export const useGetScoringRulesetForScoreQuery = (recordType: string, rulesetId?
 
   return {
     ...rulesetQuery,
-    isPending: waitingForVersion || rulesetQuery.isPending,
+    isPending: !versionNotFound && (waitingForVersion || rulesetQuery.isPending),
     data: versionNotFound ? undefined : rulesetQuery.data,
   };
 };

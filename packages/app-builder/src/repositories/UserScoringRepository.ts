@@ -93,7 +93,14 @@ export function makeGetUserScoringRepository() {
       return marbleCoreApiClient.getScoreLatest(recordType, recordId, { includeEvaluation: false });
     },
     async getScoreLatestWithEvaluation(recordType, recordId) {
-      return marbleCoreApiClient.getScoreLatest(recordType, recordId, { includeEvaluation: true });
+      try {
+        return await marbleCoreApiClient.getScoreLatest(recordType, recordId, { includeEvaluation: true });
+      } catch (err) {
+        if (isNotFoundHttpError(err)) {
+          return null;
+        }
+        throw err;
+      }
     },
     async getScoreDistribution(recordType) {
       return marbleCoreApiClient.getScoreDistribution(recordType);
