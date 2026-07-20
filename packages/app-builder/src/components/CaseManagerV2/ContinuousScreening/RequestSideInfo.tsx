@@ -1,12 +1,11 @@
-import { Callout, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { Callout } from '@app-builder/components/Callout';
 import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataListGrid';
 import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
 import { EntityDatasetsList } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { SquareTag } from '@app-builder/components/SquareTag';
-import { Case, type CaseDetail } from '@app-builder/models/cases';
+import { Case } from '@app-builder/models/cases';
 import {
   ContinuousScreening,
   ContinuousScreeningMarbleToScreeningEntity,
@@ -15,84 +14,54 @@ import {
   isIndirectContinuousScreening,
   OpenSanctionEntityPayload,
 } from '@app-builder/models/continuous-screening';
-import { Inbox } from '@app-builder/models/inbox';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Tag, Typo } from 'ui-design-system';
+import { Button, Card, cn, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { CaseDocuments } from '../shared/CaseDocuments/CaseDocuments';
-import { CaseInvestigation } from '../shared/CaseInvestigation/CaseInvestigation';
-import { CaseDetailInfo } from './CaseDetailInfo';
-import { ObjectRelatedCases } from './ObjectRelatedCases';
-import { ScreeningCaseMatches } from './ScreeningCaseMatches';
-import { ScreeningObjectDetails } from './ScreeningObjectDetails';
-import { ScreeningRequestDetail } from './ScreeningRequestDetail';
+import { ObjectDetails } from './ObjectDetails';
+import { RequestDetail } from './RequestDetail';
 
-type ScreeningCaseDetailPageProps = {
-  caseDetail: CaseDetail;
-  caseInbox: Inbox;
+type RequestSideInfoProps = {
+  caseDetail: Case;
   screening: ContinuousScreening;
-  isUserAdmin: boolean;
 };
 
-export const ScreeningCaseDetailPage = ({
-  caseDetail,
-  caseInbox,
-  screening,
-  isUserAdmin,
-}: ScreeningCaseDetailPageProps) => {
+export function RequestSideInfo({ screening, caseDetail }: RequestSideInfoProps) {
   const { t } = useTranslation(['continuousScreening']);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Page.Main>
-      <Page.Header className="justify-between">
-        <BreadCrumbs />
-      </Page.Header>
-      <Page.Container>
-        <Page.Content padding="none">
-          <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_130)] h-full relative">
-            <div className="flex flex-col gap-lg p-lg">
-              <CaseDetailInfo caseDetail={caseDetail} caseInbox={caseInbox} isUserAdmin={isUserAdmin} />
-              <ScreeningCaseMatches screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />
-              <CaseInvestigation caseId={caseDetail.id} events={caseDetail.events} root={containerRef} />
-              {caseDetail.files.length > 0 ? <CaseDocuments files={caseDetail.files} /> : null}
-            </div>
-            <div className="h-full bg-surface-card border-l border-grey-border">
-              <div className="p-lg flex flex-col gap-md top-0 sticky">
-                <div className="flex items-center gap-sm">
-                  <Typo variant="title2">{t('continuousScreening:review.information_title')}</Typo>
-                  {isDirectContinuousScreening(screening) ? (
-                    <Tag>{t(`continuousScreening:review.search_tag.${screening.triggerType}`)}</Tag>
-                  ) : null}
-                </div>
-                <Callout color="orange">
-                  <div>
-                    <Trans
-                      i18nKey={`continuousScreening:review.callout.${screening.triggerType}`}
-                      components={{
-                        EntityType: <Tag color="grey">{getEntityType(screening)}</Tag>,
-                      }}
-                    />
-                  </div>
-                </Callout>
-                {match(screening)
-                  .when(isDirectContinuousScreening, (directScreening) => {
-                    return <DirectScreeningRequestDetail screening={directScreening} caseDetail={caseDetail} />;
-                  })
-                  .when(isIndirectContinuousScreening, (indirectScreening) => {
-                    return <IndirectScreeningRequestDetail screening={indirectScreening} />;
-                  })
-                  .exhaustive()}
-              </div>
-            </div>
+    <div className="flex flex-col gap-md order-2">
+      <div className="flex items-center gap-sm">
+        <Typo variant="title2">{t('continuousScreening:review.information_title')}</Typo>
+        {isDirectContinuousScreening(screening) ? (
+          <Tag>{t(`continuousScreening:review.search_tag.${screening.triggerType}`)}</Tag>
+        ) : null}
+      </div>
+      <Callout variant="outlined" color="purple" className="text-small">
+        <div className="grid grid-cols-[1fr_auto] items-center">
+          <div>
+            <Trans
+              i18nKey={`continuousScreening:review.callout.${screening.triggerType}`}
+              components={{
+                EntityType: <Tag color="grey">{getEntityType(screening)}</Tag>,
+              }}
+            />
           </div>
-        </Page.Content>
-      </Page.Container>
-    </Page.Main>
+          <CaseSourceType type={isDirectContinuousScreening(screening) ? 'direct' : 'indirect'} />
+        </div>
+      </Callout>
+      {match(screening)
+        .when(isDirectContinuousScreening, (directScreening) => {
+          return <DirectScreeningRequestDetail screening={directScreening} caseDetail={caseDetail} />;
+        })
+        .when(isIndirectContinuousScreening, (indirectScreening) => {
+          return <IndirectScreeningRequestDetail screening={indirectScreening} />;
+        })
+        .exhaustive()}
+    </div>
   );
-};
+}
 
 const getEntityType = (screening: ContinuousScreening): string => {
   if (isDirectContinuousScreening(screening)) {
@@ -110,21 +79,10 @@ const DirectScreeningRequestDetail = ({
 }) => {
   return (
     <>
-      <ScreeningRequestDetail
-        configStableId={screening.continuousScreeningConfigStableId}
-        request={screening.request}
-      />
-      <ScreeningObjectDetails
-        objectType={screening.objectType}
-        objectId={screening.objectId}
-        className="bg-surface-card border border-grey-border"
-      />
-      <ObjectRelatedCases
-        objectType={screening.objectType}
-        objectId={screening.objectId}
-        currentCase={caseDetail}
-        className="bg-surface-card border border-grey-border"
-      />
+      <Card>
+        <ObjectDetails objectType={screening.objectType} objectId={screening.objectId} currentCase={caseDetail} />
+      </Card>
+      <RequestDetail configStableId={screening.continuousScreeningConfigStableId} request={screening.request} />
     </>
   );
 };
@@ -135,10 +93,6 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
 
   return (
     <>
-      <ScreeningRequestDetail
-        configStableId={screening.continuousScreeningConfigStableId}
-        request={screening.request}
-      />
       <div className="flex flex-col gap-sm p-md bg-surface-card rounded-lg border border-grey-border">
         <div className="flex justify-between items-center gap-sm">
           <span className="font-medium">{screening.opensanctionEntityPayload.caption}</span>
@@ -163,6 +117,7 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
           </div>
         </DataListGrid>
       </div>
+      <RequestDetail configStableId={screening.continuousScreeningConfigStableId} request={screening.request} />
       <Panel.Root open={open} onOpenChange={setOpen}>
         <ScreeningEntityDetailsPanel entity={screening.opensanctionEntityPayload} />
       </Panel.Root>
@@ -211,5 +166,30 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
         </div>
       </Panel.Content>
     </Panel.Container>
+  );
+};
+
+const CaseSourceType = ({ type }: { type: 'direct' | 'indirect' }) => {
+  const { t } = useTranslation(['continuousScreening']);
+  const circleClassName =
+    'absolute size-18 p-sm grid place-content-center rounded-full border border-grey-border bg-surface-elevated/40 text-center';
+  const selectedClassName =
+    ' data-[selected=true]:border-purple-primary data-[selected=true]:bg-purple-primary/70 data-[selected=true]:text-white';
+
+  return (
+    <div className="relative w-33 h-18">
+      <div
+        data-selected={type === 'direct'}
+        className={cn(circleClassName, selectedClassName, 'text-small top-0 inset-s-0')}
+      >
+        Marble
+      </div>
+      <div
+        data-selected={type === 'indirect'}
+        className={cn(circleClassName, selectedClassName, 'text-tiny top-0 inset-e-0')}
+      >
+        {t('continuousScreening:review.source_type.screening_lists')}
+      </div>
+    </div>
   );
 };

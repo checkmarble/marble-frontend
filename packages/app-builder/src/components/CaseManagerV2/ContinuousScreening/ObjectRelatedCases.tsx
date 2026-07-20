@@ -5,23 +5,11 @@ import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
-import { cva } from 'class-variance-authority';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { CtaV2ClassName, cn } from 'ui-design-system';
-
-const cellVariants = cva('border-grey-border border-t p-sm', {
-  variants: {
-    isLast: {
-      true: 'border-b',
-      false: null,
-    },
-  },
-  defaultVariants: {
-    isLast: false,
-  },
-});
+import { Icon } from 'ui-icons';
 
 export function ObjectRelatedCases({
   currentCase,
@@ -59,39 +47,23 @@ export function ObjectRelatedCases({
         <div className={cn('p-md rounded-md', className)}>
           <div className="flex flex-col gap-md">
             <div className="font-medium">{t('cases:case_detail.pivot_panel.case_history')}</div>
-            <div className="grid w-full grid-cols-[auto_1fr_auto_auto]">
-              {cases.map((caseObj, idx) => {
-                const isLast = idx === cases.length - 1;
-
+            <div className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-md">
+              {cases.map((caseObj) => {
                 return (
                   <Fragment key={caseObj.id}>
-                    <div
-                      className={cellVariants({
-                        isLast,
-                        className: 'shrink border-r leading-[28px]',
-                      })}
-                    >
-                      {formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}
+                    <div>{formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}</div>
+                    <div className="flex gap-sm items-center">
+                      <span>{caseObj.name}</span>
+                      <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" outcome={caseObj.outcome} />
                     </div>
-                    <div
-                      className={cellVariants({
-                        isLast,
-                        className: 'shrink truncate leading-[28px]',
-                      })}
-                    >
-                      {caseObj.name}
-                    </div>
-                    <div className={cellVariants({ isLast, className: 'shrink-0' })}>
+                    <div>
                       <Link
                         to="/cases/$caseId"
                         params={{ caseId: fromUUIDtoSUUID(caseObj.id) }}
-                        className={CtaV2ClassName({ variant: 'secondary' })}
+                        className={CtaV2ClassName({ variant: 'secondary', appearance: 'link', mode: 'icon' })}
                       >
-                        {t('common:open')}
+                        <Icon icon="external-link" className="size-4" />
                       </Link>
-                    </div>
-                    <div className={cellVariants({ isLast, className: 'flex items-center border-l' })}>
-                      <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" outcome={caseObj.outcome} />
                     </div>
                   </Fragment>
                 );

@@ -6,7 +6,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
 
-const casesLayoutLoader = createServerFn()
+const casesLayoutLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async function casesLayoutLoader({ context }) {
     const { user, dataModelRepository, entitlements } = context.authInfo;

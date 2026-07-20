@@ -23,12 +23,10 @@ import { Button, Card, CtaV2ClassName, cn, Tag, TagList } from 'ui-design-system
 import { Icon } from 'ui-icons';
 import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseInvestigation';
 import { CaseStatusBadgeV2 } from '../Cases';
-import { EditCaseAssignee } from '../Cases/EditAssignee';
-import { EditCaseInbox } from '../Cases/EditCaseInbox';
-import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { pageLayoutGutter } from '../Page/page-layout';
+import { CaseInfo } from './CaseInfo';
 import { DataExplorerPanel } from './DataExplorerPanel';
 import { EscalateCaseButton } from './EscalateCaseButton';
 import { NavigationOptions } from './NavigationOptions';
@@ -110,21 +108,7 @@ export function CaseManagerPrincipalPage({
               ) : null}
             </div>
             <div className="grid grid-cols-[2fr_1fr] gap-sm">
-              <div className="grid grid-cols-[6rem_1fr] gap-y-sm gap-x-md items-center">
-                <span className="text-grey-secondary">{t('cases:case.id')}</span>
-                <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
-
-                <span className="text-grey-secondary">{t('cases:assigned_to')}</span>
-                <EditCaseAssignee
-                  disabled={false}
-                  id={caseDetail.id}
-                  assigneeId={caseDetail.assignedTo}
-                  currentUser={currentUser}
-                />
-
-                <span className="text-grey-secondary">{t('cases:case.inbox')}</span>
-                <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
-              </div>
+              <CaseInfo caseDetail={caseDetail} currentUser={currentUser} />
             </div>
           </Card>
 
