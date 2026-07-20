@@ -2068,6 +2068,7 @@ export type ScoringScore = {
     current: boolean;
     created_at: string;
     stale_at?: string;
+    evaluations?: NodeEvaluationDto[];
 };
 /**
  * Get searchable tables

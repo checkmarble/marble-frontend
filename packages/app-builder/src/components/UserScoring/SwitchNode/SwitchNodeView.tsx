@@ -22,9 +22,17 @@ interface SwitchNodeViewProps {
   entityType: string;
   maxRiskLevel: number;
   customLists?: CustomList[];
+  matchedBranchIndex?: number | null;
 }
 
-export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, customLists }: SwitchNodeViewProps) {
+export function SwitchNodeView({
+  node,
+  dataModel,
+  entityType,
+  maxRiskLevel,
+  customLists,
+  matchedBranchIndex,
+}: SwitchNodeViewProps) {
   const { t: tAstBuilder } = useTranslation(['common', 'scenarios']);
   const {
     t,
@@ -82,10 +90,27 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
         match(model)
           .with({ type: 'user_attribute' }, { type: 'aggregate' }, (m) =>
             match(m.conditions)
-              .with({ type: 'number' }, (c) => <NumberSwitchDescription conditions={c} maxRiskLevel={maxRiskLevel} />)
-              .with({ type: 'bool' }, (c) => <BoolSwitchDescription conditions={c} maxRiskLevel={maxRiskLevel} />)
+              .with({ type: 'number' }, (c) => (
+                <NumberSwitchDescription
+                  conditions={c}
+                  maxRiskLevel={maxRiskLevel}
+                  matchedBranchIndex={matchedBranchIndex}
+                />
+              ))
+              .with({ type: 'bool' }, (c) => (
+                <BoolSwitchDescription
+                  conditions={c}
+                  maxRiskLevel={maxRiskLevel}
+                  matchedBranchIndex={matchedBranchIndex}
+                />
+              ))
               .with({ type: 'string' }, (c) => (
-                <StringSwitchDescription conditions={c} maxRiskLevel={maxRiskLevel} customLists={customLists} />
+                <StringSwitchDescription
+                  conditions={c}
+                  maxRiskLevel={maxRiskLevel}
+                  customLists={customLists}
+                  matchedBranchIndex={matchedBranchIndex}
+                />
               ))
               .exhaustive(),
           )
@@ -93,6 +118,7 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
             <TagsSwitchDescription
               conditions={m.conditions}
               maxRiskLevel={maxRiskLevel}
+              matchedBranchIndex={matchedBranchIndex}
               getTagLabel={(value) => {
                 const cats = topicsToCategories([value]);
                 const cat = cats[0];
@@ -106,11 +132,16 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
             <TagsSwitchDescription
               conditions={m.conditions}
               maxRiskLevel={maxRiskLevel}
+              matchedBranchIndex={matchedBranchIndex}
               getTagLabel={(value) => getTagById(value)?.name ?? value}
             />
           ))
           .with({ type: 'past_alerts' }, (m) => (
-            <BoolSwitchDescription conditions={m.conditions} maxRiskLevel={maxRiskLevel} />
+            <BoolSwitchDescription
+              conditions={m.conditions}
+              maxRiskLevel={maxRiskLevel}
+              matchedBranchIndex={matchedBranchIndex}
+            />
           ))
           .exhaustive()
       ) : null}

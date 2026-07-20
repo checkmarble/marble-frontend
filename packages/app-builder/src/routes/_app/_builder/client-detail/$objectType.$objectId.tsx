@@ -104,8 +104,6 @@ function ClientDetailPage() {
     isAdmin,
   } = loaderData;
 
-  console.log('activeScore', activeScore);
-
   // Guard against the concurrent-render window where the router transitions
   // to this route before the loader result is committed to the router state.
   if (!metadata) return null;

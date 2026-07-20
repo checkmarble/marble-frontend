@@ -14,6 +14,7 @@ interface StringSwitchDescriptionProps {
   conditions: StringSwitch;
   maxRiskLevel: number;
   customLists?: CustomList[];
+  matchedBranchIndex?: number | null;
 }
 
 function StringOperationValue({ operation, customLists }: { operation: StringOperation; customLists: CustomList[] }) {
@@ -45,7 +46,12 @@ function StringOperationValue({ operation, customLists }: { operation: StringOpe
   return <Tag color="grey">{operation.value as string}</Tag>;
 }
 
-export function StringSwitchDescription({ conditions, maxRiskLevel, customLists = [] }: StringSwitchDescriptionProps) {
+export function StringSwitchDescription({
+  conditions,
+  maxRiskLevel,
+  customLists = [],
+  matchedBranchIndex,
+}: StringSwitchDescriptionProps) {
   const { t } = useTranslation(['user-scoring']);
 
   const opLabels: Record<StringSingleValueOp | StringListOp, string> = {
@@ -62,14 +68,23 @@ export function StringSwitchDescription({ conditions, maxRiskLevel, customLists 
   return (
     <ul className="flex flex-col gap-sm">
       {conditions.branches.map((branch, idx) => (
-        <SwitchCaseRow key={idx} impact={branch.impact} maxRiskLevel={maxRiskLevel}>
+        <SwitchCaseRow
+          key={idx}
+          impact={branch.impact}
+          maxRiskLevel={maxRiskLevel}
+          matched={matchedBranchIndex === idx}
+        >
           <span className="flex items-center gap-sm">
             {t('user-scoring:switch.description.if_value', { op: opLabels[branch.value.op] })}
             <StringOperationValue operation={branch.value} customLists={customLists} />
           </span>
         </SwitchCaseRow>
       ))}
-      <SwitchCaseRow impact={conditions.default} maxRiskLevel={maxRiskLevel}>
+      <SwitchCaseRow
+        impact={conditions.default}
+        maxRiskLevel={maxRiskLevel}
+        matched={matchedBranchIndex === conditions.branches.length}
+      >
         {t('user-scoring:switch.description.else')}
       </SwitchCaseRow>
     </ul>
