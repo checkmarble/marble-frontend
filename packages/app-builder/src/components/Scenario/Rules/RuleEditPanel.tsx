@@ -394,7 +394,7 @@ function RuleEditForm({
               <>
                 <Panel.FooterButton
                   type="submit"
-                  disabled={!canSubmit}
+                  disabled={!canSubmit || isSubmitting}
                   isLoading={isSubmitting}
                   variant="primary-outline"
                   label={t('common:save')}
