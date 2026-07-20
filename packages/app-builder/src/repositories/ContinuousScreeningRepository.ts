@@ -1,8 +1,10 @@
 import { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptContinuousScreeningConfig,
+  adaptContinuousScreeningObject,
   adaptCreateContinuousScreeningConfigDto,
   ContinuousScreeningConfig,
+  ContinuousScreeningObject,
   CreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
 
@@ -14,6 +16,9 @@ export interface ContinuousScreeningRepository {
     configuration: CreateContinuousScreeningConfig,
   ): Promise<ContinuousScreeningConfig>;
   getConfiguration(stableId: string): Promise<ContinuousScreeningConfig>;
+  listObjects(filters: { objectType: string; objectId: string }): Promise<ContinuousScreeningObject[]>;
+  createObject(payload: { objectType: string; objectId: string; configStableId: string }): Promise<void>;
+  deleteObject(payload: { objectType: string; objectId: string; configStableId: string }): Promise<void>;
   updateMatchStatus(payload: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }): Promise<any>;
   dismiss(id: string): Promise<void>;
   loadMoreMatches(id: string): Promise<void>;
@@ -41,6 +46,27 @@ export function makeGetContinuousScreeningRepository() {
     getConfiguration: async (stableId) => {
       const result = await marbleCoreApiClient.getContinuousScreeningConfig(stableId);
       return adaptContinuousScreeningConfig(result);
+    },
+    listObjects: async ({ objectType, objectId }) => {
+      const objects = await marbleCoreApiClient.listContinuousScreeningObjects({
+        objectType: [objectType],
+        objectId: [objectId],
+      });
+      return objects.map(adaptContinuousScreeningObject);
+    },
+    createObject: async ({ objectType, objectId, configStableId }) => {
+      await marbleCoreApiClient.createContinuousScreeningObject({
+        object_type: objectType,
+        object_id: objectId,
+        config_stable_id: configStableId,
+      });
+    },
+    deleteObject: async ({ objectType, objectId, configStableId }) => {
+      await marbleCoreApiClient.deleteContinuousScreeningObject({
+        object_type: objectType,
+        object_id: objectId,
+        config_stable_id: configStableId,
+      });
     },
     updateMatchStatus: async ({ matchId, status, comment }) => {
       await marbleCoreApiClient.updateContinuousScreeningMatch(matchId, {
