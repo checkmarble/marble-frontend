@@ -124,6 +124,7 @@ export function ReauthPanel({ onReauthenticated }: { onReauthenticated: () => vo
             id="reauth-mfa-code"
             inputMode="numeric"
             autoComplete="one-time-code"
+            enablePasswordManagers
             maxLength={6}
             value={mfaCode}
             onChange={(e) => setMfaCode(e.currentTarget.value.replace(/\D/g, ''))}
@@ -165,6 +166,7 @@ export function ReauthPanel({ onReauthenticated }: { onReauthenticated: () => vo
             id="reauth-password"
             type="password"
             autoComplete="current-password"
+            enablePasswordManagers
             startAdornment="lock"
             value={password}
             onChange={(e) => setPassword(e.currentTarget.value)}

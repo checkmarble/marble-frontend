@@ -97,9 +97,11 @@ export function TwoFactorAuthSettings() {
         <span className="text-xs text-grey-secondary">{t('account:mfa.status.disabled')}</span>
       )}
 
-      <div className="flex flex-col gap-sm">
-        <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
-      </div>
+      {factors.length === 0 ? (
+        <div className="flex flex-col gap-sm">
+          <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
+        </div>
+      ) : null}
 
       <Modal.Root
         open={reauthForRemoval !== null}
@@ -241,6 +243,7 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
                       id="totp-enroll-code"
                       inputMode="numeric"
                       autoComplete="one-time-code"
+                      enablePasswordManagers
                       maxLength={6}
                       value={code}
                       onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
