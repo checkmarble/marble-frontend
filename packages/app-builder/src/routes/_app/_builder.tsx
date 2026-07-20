@@ -29,7 +29,7 @@ import { match, P } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const appBuilderLayoutLoader = createServerFn()
+const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async function appBuilderLayout({ context }) {
     const { user, inbox, organization, entitlements } = context.authInfo;

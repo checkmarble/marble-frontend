@@ -309,3 +309,10 @@ export const isIndirectContinuousScreeningMatch = (
 ): match is ContinuousScreeningMatchMarble => {
   return 'objectType' in match && 'objectId' in match;
 };
+
+export const getMatchEntityType = (screeningMatch: ContinuousScreeningMatch): string => {
+  if (isIndirectContinuousScreeningMatch(screeningMatch)) {
+    return screeningMatch.objectType;
+  }
+  return screeningMatch.payload.schema;
+};
