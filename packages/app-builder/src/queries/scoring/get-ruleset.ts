@@ -24,22 +24,22 @@ export const useGetScoringRulesetQuery = (
 
 /**
  * Load the ruleset used for a score: resolve ruleset_id → version number via the versions list,
- * then fetch that version. Without ruleset_id, loads the committed (latest) ruleset.
+ * then fetch that version. Without ruleset_id (or if the id is unknown), loads the committed ruleset.
  */
 export const useGetScoringRulesetForScoreQuery = (recordType: string, rulesetId?: string) => {
   const versionsQuery = useListScoringRulesetVersionsQuery(recordType);
   const versionNumber = rulesetId ? versionsQuery.data?.versions.find((v) => v.id === rulesetId)?.version : undefined;
 
   const waitingForVersion = !!rulesetId && versionsQuery.isPending;
-  const versionNotFound = !!rulesetId && versionsQuery.isSuccess && versionNumber === undefined;
+  // Fall back to committed when ruleset_id is missing from the versions list
+  const resolvedVersion = waitingForVersion ? undefined : (versionNumber ?? 'committed');
 
-  const rulesetQuery = useGetScoringRulesetQuery(recordType, versionNumber, {
-    enabled: !!recordType && !waitingForVersion && !versionNotFound,
+  const rulesetQuery = useGetScoringRulesetQuery(recordType, resolvedVersion, {
+    enabled: !!recordType && !waitingForVersion,
   });
 
   return {
     ...rulesetQuery,
-    isPending: !versionNotFound && (waitingForVersion || rulesetQuery.isPending),
-    data: versionNotFound ? undefined : rulesetQuery.data,
+    isPending: waitingForVersion || rulesetQuery.isPending,
   };
 };

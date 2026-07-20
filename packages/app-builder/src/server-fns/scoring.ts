@@ -130,7 +130,7 @@ export const getScoreLatestFn = createServerFn({ method: 'GET' })
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      const score = await context.authInfo.userScoring.getScoreLatest(data.objectType, data.objectId);
+      const score = await context.authInfo.userScoring.getScoreLatestWithEvaluation(data.objectType, data.objectId);
       return { score: score ?? null };
     } catch (error) {
       if (isNotFoundHttpError(error) || isUnauthorizedHttpError(error) || isForbiddenHttpError(error)) {
