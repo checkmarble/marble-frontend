@@ -523,6 +523,9 @@ components:
         stale_at:
           type: string
           format: date-time
+        ruleset_id:
+          type: string
+          format: uuid
         evaluations:
           type: array
           items:

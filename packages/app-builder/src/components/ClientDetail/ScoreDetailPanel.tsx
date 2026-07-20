@@ -13,11 +13,12 @@ import {
   scoringLevelEntries,
 } from '@app-builder/models/scoring';
 import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
-import { useGetScoringRulesetQuery } from '@app-builder/queries/scoring/get-ruleset';
+import { useGetScoringRulesetForScoreQuery } from '@app-builder/queries/scoring/get-ruleset';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { type ScoringScore } from 'marble-api';
 import { useTranslation } from 'react-i18next';
+import { match, P } from 'ts-pattern';
 import { Tag, Typo } from 'ui-design-system';
 
 interface ScoreDetailPanelProps {
@@ -37,7 +38,7 @@ export function ScoreDetailPanel({
 }: ScoreDetailPanelProps) {
   const { t } = useTranslation(['client360', 'user-scoring']);
   const formatDateTime = useFormatDateTime();
-  const rulesetQuery = useGetScoringRulesetQuery(objectType);
+  const rulesetQuery = useGetScoringRulesetForScoreQuery(objectType, activeScore.ruleset_id);
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
   const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
@@ -263,65 +264,57 @@ function ScoreEvaluationBreakdown({
 }) {
   const { t } = useTranslation(['client360']);
   const dataModel = useDataModel();
-  const rulesetQuery = useGetScoringRulesetQuery(objectType);
+  const rulesetQuery = useGetScoringRulesetForScoreQuery(objectType, activeScore.ruleset_id);
   const customListsQuery = useGetCustomListsQuery();
 
-  if (rulesetQuery.isPending || customListsQuery.isPending) {
-    return (
-      <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
-        <span className="text-s font-medium text-grey-primary">
-          {t('client360:client_detail.score_panel.applied_rules')}
-        </span>
-        <div className="flex justify-center py-md">
-          <Spinner className="size-6" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!rulesetQuery.data || !customListsQuery.data || !activeScore.evaluations) {
-    return (
-      <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
-        <span className="text-s font-medium text-grey-primary">
-          {t('client360:client_detail.score_panel.applied_rules')}
-        </span>
-        <p className="text-s text-grey-secondary">{t('client360:client_detail.score_panel.evaluation_unavailable')}</p>
-      </div>
-    );
-  }
-
-  const matchResult = matchScoreEvaluationsToRules(
-    activeScore.evaluations,
-    rulesetQuery.data.ruleset.rules,
-    objectType,
-    dataModel,
+  const unavailable = (
+    <p className="text-s text-grey-secondary">{t('client360:client_detail.score_panel.evaluation_unavailable')}</p>
   );
-
-  if (!matchResult.ok) {
-    return (
-      <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
-        <span className="text-s font-medium text-grey-primary">
-          {t('client360:client_detail.score_panel.applied_rules')}
-        </span>
-        <p className="text-s text-grey-secondary">{t('client360:client_detail.score_panel.evaluation_unavailable')}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-sm">
-      <span className="text-s font-medium text-grey-primary">
+      <Typo variant="subtitle1" className="flex items-center gap-xs justify-between">
         {t('client360:client_detail.score_panel.applied_rules')}
-      </span>
-      {matchResult.rules.map((matched) => (
-        <MatchedRuleCard
-          key={matched.rule.stableId}
-          matched={matched}
-          objectType={objectType}
-          maxRiskLevel={maxRiskLevel}
-          customLists={customListsQuery.data}
-        />
-      ))}
+        <div className="flex items-center gap-xs">
+          <Tag color="grey">{objectType}</Tag>
+          {rulesetQuery.data?.ruleset.version ? <Tag color="grey">v{rulesetQuery.data.ruleset.version}</Tag> : null}
+        </div>
+      </Typo>
+      {match([rulesetQuery, customListsQuery])
+        .with([{ isPending: true }, P.any], [P.any, { isPending: true }], () => (
+          <div className="flex justify-center py-md">
+            <Spinner className="size-6" />
+          </div>
+        ))
+        .with([{ isError: true }, P.any], [P.any, { isError: true }], () => unavailable)
+        .with([{ isSuccess: true }, { isSuccess: true }], ([rulesetResult, customListsResult]) => {
+          if (!rulesetResult.data || !customListsResult.data || !activeScore.evaluations) {
+            return unavailable;
+          }
+
+          return match(
+            matchScoreEvaluationsToRules(
+              activeScore.evaluations,
+              rulesetResult.data.ruleset.rules,
+              objectType,
+              dataModel,
+            ),
+          )
+            .with({ ok: false }, () => unavailable)
+            .with({ ok: true }, ({ rules }) =>
+              rules.map((matched) => (
+                <MatchedRuleCard
+                  key={matched.rule.stableId}
+                  matched={matched}
+                  objectType={objectType}
+                  maxRiskLevel={maxRiskLevel}
+                  customLists={customListsResult.data}
+                />
+              )),
+            )
+            .exhaustive();
+        })
+        .otherwise(() => unavailable)}
     </div>
   );
 }

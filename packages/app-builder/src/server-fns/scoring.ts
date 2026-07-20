@@ -99,9 +99,14 @@ export const updateScoringSettingsFn = createServerFn({ method: 'POST' })
 
 export const getScoringRulesetFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .validator(z.object({ recordType: z.string() }))
+  .validator(
+    z.object({
+      recordType: z.string(),
+      version: z.union([z.string(), z.number()]).optional(),
+    }),
+  )
   .handler(async ({ context, data }) => {
-    const ruleset = await context.authInfo.userScoring.getRulesetWithRules(data.recordType);
+    const ruleset = await context.authInfo.userScoring.getRulesetWithRules(data.recordType, data.version);
     return { ruleset };
   });
 
