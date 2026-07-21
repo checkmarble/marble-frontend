@@ -77,7 +77,7 @@ export function DecisionPanel({
               <ScoreModifier score={decision.score} />
             </div>
             {isPendingReview ? (
-              <ReviewDecisionModal defaultOpened={withReviewOpened} decisionId={decision.id} screening={screenings[0]}>
+              <ReviewDecisionModal defaultOpened={withReviewOpened} decisionId={decision.id} screenings={screenings}>
                 <Button variant="primary" size="small">
                   {t('cases:decisions.approve_or_decline')}
                 </Button>
