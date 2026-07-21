@@ -18,7 +18,7 @@ import { useDebouncedCallbackRef } from '@marble/shared';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
-import { FormEvent, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -193,6 +193,20 @@ function RuleEditForm({
   const handleRuleDuplicate = async (ruleId: string) => {
     await onSuccess(ruleId);
   };
+
+  useEffect(() => {
+    if (!isAiRuleDescriptionEnabled) return;
+
+    setRuleDescription(undefined);
+    if (rule.formula) {
+      ruleDescriptionMutation.mutateAsync({ scenarioId: scenario.id, astNode: rule.formula }).then((res) => {
+        if (res.success && res.data.isRuleValid) {
+          // Do not override description if one has already been generated manually for example
+          setRuleDescription((prevDesc) => prevDesc ?? res.data.description);
+        }
+      });
+    }
+  }, [rule.id]);
 
   return (
     <form onSubmit={handleSubmit(form)}>
