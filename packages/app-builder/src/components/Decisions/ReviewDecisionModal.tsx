@@ -112,8 +112,8 @@ function ReviewDecisionContent({
                 const isSelected = field.state.value === reviewStatus;
 
                 return (
-                  <div className="flex flex-col gap-2xs">
-                    <label key={reviewStatus} className="flex cursor-pointer items-center gap-sm">
+                  <div key={reviewStatus} className="flex flex-col gap-2xs">
+                    <label className="flex cursor-pointer items-center gap-sm">
                       <input
                         type="radio"
                         name="reviewStatus"
