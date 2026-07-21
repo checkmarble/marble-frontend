@@ -18,7 +18,7 @@ import { useDebouncedCallbackRef } from '@marble/shared';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
-import { useMemo, useRef, useState } from 'react';
+import { FormEvent, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -379,10 +379,9 @@ function RuleEditForm({
             {([canSubmit, isSubmitting]) => (
               <>
                 <Panel.FooterButton
-                  type="button"
+                  type="submit"
                   disabled={!canSubmit}
                   isLoading={isSubmitting}
-                  onClick={() => handleRuleSubmit(false)}
                   variant="primary-outline"
                   label={t('common:save')}
                 />

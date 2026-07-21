@@ -6,6 +6,7 @@ import { Icon } from 'ui-icons';
 export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonV2Props>(({ className, ...props }, ref) => {
   return (
     <button
+      type="button"
       className={clsx(
         'size-fit rounded-xs border p-xs text-xs transition-colors duration-200 ease-in-out',
         'bg-surface-card text-grey-secondary border-grey-border',
