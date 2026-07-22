@@ -11,7 +11,7 @@ import {
 } from '@app-builder/models/scoring';
 import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type SelectOption, SelectV2, Tag } from 'ui-design-system';
+import { cn, type SelectOption, SelectV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type FieldPillProps = {
@@ -40,17 +40,20 @@ interface SwitchCaseRowProps {
   impact: ScoreImpact;
   children: ReactNode;
   maxRiskLevel: number;
+  matched?: boolean;
 }
 
-export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowProps) {
+export function SwitchCaseRow({ impact, children, maxRiskLevel, matched = false }: SwitchCaseRowProps) {
   const { t } = useTranslation(['user-scoring']);
 
   const colors = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : {};
 
   return (
-    <li className="flex items-center gap-sm">
-      <div className="ms-md list-item list-disc whitespace-nowrap">
-        <div className="flex items-center gap-sm">
+    <li className={cn('flex items-center gap-sm', matched && 'text-grey-primary font-medium')}>
+      <div className={cn('ms-md list-item list-disc whitespace-nowrap', matched && 'marker:text-purple-primary')}>
+        <div
+          className={cn('flex items-center gap-sm', matched && 'rounded-sm bg-purple-background-light px-xs py-0.5')}
+        >
           <span className="inline-flex items-center gap-sm">
             {children} {t('user-scoring:switch.then')}
           </span>

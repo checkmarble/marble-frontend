@@ -49,7 +49,7 @@ const getDataFn = createServerFn()
 
       let activeScore = null;
       try {
-        activeScore = (await userScoring.getScoreLatest(objectType, objectId)) ?? null;
+        activeScore = (await userScoring.getScoreLatestWithEvaluation(objectType, objectId)) ?? null;
       } catch (error) {
         if (!isNotFoundHttpError(error) && !isUnauthorizedHttpError(error) && !isForbiddenHttpError(error)) throw error;
       }

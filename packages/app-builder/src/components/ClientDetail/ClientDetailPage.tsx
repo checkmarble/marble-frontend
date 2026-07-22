@@ -8,6 +8,7 @@ import { useActiveConfigsForObjectQuery } from '@app-builder/queries/continuous-
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
+import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useQueryClient } from '@tanstack/react-query';
@@ -75,6 +76,9 @@ export const ClientDetailPage = ({
   const alertHitsQuery = useGetObjectCasesQuery(objectType, objectId);
   const alertHitsCount = alertHitsQuery.data?.cases.length ?? 0;
   const [showScorePanel, setShowScorePanel] = useState(false);
+  // Prefer client-fetched score (includes evaluations), same source as UserScoreBadge
+  const scoreLatestQuery = useScoreLatestQuery(objectType, objectId);
+  const scoreForPanel = scoreLatestQuery.data?.score ?? activeScore;
 
   let [scoreColor, scoreLabel] = ['', ''];
 
@@ -360,12 +364,12 @@ export const ClientDetailPage = ({
         onOpenChange={setShowExplorer}
         dataModel={dataModelQuery.data?.dataModel ?? []}
       />
-      {scoringSettings && activeScore && isAccessible(userScoringAccess) ? (
+      {scoringSettings && scoreForPanel && isAccessible(userScoringAccess) ? (
         <ScoreDetailPanel
           open={showScorePanel}
           onOpenChange={setShowScorePanel}
           objectType={objectType}
-          activeScore={activeScore}
+          activeScore={scoreForPanel}
           scoringSettings={scoringSettings}
         />
       ) : null}

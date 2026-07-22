@@ -99,9 +99,14 @@ export const updateScoringSettingsFn = createServerFn({ method: 'POST' })
 
 export const getScoringRulesetFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .validator(z.object({ recordType: z.string() }))
+  .validator(
+    z.object({
+      recordType: z.string(),
+      version: z.union([z.string(), z.number()]).optional(),
+    }),
+  )
   .handler(async ({ context, data }) => {
-    const ruleset = await context.authInfo.userScoring.getRulesetWithRules(data.recordType);
+    const ruleset = await context.authInfo.userScoring.getRulesetWithRules(data.recordType, data.version);
     return { ruleset };
   });
 
@@ -125,7 +130,7 @@ export const getScoreLatestFn = createServerFn({ method: 'GET' })
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      const score = await context.authInfo.userScoring.getScoreLatest(data.objectType, data.objectId);
+      const score = await context.authInfo.userScoring.getScoreLatestWithEvaluation(data.objectType, data.objectId);
       return { score: score ?? null };
     } catch (error) {
       if (isNotFoundHttpError(error) || isUnauthorizedHttpError(error) || isForbiddenHttpError(error)) {
