@@ -41,6 +41,7 @@ export const MatchCard = ({
   const entity = match.payload;
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
   const canReview = match.status === 'pending' && !readonly && !unreviewable;
+  const hasAiSuggestion = aiSuggestion && match.status === 'pending';
 
   return (
     <Collapsible.Container defaultOpen={defaultOpen}>
@@ -48,7 +49,7 @@ export const MatchCard = ({
         <div className="flex grow items-center justify-between gap-sm">
           <div className="flex flex-wrap items-center gap-sm">
             <span className="text-s font-medium">{entity.caption}</span>
-            {aiSuggestion && match.status === 'pending' ? (
+            {hasAiSuggestion ? (
               <Tag color="grey">
                 {t(`screenings:match.ai_suggestion.${aiSuggestion.confidence}`)}
                 <Icon icon="wand" className="size-4" />
@@ -81,7 +82,7 @@ export const MatchCard = ({
           </div>
         </div>
       </Collapsible.Title>
-      {aiSuggestion && match.status === 'pending' && aiSuggestion.reason ? (
+      {hasAiSuggestion && aiSuggestion.reason ? (
         <div className="px-md pb-sm">
           <AiSuggestionReason reason={aiSuggestion.reason} />
         </div>
