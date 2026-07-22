@@ -22,12 +22,12 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { KeyboardEventHandler, type MouseEvent, MouseEventHandler, useState } from 'react';
+import { KeyboardEventHandler, MouseEventHandler, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { UUID } from 'short-uuid/src/types';
 import { match } from 'ts-pattern';
-import { CtaV2ClassName, cn, Popover, SearchInput, Tag, Tooltip } from 'ui-design-system';
+import { CtaV2ClassName, cn, ExpandableGroupTagLine, SearchInput, Tag, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateRule } from './Actions/CreateRule';
 import { RuleEditPanel } from './RuleEditPanel';
@@ -507,12 +507,6 @@ const DataAccessorAstNodeTag = ({ node }: { node: AstNode }) => {
   return <Tag color="grey">{getDataAccessorDisplayName(node)}</Tag>;
 };
 
-const MAX_VISIBLE_DATASETS = 4;
-
-const stopPropagation = (e: MouseEvent) => {
-  e.stopPropagation();
-};
-
 const ScreeningDatasetsView = ({ datasets }: { datasets: string[] }) => {
   const { t } = useTranslation(['scenarios']);
   const filtersQuery = useListConfigQuery('transaction_monitoring');
@@ -530,37 +524,25 @@ const ScreeningDatasetsView = ({ datasets }: { datasets: string[] }) => {
     return formatDatasetTitle(key);
   };
 
-  const visible = datasets.slice(0, MAX_VISIBLE_DATASETS);
-  const overflow = datasets.slice(MAX_VISIBLE_DATASETS);
-
   return (
     <li className="list-item">
-      {t('scenarios:rules.screening_view.relevant_lists')}{' '}
-      <span className="inline-flex flex-wrap items-center gap-xs">
-        {visible.map((key) => (
-          <Tag key={key} color="grey">
-            {resolveName(key)}
+      <ExpandableGroupTagLine
+        classname="gap-xs"
+        overflowBehavior="popover"
+        items={[
+          <span className="shrink-0">{t('scenarios:rules.screening_view.relevant_lists')}</span>,
+          ...datasets.map((key) => (
+            <Tag key={key} color="grey" className="self-start">
+              {resolveName(key)}
+            </Tag>
+          )),
+        ]}
+        moreButton={(overflow, onExpand) => (
+          <Tag color="grey" className="cursor-pointer shrink-0" onClick={onExpand}>
+            {t('scenarios:rules.screening_view.datasets_overflow', { count: overflow })}
           </Tag>
-        ))}
-        {overflow.length > 0 ? (
-          <Popover.Root>
-            <Popover.Trigger asChild>
-              <Tag color="purple" className="cursor-pointer" onClick={stopPropagation}>
-                {t('scenarios:rules.screening_view.datasets_overflow', { count: overflow.length })}
-              </Tag>
-            </Popover.Trigger>
-            <Popover.Content align="start" sideOffset={4} onClick={stopPropagation}>
-              <div className="flex max-h-[400px] flex-col items-start gap-xs overflow-auto p-md">
-                {overflow.map((key) => (
-                  <Tag key={key} color="grey">
-                    {resolveName(key)}
-                  </Tag>
-                ))}
-              </div>
-            </Popover.Content>
-          </Popover.Root>
-        ) : null}
-      </span>
+        )}
+      />
     </li>
   );
 };
