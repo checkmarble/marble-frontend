@@ -12,6 +12,7 @@ import { Scenario } from '@app-builder/models/scenario';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { ScreeningCategory } from '@app-builder/models/screening';
 import { ScreeningConfig } from '@app-builder/models/screening-config';
+import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
 import { useScenarioIterationRule } from '@app-builder/queries/scenarios/scenario-iteration-rule';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
@@ -26,7 +27,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { UUID } from 'short-uuid/src/types';
 import { match } from 'ts-pattern';
-import { CtaV2ClassName, cn, Popover, SearchInput, Tag } from 'ui-design-system';
+import { CtaV2ClassName, cn, Popover, SearchInput, Tag, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateRule } from './Actions/CreateRule';
 import { RuleEditPanel } from './RuleEditPanel';
@@ -231,7 +232,11 @@ export function RulesPage({
                             </li>
                           ) : null}
                           {rule.entityType && rule.query ? (
-                            <ScreeningRuleQueryView entityType={rule.entityType} query={rule.query} />
+                            <ScreeningRuleQueryView
+                              entityType={rule.entityType}
+                              query={rule.query}
+                              preprocessing={rule.preprocessing}
+                            />
                           ) : null}
                           {rule.datasets && rule.datasets.length > 0 ? (
                             <ScreeningDatasetsView datasets={rule.datasets} />
@@ -380,13 +385,14 @@ const AddRuleOrScreening = ({
 type ScreeningRuleQueryViewProps = {
   entityType: string;
   query: Partial<Record<string, AstNode>>;
+  preprocessing?: ScreeningConfig['preprocessing'];
 };
 
 const filterNodes = (value: [string, AstNode | undefined]): value is [string, StringConcatAstNode] => {
   return !!value[1] && isStringConcatAstNode(value[1]);
 };
 
-const ScreeningRuleQueryView = ({ entityType, query }: ScreeningRuleQueryViewProps) => {
+const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningRuleQueryViewProps) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const queries = R.pipe(
     R.entries(query),
@@ -397,7 +403,7 @@ const ScreeningRuleQueryView = ({ entityType, query }: ScreeningRuleQueryViewPro
 
   return (
     <li className="list-item">
-      <div className="grid grid-cols-[auto_1fr] gap-sm">
+      <div className="flex flex-col gap-sm">
         <span>
           <Trans
             t={t}
@@ -406,21 +412,92 @@ const ScreeningRuleQueryView = ({ entityType, query }: ScreeningRuleQueryViewPro
             components={{ Tag: <Tag color="grey" /> }}
           />
         </span>
-        <div className="flex flex-col gap-sm">
+        <ul className="list-disc flex flex-col gap-sm pl-5">
           {queries.map(([k, q]) => (
-            <span key={q.id}>
-              {'- '}
-              <Tag color="grey">{k}</Tag> {t('scenarios:rules.screening_view.matching')}{' '}
+            <li className="list-item" key={q.id}>
+              {k === 'name' ? (
+                <NameQueryFieldTag label={k} preprocessing={preprocessing} />
+              ) : (
+                <Tag color="grey">{k}</Tag>
+              )}{' '}
+              {t('scenarios:rules.screening_view.matching')}{' '}
               <span className="inline-flex gap-xs">
                 {q.children.map((node) => (
                   <DataAccessorAstNodeTag key={node.id} node={node} />
                 ))}
               </span>
-            </span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </li>
+  );
+};
+
+const hasMatchSettings = (preprocessing: ScreeningConfig['preprocessing']): boolean =>
+  !!preprocessing &&
+  (!!preprocessing.removeNumbers ||
+    preprocessing.skipIfUnder != null ||
+    !!preprocessing.useNer ||
+    !!preprocessing.nerIgnoreClassification ||
+    !!preprocessing.blacklistListId);
+
+const NameQueryFieldTag = ({
+  label,
+  preprocessing,
+}: {
+  label: string;
+  preprocessing: ScreeningConfig['preprocessing'];
+}) => {
+  if (!hasMatchSettings(preprocessing)) {
+    return <Tag color="grey">{label}</Tag>;
+  }
+
+  return (
+    <Tooltip.Default content={<MatchSettingsTooltip preprocessing={preprocessing!} />}>
+      <Tag color="grey" className="gap-xs">
+        <span>{label}</span>
+        <Icon icon="tip" className="size-4" />
+      </Tag>
+    </Tooltip.Default>
+  );
+};
+
+const MatchSettingsTooltip = ({ preprocessing }: { preprocessing: NonNullable<ScreeningConfig['preprocessing']> }) => {
+  const { t } = useTranslation(['scenarios']);
+  const customListsQuery = useGetCustomListsQuery();
+
+  const listName = preprocessing.blacklistListId
+    ? (customListsQuery.data?.find((list) => list.id === preprocessing.blacklistListId)?.name ??
+      preprocessing.blacklistListId)
+    : null;
+
+  return (
+    <ul className="text-s flex flex-col gap-xs text-left">
+      {preprocessing.removeNumbers ? <li>{t('scenarios:edit_sanction.exclude_numbers')}</li> : null}
+      {preprocessing.skipIfUnder != null ? (
+        <li>
+          <Trans
+            t={t}
+            i18nKey="scenarios:edit_sanction.ignore_check_if_under"
+            components={{ NbNumbers: <span className="font-semibold">{preprocessing.skipIfUnder}</span> }}
+          />
+        </li>
+      ) : null}
+      {preprocessing.useNer ? <li>{t('scenarios:edit_sanction.enable_entity_recognition')}</li> : null}
+      {preprocessing.nerIgnoreClassification ? <li>{t('scenarios:edit_sanction.skip_entity_recognition')}</li> : null}
+      {listName ? (
+        <li>
+          <div className="flex items-center gap-xs">
+            <span>{t('scenarios:edit_sanction.remove_terms_from_list')}</span>
+            <Tag color="grey" className="gap-xs">
+              <Icon icon="list" className="size-4" />
+              <span>{listName}</span>
+            </Tag>
+          </div>
+        </li>
+      ) : null}
+    </ul>
   );
 };
 
