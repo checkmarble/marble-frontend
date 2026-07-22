@@ -10,6 +10,7 @@ import { ReviewMatchPopover } from '../ReviewMatchPopover';
 import { StatusTag } from '../StatusTag';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicsDisplay } from '../TopicsDisplay';
+import { AiSuggestionReason } from './AiSuggestionReason';
 import { CommentLine } from './CommentLine';
 import { EntityDatasetsList } from './match-card-entity-components';
 
@@ -80,6 +81,11 @@ export const MatchCard = ({
           </div>
         </div>
       </Collapsible.Title>
+      {aiSuggestion && match.status === 'pending' && aiSuggestion.reason ? (
+        <div className="px-md pb-sm">
+          <AiSuggestionReason reason={aiSuggestion.reason} />
+        </div>
+      ) : null}
       {entity.properties['topics']?.length ? (
         <div className="px-md pb-md">
           <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-xs" />
