@@ -238,7 +238,7 @@ export function RulesPage({
                               values={{ threshold: rule.threshold ?? org.sanctionThreshold }}
                               components={{
                                 Tag: <Tag color="grey" />,
-                                Outcome: <OutcomeBadge outcome={rule.forcedOutcome} />,
+                                Outcome: <OutcomeBadge outcome={rule.forcedOutcome} className="align-middle" />,
                               }}
                             />
                           </div>
@@ -381,7 +381,12 @@ const filterNodes = (value: [string, AstNode | undefined]): value is [string, St
 
 const ScreeningRuleQueryView = ({ entityType, query }: ScreeningRuleQueryViewProps) => {
   const { t } = useTranslation(['common', 'scenarios']);
-  const queries = R.pipe(R.entries(query), R.filter(filterNodes));
+  const queries = R.pipe(
+    R.entries(query),
+    R.filter(filterNodes),
+    // Show the "name" filter first when present
+    R.sortBy(([k]) => (k === 'name' ? 0 : 1)),
+  );
 
   return (
     <li className="list-item">
@@ -397,7 +402,8 @@ const ScreeningRuleQueryView = ({ entityType, query }: ScreeningRuleQueryViewPro
         <div className="flex flex-col gap-sm">
           {queries.map(([k, q]) => (
             <span key={q.id}>
-              <Tag color="grey">{k}</Tag> {t('scenarios:rules.screening_view.included_in')}{' '}
+              {'- '}
+              <Tag color="grey">{k}</Tag> {t('scenarios:rules.screening_view.matching')}{' '}
               <span className="inline-flex gap-xs">
                 {q.children.map((node) => (
                   <DataAccessorAstNodeTag key={node.id} node={node} />
