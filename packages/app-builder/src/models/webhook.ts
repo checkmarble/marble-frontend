@@ -21,6 +21,7 @@ export const eventTypes = [
   'async_decision.failed',
   'continuous_screening.created',
   'continuous_screening.match_reviewed',
+  'user_scoring.risk_level_changed',
 ] as const;
 export type EventType = (typeof eventTypes)[number];
 
