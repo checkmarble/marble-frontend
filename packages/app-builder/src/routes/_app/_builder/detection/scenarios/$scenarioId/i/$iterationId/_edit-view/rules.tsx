@@ -1,5 +1,9 @@
 import { RulesPage } from '@app-builder/components/Scenario/Rules/RulesPage';
-import { useDerivedIterationRuleGroupsData } from '@app-builder/hooks/routes-layout-data';
+import {
+  useDerivedIterationRuleGroupsData,
+  useDetectionScenarioData,
+  useDetectionScenarioIterationData,
+} from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAccessible, isAiRuleBuildingAvailable } from '@app-builder/services/feature-access';
 import { useParam } from '@app-builder/utils/short-uuid';
@@ -26,7 +30,8 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
 function PageComponent() {
   const router = useRouter();
   const iterationId = useParam('iterationId');
-  const { editorMode, rulesList, screeningsConfigs, currentScenario, scenarioValidation } = Route.useRouteContext();
+  const { editorMode, rulesList, screeningsConfigs, scenarioValidation } = useDetectionScenarioIterationData();
+  const { currentScenario } = useDetectionScenarioData();
   const { isAiRuleDescriptionEnabled, isSanctionAvailable, isNameRecognitionAvailable } = Route.useLoaderData();
   const ruleGroups = useDerivedIterationRuleGroupsData();
 
