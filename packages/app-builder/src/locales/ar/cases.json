@@ -280,6 +280,7 @@
   "escalate-button.label": "تصعيد",
   "escalate-case.modal.callout": "عند تصعيد هذه الحالة، لن تبقى مُعيَّنًا عليها، وقد تفقد الوصول إذا لم تكن عضوًا في صندوق الوارد المستهدف. سيتم توجيهك إلى قائمة الحالات في صندوق الوارد الحالي.",
   "escalate-case.modal.submit-button.label": "تصعيد",
+  "escalate-case.modal.title": "تصعيد الحالة",
   "filter.assignee.label": "المُسند إليه",
   "filter.closed_only.label": "المغلقة فقط",
   "filter.exclude_assigned.label": "غير المُسنَدين فقط",

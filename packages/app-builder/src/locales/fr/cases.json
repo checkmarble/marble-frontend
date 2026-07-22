@@ -280,6 +280,7 @@
   "escalate-button.label": "Escalader",
   "escalate-case.modal.callout": "En escaladant cette investigation, vous ne serez plus assigné et vous n'y aurez plus accès si vous n'êtes pas membre de la boîte de réception cible. Vous serez redirigé vers la liste des investigations de la boîte actuelle.",
   "escalate-case.modal.submit-button.label": "Escalader",
+  "escalate-case.modal.title": "Escalader l'investigation",
   "filter.assignee.label": "Assigné",
   "filter.closed_only.label": "Investigations résolues uniquement",
   "filter.exclude_assigned.label": "Non assignées uniquement",
