@@ -121,7 +121,7 @@ function PageBackButton({ className, ...props }: React.ComponentProps<'button'>)
 
 function PageBackLink({ className: _className, ...props }: React.ComponentProps<typeof Link>) {
   return (
-    <Link className={CtaV2ClassName({ variant: 'secondary', appearance: 'stroked', mode: 'icon' })} {...props}>
+    <Link className={cn(CtaV2ClassName({ variant: 'secondary', appearance: 'stroked', mode: 'icon' }))} {...props}>
       <Icon icon="arrow-left" className="size-4 rtl:rotate-180" aria-hidden />
     </Link>
   );
