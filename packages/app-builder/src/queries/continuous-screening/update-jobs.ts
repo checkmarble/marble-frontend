@@ -3,12 +3,22 @@ import {
   type ListContinuousScreeningUpdateJobsParams,
 } from '@app-builder/models/continuous-screening';
 import { listContinuousScreeningUpdateJobsFn } from '@app-builder/server-fns/continuous-screening';
-import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, type Query, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+
+type UpdateJobsQuery = Query<
+  ContinuousScreeningUpdateJobSummary[],
+  Error,
+  ContinuousScreeningUpdateJobSummary[],
+  (string | ListContinuousScreeningUpdateJobsParams)[]
+>;
 
 export const useContinuousScreeningUpdateJobsQuery = (
   params: ListContinuousScreeningUpdateJobsParams = {},
-  options: { refetchInterval?: number; initialData?: ContinuousScreeningUpdateJobSummary[] } = {},
+  options: {
+    refetchInterval?: number | false | ((query: UpdateJobsQuery) => number | false | undefined);
+    initialData?: ContinuousScreeningUpdateJobSummary[];
+  } = {},
 ) => {
   const listUpdateJobs = useServerFn(listContinuousScreeningUpdateJobsFn);
 

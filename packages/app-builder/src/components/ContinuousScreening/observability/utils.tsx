@@ -9,7 +9,20 @@ import { match } from 'ts-pattern';
 import { Tag, TagProps, Tooltip } from 'ui-design-system';
 import { Icon, IconName } from 'ui-icons';
 
-export const LIMLIT_FOR_PANELS = 20;
+export const LIMIT_FOR_PANELS = 20;
+
+export const OBSERVABILITY_REFETCH_INTERVAL_ACTIVE = 1_000;
+export const OBSERVABILITY_REFETCH_INTERVAL_IDLE = 10_000;
+
+export function getObservabilityRefetchInterval(allStatusesCompleted: boolean) {
+  return allStatusesCompleted ? OBSERVABILITY_REFETCH_INTERVAL_IDLE : OBSERVABILITY_REFETCH_INTERVAL_ACTIVE;
+}
+
+export function areAllStatusesCompleted(
+  items: Array<{ status: ContinuousScreeningUpdateJobSummary['status'] }>,
+): boolean {
+  return items.every((item) => item.status === 'completed');
+}
 
 export function useDateAtFormat() {
   const locale = useFormatLanguage();
@@ -113,5 +126,5 @@ export function getProgressValue({
   totalItems,
 }: Pick<ContinuousScreeningUpdateJobSummary, 'itemsProcessed' | 'totalItems'>) {
   if (itemsProcessed === null || itemsProcessed === undefined || !totalItems || totalItems <= 0) return 0;
-  return Math.round((itemsProcessed / totalItems) * 100);
+  return Math.min(100, Math.round((itemsProcessed / totalItems) * 100));
 }
