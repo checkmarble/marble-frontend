@@ -1,15 +1,19 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { OutcomeBadge } from '@app-builder/components/Decisions/OutcomeTag';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { findDatasetByName, useDatasetTitle } from '@app-builder/components/ListAndTopicConfiguration/dataset-utils';
 import { Panel } from '@app-builder/components/Panel';
 import { CreateScreeningButton } from '@app-builder/components/Screenings/CreateScreeningButton';
+import { useDatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { AstNode, isUndefinedAstNode, ScenarioValidation } from '@app-builder/models';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isStringConcatAstNode, StringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { Scenario } from '@app-builder/models/scenario';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
+import { ScreeningCategory } from '@app-builder/models/screening';
 import { ScreeningConfig } from '@app-builder/models/screening-config';
 import { useScenarioIterationRule } from '@app-builder/queries/scenarios/scenario-iteration-rule';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import type { EditorMode } from '@app-builder/services/editor/editor-mode';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -17,12 +21,12 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { KeyboardEventHandler, MouseEventHandler, useState } from 'react';
+import { KeyboardEventHandler, type MouseEvent, MouseEventHandler, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { UUID } from 'short-uuid/src/types';
 import { match } from 'ts-pattern';
-import { CtaV2ClassName, cn, SearchInput, Tag } from 'ui-design-system';
+import { CtaV2ClassName, cn, Popover, SearchInput, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateRule } from './Actions/CreateRule';
 import { RuleEditPanel } from './RuleEditPanel';
@@ -220,14 +224,17 @@ export function RulesPage({
                               </div>
                             </li>
                           ) : null}
-                          {rule.entityType && rule.query ? (
-                            <ScreeningRuleQueryView entityType={rule.entityType} query={rule.query} />
-                          ) : null}
                           {rule.counterPartyId && isDataAccessorAstNode(rule.counterPartyId) ? (
                             <li className="list-item">
                               {t('scenarios:rules.screening_view.counterparty_id')}{' '}
                               <Tag color="grey">{getDataAccessorDisplayName(rule.counterPartyId)}</Tag>
                             </li>
+                          ) : null}
+                          {rule.entityType && rule.query ? (
+                            <ScreeningRuleQueryView entityType={rule.entityType} query={rule.query} />
+                          ) : null}
+                          {rule.datasets && rule.datasets.length > 0 ? (
+                            <ScreeningDatasetsView datasets={rule.datasets} />
                           ) : null}
                         </ul>
                         {rule.forcedOutcome ? (
@@ -421,4 +428,62 @@ const DataAccessorAstNodeTag = ({ node }: { node: AstNode }) => {
   if (!isDataAccessorAstNode(node)) return null;
 
   return <Tag color="grey">{getDataAccessorDisplayName(node)}</Tag>;
+};
+
+const MAX_VISIBLE_DATASETS = 4;
+
+const stopPropagation = (e: MouseEvent) => {
+  e.stopPropagation();
+};
+
+const ScreeningDatasetsView = ({ datasets }: { datasets: string[] }) => {
+  const { t } = useTranslation(['scenarios']);
+  const filtersQuery = useListConfigQuery('transaction_monitoring');
+  const { formatItemName, formatDatasetTitle } = useDatasetTitle();
+  const { getLaTagLabel } = useDatasetTag();
+
+  const resolveName = (key: string) => {
+    // Bare category entries (e.g. `sanctions`) have no `:` separator.
+    if (!key.includes(':')) return getLaTagLabel(key as ScreeningCategory);
+    const parts = key.split(':');
+    if (parts[1] === 'dataset') {
+      const resolved = findDatasetByName(filtersQuery.data?.filters, parts.slice(2).join(':'));
+      if (resolved) return formatItemName(resolved);
+    }
+    return formatDatasetTitle(key);
+  };
+
+  const visible = datasets.slice(0, MAX_VISIBLE_DATASETS);
+  const overflow = datasets.slice(MAX_VISIBLE_DATASETS);
+
+  return (
+    <li className="list-item">
+      {t('scenarios:rules.screening_view.relevant_lists')}{' '}
+      <span className="inline-flex flex-wrap items-center gap-xs">
+        {visible.map((key) => (
+          <Tag key={key} color="grey">
+            {resolveName(key)}
+          </Tag>
+        ))}
+        {overflow.length > 0 ? (
+          <Popover.Root>
+            <Popover.Trigger asChild>
+              <Tag color="purple" className="cursor-pointer" onClick={stopPropagation}>
+                {t('scenarios:rules.screening_view.datasets_overflow', { count: overflow.length })}
+              </Tag>
+            </Popover.Trigger>
+            <Popover.Content align="start" sideOffset={4} onClick={stopPropagation}>
+              <div className="flex max-h-[400px] flex-col items-start gap-xs overflow-auto p-md">
+                {overflow.map((key) => (
+                  <Tag key={key} color="grey">
+                    {resolveName(key)}
+                  </Tag>
+                ))}
+              </div>
+            </Popover.Content>
+          </Popover.Root>
+        ) : null}
+      </span>
+    </li>
+  );
 };
