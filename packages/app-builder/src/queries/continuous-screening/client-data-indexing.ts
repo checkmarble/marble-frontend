@@ -3,12 +3,22 @@ import {
   type ListContinuousScreeningClientDataIndexingParams,
 } from '@app-builder/models/continuous-screening';
 import { listContinuousScreeningClientDataIndexingFn } from '@app-builder/server-fns/continuous-screening';
-import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, type Query, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+
+type ClientDataIndexingQuery = Query<
+  ContinuousScreeningClientDataIndexingResponse,
+  Error,
+  ContinuousScreeningClientDataIndexingResponse,
+  (string | ListContinuousScreeningClientDataIndexingParams)[]
+>;
 
 export const useContinuousScreeningClientDataIndexingQuery = (
   params: ListContinuousScreeningClientDataIndexingParams = {},
-  options: { refetchInterval?: number; initialData?: ContinuousScreeningClientDataIndexingResponse } = {},
+  options: {
+    refetchInterval?: number | false | ((query: ClientDataIndexingQuery) => number | false | undefined);
+    initialData?: ContinuousScreeningClientDataIndexingResponse;
+  } = {},
 ) => {
   const listClientDataIndexing = useServerFn(listContinuousScreeningClientDataIndexingFn);
 

@@ -22,6 +22,7 @@ import { pageLayoutGutter } from '../../Page/page-layout';
 import { ClientDataIndexing } from './ClientDataIndexing';
 import { DatasetUpdate } from './DatasetUpdate';
 import { UpdateJobs } from './UpdateJobs';
+import { areAllStatusesCompleted, getObservabilityRefetchInterval } from './utils';
 
 type ObservabilityPageProps = {
   datasetUpdates: ContinuousScreeningDatasetUpdateSummary[];
@@ -29,26 +30,29 @@ type ObservabilityPageProps = {
   clientDataIndexing: ContinuousScreeningClientDataIndexingResponse | null;
 };
 
-const UPDATE_JOBS_REFETCH_INTERVAL = 1000;
-const DATASET_UPDATES_REFETCH_INTERVAL = 1000;
-
 export function ObservabilityPage({ datasetUpdates, updateJobs, clientDataIndexing }: ObservabilityPageProps) {
   const updateJobsQuery = useContinuousScreeningUpdateJobsQuery(
     { limit: UPDATE_JOBS_PAGE_SIZE },
-    { refetchInterval: UPDATE_JOBS_REFETCH_INTERVAL, initialData: updateJobs },
+    {
+      refetchInterval: (query) => getObservabilityRefetchInterval(areAllStatusesCompleted(query.state.data ?? [])),
+      initialData: updateJobs,
+    },
   );
 
   const clientDataIndexingQuery = useContinuousScreeningClientDataIndexingQuery(
     { limit: CLIENT_DATA_INDEXING_PAGE_SIZE },
     {
-      refetchInterval: UPDATE_JOBS_REFETCH_INTERVAL,
+      refetchInterval: (query) => getObservabilityRefetchInterval((query.state.data?.pendingItems ?? 0) === 0),
       ...(clientDataIndexing === null ? {} : { initialData: clientDataIndexing }),
     },
   );
 
   const datasetUpdatesQuery = useContinuousScreeningDatasetUpdatesQuery(
     { limit: DATASET_UPDATES_PAGE_SIZE },
-    { refetchInterval: DATASET_UPDATES_REFETCH_INTERVAL, initialData: datasetUpdates },
+    {
+      refetchInterval: (query) => getObservabilityRefetchInterval(areAllStatusesCompleted(query.state.data ?? [])),
+      initialData: datasetUpdates,
+    },
   );
 
   const clientDataIndexingData = clientDataIndexingQuery.data ?? clientDataIndexing;

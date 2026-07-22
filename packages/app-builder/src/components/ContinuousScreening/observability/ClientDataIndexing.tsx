@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Card, DefaultTooltip, Typo, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { LIMLIT_FOR_PANELS, TagStatus, useDateAtFormat } from './utils';
+import { LIMIT_FOR_PANELS, TagStatus, useDateAtFormat } from './utils';
 
 export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDataIndexingResponse | null }) {
   const { t } = useTranslation(['common', 'continuousScreening']);
@@ -101,7 +101,7 @@ function PanelCientIndexing() {
 function PanelCientIndexingContent() {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const locale = useFormatLanguage();
-  const query = useContinuousScreeningClientDataIndexingInfiniteQuery(LIMLIT_FOR_PANELS);
+  const query = useContinuousScreeningClientDataIndexingInfiniteQuery(LIMIT_FOR_PANELS);
   const { dateFormatter } = useDateAtFormat();
 
   return (

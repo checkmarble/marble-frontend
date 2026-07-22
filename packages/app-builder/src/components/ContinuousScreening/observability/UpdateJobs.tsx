@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tooltip, Typo, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { GridStatus, getProgressValue, LIMLIT_FOR_PANELS, useDateAtFormat } from './utils';
+import { GridStatus, getProgressValue, LIMIT_FOR_PANELS, useDateAtFormat } from './utils';
 
 export function UpdateJobs({ data }: { data: ContinuousScreeningUpdateJobSummary[] }) {
   return <UpdateJobsContent data={data} />;
@@ -112,7 +112,7 @@ function PanelDatasetUpdates() {
 function PanelDatasetUpdatesContent() {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const locale = useFormatLanguage();
-  const query = useContinuousScreeningUpdateJobsInfiniteQuery(LIMLIT_FOR_PANELS);
+  const query = useContinuousScreeningUpdateJobsInfiniteQuery(LIMIT_FOR_PANELS);
 
   return (
     <Panel.Content>
