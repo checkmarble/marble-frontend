@@ -18,7 +18,7 @@ import { useDebouncedCallbackRef } from '@marble/shared';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
-import { useMemo, useRef, useState } from 'react';
+import { FormEvent, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -127,19 +127,31 @@ function RuleEditForm({
   const ruleValidation = useMemo(() => findRuleValidation(scenarioValidation, rule.id), [scenarioValidation, rule.id]);
 
   const form = useForm({
-    onSubmit: ({ value, formApi }) => {
+    onSubmitMeta: { closeOnSuccess: false },
+    onSubmit: async ({ value, formApi, meta }) => {
       if (serverValidationMessages.length > 0 || !formApi.state.isValid) {
         return;
       }
 
-      return mutation.mutateAsync(value);
+      await mutation.mutateAsync(value);
+      if (meta.closeOnSuccess) {
+        panelSharp.actions.close();
+      }
     },
     validators: {
-      onSubmit: editRuleFormSchema,
-      onChange: editRuleFormSchema,
+      // onMount is required so canSubmit is false for invalid default values
+      // (TanStack keeps canSubmit true until the form is touched otherwise).
       onMount: editRuleFormSchema,
+      onChange: editRuleFormSchema,
+      onSubmit: editRuleFormSchema,
     },
-    defaultValues: rule as EditRuleForm,
+    defaultValues: {
+      name: rule.name ?? '',
+      description: rule.description ?? '',
+      ruleGroup: rule.ruleGroup,
+      scoreModifier: rule.scoreModifier,
+      formula: rule.formula,
+    } as EditRuleForm,
   });
 
   const formFormula = useStore(form.store, (state) => state.values.formula);
@@ -173,10 +185,7 @@ function RuleEditForm({
   };
 
   const handleRuleSubmit = async (closeOnSuccess: boolean) => {
-    await form.handleSubmit();
-    if (closeOnSuccess) {
-      panelSharp.actions.close();
-    }
+    await form.handleSubmit({ closeOnSuccess });
   };
   const handleRuleDelete = async () => {
     await onDelete();
@@ -192,14 +201,21 @@ function RuleEditForm({
           <div className="flex gap-sm">
             <form.Field name="name">
               {(field) => (
-                <Panel.HeaderInput
-                  ref={nameInputRef}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder={t('scenarios:edit_rule.name_placeholder')}
-                  data-testid="rule_edit_panel.name_input"
-                />
+                <div className="flex flex-col gap-xs">
+                  <Panel.HeaderInput
+                    ref={nameInputRef}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    placeholder={t('scenarios:edit_rule.name_placeholder')}
+                    data-testid="rule_edit_panel.name_input"
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                  />
+                  {field.state.meta.isTouched ? (
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  ) : null}
+                </div>
               )}
             </form.Field>
             <form.Field
@@ -363,14 +379,15 @@ function RuleEditForm({
             {([canSubmit, isSubmitting]) => (
               <>
                 <Panel.FooterButton
+                  type="submit"
                   disabled={!canSubmit}
                   isLoading={isSubmitting}
-                  onClick={() => handleRuleSubmit(false)}
                   variant="primary-outline"
                   label={t('common:save')}
                 />
                 <Panel.FooterButton
-                  disabled={!canSubmit}
+                  type="button"
+                  disabled={!canSubmit || isSubmitting}
                   isLoading={isSubmitting}
                   onClick={() => handleRuleSubmit(true)}
                   trailingIcon="save"
