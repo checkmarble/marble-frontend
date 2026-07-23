@@ -1,3 +1,4 @@
+import { AiReviewStatusMessage } from '@app-builder/components/CaseManagerV2/AiReview/AiReviewStatusMessage';
 import { type AiCaseReviewStatus } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
@@ -56,31 +57,6 @@ function ReviewStatusBadge({ status }: { status: AiCaseReviewStatus }) {
   }
 }
 
-function NoContentBody({ status }: { status: AiCaseReviewStatus }) {
-  const { t } = useTranslation(['cases']);
-  if (status === 'pending') {
-    return (
-      <div className="flex h-full items-center justify-center gap-xs text-s text-grey-secondary">
-        <Icon icon="spinner" className="size-4 animate-spin" />
-        <span>{t('cases:case.ai_reviews.generating')}</span>
-      </div>
-    );
-  }
-  if (status === 'failed' || status === 'insufficient_funds') {
-    return (
-      <div className="flex h-full items-center justify-center gap-xs text-s text-red-primary">
-        <Icon icon="warning" className="size-4 shrink-0" />
-        <span>
-          {status === 'insufficient_funds'
-            ? t('cases:case.ai_reviews.insufficient_funds')
-            : t('cases:case.ai_reviews.failed')}
-        </span>
-      </div>
-    );
-  }
-  return null;
-}
-
 function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: string; onBack: () => void }) {
   const { t } = useTranslation(['cases', 'common']);
   const formatDateTime = useFormatDateTime();
@@ -131,7 +107,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
             </div>
           </>
         ) : review ? (
-          <NoContentBody status={review.status} />
+          <AiReviewStatusMessage status={review.status} className="h-full justify-center" />
         ) : null}
       </div>
 
