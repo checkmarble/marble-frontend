@@ -1,4 +1,5 @@
 import {
+  applyUniqueLexisNexisSectionDefault,
   DatasetSelectionContent,
   getCanonicalSelectedKeys,
   getSectionLeafKeys,
@@ -35,32 +36,53 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const [open, setOpen] = useState(false);
   const tagRef = useRef<HTMLButtonElement>(null);
+  const listConfig = listConfigQuery.data;
+
+  const syncFromSelected = () => {
+    listSharp.update((state) => {
+      if (listConfig) {
+        syncSharpDatasets(state.datasets, selectedDatasets, {
+          filters: listConfig.filters,
+          provider: listConfig.provider,
+        });
+      } else {
+        syncSharpDatasets(state.datasets, selectedDatasets);
+      }
+    });
+  };
 
   const handleOpenChange = (isOpen: boolean) => {
     if (disabled) return;
     if (isOpen) {
-      listSharp.update((state) => {
-        syncSharpDatasets(state.datasets, selectedDatasets);
-      });
+      syncFromSelected();
     }
     setOpen(isOpen);
   };
 
   const handleApply = () => {
+    if (listConfig) {
+      listSharp.update((state) => {
+        applyUniqueLexisNexisSectionDefault(state.datasets, listConfig.filters, listConfig.provider);
+      });
+    }
     onApply(getCanonicalSelectedKeys(listSharp.value.datasets));
     setOpen(false);
   };
 
   const handleCancel = () => {
-    listSharp.update((state) => {
-      syncSharpDatasets(state.datasets, selectedDatasets);
-    });
+    syncFromSelected();
     setOpen(false);
   };
 
   const hasSelection = selectedDatasets.filter((d) => !d.startsWith('global')).length > 0;
 
-  const selectionMap = useMemo(() => makeDatasetsMap(selectedDatasets), [selectedDatasets]);
+  const selectionMap = useMemo(() => {
+    const map = makeDatasetsMap(selectedDatasets);
+    if (listConfig) {
+      applyUniqueLexisNexisSectionDefault(map, listConfig.filters, listConfig.provider);
+    }
+    return map;
+  }, [selectedDatasets, listConfig]);
 
   const sectionTags = useMemo(() => {
     const data = listConfigQuery.data;
