@@ -21,6 +21,8 @@ const PublicEnvVarsSchema = z.object({
   NODE_ENV: z.string().optional().default('production'),
   APP_VERSION: z.string().optional(),
 
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).optional(),
+
   SESSION_MAX_AGE: z.string().optional(),
   SESSION_IDLE_TIMEOUT: z.string().optional(),
   MARBLE_API_URL: z.string(),
@@ -87,6 +89,7 @@ interface ServerEnvVars {
   ENV: string;
   NODE_ENV: string;
   APP_VERSION?: string;
+  LOG_LEVEL?: string;
   SESSION_MAX_AGE?: string;
   SESSION_IDLE_TIMEOUT?: string;
   MARBLE_API_URL: string;
