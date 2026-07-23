@@ -231,7 +231,6 @@ export function adaptContinuousScreeningClientDataIndexingResponse(
     hasNextPage: dto.has_next_page,
   };
 }
-
 export type ContinuousScreeningObject = {
   id: string;
   objectType: string;
@@ -249,7 +248,6 @@ export function adaptContinuousScreeningObject(object: ContinuousScreeningObject
     createdAt: object.created_at,
   };
 }
-
 export type CreateMappingConfig = {
   objectType: string;
   ftmEntity: FtmEntity;
