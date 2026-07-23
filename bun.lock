@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "marble-front",
+      "dependencies": {
+        "tailwindcss-grid-areas": "^0.1.1",
+      },
       "devDependencies": {
         "@biomejs/biome": "2.5.2",
         "@vitejs/plugin-react": "4.3.4",
@@ -2492,6 +2495,8 @@
     "tailwindcss": ["tailwindcss@4.3.2", "", {}, "sha512-WtctNNSH8A9jlMIqxzuYumOHU5uGZyRv0Q5svQl+oEPy5w84YpBxdb7MdqyiSPQge5jTJ6zFQLq0PFygdccSBA=="],
 
     "tailwindcss-animate": ["tailwindcss-animate@1.0.7", "", { "peerDependencies": { "tailwindcss": ">=3.0.0 || insiders" } }, "sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA=="],
+
+    "tailwindcss-grid-areas": ["tailwindcss-grid-areas@0.1.1", "", { "peerDependencies": { "tailwindcss": ">=3.0.0" } }, "sha512-r1Cuhe4Z+ebz74udfHNoLy9A0hY3V+1bo/BBQCfrdNaVC8/ptrUP0CEYQAMT8Lm6/ujCHByMbs2G06Zwbzp0kg=="],
 
     "tailwindcss-radix": ["tailwindcss-radix@4.0.2", "", { "peerDependencies": { "tailwindcss": "^3.0 || ^4.0" } }, "sha512-Uoa2BUCfWKGCjQPXbj4X4Q4EWAeCsvhj0udn0IupeNcvuLbqRXvC5+bKAqsngIne5mrRUPTy/IqMXGh81YyrCA=="],
 

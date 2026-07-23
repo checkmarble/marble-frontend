@@ -89,23 +89,25 @@ const SearchInput = ({
   );
 
   return (
-    <div className="flex items-center gap-sm">
-      <span>{t('screenings:search_input')}</span>
-      {searchInputList.map(({ value, type, semanticType }, i) => (
-        <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
-          <DatatypeIcon dataType={DatatypeToPrimitiveType(type)} />
+    <div className="grid grid-cols-[auto_1fr] gap-sm">
+      <span className="grid items-center h-[50px]">{t('screenings:search_input')}</span>
+      <div className="flex flex-wrap gap-sm">
+        {searchInputList.map(({ value, type, semanticType }, i) => (
+          <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
+            <DatatypeIcon dataType={DatatypeToPrimitiveType(type)} />
 
-          {semanticType === 'date_of_birth' ? (
-            <DateBirthdateComponent value={value} compact />
-          ) : semanticType === 'name' ? (
-            <StringMainComponent value={value} />
-          ) : type === 'Timestamp' ? (
-            <DateDatetimeComponent value={value} />
-          ) : (
-            value
-          )}
-        </div>
-      ))}
+            {semanticType === 'date_of_birth' ? (
+              <DateBirthdateComponent value={value} compact />
+            ) : semanticType === 'name' ? (
+              <StringMainComponent value={value} />
+            ) : type === 'Timestamp' ? (
+              <DateDatetimeComponent value={value} />
+            ) : (
+              value
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
