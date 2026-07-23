@@ -9,6 +9,7 @@ import { match } from 'ts-pattern';
 import { AIText, Button, Card } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewPanel } from './AiReviewPanel';
+import { AiReviewStatusMessage } from './AiReviewStatusMessage';
 
 const PENDING_POLL_INTERVAL_MS = 5000;
 
@@ -18,7 +19,6 @@ type AiReviewCardProps = {
 };
 
 export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
-  canManuallyReview = true;
   const [panelOpen, setPanelOpen] = useState(false);
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const queryClient = useQueryClient();
@@ -48,12 +48,10 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
                 }
                 isGenerating={enqueueReviewMutation.isPending}
               />
+            ) : latestReview.status === 'completed' ? (
+              <PopulatedBody review={reviewsQuery.data?.[0]} />
             ) : (
-              match(latestReview.status)
-                .with('pending', () => <PendingBody />)
-                .with('failed', () => <FailedBody status="failed" />)
-                .with('insufficient_funds', () => <FailedBody status="insufficient_funds" />)
-                .otherwise(() => <PopulatedBody review={reviewsQuery.data?.[0]} />)
+              <AiReviewStatusMessage status={latestReview.status} />
             ),
           )}
       </Card>
@@ -111,16 +109,6 @@ function EmptyBody({
   );
 }
 
-function PendingBody() {
-  const { t } = useTranslation(['cases']);
-  return (
-    <div className="flex items-center gap-xs text-small text-grey-secondary">
-      <Icon icon="spinner" className="size-4 animate-spin" />
-      <span>{t('cases:case.ai_reviews.generating')}</span>
-    </div>
-  );
-}
-
 function LoadingBody() {
   return (
     <div className="flex items-center gap-xs text-small text-grey-secondary">
@@ -132,18 +120,6 @@ function LoadingBody() {
 function ErrorBody() {
   const { t } = useTranslation(['cases']);
   return <span className="text-small text-red-primary">{t('cases:case.ai_reviews.error_loading')}</span>;
-}
-
-function FailedBody({ status }: { status: 'failed' | 'insufficient_funds' }) {
-  const { t } = useTranslation(['cases']);
-  const message =
-    status === 'insufficient_funds' ? t('cases:case.ai_reviews.insufficient_funds') : t('cases:case.ai_reviews.failed');
-  return (
-    <div className="flex items-center gap-xs text-small text-red-primary">
-      <Icon icon="warning" className="size-4 shrink-0" />
-      <span>{message}</span>
-    </div>
-  );
 }
 
 function PopulatedBody({ review }: { review?: AiCaseReviewListItem }) {
