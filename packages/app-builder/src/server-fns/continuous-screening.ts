@@ -35,6 +35,48 @@ export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 
     return { configurations: configurationsWithInbox };
   });
 
+export const listContinuousScreeningDatasetUpdatesFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      offsetId: z.string().optional(),
+      limit: z.number().optional(),
+      order: z.enum(['ASC', 'DESC']).optional(),
+      sorting: z.string().optional(),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    return context.authInfo.continuousScreening.listDatasetUpdates(data);
+  });
+
+export const listContinuousScreeningUpdateJobsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      offsetId: z.string().optional(),
+      limit: z.number().optional(),
+      order: z.enum(['ASC', 'DESC']).optional(),
+      sorting: z.string().optional(),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    return context.authInfo.continuousScreening.listUpdateJobs(data);
+  });
+
+export const listContinuousScreeningClientDataIndexingFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      offsetId: z.string().optional(),
+      limit: z.number().optional(),
+      order: z.enum(['ASC', 'DESC']).optional(),
+      sorting: z.string().optional(),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    return context.authInfo.continuousScreening.listClientDataIndexing(data);
+  });
+
 async function getActiveConfigurations(
   continuousScreening: ContinuousScreeningRepository,
   objectType: string,

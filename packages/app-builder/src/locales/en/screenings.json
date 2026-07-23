@@ -211,6 +211,8 @@
   "match.status.pending": "To review",
   "match.status.skipped": "Skipped",
   "match.unique_counterparty_identifier": "Unique Counterparty Identifier",
+  "navigation.configurations": "Configurations",
+  "navigation.observability": "Observability",
   "panel.deselect_all": "Deselect all",
   "panel.dismiss_false_positives": "Dismiss likely false positives",
   "panel.mark_all_false_positive": "Mark all as false positive",

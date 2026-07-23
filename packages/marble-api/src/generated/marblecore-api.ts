@@ -1260,6 +1260,66 @@ export type DeleteContinuousScreeningObjectDto = {
     object_id: string;
     config_stable_id: string;
 };
+export type ContinuousScreeningDatasetUpdateSummaryDto = {
+    id: string;
+    dataset_name: string;
+    version: string;
+    live_version: string;
+    title: string;
+    is_current: boolean;
+    total_items: number;
+    status: "pending" | "processing" | "completed" | "failed";
+    completion: {
+        completed: number;
+        processing: number;
+        pending: number;
+        failed: number;
+        total: number;
+        items_processed: number;
+        items_total: number;
+    };
+    created_at: string;
+};
+export type ContinuousScreeningJobErrorDto = {
+    id: string;
+    update_job_id: string;
+    details: object;
+    created_at: string;
+};
+export type ContinuousScreeningUpdateJobSummaryDto = {
+    id: string;
+    status: "pending" | "processing" | "completed" | "failed";
+    job_start: string;
+    job_end: string;
+    config_name: string;
+    description: string;
+    total_items: number;
+    reception_time: string;
+    version: string;
+    items_processed?: number | null;
+    errors: ContinuousScreeningJobErrorDto[];
+};
+export type ContinuousScreeningClientDataIndexingDto = {
+    id: string;
+    /** Full-dataset generation time. */
+    job_date: string;
+    total_items: number;
+    version: string;
+    object_type: string;
+};
+export type ContinuousScreeningClientDataIndexingResponseDto = {
+    /** Full-dataset version. Empty when no dataset has been generated. */
+    version: string;
+    /** Version processed by Motiva. Null when Motiva has not indexed a dataset. */
+    index_version: string | null;
+    /** Whether Motiva has indexed the current full-dataset version. */
+    index_current: boolean;
+    /** Number of rows not yet indexed by Motiva. */
+    pending_items: number;
+    /** Dataset versions processed by Motiva. */
+    items: ContinuousScreeningClientDataIndexingDto[];
+    has_next_page: boolean;
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -4522,6 +4582,73 @@ export function deleteContinuousScreeningObject(deleteContinuousScreeningObjectD
         method: "DELETE",
         body: deleteContinuousScreeningObjectDto
     })));
+}
+/**
+ * List continuous screening dataset update summaries
+ */
+export function listContinuousScreeningDatasetUpdates({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Pagination & {
+            items: ContinuousScreeningDatasetUpdateSummaryDto[];
+        };
+    }>(`/continuous-screenings/dataset-updates${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List continuous screening update job summaries
+ */
+export function listContinuousScreeningUpdateJobs({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Pagination & {
+            items: ContinuousScreeningUpdateJobSummaryDto[];
+        };
+    }>(`/continuous-screenings/update-jobs${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List continuous screening client data indexing summaries
+ */
+export function listContinuousScreeningClientDataIndexing({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningClientDataIndexingResponseDto;
+    }>(`/continuous-screenings/client-data-indexing${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
 }
 /**
  * Update a continuous screening match status

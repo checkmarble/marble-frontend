@@ -233,6 +233,90 @@
             schema:
               $ref: '#/components/schemas/ContinuousScreeningDto'
 
+/continuous-screenings/dataset-updates:
+  get:
+    summary: List continuous screening dataset update summaries
+    operationId: listContinuousScreeningDatasetUpdates
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of continuous screening dataset update summaries
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: 'components.yml#/schemas/Pagination'
+                - type: object
+                  required:
+                    - items
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateSummaryDto'
+
+/continuous-screenings/update-jobs:
+  get:
+    summary: List continuous screening update job summaries
+    operationId: listContinuousScreeningUpdateJobs
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of continuous screening update job summaries
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: 'components.yml#/schemas/Pagination'
+                - type: object
+                  required:
+                    - items
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ContinuousScreeningUpdateJobSummaryDto'
+
+/continuous-screenings/client-data-indexing:
+  get:
+    summary: List continuous screening client data indexing summaries
+    operationId: listContinuousScreeningClientDataIndexing
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of continuous screening client data indexing summaries
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingResponseDto'
+
 /continuous-screenings/{id}/load-more:
   post:
     summary: Load more matches for a continuous screening
@@ -256,6 +340,197 @@
 
 components:
   schemas:
+    ContinuousScreeningDatasetUpdateSummaryDto:
+      type: object
+      required:
+        - id
+        - dataset_name
+        - version
+        - live_version
+        - title
+        - is_current
+        - total_items
+        - status
+        - completion
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        dataset_name:
+          type: string
+        version:
+          type: string
+        live_version:
+          type: string
+        title:
+          type: string
+        is_current:
+          type: boolean
+        total_items:
+          type: integer
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+        completion:
+          $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateCompletionDto'
+        created_at:
+          type: string
+          format: date-time
+
+    ContinuousScreeningDatasetUpdateCompletionDto:
+      type: object
+      required:
+        - completed
+        - processing
+        - pending
+        - failed
+        - total
+        - items_processed
+        - items_total
+      properties:
+        completed:
+          type: integer
+        processing:
+          type: integer
+        pending:
+          type: integer
+        failed:
+          type: integer
+        total:
+          type: integer
+        items_processed:
+          type: integer
+        items_total:
+          type: integer
+
+    ContinuousScreeningJobErrorDto:
+      type: object
+      required:
+        - id
+        - update_job_id
+        - details
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        update_job_id:
+          type: string
+          format: uuid
+        details:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+
+    ContinuousScreeningUpdateJobSummaryDto:
+      type: object
+      required:
+        - id
+        - status
+        - job_start
+        - job_end
+        - config_name
+        - description
+        - total_items
+        - reception_time
+        - version
+        - errors
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+        job_start:
+          type: string
+          format: date-time
+        job_end:
+          type: string
+          format: date-time
+        config_name:
+          type: string
+        description:
+          type: string
+        total_items:
+          type: integer
+        reception_time:
+          type: string
+          format: date-time
+        version:
+          type: string
+        items_processed:
+          type: integer
+          nullable: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningJobErrorDto'
+
+    ContinuousScreeningClientDataIndexingDto:
+      type: object
+      required:
+        - id
+        - job_date
+        - total_items
+        - version
+        - object_type
+      properties:
+        id:
+          type: string
+          format: uuid
+        job_date:
+          type: string
+          format: date-time
+          description: Full-dataset generation time.
+        total_items:
+          type: integer
+        version:
+          type: string
+        object_type:
+          type: string
+
+    ContinuousScreeningClientDataIndexingResponseDto:
+      type: object
+      required:
+        - version
+        - index_version
+        - index_current
+        - pending_items
+        - items
+        - has_next_page
+      properties:
+        version:
+          type: string
+          description: Full-dataset version. Empty when no dataset has been generated.
+        index_version:
+          type: string
+          nullable: true
+          description: Version processed by Motiva. Null when Motiva has not indexed a dataset.
+        index_current:
+          type: boolean
+          description: Whether Motiva has indexed the current full-dataset version.
+        pending_items:
+          type: integer
+          description: Number of rows not yet indexed by Motiva.
+        items:
+          type: array
+          description: Dataset versions processed by Motiva.
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingDto'
+        has_next_page:
+          type: boolean
+
     ContinuousScreeningConfigDto:
       type: object
       required:

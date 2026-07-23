@@ -211,6 +211,8 @@
   "match.status.pending": "À examiner",
   "match.status.skipped": "Ignoré",
   "match.unique_counterparty_identifier": "Identifiant unique de contrepartie",
+  "navigation.configurations": "Configurations",
+  "navigation.observability": "Observabilité",
   "panel.deselect_all": "Tout désélectionner",
   "panel.dismiss_false_positives": "Supprimer les faux positifs probables",
   "panel.mark_all_false_positive": "Tout mettre en faux positif",
