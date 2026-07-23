@@ -189,6 +189,7 @@
   "case.ai_reviews.generate": "إنشاء مراجعة جديدة",
   "case.ai_reviews.generating": "جارٍ إنشاء المراجعة بالذكاء الاصطناعي…",
   "case.ai_reviews.insufficient_funds": "تعذّر إنشاء المراجعة بالذكاء الاصطناعي بسبب عدم كفاية الرصيد",
+  "case.ai_reviews.no_content": "لا يوجد محتوى مراجعة متاح",
   "case.ai_reviews.refresh": "تحديث",
   "case.ai_reviews.review_requested": "تم طلب المراجعة — قم بالتحديث بعد بضع دقائق",
   "case.ai_reviews.see_all": "عرض الكل",
