@@ -1,4 +1,5 @@
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { setRequestOrgId, setRequestUserEmail } from '@app-builder/utils/logger.server';
 import { redirect } from '@tanstack/react-router';
 import { createMiddleware } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
@@ -21,6 +22,9 @@ export const authMiddleware = createMiddleware({ type: 'function' })
       }
       throw error;
     }
+
+    setRequestUserEmail(authInfo.user.actorIdentity.email);
+    setRequestOrgId(authInfo.user.organizationId);
 
     const result = await next({ context: { authInfo } });
 
