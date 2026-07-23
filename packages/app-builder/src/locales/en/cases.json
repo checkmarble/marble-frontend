@@ -189,6 +189,7 @@
   "case.ai_reviews.generate": "Generate new review",
   "case.ai_reviews.generating": "AI review is being generated…",
   "case.ai_reviews.insufficient_funds": "AI review could not be generated due to insufficient funds",
+  "case.ai_reviews.no_content": "No review content available",
   "case.ai_reviews.refresh": "Refresh",
   "case.ai_reviews.review_requested": "Review requested — refresh in a few minutes",
   "case.ai_reviews.see_all": "See all",

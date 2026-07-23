@@ -189,6 +189,7 @@
   "case.ai_reviews.generate": "Générer une nouvelle analyse",
   "case.ai_reviews.generating": "Analyse IA en cours de génération…",
   "case.ai_reviews.insufficient_funds": "Analyse IA impossible : fonds insuffisants",
+  "case.ai_reviews.no_content": "Aucun contenu d'analyse disponible",
   "case.ai_reviews.refresh": "Actualiser",
   "case.ai_reviews.review_requested": "Analyse demandée — actualisez dans quelques minutes",
   "case.ai_reviews.see_all": "Voir tout",

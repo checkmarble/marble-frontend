@@ -127,16 +127,11 @@ function PopulatedBody({ review }: { review?: AiCaseReviewListItem }) {
 
   if (reviewQuery.isLoading) return <LoadingBody />;
   if (reviewQuery.isError) return <ErrorBody />;
-  let excerpt = '';
 
   if (reviewQuery.data) {
-    if (reviewQuery.data.review?.summary) excerpt = reviewQuery.data.review.summary;
-    else {
-      const output = reviewQuery.data.review?.output?.trim();
-      if (!output) return null;
-      excerpt = stripMarkdown(output);
-    }
-    if (!excerpt) return null;
+    const content = reviewQuery.data.review;
+    const excerpt = content?.summary || stripMarkdown(content?.output?.trim() ?? '');
+    if (!excerpt) return <AiReviewStatusMessage status="completed" />;
     return <AIText text={excerpt} maxLines={6} />;
   }
   return null;
