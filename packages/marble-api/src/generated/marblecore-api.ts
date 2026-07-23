@@ -1188,10 +1188,6 @@ export type UpdateScenarioIterationRuleBodyDto = {
     formula_ast_expression?: (NodeDto) | null;
     score_modifier?: number;
 };
-export type ScenarioIterationRuleAiDescriptionDto = {
-    /** The AI description for the scenario iteration rule */
-    description: string;
-};
 export type ContinuousScreeningConfigDto = {
     id: string;
     stable_id: string;
@@ -2132,6 +2128,8 @@ export type ScoringScore = {
     current: boolean;
     created_at: string;
     stale_at?: string;
+    ruleset_id?: string;
+    evaluations?: NodeEvaluationDto[];
 };
 /**
  * Get searchable tables
@@ -4483,26 +4481,6 @@ export function deleteScenarioIterationRule(ruleId: string, opts?: Oazapfts.Requ
     }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, {
         ...opts,
         method: "DELETE"
-    }));
-}
-/**
- * Get AI description for a scenario iteration rule
- */
-export function getScenarioIterationRuleAiDescription(ruleId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ScenarioIterationRuleAiDescriptionDto;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}/ai-description`, {
-        ...opts
     }));
 }
 /**

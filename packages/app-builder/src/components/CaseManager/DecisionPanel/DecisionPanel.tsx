@@ -29,9 +29,16 @@ type DecisionPanelProps = {
   dataModel: DataModel;
   onClose: () => void;
   onScreeningSelect: (screeningId: string) => void;
+  withReviewOpened?: boolean;
 };
 
-export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect }: DecisionPanelProps) {
+export function DecisionPanel({
+  decision,
+  dataModel,
+  onClose,
+  onScreeningSelect,
+  withReviewOpened = false,
+}: DecisionPanelProps) {
   const { t } = useTranslation(casesI18n);
   const detailDecisionQuery = useDetailDecisionQuery(decision.id);
 
@@ -70,7 +77,7 @@ export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect 
               <ScoreModifier score={decision.score} />
             </div>
             {isPendingReview ? (
-              <ReviewDecisionModal decisionId={decision.id} screening={screenings[0]}>
+              <ReviewDecisionModal defaultOpened={withReviewOpened} decisionId={decision.id} screenings={screenings}>
                 <Button variant="primary" size="small">
                   {t('cases:decisions.approve_or_decline')}
                 </Button>

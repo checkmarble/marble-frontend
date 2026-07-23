@@ -1,7 +1,7 @@
 import { ClientDetailPage as ClientDetailPageComponent } from '@app-builder/components/ClientDetail/ClientDetailPage';
 import { ErrorComponent } from '@app-builder/components/ErrorComponent';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } from '@app-builder/models';
+import { isAdmin, isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } from '@app-builder/models';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { setToast } from '@app-builder/services/toast.server';
@@ -49,7 +49,7 @@ const getDataFn = createServerFn()
 
       let activeScore = null;
       try {
-        activeScore = (await userScoring.getScoreLatest(objectType, objectId)) ?? null;
+        activeScore = (await userScoring.getScoreLatestWithEvaluation(objectType, objectId)) ?? null;
       } catch (error) {
         if (!isNotFoundHttpError(error) && !isUnauthorizedHttpError(error) && !isForbiddenHttpError(error)) throw error;
       }
@@ -72,6 +72,7 @@ const getDataFn = createServerFn()
         scoringSettings,
         activeScore,
         userScoringAccess: entitlements.userScoring,
+        isAdmin: isAdmin(user),
       };
     } catch (error) {
       if (isRedirect(error) || error instanceof Response) throw error;
@@ -100,6 +101,7 @@ function ClientDetailPage() {
     scoringSettings,
     activeScore,
     userScoringAccess,
+    isAdmin,
   } = loaderData;
 
   // Guard against the concurrent-render window where the router transitions
@@ -118,6 +120,7 @@ function ClientDetailPage() {
         scoringSettings={scoringSettings}
         activeScore={activeScore}
         userScoringAccess={userScoringAccess}
+        isAdmin={isAdmin}
       />
     </DataModelContextProvider>
   );

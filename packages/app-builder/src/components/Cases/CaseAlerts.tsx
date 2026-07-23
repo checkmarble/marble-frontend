@@ -8,7 +8,7 @@ import { useScreeningDetailQuery } from '@app-builder/queries/screening/get-scre
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
@@ -93,7 +93,7 @@ export const AlertCard = ({
   const { t } = useTranslation(casesI18n);
   const formatDateTime = useFormatDateTime();
   const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
-  const [openDetails, setOpenDetails] = useState(false);
+  const [openDetails, setOpenDetails] = useState<{ withReview: boolean } | null>(null);
 
   // Defensive default: legacy cached decisions (pre-adapter) can be served by
   // TanStack Query with `screenings` missing, which would crash every .find()/
@@ -101,9 +101,20 @@ export const AlertCard = ({
   const screenings = decision.screenings ?? [];
   const hitRules = decision.rules.filter((r) => r.outcome === 'hit');
 
+  const isPendingReview = decision.outcome === 'block_and_review' && decision.reviewStatus === 'pending';
+
   const openScreening = screenings.find((s) => s.id === panelScreeningId);
   const onSelect = () => {
-    setOpenDetails(true);
+    setOpenDetails({ withReview: false });
+  };
+  const onReview = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setOpenDetails({ withReview: true });
+  };
+  const handleOpenChange = (state: boolean) => {
+    if (!state) {
+      setOpenDetails(null);
+    }
   };
 
   return (
@@ -112,119 +123,123 @@ export const AlertCard = ({
         tabIndex={0}
         role="button"
         className={cn(
-          'border-grey-border bg-surface-card grid grid-cols-[80px_1fr] gap-sm rounded-lg border p-md transition-colors cursor-pointer hover:bg-purple-background-light',
+          'border-grey-border bg-surface-card flex flex-col gap-xs rounded-lg border p-md transition-colors cursor-pointer hover:bg-purple-background-light',
           { 'bg-purple-background-light': openDetails },
         )}
         onClick={() => {
           onSelect();
         }}
       >
-        {/* Left column: Date */}
+        {/* Row 1: Header — outcome, scenario, score, actions */}
+        <div className="flex items-center justify-between gap-sm">
+          <div className="flex items-center gap-sm overflow-hidden">
+            <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
+            <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
+            {decision.rules.length > 0 ? (
+              <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-xs rounded-full border px-xs py-0.5 text-xs font-normal">
+                {decision.score >= 0 ? '+' : ''}
+                {decision.score}
+              </span>
+            ) : null}
+          </div>
+          <div className="flex gap-sm">
+            {decision.reviewStatus === 'approve' ? (
+              <ReviewStatusTag reviewStatus={decision.reviewStatus} />
+            ) : isPendingReview ? (
+              <Button variant="primary" appearance="stroked" size="small" onClick={onReview}>
+                {t('cases:decisions.approve_or_decline')}
+              </Button>
+            ) : null}
+            <Button variant="secondary" size="small" appearance="stroked" mode="icon" onClick={onSelect}>
+              <Icon icon="eye" className="size-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Row 2: Date */}
         <div className="flex h-6 items-center">
           <span className="text-grey-secondary text-xs font-normal">
             {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
           </span>
         </div>
 
-        {/* Right column: Vertical content */}
-        <div className="flex flex-col gap-xs">
-          {/* Row 1: Header — outcome, scenario, score, actions */}
-          <div className="flex items-center justify-between gap-sm">
-            <div className="flex items-center gap-sm overflow-hidden">
-              <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
-              <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
-              {decision.rules.length > 0 ? (
-                <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-xs rounded-full border px-xs py-0.5 text-xs font-normal">
-                  {decision.score >= 0 ? '+' : ''}
-                  {decision.score}
+        {/* Row 3: Trigger objects */}
+        {triggerObjectFields.length > 0 ? (
+          <TriggerFieldsRow fields={triggerObjectFields} triggerObject={decision.triggerObject} />
+        ) : null}
+
+        {/* Row 4: Rules hit */}
+        {hitRules.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-xs text-xs">
+            <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}</span>
+            {pipe(
+              hitRules,
+              take(MAX_RULES_DISPLAYED),
+              map((r) => (
+                <span
+                  key={r.ruleId || r.name}
+                  className="border-grey-border truncate rounded-sm border px-xs py-2xs text-xs font-normal"
+                >
+                  {r.scoreModifier > 0 ? '+' : ''}
+                  {r.scoreModifier} {r.name}
                 </span>
-              ) : null}
-            </div>
-            <div className="flex gap-sm">
-              {decision.reviewStatus === 'approve' ? <ReviewStatusTag reviewStatus={decision.reviewStatus} /> : null}
-              <Button variant="secondary" size="small" appearance="stroked" mode="icon" onClick={onSelect}>
-                <Icon icon="eye" className="size-4" />
-              </Button>
-            </div>
+              )),
+            )}
+            {hitRules.length > MAX_RULES_DISPLAYED ? (
+              <span className="border-grey-border rounded-sm border px-xs py-2xs text-xs font-medium">
+                +{hitRules.length - MAX_RULES_DISPLAYED}
+              </span>
+            ) : null}
           </div>
+        ) : null}
 
-          {/* Row 2: Trigger objects */}
-          {triggerObjectFields.length > 0 ? (
-            <TriggerFieldsRow fields={triggerObjectFields} triggerObject={decision.triggerObject} />
-          ) : null}
-
-          {/* Row 3: Rules hit */}
-          {hitRules.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-xs text-xs">
-              <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}</span>
-              {pipe(
-                hitRules,
-                take(MAX_RULES_DISPLAYED),
-                map((r) => (
-                  <span
-                    key={r.ruleId || r.name}
-                    className="border-grey-border truncate rounded-sm border px-xs py-2xs text-xs font-normal"
-                  >
-                    {r.scoreModifier > 0 ? '+' : ''}
-                    {r.scoreModifier} {r.name}
-                  </span>
-                )),
-              )}
-              {hitRules.length > MAX_RULES_DISPLAYED ? (
-                <span className="border-grey-border rounded-sm border px-xs py-2xs text-xs font-medium">
-                  +{hitRules.length - MAX_RULES_DISPLAYED}
-                </span>
-              ) : null}
-            </div>
-          ) : null}
-
-          {/* Row 4: Status on hits (screenings) */}
-          {screenings.length > 0 ? (
-            <div className="flex flex-col gap-xs">
-              <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
-              <div className="flex flex-col gap-sm">
-                {screenings.map((screening) => {
-                  return (
-                    <div key={screening.id} className="flex items-center gap-sm">
-                      <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
-                      <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClick={(e) => {
+        {/* Row 5: Status on hits (screenings) */}
+        {screenings.length > 0 ? (
+          <div className="flex flex-col gap-xs">
+            <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
+            <div className="flex flex-col gap-sm">
+              {screenings.map((screening) => {
+                return (
+                  <div key={screening.id} className="flex items-center gap-sm">
+                    <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
+                    <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPanelScreeningId(screening.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
                           e.stopPropagation();
                           setPanelScreeningId(screening.id);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.stopPropagation();
-                            setPanelScreeningId(screening.id);
-                          }
-                        }}
-                      >
-                        <ScreeningStatusBadge
-                          status={screening.status}
-                          decisionId={decision.id}
-                          screeningId={screening.id}
-                          nbHits={screening.count}
-                        />
-                      </div>
+                        }
+                      }}
+                    >
+                      <ScreeningStatusBadge
+                        status={screening.status}
+                        decisionId={decision.id}
+                        screeningId={screening.id}
+                        nbHits={screening.count}
+                      />
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
       {openDetails ? (
-        <Panel.Root open onOpenChange={(isOpen) => setOpenDetails(isOpen)}>
+        <Panel.Root open onOpenChange={handleOpenChange}>
           <Panel.Container size="medium">
             <DecisionPanel
               dataModel={dataModel}
               decision={decision}
-              onClose={() => setOpenDetails(false)}
+              onClose={() => setOpenDetails(null)}
               onScreeningSelect={setPanelScreeningId}
+              withReviewOpened={openDetails.withReview}
             />
           </Panel.Container>
         </Panel.Root>

@@ -523,7 +523,13 @@ components:
         stale_at:
           type: string
           format: date-time
-
+        ruleset_id:
+          type: string
+          format: uuid
+        evaluations:
+          type: array
+          items:
+            $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
     CreateScoringScoreOverride:
       type: object
       required: [risk_level]

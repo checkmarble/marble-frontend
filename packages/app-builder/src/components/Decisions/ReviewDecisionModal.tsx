@@ -12,26 +12,29 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { cn, Modal, TextArea } from 'ui-design-system';
+import { Callout } from '../Callout';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { LoadingIcon } from '../Spinner';
 import { ReviewStatusTag } from './ReviewStatusTag';
 
 export function ReviewDecisionModal({
   decisionId,
-  screening,
+  screenings,
   children,
+  defaultOpened,
 }: {
   children: React.ReactElement;
   decisionId: string;
-  screening: { status: ScreeningStatus } | undefined;
+  screenings: Array<{ status: ScreeningStatus }> | undefined;
+  defaultOpened: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpened);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
-        <ReviewDecisionContent setOpen={setOpen} decisionId={decisionId} screening={screening} />
+        <ReviewDecisionContent setOpen={setOpen} decisionId={decisionId} screenings={screenings} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -39,15 +42,16 @@ export function ReviewDecisionModal({
 
 function ReviewDecisionContent({
   decisionId,
-  screening,
+  screenings,
   setOpen,
 }: {
   decisionId: string;
-  screening: { status: ScreeningStatus } | undefined;
+  screenings: Array<{ status: ScreeningStatus }> | undefined;
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
   const reviewDecisionMutation = useReviewDecisionMutation();
+  const hasScreeningsUnconfirmed = screenings?.some((screening) => ['in_review', 'pending'].includes(screening.status));
 
   const form = useForm({
     defaultValues: {
@@ -106,30 +110,29 @@ function ReviewDecisionContent({
             <div className="flex flex-col gap-sm">
               {nonPendingReviewStatuses.map((reviewStatus) => {
                 const isSelected = field.state.value === reviewStatus;
-                const hasScreeningWarning = screening && screening.status !== 'no_hit' && reviewStatus === 'approve';
 
                 return (
-                  <label key={reviewStatus} className="flex cursor-pointer items-center gap-sm">
-                    <input
-                      type="radio"
-                      name="reviewStatus"
-                      value={reviewStatus}
-                      checked={isSelected}
-                      onChange={() => field.handleChange(reviewStatus)}
-                      className={cn(
-                        'size-4 shrink-0 appearance-none rounded-full border',
-                        isSelected ? 'border-[5px] border-purple-primary' : 'border border-purple-primary bg-white',
-                      )}
-                    />
-                    <div className="flex flex-col gap-2xs">
+                  <div key={reviewStatus} className="flex flex-col gap-2xs">
+                    <label className="flex cursor-pointer items-center gap-sm">
+                      <input
+                        type="radio"
+                        name="reviewStatus"
+                        value={reviewStatus}
+                        checked={isSelected}
+                        onChange={() => field.handleChange(reviewStatus)}
+                        className={cn(
+                          'size-4 shrink-0 appearance-none rounded-full border',
+                          isSelected ? 'border-[5px] border-purple-primary' : 'border border-purple-primary bg-white',
+                        )}
+                      />
                       <ReviewStatusTag size="small" className="w-fit" reviewStatus={reviewStatus} />
-                      {hasScreeningWarning ? (
-                        <span className="text-red-hover text-xs">
-                          {t('cases:case_detail.review_decision.warning_approve')}
-                        </span>
-                      ) : null}
-                    </div>
-                  </label>
+                    </label>
+                    {hasScreeningsUnconfirmed && reviewStatus === 'approve' ? (
+                      <Callout icon="warning" iconColor="orange" color="orange" className="text-orange-primary text-xs">
+                        {t('cases:case_detail.review_decision.warning_approve')}
+                      </Callout>
+                    ) : null}
+                  </div>
                 );
               })}
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

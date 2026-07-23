@@ -188,7 +188,8 @@ export function ScreeningRuleEditPanel({
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm({
-    onSubmit: async ({ value }) => {
+    onSubmitMeta: { closeOnSuccess: false },
+    onSubmit: async ({ value, meta }) => {
       const submitValidationOptions = {
         ignoreLegacyAggregateQuery: true,
         formQuery: value.query ?? {},
@@ -221,15 +222,24 @@ export function ScreeningRuleEditPanel({
         return;
       }
       if (form.state.isValid) {
-        mutation
-          // leave threshold undefined if it is the same as the organization threshold
-          .mutateAsync({
-            ...value,
-            threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold,
-          });
+        // leave threshold undefined if it is the same as the organization threshold
+        await mutation.mutateAsync({
+          ...value,
+          threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold,
+        });
+        if (meta.closeOnSuccess) {
+          panelSharp.actions.close();
+        }
       }
     },
+    onSubmitInvalid: () => {
+      setShowValidationSummary(true);
+    },
     validators: {
+      // onMount is required so canSubmit is false for invalid default values
+      // (TanStack keeps canSubmit true until the form is touched otherwise).
+      onMount: editScreeningFormSchema,
+      onChange: editScreeningFormSchema,
       onSubmit: editScreeningFormSchema,
     },
     defaultValues: {
@@ -242,7 +252,7 @@ export function ScreeningRuleEditPanel({
       forcedOutcome: (rule?.forcedOutcome as ScreeningOutcome) ?? 'block_and_review',
       triggerRule: rule?.triggerRule,
       entityType: rule?.entityType,
-      query: rule?.query,
+      query: rule?.query ?? {},
       counterPartyId: rule?.counterPartyId,
       preprocessing: rule?.preprocessing,
     } as EditScreeningForm,
@@ -319,10 +329,7 @@ export function ScreeningRuleEditPanel({
     cn(highlight.queryField(fieldKey) && 'rounded-sm border border-red-primary p-xs');
 
   const handleRuleSubmit = async (closeOnSuccess: boolean) => {
-    await form.handleSubmit();
-    if (closeOnSuccess) {
-      panelSharp.actions.close();
-    }
+    await form.handleSubmit({ closeOnSuccess });
   };
   const handleRuleDelete = async () => {
     await onDelete();
@@ -335,12 +342,19 @@ export function ScreeningRuleEditPanel({
           <div className="flex gap-sm">
             <form.Field name="name">
               {(field) => (
-                <Panel.HeaderInput
-                  ref={nameInputRef}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
+                <div className="flex flex-col gap-xs">
+                  <Panel.HeaderInput
+                    ref={nameInputRef}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                  />
+                  {field.state.meta.isTouched ? (
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  ) : null}
+                </div>
               )}
             </form.Field>
             <form.Field name="ruleGroup">
@@ -844,13 +858,15 @@ export function ScreeningRuleEditPanel({
             {([canSubmit, isSubmitting]) => (
               <>
                 <Panel.FooterButton
+                  type="button"
                   disabled={!canSubmit}
                   onClick={() => handleRuleSubmit(false)}
                   variant="primary-outline"
                   label={t('common:save')}
                 />
                 <Panel.FooterButton
-                  disabled={!canSubmit}
+                  type="button"
+                  disabled={!canSubmit || isSubmitting}
                   onClick={() => handleRuleSubmit(true)}
                   trailingIcon="save"
                   variant="primary"

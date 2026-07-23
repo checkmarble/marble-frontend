@@ -95,6 +95,7 @@ function MfaTotpChallenge({
           id="mfa-totp-code"
           inputMode="numeric"
           autoComplete="one-time-code"
+          enablePasswordManagers
           maxLength={6}
           className="w-full"
           value={code}

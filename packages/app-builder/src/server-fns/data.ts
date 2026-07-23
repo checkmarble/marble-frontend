@@ -443,7 +443,7 @@ export const getUploadLogsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string() }))
   .handler(async ({ context, data: { objectType } }) => {
-    return context.authInfo.apiClient.getIngestionUploadLogs(objectType);
+    return context.authInfo.dataModelRepository.getIngestionUploadLogs(objectType);
   });
 
 // ---- Org import ----

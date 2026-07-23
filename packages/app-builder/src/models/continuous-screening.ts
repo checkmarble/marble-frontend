@@ -13,6 +13,7 @@ import {
   ContinuousScreeningMatchBaseDto,
   ContinuousScreeningMatchMarbleDto,
   ContinuousScreeningMatchScreeningEntityDto,
+  ContinuousScreeningObjectDto,
   ContinuousScreeningRequestDto,
   ContinuousScreeningUpdateJobSummaryDto,
   CreateContinuousScreeningConfigDto,
@@ -228,6 +229,21 @@ export function adaptContinuousScreeningClientDataIndexingResponse(
     pendingItems: dto.pending_items,
     items: dto.items.map(adaptContinuousScreeningClientDataIndexing),
     hasNextPage: dto.has_next_page,
+export type ContinuousScreeningObject = {
+  id: string;
+  objectType: string;
+  objectId: string;
+  configStableId: string;
+  createdAt: string;
+};
+
+export function adaptContinuousScreeningObject(object: ContinuousScreeningObjectDto): ContinuousScreeningObject {
+  return {
+    id: object.id,
+    objectType: object.object_type,
+    objectId: object.object_id,
+    configStableId: object.config_stable_id,
+    createdAt: object.created_at,
   };
 }
 

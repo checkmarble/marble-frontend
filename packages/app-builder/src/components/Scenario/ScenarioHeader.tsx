@@ -33,7 +33,7 @@ export function ScenarioHeader({ isEditScenarioAvailable, scenario }: ScenarioHe
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <div className="flex flex-row items-center gap-xs">
+    <div className="flex flex-row items-center gap-md">
       <BackButton />
       <EditableScenarioField
         scenarioId={scenario.id}

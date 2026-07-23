@@ -5,9 +5,14 @@ import { SwitchCaseRow } from './shared';
 interface NumberSwitchDescriptionProps {
   conditions: NumberSwitch;
   maxRiskLevel: number;
+  matchedBranchIndex?: number | null;
 }
 
-export function NumberSwitchDescription({ conditions, maxRiskLevel }: NumberSwitchDescriptionProps) {
+export function NumberSwitchDescription({
+  conditions,
+  maxRiskLevel,
+  matchedBranchIndex,
+}: NumberSwitchDescriptionProps) {
   const { t } = useTranslation(['user-scoring']);
   return (
     <ul className="flex flex-col gap-sm">
@@ -20,12 +25,21 @@ export function NumberSwitchDescription({ conditions, maxRiskLevel }: NumberSwit
                 to: branch.value,
               });
         return (
-          <SwitchCaseRow key={idx} impact={branch.impact} maxRiskLevel={maxRiskLevel}>
+          <SwitchCaseRow
+            key={idx}
+            impact={branch.impact}
+            maxRiskLevel={maxRiskLevel}
+            matched={matchedBranchIndex === idx}
+          >
             {label}
           </SwitchCaseRow>
         );
       })}
-      <SwitchCaseRow impact={conditions.default} maxRiskLevel={maxRiskLevel}>
+      <SwitchCaseRow
+        impact={conditions.default}
+        maxRiskLevel={maxRiskLevel}
+        matched={matchedBranchIndex === conditions.branches.length}
+      >
         {t('user-scoring:switch.description.else')}
       </SwitchCaseRow>
     </ul>

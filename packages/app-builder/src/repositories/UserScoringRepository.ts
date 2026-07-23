@@ -25,6 +25,7 @@ export interface UserScoringRepository {
   prepareScoringRuleset(recordType: string): Promise<void>;
   commitScoringRuleset(recordType: string): Promise<ScoringRuleset>;
   getScoreLatest(recordType: string, recordId: string): Promise<ScoringScore | null>;
+  getScoreLatestWithEvaluation(recordType: string, recordId: string): Promise<ScoringScore | null>;
   getScoreDistribution(recordType: string): Promise<ScoreDistributionItem[]>;
 }
 
@@ -90,6 +91,16 @@ export function makeGetUserScoringRepository() {
     },
     async getScoreLatest(recordType, recordId) {
       return marbleCoreApiClient.getScoreLatest(recordType, recordId, { includeEvaluation: false });
+    },
+    async getScoreLatestWithEvaluation(recordType, recordId) {
+      try {
+        return await marbleCoreApiClient.getScoreLatest(recordType, recordId, { includeEvaluation: true });
+      } catch (err) {
+        if (isNotFoundHttpError(err)) {
+          return null;
+        }
+        throw err;
+      }
     },
     async getScoreDistribution(recordType) {
       return marbleCoreApiClient.getScoreDistribution(recordType);

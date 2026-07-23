@@ -36,7 +36,6 @@ import {
   Modal,
   Radio,
   Tabs,
-  TooltipV2,
   Typo,
   tabClassName,
 } from 'ui-design-system';
@@ -103,24 +102,20 @@ export function CaseManagerPageLayout({
           ) : (
             <OpenCase id={caseDetail.id} />
           )}
-          <TooltipV2.Tooltip delayDuration={0}>
-            <TooltipV2.TooltipTrigger asChild>
-              <a
-                href={nextUnassignedCaseHref}
-                aria-label={t('cases:next_unassigned_case')}
-                className={cn(CtaV2ClassName({ variant: 'secondary', mode: 'icon' }), 'hover:bg-grey-background')}
-                onClick={(e) => {
-                  // let modified clicks (cmd/ctrl/shift/alt) reach the browser to open a new tab
-                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-                  e.preventDefault();
-                  getNextUnassignedCase({ data: { caseId: caseDetail.id } });
-                }}
-              >
-                <Icon icon="arrow-right" className="size-4" />
-              </a>
-            </TooltipV2.TooltipTrigger>
-            <TooltipV2.TooltipContent>{t('cases:next_unassigned_case')}</TooltipV2.TooltipContent>
-          </TooltipV2.Tooltip>
+          <a
+            href={nextUnassignedCaseHref}
+            aria-label={t('cases:next_unassigned_case')}
+            className={cn(CtaV2ClassName({ variant: 'secondary' }), 'hover:bg-grey-background')}
+            onClick={(e) => {
+              // let modified clicks (cmd/ctrl/shift/alt) reach the browser to open a new tab
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+              e.preventDefault();
+              getNextUnassignedCase({ data: { caseId: caseDetail.id } });
+            }}
+          >
+            <span>{t('cases:next_unassigned_case')}</span>
+            <Icon icon="arrow-right" className="size-4" />
+          </a>
         </div>
       </Page.Header>
       <Page.Container>
@@ -219,6 +214,8 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
           onOpenChange(false);
           form.setFieldValue('reportId', res.data?.id);
           queryClient.invalidateQueries({ queryKey: ['sar-reports', caseId] });
+
+          form.reset();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));

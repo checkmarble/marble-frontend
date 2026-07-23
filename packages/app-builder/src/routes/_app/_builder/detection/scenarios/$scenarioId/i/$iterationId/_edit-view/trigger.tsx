@@ -4,7 +4,7 @@ import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edi
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
-import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
+import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
 import { isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { useSaveTriggerMutation } from '@app-builder/queries/scenarios/save-trigger';
@@ -29,7 +29,7 @@ export const Route = createFileRoute(
 
 function Trigger() {
   const { t } = useTranslation([...scenarioI18n, 'common']);
-  const { scenarioIteration, scenarioValidation } = Route.useRouteContext();
+  const { scenarioIteration, scenarioValidation } = useDetectionScenarioIterationData();
   const [validationErrors, setValidationErrors] = useState<ScenarioValidationErrorCode[]>(
     scenarioValidation.trigger.errors,
   );

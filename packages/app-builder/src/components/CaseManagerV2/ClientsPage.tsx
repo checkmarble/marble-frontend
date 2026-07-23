@@ -13,7 +13,6 @@ import { Button, Card, CtaV2ClassName, Popover, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientDocumentsPopover } from '../Annotations/ClientDocumentsPopover';
 import { ClientObjectTagList } from '../Annotations/ClientObjectTagList';
-import { PivotNavigationOptions } from '../CaseManager/PivotsPanel/PivotNavigationOptions';
 import { DocumentsList } from '../ClientDetail/DocumentsList';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
@@ -21,6 +20,7 @@ import { ClientCommentsListCard } from './ClientComments';
 import { ClientRelatedAlertCasesCard } from './ClientRelatedAlertCasesCard';
 import { DataExplorerPanel } from './DataExplorerPanel';
 import { CommentContext } from './hooks/comment-context';
+import { NavigationOptions } from './NavigationOptions';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
 
 export type CaseManagerClientsPageProps = {
@@ -95,8 +95,7 @@ export function CaseManagerClientsPage({
             />
             {currentTable ? (
               <DataModelExplorerProvider>
-                <PivotNavigationOptions
-                  className="mt-xl"
+                <NavigationOptions
                   currentUser={currentUser}
                   pivotObject={pivotObject}
                   table={currentTable}
