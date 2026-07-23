@@ -36,6 +36,7 @@ import { Route as AppAuthEmailVerificationRouteImport } from './routes/_app/_aut
 import { Route as AppAuthCreatePasswordRouteImport } from './routes/_app/_auth/create-password'
 import { Route as AppAuthAuthRedirectRouteImport } from './routes/_app/_auth/auth-redirect'
 import { Route as AppBuilderUserScoringIndexRouteImport } from './routes/_app/_builder/user-scoring/index'
+import { Route as AppBuilderTestGraphIndexRouteImport } from './routes/_app/_builder/test-graph/index'
 import { Route as AppBuilderSettingsIndexRouteImport } from './routes/_app/_builder/settings/index'
 import { Route as AppBuilderScreeningSearchIndexRouteImport } from './routes/_app/_builder/screening-search/index'
 import { Route as AppBuilderDetectionIndexRouteImport } from './routes/_app/_builder/detection/index'
@@ -256,6 +257,12 @@ const AppBuilderUserScoringIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AppBuilderUserScoringRoute,
+  } as any)
+const AppBuilderTestGraphIndexRoute =
+  AppBuilderTestGraphIndexRouteImport.update({
+    id: '/test-graph/',
+    path: '/test-graph/',
+    getParentRoute: () => AppBuilderRoute,
   } as any)
 const AppBuilderSettingsIndexRoute = AppBuilderSettingsIndexRouteImport.update({
   id: '/',
@@ -819,6 +826,7 @@ export interface FileRoutesByFullPath {
   '/detection/': typeof AppBuilderDetectionIndexRoute
   '/screening-search/': typeof AppBuilderScreeningSearchIndexRoute
   '/settings/': typeof AppBuilderSettingsIndexRoute
+  '/test-graph/': typeof AppBuilderTestGraphIndexRoute
   '/user-scoring/': typeof AppBuilderUserScoringIndexRoute
   '/cases/$caseId/d': typeof AppBuilderCasesCaseIdDRouteWithChildren
   '/cases/inboxes/$inboxId': typeof AppBuilderCasesInboxesInboxIdRoute
@@ -912,6 +920,7 @@ export interface FileRoutesByTo {
   '/detection': typeof AppBuilderDetectionIndexRoute
   '/screening-search': typeof AppBuilderScreeningSearchIndexRoute
   '/settings': typeof AppBuilderSettingsIndexRoute
+  '/test-graph': typeof AppBuilderTestGraphIndexRoute
   '/user-scoring': typeof AppBuilderUserScoringIndexRoute
   '/cases/$caseId/d': typeof AppBuilderCasesCaseIdDRouteWithChildren
   '/cases/inboxes/$inboxId': typeof AppBuilderCasesInboxesInboxIdRoute
@@ -1018,6 +1027,7 @@ export interface FileRoutesById {
   '/_app/_builder/detection/': typeof AppBuilderDetectionIndexRoute
   '/_app/_builder/screening-search/': typeof AppBuilderScreeningSearchIndexRoute
   '/_app/_builder/settings/': typeof AppBuilderSettingsIndexRoute
+  '/_app/_builder/test-graph/': typeof AppBuilderTestGraphIndexRoute
   '/_app/_builder/user-scoring/': typeof AppBuilderUserScoringIndexRoute
   '/_app/_builder/cases/$caseId/d': typeof AppBuilderCasesCaseIdDRouteWithChildren
   '/_app/_builder/cases/inboxes/$inboxId': typeof AppBuilderCasesInboxesInboxIdRoute
@@ -1128,6 +1138,7 @@ export interface FileRouteTypes {
     | '/detection/'
     | '/screening-search/'
     | '/settings/'
+    | '/test-graph/'
     | '/user-scoring/'
     | '/cases/$caseId/d'
     | '/cases/inboxes/$inboxId'
@@ -1221,6 +1232,7 @@ export interface FileRouteTypes {
     | '/detection'
     | '/screening-search'
     | '/settings'
+    | '/test-graph'
     | '/user-scoring'
     | '/cases/$caseId/d'
     | '/cases/inboxes/$inboxId'
@@ -1326,6 +1338,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/'
     | '/_app/_builder/screening-search/'
     | '/_app/_builder/settings/'
+    | '/_app/_builder/test-graph/'
     | '/_app/_builder/user-scoring/'
     | '/_app/_builder/cases/$caseId/d'
     | '/_app/_builder/cases/inboxes/$inboxId'
@@ -1587,6 +1600,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/user-scoring/'
       preLoaderRoute: typeof AppBuilderUserScoringIndexRouteImport
       parentRoute: typeof AppBuilderUserScoringRoute
+    }
+    '/_app/_builder/test-graph/': {
+      id: '/_app/_builder/test-graph/'
+      path: '/test-graph'
+      fullPath: '/test-graph/'
+      preLoaderRoute: typeof AppBuilderTestGraphIndexRouteImport
+      parentRoute: typeof AppBuilderRoute
     }
     '/_app/_builder/settings/': {
       id: '/_app/_builder/settings/'
@@ -2695,6 +2715,7 @@ interface AppBuilderRouteChildren {
   AppBuilderUserScoringRoute: typeof AppBuilderUserScoringRouteWithChildren
   AppBuilderUploadObjectTypeRoute: typeof AppBuilderUploadObjectTypeRoute
   AppBuilderClientDetailIndexRoute: typeof AppBuilderClientDetailIndexRoute
+  AppBuilderTestGraphIndexRoute: typeof AppBuilderTestGraphIndexRoute
   AppBuilderClientDetailObjectTypeObjectIdRoute: typeof AppBuilderClientDetailObjectTypeObjectIdRoute
 }
 
@@ -2711,6 +2732,7 @@ const AppBuilderRouteChildren: AppBuilderRouteChildren = {
   AppBuilderUserScoringRoute: AppBuilderUserScoringRouteWithChildren,
   AppBuilderUploadObjectTypeRoute: AppBuilderUploadObjectTypeRoute,
   AppBuilderClientDetailIndexRoute: AppBuilderClientDetailIndexRoute,
+  AppBuilderTestGraphIndexRoute: AppBuilderTestGraphIndexRoute,
   AppBuilderClientDetailObjectTypeObjectIdRoute:
     AppBuilderClientDetailObjectTypeObjectIdRoute,
 }
