@@ -340,15 +340,17 @@ function RuleEditForm({
                   </form.Field>
                 </Card>
 
-                <AiGenerateRule
-                  scenarioId={scenario.id}
-                  ruleId={rule.id}
-                  onFormulaGenerated={(ruleAst) => {
-                    form.setFieldValue('formula', ruleAst);
-                    handleFormulaChange(ruleAst);
-                    setFormulaKey((k) => k + 1);
-                  }}
-                />
+                {isAiRuleDescriptionEnabled ? (
+                  <AiGenerateRule
+                    scenarioId={scenario.id}
+                    ruleId={rule.id}
+                    onFormulaGenerated={(ruleAst) => {
+                      form.setFieldValue('formula', ruleAst);
+                      handleFormulaChange(ruleAst);
+                      setFormulaKey((k) => k + 1);
+                    }}
+                  />
+                ) : null}
 
                 <Card>
                   <div className="flex items-center gap-sm">
