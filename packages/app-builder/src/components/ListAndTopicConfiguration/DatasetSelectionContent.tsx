@@ -39,7 +39,7 @@ import {
   syncSectionEnabledFromLeaves,
 } from './dataset-selection-provider-utils';
 import {
-  GlobalTopicConfig,
+  type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
   getDatasetNames,
   getSpecialTopicLabel,
