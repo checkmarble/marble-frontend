@@ -75,6 +75,8 @@ export const listContinuousScreeningClientDataIndexingFn = createServerFn({ meth
   )
   .handler(async ({ context, data }) => {
     return context.authInfo.continuousScreening.listClientDataIndexing(data);
+  });
+
 async function getActiveConfigurations(
   continuousScreening: ContinuousScreeningRepository,
   objectType: string,
