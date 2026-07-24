@@ -24,7 +24,7 @@ const screeningCaseDetailLoader = createServerFn()
     return { caseDetail: context.case.detail, caseInbox: context.case.inbox, screening, isUserAdmin };
   });
 
-export const Route = createFileRoute('/_app/_builder/cases/_detail/m/$caseId')({
+export const Route = createFileRoute('/_app/_builder/cases/_detail/m/$caseId/old')({
   loader: ({ params }) => screeningCaseDetailLoader({ data: { params } }),
   component: ScreeningCaseDetail,
 });

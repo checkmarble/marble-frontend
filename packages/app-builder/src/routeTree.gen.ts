@@ -97,12 +97,13 @@ import { Route as AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport } fr
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run'
 import { Route as AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
 import { Route as AppBuilderDetectionScenariosScenarioIdHomeRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/home'
-import { Route as AppBuilderCasesDetailMCaseIdRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId'
 import { Route as AppBuilderCasesCaseIdDDecisionIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId'
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/index'
+import { Route as AppBuilderCasesDetailMCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId/index'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
 import { Route as AppBuilderCasesDetailSCaseIdOldRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/old'
 import { Route as AppBuilderCasesDetailSCaseIdNewRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/_new'
+import { Route as AppBuilderCasesDetailMCaseIdOldRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId/old'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings'
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/index'
 import { Route as AppBuilderCasesDetailSCaseIdNewIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/_new/index'
@@ -611,12 +612,6 @@ const AppBuilderDetectionScenariosScenarioIdHomeRoute =
     path: '/home',
     getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
-const AppBuilderCasesDetailMCaseIdRoute =
-  AppBuilderCasesDetailMCaseIdRouteImport.update({
-    id: '/m/$caseId',
-    path: '/m/$caseId',
-    getParentRoute: () => AppBuilderCasesDetailRoute,
-  } as any)
 const AppBuilderCasesCaseIdDDecisionIdRoute =
   AppBuilderCasesCaseIdDDecisionIdRouteImport.update({
     id: '/$decisionId',
@@ -628,6 +623,12 @@ const AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AppBuilderDetectionScenariosScenarioIdTestRunRoute,
+  } as any)
+const AppBuilderCasesDetailMCaseIdIndexRoute =
+  AppBuilderCasesDetailMCaseIdIndexRouteImport.update({
+    id: '/m/$caseId/',
+    path: '/m/$caseId/',
+    getParentRoute: () => AppBuilderCasesDetailRoute,
   } as any)
 const AppBuilderDetectionScenariosScenarioIdIIterationIdRoute =
   AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport.update({
@@ -645,6 +646,12 @@ const AppBuilderCasesDetailSCaseIdNewRoute =
   AppBuilderCasesDetailSCaseIdNewRouteImport.update({
     id: '/s/$caseId/_new',
     path: '/s/$caseId',
+    getParentRoute: () => AppBuilderCasesDetailRoute,
+  } as any)
+const AppBuilderCasesDetailMCaseIdOldRoute =
+  AppBuilderCasesDetailMCaseIdOldRouteImport.update({
+    id: '/m/$caseId/old',
+    path: '/m/$caseId/old',
     getParentRoute: () => AppBuilderCasesDetailRoute,
   } as any)
 const AppBuilderCasesCaseIdDDecisionIdScreeningsRoute =
@@ -841,7 +848,6 @@ export interface FileRoutesByFullPath {
   '/detection/scenarios/': typeof AppBuilderDetectionScenariosIndexRoute
   '/settings/inboxes/': typeof AppBuilderSettingsInboxesIndexRoute
   '/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
-  '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdRoute
   '/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteWithChildren
@@ -849,9 +855,11 @@ export interface FileRoutesByFullPath {
   '/ressources/cases/sar/download/$caseId/$reportId': typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
   '/detection/scenarios/$scenarioId/': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
+  '/cases/m/$caseId/old': typeof AppBuilderCasesDetailMCaseIdOldRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdNewRouteWithChildren
   '/cases/s/$caseId/old': typeof AppBuilderCasesDetailSCaseIdOldRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
+  '/cases/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/detection/scenarios/$scenarioId/test-run/': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteWithChildren
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdNewClientsRouteWithChildren
@@ -933,15 +941,16 @@ export interface FileRoutesByTo {
   '/detection/scenarios': typeof AppBuilderDetectionScenariosIndexRoute
   '/settings/inboxes': typeof AppBuilderSettingsInboxesIndexRoute
   '/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
-  '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdRoute
   '/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/detection/scenarios/$scenarioId/workflow': typeof AppBuilderDetectionScenariosScenarioIdWorkflowRoute
   '/ressources/cases/sar/download/$caseId/$reportId': typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
   '/detection/scenarios/$scenarioId': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
+  '/cases/m/$caseId/old': typeof AppBuilderCasesDetailMCaseIdOldRoute
   '/cases/s/$caseId/old': typeof AppBuilderCasesDetailSCaseIdOldRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
+  '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdNewPrincipalRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdNewIndexRoute
@@ -1040,7 +1049,6 @@ export interface FileRoutesById {
   '/_app/_builder/detection/scenarios/': typeof AppBuilderDetectionScenariosIndexRoute
   '/_app/_builder/settings/inboxes/': typeof AppBuilderSettingsInboxesIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
-  '/_app/_builder/cases/_detail/m/$caseId': typeof AppBuilderCasesDetailMCaseIdRoute
   '/_app/_builder/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/_app/_builder/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteWithChildren
@@ -1048,9 +1056,11 @@ export interface FileRoutesById {
   '/ressources/cases/sar/download/$caseId/$reportId': typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
   '/_app/_builder/detection/scenarios/$scenarioId/': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
+  '/_app/_builder/cases/_detail/m/$caseId/old': typeof AppBuilderCasesDetailMCaseIdOldRoute
   '/_app/_builder/cases/_detail/s/$caseId/_new': typeof AppBuilderCasesDetailSCaseIdNewRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/old': typeof AppBuilderCasesDetailSCaseIdOldRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
+  '/_app/_builder/cases/_detail/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/_app/_builder/detection/scenarios/$scenarioId/test-run/': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/_new/clients': typeof AppBuilderCasesDetailSCaseIdNewClientsRouteWithChildren
@@ -1150,7 +1160,6 @@ export interface FileRouteTypes {
     | '/detection/scenarios/'
     | '/settings/inboxes/'
     | '/cases/$caseId/d/$decisionId'
-    | '/cases/m/$caseId'
     | '/detection/scenarios/$scenarioId/home'
     | '/detection/scenarios/$scenarioId/scheduled-executions'
     | '/detection/scenarios/$scenarioId/test-run'
@@ -1158,9 +1167,11 @@ export interface FileRouteTypes {
     | '/ressources/cases/sar/download/$caseId/$reportId'
     | '/detection/scenarios/$scenarioId/'
     | '/cases/$caseId/d/$decisionId/screenings'
+    | '/cases/m/$caseId/old'
     | '/cases/s/$caseId'
     | '/cases/s/$caseId/old'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
+    | '/cases/m/$caseId/'
     | '/detection/scenarios/$scenarioId/test-run/'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId'
     | '/cases/s/$caseId/clients'
@@ -1242,15 +1253,16 @@ export interface FileRouteTypes {
     | '/detection/scenarios'
     | '/settings/inboxes'
     | '/cases/$caseId/d/$decisionId'
-    | '/cases/m/$caseId'
     | '/detection/scenarios/$scenarioId/home'
     | '/detection/scenarios/$scenarioId/scheduled-executions'
     | '/detection/scenarios/$scenarioId/workflow'
     | '/ressources/cases/sar/download/$caseId/$reportId'
     | '/detection/scenarios/$scenarioId'
     | '/cases/$caseId/d/$decisionId/screenings'
+    | '/cases/m/$caseId/old'
     | '/cases/s/$caseId/old'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
+    | '/cases/m/$caseId'
     | '/detection/scenarios/$scenarioId/test-run'
     | '/cases/s/$caseId/principal'
     | '/cases/s/$caseId'
@@ -1348,7 +1360,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/scenarios/'
     | '/_app/_builder/settings/inboxes/'
     | '/_app/_builder/cases/$caseId/d/$decisionId'
-    | '/_app/_builder/cases/_detail/m/$caseId'
     | '/_app/_builder/detection/scenarios/$scenarioId/home'
     | '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
     | '/_app/_builder/detection/scenarios/$scenarioId/test-run'
@@ -1356,9 +1367,11 @@ export interface FileRouteTypes {
     | '/ressources/cases/sar/download/$caseId/$reportId'
     | '/_app/_builder/detection/scenarios/$scenarioId/'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings'
+    | '/_app/_builder/cases/_detail/m/$caseId/old'
     | '/_app/_builder/cases/_detail/s/$caseId/_new'
     | '/_app/_builder/cases/_detail/s/$caseId/old'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
+    | '/_app/_builder/cases/_detail/m/$caseId/'
     | '/_app/_builder/detection/scenarios/$scenarioId/test-run/'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
     | '/_app/_builder/cases/_detail/s/$caseId/_new/clients'
@@ -2015,13 +2028,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdHomeRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
     }
-    '/_app/_builder/cases/_detail/m/$caseId': {
-      id: '/_app/_builder/cases/_detail/m/$caseId'
-      path: '/m/$caseId'
-      fullPath: '/cases/m/$caseId'
-      preLoaderRoute: typeof AppBuilderCasesDetailMCaseIdRouteImport
-      parentRoute: typeof AppBuilderCasesDetailRoute
-    }
     '/_app/_builder/cases/$caseId/d/$decisionId': {
       id: '/_app/_builder/cases/$caseId/d/$decisionId'
       path: '/$decisionId'
@@ -2035,6 +2041,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/detection/scenarios/$scenarioId/test-run/'
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunRoute
+    }
+    '/_app/_builder/cases/_detail/m/$caseId/': {
+      id: '/_app/_builder/cases/_detail/m/$caseId/'
+      path: '/m/$caseId'
+      fullPath: '/cases/m/$caseId/'
+      preLoaderRoute: typeof AppBuilderCasesDetailMCaseIdIndexRouteImport
+      parentRoute: typeof AppBuilderCasesDetailRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': {
       id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
@@ -2055,6 +2068,13 @@ declare module '@tanstack/react-router' {
       path: '/s/$caseId'
       fullPath: '/cases/s/$caseId'
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdNewRouteImport
+      parentRoute: typeof AppBuilderCasesDetailRoute
+    }
+    '/_app/_builder/cases/_detail/m/$caseId/old': {
+      id: '/_app/_builder/cases/_detail/m/$caseId/old'
+      path: '/m/$caseId/old'
+      fullPath: '/cases/m/$caseId/old'
+      preLoaderRoute: typeof AppBuilderCasesDetailMCaseIdOldRouteImport
       parentRoute: typeof AppBuilderCasesDetailRoute
     }
     '/_app/_builder/cases/$caseId/d/$decisionId/screenings': {
@@ -2312,16 +2332,19 @@ const AppBuilderCasesDetailSCaseIdNewRouteWithChildren =
   )
 
 interface AppBuilderCasesDetailRouteChildren {
-  AppBuilderCasesDetailMCaseIdRoute: typeof AppBuilderCasesDetailMCaseIdRoute
+  AppBuilderCasesDetailMCaseIdOldRoute: typeof AppBuilderCasesDetailMCaseIdOldRoute
   AppBuilderCasesDetailSCaseIdNewRoute: typeof AppBuilderCasesDetailSCaseIdNewRouteWithChildren
   AppBuilderCasesDetailSCaseIdOldRoute: typeof AppBuilderCasesDetailSCaseIdOldRoute
+  AppBuilderCasesDetailMCaseIdIndexRoute: typeof AppBuilderCasesDetailMCaseIdIndexRoute
 }
 
 const AppBuilderCasesDetailRouteChildren: AppBuilderCasesDetailRouteChildren = {
-  AppBuilderCasesDetailMCaseIdRoute: AppBuilderCasesDetailMCaseIdRoute,
+  AppBuilderCasesDetailMCaseIdOldRoute: AppBuilderCasesDetailMCaseIdOldRoute,
   AppBuilderCasesDetailSCaseIdNewRoute:
     AppBuilderCasesDetailSCaseIdNewRouteWithChildren,
   AppBuilderCasesDetailSCaseIdOldRoute: AppBuilderCasesDetailSCaseIdOldRoute,
+  AppBuilderCasesDetailMCaseIdIndexRoute:
+    AppBuilderCasesDetailMCaseIdIndexRoute,
 }
 
 const AppBuilderCasesDetailRouteWithChildren =

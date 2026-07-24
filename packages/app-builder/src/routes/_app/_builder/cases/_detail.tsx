@@ -5,7 +5,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-const beforeLoadFn = createServerFn()
+const beforeLoadFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
     return {
