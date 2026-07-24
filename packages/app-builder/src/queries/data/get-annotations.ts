@@ -21,5 +21,6 @@ export const useGetAnnotationsQuery = (objectType: string, objectId: string, loa
       }>);
       return result ?? { annotations: EMPTY_GROUPED_ANNOTATIONS };
     },
+    enabled: !!objectType && !!objectId,
   });
 };

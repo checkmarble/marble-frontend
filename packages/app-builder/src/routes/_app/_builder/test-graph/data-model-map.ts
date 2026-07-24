@@ -1,4 +1,9 @@
-import { type FtmEntityPersonOption, type FtmEntityV2 } from '@app-builder/models/data-model';
+import {
+  type DataModel,
+  type FtmEntityPersonOption,
+  type FtmEntityV2,
+  type TableModel,
+} from '@app-builder/models/data-model';
 
 export type NonPersonSemantic = Exclude<FtmEntityV2, 'person'>;
 
@@ -7,47 +12,68 @@ export type GraphTypeMeta =
   | { kind: 'entity'; semanticType: NonPersonSemantic }
   | { kind: 'pivot' };
 
+function metaFromTable(table: TableModel): GraphTypeMeta {
+  const semanticType = table.semanticType ?? 'other';
+  if (semanticType === 'person') {
+    return {
+      kind: 'person',
+      semanticType: 'person',
+      defaultSubEntity: table.subEntity ?? 'generic',
+    };
+  }
+  return { kind: 'entity', semanticType };
+}
+
 /**
- * Maps raw graphData node `type` values to Marble data-model semantic types.
- * Pivots are path glue only — they do not form their own group nodes.
+ * Infers Marble semantic type from a graph node `type` (= data-model table name).
+ * Types with no matching table are pivots — path glue only, not group nodes.
  */
-export const graphTypeToSemantic: Record<string, GraphTypeMeta> = {
-  user: { kind: 'person', semanticType: 'person', defaultSubEntity: 'natural' },
-  account: { kind: 'entity', semanticType: 'account' },
-  transactions: { kind: 'entity', semanticType: 'transaction' },
-  devices: { kind: 'entity', semanticType: 'event' },
-  same_iban: { kind: 'pivot' },
-  same_ip: { kind: 'pivot' },
-};
-
-/** Short labels for group nodes in the UI. */
-export const semanticTypeLabel: Record<NonPersonSemantic, string> = {
-  account: 'Account',
-  transaction: 'Transaction',
-  event: 'Event',
-  other: 'Other',
-};
-
-export function resolveGraphTypeMeta(type: string): GraphTypeMeta {
-  return graphTypeToSemantic[type] ?? { kind: 'entity', semanticType: 'other' };
+export function graphTypeToSemantic(objectType: string, dataModel: DataModel): GraphTypeMeta {
+  const table = dataModel.find((t) => t.name === objectType);
+  if (!table) return { kind: 'pivot' };
+  return metaFromTable(table);
 }
 
-export function isPersonType(type: string): boolean {
-  return resolveGraphTypeMeta(type).kind === 'person';
+/** Display label for a table: alias when set, otherwise the table name. */
+export function objectTypeLabel(objectType: string, dataModel: DataModel): string {
+  const table = dataModel.find((t) => t.name === objectType);
+  if (!table) return objectType;
+  return table.alias.trim() || table.name;
 }
 
-export function isPivotType(type: string): boolean {
-  return resolveGraphTypeMeta(type).kind === 'pivot';
+export function createGraphTypeHelpers(dataModel: DataModel) {
+  const byName = new Map(dataModel.map((t) => [t.name, t]));
+
+  function resolveGraphTypeMeta(objectType: string): GraphTypeMeta {
+    const table = byName.get(objectType);
+    if (!table) return { kind: 'pivot' };
+    return metaFromTable(table);
+  }
+
+  return {
+    resolveGraphTypeMeta,
+    isPersonType(objectType: string): boolean {
+      return resolveGraphTypeMeta(objectType).kind === 'person';
+    },
+    isPivotType(objectType: string): boolean {
+      return resolveGraphTypeMeta(objectType).kind === 'pivot';
+    },
+    getNonPersonSemantic(objectType: string): NonPersonSemantic | null {
+      const meta = resolveGraphTypeMeta(objectType);
+      if (meta.kind === 'entity') return meta.semanticType;
+      return null;
+    },
+    getPersonSubEntity(objectType: string): FtmEntityPersonOption {
+      const meta = resolveGraphTypeMeta(objectType);
+      if (meta.kind === 'person') return meta.defaultSubEntity;
+      return 'generic';
+    },
+    getObjectTypeLabel(objectType: string): string {
+      const table = byName.get(objectType);
+      if (!table) return objectType;
+      return table.alias.trim() || table.name;
+    },
+  };
 }
 
-export function getNonPersonSemantic(type: string): NonPersonSemantic | null {
-  const meta = resolveGraphTypeMeta(type);
-  if (meta.kind === 'entity') return meta.semanticType;
-  return null;
-}
-
-export function getPersonSubEntity(type: string): FtmEntityPersonOption {
-  const meta = resolveGraphTypeMeta(type);
-  if (meta.kind === 'person') return meta.defaultSubEntity;
-  return 'generic';
-}
+export type GraphTypeHelpers = ReturnType<typeof createGraphTypeHelpers>;
