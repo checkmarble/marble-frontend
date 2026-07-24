@@ -13,6 +13,7 @@ import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { Panel } from '@app-builder/components/Panel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModel, isNotFoundHttpError } from '@app-builder/models';
@@ -28,7 +29,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod/v4';
 
@@ -203,31 +204,31 @@ function DecisionPage() {
           {!decision.case ? <AddToCase /> : null}
         </Page.Header>
         <Page.Container>
-          <Page.Content>
-            <div className="grid grid-cols-[2fr_1fr] gap-md lg:gap-xl">
-              <div className="flex flex-col gap-md lg:gap-xl">
-                <DecisionDetail decision={decision} />
-                <PivotDetail pivotValues={pivotValues} existingPivotDefinition={existingPivotDefinition} />
-                <RulesDetail
-                  scenarioId={decision.scenario.id}
-                  ruleExecutions={decision.rules}
-                  rules={scenarioRules}
-                  isIterationArchived={isIterationArchived}
-                />
-                {screening.map((s) => (
-                  <ScreeningDetail key={s.id} screening={s} table={table} />
-                ))}
+          <Page.Content
+            className={cn(
+              'grid grid-areas-[aside,main] xl:grid-areas-[main_aside] grid-cols-1 xl:grid-cols-[3fr_1fr]',
+              pageLayoutGutter.gap,
+            )}
+          >
+            <div className={cn('flex flex-col area-[main]', pageLayoutGutter.gap)}>
+              <DecisionDetail decision={decision} />
+              <PivotDetail pivotValues={pivotValues} existingPivotDefinition={existingPivotDefinition} />
+              <RulesDetail
+                scenarioId={decision.scenario.id}
+                ruleExecutions={decision.rules}
+                rules={scenarioRules}
+                isIterationArchived={isIterationArchived}
+              />
+              {screening.map((s) => (
+                <ScreeningDetail key={s.id} screening={s} table={table} />
+              ))}
+            </div>
+            <div className={cn('flex flex-col shrink-0 area-[aside]', pageLayoutGutter.gap)}>
+              <div className={cn('flex flex-row', pageLayoutGutter.gap)}>
+                <ScorePanel score={decision.score} />
+                <OutcomePanel outcome={decision.outcome} />
               </div>
-              <div className="flex flex-col gap-md lg:gap-xl shrink-0">
-                <div className="flex flex-col gap-md lg:flex-row lg:gap-xl">
-                  <ScorePanel score={decision.score} />
-                  <OutcomePanel outcome={decision.outcome} />
-                </div>
-                <DecisionDetailTriggerObject
-                  table={decision.triggerObjectType}
-                  triggerObject={decision.triggerObject}
-                />
-              </div>
+              <DecisionDetailTriggerObject table={decision.triggerObjectType} triggerObject={decision.triggerObject} />
             </div>
           </Page.Content>
         </Page.Container>
