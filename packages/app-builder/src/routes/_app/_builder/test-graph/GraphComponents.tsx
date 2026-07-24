@@ -1,5 +1,4 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
-import { createSimpleContext } from '@app-builder/utils/create-context';
 import {
   BaseEdge,
   type Edge,
@@ -11,27 +10,17 @@ import {
   type NodeProps,
   Position,
 } from '@xyflow/react';
-import { type ReactNode } from 'react';
-import { cn } from 'ui-design-system';
+import { cn, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
+import { useCustomerGraph } from './CustomerGraphContext';
 import { type NonPersonSemantic, semanticTypeLabel } from './data-model-map';
-
-export type CustomerGraphContextValue = {
-  showEdgeLabels: boolean;
-  expandGroup: (groupId: string) => void;
-  collapseGroup: (groupId: string) => void;
-};
-
-const CustomerGraphContext = createSimpleContext<CustomerGraphContextValue>('CustomerGraph');
-
-export function CustomerGraphProvider({ value, children }: { value: CustomerGraphContextValue; children: ReactNode }) {
-  return <CustomerGraphContext.Provider value={value}>{children}</CustomerGraphContext.Provider>;
-}
 
 export type PersonRfData = {
   label: string;
   subEntity: FtmEntityPersonOption;
   isStart: boolean;
+  riskLabel?: string;
+  tags?: string[];
 };
 
 export type GroupRfData = {
@@ -156,10 +145,12 @@ function entityIcon(semanticType: NonPersonSemantic): IconName {
 }
 
 export function PersonNode({ data }: NodeProps<PersonRfNode>) {
+  const { showRiskScore, showTags } = useCustomerGraph();
+
   return (
     <div
       className={cn(
-        'relative flex w-fit items-center gap-xs rounded-lg px-md py-sm text-sm font-medium text-purple-primary shadow-sm bg-purple-background-light border-purple-border',
+        'relative flex w-fit flex-col gap-xs rounded-lg px-md py-sm text-sm font-medium text-purple-primary shadow-sm bg-purple-background-light border-purple-border',
         data.isStart && 'bg-purple-primary ring-2 ring-purple-primary ring-offset-2 text-white',
       )}
     >
@@ -175,7 +166,35 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
           className={cn('size-4 text-purple-primary', data.isStart && 'text-white')}
         />
       </div>
-      <span>{data.label}</span>
+      <div className="flex items-center gap-xs">
+        <span>{data.label}</span>
+        {showRiskScore && data.riskLabel ? (
+          <span
+            className={cn(
+              'rounded-full border px-xs py-px text-[10px] font-normal',
+              data.isStart
+                ? 'border-white/40 text-white'
+                : 'border-green-border text-green-primary bg-green-background-light',
+            )}
+          >
+            {data.riskLabel}
+          </span>
+        ) : null}
+      </div>
+      {showTags && data.tags && data.tags.length > 0 ? (
+        <div className="flex flex-wrap gap-xs">
+          {data.tags.map((tag) => (
+            <Tag
+              key={tag}
+              size="small"
+              color={data.isStart ? 'white' : 'purple'}
+              className={data.isStart ? 'bg-grey-white' : undefined}
+            >
+              {tag}
+            </Tag>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -193,7 +212,7 @@ export function GroupNode({ data }: NodeProps<GroupRfNode>) {
 }
 
 export function TypeBundleNode({ data }: NodeProps<TypeBundleRfNode>) {
-  const { expandGroup } = CustomerGraphContext.useValue();
+  const { expandGroup } = useCustomerGraph();
 
   return (
     <div className="border-purple-border bg-purple-background-light text-purple-primary relative flex w-fit max-w-52 items-center gap-xs rounded-md border px-sm py-xs text-xs shadow-sm">
@@ -222,7 +241,7 @@ export function TypeBundleNode({ data }: NodeProps<TypeBundleRfNode>) {
 }
 
 export function EntityNode({ data }: NodeProps<EntityRfNode>) {
-  const { collapseGroup } = CustomerGraphContext.useValue();
+  const { collapseGroup } = useCustomerGraph();
 
   return (
     <div className="border-grey-border bg-grey-white text-grey-primary relative flex w-fit max-w-48 items-center gap-xs rounded-md border px-sm py-xs text-xs shadow-sm">
@@ -280,7 +299,7 @@ function GraphEdge({
   strokeClassName: string;
   labelClassName: string;
 }) {
-  const { showEdgeLabels } = CustomerGraphContext.useValue();
+  const { showEdgeLabels } = useCustomerGraph();
   const [path, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
