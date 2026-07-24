@@ -5,15 +5,16 @@ import {
   Controls,
   type EdgeChange,
   type NodeChange,
+  type NodeMouseHandler,
   ReactFlow,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
+import { type CustomerGraphContextValue, type GraphAttribute, useCustomerGraph } from './CustomerGraphContext';
 import { type GraphData } from './data';
 import { type NonPersonSemantic, semanticTypeLabel } from './data-model-map';
 import {
   BackEdge,
-  CustomerGraphProvider,
   EntityNode,
   type GraphRfEdge,
   type GraphRfNode,
@@ -283,6 +284,8 @@ function placeExpanded(
         label: personLabel(child),
         subEntity: child.subEntity,
         isStart: false,
+        riskLabel: 'Risque faible',
+        tags: ['Custom lorem'],
       },
     });
   }
@@ -362,6 +365,8 @@ function placeGroupPersons(
         label: personLabel(leaf),
         subEntity: leaf.subEntity,
         isStart: false,
+        riskLabel: 'Risque faible',
+        tags: ['Custom lorem'],
       },
     });
 
@@ -400,6 +405,8 @@ function buildRadialGraph(
         label: personLabel(data.root),
         subEntity: data.root.subEntity,
         isStart: true,
+        riskLabel: 'Risque faible',
+        tags: ['Custom lorem'],
       },
     },
   ];
@@ -408,7 +415,72 @@ function buildRadialGraph(
   return { nodes, edges: withBestHandles(nodes, edges) };
 }
 
+type VisibilityFilters = Pick<
+  CustomerGraphContextValue,
+  'showPersons' | 'showCompanies' | 'eventFilter' | 'attributes'
+>;
+
+function attributeAllowsPivot(rawType: string, attributes: GraphAttribute[]): boolean {
+  if (rawType === 'same_ip') return attributes.includes('ip');
+  if (rawType === 'same_iban') return attributes.includes('iban');
+  return true;
+}
+
+function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
+  if (node.type === 'person') {
+    if (node.data.isStart) return true;
+    if (node.data.subEntity === 'moral') return filters.showCompanies;
+    if (node.data.subEntity === 'natural') return filters.showPersons;
+    return filters.showPersons || filters.showCompanies;
+  }
+
+  if (node.type === 'entity') {
+    if (node.data.semanticType === 'event') {
+      return filters.eventFilter === 'all' && filters.attributes.includes('device');
+    }
+    return true;
+  }
+
+  if (node.type === 'typeBundle') {
+    if (node.data.semanticType === 'event') {
+      return filters.eventFilter === 'all' && filters.attributes.includes('device');
+    }
+    return true;
+  }
+
+  if (node.type === 'pivot') {
+    return attributeAllowsPivot(node.data.rawType, filters.attributes);
+  }
+
+  return true;
+}
+
+function applyVisibilityFilters(
+  nodes: GraphRfNode[],
+  edges: GraphRfEdge[],
+  filters: VisibilityFilters,
+): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
+  const visibleNodes = nodes.filter((node) => isNodeVisible(node, filters));
+  const visibleIds = new Set(visibleNodes.map((node) => node.id));
+  const visibleEdges = edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
+  return { nodes: visibleNodes, edges: visibleEdges };
+}
+
 export function GraphImpl({ data, maxExplorationHops = 0 }: GraphImplProps) {
+  const {
+    showPersons,
+    showCompanies,
+    eventFilter,
+    attributes,
+    showEdgeLabels,
+    setShowEdgeLabels,
+    expandedGroupIds,
+    expandAllGroups,
+    collapseAllGroups,
+    resetExpandedGroups,
+    setSelectedNodeId,
+  } = useCustomerGraph();
+
   const flowGraph = useMemo(
     () =>
       transformDataToFlow(data, {
@@ -420,49 +492,31 @@ export function GraphImpl({ data, maxExplorationHops = 0 }: GraphImplProps) {
   );
 
   const allGroupIds = useMemo(() => collectMultiMemberGroupIds(flowGraph.root), [flowGraph]);
-  const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(() => new Set());
-  const [showEdgeLabels, setShowEdgeLabels] = useState(false);
 
-  // Reset group expand state when the explored subgraph changes
   useEffect(() => {
-    setExpandedGroupIds(new Set());
-  }, [flowGraph]);
+    resetExpandedGroups();
+  }, [flowGraph, resetExpandedGroups]);
 
   const layout = useMemo(() => buildRadialGraph(flowGraph, expandedGroupIds), [flowGraph, expandedGroupIds]);
 
-  const [nodes, setNodes] = useState(layout.nodes);
-  const [edges, setEdges] = useState(layout.edges);
+  const filteredLayout = useMemo(
+    () =>
+      applyVisibilityFilters(layout.nodes, layout.edges, {
+        showPersons,
+        showCompanies,
+        eventFilter,
+        attributes,
+      }),
+    [layout, showPersons, showCompanies, eventFilter, attributes],
+  );
+
+  const [nodes, setNodes] = useState(filteredLayout.nodes);
+  const [edges, setEdges] = useState(filteredLayout.edges);
 
   useEffect(() => {
-    setNodes(layout.nodes);
-    setEdges(layout.edges);
-  }, [layout]);
-
-  const expandGroup = useCallback((groupId: string) => {
-    setExpandedGroupIds((prev) => {
-      if (prev.has(groupId)) return prev;
-      const next = new Set(prev);
-      next.add(groupId);
-      return next;
-    });
-  }, []);
-
-  const collapseGroup = useCallback((groupId: string) => {
-    setExpandedGroupIds((prev) => {
-      if (!prev.has(groupId)) return prev;
-      const next = new Set(prev);
-      next.delete(groupId);
-      return next;
-    });
-  }, []);
-
-  const expandAll = useCallback(() => {
-    setExpandedGroupIds(new Set(allGroupIds));
-  }, [allGroupIds]);
-
-  const collapseAll = useCallback(() => {
-    setExpandedGroupIds(new Set());
-  }, []);
+    setNodes(filteredLayout.nodes);
+    setEdges(filteredLayout.edges);
+  }, [filteredLayout]);
 
   const onNodesChange = useCallback((changes: NodeChange<GraphRfNode>[]) => {
     setNodes((nds) => {
@@ -479,52 +533,54 @@ export function GraphImpl({ data, maxExplorationHops = 0 }: GraphImplProps) {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
 
-  const allExpanded = allGroupIds.length > 0 && allGroupIds.every((id) => expandedGroupIds.has(id));
-
-  const customerGraphValue = useMemo(
-    () => ({ showEdgeLabels, expandGroup, collapseGroup }),
-    [showEdgeLabels, expandGroup, collapseGroup],
+  const onNodeClick = useCallback<NodeMouseHandler<GraphRfNode>>(
+    (_event, node) => {
+      setSelectedNodeId(node.id);
+    },
+    [setSelectedNodeId],
   );
 
+  const allExpanded = allGroupIds.length > 0 && allGroupIds.every((id) => expandedGroupIds.has(id));
+
   return (
-    <CustomerGraphProvider value={customerGraphValue}>
-      <ReactFlow
-        nodeTypes={{
-          person: PersonNode,
-          typeGroup: GroupNode,
-          entity: EntityNode,
-          pivot: PivotNode,
-          typeBundle: TypeBundleNode,
-        }}
-        edgeTypes={{
-          link: LinkEdge,
-          back: BackEdge,
-          match: MatchEdge,
-        }}
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        fitView
-        proOptions={{ hideAttribution: true }}
-      >
-        <Controls>
-          <ControlButton
-            onClick={() => setShowEdgeLabels((prev) => !prev)}
-            title={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
-            aria-label={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
-          >
-            <Icon icon={showEdgeLabels ? 'tip' : 'eye-slash'} className="size-4" />
-          </ControlButton>
-          <ControlButton
-            onClick={allExpanded ? collapseAll : expandAll}
-            title={allExpanded ? 'Collapse all groups' : 'Expand all groups'}
-            aria-label={allExpanded ? 'Collapse all groups' : 'Expand all groups'}
-          >
-            <Icon icon={allExpanded ? 'minus' : 'plus'} className="size-4" />
-          </ControlButton>
-        </Controls>
-      </ReactFlow>
-    </CustomerGraphProvider>
+    <ReactFlow
+      className="h-full min-h-0"
+      nodeTypes={{
+        person: PersonNode,
+        typeGroup: GroupNode,
+        entity: EntityNode,
+        pivot: PivotNode,
+        typeBundle: TypeBundleNode,
+      }}
+      edgeTypes={{
+        link: LinkEdge,
+        back: BackEdge,
+        match: MatchEdge,
+      }}
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onNodeClick={onNodeClick}
+      fitView
+      proOptions={{ hideAttribution: true }}
+    >
+      <Controls>
+        <ControlButton
+          onClick={() => setShowEdgeLabels(!showEdgeLabels)}
+          title={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
+          aria-label={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
+        >
+          <Icon icon={showEdgeLabels ? 'tip' : 'eye-slash'} className="size-4" />
+        </ControlButton>
+        <ControlButton
+          onClick={() => (allExpanded ? collapseAllGroups() : expandAllGroups(allGroupIds))}
+          title={allExpanded ? 'Collapse all groups' : 'Expand all groups'}
+          aria-label={allExpanded ? 'Collapse all groups' : 'Expand all groups'}
+        >
+          <Icon icon={allExpanded ? 'minus' : 'plus'} className="size-4" />
+        </ControlButton>
+      </Controls>
+    </ReactFlow>
   );
 }
