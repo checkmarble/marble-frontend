@@ -1,4 +1,17 @@
-import { Checkbox, type CheckedState, MenuCommand, Switch, Tag } from 'ui-design-system';
+import { ClientTagsList } from '@app-builder/components/Annotations/ClientTagsList';
+import { ScoreDetailPanel } from '@app-builder/components/ClientDetail/ScoreDetailPanel';
+import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
+import { type DataModelObjectValue } from '@app-builder/models/data-model';
+import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
+import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
+import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
+import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
+import { type ScoringScore } from 'marble-api';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { match, P } from 'ts-pattern';
+import { Button, Checkbox, type CheckedState, MenuCommand, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   GRAPH_ATTRIBUTE_LABELS,
@@ -12,6 +25,8 @@ const EVENT_FILTER_LABELS = {
   none: 'No events',
 } as const;
 
+const TITLE_FIELD_CANDIDATES = ['name', 'full_name', 'company_name', 'display_name', 'label'] as const;
+
 function attributesLabel(attributes: GraphAttribute[]): string {
   if (attributes.length === 0) return 'Attributes: none';
   if (attributes.length === GRAPH_ATTRIBUTES.length) {
@@ -22,6 +37,102 @@ function attributesLabel(attributes: GraphAttribute[]): string {
 
 function asBoolean(value: CheckedState): boolean {
   return value === true;
+}
+
+function resolveTitle(data: Record<string, DataModelObjectValue>, objectId: string): string {
+  for (const key of TITLE_FIELD_CANDIDATES) {
+    const value = data[key];
+    if (typeof value === 'string' && value.trim()) return value;
+  }
+  const objectIdValue = data['object_id'];
+  if (typeof objectIdValue === 'string' && objectIdValue.trim()) return objectIdValue;
+  return objectId;
+}
+
+function DetailCardSkeleton() {
+  return (
+    <div className="flex flex-col gap-sm">
+      <div className="flex flex-wrap items-center gap-sm">
+        <div className="bg-grey-border h-4 w-28 animate-pulse rounded-md" />
+        <div className="bg-grey-border h-5 w-24 animate-pulse rounded-full" />
+      </div>
+      <div className="flex flex-wrap gap-xs">
+        <div className="bg-grey-border h-5 w-16 animate-pulse rounded-full" />
+        <div className="bg-grey-border h-5 w-14 animate-pulse rounded-full" />
+      </div>
+      <div className="flex flex-col gap-xs">
+        <div className="bg-grey-border h-6 w-full animate-pulse rounded-sm" />
+        <div className="bg-grey-border h-6 w-full animate-pulse rounded-sm" />
+        <div className="bg-grey-border h-6 w-3/4 animate-pulse rounded-sm" />
+      </div>
+    </div>
+  );
+}
+
+function RiskBadgeSkeleton() {
+  return <div className="bg-grey-border h-5 w-24 animate-pulse rounded-full" />;
+}
+
+function TagsSkeleton() {
+  return (
+    <div className="flex flex-wrap gap-xs">
+      <div className="bg-grey-border h-5 w-16 animate-pulse rounded-full" />
+      <div className="bg-grey-border h-5 w-14 animate-pulse rounded-full" />
+    </div>
+  );
+}
+
+function QueryError({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation(['common']);
+  return (
+    <div className="flex flex-col items-start gap-xs">
+      <span className="text-grey-secondary text-xs">{t('common:generic_fetch_data_error')}</span>
+      <Button variant="secondary" size="small" onClick={onRetry}>
+        {t('common:retry')}
+      </Button>
+    </div>
+  );
+}
+
+function RiskBadge({
+  objectType,
+  score,
+  scoringSettings,
+}: {
+  objectType: string;
+  score: ScoringScore;
+  scoringSettings: ScoringSettings;
+}) {
+  const { t } = useTranslation(['cases', 'user-scoring']);
+  const [panelOpen, setPanelOpen] = useState(false);
+
+  const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
+  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][score.risk_level] ?? 'inherit';
+  const scoreLabel = t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][score.risk_level] ?? score.risk_level.toString());
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setPanelOpen(true)}
+        className="inline-flex cursor-pointer items-center gap-xs rounded-full border px-sm py-px text-xs"
+        style={{ backgroundColor: `${scoreColor}20`, borderColor: scoreColor }}
+      >
+        <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: scoreColor }} />
+        <span>
+          {t('cases:manager.client.risk_label')} <strong>{scoreLabel}</strong>
+        </span>
+        <Icon icon="visibility" className="size-3" />
+      </button>
+      <ScoreDetailPanel
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+        objectType={objectType}
+        activeScore={score}
+        scoringSettings={scoringSettings}
+      />
+    </>
+  );
 }
 
 export function GraphSettingsPanel() {
@@ -38,8 +149,17 @@ export function GraphSettingsPanel() {
     setShowRiskScore,
     showTags,
     setShowTags,
-    selectedNodeId,
+    selectedObject,
   } = useCustomerGraph();
+
+  const objectType = selectedObject?.objectType ?? '';
+  const objectId = selectedObject?.objectId ?? '';
+  const hasSelection = !!selectedObject;
+
+  const detailsQuery = useObjectDetailsQuery(objectType, objectId, hasSelection);
+  const scoreQuery = useScoreLatestQuery(objectType, objectId);
+  const settingsQuery = useScoringSettingsQuery();
+  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
 
   return (
     <aside className="border-grey-border bg-grey-white flex w-full shrink-0 flex-col gap-md rounded-lg border p-md lg:w-80">
@@ -110,52 +230,78 @@ export function GraphSettingsPanel() {
       </MenuCommand.Menu>
 
       <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-md border p-md">
-        {selectedNodeId ? (
-          <>
-            <div className="flex flex-wrap items-center gap-sm">
-              <span className="text-purple-primary text-sm font-semibold">{selectedNodeId}</span>
-              {showRiskScore ? (
-                <span className="border-green-border text-green-primary bg-green-background-light inline-flex items-center gap-xs rounded-full border px-sm py-px text-xs">
-                  <span className="bg-green-primary size-1.5 rounded-full" />
-                  Risque <strong>faible</strong>
-                </span>
-              ) : null}
-            </div>
-            {showTags ? (
-              <div className="flex flex-wrap items-center gap-xs">
-                <Tag size="small" color="purple">
-                  Custom lorem
-                </Tag>
-                <button
-                  type="button"
-                  className="border-purple-border text-purple-primary flex size-6 items-center justify-center rounded-full border"
-                  aria-label="Add tag"
-                >
-                  <Icon icon="plus" className="size-3" />
-                </button>
-              </div>
-            ) : null}
-            <dl className="flex flex-col gap-xs text-xs">
-              <div className="flex items-center justify-between gap-sm">
-                <dt className="text-grey-secondary">Account ID</dt>
-                <dd className="border-grey-border bg-grey-white rounded-sm border px-sm py-px font-mono">01010101</dd>
-              </div>
-              <div className="flex items-center justify-between gap-sm">
-                <dt className="text-grey-secondary">Company nb</dt>
-                <dd className="border-grey-border bg-grey-white rounded-sm border px-sm py-px font-mono">
-                  0101010100101
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-sm">
-                <dt className="text-grey-secondary">Updated at</dt>
-                <dd>01-01-2026</dd>
-              </div>
-            </dl>
-            <textarea
-              className="border-grey-border bg-grey-white text-grey-primary placeholder:text-grey-placeholder min-h-16 w-full resize-none rounded-md border px-sm py-xs text-xs outline-none"
-              placeholder="Write comment..."
-            />
-          </>
+        {hasSelection ? (
+          match(detailsQuery)
+            .with({ isError: true }, () => <QueryError onRetry={() => detailsQuery.refetch()} />)
+            .with({ isPending: true }, () => <DetailCardSkeleton />)
+            .with({ isSuccess: true }, ({ data: objectDetails }) => {
+              const title = resolveTitle(objectDetails.data, objectId);
+
+              return (
+                <>
+                  <div className="flex flex-wrap items-center gap-sm">
+                    <span className="text-purple-primary text-sm font-semibold">{title}</span>
+                    {showRiskScore
+                      ? match({ scoreQuery, settingsQuery })
+                          .with({ scoreQuery: { isError: true } }, () => null)
+                          .with(
+                            P.union({ scoreQuery: { isPending: true } }, { settingsQuery: { isPending: true } }),
+                            () => <RiskBadgeSkeleton />,
+                          )
+                          .with(
+                            {
+                              scoreQuery: { isSuccess: true, data: { score: P.nonNullable } },
+                              settingsQuery: { isSuccess: true, data: { settings: P.nonNullable } },
+                            },
+                            ({
+                              scoreQuery: {
+                                data: { score },
+                              },
+                              settingsQuery: {
+                                data: { settings },
+                              },
+                            }) => <RiskBadge objectType={objectType} score={score} scoringSettings={settings} />,
+                          )
+                          .otherwise(() => null)
+                      : null}
+                  </div>
+
+                  {showTags
+                    ? match(annotationsQuery)
+                        .with({ isError: true }, () => <QueryError onRetry={() => annotationsQuery.refetch()} />)
+                        .with({ isPending: true }, () => <TagsSkeleton />)
+                        .with({ isSuccess: true }, ({ data }) => {
+                          const tagIds = data.annotations.tags.map((annotation) => annotation.payload.tag_id);
+                          return (
+                            <div className="flex flex-wrap items-center gap-xs">
+                              <ClientTagsList tagsIds={tagIds} />
+                              <button
+                                type="button"
+                                className="border-purple-border text-purple-primary flex size-6 items-center justify-center rounded-full border"
+                                aria-label="Add tag"
+                              >
+                                <Icon icon="plus" className="size-3" />
+                              </button>
+                            </div>
+                          );
+                        })
+                        .exhaustive()
+                    : null}
+
+                  <DataFields
+                    table={objectType}
+                    object={objectDetails}
+                    options={{ hideLinks: true, maxVisibleFields: 6, displayExpandButton: true }}
+                  />
+
+                  <textarea
+                    className="border-grey-border bg-grey-white text-grey-primary placeholder:text-grey-placeholder min-h-16 w-full resize-none rounded-md border px-sm py-xs text-xs outline-none"
+                    placeholder="Write comment..."
+                  />
+                </>
+              );
+            })
+            .exhaustive()
         ) : (
           <p className="text-grey-secondary text-xs">Select a node to see details.</p>
         )}

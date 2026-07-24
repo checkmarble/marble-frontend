@@ -1,14 +1,8 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
 import { type EdgeData, type GraphData, type NodeData } from './data';
-import {
-  getNonPersonSemantic,
-  getPersonSubEntity,
-  isPersonType,
-  isPivotType,
-  type NonPersonSemantic,
-} from './data-model-map';
+import { type GraphTypeHelpers, type NonPersonSemantic } from './data-model-map';
 
-/** Composite key: `${type}:${id}` e.g. "user:user_0001" */
+/** Composite key: `${type}:${id}` e.g. "users:user_0001" */
 export function nodeKey(ref: { type: string; id: string }): string {
   return `${ref.type}:${ref.id}`;
 }
@@ -75,6 +69,8 @@ export type FlowGraph = {
   root: PersonLeaf;
   /** O(1) lookup of any placed person by nodeKey */
   byKey: Map<string, PersonLeaf>;
+  /** Resolves object types (table names) to data-model semantics */
+  typeHelpers: GraphTypeHelpers;
 };
 
 export type TransformOptions = {
@@ -222,7 +218,9 @@ function findRelatedByGroup(
   personKey: string,
   adj: Map<string, AdjEntry[]>,
   nodesByKey: Map<string, NodeData>,
+  typeHelpers: GraphTypeHelpers,
 ): Map<NonPersonSemantic, RelatedBucket> {
+  const { isPersonType, isPivotType, getNonPersonSemantic } = typeHelpers;
   const buckets = new Map<NonPersonSemantic, RelatedBucket>();
 
   type QueueItem = {
@@ -300,7 +298,9 @@ function findExpandedNeighborhood(
   personKey: string,
   adj: Map<string, AdjEntry[]>,
   nodesByKey: Map<string, NodeData>,
+  typeHelpers: GraphTypeHelpers,
 ): ExpandedWalk {
+  const { isPersonType } = typeHelpers;
   const nodes = new Map<string, NodeData>();
   const links: FlowLink[] = [];
   const linkKeys = new Set<string>();
@@ -395,7 +395,9 @@ function buildTypeGroups(
   ownerKey: string,
   nodes: Map<string, NodeData>,
   depths: Map<string, number>,
+  typeHelpers: GraphTypeHelpers,
 ): { typeGroups: TypeGroup[]; memberToGroup: Map<string, string> } {
+  const { isPivotType, isPersonType, getNonPersonSemantic } = typeHelpers;
   const buckets = new Map<string, TypeGroup>();
 
   for (const [key, node] of nodes) {
@@ -432,7 +434,9 @@ export function projectExpandedView(
   expanded: ExpandedLeaf,
   ownerKey: string,
   expandedGroupIds: Set<string>,
+  typeHelpers: GraphTypeHelpers,
 ): ProjectedView {
+  const { getNonPersonSemantic, isPivotType } = typeHelpers;
   const nodes: ViewNode[] = [];
   const visibleId = new Map<string, string>();
 
@@ -508,12 +512,12 @@ export function projectExpandedView(
   return { nodes, links };
 }
 
-function makePersonLeaf(node: NodeData, depth: number): PersonLeaf {
+function makePersonLeaf(node: NodeData, depth: number, typeHelpers: GraphTypeHelpers): PersonLeaf {
   return {
     kind: 'person',
     node,
     semanticType: 'person',
-    subEntity: getPersonSubEntity(node.type),
+    subEntity: typeHelpers.getPersonSubEntity(node.type),
     depth,
     expanded: null,
     groups: new Map(),
@@ -527,6 +531,7 @@ function attachRelatedPersons(
   nodesByKey: Map<string, NodeData>,
   byKey: Map<string, PersonLeaf>,
   expandQueue: PersonLeaf[],
+  typeHelpers: GraphTypeHelpers,
 ): { persons: Map<string, PersonLeaf>; backLinks: string[] } {
   const persons = new Map<string, PersonLeaf>();
   const backLinks: string[] = [];
@@ -543,7 +548,7 @@ function attachRelatedPersons(
     const relatedNode = nodesByKey.get(relatedKey);
     if (!relatedNode) continue;
 
-    const child = makePersonLeaf(relatedNode, personDepth + 1);
+    const child = makePersonLeaf(relatedNode, personDepth + 1, typeHelpers);
     persons.set(relatedKey, child);
     byKey.set(relatedKey, child);
     expandQueue.push(child);
@@ -552,7 +557,11 @@ function attachRelatedPersons(
   return { persons, backLinks };
 }
 
-export function transformDataToFlow(data: GraphData, options: TransformOptions = {}): FlowGraph {
+export function transformDataToFlow(
+  data: GraphData,
+  typeHelpers: GraphTypeHelpers,
+  options: TransformOptions = {},
+): FlowGraph {
   const maxDepth = options.maxDepth ?? 2;
   const expandLevels = options.expandLevels ?? 1;
   const maxExplorationHops = options.maxExplorationHops ?? 0;
@@ -562,13 +571,13 @@ export function transformDataToFlow(data: GraphData, options: TransformOptions =
   const startKey = nodeKey(data.start);
   const startNode = nodesByKey.get(startKey);
   if (!startNode) throw new Error(`Start node ${startKey} missing from nodes`);
-  if (!isPersonType(startNode.type)) {
+  if (!typeHelpers.isPersonType(startNode.type)) {
     throw new Error(`Start node ${startKey} is not a person type`);
   }
 
   const adj = filterAdjacencyByHops(fullAdj, startKey, maxExplorationHops);
 
-  const root = makePersonLeaf(startNode, 0);
+  const root = makePersonLeaf(startNode, 0, typeHelpers);
   const byKey = new Map<string, PersonLeaf>([[startKey, root]]);
 
   const expandQueue: PersonLeaf[] = [root];
@@ -581,7 +590,7 @@ export function transformDataToFlow(data: GraphData, options: TransformOptions =
     const shouldExpand = person.depth < expandLevels;
 
     if (shouldExpand) {
-      const walk = findExpandedNeighborhood(personKey, adj, nodesByKey);
+      const walk = findExpandedNeighborhood(personKey, adj, nodesByKey, typeHelpers);
       const { persons, backLinks } = attachRelatedPersons(
         walk.persons,
         personKey,
@@ -589,11 +598,12 @@ export function transformDataToFlow(data: GraphData, options: TransformOptions =
         nodesByKey,
         byKey,
         expandQueue,
+        typeHelpers,
       );
 
       if (walk.nodes.size > 0 || persons.size > 0 || backLinks.length > 0) {
         const depths = computeNeighborhoodDepths(personKey, walk.nodes, walk.links);
-        const { typeGroups, memberToGroup } = buildTypeGroups(personKey, walk.nodes, depths);
+        const { typeGroups, memberToGroup } = buildTypeGroups(personKey, walk.nodes, depths, typeHelpers);
         person.expanded = {
           kind: 'expanded',
           nodes: walk.nodes,
@@ -608,7 +618,7 @@ export function transformDataToFlow(data: GraphData, options: TransformOptions =
       continue;
     }
 
-    const buckets = findRelatedByGroup(personKey, adj, nodesByKey);
+    const buckets = findRelatedByGroup(personKey, adj, nodesByKey, typeHelpers);
 
     for (const [semanticType, bucket] of buckets) {
       const { persons, backLinks } = attachRelatedPersons(
@@ -618,6 +628,7 @@ export function transformDataToFlow(data: GraphData, options: TransformOptions =
         nodesByKey,
         byKey,
         expandQueue,
+        typeHelpers,
       );
 
       // Only keep groups that introduce at least one new person.
@@ -634,5 +645,5 @@ export function transformDataToFlow(data: GraphData, options: TransformOptions =
     }
   }
 
-  return { root, byKey };
+  return { root, byKey, typeHelpers };
 }

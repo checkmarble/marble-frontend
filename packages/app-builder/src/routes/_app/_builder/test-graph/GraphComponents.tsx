@@ -1,4 +1,9 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
+import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
+import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
+import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import {
   BaseEdge,
   type Edge,
@@ -10,17 +15,18 @@ import {
   type NodeProps,
   Position,
 } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import { cn, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
-import { type NonPersonSemantic, semanticTypeLabel } from './data-model-map';
+import { type NonPersonSemantic } from './data-model-map';
 
 export type PersonRfData = {
   label: string;
   subEntity: FtmEntityPersonOption;
   isStart: boolean;
-  riskLabel?: string;
-  tags?: string[];
+  objectType: string;
+  objectId: string;
 };
 
 export type GroupRfData = {
@@ -31,8 +37,12 @@ export type GroupRfData = {
 
 export type EntityRfData = {
   label: string;
+  /** Table alias or name shown as the type caption */
+  typeLabel: string;
   semanticType: NonPersonSemantic;
   rawType: string;
+  objectType: string;
+  objectId: string;
   groupId?: string;
   canCollapse?: boolean;
 };
@@ -145,7 +155,28 @@ function entityIcon(semanticType: NonPersonSemantic): IconName {
 }
 
 export function PersonNode({ data }: NodeProps<PersonRfNode>) {
+  const { t } = useTranslation(['user-scoring']);
   const { showRiskScore, showTags } = useCustomerGraph();
+  const { orgObjectTags } = useOrganizationObjectTags();
+
+  const scoreQuery = useScoreLatestQuery(data.objectType, data.objectId);
+  const settingsQuery = useScoringSettingsQuery();
+  const annotationsQuery = useGetAnnotationsQuery(data.objectType, data.objectId);
+
+  const score = scoreQuery.data?.score;
+  const settings = settingsQuery.data?.settings;
+  const maxRiskLevel = settings?.maxRiskLevel as 3 | 4 | 5 | 6 | undefined;
+  const scoreColor =
+    score && maxRiskLevel ? (SCORING_LEVELS_COLORS[maxRiskLevel][score.risk_level] ?? undefined) : undefined;
+  const scoreLabel =
+    score && maxRiskLevel
+      ? t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][score.risk_level] ?? score.risk_level.toString())
+      : undefined;
+
+  const tagIds = annotationsQuery.data?.annotations.tags.map((annotation) => annotation.payload.tag_id) ?? [];
+  const tags = tagIds
+    .map((tagId) => orgObjectTags.find((tag) => tag.id === tagId))
+    .filter((tag): tag is NonNullable<typeof tag> => tag != null);
 
   return (
     <div
@@ -168,29 +199,29 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
       </div>
       <div className="flex items-center gap-xs">
         <span>{data.label}</span>
-        {showRiskScore && data.riskLabel ? (
+        {showRiskScore && scoreLabel && scoreColor ? (
           <span
-            className={cn(
-              'rounded-full border px-xs py-px text-[10px] font-normal',
-              data.isStart
-                ? 'border-white/40 text-white'
-                : 'border-green-border text-green-primary bg-green-background-light',
-            )}
+            className="rounded-full border px-xs py-px text-[10px] font-normal"
+            style={{
+              color: scoreColor,
+              borderColor: scoreColor,
+              backgroundColor: `${scoreColor}20`,
+            }}
           >
-            {data.riskLabel}
+            {scoreLabel}
           </span>
         ) : null}
       </div>
-      {showTags && data.tags && data.tags.length > 0 ? (
+      {showTags && tags.length > 0 ? (
         <div className="flex flex-wrap gap-xs">
-          {data.tags.map((tag) => (
+          {tags.map((tag) => (
             <Tag
-              key={tag}
+              key={tag.id}
               size="small"
               color={data.isStart ? 'white' : 'purple'}
               className={data.isStart ? 'bg-grey-white' : undefined}
             >
-              {tag}
+              {tag.name}
             </Tag>
           ))}
         </div>
@@ -248,7 +279,7 @@ export function EntityNode({ data }: NodeProps<EntityRfNode>) {
       <FourHandles />
       <Icon icon={entityIcon(data.semanticType)} className="size-3.5 shrink-0 text-grey-secondary" />
       <div className="min-w-0">
-        <div className="text-grey-secondary text-[10px] leading-none">{semanticTypeLabel[data.semanticType]}</div>
+        <div className="text-grey-secondary text-[10px] leading-none">{data.typeLabel}</div>
         <div className="truncate font-medium">{data.label}</div>
       </div>
       {data.canCollapse && data.groupId ? (
@@ -256,7 +287,7 @@ export function EntityNode({ data }: NodeProps<EntityRfNode>) {
           type="button"
           className="nodrag nopan border-grey-border hover:bg-grey-background flex size-5 shrink-0 items-center justify-center rounded-sm border"
           title="Collapse group"
-          aria-label={`Collapse ${semanticTypeLabel[data.semanticType]} group`}
+          aria-label={`Collapse ${data.typeLabel} group`}
           onClick={(e) => {
             e.stopPropagation();
             collapseGroup(data.groupId!);

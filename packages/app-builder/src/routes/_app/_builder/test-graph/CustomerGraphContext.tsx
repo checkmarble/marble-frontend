@@ -13,6 +13,11 @@ export const GRAPH_ATTRIBUTE_LABELS: Record<GraphAttribute, string> = {
 
 export type EventFilter = 'all' | 'none';
 
+export type SelectedGraphObject = {
+  objectType: string;
+  objectId: string;
+};
+
 export type CustomerGraphContextValue = {
   // Node type filters
   showPersons: boolean;
@@ -36,8 +41,8 @@ export type CustomerGraphContextValue = {
   setShowEdgeLabels: (value: boolean) => void;
 
   // Selection (settings panel detail card)
-  selectedNodeId: string | null;
-  setSelectedNodeId: (id: string | null) => void;
+  selectedObject: SelectedGraphObject | null;
+  setSelectedObject: (value: SelectedGraphObject | null) => void;
 
   // Type-bundle expand/collapse
   expandedGroupIds: Set<string>;
@@ -52,7 +57,13 @@ const CustomerGraphContext = createSimpleContext<CustomerGraphContextValue>('Cus
 
 export const useCustomerGraph = CustomerGraphContext.useValue;
 
-export function CustomerGraphProvider({ children }: { children: ReactNode }) {
+export function CustomerGraphProvider({
+  children,
+  initialSelectedObject = null,
+}: {
+  children: ReactNode;
+  initialSelectedObject?: SelectedGraphObject | null;
+}) {
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
   const [eventFilter, setEventFilter] = useState<EventFilter>('all');
@@ -60,7 +71,7 @@ export function CustomerGraphProvider({ children }: { children: ReactNode }) {
   const [showRiskScore, setShowRiskScore] = useState(true);
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
   const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(() => new Set());
 
   const toggleAttribute = useCallback((attribute: GraphAttribute) => {
@@ -114,8 +125,8 @@ export function CustomerGraphProvider({ children }: { children: ReactNode }) {
       setShowTags,
       showEdgeLabels,
       setShowEdgeLabels,
-      selectedNodeId,
-      setSelectedNodeId,
+      selectedObject,
+      setSelectedObject,
       expandedGroupIds,
       expandGroup,
       collapseGroup,
@@ -132,7 +143,7 @@ export function CustomerGraphProvider({ children }: { children: ReactNode }) {
       showRiskScore,
       showTags,
       showEdgeLabels,
-      selectedNodeId,
+      selectedObject,
       expandedGroupIds,
       expandGroup,
       collapseGroup,

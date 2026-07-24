@@ -1,3 +1,4 @@
+import { type DataModel } from '@app-builder/models/data-model';
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -12,7 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { type CustomerGraphContextValue, type GraphAttribute, useCustomerGraph } from './CustomerGraphContext';
 import { type GraphData } from './data';
-import { type NonPersonSemantic, semanticTypeLabel } from './data-model-map';
+import { createGraphTypeHelpers, type GraphTypeHelpers, type NonPersonSemantic } from './data-model-map';
 import {
   BackEdge,
   EntityNode,
@@ -47,6 +48,7 @@ const PERSON_OUTER_EXTRA = 100;
 
 export type GraphImplProps = {
   data: GraphData;
+  dataModel: DataModel;
   /**
    * Max graph hops from the start node.
    * `0` (default) explores the full reachable graph; `N > 0` stops after N hops.
@@ -75,9 +77,10 @@ function expandPerson(
   expandedGroupIds: Set<string>,
   nodes: GraphRfNode[],
   edges: GraphRfEdge[],
+  typeHelpers: GraphTypeHelpers,
 ) {
   if (leaf.expanded) {
-    placeExpanded(leaf, leaf.expanded, cx, cy, inwardAngle, expandedGroupIds, nodes, edges);
+    placeExpanded(leaf, leaf.expanded, cx, cy, inwardAngle, expandedGroupIds, nodes, edges, typeHelpers);
     return;
   }
 
@@ -102,6 +105,8 @@ function expandPerson(
 
     const groupPos = polar(cx, cy, groupRadius, groupAngle);
     const gId = groupNodeId(ownerKey, semanticType);
+    const firstMember = group.members[0];
+    const label = firstMember ? typeHelpers.getObjectTypeLabel(firstMember.type) : semanticType;
 
     nodes.push({
       id: gId,
@@ -109,7 +114,7 @@ function expandPerson(
       type: 'typeGroup',
       data: {
         semanticType,
-        label: semanticTypeLabel[semanticType],
+        label,
         memberCount: group.members.length,
       },
     });
@@ -128,7 +133,16 @@ function expandPerson(
       const childNode = nodes.find((n) => n.id === personKey);
       if (!childNode) continue;
       const childInward = Math.atan2(cy - childNode.position.y, cx - childNode.position.x);
-      expandPerson(child, childNode.position.x, childNode.position.y, childInward, expandedGroupIds, nodes, edges);
+      expandPerson(
+        child,
+        childNode.position.x,
+        childNode.position.y,
+        childInward,
+        expandedGroupIds,
+        nodes,
+        edges,
+        typeHelpers,
+      );
     }
   });
 }
@@ -142,11 +156,12 @@ function placeExpanded(
   expandedGroupIds: Set<string>,
   nodes: GraphRfNode[],
   edges: GraphRfEdge[],
+  typeHelpers: GraphTypeHelpers,
 ) {
   const ownerKey = nodeKey(leaf.node);
   if (expanded.nodes.size === 0 && expanded.persons.size === 0) return;
 
-  const projected = projectExpandedView(expanded, ownerKey, expandedGroupIds);
+  const projected = projectExpandedView(expanded, ownerKey, expandedGroupIds, typeHelpers);
 
   // Adjacency on the projected graph for layout
   const localAdj = new Map<string, string[]>();
@@ -225,6 +240,10 @@ function placeExpanded(
     const pos = polar(cx, cy, depth * ENTITY_LAYER_RADIUS, angle);
 
     if (viewNode.kind === 'bundle') {
+      const group = expanded.typeGroups.find((g) => g.id === viewNode.groupId);
+      const firstKey = group?.memberKeys[0];
+      const firstNode = firstKey ? expanded.nodes.get(firstKey) : undefined;
+      const label = firstNode ? typeHelpers.getObjectTypeLabel(firstNode.type) : viewNode.semanticType;
       nodes.push({
         id: viewNode.id,
         position: pos,
@@ -232,7 +251,7 @@ function placeExpanded(
         data: {
           groupId: viewNode.groupId,
           semanticType: viewNode.semanticType,
-          label: semanticTypeLabel[viewNode.semanticType],
+          label,
           count: viewNode.count,
         },
       });
@@ -250,8 +269,11 @@ function placeExpanded(
         type: 'entity',
         data: {
           label: viewNode.node.id,
+          typeLabel: typeHelpers.getObjectTypeLabel(viewNode.node.type),
           semanticType: viewNode.semanticType,
           rawType: viewNode.node.type,
+          objectType: viewNode.node.type,
+          objectId: viewNode.node.id,
           groupId: viewNode.groupId,
           canCollapse: viewNode.canCollapse,
         },
@@ -284,8 +306,8 @@ function placeExpanded(
         label: personLabel(child),
         subEntity: child.subEntity,
         isStart: false,
-        riskLabel: 'Risque faible',
-        tags: ['Custom lorem'],
+        objectType: child.node.type,
+        objectId: child.node.id,
       },
     });
   }
@@ -329,7 +351,16 @@ function placeExpanded(
     const childNode = nodes.find((n) => n.id === personKey);
     if (!childNode) continue;
     const childInward = Math.atan2(cy - childNode.position.y, cx - childNode.position.x);
-    expandPerson(child, childNode.position.x, childNode.position.y, childInward, expandedGroupIds, nodes, edges);
+    expandPerson(
+      child,
+      childNode.position.x,
+      childNode.position.y,
+      childInward,
+      expandedGroupIds,
+      nodes,
+      edges,
+      typeHelpers,
+    );
   }
 }
 
@@ -365,8 +396,8 @@ function placeGroupPersons(
         label: personLabel(leaf),
         subEntity: leaf.subEntity,
         isStart: false,
-        riskLabel: 'Risque faible',
-        tags: ['Custom lorem'],
+        objectType: leaf.node.type,
+        objectId: leaf.node.id,
       },
     });
 
@@ -405,13 +436,13 @@ function buildRadialGraph(
         label: personLabel(data.root),
         subEntity: data.root.subEntity,
         isStart: true,
-        riskLabel: 'Risque faible',
-        tags: ['Custom lorem'],
+        objectType: data.root.node.type,
+        objectId: data.root.node.id,
       },
     },
   ];
   const edges: GraphRfEdge[] = [];
-  expandPerson(data.root, 0, 0, undefined, expandedGroupIds, nodes, edges);
+  expandPerson(data.root, 0, 0, undefined, expandedGroupIds, nodes, edges, data.typeHelpers);
   return { nodes, edges: withBestHandles(nodes, edges) };
 }
 
@@ -466,7 +497,7 @@ function applyVisibilityFilters(
   return { nodes: visibleNodes, edges: visibleEdges };
 }
 
-export function GraphImpl({ data, maxExplorationHops = 0 }: GraphImplProps) {
+export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImplProps) {
   const {
     showPersons,
     showCompanies,
@@ -478,17 +509,19 @@ export function GraphImpl({ data, maxExplorationHops = 0 }: GraphImplProps) {
     expandAllGroups,
     collapseAllGroups,
     resetExpandedGroups,
-    setSelectedNodeId,
+    setSelectedObject,
   } = useCustomerGraph();
+
+  const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
 
   const flowGraph = useMemo(
     () =>
-      transformDataToFlow(data, {
+      transformDataToFlow(data, typeHelpers, {
         maxDepth: 2,
         expandLevels: 1,
         maxExplorationHops,
       }),
-    [data, maxExplorationHops],
+    [data, typeHelpers, maxExplorationHops],
   );
 
   const allGroupIds = useMemo(() => collectMultiMemberGroupIds(flowGraph.root), [flowGraph]);
@@ -535,9 +568,16 @@ export function GraphImpl({ data, maxExplorationHops = 0 }: GraphImplProps) {
 
   const onNodeClick = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {
-      setSelectedNodeId(node.id);
+      if (node.type === 'person' || node.type === 'entity') {
+        setSelectedObject({
+          objectType: node.data.objectType,
+          objectId: node.data.objectId,
+        });
+        return;
+      }
+      setSelectedObject(null);
     },
-    [setSelectedNodeId],
+    [setSelectedObject],
   );
 
   const allExpanded = allGroupIds.length > 0 && allGroupIds.every((id) => expandedGroupIds.has(id));
