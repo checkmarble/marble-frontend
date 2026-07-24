@@ -4,9 +4,14 @@ import {
   type ScreeningMatchPayload,
 } from '@app-builder/models/screening';
 import {
+  createFreeFormSearchPresetFn,
+  deleteFreeFormSearchPresetFn,
   type FreeformSearchInput,
+  FreeformSearchPreset,
   freeformSearchFn,
+  getFreeFormSearchPresetFn,
   getFreeformSearchFn,
+  getListFreeFormSearchPresetsFn,
   listSavedFreeformSearchesFn,
   saveFreeformSearchFn,
 } from '@app-builder/server-fns/screenings';
@@ -72,6 +77,53 @@ export const useGetFreeformSearchQuery = (id: string) => {
     queryKey: ['screening', 'freeform-search', id],
     queryFn: async (): Promise<GetFreeformSearchResponse> => {
       return getFreeformSearch({ data: { id } }) as Promise<GetFreeformSearchResponse>;
+    },
+  });
+};
+
+export const useListFreeFormSearchPresetsQuery = () => {
+  const getListFFS = useServerFn(getListFreeFormSearchPresetsFn);
+
+  return useQuery({
+    queryKey: ['screening', 'freeform-search'],
+    queryFn: async () => {
+      const result = await getListFFS();
+      return result;
+    },
+  });
+};
+
+export const useGetFreeFormSearchPresetQuery = (name: string) => {
+  const getFreeFormSearchPreset = useServerFn(getFreeFormSearchPresetFn);
+
+  return useQuery({
+    queryKey: ['screening', 'freeform-search', 'preset', name],
+    queryFn: async () => {
+      const result = await getFreeFormSearchPreset({ data: { name } });
+      return result;
+    },
+  });
+};
+
+export const useCreateFreeFormSearchPresetMutation = () => {
+  const createFreeFormSearchPreset = useServerFn(createFreeFormSearchPresetFn);
+
+  return useMutation({
+    mutationKey: ['screening', 'freeform-search', 'preset'],
+    mutationFn: async ({ name, value }: { name: string; value: FreeformSearchPreset }) => {
+      console.log('createFreeFormSearchPreset', { name, value });
+      return createFreeFormSearchPreset({ data: { name, value } });
+    },
+  });
+};
+
+export const useDeleteFreeFormSearchPresetMutation = () => {
+  const deleteFreeFormSearchPreset = useServerFn(deleteFreeFormSearchPresetFn);
+
+  return useMutation({
+    mutationKey: ['screening', 'freeform-search', 'preset'],
+    mutationFn: async ({ name }: { name: string }) => {
+      return deleteFreeFormSearchPreset({ data: { name } });
     },
   });
 };
