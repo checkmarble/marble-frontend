@@ -284,31 +284,52 @@ function placeExpanded(
   const maxLocalDist = projected.nodes.reduce((max, n) => Math.max(max, dist.get(n.id) ?? n.depth), 0);
   const personRadius = Math.max(1, maxLocalDist + 1) * ENTITY_LAYER_RADIUS + PERSON_OUTER_EXTRA;
 
+  // Prefer spanning-tree leaf angles so persons that share a collapsed bundle
+  // (or the same entity) fan out instead of stacking on one attachment point.
+  const personPlacements: { personKey: string; child: PersonLeaf; baseAngle: number }[] = [];
   for (const [personKey, child] of expanded.persons) {
-    const attachmentAngles: number[] = [];
-    for (const link of projected.links) {
-      const other = link.from === personKey ? link.to : link.to === personKey ? link.from : null;
-      if (!other) continue;
-      const angle = angles.get(other);
-      if (angle !== undefined) attachmentAngles.push(angle);
+    let baseAngle = angles.get(personKey);
+    if (baseAngle === undefined) {
+      const attachmentAngles: number[] = [];
+      for (const link of projected.links) {
+        const other = link.from === personKey ? link.to : link.to === personKey ? link.from : null;
+        if (!other) continue;
+        const attachmentAngle = angles.get(other);
+        if (attachmentAngle !== undefined) attachmentAngles.push(attachmentAngle);
+      }
+      baseAngle =
+        attachmentAngles.length > 0
+          ? attachmentAngles.reduce((sum, a) => sum + a, 0) / attachmentAngles.length
+          : sectorStart + sectorWidth / 2;
     }
-    const angle =
-      attachmentAngles.length > 0
-        ? attachmentAngles.reduce((sum, a) => sum + a, 0) / attachmentAngles.length
-        : sectorStart + sectorWidth / 2;
-    const pos = polar(cx, cy, personRadius, angle);
+    personPlacements.push({ personKey, child, baseAngle });
+  }
 
-    nodes.push({
-      id: personKey,
-      position: pos,
-      type: 'person',
-      data: {
-        label: personLabel(child),
-        subEntity: child.subEntity,
-        isStart: false,
-        objectType: child.node.type,
-        objectId: child.node.id,
-      },
+  const personsByAngle = new Map<number, typeof personPlacements>();
+  for (const placement of personPlacements) {
+    const group = personsByAngle.get(placement.baseAngle) ?? [];
+    group.push(placement);
+    personsByAngle.set(placement.baseAngle, group);
+  }
+
+  for (const group of personsByAngle.values()) {
+    const fan = Math.min(sectorWidth * 0.35, (Math.PI / 8) * Math.max(group.length - 1, 1));
+    group.forEach(({ personKey, child, baseAngle }, index) => {
+      const angle = group.length === 1 ? baseAngle : baseAngle - fan / 2 + (fan * (index + 0.5)) / group.length;
+      const pos = polar(cx, cy, personRadius, angle);
+
+      nodes.push({
+        id: personKey,
+        position: pos,
+        type: 'person',
+        data: {
+          label: personLabel(child),
+          subEntity: child.subEntity,
+          isStart: false,
+          objectType: child.node.type,
+          objectId: child.node.id,
+        },
+      });
     });
   }
 
