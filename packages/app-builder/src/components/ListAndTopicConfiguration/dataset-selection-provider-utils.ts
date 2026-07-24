@@ -105,7 +105,11 @@ export function selectAllInSection(
   }
 }
 
-export function syncSharpDatasets(datasets: Record<string, boolean>, selected: string[]): void {
+export function syncSharpDatasets(
+  datasets: Record<string, boolean>,
+  selected: string[],
+  options?: { filters: ListConfigFilters; provider: ScreeningProviders },
+): void {
   const nextDatasets = makeDatasetsMap(selected);
 
   for (const key of Object.keys(datasets)) {
@@ -113,6 +117,11 @@ export function syncSharpDatasets(datasets: Record<string, boolean>, selected: s
   }
   for (const [key, isSelected] of Object.entries(nextDatasets)) {
     datasets[key] = isSelected;
+  }
+
+  // Re-apply after replace so parent syncs cannot drop the mandatory LN section flag.
+  if (options) {
+    applyUniqueLexisNexisSectionDefault(datasets, options.filters, options.provider);
   }
 }
 
@@ -151,13 +160,8 @@ export function isUniqueLexisNexisList(provider: ScreeningProviders, availableSe
   return provider === 'lexisnexis' && availableSectionCount === 1;
 }
 
-export function isSectionEnabled(
-  datasets: Record<string, boolean>,
-  sectionKey: ScreeningCategory,
-  provider: ScreeningProviders,
-  availableSectionCount: number,
-): boolean {
-  return !!datasets[sectionKey] || isUniqueLexisNexisList(provider, availableSectionCount);
+export function isSectionEnabled(datasets: Record<string, boolean>, sectionKey: ScreeningCategory): boolean {
+  return !!datasets[sectionKey];
 }
 
 /** Persists the mandatory LexisNexis section flag so UI state and wire payload stay aligned. */
@@ -175,12 +179,7 @@ export function applyUniqueLexisNexisSectionDefault(
 
 /** Strips falsy entries from the datasets map before persistence. */
 export function sanitizeTruthyDatasets(datasets: Record<string, boolean>): Record<string, boolean> {
-  // TODO: remove the liveness filter when reindexation is done
-  // global:topic:liveness:filter.alive
-  // global:topic:liveness:filter.deceased
-  const strippedDatasets = Object.fromEntries(
-    Object.entries(datasets).filter(([key, selected]) => !key.startsWith('global:topic:liveness:filter.') && selected),
-  );
+  const strippedDatasets = Object.fromEntries(Object.entries(datasets).filter(([_, selected]) => selected));
   return strippedDatasets;
 }
 

@@ -6,6 +6,7 @@ export {
 export { DatasetSelectionContent } from './DatasetSelectionContent';
 export {
   applyAliveDeceasedDefaults,
+  applyUniqueLexisNexisSectionDefault,
   buildDatasetKey,
   buildTopicKey,
   getCanonicalSelectedKeys,

@@ -3,6 +3,7 @@ import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { Nudge } from '@app-builder/components/Nudge';
 import { Page } from '@app-builder/components/Page';
+import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
 import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration/Actions/CreateDraft';
 import { ScenarioDescriptionEditable, ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
@@ -25,13 +26,12 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, HiddenInputs, Typo } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, HiddenInputs, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -165,11 +165,11 @@ function ScenarioHome() {
             ) : null}
           </div>
         </section>
-        <section className="flex flex-col gap-sm">
+        <section className={cn('flex flex-col', pageLayoutGutter.gap)}>
           <Typo variant="title2" className="text-grey-primary">
             {t('scenarios:home.execution')}
           </Typo>
-          <div className="grid grid-cols-2 gap-sm">
+          <div className={cn('grid grid-cols-2', pageLayoutGutter.gap)}>
             <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
             <BatchSection
               scenarioId={currentScenario.id}
@@ -211,7 +211,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
     <article className="flex flex-col">
       <TabHeader title={t('scenarios:home.testrun')} spinner={isExecutionOngoing} />
       <section
-        className={clsx(
+        className={cn(
           'bg-surface-card border-grey-border relative flex flex-col gap-md rounded-lg border p-md rounded-tl-none flex-1',
           isExecutionOngoing && 'border-purple-primary',
         )}
@@ -286,7 +286,7 @@ function RealTimeSection({
             />
           </span>
           <span
-            className={clsx('text-grey-primary text-s inline-flex items-center font-semibold', {
+            className={cn('text-grey-primary text-s inline-flex items-center font-semibold', {
               'whitespace-pre': isLive,
             })}
           >
@@ -314,7 +314,7 @@ function RealTimeSection({
 
 function TabHeader({ title, spinner }: { title: string; spinner: boolean }) {
   return (
-    <div className="flex items-center gap-md border-l border-t border-r bg-surface-card border-grey-border rounded-t-md py-xs px-xs w-fit">
+    <div className="flex items-center gap-md border-l border-t border-r bg-surface-card border-grey-border rounded-t-md py-xs px-sm w-fit">
       <Typo variant="subtitle1" className="text-grey-secondary">
         {title}
       </Typo>
@@ -364,7 +364,7 @@ function BatchSection({
     <article className="flex flex-col">
       <TabHeader title={t('scenarios:home.execution.batch')} spinner={isExecutionOngoing} />
       <div
-        className={clsx(
+        className={cn(
           'bg-surface-card border-grey-border relative flex flex-1 flex-col gap-md rounded-lg border p-md rounded-tl-none',
           isExecutionOngoing && 'border-purple-primary',
         )}

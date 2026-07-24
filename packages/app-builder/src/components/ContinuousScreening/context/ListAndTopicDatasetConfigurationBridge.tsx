@@ -1,10 +1,11 @@
 import {
+  applyUniqueLexisNexisSectionDefault,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningProviders } from '@app-builder/models/screening';
-import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
+import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { Trans } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -41,7 +42,7 @@ export function ListAndTopicDatasetConfigurationBridge({
       </div>
     ))
     .otherwise(({ data }) => (
-      <ListAndTopicDatasetConfigurationBridgeInner provider={data.provider}>
+      <ListAndTopicDatasetConfigurationBridgeInner provider={data.provider} filters={data.filters}>
         {children}
       </ListAndTopicDatasetConfigurationBridgeInner>
     ));
@@ -49,9 +50,11 @@ export function ListAndTopicDatasetConfigurationBridge({
 
 function ListAndTopicDatasetConfigurationBridgeInner({
   provider,
+  filters,
   children,
 }: {
   provider: ScreeningProviders;
+  filters: ListConfigFilters;
   children: ReactNode;
 }) {
   const wizard = ContinuousScreeningConfigurationStepper.useSharp();
@@ -70,10 +73,12 @@ function ListAndTopicDatasetConfigurationBridgeInner({
   }, [listSharp, wizardMode]);
 
   useEffect(() => {
-    const currentKey = getDatasetsMapKey(listSharp.value.datasets);
-    if (currentKey === datasetsMapKey) return;
-
     const nextDatasets = { ...datasetsMap };
+    applyUniqueLexisNexisSectionDefault(nextDatasets, filters, provider);
+    const expectedKey = getDatasetsMapKey(nextDatasets);
+    const currentKey = getDatasetsMapKey(listSharp.value.datasets);
+    if (currentKey === expectedKey) return;
+
     listSharp.update((state) => {
       for (const key of Object.keys(state.datasets)) {
         delete state.datasets[key];
@@ -82,7 +87,7 @@ function ListAndTopicDatasetConfigurationBridgeInner({
         state.datasets[key] = !!nextDatasets[key];
       }
     });
-  }, [listSharp, datasetsMap, datasetsMapKey]);
+  }, [listSharp, datasetsMap, datasetsMapKey, filters, provider]);
 
   return (
     <ListAndTopicDatasetConfiguration.Provider value={listSharp}>{children}</ListAndTopicDatasetConfiguration.Provider>
