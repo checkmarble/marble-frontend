@@ -11,8 +11,8 @@ import {
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
+import { type GraphData } from '../../routes/_app/_builder/test-graph/data';
 import { type CustomerGraphContextValue, type GraphAttribute, useCustomerGraph } from './CustomerGraphContext';
-import { type GraphData } from './data';
 import { createGraphTypeHelpers, type GraphTypeHelpers, type NonPersonSemantic } from './data-model-map';
 import {
   BackEdge,

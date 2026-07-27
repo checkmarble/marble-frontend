@@ -1,5 +1,5 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
-import { type EdgeData, type GraphData, type NodeData } from './data';
+import { type EdgeData, type GraphData, type NodeData } from '../../routes/_app/_builder/test-graph/data';
 import { type GraphTypeHelpers, type NonPersonSemantic } from './data-model-map';
 
 /** Composite key: `${type}:${id}` e.g. "users:user_0001" */

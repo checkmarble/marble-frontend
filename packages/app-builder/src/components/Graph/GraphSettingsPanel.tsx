@@ -1,9 +1,7 @@
-import { ClientTagsList } from '@app-builder/components/Annotations/ClientTagsList';
+import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientObjectTagList';
 import { ScoreDetailPanel } from '@app-builder/components/ClientDetail/ScoreDetailPanel';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
-import { type DataModelObjectValue } from '@app-builder/models/data-model';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
-import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
@@ -19,13 +17,12 @@ import {
   type GraphAttribute,
   useCustomerGraph,
 } from './CustomerGraphContext';
+import { resolveTitle } from './resolve-object-title';
 
 const EVENT_FILTER_LABELS = {
   all: 'All events',
   none: 'No events',
 } as const;
-
-const TITLE_FIELD_CANDIDATES = ['name', 'full_name', 'company_name', 'display_name', 'label'] as const;
 
 function attributesLabel(attributes: GraphAttribute[]): string {
   if (attributes.length === 0) return 'Attributes: none';
@@ -37,16 +34,6 @@ function attributesLabel(attributes: GraphAttribute[]): string {
 
 function asBoolean(value: CheckedState): boolean {
   return value === true;
-}
-
-function resolveTitle(data: Record<string, DataModelObjectValue>, objectId: string): string {
-  for (const key of TITLE_FIELD_CANDIDATES) {
-    const value = data[key];
-    if (typeof value === 'string' && value.trim()) return value;
-  }
-  const objectIdValue = data['object_id'];
-  if (typeof objectIdValue === 'string' && objectIdValue.trim()) return objectIdValue;
-  return objectId;
 }
 
 function DetailCardSkeleton() {
@@ -71,15 +58,6 @@ function DetailCardSkeleton() {
 
 function RiskBadgeSkeleton() {
   return <div className="bg-grey-border h-5 w-24 animate-pulse rounded-full" />;
-}
-
-function TagsSkeleton() {
-  return (
-    <div className="flex flex-wrap gap-xs">
-      <div className="bg-grey-border h-5 w-16 animate-pulse rounded-full" />
-      <div className="bg-grey-border h-5 w-14 animate-pulse rounded-full" />
-    </div>
-  );
 }
 
 function QueryError({ onRetry }: { onRetry: () => void }) {
@@ -159,7 +137,6 @@ export function GraphSettingsPanel() {
   const detailsQuery = useObjectDetailsQuery(objectType, objectId, hasSelection);
   const scoreQuery = useScoreLatestQuery(objectType, objectId);
   const settingsQuery = useScoringSettingsQuery();
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
 
   return (
     <aside className="border-grey-border bg-grey-white flex w-full shrink-0 flex-col gap-md rounded-lg border p-md lg:w-80">
@@ -266,27 +243,7 @@ export function GraphSettingsPanel() {
                       : null}
                   </div>
 
-                  {showTags
-                    ? match(annotationsQuery)
-                        .with({ isError: true }, () => <QueryError onRetry={() => annotationsQuery.refetch()} />)
-                        .with({ isPending: true }, () => <TagsSkeleton />)
-                        .with({ isSuccess: true }, ({ data }) => {
-                          const tagIds = data.annotations.tags.map((annotation) => annotation.payload.tag_id);
-                          return (
-                            <div className="flex flex-wrap items-center gap-xs">
-                              <ClientTagsList tagsIds={tagIds} />
-                              <button
-                                type="button"
-                                className="border-purple-border text-purple-primary flex size-6 items-center justify-center rounded-full border"
-                                aria-label="Add tag"
-                              >
-                                <Icon icon="plus" className="size-3" />
-                              </button>
-                            </div>
-                          );
-                        })
-                        .exhaustive()
-                    : null}
+                  {showTags ? <ClientObjectTagList tableName={objectType} objectId={objectId} /> : null}
 
                   <DataFields
                     table={objectType}

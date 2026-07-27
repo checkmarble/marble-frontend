@@ -1,6 +1,7 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
@@ -15,11 +16,11 @@ import {
   type NodeProps,
   Position,
 } from '@xyflow/react';
-import { useTranslation } from 'react-i18next';
 import { cn, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
 import { type NonPersonSemantic } from './data-model-map';
+import { resolveTitle } from './resolve-object-title';
 
 export type PersonRfData = {
   label: string;
@@ -155,9 +156,15 @@ function entityIcon(semanticType: NonPersonSemantic): IconName {
 }
 
 export function PersonNode({ data }: NodeProps<PersonRfNode>) {
-  const { t } = useTranslation(['user-scoring']);
-  const { showRiskScore, showTags } = useCustomerGraph();
+  const { showRiskScore, showTags, selectedObject } = useCustomerGraph();
   const { orgObjectTags } = useOrganizationObjectTags();
+
+  const isSelected = selectedObject?.objectType === data.objectType && selectedObject?.objectId === data.objectId;
+  const isHighlighted = data.isStart || isSelected;
+
+  const detailsQuery = useObjectDetailsQuery(data.objectType, data.objectId);
+  const displayLabel =
+    detailsQuery.data?.data != null ? resolveTitle(detailsQuery.data.data, data.objectId) : data.label;
 
   const scoreQuery = useScoreLatestQuery(data.objectType, data.objectId);
   const settingsQuery = useScoringSettingsQuery();
@@ -170,7 +177,8 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
     score && maxRiskLevel ? (SCORING_LEVELS_COLORS[maxRiskLevel][score.risk_level] ?? undefined) : undefined;
   const scoreLabel =
     score && maxRiskLevel
-      ? t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][score.risk_level] ?? score.risk_level.toString())
+      ? // ? t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][score.risk_level] ?? score.risk_level.toString())
+        score.risk_level.toString()
       : undefined;
 
   const tagIds = annotationsQuery.data?.annotations.tags.map((annotation) => annotation.payload.tag_id) ?? [];
@@ -181,36 +189,39 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
   return (
     <div
       className={cn(
-        'relative flex w-fit flex-col gap-xs rounded-lg px-md py-sm text-sm font-medium text-purple-primary shadow-sm bg-purple-background-light border-purple-border',
-        data.isStart && 'bg-purple-primary ring-2 ring-purple-primary ring-offset-2 text-white',
+        'relative flex w-fit flex-col gap-xs rounded-lg px-md py-sm text-sm font-medium text-purple-primary border shadow-sm bg-purple-border border-purple-disabled cursor-pointer',
+        isHighlighted && 'bg-purple-primary ring-2 ring-offset-2 text-white border-white',
+        data.isStart && 'ring-purple-primary',
       )}
     >
       <FourHandles />
-      <div
-        className={cn(
-          'absolute left-1/2 -top-2 -translate-x-1/2 -translate-y-1/2 rounded-full shrink-0 bg-purple-background-light border-purple-border p-xs',
-          data.isStart && 'bg-purple-primary border-purple-primary',
-        )}
-      >
-        <Icon
-          icon={subEntityIcon(data.subEntity)}
-          className={cn('size-4 text-purple-primary', data.isStart && 'text-white')}
-        />
-      </div>
-      <div className="flex items-center gap-xs">
-        <span>{data.label}</span>
+      <div className="flex items-center absolute left-1/2 -top-2 -translate-x-1/2 -translate-y-1/2 ">
+        <div
+          className={cn(
+            'rounded-full shrink-0 border bg-purple-border border-purple-disabled p-xs',
+            isHighlighted && 'bg-purple-primary border-white',
+          )}
+        >
+          <Icon
+            icon={subEntityIcon(data.subEntity)}
+            className={cn('size-4 text-purple-primary', isHighlighted && 'text-white')}
+          />
+        </div>
         {showRiskScore && scoreLabel && scoreColor ? (
           <span
-            className="rounded-full border px-xs py-px text-[10px] font-normal"
+            className="rounded-full border p-px text-xs font-normal h-7 min-w-7 grid place-items-center text-white border-white -ml-1"
             style={{
-              color: scoreColor,
-              borderColor: scoreColor,
-              backgroundColor: `${scoreColor}20`,
+              backgroundColor: scoreColor,
             }}
           >
             {scoreLabel}
           </span>
         ) : null}
+      </div>
+      <div className="flex items-center gap-xs">
+        <span className="max-w-48 truncate" title={displayLabel}>
+          {displayLabel}
+        </span>
       </div>
       {showTags && tags.length > 0 ? (
         <div className="flex flex-wrap gap-xs">
@@ -218,9 +229,10 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
             <Tag
               key={tag.id}
               size="small"
-              color={data.isStart ? 'white' : 'purple'}
-              className={data.isStart ? 'bg-grey-white' : undefined}
+              color={isHighlighted ? 'white' : 'purple'}
+              className={isHighlighted ? 'bg-grey-white' : undefined}
             >
+              <div className="size-3 shrink-0 rounded-full me-xs" style={{ backgroundColor: tag.color }} />
               {tag.name}
             </Tag>
           ))}
@@ -252,7 +264,7 @@ export function TypeBundleNode({ data }: NodeProps<TypeBundleRfNode>) {
       <div className="min-w-0">
         <div className="font-medium">{data.label}</div>
       </div>
-      <span className="bg-purple-primary shrink-0 rounded-sm px-xs py-px text-[10px] font-semibold text-white">
+      <span className="bg-purple-primary shrink-0 rounded-sm p-px text-xs leading-tight font-semibold text-white">
         {data.count}
       </span>
       <button
@@ -279,7 +291,7 @@ export function EntityNode({ data }: NodeProps<EntityRfNode>) {
       <FourHandles />
       <Icon icon={entityIcon(data.semanticType)} className="size-3.5 shrink-0 text-grey-secondary" />
       <div className="min-w-0">
-        <div className="text-grey-secondary text-[10px] leading-none">{data.typeLabel}</div>
+        <div className="text-grey-secondary text-xs leading-none">{data.typeLabel}</div>
         <div className="truncate font-medium">{data.label}</div>
       </div>
       {data.canCollapse && data.groupId ? (
@@ -306,7 +318,7 @@ export function PivotNode({ data }: NodeProps<PivotRfNode>) {
       <FourHandles />
       <Icon icon="tip" className="size-3.5 shrink-0" />
       <div className="min-w-0">
-        <div className="text-[10px] leading-none opacity-70">{data.rawType}</div>
+        <div className="text-xs leading-none opacity-70">{data.rawType}</div>
         <div className="truncate font-medium">{data.label}</div>
       </div>
     </div>
