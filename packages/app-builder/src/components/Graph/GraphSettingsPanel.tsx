@@ -1,12 +1,14 @@
 import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientObjectTagList';
+import { ClientComments } from '@app-builder/components/ClientDetail/ClientComments';
 import { ScoreDetailPanel } from '@app-builder/components/ClientDetail/ScoreDetailPanel';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
+import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import { type ScoringScore } from 'marble-api';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 import { Button, Checkbox, type CheckedState, MenuCommand, Switch } from 'ui-design-system';
@@ -133,13 +135,18 @@ export function GraphSettingsPanel() {
   const objectType = selectedObject?.objectType ?? '';
   const objectId = selectedObject?.objectId ?? '';
   const hasSelection = !!selectedObject;
+  const asideRef = useRef<HTMLElement>(null);
 
   const detailsQuery = useObjectDetailsQuery(objectType, objectId, hasSelection);
   const scoreQuery = useScoreLatestQuery(objectType, objectId);
   const settingsQuery = useScoringSettingsQuery();
+  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
 
   return (
-    <aside className="border-grey-border bg-grey-white flex w-full shrink-0 flex-col gap-md rounded-lg border p-md lg:w-80">
+    <aside
+      ref={asideRef}
+      className="border-grey-border bg-grey-white flex min-h-0 flex-col gap-md overflow-y-auto rounded-lg border p-md h-fit min-w-md"
+    >
       <div className="flex flex-wrap items-center gap-md">
         <label htmlFor="filter-persons" className="flex cursor-pointer items-center gap-sm text-sm">
           <Checkbox
@@ -208,57 +215,60 @@ export function GraphSettingsPanel() {
 
       <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-md border p-md">
         {hasSelection ? (
-          match(detailsQuery)
-            .with({ isError: true }, () => <QueryError onRetry={() => detailsQuery.refetch()} />)
-            .with({ isPending: true }, () => <DetailCardSkeleton />)
-            .with({ isSuccess: true }, ({ data: objectDetails }) => {
-              const title = resolveTitle(objectDetails.data, objectId);
+          <>
+            {match(detailsQuery)
+              .with({ isError: true }, () => <QueryError onRetry={() => detailsQuery.refetch()} />)
+              .with({ isPending: true }, () => <DetailCardSkeleton />)
+              .with({ isSuccess: true }, ({ data: objectDetails }) => {
+                const title = resolveTitle(objectDetails.data, objectId);
 
-              return (
-                <>
-                  <div className="flex flex-wrap items-center gap-sm">
-                    <span className="text-purple-primary text-sm font-semibold">{title}</span>
-                    {showRiskScore
-                      ? match({ scoreQuery, settingsQuery })
-                          .with({ scoreQuery: { isError: true } }, () => null)
-                          .with(
-                            P.union({ scoreQuery: { isPending: true } }, { settingsQuery: { isPending: true } }),
-                            () => <RiskBadgeSkeleton />,
-                          )
-                          .with(
-                            {
-                              scoreQuery: { isSuccess: true, data: { score: P.nonNullable } },
-                              settingsQuery: { isSuccess: true, data: { settings: P.nonNullable } },
-                            },
-                            ({
-                              scoreQuery: {
-                                data: { score },
+                return (
+                  <>
+                    <div className="flex flex-wrap items-center gap-sm">
+                      <span className="text-purple-primary text-sm font-semibold">{title}</span>
+                      {showRiskScore
+                        ? match({ scoreQuery, settingsQuery })
+                            .with({ scoreQuery: { isError: true } }, () => null)
+                            .with(
+                              P.union({ scoreQuery: { isPending: true } }, { settingsQuery: { isPending: true } }),
+                              () => <RiskBadgeSkeleton />,
+                            )
+                            .with(
+                              {
+                                scoreQuery: { isSuccess: true, data: { score: P.nonNullable } },
+                                settingsQuery: { isSuccess: true, data: { settings: P.nonNullable } },
                               },
-                              settingsQuery: {
-                                data: { settings },
-                              },
-                            }) => <RiskBadge objectType={objectType} score={score} scoringSettings={settings} />,
-                          )
-                          .otherwise(() => null)
-                      : null}
-                  </div>
+                              ({
+                                scoreQuery: {
+                                  data: { score },
+                                },
+                                settingsQuery: {
+                                  data: { settings },
+                                },
+                              }) => <RiskBadge objectType={objectType} score={score} scoringSettings={settings} />,
+                            )
+                            .otherwise(() => null)
+                        : null}
+                    </div>
 
-                  {showTags ? <ClientObjectTagList tableName={objectType} objectId={objectId} /> : null}
+                    {showTags ? <ClientObjectTagList tableName={objectType} objectId={objectId} /> : null}
 
-                  <DataFields
-                    table={objectType}
-                    object={objectDetails}
-                    options={{ hideLinks: true, maxVisibleFields: 6, displayExpandButton: true }}
-                  />
-
-                  <textarea
-                    className="border-grey-border bg-grey-white text-grey-primary placeholder:text-grey-placeholder min-h-16 w-full resize-none rounded-md border px-sm py-xs text-xs outline-none"
-                    placeholder="Write comment..."
-                  />
-                </>
-              );
-            })
-            .exhaustive()
+                    <DataFields
+                      table={objectType}
+                      object={objectDetails}
+                      options={{ hideLinks: true, maxVisibleFields: 6, displayExpandButton: true }}
+                    />
+                  </>
+                );
+              })
+              .exhaustive()}
+            <ClientComments
+              objectType={objectType}
+              objectId={objectId}
+              annotationsQuery={annotationsQuery}
+              root={asideRef}
+            />
+          </>
         ) : (
           <p className="text-grey-secondary text-xs">Select a node to see details.</p>
         )}

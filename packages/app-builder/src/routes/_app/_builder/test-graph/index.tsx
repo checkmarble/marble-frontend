@@ -67,16 +67,14 @@ function RouteComponent() {
           </Page.Header>
           <Page.Container className="min-h-0">
             <Page.Content className="min-h-0 flex-1" width="fluid">
-              <div className="flex min-h-0 flex-1 flex-col gap-md lg:flex-row">
+              <Card className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row overflow-hidden p-sm">
                 <GraphSettingsPanel />
-                <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-sm">
-                  <ReactFlowProvider>
-                    <div className="min-h-0 flex-1">
-                      <GraphImpl data={data} dataModel={dataModel} maxExplorationHops={maxExplorationHops} />
-                    </div>
-                  </ReactFlowProvider>
-                </Card>
-              </div>
+                <ReactFlowProvider>
+                  <div className="min-h-0 flex-1">
+                    <GraphImpl data={data} dataModel={dataModel} maxExplorationHops={maxExplorationHops} />
+                  </div>
+                </ReactFlowProvider>
+              </Card>
             </Page.Content>
           </Page.Container>
         </Page.Main>

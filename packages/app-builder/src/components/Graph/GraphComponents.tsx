@@ -16,7 +16,7 @@ import {
   type NodeProps,
   Position,
 } from '@xyflow/react';
-import { cn, Tag } from 'ui-design-system';
+import { cn, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
 import { type NonPersonSemantic } from './data-model-map';
@@ -185,59 +185,88 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
   const tags = tagIds
     .map((tagId) => orgObjectTags.find((tag) => tag.id === tagId))
     .filter((tag): tag is NonNullable<typeof tag> => tag != null);
+  const hasTags = showTags && tags.length > 0;
+
+  const namePillClassName = cn(
+    'rounded-full border bg-purple-border border-purple-disabled px-md py-sm text-sm font-medium text-purple-primary shadow-sm',
+    isHighlighted && 'bg-purple-primary border-white text-white',
+  );
+
+  const tagItems = tags.map((tag) => (
+    <Tag key={tag.id} size="small" color="purple">
+      <div className="size-3 shrink-0 rounded-full me-xs" style={{ backgroundColor: tag.color }} />
+      {tag.name}
+    </Tag>
+  ));
+
+  const badges = (
+    <div className="absolute left-1/2 -top-1 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center">
+      <div
+        className={cn(
+          'rounded-full shrink-0 border bg-purple-border border-purple-disabled p-xs',
+          isHighlighted && 'bg-purple-primary border-white',
+        )}
+      >
+        <Icon
+          icon={subEntityIcon(data.subEntity)}
+          className={cn('size-4 text-purple-primary', isHighlighted && 'text-white')}
+        />
+      </div>
+      {showRiskScore && scoreLabel && scoreColor ? (
+        <span
+          className="rounded-full border p-px text-xs font-normal h-7 min-w-7 grid place-items-center text-white border-white -ml-1"
+          style={{
+            backgroundColor: scoreColor,
+          }}
+        >
+          {scoreLabel}
+        </span>
+      ) : null}
+    </div>
+  );
 
   return (
-    <div
-      className={cn(
-        'relative flex w-fit flex-col gap-xs rounded-lg px-md py-sm text-sm font-medium text-purple-primary border shadow-sm bg-purple-border border-purple-disabled cursor-pointer',
-        isHighlighted && 'bg-purple-primary ring-2 ring-offset-2 text-white border-white',
-        data.isStart && 'ring-purple-primary',
-      )}
-    >
+    <div className="relative flex w-fit cursor-pointer flex-col items-center pt-md">
       <FourHandles />
-      <div className="flex items-center absolute left-1/2 -top-2 -translate-x-1/2 -translate-y-1/2 ">
-        <div
-          className={cn(
-            'rounded-full shrink-0 border bg-purple-border border-purple-disabled p-xs',
-            isHighlighted && 'bg-purple-primary border-white',
-          )}
-        >
-          <Icon
-            icon={subEntityIcon(data.subEntity)}
-            className={cn('size-4 text-purple-primary', isHighlighted && 'text-white')}
-          />
-        </div>
-        {showRiskScore && scoreLabel && scoreColor ? (
-          <span
-            className="rounded-full border p-px text-xs font-normal h-7 min-w-7 grid place-items-center text-white border-white -ml-1"
-            style={{
-              backgroundColor: scoreColor,
-            }}
+      {hasTags ? (
+        <div className="relative w-48 min-w-44">
+          <div
+            className={cn(
+              'absolute left-1/2 top-0 z-10 max-w-full -translate-x-1/2 -translate-y-1/2',
+              namePillClassName,
+            )}
           >
-            {scoreLabel}
-          </span>
-        ) : null}
-      </div>
-      <div className="flex items-center gap-xs">
-        <span className="max-w-48 truncate" title={displayLabel}>
-          {displayLabel}
-        </span>
-      </div>
-      {showTags && tags.length > 0 ? (
-        <div className="flex flex-wrap gap-xs">
-          {tags.map((tag) => (
-            <Tag
-              key={tag.id}
-              size="small"
-              color={isHighlighted ? 'white' : 'purple'}
-              className={isHighlighted ? 'bg-grey-white' : undefined}
-            >
-              <div className="size-3 shrink-0 rounded-full me-xs" style={{ backgroundColor: tag.color }} />
-              {tag.name}
-            </Tag>
-          ))}
+            {badges}
+            <span className="block truncate" title={displayLabel}>
+              {displayLabel}
+            </span>
+          </div>
+          <div className="nodrag nopan border-grey-border bg-grey-white rounded-lg border px-sm pt-lg pb-sm shadow-sm">
+            <ExpandableGroupTagLine
+              items={tagItems}
+              classname="gap-xs"
+              overflowBehavior="popover"
+              moreButton={(overflow, onExpand) => (
+                <Tag
+                  color="purple"
+                  size="small"
+                  className="nodrag nopan cursor-pointer shrink-0 transition-colors hover:bg-purple-primary/20"
+                  onClick={onExpand}
+                >
+                  +{overflow}
+                </Tag>
+              )}
+            />
+          </div>
         </div>
-      ) : null}
+      ) : (
+        <div className={cn('relative', namePillClassName)}>
+          {badges}
+          <span className="block max-w-48 truncate" title={displayLabel}>
+            {displayLabel}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -264,7 +293,7 @@ export function TypeBundleNode({ data }: NodeProps<TypeBundleRfNode>) {
       <div className="min-w-0">
         <div className="font-medium">{data.label}</div>
       </div>
-      <span className="bg-purple-primary shrink-0 rounded-sm p-px text-xs leading-tight font-semibold text-white">
+      <span className="bg-purple-primary shrink-0 rounded-sm px-1 py-px text-xs leading-tight font-semibold text-white">
         {data.count}
       </span>
       <button
