@@ -95,7 +95,7 @@ export function ScoreDetailPanel({
           <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
             <div className="text-s font-medium text-grey-primary flex items-center justify-between">
               <Typo variant="subtitle1">{t('client360:client_detail.score_panel.score_scale')}</Typo>
-              <Tag>{scoreValue}</Tag>
+              {scoreValue !== undefined && <Tag>{scoreValue}</Tag>}
             </div>
             <ScoreScale
               maxRiskLevel={maxRiskLevel}
@@ -251,7 +251,7 @@ function MatchedRuleCard({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-xs">
-          {modifier ? (
+          {modifier !== null ? (
             <Tag color="purple" className="flex items-center gap-xs">
               <span>{t('client360:client_detail.score_panel.score_modifier')}</span>
               <span>
