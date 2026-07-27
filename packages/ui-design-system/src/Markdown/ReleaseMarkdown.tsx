@@ -86,5 +86,12 @@ interface ReleaseMarkdownProps {
 
 export function ReleaseMarkdown({ children }: ReleaseMarkdownProps) {
   const processedMarkdown = preprocessGitHubCallouts(children);
-  return <Markdown components={releaseMarkdownComponents}>{processedMarkdown}</Markdown>;
+  return (
+    // Use `ltr` to force the content to be align at the left, even in arabic language.
+    // text-left is not enough because the list point is still on the right side in rtl languages.
+    // The release content is always in english
+    <div dir="ltr">
+      <Markdown components={releaseMarkdownComponents}>{processedMarkdown}</Markdown>
+    </div>
+  );
 }
