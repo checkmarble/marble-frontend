@@ -46,6 +46,7 @@
   "client_detail.score_panel.score_scale": "Échelle de score",
   "client_detail.score_panel.source_override": "Remplacé",
   "client_detail.score_panel.title": "Score de risque",
+  "client_detail.score_panel.value_label": "Valeur évaluée : {{value}}",
   "client_detail.search_form.search_button": "Rechercher",
   "client_detail.search_form.search_by": "Rechercher par {{name}}",
   "client_detail.search_form.table_not_ready": "Cette table n'est pas encore prête pour la recherche",

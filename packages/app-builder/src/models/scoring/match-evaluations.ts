@@ -129,6 +129,33 @@ function findMatchedBranchIndex(
   return null;
 }
 
+/** Applied score modifier for a matched rule (evaluation return, else branch impact). */
+export function getMatchedRuleModifier(matched: MatchedScoreRule): number | null {
+  return matched.appliedModifier ?? (matched.matchedBranchIndex !== null ? (matched.impact?.modifier ?? null) : null);
+}
+
+/** Risk-level floor from the matched branch impact, when a branch matched. */
+export function getMatchedRuleFloor(matched: MatchedScoreRule): number | undefined {
+  return matched.matchedBranchIndex !== null ? matched.impact?.floor : undefined;
+}
+
+/** Sum modifiers and take the max floor across matched rules. */
+export function computeScoreFromMatchedRules(rules: MatchedScoreRule[]): {
+  score: number;
+  floor: number | undefined;
+} {
+  let score = 0;
+  let floor: number | undefined;
+  for (const rule of rules) {
+    score += getMatchedRuleModifier(rule) ?? 0;
+    const ruleFloor = getMatchedRuleFloor(rule);
+    if (ruleFloor !== undefined) {
+      floor = floor === undefined ? ruleFloor : Math.max(floor, ruleFloor);
+    }
+  }
+  return { score, floor };
+}
+
 /**
  * Pair score evaluations with ruleset rules by array order.
  * Fails closed on length or Switch-structure mismatch (no partial/incorrect match).

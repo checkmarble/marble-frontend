@@ -1,8 +1,12 @@
+import { formatReturnValue } from '@app-builder/components/AstBuilder/viewing/helpers';
 import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { SwitchNodeView } from '@app-builder/components/UserScoring/SwitchNode/SwitchNodeView';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
+  computeScoreFromMatchedRules,
+  getMatchedRuleFloor,
+  getMatchedRuleModifier,
   isMaxRiskLevelInRange,
   type MatchedScoreRule,
   matchScoreEvaluationsToRules,
@@ -38,6 +42,7 @@ export function ScoreDetailPanel({
 }: ScoreDetailPanelProps) {
   const { t } = useTranslation(['client360', 'user-scoring']);
   const formatDateTime = useFormatDateTime();
+  const dataModel = useDataModel();
   const rulesetQuery = useGetScoringRulesetForScoreQuery(objectType, activeScore.ruleset_id);
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
@@ -46,6 +51,16 @@ export function ScoreDetailPanel({
   const scoreLabel = t(
     SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString(),
   );
+
+  const scoreValue =
+    activeScore.evaluations && rulesetQuery.data
+      ? match(
+          matchScoreEvaluationsToRules(activeScore.evaluations, rulesetQuery.data.ruleset.rules, objectType, dataModel),
+        )
+          .with({ ok: true }, ({ rules }) => computeScoreFromMatchedRules(rules).score)
+          .with({ ok: false }, () => undefined)
+          .exhaustive()
+      : undefined;
 
   return (
     <Panel.Root open={open} onOpenChange={onOpenChange}>
@@ -78,10 +93,16 @@ export function ScoreDetailPanel({
 
           {/* Score scale */}
           <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
-            <span className="text-s font-medium text-grey-primary">
-              {t('client360:client_detail.score_panel.score_scale')}
-            </span>
-            <ScoreScale maxRiskLevel={maxRiskLevel} currentLevel={activeScore.risk_level} thresholds={thresholds} />
+            <div className="text-s font-medium text-grey-primary flex items-center justify-between">
+              <Typo variant="subtitle1">{t('client360:client_detail.score_panel.score_scale')}</Typo>
+              <Tag>{scoreValue}</Tag>
+            </div>
+            <ScoreScale
+              maxRiskLevel={maxRiskLevel}
+              currentLevel={activeScore.risk_level}
+              thresholds={thresholds}
+              scoreValue={scoreValue}
+            />
           </div>
           {activeScore.source === 'ruleset' && activeScore.evaluations && activeScore.evaluations.length > 0 ? (
             <ScoreEvaluationBreakdown activeScore={activeScore} objectType={objectType} maxRiskLevel={maxRiskLevel} />
@@ -96,9 +117,10 @@ interface ScoreScaleProps {
   maxRiskLevel: 3 | 4 | 5 | 6;
   currentLevel: number;
   thresholds?: number[];
+  scoreValue?: number;
 }
 
-function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps) {
+function ScoreScale({ maxRiskLevel, currentLevel, thresholds, scoreValue }: ScoreScaleProps) {
   const colorMap = SCORING_LEVELS_COLORS[maxRiskLevel];
   const colorEntries = scoringLevelEntries(colorMap);
 
@@ -116,10 +138,10 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             return ((segEnd - segStart) / totalRange) * 100;
           });
           const markerPositions = thresholds.map((v) => ((v - minValue) / totalRange) * 100);
-          // currentLevel is 1-based
-          const segStart = currentLevel <= 1 ? minValue : thresholds[currentLevel - 2]!;
-          const segEnd = currentLevel > thresholds.length ? maxValue : thresholds[currentLevel - 1]!;
-          const markerPct = (((segStart + segEnd) / 2 - minValue) / totalRange) * 100;
+          const markerPct =
+            scoreValue !== undefined
+              ? Math.min(100, Math.max(0, ((scoreValue - minValue) / totalRange) * 100))
+              : undefined;
 
           // Build all labels (0 + thresholds) sorted by position, then stagger when too close
           const allLabels: Array<{ value: string; pct: number; staggered: boolean }> = [];
@@ -160,7 +182,7 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             <div className="absolute inset-y-0 w-px bg-white" style={{ left: `${proportional.zeroLabelPct}%` }} />
           ) : null}
         </div>
-        {proportional ? (
+        {proportional?.markerPct !== undefined ? (
           <div
             className="absolute top-1/2 size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white shadow-sm"
             style={{
@@ -203,12 +225,19 @@ function MatchedRuleCard({
   customLists: CustomList[];
 }) {
   const { t } = useTranslation(['user-scoring', 'client360']);
+  const {
+    t: tFunction,
+    i18n: { language },
+  } = useTranslation(['common', 'scenarios']);
   const dataModel = useDataModel();
-  const { rule, impact, appliedModifier, matchedBranchIndex } = matched;
-  // Switch return_value is the applied score; impact/floor only when branch match succeeded
-  const modifier = appliedModifier ?? (matchedBranchIndex !== null ? (impact?.modifier ?? null) : null);
-  const floor = matchedBranchIndex !== null ? impact?.floor : undefined;
+  const { rule, matchedBranchIndex, evaluation } = matched;
+  const modifier = getMatchedRuleModifier(matched);
+  const floor = getMatchedRuleFloor(matched);
   const floorColors = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : {};
+  const formattedRuleValue = formatReturnValue(evaluation.namedChildren['field']?.returnValue, {
+    t: tFunction,
+    language,
+  });
 
   return (
     <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
@@ -221,26 +250,31 @@ function MatchedRuleCard({
             <Tag color="grey">{rule.riskType}</Tag>
           ) : null}
         </div>
-        {modifier ? (
-          <Tag color="purple" className="flex items-center gap-xs">
-            <span>{t('client360:client_detail.score_panel.score_modifier')}</span>
-            <span>
-              {modifier > 0 ? '+' : ''}
-              {modifier}
-            </span>
-            {floor !== undefined ? (
-              <span className="flex items-center gap-xs">
-                {t('user-scoring:switch.floor_label')}
-                <span className="size-3 rounded-full" style={{ backgroundColor: floorColors[floor] }} />
+        <div className="flex shrink-0 items-center gap-xs">
+          {modifier ? (
+            <Tag color="purple" className="flex items-center gap-xs">
+              <span>{t('client360:client_detail.score_panel.score_modifier')}</span>
+              <span>
+                {modifier > 0 ? '+' : ''}
+                {modifier}
               </span>
-            ) : null}
-          </Tag>
-        ) : (
-          <div>
+              {floor !== undefined ? (
+                <span className="flex items-center gap-xs">
+                  {t('user-scoring:switch.floor_label')}
+                  <span className="size-3 rounded-full" style={{ backgroundColor: floorColors[floor] }} />
+                </span>
+              ) : null}
+            </Tag>
+          ) : (
             <Tag color="grey">{t('client360:client_detail.score_panel.no_modification')}</Tag>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+      {formattedRuleValue ? (
+        <Tag color="white" size="medium" className="w-fit">
+          {t('client360:client_detail.score_panel.value_label', { value: formattedRuleValue })}
+        </Tag>
+      ) : null}
       <SwitchNodeView
         node={rule.ast}
         dataModel={dataModel}
