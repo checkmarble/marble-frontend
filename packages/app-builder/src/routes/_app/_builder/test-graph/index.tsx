@@ -7,10 +7,10 @@ import { createServerFn } from '@tanstack/react-start';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useState } from 'react';
 import { Card, cn } from 'ui-design-system';
-import { CustomerGraphProvider } from './CustomerGraphContext';
+import { CustomerGraphProvider } from '../../../../components/Graph/CustomerGraphContext';
+import { GraphImpl } from '../../../../components/Graph/GraphImpl';
+import { GraphSettingsPanel } from '../../../../components/Graph/GraphSettingsPanel';
 import { graphData } from './data';
-import { GraphImpl } from './GraphImpl';
-import { GraphSettingsPanel } from './GraphSettingsPanel';
 
 const HOP_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 
