@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Card, cn } from 'ui-design-system';
 import { CustomerGraphProvider } from '../../../../components/Graph/CustomerGraphContext';
 import { GraphImpl } from '../../../../components/Graph/GraphImpl';
+import { GraphSelectionToolbar } from '../../../../components/Graph/GraphSelectionToolbar';
 import { GraphSettingsPanel } from '../../../../components/Graph/GraphSettingsPanel';
 import { graphData } from './data';
 
@@ -70,7 +71,8 @@ function RouteComponent() {
               <Card className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row overflow-hidden p-sm">
                 <GraphSettingsPanel />
                 <ReactFlowProvider>
-                  <div className="min-h-0 flex-1">
+                  <div className="relative min-h-0 flex-1">
+                    <GraphSelectionToolbar />
                     <GraphImpl data={data} dataModel={dataModel} maxExplorationHops={maxExplorationHops} />
                   </div>
                 </ReactFlowProvider>

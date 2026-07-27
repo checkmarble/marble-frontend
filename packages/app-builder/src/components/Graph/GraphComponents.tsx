@@ -16,7 +16,7 @@ import {
   type NodeProps,
   Position,
 } from '@xyflow/react';
-import { cn, ExpandableGroupTagLine, Tag } from 'ui-design-system';
+import { Checkbox, cn, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
 import { type NonPersonSemantic } from './data-model-map';
@@ -156,11 +156,14 @@ function entityIcon(semanticType: NonPersonSemantic): IconName {
 }
 
 export function PersonNode({ data }: NodeProps<PersonRfNode>) {
-  const { showRiskScore, showTags, selectedObject } = useCustomerGraph();
+  const { showRiskScore, showTags, selectedObject, selectionMode, toggleCheckedPerson, isPersonChecked } =
+    useCustomerGraph();
   const { orgObjectTags } = useOrganizationObjectTags();
 
+  const personRef = { objectType: data.objectType, objectId: data.objectId };
   const isSelected = selectedObject?.objectType === data.objectType && selectedObject?.objectId === data.objectId;
   const isHighlighted = data.isStart || isSelected;
+  const isChecked = isPersonChecked(personRef);
 
   const detailsQuery = useObjectDetailsQuery(data.objectType, data.objectId);
   const displayLabel =
@@ -225,48 +228,67 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
     </div>
   );
 
+  const nameContent = hasTags ? (
+    <div className="relative w-48 min-w-44">
+      <div
+        className={cn('absolute left-1/2 top-0 z-10 max-w-full -translate-x-1/2 -translate-y-1/2', namePillClassName)}
+      >
+        {badges}
+        <span className="block truncate" title={displayLabel}>
+          {displayLabel}
+        </span>
+      </div>
+      <div className="nodrag nopan border-grey-border bg-grey-white rounded-lg border px-sm pt-lg pb-sm shadow-sm">
+        <ExpandableGroupTagLine
+          items={tagItems}
+          classname="gap-xs"
+          overflowBehavior="popover"
+          moreButton={(overflow, onExpand) => (
+            <Tag
+              color="purple"
+              size="small"
+              className="nodrag nopan cursor-pointer shrink-0 transition-colors hover:bg-purple-primary/20"
+              onClick={onExpand}
+            >
+              +{overflow}
+            </Tag>
+          )}
+        />
+      </div>
+    </div>
+  ) : (
+    <div className={cn('relative', namePillClassName)}>
+      {badges}
+      <span className="block max-w-48 truncate" title={displayLabel}>
+        {displayLabel}
+      </span>
+    </div>
+  );
+
   return (
     <div className="relative flex w-fit cursor-pointer flex-col items-center pt-md">
       <FourHandles />
-      {hasTags ? (
-        <div className="relative w-48 min-w-44">
+      <div className="flex items-center gap-sm">
+        {selectionMode ? (
           <div
-            className={cn(
-              'absolute left-1/2 top-0 z-10 max-w-full -translate-x-1/2 -translate-y-1/2',
-              namePillClassName,
-            )}
+            className="nodrag nopan shrink-0"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
           >
-            {badges}
-            <span className="block truncate" title={displayLabel}>
-              {displayLabel}
-            </span>
-          </div>
-          <div className="nodrag nopan border-grey-border bg-grey-white rounded-lg border px-sm pt-lg pb-sm shadow-sm">
-            <ExpandableGroupTagLine
-              items={tagItems}
-              classname="gap-xs"
-              overflowBehavior="popover"
-              moreButton={(overflow, onExpand) => (
-                <Tag
-                  color="purple"
-                  size="small"
-                  className="nodrag nopan cursor-pointer shrink-0 transition-colors hover:bg-purple-primary/20"
-                  onClick={onExpand}
-                >
-                  +{overflow}
-                </Tag>
-              )}
+            <Checkbox
+              size="small"
+              checked={isChecked}
+              onCheckedChange={() => toggleCheckedPerson(personRef)}
+              aria-label={`Select ${displayLabel}`}
             />
           </div>
-        </div>
-      ) : (
-        <div className={cn('relative', namePillClassName)}>
-          {badges}
-          <span className="block max-w-48 truncate" title={displayLabel}>
-            {displayLabel}
-          </span>
-        </div>
-      )}
+        ) : null}
+        {nameContent}
+      </div>
     </div>
   );
 }

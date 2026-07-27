@@ -18,6 +18,19 @@ export type SelectedGraphObject = {
   objectId: string;
 };
 
+/** Same composite key as graph `nodeKey`: `${objectType}:${objectId}` */
+export function personBulkKey(person: SelectedGraphObject): string {
+  return `${person.objectType}:${person.objectId}`;
+}
+
+export function parsePersonBulkKey(key: string): SelectedGraphObject {
+  const colonIdx = key.indexOf(':');
+  return {
+    objectType: key.slice(0, colonIdx),
+    objectId: key.slice(colonIdx + 1),
+  };
+}
+
 export type CustomerGraphContextValue = {
   // Node type filters
   showPersons: boolean;
@@ -40,9 +53,18 @@ export type CustomerGraphContextValue = {
   showEdgeLabels: boolean;
   setShowEdgeLabels: (value: boolean) => void;
 
-  // Selection (settings panel detail card)
+  // Focus (settings panel detail card)
   selectedObject: SelectedGraphObject | null;
   setSelectedObject: (value: SelectedGraphObject | null) => void;
+
+  // Selection mode + bulk selection (person checkboxes)
+  selectionMode: boolean;
+  enterSelectionMode: () => void;
+  exitSelectionMode: () => void;
+  checkedPersons: Set<string>;
+  toggleCheckedPerson: (person: SelectedGraphObject) => void;
+  isPersonChecked: (person: SelectedGraphObject) => boolean;
+  clearCheckedPersons: () => void;
 
   // Type-bundle expand/collapse
   expandedGroupIds: Set<string>;
@@ -72,11 +94,44 @@ export function CustomerGraphProvider({
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
   const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [checkedPersons, setCheckedPersons] = useState<Set<string>>(() => new Set());
   const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(() => new Set());
 
   const toggleAttribute = useCallback((attribute: GraphAttribute) => {
     setAttributes((prev) => (prev.includes(attribute) ? prev.filter((a) => a !== attribute) : [...prev, attribute]));
   }, []);
+
+  const clearCheckedPersons = useCallback(() => {
+    setCheckedPersons(new Set());
+  }, []);
+
+  const enterSelectionMode = useCallback(() => {
+    setSelectionMode(true);
+  }, []);
+
+  const exitSelectionMode = useCallback(() => {
+    setSelectionMode(false);
+    setCheckedPersons(new Set());
+  }, []);
+
+  const toggleCheckedPerson = useCallback((person: SelectedGraphObject) => {
+    const key = personBulkKey(person);
+    setCheckedPersons((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
+
+  const isPersonChecked = useCallback(
+    (person: SelectedGraphObject) => checkedPersons.has(personBulkKey(person)),
+    [checkedPersons],
+  );
 
   const expandGroup = useCallback((groupId: string) => {
     setExpandedGroupIds((prev) => {
@@ -127,6 +182,13 @@ export function CustomerGraphProvider({
       setShowEdgeLabels,
       selectedObject,
       setSelectedObject,
+      selectionMode,
+      enterSelectionMode,
+      exitSelectionMode,
+      checkedPersons,
+      toggleCheckedPerson,
+      isPersonChecked,
+      clearCheckedPersons,
       expandedGroupIds,
       expandGroup,
       collapseGroup,
@@ -144,6 +206,13 @@ export function CustomerGraphProvider({
       showTags,
       showEdgeLabels,
       selectedObject,
+      selectionMode,
+      enterSelectionMode,
+      exitSelectionMode,
+      checkedPersons,
+      toggleCheckedPerson,
+      isPersonChecked,
+      clearCheckedPersons,
       expandedGroupIds,
       expandGroup,
       collapseGroup,
