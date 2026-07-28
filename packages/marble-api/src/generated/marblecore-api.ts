@@ -924,6 +924,7 @@ export type ScenarioIterationRuleMetadataDto = {
     display_order: number;
     name: string;
     description: string;
+    ai_description: string;
     rule_group: string;
     score_modifier: number;
     created_at: string;

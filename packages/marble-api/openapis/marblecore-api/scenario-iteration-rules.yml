@@ -236,6 +236,8 @@ components:
           type: string
         description:
           type: string
+        ai_description:
+          type: string
         rule_group:
           type: string
         score_modifier:
@@ -249,6 +251,7 @@ components:
         - display_order
         - name
         - description
+        - ai_description
         - rule_group
         - score_modifier
         - created_at

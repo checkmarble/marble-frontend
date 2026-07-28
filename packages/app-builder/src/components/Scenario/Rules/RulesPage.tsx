@@ -178,7 +178,15 @@ export function RulesPage({
                       ) : null}
                       <span>{rule.name}</span>
                     </GridCell>
-                    <GridCell>{rule.description}</GridCell>
+                    <GridCell>
+                      {rule.description ? (
+                        rule.description
+                      ) : rule.type === 'rule' && rule.aiDescription ? (
+                        <p className="border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm whitespace-pre-wrap">
+                          {rule.aiDescription}
+                        </p>
+                      ) : null}
+                    </GridCell>
                     <GridCell>{rule.ruleGroup ? <Tag>{rule.ruleGroup}</Tag> : null}</GridCell>
                     <GridCell>
                       {rule.type === 'rule' ? (
