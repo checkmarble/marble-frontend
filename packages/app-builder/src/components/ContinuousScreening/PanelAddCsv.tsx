@@ -275,7 +275,17 @@ function CsvUploadConfirmStep({
         <Button variant="secondary" onClick={onBack}>
           {t('common:cancel')}
         </Button>
-        <Button variant="primary" onClick={onNext} disabled={!canValidate}>
+        <Button
+          variant="primary"
+          onClick={() =>
+            onNext({
+              place_under_monitoring: String(placeUnderMonitoring),
+              skip_initial_screening: String(skipInitialScreening),
+              ...(placeUnderMonitoring && selectedConfigStableId ? { config_stable_id: selectedConfigStableId } : {}),
+            })
+          }
+          disabled={!canValidate}
+        >
           {t('continuousScreening:configurations.csv.confirm.validate_upload')}
         </Button>
       </div>

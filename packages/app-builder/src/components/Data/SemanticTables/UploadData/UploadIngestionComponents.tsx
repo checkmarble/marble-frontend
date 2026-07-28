@@ -6,7 +6,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -113,9 +113,15 @@ export const ResultModal = ({
   );
 };
 
+/**
+ * Extra form fields a step can contribute to the upload request. Steps own their
+ * own field names, so the parent form stays agnostic about what each step collects.
+ */
+export type UploadFormStepData = Record<string, string | Blob>;
+
 export type UploadFormIntermediateStepProps = {
   file: File;
-  onNext: () => void;
+  onNext: (data?: UploadFormStepData) => void;
   onBack: () => void;
 };
 
@@ -140,6 +146,7 @@ export const UploadForm = ({
     success: true,
   });
   const uploadIngestionData = useUploadIngestionData(objectType);
+  const uploadStepDataRef = useRef<UploadFormStepData>({});
 
   const hasIntermediateSteps = intermediateSteps.length > 0;
   const showIntermediateStep = hasIntermediateSteps && selectedFile !== null && !loading;
@@ -147,6 +154,7 @@ export const UploadForm = ({
   const resetFileSelection = useCallback(() => {
     setSelectedFile(null);
     setStepIndex(0);
+    uploadStepDataRef.current = {};
   }, []);
 
   const computeModalMessage = useCallback(
@@ -178,11 +186,14 @@ export const UploadForm = ({
   );
 
   const ingestFile = useCallback(
-    async (file: File) => {
+    async (file: File, stepData?: UploadFormStepData) => {
       try {
         setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
+        for (const [key, value] of Object.entries(stepData ?? {})) {
+          formData.append(key, value);
+        }
 
         const response = await uploadIngestionData.mutateAsync(formData);
         if (!response.ok) {
@@ -234,13 +245,16 @@ export const UploadForm = ({
     void ingestFile(file);
   };
 
-  const handleStepNext = () => {
+  const handleStepNext = (data?: UploadFormStepData) => {
     if (!selectedFile) return;
+    if (data) {
+      uploadStepDataRef.current = { ...uploadStepDataRef.current, ...data };
+    }
     if (stepIndex < intermediateSteps.length - 1) {
       setStepIndex((index) => index + 1);
       return;
     }
-    void ingestFile(selectedFile);
+    void ingestFile(selectedFile, uploadStepDataRef.current);
   };
 
   const handleStepBack = () => {
