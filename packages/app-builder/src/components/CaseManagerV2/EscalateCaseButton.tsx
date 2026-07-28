@@ -9,7 +9,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Modal, TooltipV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -86,11 +86,9 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
         </TooltipV2.TooltipContent>
       </TooltipV2.Tooltip>
       <Modal.Content>
-        <Modal.Title>Escalate Case</Modal.Title>
-        <div className="flex flex-col gap-xl p-xl">
-          <Callout className="text-balance">
-            <Trans i18nKey="cases:escalate-case.modal.callout" />
-          </Callout>
+        <Modal.Title>{t('cases:escalate-case.modal.title')}</Modal.Title>
+        <div className="px-md text-balance">
+          <Callout>{t('cases:escalate-case.modal.callout')}</Callout>
         </div>
         <form onSubmit={handleSubmit(form)}>
           <Modal.Footer>
