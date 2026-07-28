@@ -237,7 +237,7 @@ function RuleRow({ rule, scenario, editorMode, language, org, onEditRequest }: R
           <GridCell className={cn({ 'grid grid-cols-[1rem_1fr] items-center gap-x-sm': editorMode === 'view' })}>
             {editorMode === 'view' ? (
               <button type="button">
-                <Icon icon="caret-down" className="size-4" />
+                <Icon icon="caret-down" className={cn('size-4 transition-transform', { 'rotate-180': open })} />
               </button>
             ) : null}
             <span>{rule.name}</span>
@@ -346,10 +346,14 @@ const RuleDescription = ({ rule, clamp }: { rule: RuleOrScreening; clamp?: boole
 
   if (rule.type === 'rule' && rule.aiDescription) {
     return (
-      <div className="border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm flex items-start gap-xs">
-        <Icon icon="wand" className="size-4 shrink-0 text-purple-primary" />
-        <p className={cn('whitespace-pre-wrap', { 'line-clamp-2': clamp })}>{rule.aiDescription}</p>
-      </div>
+      <p
+        className={cn('border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm whitespace-pre-wrap', {
+          'line-clamp-2': clamp,
+        })}
+      >
+        <Icon icon="wand" className="inline size-4 align-text-bottom mr-xs text-purple-primary" />
+        {rule.aiDescription}
+      </p>
     );
   }
 
