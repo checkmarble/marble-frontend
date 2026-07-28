@@ -91,9 +91,12 @@ const SearchInput = ({
   return (
     <div className="grid grid-cols-[auto_1fr] gap-sm">
       <span className="grid items-center h-[50px]">{t('screenings:search_input')}</span>
-      <div className="flex flex-wrap gap-sm">
+      <div className="flex min-w-0 flex-wrap gap-sm">
         {searchInputList.map(({ value, type, semanticType }, i) => (
-          <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
+          <div
+            key={i}
+            className="border-grey-border flex min-w-0 items-center gap-sm break-words rounded-sm border p-sm"
+          >
             <DatatypeIcon dataType={DatatypeToPrimitiveType(type)} />
 
             {semanticType === 'date_of_birth' ? (
