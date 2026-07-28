@@ -484,7 +484,6 @@ components:
         - job_date
         - total_items
         - version
-        - object_type
       properties:
         id:
           type: string
@@ -496,8 +495,6 @@ components:
         total_items:
           type: integer
         version:
-          type: string
-        object_type:
           type: string
 
     ContinuousScreeningClientDataIndexingResponseDto:

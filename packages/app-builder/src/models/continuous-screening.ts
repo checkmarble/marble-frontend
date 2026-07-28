@@ -188,7 +188,6 @@ export type ContinuousScreeningClientDataIndexing = {
   jobDate: string;
   totalItems: number;
   version: string;
-  objectType: string;
 };
 
 export type ContinuousScreeningClientDataIndexingResponse = {
@@ -215,7 +214,6 @@ export function adaptContinuousScreeningClientDataIndexing(
     jobDate: dto.job_date,
     totalItems: dto.total_items,
     version: dto.version,
-    objectType: dto.object_type,
   };
 }
 

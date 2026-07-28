@@ -124,7 +124,6 @@
   "observability.client_data_indexing_index_outdated": "Index out of date",
   "observability.client_data_indexing_index_pending": "Indexing pending",
   "observability.client_data_indexing_index_version": "Index version: {{version}}",
-  "observability.client_data_indexing_object_type": "Object type",
   "observability.client_data_indexing_pending": "Pending: {{count}}",
   "observability.client_data_indexing_tooltip": "Client data indexing is the process of indexing client data into the database.",
   "observability.client_data_indexing_version": "Version",

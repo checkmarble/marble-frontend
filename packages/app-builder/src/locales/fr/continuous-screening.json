@@ -124,7 +124,6 @@
   "observability.client_data_indexing_index_outdated": "Index obsolète",
   "observability.client_data_indexing_index_pending": "Indexation en attente",
   "observability.client_data_indexing_index_version": "Version de l’index : {{version}}",
-  "observability.client_data_indexing_object_type": "Type d’entité",
   "observability.client_data_indexing_pending": "En attente : {{count}}",
   "observability.client_data_indexing_tooltip": "L’indexation des données client est le processus d’indexation des données client dans la base de données.",
   "observability.client_data_indexing_version": "Version",

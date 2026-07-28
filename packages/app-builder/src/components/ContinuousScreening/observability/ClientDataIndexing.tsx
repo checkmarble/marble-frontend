@@ -123,20 +123,16 @@ function PanelCientIndexingContent() {
 
           return (
             <div className="flex flex-col gap-md text-sm">
-              <GridTable.Table className="grid-cols-4">
+              <GridTable.Table className="grid-cols-3">
                 <GridTable.Row className="font-semibold border-b border-grey-border">
                   <GridTable.Cell>{t('continuousScreening:observability.dataset_updates_date')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:observability.client_data_indexing_version')}</GridTable.Cell>
-                  <GridTable.Cell>
-                    {t('continuousScreening:observability.client_data_indexing_object_type')}
-                  </GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:observability.grid_versions_items_ingested')}</GridTable.Cell>
                 </GridTable.Row>
                 {items.map((item) => (
                   <GridTable.Row key={item.id}>
                     <GridTable.Cell>{dateFormatter(item.jobDate)}</GridTable.Cell>
                     <GridTable.Cell>{item.version}</GridTable.Cell>
-                    <GridTable.Cell>{item.objectType}</GridTable.Cell>
                     <GridTable.Cell className="justify-end tabular-nums">
                       {formatNumber(item.totalItems, { language: locale })}
                     </GridTable.Cell>

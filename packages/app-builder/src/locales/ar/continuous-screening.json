@@ -124,7 +124,6 @@
   "observability.client_data_indexing_index_outdated": "الفهرس غير محدّث",
   "observability.client_data_indexing_index_pending": "الفهرسة قيد الانتظار",
   "observability.client_data_indexing_index_version": "إصدار الفهرس: {{version}}",
-  "observability.client_data_indexing_object_type": "نوع الكيان",
   "observability.client_data_indexing_pending": "قيد الانتظار: {{count}}",
   "observability.client_data_indexing_tooltip": "فهرسة بيانات العميل هي عملية فهرسة بيانات العميل في قاعدة البيانات.",
   "observability.client_data_indexing_version": "الإصدار",

@@ -1305,7 +1305,6 @@ export type ContinuousScreeningClientDataIndexingDto = {
     job_date: string;
     total_items: number;
     version: string;
-    object_type: string;
 };
 export type ContinuousScreeningClientDataIndexingResponseDto = {
     /** Full-dataset version. Empty when no dataset has been generated. */
