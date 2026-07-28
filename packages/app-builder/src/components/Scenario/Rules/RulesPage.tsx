@@ -180,11 +180,12 @@ export function RulesPage({
                     </GridCell>
                     <GridCell>
                       {rule.description ? (
-                        rule.description
+                        <p className="line-clamp-2">{rule.description}</p>
                       ) : rule.type === 'rule' && rule.aiDescription ? (
-                        <p className="border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm whitespace-pre-wrap">
-                          {rule.aiDescription}
-                        </p>
+                        <div className="border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm flex items-start gap-xs">
+                          <Icon icon="wand" className="size-4 shrink-0 text-purple-primary" />
+                          <p className="line-clamp-2 whitespace-pre-wrap">{rule.aiDescription}</p>
+                        </div>
                       ) : null}
                     </GridCell>
                     <GridCell>{rule.ruleGroup ? <Tag>{rule.ruleGroup}</Tag> : null}</GridCell>
