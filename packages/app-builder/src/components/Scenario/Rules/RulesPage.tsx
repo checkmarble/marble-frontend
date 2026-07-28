@@ -140,133 +140,17 @@ export function RulesPage({
             <HeaderCell>{t('scenarios:rules.rule_group')}</HeaderCell>
             <HeaderCell>{t('scenarios:rules.score_or_outcome')}</HeaderCell>
           </div>
-          {list.map((rule) => {
-            return (
-              <Collapsible.Root
-                key={`${rule.type}_${rule.id}`}
-                className="overflow-hidden grid grid-cols-subgrid col-span-full group/table-row hover:bg-purple-background-light cursor-pointer "
-                onClick={handleRowClick}
-                onKeyDown={handleRowKeyDown}
-                data-row
-              >
-                <Collapsible.Trigger asChild>
-                  <div
-                    role="link"
-                    tabIndex={0}
-                    className="grid grid-cols-subgrid col-span-full items-center focus-visible:outline-2 -outline-offset-2 outline-purple-primary"
-                  >
-                    <div className="invisible">
-                      {editorMode === 'edit' ? (
-                        <button
-                          data-row-button
-                          aria-label={t('scenarios:rules.edit_rule_aria_label')}
-                          onClick={() => {
-                            if (rule.id) {
-                              setCurrentEditing({ id: rule.id, type: rule.type });
-                            }
-                          }}
-                        />
-                      ) : null}
-                    </div>
-                    <GridCell
-                      className={cn({ 'grid grid-cols-[1rem_1fr] items-center gap-x-sm': editorMode === 'view' })}
-                    >
-                      {editorMode === 'view' ? (
-                        <button type="button">
-                          <Icon icon="caret-down" className="size-4" />
-                        </button>
-                      ) : null}
-                      <span>{rule.name}</span>
-                    </GridCell>
-                    <GridCell>
-                      <RuleDescription rule={rule} clamp />
-                    </GridCell>
-                    <GridCell>{rule.ruleGroup ? <Tag>{rule.ruleGroup}</Tag> : null}</GridCell>
-                    <GridCell>
-                      {rule.type === 'rule' ? (
-                        <span className={rule.scoreModifier < 0 ? 'text-green-primary' : 'text-red-primary'}>
-                          {formatNumber(rule.scoreModifier, {
-                            language,
-                            signDisplay: 'exceptZero',
-                          })}
-                        </span>
-                      ) : rule.forcedOutcome ? (
-                        <OutcomeBadge outcome={rule.forcedOutcome} size="md" />
-                      ) : null}
-                    </GridCell>
-                  </div>
-                </Collapsible.Trigger>
-                {rule.type === 'rule' ? (
-                  <Collapsible.Content asChild>
-                    <div className="col-span-full p-md grid grid-cols-[1rem_1fr] items-start gap-x-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-                      <div className="flex flex-col gap-sm max-w-3/4 col-start-2">
-                        <RuleDescription rule={rule} />
-                        <div className="border border-grey-border rounded-md px-md py-sm bg-surface-card">
-                          <RuleView scenarioId={scenario.id} ruleId={rule.id} />
-                        </div>
-                      </div>
-                    </div>
-                  </Collapsible.Content>
-                ) : (
-                  <Collapsible.Content asChild>
-                    <div className="col-span-full p-md grid grid-cols-[1rem_1fr] items-center gap-x-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-                      <div className="border border-grey-border rounded-md px-md py-sm bg-surface-card max-w-3/4 col-start-2 flex flex-col gap-sm">
-                        <div>
-                          <Trans
-                            t={t}
-                            i18nKey="scenarios:rules.screening_view.trigger_intro"
-                            values={{ triggerObject: scenario.triggerObjectType }}
-                            components={{ Tag: <Tag color="grey" /> }}
-                          />
-                        </div>
-                        <ul className="list-disc flex flex-col gap-sm pl-5">
-                          {rule.triggerRule && !isUndefinedAstNode(rule.triggerRule) ? (
-                            <li className="list-item">
-                              <div className="flex-col gap-sm">
-                                <span>{t('scenarios:rules.screening_view.trigger_condition')}</span>
-                                <AstBuilder.Provider scenarioId={scenario.id} mode="view">
-                                  <AstBuilder.Root node={rule.triggerRule} />
-                                </AstBuilder.Provider>
-                              </div>
-                            </li>
-                          ) : null}
-                          {rule.counterPartyId && isDataAccessorAstNode(rule.counterPartyId) ? (
-                            <li className="list-item">
-                              {t('scenarios:rules.screening_view.counterparty_id')}{' '}
-                              <Tag color="grey">{getDataAccessorDisplayName(rule.counterPartyId)}</Tag>
-                            </li>
-                          ) : null}
-                          {rule.entityType && rule.query ? (
-                            <ScreeningRuleQueryView
-                              entityType={rule.entityType}
-                              query={rule.query}
-                              preprocessing={rule.preprocessing}
-                            />
-                          ) : null}
-                          {rule.datasets && rule.datasets.length > 0 ? (
-                            <ScreeningDatasetsView datasets={rule.datasets} />
-                          ) : null}
-                        </ul>
-                        {rule.forcedOutcome ? (
-                          <div>
-                            <Trans
-                              t={t}
-                              i18nKey="scenarios:rules.screening_view.match_outcome"
-                              values={{ threshold: rule.threshold ?? org.sanctionThreshold }}
-                              components={{
-                                Tag: <Tag color="grey" />,
-                                Outcome: <OutcomeBadge outcome={rule.forcedOutcome} className="align-middle" />,
-                              }}
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </Collapsible.Content>
-                )}
-              </Collapsible.Root>
-            );
-          })}
+          {list.map((rule) => (
+            <RuleRow
+              key={`${rule.type}_${rule.id}`}
+              rule={rule}
+              scenario={scenario}
+              editorMode={editorMode}
+              language={language}
+              org={org}
+              onEditRequest={setCurrentEditing}
+            />
+          ))}
         </div>
       </div>
       {editorMode === 'edit' ? (
@@ -306,6 +190,140 @@ export function RulesPage({
         </>
       ) : null}
     </div>
+  );
+}
+
+type RuleRowProps = {
+  rule: RuleOrScreening;
+  scenario: Scenario;
+  editorMode: NonNullable<EditorMode>;
+  language: ReturnType<typeof useFormatLanguage>;
+  org: ReturnType<typeof useOrganizationDetails>['org'];
+  onEditRequest: (value: { id: string; type: 'rule' | 'sanction' }) => void;
+};
+
+function RuleRow({ rule, scenario, editorMode, language, org, onEditRequest }: RuleRowProps) {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Collapsible.Root
+      open={open}
+      onOpenChange={setOpen}
+      className="overflow-hidden grid grid-cols-subgrid col-span-full group/table-row hover:bg-purple-background-light cursor-pointer "
+      onClick={handleRowClick}
+      onKeyDown={handleRowKeyDown}
+      data-row
+    >
+      <Collapsible.Trigger asChild>
+        <div
+          role="link"
+          tabIndex={0}
+          className="grid grid-cols-subgrid col-span-full items-center focus-visible:outline-2 -outline-offset-2 outline-purple-primary"
+        >
+          <div className="invisible">
+            {editorMode === 'edit' ? (
+              <button
+                data-row-button
+                aria-label={t('scenarios:rules.edit_rule_aria_label')}
+                onClick={() => {
+                  if (rule.id) {
+                    onEditRequest({ id: rule.id, type: rule.type });
+                  }
+                }}
+              />
+            ) : null}
+          </div>
+          <GridCell className={cn({ 'grid grid-cols-[1rem_1fr] items-center gap-x-sm': editorMode === 'view' })}>
+            {editorMode === 'view' ? (
+              <button type="button">
+                <Icon icon="caret-down" className="size-4" />
+              </button>
+            ) : null}
+            <span>{rule.name}</span>
+          </GridCell>
+          <GridCell>
+            <RuleDescription rule={rule} clamp={!open} />
+          </GridCell>
+          <GridCell>{rule.ruleGroup ? <Tag>{rule.ruleGroup}</Tag> : null}</GridCell>
+          <GridCell>
+            {rule.type === 'rule' ? (
+              <span className={rule.scoreModifier < 0 ? 'text-green-primary' : 'text-red-primary'}>
+                {formatNumber(rule.scoreModifier, {
+                  language,
+                  signDisplay: 'exceptZero',
+                })}
+              </span>
+            ) : rule.forcedOutcome ? (
+              <OutcomeBadge outcome={rule.forcedOutcome} size="md" />
+            ) : null}
+          </GridCell>
+        </div>
+      </Collapsible.Trigger>
+      {rule.type === 'rule' ? (
+        <Collapsible.Content asChild>
+          <div className="col-span-full p-md grid grid-cols-[1rem_1fr] items-center gap-x-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+            <div className="border border-grey-border rounded-md px-md py-sm bg-surface-card max-w-3/4 col-start-2">
+              <RuleView scenarioId={scenario.id} ruleId={rule.id} />
+            </div>
+          </div>
+        </Collapsible.Content>
+      ) : (
+        <Collapsible.Content asChild>
+          <div className="col-span-full p-md grid grid-cols-[1rem_1fr] items-center gap-x-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+            <div className="border border-grey-border rounded-md px-md py-sm bg-surface-card max-w-3/4 col-start-2 flex flex-col gap-sm">
+              <div>
+                <Trans
+                  t={t}
+                  i18nKey="scenarios:rules.screening_view.trigger_intro"
+                  values={{ triggerObject: scenario.triggerObjectType }}
+                  components={{ Tag: <Tag color="grey" /> }}
+                />
+              </div>
+              <ul className="list-disc flex flex-col gap-sm pl-5">
+                {rule.triggerRule && !isUndefinedAstNode(rule.triggerRule) ? (
+                  <li className="list-item">
+                    <div className="flex-col gap-sm">
+                      <span>{t('scenarios:rules.screening_view.trigger_condition')}</span>
+                      <AstBuilder.Provider scenarioId={scenario.id} mode="view">
+                        <AstBuilder.Root node={rule.triggerRule} />
+                      </AstBuilder.Provider>
+                    </div>
+                  </li>
+                ) : null}
+                {rule.counterPartyId && isDataAccessorAstNode(rule.counterPartyId) ? (
+                  <li className="list-item">
+                    {t('scenarios:rules.screening_view.counterparty_id')}{' '}
+                    <Tag color="grey">{getDataAccessorDisplayName(rule.counterPartyId)}</Tag>
+                  </li>
+                ) : null}
+                {rule.entityType && rule.query ? (
+                  <ScreeningRuleQueryView
+                    entityType={rule.entityType}
+                    query={rule.query}
+                    preprocessing={rule.preprocessing}
+                  />
+                ) : null}
+                {rule.datasets && rule.datasets.length > 0 ? <ScreeningDatasetsView datasets={rule.datasets} /> : null}
+              </ul>
+              {rule.forcedOutcome ? (
+                <div>
+                  <Trans
+                    t={t}
+                    i18nKey="scenarios:rules.screening_view.match_outcome"
+                    values={{ threshold: rule.threshold ?? org.sanctionThreshold }}
+                    components={{
+                      Tag: <Tag color="grey" />,
+                      Outcome: <OutcomeBadge outcome={rule.forcedOutcome} className="align-middle" />,
+                    }}
+                  />
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </Collapsible.Content>
+      )}
+    </Collapsible.Root>
   );
 }
 
