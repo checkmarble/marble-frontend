@@ -79,7 +79,7 @@ export const ScreeningCaseMatches = ({
                       <span className="font-medium">{screeningMatch.payload.caption}</span>
                       <span className="text-small text-grey-secondary">{getMatchEntityType(screeningMatch)}</span>
                       <Tag color="grey" className="shrink-0">
-                        {t('screenings:match.score', { score: screeningMatch.payload.score * 100 })}
+                        {t('screenings:match.score', { score: Math.floor(screeningMatch.payload.score * 100) })}
                       </Tag>
                       {screeningMatch.payload.properties['topics']?.map((topic) => {
                         return <TopicTag key={topic} topic={topic} className="text-small" />;

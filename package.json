@@ -42,5 +42,8 @@
   "type": "module",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "tailwindcss-grid-areas": "^0.1.1"
+  }
 }
