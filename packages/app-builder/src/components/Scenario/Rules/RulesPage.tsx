@@ -219,7 +219,7 @@ function RuleRow({ rule, scenario, editorMode, language, org, onEditRequest }: R
         <div
           role="link"
           tabIndex={0}
-          className="grid grid-cols-subgrid col-span-full items-center focus-visible:outline-2 -outline-offset-2 outline-purple-primary"
+          className="grid grid-cols-subgrid col-span-full items-start focus-visible:outline-2 -outline-offset-2 outline-purple-primary"
         >
           <div className="invisible">
             {editorMode === 'edit' ? (
