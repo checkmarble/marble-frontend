@@ -179,14 +179,7 @@ export function RulesPage({
                       <span>{rule.name}</span>
                     </GridCell>
                     <GridCell>
-                      {rule.description ? (
-                        <p className="line-clamp-2">{rule.description}</p>
-                      ) : rule.type === 'rule' && rule.aiDescription ? (
-                        <div className="border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm flex items-start gap-xs">
-                          <Icon icon="wand" className="size-4 shrink-0 text-purple-primary" />
-                          <p className="line-clamp-2 whitespace-pre-wrap">{rule.aiDescription}</p>
-                        </div>
-                      ) : null}
+                      <RuleDescription rule={rule} clamp />
                     </GridCell>
                     <GridCell>{rule.ruleGroup ? <Tag>{rule.ruleGroup}</Tag> : null}</GridCell>
                     <GridCell>
@@ -205,9 +198,12 @@ export function RulesPage({
                 </Collapsible.Trigger>
                 {rule.type === 'rule' ? (
                   <Collapsible.Content asChild>
-                    <div className="col-span-full p-md grid grid-cols-[1rem_1fr] items-center gap-x-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-                      <div className="border border-grey-border rounded-md px-md py-sm bg-surface-card max-w-3/4 col-start-2">
-                        <RuleView scenarioId={scenario.id} ruleId={rule.id} />
+                    <div className="col-span-full p-md grid grid-cols-[1rem_1fr] items-start gap-x-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+                      <div className="flex flex-col gap-sm max-w-3/4 col-start-2">
+                        <RuleDescription rule={rule} />
+                        <div className="border border-grey-border rounded-md px-md py-sm bg-surface-card">
+                          <RuleView scenarioId={scenario.id} ruleId={rule.id} />
+                        </div>
                       </div>
                     </div>
                   </Collapsible.Content>
@@ -324,6 +320,23 @@ function HeaderCell({ children, className }: { children?: React.ReactNode; class
     </GridCell>
   );
 }
+
+const RuleDescription = ({ rule, clamp }: { rule: RuleOrScreening; clamp?: boolean }) => {
+  if (rule.description) {
+    return <p className={cn({ 'line-clamp-2': clamp })}>{rule.description}</p>;
+  }
+
+  if (rule.type === 'rule' && rule.aiDescription) {
+    return (
+      <div className="border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm flex items-start gap-xs">
+        <Icon icon="wand" className="size-4 shrink-0 text-purple-primary" />
+        <p className={cn('whitespace-pre-wrap', { 'line-clamp-2': clamp })}>{rule.aiDescription}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const RuleView = ({ scenarioId, ruleId }: { scenarioId: string; ruleId: string }) => {
   const { t } = useTranslation(['common']);
