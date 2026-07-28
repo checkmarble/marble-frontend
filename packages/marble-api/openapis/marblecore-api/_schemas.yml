@@ -584,6 +584,16 @@ OpenCasesByAgeResponseDto:
 
 # CONTINUOUS SCREENINGS
 
+ContinuousScreeningDatasetUpdateSummaryDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningDatasetUpdateSummaryDto
+ContinuousScreeningUpdateJobSummaryDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningUpdateJobSummaryDto
+ContinuousScreeningJobErrorDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningJobErrorDto
+ContinuousScreeningClientDataIndexingDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningClientDataIndexingDto
+ContinuousScreeningClientDataIndexingResponseDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningClientDataIndexingResponseDto
 ContinuousScreeningConfigDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningConfigDto
 CreateContinuousScreeningConfigDto:
