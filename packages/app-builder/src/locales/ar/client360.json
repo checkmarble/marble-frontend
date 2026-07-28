@@ -46,6 +46,7 @@
   "client_detail.score_panel.score_scale": "مقياس الدرجات",
   "client_detail.score_panel.source_override": "تجاوز",
   "client_detail.score_panel.title": "درجة المخاطر",
+  "client_detail.score_panel.value_label": "القيمة المقدرة: {{value}}",
   "client_detail.search_form.search_button": "البحث",
   "client_detail.search_form.search_by": "البحث حسب {{name}}",
   "client_detail.search_form.table_not_ready": "هذا الجدول غير جاهز للبحث بعد",
