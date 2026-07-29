@@ -141,7 +141,7 @@ export function RulesPage({
             <HeaderCell>{t('scenarios:rules.score_or_outcome')}</HeaderCell>
           </div>
           {list.map((rule) => (
-            <RuleRow
+            <ScenarioRuleRow
               key={`${rule.type}_${rule.id}`}
               rule={rule}
               scenario={scenario}
@@ -193,7 +193,7 @@ export function RulesPage({
   );
 }
 
-type RuleRowProps = {
+type ScenarioRuleRowProps = {
   rule: RuleOrScreening;
   scenario: Scenario;
   editorMode: NonNullable<EditorMode>;
@@ -202,7 +202,7 @@ type RuleRowProps = {
   onEditRequest: (value: { id: string; type: 'rule' | 'sanction' }) => void;
 };
 
-function RuleRow({ rule, scenario, editorMode, language, org, onEditRequest }: RuleRowProps) {
+function ScenarioRuleRow({ rule, scenario, editorMode, language, org, onEditRequest }: ScenarioRuleRowProps) {
   const { t } = useTranslation(['common', 'scenarios']);
   const [open, setOpen] = useState(false);
 
@@ -346,11 +346,7 @@ const RuleDescription = ({ rule, clamp }: { rule: RuleOrScreening; clamp?: boole
 
   if (rule.type === 'rule' && rule.aiDescription) {
     return (
-      <p
-        className={cn('border-l-purple-primary text-grey-primary text-s border-l-2 pl-sm whitespace-pre-wrap', {
-          'line-clamp-2': clamp,
-        })}
-      >
+      <p className={cn({ 'line-clamp-2': clamp })}>
         <Icon icon="wand" className="inline size-4 align-text-bottom mr-xs text-purple-primary" />
         {rule.aiDescription}
       </p>
