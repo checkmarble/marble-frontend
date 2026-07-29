@@ -1,15 +1,18 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { ContinuousScreeningConfiguration } from '@app-builder/queries/continuous-screening/configurations';
+import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { UploadLog } from 'marble-api';
+import { toggle } from 'radash';
 import { type MouseEvent, type SyntheticEvent, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Card, cn, MenuCommand, Switch, Tag, TagProps, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
+  DownloadCsvTemplate,
   UploadForm,
   type UploadFormIntermediateStepProps,
 } from '../Data/SemanticTables/UploadData/UploadIngestionComponents';
@@ -26,8 +29,16 @@ export function PanelAddCsv({
   const [panelOpen, setPanelOpen] = useState(false);
   const [selectedObjectType, setSelectedObjectType] = useState<string | null>(null);
   const { t } = useTranslation(['continuousScreening', 'upload']);
+  const dataModelQuery = useDataModelQuery();
 
   const objectTypes = configuration.objectTypes;
+  const selectedTableModel = useMemo(
+    () =>
+      selectedObjectType
+        ? (dataModelQuery.data?.dataModel.find((table) => table.name === selectedObjectType) ?? null)
+        : null,
+    [dataModelQuery.data?.dataModel, selectedObjectType],
+  );
 
   const openPanelForObjectType = (objectType: string) => {
     setSelectedObjectType(objectType);
@@ -50,10 +61,6 @@ export function PanelAddCsv({
 
   const stopRowInteraction = (e: SyntheticEvent) => {
     e.stopPropagation();
-  };
-
-  const handleUploadSuccess = (uploadLog: UploadLog) => {
-    console.log(uploadLog);
   };
 
   return (
@@ -114,14 +121,18 @@ export function PanelAddCsv({
                 {t('upload:upload_callout_2')}
               </p>
 
+              {selectedObjectType && selectedTableModel ? (
+                <DownloadCsvTemplate tableModel={selectedTableModel} objectType={selectedObjectType} />
+              ) : null}
+
               {selectedObjectType ? (
                 <UploadForm
                   objectType={selectedObjectType}
-                  onSuccess={handleUploadSuccess}
                   intermediateSteps={[
                     ({ file, onNext, onBack }) => (
                       <CsvUploadConfirmStep
                         file={file}
+                        configuration={configuration}
                         configs={configsPerObjectType.get(selectedObjectType) ?? []}
                         onNext={onNext}
                         onBack={onBack}
@@ -143,23 +154,29 @@ export function PanelAddCsv({
 
 function CsvUploadConfirmStep({
   file,
+  configuration,
   configs,
   onNext,
   onBack,
 }: UploadFormIntermediateStepProps & {
+  configuration: ContinuousScreeningConfiguration;
   configs: ContinuousScreeningConfiguration[];
 }) {
   const { t } = useTranslation(['continuousScreening', 'common']);
   const [placeUnderMonitoring, setPlaceUnderMonitoring] = useState(true);
-  const [selectedConfigStableId, setSelectedConfigStableId] = useState<string | null>(null);
+  const [selectedStableIds, setSelectedStableIds] = useState<string[]>([configuration.stableId]);
   const [skipInitialScreening, setSkipInitialScreening] = useState(true);
 
-  const selectedConfig = useMemo(
-    () => configs.find((config) => config.stableId === selectedConfigStableId) ?? null,
-    [configs, selectedConfigStableId],
+  const selectedConfigurations = useMemo(
+    () => configs.filter((config) => selectedStableIds.includes(config.stableId)),
+    [configs, selectedStableIds],
   );
 
-  const canValidate = !placeUnderMonitoring || selectedConfigStableId !== null;
+  const canValidate = !placeUnderMonitoring || selectedStableIds.length > 0;
+
+  const handleToggleConfig = (stableId: string) => {
+    setSelectedStableIds((current) => toggle(current, stableId));
+  };
 
   return (
     <div className="border-grey-placeholder flex flex-col gap-lg rounded-sm border-2 border-dashed p-lg">
@@ -193,7 +210,9 @@ function CsvUploadConfirmStep({
               onCheckedChange={(checked) => {
                 setPlaceUnderMonitoring(checked);
                 if (!checked) {
-                  setSelectedConfigStableId(null);
+                  setSelectedStableIds([]);
+                } else if (selectedStableIds.length === 0) {
+                  setSelectedStableIds([configuration.stableId]);
                 }
               }}
             />
@@ -204,7 +223,7 @@ function CsvUploadConfirmStep({
 
           {placeUnderMonitoring ? (
             <div className="ps-2xl">
-              <MenuCommand.Menu>
+              <MenuCommand.Menu persistOnSelect>
                 <MenuCommand.Trigger>
                   <button
                     type="button"
@@ -213,15 +232,21 @@ function CsvUploadConfirmStep({
                       'hover:border-grey-secondary focus-visible:ring-purple-primary focus-visible:ring-2 focus-visible:outline-hidden',
                     )}
                   >
-                    <span
-                      className={cn(
-                        'flex-1 truncate text-s',
-                        selectedConfig ? 'text-grey-primary' : 'text-grey-secondary',
+                    <div className="flex flex-1 flex-wrap gap-xs">
+                      {selectedConfigurations.length > 0 ? (
+                        selectedConfigurations.map((config) => (
+                          <RemovableConfigTag
+                            key={config.stableId}
+                            label={config.name}
+                            onRemove={() => handleToggleConfig(config.stableId)}
+                          />
+                        ))
+                      ) : (
+                        <span className="text-s text-grey-secondary">
+                          {t('continuousScreening:configurations.csv.confirm.configuration_placeholder')}
+                        </span>
                       )}
-                    >
-                      {selectedConfig?.name ??
-                        t('continuousScreening:configurations.csv.confirm.configuration_placeholder')}
-                    </span>
+                    </div>
                     <Icon
                       icon="caret-down"
                       className="text-grey-secondary size-4 shrink-0 group-radix-state-open:rotate-180 transition-transform duration-200"
@@ -236,13 +261,13 @@ function CsvUploadConfirmStep({
                 >
                   <MenuCommand.List>
                     {configs.map((config) => {
-                      const isSelected = config.stableId === selectedConfigStableId;
+                      const isSelected = selectedStableIds.includes(config.stableId);
                       return (
                         <MenuCommand.Item
                           key={config.stableId}
                           value={config.name}
                           className="cursor-pointer"
-                          onSelect={() => setSelectedConfigStableId(config.stableId)}
+                          onSelect={() => handleToggleConfig(config.stableId)}
                         >
                           <span className="grow truncate">{config.name}</span>
                           {isSelected ? <Icon icon="tick" className="text-purple-primary size-5 shrink-0" /> : null}
@@ -279,9 +304,9 @@ function CsvUploadConfirmStep({
           variant="primary"
           onClick={() =>
             onNext({
-              place_under_monitoring: String(placeUnderMonitoring),
-              skip_initial_screening: String(skipInitialScreening),
-              ...(placeUnderMonitoring && selectedConfigStableId ? { config_stable_id: selectedConfigStableId } : {}),
+              monitor: String(placeUnderMonitoring),
+              skip_screening: String(skipInitialScreening),
+              ...(placeUnderMonitoring ? { monitoring_config_id: selectedStableIds } : {}),
             })
           }
           disabled={!canValidate}
@@ -290,6 +315,26 @@ function CsvUploadConfirmStep({
         </Button>
       </div>
     </div>
+  );
+}
+
+function RemovableConfigTag({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <Tag
+      color="purple"
+      size="small"
+      className="group cursor-pointer hover:bg-purple-primary/20 transition-colors"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onRemove();
+      }}
+    >
+      <span className="flex items-center gap-xs">
+        <span className="max-w-[20ch] truncate">{label}</span>
+        <Icon icon="cross" className="size-3 shrink-0" />
+      </span>
+    </Tag>
   );
 }
 

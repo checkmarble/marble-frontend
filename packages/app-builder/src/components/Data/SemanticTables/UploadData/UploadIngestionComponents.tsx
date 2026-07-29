@@ -10,7 +10,7 @@ import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaV2ClassName, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const MAX_FILE_SIZE_MB = 32;
@@ -21,6 +21,21 @@ export const generateCsvTemplateLink = (table: TableModel): string => {
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8,' });
   return URL.createObjectURL(blob);
 };
+
+export function DownloadCsvTemplate({ tableModel, objectType }: { tableModel: TableModel; objectType: string }) {
+  const { t } = useTranslation(['upload']);
+
+  return (
+    <a
+      href={generateCsvTemplateLink(tableModel)}
+      download={`${objectType}_template.csv`}
+      className={CtaV2ClassName({ variant: 'secondary' })}
+    >
+      <Icon icon="download" className="me-sm size-6" />
+      {t('upload:download_template_cta')}
+    </a>
+  );
+}
 
 export const getStatusIcon = (status: string) => {
   if (status === 'success') {
@@ -116,8 +131,9 @@ export const ResultModal = ({
 /**
  * Extra form fields a step can contribute to the upload request. Steps own their
  * own field names, so the parent form stays agnostic about what each step collects.
+ * String arrays are appended as repeated FormData keys (e.g. monitoring_config_id).
  */
-export type UploadFormStepData = Record<string, string | Blob>;
+export type UploadFormStepData = Record<string, string | Blob | string[]>;
 
 export type UploadFormIntermediateStepProps = {
   file: File;
@@ -133,7 +149,7 @@ export const UploadForm = ({
   intermediateSteps = [],
 }: {
   objectType: string;
-  onSuccess: (uploadLog: UploadLog) => void;
+  onSuccess?: (uploadLog: UploadLog) => void;
   intermediateSteps?: UploadFormIntermediateStep[];
 }) => {
   const { t } = useTranslation(['upload', 'common']);
@@ -192,6 +208,12 @@ export const UploadForm = ({
         const formData = new FormData();
         formData.append('file', file);
         for (const [key, value] of Object.entries(stepData ?? {})) {
+          if (Array.isArray(value)) {
+            for (const item of value) {
+              formData.append(key, item);
+            }
+            continue;
+          }
           formData.append(key, value);
         }
 
@@ -217,7 +239,7 @@ export const UploadForm = ({
           success: true,
           linesProcessed: uploadLog.lines_processed,
         });
-        onSuccess(uploadLog);
+        onSuccess?.(uploadLog);
       } catch (error) {
         setIsModalOpen(true);
         computeModalMessage({

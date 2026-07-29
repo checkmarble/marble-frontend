@@ -145,13 +145,12 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets, isAdmin 
                             const resolvedItem = findDatasetOrTopicByKey(datasets, d);
                             const itemName = resolvedItem ? formatItemName(resolvedItem) : d;
                             return (
-                              <Tag key={d} color="grey">
-                                <span className="max-w-[15ch] truncate" title={itemName}>
-                                  {itemName}
-                                </span>
+                              <Tag key={d} color="grey" className="w-fit">
+                                {itemName}
                               </Tag>
                             );
                           })}
+                          overflowBehavior="popover"
                         />
                       </div>
                     </GridTable.Cell>

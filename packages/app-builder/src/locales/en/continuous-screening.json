@@ -1,6 +1,6 @@
 {
   "configurations.add_configuration": "Add a configuration",
-  "configurations.csv.button.addCsv": "Add table",
+  "configurations.csv.button.addCsv": "Upload data from a CSV file",
   "configurations.csv.button.title": "Upload .csv to {{objectType}}",
   "configurations.csv.confirm.configuration_placeholder": "Select configurations to use",
   "configurations.csv.confirm.going_to_upload": "You're going to upload",

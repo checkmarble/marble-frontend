@@ -1,6 +1,6 @@
 {
   "configurations.add_configuration": "إنشاء فحص مستمر",
-  "configurations.csv.button.addCsv": "إضافة جدول",
+  "configurations.csv.button.addCsv": "رفع بيانات من ملف CSV",
   "configurations.csv.button.title": "رفع .csv إلى {{objectType}}",
   "configurations.csv.confirm.configuration_placeholder": "اختر الإعدادات التي سيتم استخدامها",
   "configurations.csv.confirm.going_to_upload": "أنت على وشك رفع",

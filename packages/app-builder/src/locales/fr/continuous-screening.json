@@ -1,6 +1,6 @@
 {
   "configurations.add_configuration": "Créer un monitoring permanent",
-  "configurations.csv.button.addCsv": "Ajouter une table",
+  "configurations.csv.button.addCsv": "Importer des données depuis un fichier CSV",
   "configurations.csv.button.title": "Importer un .csv pour {{objectType}}",
   "configurations.csv.confirm.configuration_placeholder": "Sélectionner les configurations à utiliser",
   "configurations.csv.confirm.going_to_upload": "Vous allez importer",
