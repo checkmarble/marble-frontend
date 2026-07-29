@@ -70,7 +70,7 @@ export function PanelAddCsv({
           <MenuCommand.Trigger>
             <Button variant="primary" appearance="stroked" onClick={(e) => e.stopPropagation()}>
               <Icon icon="plus" className="size-4" />
-              {t('continuousScreening:configurations.csv.button.addCsv')}
+              <span className="truncate">{t('continuousScreening:configurations.csv.button.addCsv')}</span>
             </Button>
           </MenuCommand.Trigger>
           <MenuCommand.Content align="end" sideOffset={4}>
@@ -132,7 +132,6 @@ export function PanelAddCsv({
                     ({ file, onNext, onBack }) => (
                       <CsvUploadConfirmStep
                         file={file}
-                        configuration={configuration}
                         configs={configsPerObjectType.get(selectedObjectType) ?? []}
                         onNext={onNext}
                         onBack={onBack}
@@ -154,17 +153,15 @@ export function PanelAddCsv({
 
 function CsvUploadConfirmStep({
   file,
-  configuration,
   configs,
   onNext,
   onBack,
 }: UploadFormIntermediateStepProps & {
-  configuration: ContinuousScreeningConfiguration;
   configs: ContinuousScreeningConfiguration[];
 }) {
   const { t } = useTranslation(['continuousScreening', 'common']);
   const [placeUnderMonitoring, setPlaceUnderMonitoring] = useState(true);
-  const [selectedStableIds, setSelectedStableIds] = useState<string[]>([configuration.stableId]);
+  const [selectedStableIds, setSelectedStableIds] = useState(() => configs.map((config) => config.stableId));
   const [skipInitialScreening, setSkipInitialScreening] = useState(true);
 
   const selectedConfigurations = useMemo(
@@ -212,7 +209,7 @@ function CsvUploadConfirmStep({
                 if (!checked) {
                   setSelectedStableIds([]);
                 } else if (selectedStableIds.length === 0) {
-                  setSelectedStableIds([configuration.stableId]);
+                  setSelectedStableIds(configs.map((config) => config.stableId));
                 }
               }}
             />
