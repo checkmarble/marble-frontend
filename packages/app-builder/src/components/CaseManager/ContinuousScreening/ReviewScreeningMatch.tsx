@@ -33,7 +33,7 @@ export const ReviewScreeningMatch = ({
   const form = useForm({
     defaultValues: {
       matchId: screeningMatch.id,
-      status: 'confirmed_hit',
+      status: 'no_hit',
       comment: '',
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
