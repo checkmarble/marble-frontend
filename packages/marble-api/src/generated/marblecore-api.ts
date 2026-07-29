@@ -1249,11 +1249,15 @@ export type CreateContinuousScreeningObjectDto = {
     config_stable_id: string;
     object_id: string;
     object_payload?: object;
+    /** Whether to skip screening the object immediately when adding it under monitoring */
+    skip_screen?: boolean;
 } | {
     object_type: string;
     config_stable_id: string;
     object_id?: string;
     object_payload: object;
+    /** Whether to skip screening the object immediately when adding it under monitoring */
+    skip_screen?: boolean;
 };
 export type DeleteContinuousScreeningObjectDto = {
     object_type: string;

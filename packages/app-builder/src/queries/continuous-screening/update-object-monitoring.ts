@@ -6,6 +6,7 @@ type UpdateObjectMonitoringInput = {
   objectType: string;
   objectId: string;
   configStableIds: string[];
+  skipScreen: boolean;
 };
 
 export const useUpdateObjectMonitoringMutation = () => {

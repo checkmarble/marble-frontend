@@ -113,13 +113,18 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
       objectType: z.string(),
       objectId: z.string(),
       configStableIds: z.array(z.string()),
+      skipScreen: z.boolean(),
     }),
   )
   .handler(async ({ context, data }) => {
     const { continuousScreening, entitlements, user } = context.authInfo;
 
-    if (!isContinuousScreeningAvailable(entitlements) || !isAdmin(user)) {
+    if (!isContinuousScreeningAvailable(entitlements)) {
       return { configurations: [] };
+    }
+
+    if (!isAdmin(user)) {
+      throw new Response(null, { status: 403, statusText: 'Forbidden' });
     }
 
     const currentObjects = await continuousScreening.listObjects({
@@ -150,6 +155,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
           objectType: data.objectType,
           objectId: data.objectId,
           configStableId,
+          skipScreen: data.skipScreen,
         }),
       ),
     ]);

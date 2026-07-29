@@ -1,5 +1,12 @@
 {
   "configurations.add_configuration": "Créer un monitoring permanent",
+  "configurations.csv.button.addCsv": "Importer des données depuis un fichier CSV",
+  "configurations.csv.button.title": "Importer un .csv pour {{objectType}}",
+  "configurations.csv.confirm.configuration_placeholder": "Sélectionner les configurations à utiliser",
+  "configurations.csv.confirm.going_to_upload": "Vous allez importer",
+  "configurations.csv.confirm.place_under_monitoring": "Mettre sous monitoring",
+  "configurations.csv.confirm.skip_initial_screening": "Ignorer le screening initial",
+  "configurations.csv.confirm.validate_upload": "Valider l'import",
   "configurations.list.column.datasets": "Listes et sujets",
   "configurations.list.column.name": "Nom de la configuration",
   "configurations.list.column.object_types": "Types d’entités",

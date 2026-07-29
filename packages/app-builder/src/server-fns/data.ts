@@ -402,6 +402,8 @@ export const deleteAnnotationFn = createServerFn({ method: 'POST' })
 
 // ---- Ingestion upload ----
 
+const INGESTION_UPLOAD_QUERY_PARAMS = new Set(['monitor', 'skip_screening', 'monitoring_config_id']);
+
 export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator((data: unknown) => {
@@ -415,12 +417,19 @@ export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
     const token = await context.authInfo.tokenService.getToken();
 
     const backendData = new FormData();
+    const searchParams = new URLSearchParams();
     for (const [key, value] of data.entries()) {
-      if (key !== 'objectType') backendData.append(key, value);
+      if (key === 'objectType') continue;
+      if (INGESTION_UPLOAD_QUERY_PARAMS.has(key) && typeof value === 'string') {
+        searchParams.append(key, value);
+        continue;
+      }
+      backendData.append(key, value);
     }
 
+    const query = searchParams.toString();
     const upstream = await fetch(
-      `${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}`,
+      `${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}${query ? `?${query}` : ''}`,
       {
         body: backendData,
         method: 'POST',

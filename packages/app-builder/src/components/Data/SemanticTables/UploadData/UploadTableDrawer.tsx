@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { generateCsvTemplateLink, PastUploads, UploadForm } from './UploadIngestionComponents';
+import { DownloadCsvTemplate, PastUploads, UploadForm } from './UploadIngestionComponents';
 
 export function UploadTableDrawer({
   open,
@@ -74,16 +74,7 @@ export function UploadTableDrawer({
               {t('upload:upload_callout_2')}
             </p>
 
-            <div className="flex">
-              <a
-                href={generateCsvTemplateLink(tableModel)}
-                download={`${tableName}_template.csv`}
-                className="text-s flex flex-row items-center justify-center gap-xs rounded-sm border border-solid px-sm py-xs font-semibold outline-hidden hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-secondary disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary"
-              >
-                <Icon icon="download" className="me-sm size-6" />
-                {t('upload:download_template_cta')}
-              </a>
-            </div>
+            <DownloadCsvTemplate tableModel={tableModel} objectType={tableName} />
 
             <UploadForm objectType={tableName} onSuccess={handleUploadSuccess} />
 
