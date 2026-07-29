@@ -59,7 +59,14 @@ export const LimitPopover = ({
     if (isOpen) {
       setDraftLimit(committedLimit ?? DEFAULT_LIMIT);
       listSharp.update((state) => {
-        syncSharpDatasets(state.datasets, selectedDatasets);
+        if (listConfig) {
+          syncSharpDatasets(state.datasets, selectedDatasets, {
+            filters: listConfig.filters,
+            provider: listConfig.provider,
+          });
+        } else {
+          syncSharpDatasets(state.datasets, selectedDatasets);
+        }
       });
     } else {
       setDraftLimit(undefined);
@@ -70,7 +77,14 @@ export const LimitPopover = ({
   const handleCancel = () => {
     form.setFieldValue('limit', originalValue);
     listSharp.update((state) => {
-      syncSharpDatasets(state.datasets, selectedDatasets);
+      if (listConfig) {
+        syncSharpDatasets(state.datasets, selectedDatasets, {
+          filters: listConfig.filters,
+          provider: listConfig.provider,
+        });
+      } else {
+        syncSharpDatasets(state.datasets, selectedDatasets);
+      }
     });
     setDraftLimit(undefined);
     setOpen(false);

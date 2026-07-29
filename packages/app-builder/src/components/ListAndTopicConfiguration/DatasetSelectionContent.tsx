@@ -28,19 +28,19 @@ import {
   buildDatasetKey,
   buildTopicKey,
   isDatasetKeySelected,
+  isGlobalTopicSwitchSelected,
   isSectionEnabled,
-  // isGlobalTopicSwitchSelected,
   isTopicKeySelected,
   isUniqueLexisNexisList,
   selectAllInSection,
   setDatasetKey,
-  // setGlobalTopicSwitch,
+  setGlobalTopicSwitch,
   setTopicKey,
   syncSectionEnabledFromLeaves,
 } from './dataset-selection-provider-utils';
 import {
-  // type GlobalTopicConfig,
-  // getAvailableGlobalTopicConfigs,
+  type GlobalTopicConfig,
+  getAvailableGlobalTopicConfigs,
   getDatasetNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
@@ -90,18 +90,16 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
 
     return match(variant)
       .with('default', () => {
-        // const availableGlobalTopicConfigs = getAvailableGlobalTopicConfigs(data);
+        const availableGlobalTopicConfigs = getAvailableGlobalTopicConfigs(data);
         return (
           <div className="flex flex-col">
-            {/*
-            TODO: uncomment when indexation is done
-            availableGlobalTopicConfigs.length > 0 && (
+            {availableGlobalTopicConfigs.length > 0 && (
               <div className="flex flex-col gap-sm px-md py-sm">
                 {availableGlobalTopicConfigs.map((config) => (
                   <GlobalTopicSwitch key={config.groupKey} config={config} />
                 ))}
               </div>
-            )*/}
+            )}
             {sections.map(([key, section]) =>
               section ? (
                 <Section
@@ -236,13 +234,11 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
 
   const datasetNames = getDatasetNames(section);
-  const isEnabled = ListAndTopicDatasetConfiguration.select((state) =>
-    isSectionEnabled(state.datasets, sectionKey, state.provider, sectionCount),
-  );
   const selectedCount = ListAndTopicDatasetConfiguration.select(
     (state) => datasetNames.filter((n) => state.datasets[buildDatasetKey(sectionKey, n)]).length,
   );
   const isUniqueListForLN = isUniqueLexisNexisList(provider, sectionCount);
+  const isEnabled = ListAndTopicDatasetConfiguration.select((state) => isSectionEnabled(state.datasets, sectionKey));
 
   return match(variant)
     .with('default', () => (
@@ -318,10 +314,9 @@ const SectionPanel = ({ sectionKey, section, sectionCount }: SectionPanelProps) 
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
-  const isEnabled = ListAndTopicDatasetConfiguration.select((state) =>
-    isSectionEnabled(state.datasets, sectionKey, state.provider, sectionCount),
-  );
   const isUniqueListForLN = isUniqueLexisNexisList(provider, sectionCount);
+  const isEnabled = ListAndTopicDatasetConfiguration.select((state) => isSectionEnabled(state.datasets, sectionKey));
+
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
   const { getLaTagLabel } = useDatasetTag();
 
@@ -1100,30 +1095,30 @@ const FilterGroupMenu = ({
   return <MenuCommand.Menu persistOnSelect>{menuTriggerAndContent}</MenuCommand.Menu>;
 };
 
-// const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
-//   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
-//   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-//   const { t } = useTranslation(['screenings']);
-//   const switchId = `global-topic-${config.groupKey}`;
-//   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
-//     isGlobalTopicSwitchSelected(state.datasets, config),
-//   );
+const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
+  const listSharp = ListAndTopicDatasetConfiguration.useSharp();
+  const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const { t } = useTranslation(['screenings']);
+  const switchId = `global-topic-${config.groupKey}`;
+  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+    isGlobalTopicSwitchSelected(state.datasets, config),
+  );
 
-//   return (
-//     <div className="flex items-center gap-sm">
-//       <Switch
-//         id={switchId}
-//         checked={isSelected}
-//         disabled={mode === 'view'}
-//         onCheckedChange={(checked) => {
-//           listSharp.update((state) => {
-//             setGlobalTopicSwitch(state.datasets, config, checked);
-//           });
-//         }}
-//       />
-//       <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
-//         {t(config.label)}
-//       </label>
-//     </div>
-//   );
-// };
+  return (
+    <div className="flex items-center gap-sm">
+      <Switch
+        id={switchId}
+        checked={isSelected}
+        disabled={mode === 'view'}
+        onCheckedChange={(checked) => {
+          listSharp.update((state) => {
+            setGlobalTopicSwitch(state.datasets, config, checked);
+          });
+        }}
+      />
+      <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
+        {t(config.label)}
+      </label>
+    </div>
+  );
+};

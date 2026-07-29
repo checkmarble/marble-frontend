@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import {
+  applyUniqueLexisNexisSectionDefault,
   DatasetSelectionContent,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
@@ -7,7 +8,7 @@ import {
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type ScreeningProviders } from '@app-builder/models/screening';
-import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
+import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { useSignalEffect } from '@preact/signals-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +47,13 @@ export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDataset
             </div>
           ))
           .otherwise(({ data }) => (
-            <FieldDatasetInner provider={data.provider} value={value} onChange={onChange} readOnly={readOnly} />
+            <FieldDatasetInner
+              provider={data.provider}
+              filters={data.filters}
+              value={value}
+              onChange={onChange}
+              readOnly={readOnly}
+            />
           ))}
       </div>
     </div>
@@ -55,16 +62,22 @@ export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDataset
 
 const FieldDatasetInner = ({
   provider,
+  filters,
   value,
   onChange,
   readOnly,
 }: {
   provider: ScreeningProviders;
+  filters: ListConfigFilters;
 } & FieldDatasetProps) => {
   const valueKey = useMemo(() => getDatasetsKey(value ?? []), [value]);
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
-    datasets: makeDatasetsMap(value ?? []),
+    datasets: (() => {
+      const initial = makeDatasetsMap(value ?? []);
+      applyUniqueLexisNexisSectionDefault(initial, filters, provider);
+      return initial;
+    })(),
     mode: readOnly ? 'view' : 'edit',
     provider,
   });
@@ -75,10 +88,12 @@ const FieldDatasetInner = ({
   lastValueKeyRef.current = valueKey;
 
   useEffect(() => {
-    const selectedKey = getDatasetsKey(getCanonicalSelectedKeys(listSharp.value.datasets));
-    if (selectedKey === valueKey) return;
-
     const nextDatasets = makeDatasetsMap(value ?? []);
+    applyUniqueLexisNexisSectionDefault(nextDatasets, filters, provider);
+    const expectedKey = getDatasetsKey(getCanonicalSelectedKeys(nextDatasets));
+    const selectedKey = getDatasetsKey(getCanonicalSelectedKeys(listSharp.value.datasets));
+    if (selectedKey === expectedKey) return;
+
     listSharp.update((state) => {
       for (const key of Object.keys(state.datasets)) {
         delete state.datasets[key];
@@ -87,7 +102,7 @@ const FieldDatasetInner = ({
         state.datasets[key] = isSelected;
       }
     });
-  }, [listSharp, value, valueKey]);
+  }, [listSharp, value, valueKey, filters, provider]);
 
   useSignalEffect(() => {
     const selectedDatasets = getCanonicalSelectedKeys(listSharp.value.datasets);

@@ -1,5 +1,6 @@
 import {
   applyAliveDeceasedDefaults,
+  applyUniqueLexisNexisSectionDefault,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
@@ -88,12 +89,17 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>(() => {
     const initial: Record<string, boolean> = {};
     applyAliveDeceasedDefaults(initial, listConfig, 'manual_search');
+    applyUniqueLexisNexisSectionDefault(initial, listConfig, provider);
     return getCanonicalSelectedKeys(initial);
   });
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
-    datasets: makeDatasetsMap(selectedDatasets),
+    datasets: (() => {
+      const initial = makeDatasetsMap(selectedDatasets);
+      applyUniqueLexisNexisSectionDefault(initial, listConfig, provider);
+      return initial;
+    })(),
     mode: 'edit',
     variant: 'popover',
     provider,
@@ -101,12 +107,15 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
 
   useEffect(() => {
     listSharp.update((state) => {
-      syncSharpDatasets(state.datasets, selectedDatasets);
+      syncSharpDatasets(state.datasets, selectedDatasets, { filters: listConfig, provider });
     });
-  }, [listSharp, selectedDatasetsKey, selectedDatasets]);
+  }, [listSharp, selectedDatasetsKey, selectedDatasets, listConfig, provider]);
 
   const form = useManualSearchForm({
     onSubmit: async (value) => {
+      listSharp.update((state) => {
+        applyUniqueLexisNexisSectionDefault(state.datasets, listConfig, provider);
+      });
       const datasets = getCanonicalSelectedKeys(listSharp.value.datasets);
 
       const submitValue: FreeformSearchInput = {
