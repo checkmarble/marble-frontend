@@ -14,12 +14,12 @@ import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn, ExpandableGroupTagLine, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { DecisionPanel } from '../CaseManager/DecisionPanel/DecisionPanel';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { FormatData } from '../FormatData';
 import { ScreeningHitsPanel } from '../Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
+import { DecisionPanel } from './DecisionPanel/DecisionPanel';
 
 const MAX_RULES_DISPLAYED = 3;
 

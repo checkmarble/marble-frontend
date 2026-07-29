@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PivotObjectDetails } from '../../CaseManager/PivotsPanel/PivotsPanelContent';
+import { PivotObjectDetails } from './PivotObjectDetails';
 
 const findDataFromPivotValue = (pivots: PivotObject[], pivotValue: string) => {
   return pivots.find((p) => p.pivotValue === pivotValue);

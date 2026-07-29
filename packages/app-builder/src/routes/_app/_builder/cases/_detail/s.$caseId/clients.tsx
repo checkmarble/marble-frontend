@@ -2,7 +2,7 @@ import { getPivotObjectKey } from '@app-builder/models/cases';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_new/clients')({
+export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/clients')({
   component: RouteComponent,
 });
 

@@ -42,11 +42,6 @@ const PublicEnvVarsSchema = z.object({
 
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
-
-  CASE_MANAGER_V2_ENABLED: z.string().optional(),
-
-  // TFA enrollment gating: comma-separated list of org UUIDs, or "all"
-  ENABLE_TFA: z.string().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -101,10 +96,6 @@ interface ServerEnvVars {
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
-
-  CASE_MANAGER_V2_ENABLED?: string;
-
-  ENABLE_TFA?: string;
 }
 
 /**

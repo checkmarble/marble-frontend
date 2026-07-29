@@ -1,4 +1,4 @@
-import { ContinuousScreeningPage } from '@app-builder/components/CaseManagerV2/ContinuousScreeningPage';
+import { ContinuousScreeningPage } from '@app-builder/components/CaseManager/ContinuousScreeningPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, redirect } from '@tanstack/react-router';

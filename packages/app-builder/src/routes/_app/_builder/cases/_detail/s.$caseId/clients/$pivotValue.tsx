@@ -1,8 +1,8 @@
-import { CaseManagerClientsPage } from '@app-builder/components/CaseManagerV2/ClientsPage';
+import { CaseManagerClientsPage } from '@app-builder/components/CaseManager/ClientsPage';
 import { getPivotObjectKey } from '@app-builder/models/cases';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_new/clients/$pivotValue')({
+export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue')({
   beforeLoad: ({ context, params }) => {
     const { pivotObjects } = context;
 
