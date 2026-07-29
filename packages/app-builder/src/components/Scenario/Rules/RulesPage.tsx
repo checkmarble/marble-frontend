@@ -204,12 +204,13 @@ type ScenarioRuleRowProps = {
 
 function ScenarioRuleRow({ rule, scenario, editorMode, language, org, onEditRequest }: ScenarioRuleRowProps) {
   const { t } = useTranslation(['common', 'scenarios']);
+  const isExpandable = editorMode === 'view';
   const [open, setOpen] = useState(false);
 
   return (
     <Collapsible.Root
-      open={open}
-      onOpenChange={setOpen}
+      open={isExpandable && open}
+      onOpenChange={isExpandable ? setOpen : undefined}
       className="overflow-hidden grid grid-cols-subgrid col-span-full group/table-row hover:bg-purple-background-light cursor-pointer "
       onClick={handleRowClick}
       onKeyDown={handleRowKeyDown}
