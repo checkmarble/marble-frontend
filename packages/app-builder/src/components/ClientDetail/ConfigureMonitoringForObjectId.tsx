@@ -33,6 +33,7 @@ export const ConfigureMonitoringForObjectId = ({
   const form = useForm({
     defaultValues: {
       configStableIds: activeStableIds,
+      skipScreen: true,
     },
     onSubmit: async ({ value }) => {
       await updateMutation.mutateAsync(
@@ -40,6 +41,7 @@ export const ConfigureMonitoringForObjectId = ({
           objectType,
           objectId,
           configStableIds: value.configStableIds,
+          skipScreen: value.skipScreen,
         },
         {
           onSuccess: () => toast.success(t('common:success.save')),
@@ -51,6 +53,7 @@ export const ConfigureMonitoringForObjectId = ({
   });
 
   const selectedStableIds = useStore(form.store, (state) => state.values.configStableIds);
+  const skipScreen = useStore(form.store, (state) => state.values.skipScreen);
   const isDirty = useStore(form.store, (state) => state.isDirty);
 
   const eligibleConfigurations = useMemo(() => {
@@ -68,7 +71,7 @@ export const ConfigureMonitoringForObjectId = ({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
-      form.reset({ configStableIds: activeStableIds });
+      form.reset({ configStableIds: activeStableIds, skipScreen: true });
     }
     setOpen(nextOpen);
   };
@@ -144,8 +147,12 @@ export const ConfigureMonitoringForObjectId = ({
               </MenuCommand.Menu>
             </div>
             <div className="flex items-center gap-sm">
-              <Switch id="skip-initial-screening" checked disabled />
-              <label htmlFor="skip-initial-screening" className="text-s text-grey-secondary">
+              <Switch
+                id="skip-initial-screening"
+                checked={skipScreen}
+                onCheckedChange={(checked) => form.setFieldValue('skipScreen', checked)}
+              />
+              <label htmlFor="skip-initial-screening" className="text-s text-grey-primary">
                 {t('client360:client_detail.monitoring_hits.skip_initial_screening')}
               </label>
             </div>

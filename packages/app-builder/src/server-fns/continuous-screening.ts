@@ -113,6 +113,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
       objectType: z.string(),
       objectId: z.string(),
       configStableIds: z.array(z.string()),
+      skipScreen: z.boolean(),
     }),
   )
   .handler(async ({ context, data }) => {
@@ -154,6 +155,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
           objectType: data.objectType,
           objectId: data.objectId,
           configStableId,
+          skipScreen: data.skipScreen,
         }),
       ),
     ]);

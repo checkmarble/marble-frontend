@@ -723,6 +723,9 @@ components:
           type: string
         object_payload:
           type: object
+        skip_screen:
+          type: boolean
+          description: Whether to skip screening the object immediately when adding it under monitoring
       oneOf:
         - required:
             - object_id

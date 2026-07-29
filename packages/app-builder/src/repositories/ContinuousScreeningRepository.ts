@@ -16,6 +16,7 @@ import {
   ListContinuousScreeningDatasetUpdatesParams,
   ListContinuousScreeningUpdateJobsParams,
 } from '@app-builder/models/continuous-screening';
+import { isNotFoundHttpError } from '@app-builder/models/http-errors';
 import { adaptPagination, type PaginatedResponse } from '@app-builder/models/pagination';
 
 export interface ContinuousScreeningRepository {
@@ -36,7 +37,12 @@ export interface ContinuousScreeningRepository {
   ): Promise<ContinuousScreeningConfig>;
   getConfiguration(stableId: string): Promise<ContinuousScreeningConfig>;
   listObjects(filters: { objectType: string; objectId: string }): Promise<ContinuousScreeningObject[]>;
-  createObject(payload: { objectType: string; objectId: string; configStableId: string }): Promise<void>;
+  createObject(payload: {
+    objectType: string;
+    objectId: string;
+    configStableId: string;
+    skipScreen?: boolean;
+  }): Promise<void>;
   deleteObject(payload: { objectType: string; objectId: string; configStableId: string }): Promise<void>;
   updateMatchStatus(payload: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }): Promise<any>;
   dismiss(id: string): Promise<void>;
@@ -110,19 +116,26 @@ export function makeGetContinuousScreeningRepository() {
       });
       return objects.map(adaptContinuousScreeningObject);
     },
-    createObject: async ({ objectType, objectId, configStableId }) => {
+    createObject: async ({ objectType, objectId, configStableId, skipScreen }) => {
       await marbleCoreApiClient.createContinuousScreeningObject({
         object_type: objectType,
         object_id: objectId,
         config_stable_id: configStableId,
+        ...(skipScreen !== undefined ? { skip_screen: skipScreen } : {}),
       });
     },
     deleteObject: async ({ objectType, objectId, configStableId }) => {
-      await marbleCoreApiClient.deleteContinuousScreeningObject({
-        object_type: objectType,
-        object_id: objectId,
-        config_stable_id: configStableId,
-      });
+      try {
+        await marbleCoreApiClient.deleteContinuousScreeningObject({
+          object_type: objectType,
+          object_id: objectId,
+          config_stable_id: configStableId,
+        });
+      } catch (error) {
+        // Already removed — treat as success so concurrent create/delete diffs stay resilient.
+        if (isNotFoundHttpError(error)) return;
+        throw error;
+      }
     },
     updateMatchStatus: async ({ matchId, status, comment }) => {
       await marbleCoreApiClient.updateContinuousScreeningMatch(matchId, {
