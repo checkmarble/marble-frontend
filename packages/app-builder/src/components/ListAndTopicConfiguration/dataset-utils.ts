@@ -198,6 +198,65 @@ export function getDatasetNames(section: SectionData) {
   return (section.datasets ?? []).flatMap((g) => g.datasets.map((d) => d.name));
 }
 
+// One bullet item in a category row: a single dataset, or a whole topic-group whose
+// selected titles are summarized together (e.g. "Asia, Europe, +3").
+export type DatasetBulletItem = { id: string; titles: string[] };
+export type CategoryDatasetSummary = { category: ScreeningCategory; items: DatasetBulletItem[] };
+
+/**
+ * Turns a config's flat list of selected composite keys (`${section}:dataset:${name}` /
+ * `${section}:topic:${group}:${name}`) into per-category bullet items, resolving titles from
+ * the normalized list config. Each dataset becomes its own bullet item; topics are grouped by
+ * their topic-group into a single bullet item. Categories are ordered by first appearance in
+ * `selectedKeys`.
+ */
+export function buildCategoryDatasetSummaries(
+  selectedKeys: string[],
+  filters: ListConfigFilters,
+  formatItemName: (item: { name: string; title?: string }) => string,
+): CategoryDatasetSummary[] {
+  const selected = new Set(selectedKeys);
+
+  const orderedCategories: ScreeningCategory[] = [];
+  for (const key of selectedKeys) {
+    const category = key.split(':')[0] as ScreeningCategory;
+    if (filters[category] && !orderedCategories.includes(category)) {
+      orderedCategories.push(category);
+    }
+  }
+
+  return orderedCategories.flatMap((category) => {
+    const section = filters[category];
+    if (!section) return [];
+
+    const items: DatasetBulletItem[] = [];
+
+    for (const group of section.datasets ?? []) {
+      for (const dataset of group.datasets) {
+        if (selected.has(`${category}:dataset:${dataset.name}`)) {
+          items.push({ id: `dataset:${dataset.name}`, titles: [formatItemName(dataset)] });
+        }
+      }
+    }
+
+    const topicGroups: Record<string, { name: string; title: string }[]> = {
+      ...section.topics,
+      ...Object.fromEntries(Object.entries(section.conditionalTopics ?? {}).map(([g, ct]) => [g, ct.items])),
+    };
+
+    for (const [group, topics] of Object.entries(topicGroups)) {
+      const titles = topics
+        .filter((topic) => selected.has(`${category}:topic:${group}:${topic.name}`))
+        .map((topic) => formatItemName(topic));
+      if (titles.length > 0) {
+        items.push({ id: `topic:${group}`, titles });
+      }
+    }
+
+    return items.length > 0 ? [{ category, items }] : [];
+  });
+}
+
 const FILTER_TRANSLATION_MAP = {
   'filter.pep.category.govt_branch_member': 'continuousScreening:filter.pep.category.govt_branch_member',
   'filter.pep.category.family_member': 'continuousScreening:filter.pep.category.family_member',

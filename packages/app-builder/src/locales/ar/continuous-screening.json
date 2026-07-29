@@ -193,6 +193,7 @@
   "review.search_parameters_subtitle": "معلمات البحث",
   "review.search_tag.object_added": "بحث أولي",
   "review.search_tag.object_updated": "بحث عند التحديث",
+  "review.source_type.screening_lists": "قوائم الفحص",
   "success.dismissed": "تم تجاهل التنبيه بنجاح",
   "topics.kind.primary": "أشخاص ذوو نفوذ مباشر فقط (استبعد الأقارب)",
   "topics.status.exclude_inactive": "الأنشطة الحالية فقط (أشخاص ذوو نفوذ مباشر فقط)",

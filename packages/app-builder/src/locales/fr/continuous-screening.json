@@ -189,6 +189,7 @@
   "review.search_parameters_subtitle": "Paramètres de recherche",
   "review.search_tag.object_added": "Recherche initiale",
   "review.search_tag.object_updated": "Alerte suite à mise à jour de l'entité",
+  "review.source_type.screening_lists": "Listes de filtrage",
   "success.dismissed": "Alerte ignorée avec succès",
   "topics.kind.primary": "PPE directs uniquement (exclut les proches)",
   "topics.status.exclude_inactive": "Positions actives uniquement (s'applique uniquement aux PPE directs)",

@@ -12,7 +12,7 @@ const iconColorClassName = {
   yellow: 'text-yellow-primary',
 } as const;
 
-const callout = cva('text-s flex flex-row items-center gap-sm rounded-sm p-sm font-normal', {
+const callout = cva('text-s grid grid-cols-[2px_1fr] rounded-md font-normal overflow-hidden', {
   variants: {
     /**
      * Outlined variant is usefull when you want to use the callout on non white background
@@ -22,13 +22,6 @@ const callout = cva('text-s flex flex-row items-center gap-sm rounded-sm p-sm fo
       outlined: 'bg-surface-card border-grey-border border',
       soft: 'bg-grey-background-light',
     },
-    color: {
-      grey: null,
-      purple: 'border-s-2 border-s-purple-primary',
-      red: 'border-s-2 border-s-red-primary',
-      orange: 'border-s-2 border-s-orange-primary',
-      yellow: 'border-s-2 border-s-yellow-primary',
-    },
     bordered: {
       true: 'border border-grey-border',
       false: null,
@@ -36,7 +29,22 @@ const callout = cva('text-s flex flex-row items-center gap-sm rounded-sm p-sm fo
   },
 });
 
-interface CalloutProps extends VariantProps<typeof callout>, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
+const calloutBorder = cva('w-0.5', {
+  variants: {
+    color: {
+      grey: 'bg-grey-border',
+      purple: 'bg-purple-primary',
+      red: 'bg-red-primary',
+      orange: 'bg-orange-primary',
+      yellow: 'bg-yellow-primary',
+    },
+  },
+});
+
+interface CalloutProps
+  extends VariantProps<typeof callout>,
+    VariantProps<typeof calloutBorder>,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   icon?: IconName;
   iconColor?: keyof typeof iconColorClassName;
 }
@@ -54,9 +62,12 @@ export function Callout({
   if (!children) return null;
 
   return (
-    <div className={callout({ color, variant, className, bordered })} {...otherProps}>
-      <Icon icon={icon} className={cn('size-4 shrink-0', iconColorClassName[iconColor ?? 'grey'])} />
-      {children}
+    <div className={callout({ variant, className, bordered })} {...otherProps}>
+      <div className={calloutBorder({ color })} />
+      <div className="flex flex-row items-center gap-sm p-sm">
+        <Icon icon={icon} className={cn('size-4 shrink-0', iconColorClassName[iconColor ?? 'grey'])} />
+        {children}
+      </div>
     </div>
   );
 }

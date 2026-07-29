@@ -1,53 +1,54 @@
+import { Callout } from '@app-builder/components';
+import { RadioItem } from '@app-builder/components/Screenings/StatusRadioGroup';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { Screening, type ScreeningMatch } from '@app-builder/models/screening';
-import {
-  type ReviewScreeningMatchPayload,
-  reviewScreeningMatchPayloadSchema,
-  useReviewScreeningMatchMutation,
-} from '@app-builder/queries/screening/review-screening-match';
+import { ContinuousScreeningMatch } from '@app-builder/models/continuous-screening';
+import { useReviewContinuousScreeningMatchMutation } from '@app-builder/queries/continuous-screening/review-match';
+import { ReviewScreeningMatchPayload } from '@app-builder/queries/screening/review-screening-match';
+import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { handleSubmit } from '@app-builder/utils/form';
 import { RadioGroup, RadioProvider } from '@ariakit/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal, Switch, TextArea } from 'ui-design-system';
+import { Button, MenuCommand, Modal, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { RadioItem } from './StatusRadioGroup';
-import { screeningsI18n } from './screenings-i18n';
 
-export function ReviewMatchPopover({
-  screening,
-  screeningMatch,
-  open,
-  onOpenChange,
-}: {
-  screening: Screening;
-  screeningMatch: ScreeningMatch;
+type ReviewScreeningMatchProps = {
+  screeningMatch: ContinuousScreeningMatch;
+  automaticallyConfirmScreening?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
-  const { t } = useTranslation(['common', ...screeningsI18n]);
-  const reviewScreeningMatchMutation = useReviewScreeningMatchMutation();
+};
+
+export const ReviewScreeningMatch = ({
+  screeningMatch,
+  automaticallyConfirmScreening = false,
+  open,
+  onOpenChange,
+}: ReviewScreeningMatchProps) => {
+  const { t } = useTranslation(['common', 'screenings']);
+  const reviewScreeningMatchMutation = useReviewContinuousScreeningMatchMutation();
   const revalidate = useLoaderRevalidator();
 
   const form = useForm({
     defaultValues: {
       matchId: screeningMatch.id,
-      status: 'no_hit',
+      status: 'confirmed_hit',
       comment: '',
-      whitelist: true,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      try {
-        await reviewScreeningMatchMutation.mutateAsync(value);
-        onOpenChange(false);
-        revalidate();
-      } catch {
-        toast.error(t('common:errors.unknown'));
-      }
+      reviewScreeningMatchMutation
+        .mutateAsync(value)
+        .then(() => {
+          onOpenChange(false);
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
-      onSubmit: reviewScreeningMatchPayloadSchema,
+      onSubmit: reviewMatchPayloadSchema,
     },
   });
 
@@ -94,6 +95,9 @@ export function ReviewMatchPopover({
                     <span className="text-xs">{t('screenings:match.status.no_hit')}</span>
                   </RadioItem>
                 </RadioGroup>
+                {currentStatus === 'confirmed_hit' && automaticallyConfirmScreening ? (
+                  <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
+                ) : null}
               </RadioProvider>
             )}
           </form.Field>
@@ -109,25 +113,6 @@ export function ReviewMatchPopover({
               />
             )}
           </form.Field>
-
-          {currentStatus === 'no_hit' && screening.uniqueCounterpartyIdentifier ? (
-            <form.Field name="whitelist">
-              {(field) => {
-                return (
-                  <div className="flex flex-col gap-sm">
-                    <span className="flex items-center gap-sm">
-                      <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
-                      {t('screenings:review_modal.whitelist_label')}
-                    </span>
-                    <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-sm border p-sm">
-                      <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
-                      <span>{screening.uniqueCounterpartyIdentifier}</span>
-                    </div>
-                  </div>
-                );
-              }}
-            </form.Field>
-          ) : null}
         </form>
 
         <Modal.Footer>
@@ -142,4 +127,4 @@ export function ReviewMatchPopover({
       </MenuCommand.Content>
     </MenuCommand.Menu>
   );
-}
+};
