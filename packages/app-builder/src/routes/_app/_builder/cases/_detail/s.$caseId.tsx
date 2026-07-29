@@ -1,5 +1,5 @@
-import { CommentContext } from '@app-builder/components/CaseManagerV2/hooks/comment-context';
-import { CaseManagerPageLayout } from '@app-builder/components/CaseManagerV2/PageLayout';
+import { CommentContext } from '@app-builder/components/CaseManager/hooks/comment-context';
+import { CaseManagerPageLayout } from '@app-builder/components/CaseManager/PageLayout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
@@ -36,7 +36,7 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
     };
   });
 
-export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_new')({
+export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId')({
   beforeLoad: async ({ params }) => {
     return beforeLoadFn({ data: { caseId: params.caseId } });
   },

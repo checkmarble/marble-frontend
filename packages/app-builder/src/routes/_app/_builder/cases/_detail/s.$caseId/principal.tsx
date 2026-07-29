@@ -1,7 +1,7 @@
-import { CaseManagerPrincipalPage } from '@app-builder/components/CaseManagerV2/PrincipalPage';
+import { CaseManagerPrincipalPage } from '@app-builder/components/CaseManager/PrincipalPage';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_new/principal')({
+export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/principal')({
   component: RouteComponent,
 });
 

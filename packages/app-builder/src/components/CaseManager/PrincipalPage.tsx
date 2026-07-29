@@ -1,7 +1,10 @@
 import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientObjectTagList';
-import { AiReviewCard } from '@app-builder/components/CaseManagerV2/AiReview/AiReviewCard';
-import { UserScoreBadge } from '@app-builder/components/CaseManagerV2/UserScore/UserScoreBadge';
+import { CaseStatusBadgeV2 } from '@app-builder/components/Cases';
 import { CaseAlerts } from '@app-builder/components/Cases/CaseAlerts';
+import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
+import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
+import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
+import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { Panel } from '@app-builder/components/Panel';
 import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
@@ -21,16 +24,13 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseInvestigation';
-import { CaseStatusBadgeV2 } from '../Cases';
-import { DataFields } from '../Data/DataVisualisation/DataFields';
-import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
-import { pageLayoutGutter } from '../Page/page-layout';
+import { AiReviewCard } from './AiReview/AiReviewCard';
 import { CaseInfo } from './CaseInfo';
-import { DataExplorerPanel } from './DataExplorerPanel';
+import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
 import { EscalateCaseButton } from './EscalateCaseButton';
 import { NavigationOptions } from './NavigationOptions';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
+import { UserScoreBadge } from './UserScore/UserScoreBadge';
 import { getClientDisplayInfo } from './utils/client';
 
 export type CaseManagerPrincipalPageProps = {
