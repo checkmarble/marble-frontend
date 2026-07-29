@@ -13,6 +13,7 @@ export interface ScenarioIterationRuleMetadata {
   displayOrder: number;
   name: string;
   description: string;
+  aiDescription: string;
   ruleGroup: string;
   scoreModifier: number;
   createdAt: string;
@@ -31,6 +32,7 @@ export function adaptScenarioIterationRuleMetadata(
     displayOrder: dto.display_order,
     name: dto.name,
     description: dto.description,
+    aiDescription: dto.ai_description,
     ruleGroup: dto.rule_group,
     scoreModifier: dto.score_modifier,
     createdAt: dto.created_at,
@@ -44,6 +46,7 @@ export function adaptScenarioIterationRule(dto: ScenarioIterationRuleDto): Scena
     displayOrder: dto.display_order,
     name: dto.name,
     description: dto.description,
+    aiDescription: dto.ai_description,
     ruleGroup: dto.rule_group,
     formula: dto.formula_ast_expression ? adaptAstNode(dto.formula_ast_expression) : null,
     scoreModifier: dto.score_modifier,
