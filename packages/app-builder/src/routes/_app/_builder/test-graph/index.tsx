@@ -1,4 +1,8 @@
 import { Page } from '@app-builder/components';
+import { CustomerGraphProvider } from '@app-builder/components/Graph/CustomerGraphContext';
+import { GraphImpl } from '@app-builder/components/Graph/GraphImpl';
+import { GraphSelectionToolbar } from '@app-builder/components/Graph/GraphSelectionToolbar';
+import { GraphSettingsPanel } from '@app-builder/components/Graph/GraphSettingsPanel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
@@ -7,11 +11,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useState } from 'react';
 import { Card, cn } from 'ui-design-system';
-import { CustomerGraphProvider } from '../../../../components/Graph/CustomerGraphContext';
-import { GraphImpl } from '../../../../components/Graph/GraphImpl';
-import { GraphSelectionToolbar } from '../../../../components/Graph/GraphSelectionToolbar';
-import { GraphSettingsPanel } from '../../../../components/Graph/GraphSettingsPanel';
-import { graphData } from './data';
+import { graphData } from './-data';
 
 const HOP_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 

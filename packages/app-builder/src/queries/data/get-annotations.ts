@@ -10,7 +10,12 @@ const EMPTY_GROUPED_ANNOTATIONS: GroupedAnnotations = {
   risk_tags: [],
 };
 
-export const useGetAnnotationsQuery = (objectType: string, objectId: string, loadThumbnails: boolean = false) => {
+export const useGetAnnotationsQuery = (
+  objectType: string,
+  objectId: string,
+  loadThumbnails: boolean = false,
+  enabled: boolean = true,
+) => {
   const getAnnotations = useServerFn(getAnnotationsFn);
 
   return useQuery({
@@ -21,6 +26,6 @@ export const useGetAnnotationsQuery = (objectType: string, objectId: string, loa
       }>);
       return result ?? { annotations: EMPTY_GROUPED_ANNOTATIONS };
     },
-    enabled: !!objectType && !!objectId,
+    enabled: enabled && !!objectType && !!objectId,
   });
 };

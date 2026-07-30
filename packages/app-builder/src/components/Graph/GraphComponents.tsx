@@ -7,68 +7,27 @@ import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scorin
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import {
   BaseEdge,
-  type Edge,
   EdgeLabelRenderer,
   type EdgeProps,
   getBezierPath,
   Handle,
-  type Node,
   type NodeProps,
   Position,
 } from '@xyflow/react';
 import { Checkbox, cn, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
-import { type NonPersonSemantic } from './data-model-map';
+import { type GraphRfEdge, type GraphRfNode, type PersonRfNode, type PivotRfNode } from './graph-rf-types';
 import { resolveTitle } from './resolve-object-title';
 
-export type PersonRfData = {
-  label: string;
-  subEntity: FtmEntityPersonOption;
-  isStart: boolean;
-  objectType: string;
-  objectId: string;
-};
-
-export type GroupRfData = {
-  semanticType: NonPersonSemantic;
-  label: string;
-  memberCount: number;
-};
-
-export type EntityRfData = {
-  label: string;
-  /** Table alias or name shown as the type caption */
-  typeLabel: string;
-  semanticType: NonPersonSemantic;
-  rawType: string;
-  objectType: string;
-  objectId: string;
-  groupId?: string;
-  canCollapse?: boolean;
-};
-
-export type PivotRfData = {
-  label: string;
-  rawType: string;
-};
-
-export type TypeBundleRfData = {
-  groupId: string;
-  semanticType: NonPersonSemantic;
-  label: string;
-  count: number;
-};
-
-export type PersonRfNode = Node<PersonRfData, 'person'>;
-/** Not named `group` — that collides with React Flow's built-in parent-group node styles. */
-export type GroupRfNode = Node<GroupRfData, 'typeGroup'>;
-export type EntityRfNode = Node<EntityRfData, 'entity'>;
-export type PivotRfNode = Node<PivotRfData, 'pivot'>;
-export type TypeBundleRfNode = Node<TypeBundleRfData, 'typeBundle'>;
-export type GraphRfNode = PersonRfNode | GroupRfNode | EntityRfNode | PivotRfNode | TypeBundleRfNode;
-
-export type GraphRfEdge = Edge<{ kind?: string }, 'link' | 'back' | 'match'>;
+export type {
+  GraphRfEdge,
+  GraphRfNode,
+  PersonRfData,
+  PersonRfNode,
+  PivotRfData,
+  PivotRfNode,
+} from './graph-rf-types';
 
 type HandleSide = 't' | 'r' | 'b' | 'l';
 
@@ -133,25 +92,12 @@ export function FourHandles() {
 function subEntityIcon(subEntity: FtmEntityPersonOption): IconName {
   switch (subEntity) {
     case 'moral':
-      return 'dns';
+      return 'building';
     case 'generic':
       return 'users';
     case 'natural':
     default:
       return 'person';
-  }
-}
-
-function entityIcon(semanticType: NonPersonSemantic): IconName {
-  switch (semanticType) {
-    case 'account':
-      return 'account-circle';
-    case 'transaction':
-      return 'decision';
-    case 'event':
-      return 'world';
-    default:
-      return 'tip';
   }
 }
 
@@ -169,20 +115,16 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
   const displayLabel =
     detailsQuery.data?.data != null ? resolveTitle(detailsQuery.data.data, data.objectId) : data.label;
 
-  const scoreQuery = useScoreLatestQuery(data.objectType, data.objectId);
-  const settingsQuery = useScoringSettingsQuery();
-  const annotationsQuery = useGetAnnotationsQuery(data.objectType, data.objectId);
+  const scoreQuery = useScoreLatestQuery(data.objectType, data.objectId, showRiskScore);
+  const settingsQuery = useScoringSettingsQuery(showRiskScore);
+  const annotationsQuery = useGetAnnotationsQuery(data.objectType, data.objectId, false, showTags);
 
   const score = scoreQuery.data?.score;
   const settings = settingsQuery.data?.settings;
   const maxRiskLevel = settings?.maxRiskLevel as 3 | 4 | 5 | 6 | undefined;
   const scoreColor =
     score && maxRiskLevel ? (SCORING_LEVELS_COLORS[maxRiskLevel][score.risk_level] ?? undefined) : undefined;
-  const scoreLabel =
-    score && maxRiskLevel
-      ? // ? t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][score.risk_level] ?? score.risk_level.toString())
-        score.risk_level.toString()
-      : undefined;
+  const scoreLabel = score && maxRiskLevel ? score.risk_level.toString() : undefined;
 
   const tagIds = annotationsQuery.data?.annotations.tags.map((annotation) => annotation.payload.tag_id) ?? [];
   const tags = tagIds
@@ -293,76 +235,6 @@ export function PersonNode({ data }: NodeProps<PersonRfNode>) {
   );
 }
 
-export function GroupNode({ data }: NodeProps<GroupRfNode>) {
-  return (
-    <div className="border-purple-border bg-grey-white text-grey-primary relative w-fit rounded-md border px-md py-sm text-sm shadow-sm">
-      <FourHandles />
-      <span>
-        {data.label}
-        {data.memberCount > 0 ? ` (${data.memberCount})` : ''}
-      </span>
-    </div>
-  );
-}
-
-export function TypeBundleNode({ data }: NodeProps<TypeBundleRfNode>) {
-  const { expandGroup } = useCustomerGraph();
-
-  return (
-    <div className="border-purple-border bg-purple-background-light text-purple-primary relative flex w-fit max-w-52 items-center gap-xs rounded-md border px-sm py-xs text-xs shadow-sm">
-      <FourHandles />
-      <Icon icon={entityIcon(data.semanticType)} className="size-3.5 shrink-0" />
-      <div className="min-w-0">
-        <div className="font-medium">{data.label}</div>
-      </div>
-      <span className="bg-purple-primary shrink-0 rounded-sm px-1 py-px text-xs leading-tight font-semibold text-white">
-        {data.count}
-      </span>
-      <button
-        type="button"
-        className="nodrag nopan border-purple-border hover:bg-purple-background flex size-5 shrink-0 items-center justify-center rounded-sm border bg-white"
-        title="Expand group"
-        aria-label={`Expand ${data.label} group`}
-        onClick={(e) => {
-          e.stopPropagation();
-          expandGroup(data.groupId);
-        }}
-      >
-        <Icon icon="plus" className="size-3" />
-      </button>
-    </div>
-  );
-}
-
-export function EntityNode({ data }: NodeProps<EntityRfNode>) {
-  const { collapseGroup } = useCustomerGraph();
-
-  return (
-    <div className="border-grey-border bg-grey-white text-grey-primary relative flex w-fit max-w-48 items-center gap-xs rounded-md border px-sm py-xs text-xs shadow-sm">
-      <FourHandles />
-      <Icon icon={entityIcon(data.semanticType)} className="size-3.5 shrink-0 text-grey-secondary" />
-      <div className="min-w-0">
-        <div className="text-grey-secondary text-xs leading-none">{data.typeLabel}</div>
-        <div className="truncate font-medium">{data.label}</div>
-      </div>
-      {data.canCollapse && data.groupId ? (
-        <button
-          type="button"
-          className="nodrag nopan border-grey-border hover:bg-grey-background flex size-5 shrink-0 items-center justify-center rounded-sm border"
-          title="Collapse group"
-          aria-label={`Collapse ${data.typeLabel} group`}
-          onClick={(e) => {
-            e.stopPropagation();
-            collapseGroup(data.groupId!);
-          }}
-        >
-          <Icon icon="minus" className="size-3" />
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
 export function PivotNode({ data }: NodeProps<PivotRfNode>) {
   return (
     <div className="border-orange-border bg-orange-background-light text-orange-primary relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm">
@@ -413,7 +285,9 @@ function GraphEdge({
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               fontSize: '6px',
-              padding: '2px 4px',
+              padding: '4px',
+              lineHeight: '1',
+              maxWidth: '4rem',
             }}
           >
             {label}
@@ -434,17 +308,6 @@ export function LinkEdge(props: EdgeProps<GraphRfEdge>) {
   );
 }
 
-export function BackEdge(props: EdgeProps<GraphRfEdge>) {
-  return (
-    <GraphEdge
-      {...props}
-      style={{ ...props.style, strokeDasharray: '6 4' }}
-      strokeClassName="!stroke-purple-primary/40 !stroke-[1.5]"
-      labelClassName="bg-purple-background-light text-purple-primary border border-purple-border"
-    />
-  );
-}
-
 export function MatchEdge(props: EdgeProps<GraphRfEdge>) {
   return (
     <GraphEdge
@@ -458,14 +321,10 @@ export function MatchEdge(props: EdgeProps<GraphRfEdge>) {
 
 export const graphNodeTypes = {
   person: PersonNode,
-  typeGroup: GroupNode,
-  entity: EntityNode,
   pivot: PivotNode,
-  typeBundle: TypeBundleNode,
 };
 
 export const graphEdgeTypes = {
   link: LinkEdge,
-  back: BackEdge,
   match: MatchEdge,
 };

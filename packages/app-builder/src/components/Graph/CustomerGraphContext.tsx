@@ -11,8 +11,6 @@ export const GRAPH_ATTRIBUTE_LABELS: Record<GraphAttribute, string> = {
   email: 'Email',
 };
 
-export type EventFilter = 'all' | 'none';
-
 export type SelectedGraphObject = {
   objectType: string;
   objectId: string;
@@ -38,9 +36,7 @@ export type CustomerGraphContextValue = {
   showCompanies: boolean;
   setShowCompanies: (value: boolean) => void;
 
-  // Event / attribute filters
-  eventFilter: EventFilter;
-  setEventFilter: (value: EventFilter) => void;
+  // Attribute filters (pivots)
   attributes: GraphAttribute[];
   setAttributes: (value: GraphAttribute[]) => void;
   toggleAttribute: (attribute: GraphAttribute) => void;
@@ -65,14 +61,6 @@ export type CustomerGraphContextValue = {
   toggleCheckedPerson: (person: SelectedGraphObject) => void;
   isPersonChecked: (person: SelectedGraphObject) => boolean;
   clearCheckedPersons: () => void;
-
-  // Type-bundle expand/collapse
-  expandedGroupIds: Set<string>;
-  expandGroup: (groupId: string) => void;
-  collapseGroup: (groupId: string) => void;
-  expandAllGroups: (groupIds: string[]) => void;
-  collapseAllGroups: () => void;
-  resetExpandedGroups: () => void;
 };
 
 const CustomerGraphContext = createSimpleContext<CustomerGraphContextValue>('CustomerGraph');
@@ -88,7 +76,6 @@ export function CustomerGraphProvider({
 }) {
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
-  const [eventFilter, setEventFilter] = useState<EventFilter>('all');
   const [attributes, setAttributes] = useState<GraphAttribute[]>([...GRAPH_ATTRIBUTES]);
   const [showRiskScore, setShowRiskScore] = useState(true);
   const [showTags, setShowTags] = useState(false);
@@ -96,7 +83,6 @@ export function CustomerGraphProvider({
   const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
   const [selectionMode, setSelectionMode] = useState(false);
   const [checkedPersons, setCheckedPersons] = useState<Set<string>>(() => new Set());
-  const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(() => new Set());
 
   const toggleAttribute = useCallback((attribute: GraphAttribute) => {
     setAttributes((prev) => (prev.includes(attribute) ? prev.filter((a) => a !== attribute) : [...prev, attribute]));
@@ -133,44 +119,12 @@ export function CustomerGraphProvider({
     [checkedPersons],
   );
 
-  const expandGroup = useCallback((groupId: string) => {
-    setExpandedGroupIds((prev) => {
-      if (prev.has(groupId)) return prev;
-      const next = new Set(prev);
-      next.add(groupId);
-      return next;
-    });
-  }, []);
-
-  const collapseGroup = useCallback((groupId: string) => {
-    setExpandedGroupIds((prev) => {
-      if (!prev.has(groupId)) return prev;
-      const next = new Set(prev);
-      next.delete(groupId);
-      return next;
-    });
-  }, []);
-
-  const expandAllGroups = useCallback((groupIds: string[]) => {
-    setExpandedGroupIds(new Set(groupIds));
-  }, []);
-
-  const collapseAllGroups = useCallback(() => {
-    setExpandedGroupIds(new Set());
-  }, []);
-
-  const resetExpandedGroups = useCallback(() => {
-    setExpandedGroupIds(new Set());
-  }, []);
-
   const value = useMemo(
     () => ({
       showPersons,
       setShowPersons,
       showCompanies,
       setShowCompanies,
-      eventFilter,
-      setEventFilter,
       attributes,
       setAttributes,
       toggleAttribute,
@@ -189,17 +143,10 @@ export function CustomerGraphProvider({
       toggleCheckedPerson,
       isPersonChecked,
       clearCheckedPersons,
-      expandedGroupIds,
-      expandGroup,
-      collapseGroup,
-      expandAllGroups,
-      collapseAllGroups,
-      resetExpandedGroups,
     }),
     [
       showPersons,
       showCompanies,
-      eventFilter,
       attributes,
       toggleAttribute,
       showRiskScore,
@@ -213,12 +160,6 @@ export function CustomerGraphProvider({
       toggleCheckedPerson,
       isPersonChecked,
       clearCheckedPersons,
-      expandedGroupIds,
-      expandGroup,
-      collapseGroup,
-      expandAllGroups,
-      collapseAllGroups,
-      resetExpandedGroups,
     ],
   );
 

@@ -1,4 +1,6 @@
+import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { type DataModel } from '@app-builder/models/data-model';
+import Dagre from '@dagrejs/dagre';
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -11,40 +13,23 @@ import {
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
-import { type GraphData } from '../../routes/_app/_builder/test-graph/data';
+import { type GraphData } from '../../routes/_app/_builder/test-graph/-data';
 import { type CustomerGraphContextValue, type GraphAttribute, useCustomerGraph } from './CustomerGraphContext';
-import { createGraphTypeHelpers, type GraphTypeHelpers, type NonPersonSemantic } from './data-model-map';
+import { createGraphTypeHelpers } from './data-model-map';
 import {
-  BackEdge,
-  EntityNode,
   type GraphRfEdge,
   type GraphRfNode,
-  GroupNode,
   LinkEdge,
   MatchEdge,
   PersonNode,
   PivotNode,
-  TypeBundleNode,
   withBestHandles,
 } from './GraphComponents';
-import {
-  collectMultiMemberGroupIds,
-  type ExpandedLeaf,
-  type FlowGraph,
-  type GroupLeaf,
-  nodeKey,
-  type PersonLeaf,
-  projectExpandedView,
-  transformDataToFlow,
-} from './utils';
+import { bfsSpanningTreeEdges, toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
 
-const GROUP_RADIUS = 200;
-const PERSON_RADIUS = 380;
-const NESTED_GROUP_RADIUS = 160;
-const NESTED_PERSON_RADIUS = 300;
-const ENTITY_LAYER_RADIUS = 170;
-const PERSON_OUTER_EXTRA = 100;
+const DEFAULT_NODE_WIDTH = 180;
+const DEFAULT_NODE_HEIGHT = 56;
 
 export type GraphImplProps = {
   data: GraphData;
@@ -56,425 +41,83 @@ export type GraphImplProps = {
   maxExplorationHops?: number;
 };
 
-function polar(cx: number, cy: number, radius: number, angle: number) {
-  return { x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius };
-}
-
-function personLabel(leaf: PersonLeaf): string {
-  return leaf.node.id;
-}
-
-function groupNodeId(ownerKey: string, semanticType: NonPersonSemantic): string {
-  return `group:${ownerKey}:${semanticType}`;
-}
-
-function expandPerson(
-  leaf: PersonLeaf,
-  cx: number,
-  cy: number,
-  /** Angle from this person back toward its parent (undefined for root) */
-  inwardAngle: number | undefined,
-  expandedGroupIds: Set<string>,
-  nodes: GraphRfNode[],
-  edges: GraphRfEdge[],
-  typeHelpers: GraphTypeHelpers,
-) {
-  if (leaf.expanded) {
-    placeExpanded(leaf, leaf.expanded, cx, cy, inwardAngle, expandedGroupIds, nodes, edges, typeHelpers);
-    return;
-  }
-
-  const groups = [...leaf.groups.entries()];
-  if (groups.length === 0) return;
-
-  const ownerKey = nodeKey(leaf.node);
-  const isRoot = inwardAngle === undefined;
-  const groupRadius = isRoot ? GROUP_RADIUS : NESTED_GROUP_RADIUS;
-  const personRadius = isRoot ? PERSON_RADIUS : NESTED_PERSON_RADIUS;
-
-  // Root: full circle. Nested: fan outward (away from parent).
-  const outwardBase = isRoot ? -Math.PI / 2 : inwardAngle! + Math.PI;
-  const spread = isRoot ? Math.PI * 2 : Math.PI * 0.9;
-
-  groups.forEach(([semanticType, group], groupIndex) => {
-    const groupAngle = isRoot
-      ? -Math.PI / 2 + (Math.PI * 2 * groupIndex) / groups.length
-      : groups.length === 1
-        ? outwardBase
-        : outwardBase - spread / 2 + (spread * groupIndex) / (groups.length - 1);
-
-    const groupPos = polar(cx, cy, groupRadius, groupAngle);
-    const gId = groupNodeId(ownerKey, semanticType);
-    const firstMember = group.members[0];
-    const label = firstMember ? typeHelpers.getObjectTypeLabel(firstMember.type) : semanticType;
-
-    nodes.push({
-      id: gId,
-      position: groupPos,
-      type: 'typeGroup',
-      data: {
-        semanticType,
-        label,
-        memberCount: group.members.length,
-      },
-    });
-
-    edges.push({
-      id: `${ownerKey}->${gId}`,
-      source: ownerKey,
-      target: gId,
-      type: 'link',
-      data: { kind: 'link' },
-    });
-
-    placeGroupPersons(group, gId, cx, cy, groupAngle, personRadius, spread / Math.max(groups.length, 1), nodes, edges);
-
-    for (const [personKey, child] of group.persons) {
-      const childNode = nodes.find((n) => n.id === personKey);
-      if (!childNode) continue;
-      const childInward = Math.atan2(cy - childNode.position.y, cx - childNode.position.x);
-      expandPerson(
-        child,
-        childNode.position.x,
-        childNode.position.y,
-        childInward,
-        expandedGroupIds,
-        nodes,
-        edges,
-        typeHelpers,
-      );
-    }
-  });
-}
-
-function placeExpanded(
-  leaf: PersonLeaf,
-  expanded: ExpandedLeaf,
-  cx: number,
-  cy: number,
-  inwardAngle: number | undefined,
-  expandedGroupIds: Set<string>,
-  nodes: GraphRfNode[],
-  edges: GraphRfEdge[],
-  typeHelpers: GraphTypeHelpers,
-) {
-  const ownerKey = nodeKey(leaf.node);
-  if (expanded.nodes.size === 0 && expanded.persons.size === 0) return;
-
-  const projected = projectExpandedView(expanded, ownerKey, expandedGroupIds, typeHelpers);
-
-  // Adjacency on the projected graph for layout
-  const localAdj = new Map<string, string[]>();
-  const addAdj = (a: string, b: string) => {
-    const list = localAdj.get(a) ?? [];
-    list.push(b);
-    localAdj.set(a, list);
+function nodeMeasuredSize(node: GraphRfNode): { width: number; height: number } {
+  return {
+    width: node.measured?.width ?? node.width ?? DEFAULT_NODE_WIDTH,
+    height: node.measured?.height ?? node.height ?? DEFAULT_NODE_HEIGHT,
   };
-  for (const link of projected.links) {
-    const aLocal = link.from === ownerKey || projected.nodes.some((n) => n.id === link.from);
-    const bLocal = link.to === ownerKey || projected.nodes.some((n) => n.id === link.to);
-    if (aLocal && bLocal) {
-      addAdj(link.from, link.to);
-      addAdj(link.to, link.from);
-    }
-  }
-  // Include person attachments in spanning tree for angle assignment
-  for (const link of projected.links) {
-    if (expanded.persons.has(link.from) || expanded.persons.has(link.to)) {
-      addAdj(link.from, link.to);
-      addAdj(link.to, link.from);
-    }
-  }
-
-  const dist = new Map<string, number>([[ownerKey, 0]]);
-  const parent = new Map<string, string>();
-  const queue = [ownerKey];
-  while (queue.length > 0) {
-    const cur = queue.shift()!;
-    for (const nxt of localAdj.get(cur) ?? []) {
-      if (dist.has(nxt)) continue;
-      dist.set(nxt, (dist.get(cur) ?? 0) + 1);
-      parent.set(nxt, cur);
-      queue.push(nxt);
-    }
-  }
-
-  const children = new Map<string, string[]>();
-  for (const [child, p] of parent) {
-    const list = children.get(p) ?? [];
-    list.push(child);
-    children.set(p, list);
-  }
-
-  const sectorStart = inwardAngle === undefined ? -Math.PI : inwardAngle + Math.PI - Math.PI * 0.45;
-  const sectorWidth = inwardAngle === undefined ? Math.PI * 2 : Math.PI * 0.9;
-
-  let leafCursor = 0;
-  const leafCount = countSpanningLeaves(ownerKey, children);
-  const angles = new Map<string, number>();
-
-  function assignAngles(key: string): { min: number; max: number } {
-    const kids = children.get(key) ?? [];
-    if (kids.length === 0) {
-      const t = leafCount <= 1 ? 0.5 : (leafCursor + 0.5) / leafCount;
-      leafCursor += 1;
-      const angle = sectorStart + sectorWidth * t;
-      angles.set(key, angle);
-      return { min: angle, max: angle };
-    }
-    let min = Number.POSITIVE_INFINITY;
-    let max = Number.NEGATIVE_INFINITY;
-    for (const kid of kids) {
-      const range = assignAngles(kid);
-      min = Math.min(min, range.min);
-      max = Math.max(max, range.max);
-    }
-    angles.set(key, (min + max) / 2);
-    return { min, max };
-  }
-  assignAngles(ownerKey);
-
-  for (const viewNode of projected.nodes) {
-    const depth = dist.get(viewNode.id) ?? viewNode.depth;
-    const angle = angles.get(viewNode.id) ?? sectorStart + sectorWidth / 2;
-    const pos = polar(cx, cy, depth * ENTITY_LAYER_RADIUS, angle);
-
-    if (viewNode.kind === 'bundle') {
-      const group = expanded.typeGroups.find((g) => g.id === viewNode.groupId);
-      const firstKey = group?.memberKeys[0];
-      const firstNode = firstKey ? expanded.nodes.get(firstKey) : undefined;
-      const label = firstNode ? typeHelpers.getObjectTypeLabel(firstNode.type) : viewNode.semanticType;
-      nodes.push({
-        id: viewNode.id,
-        position: pos,
-        type: 'typeBundle',
-        data: {
-          groupId: viewNode.groupId,
-          semanticType: viewNode.semanticType,
-          label,
-          count: viewNode.count,
-        },
-      });
-    } else if (viewNode.kind === 'pivot') {
-      nodes.push({
-        id: viewNode.id,
-        position: pos,
-        type: 'pivot',
-        data: { label: viewNode.node.id, rawType: viewNode.node.type },
-      });
-    } else {
-      nodes.push({
-        id: viewNode.id,
-        position: pos,
-        type: 'entity',
-        data: {
-          label: viewNode.node.id,
-          typeLabel: typeHelpers.getObjectTypeLabel(viewNode.node.type),
-          semanticType: viewNode.semanticType,
-          rawType: viewNode.node.type,
-          objectType: viewNode.node.type,
-          objectId: viewNode.node.id,
-          groupId: viewNode.groupId,
-          canCollapse: viewNode.canCollapse,
-        },
-      });
-    }
-  }
-
-  const maxLocalDist = projected.nodes.reduce((max, n) => Math.max(max, dist.get(n.id) ?? n.depth), 0);
-  const personRadius = Math.max(1, maxLocalDist + 1) * ENTITY_LAYER_RADIUS + PERSON_OUTER_EXTRA;
-
-  // Prefer spanning-tree leaf angles so persons that share a collapsed bundle
-  // (or the same entity) fan out instead of stacking on one attachment point.
-  const personPlacements: { personKey: string; child: PersonLeaf; baseAngle: number }[] = [];
-  for (const [personKey, child] of expanded.persons) {
-    let baseAngle = angles.get(personKey);
-    if (baseAngle === undefined) {
-      const attachmentAngles: number[] = [];
-      for (const link of projected.links) {
-        const other = link.from === personKey ? link.to : link.to === personKey ? link.from : null;
-        if (!other) continue;
-        const attachmentAngle = angles.get(other);
-        if (attachmentAngle !== undefined) attachmentAngles.push(attachmentAngle);
-      }
-      baseAngle =
-        attachmentAngles.length > 0
-          ? attachmentAngles.reduce((sum, a) => sum + a, 0) / attachmentAngles.length
-          : sectorStart + sectorWidth / 2;
-    }
-    personPlacements.push({ personKey, child, baseAngle });
-  }
-
-  const personsByAngle = new Map<number, typeof personPlacements>();
-  for (const placement of personPlacements) {
-    const group = personsByAngle.get(placement.baseAngle) ?? [];
-    group.push(placement);
-    personsByAngle.set(placement.baseAngle, group);
-  }
-
-  for (const group of personsByAngle.values()) {
-    const fan = Math.min(sectorWidth * 0.35, (Math.PI / 8) * Math.max(group.length - 1, 1));
-    group.forEach(({ personKey, child, baseAngle }, index) => {
-      const angle = group.length === 1 ? baseAngle : baseAngle - fan / 2 + (fan * (index + 0.5)) / group.length;
-      const pos = polar(cx, cy, personRadius, angle);
-
-      nodes.push({
-        id: personKey,
-        position: pos,
-        type: 'person',
-        data: {
-          label: personLabel(child),
-          subEntity: child.subEntity,
-          isStart: false,
-          objectType: child.node.type,
-          objectId: child.node.id,
-        },
-      });
-    });
-  }
-
-  const placedIds = new Set(nodes.map((n) => n.id));
-
-  for (const link of projected.links) {
-    if (!placedIds.has(link.from) || !placedIds.has(link.to)) continue;
-    const touchesBackLink = expanded.backLinks.includes(link.from) || expanded.backLinks.includes(link.to);
-    const isMatch = link.edge.kind === 'match';
-    edges.push({
-      id: `${link.from}->${link.to}:${link.edge.label}`,
-      source: link.from,
-      target: link.to,
-      type: touchesBackLink ? 'back' : isMatch ? 'match' : 'link',
-      label: link.edge.label,
-      data: { kind: link.edge.kind },
-    });
-  }
-
-  for (const key of expanded.backLinks) {
-    if (!placedIds.has(key)) continue;
-    for (const link of projected.links) {
-      if (link.from !== key && link.to !== key) continue;
-      const other = link.from === key ? link.to : link.from;
-      if (!placedIds.has(other)) continue;
-      const edgeId = `${link.from}->${link.to}:${link.edge.label}`;
-      if (edges.some((e) => e.id === edgeId)) continue;
-      edges.push({
-        id: `${edgeId}:back`,
-        source: link.from,
-        target: link.to,
-        type: 'back',
-        label: link.edge.label,
-        data: { kind: 'back' },
-      });
-    }
-  }
-
-  for (const [personKey, child] of expanded.persons) {
-    const childNode = nodes.find((n) => n.id === personKey);
-    if (!childNode) continue;
-    const childInward = Math.atan2(cy - childNode.position.y, cx - childNode.position.x);
-    expandPerson(
-      child,
-      childNode.position.x,
-      childNode.position.y,
-      childInward,
-      expandedGroupIds,
-      nodes,
-      edges,
-      typeHelpers,
-    );
-  }
 }
 
-function countSpanningLeaves(key: string, children: Map<string, string[]>): number {
-  const kids = children.get(key) ?? [];
-  if (kids.length === 0) return 1;
-  return kids.reduce((sum, kid) => sum + countSpanningLeaves(kid, children), 0);
+function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
+  const start = nodes.find((n) => n.type === 'person' && n.data.isStart);
+  return start?.id ?? fallback;
 }
 
-function placeGroupPersons(
-  group: GroupLeaf,
-  groupId: string,
-  originX: number,
-  originY: number,
-  groupAngle: number,
-  personRadius: number,
-  sectorWidth: number,
+/**
+ * Dagre TB layout using a BFS spanning tree from `startKey` for ranks,
+ * then positions are applied to all nodes. All edges remain for rendering.
+ */
+export function layoutGraphElements(
   nodes: GraphRfNode[],
   edges: GraphRfEdge[],
-) {
-  const persons = [...group.persons.entries()];
+  startKey: string,
+): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
+  if (nodes.length === 0) return { nodes, edges };
 
-  persons.forEach(([key, leaf], index) => {
-    const t = persons.length === 1 ? 0.5 : (index + 0.5) / persons.length;
-    const angle = groupAngle - sectorWidth / 2 + sectorWidth * t;
-    const pos = polar(originX, originY, personRadius, angle);
-
-    nodes.push({
-      id: key,
-      position: pos,
-      type: 'person',
-      data: {
-        label: personLabel(leaf),
-        subEntity: leaf.subEntity,
-        isStart: false,
-        objectType: leaf.node.type,
-        objectId: leaf.node.id,
-      },
-    });
-
-    edges.push({
-      id: `${groupId}->${key}`,
-      source: groupId,
-      target: key,
-      type: 'link',
-      data: { kind: 'link' },
-    });
+  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+  g.setGraph({
+    rankdir: 'TB',
+    nodesep: 80,
+    ranksep: 100,
   });
 
-  for (const key of group.backLinks) {
-    if (!nodes.some((n) => n.id === key)) continue;
-    edges.push({
-      id: `${groupId}->${key}:back`,
-      source: groupId,
-      target: key,
-      type: 'back',
-      data: { kind: 'back' },
-    });
+  for (const node of nodes) {
+    const { width, height } = nodeMeasuredSize(node);
+    g.setNode(node.id, { width, height });
   }
-}
 
-function buildRadialGraph(
-  data: FlowGraph,
-  expandedGroupIds: Set<string>,
-): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
-  const startId = nodeKey(data.root.node);
-  const nodes: GraphRfNode[] = [
-    {
-      id: startId,
-      position: { x: 0, y: 0 },
-      type: 'person',
-      data: {
-        label: personLabel(data.root),
-        subEntity: data.root.subEntity,
-        isStart: true,
-        objectType: data.root.node.type,
-        objectId: data.root.node.id,
+  const treeEdges = bfsSpanningTreeEdges(
+    nodes.map((n) => n.id),
+    edges,
+    startKey,
+  );
+  for (const edge of treeEdges) {
+    g.setEdge(edge.source, edge.target);
+  }
+
+  Dagre.layout(g);
+
+  const laidNodes = nodes.map((node) => {
+    const positioned = g.node(node.id);
+    if (!positioned) return node;
+    const { width, height } = nodeMeasuredSize(node);
+    return {
+      ...node,
+      position: {
+        x: positioned.x - width / 2,
+        y: positioned.y - height / 2,
       },
-    },
-  ];
-  const edges: GraphRfEdge[] = [];
-  expandPerson(data.root, 0, 0, undefined, expandedGroupIds, nodes, edges, data.typeHelpers);
-  return { nodes, edges: withBestHandles(nodes, edges) };
+    };
+  });
+
+  return {
+    nodes: laidNodes,
+    edges: withBestHandles(laidNodes, edges),
+  };
 }
 
-type VisibilityFilters = Pick<
-  CustomerGraphContextValue,
-  'showPersons' | 'showCompanies' | 'eventFilter' | 'attributes'
->;
+/** Stable for AutoLayoutControlButton — start is read from `isStart` person nodes. */
+function autoLayoutElements(nodes: GraphRfNode[], edges: GraphRfEdge[]) {
+  return layoutGraphElements(nodes, edges, resolveStartKey(nodes, nodes[0]?.id ?? ''));
+}
+
+type VisibilityFilters = Pick<CustomerGraphContextValue, 'showPersons' | 'showCompanies' | 'attributes'>;
 
 function attributeAllowsPivot(rawType: string, attributes: GraphAttribute[]): boolean {
   if (rawType === 'same_ip') return attributes.includes('ip');
   if (rawType === 'same_iban') return attributes.includes('iban');
+  if (rawType === 'same_device') return attributes.includes('device');
+  if (rawType === 'same_email') return attributes.includes('email');
   return true;
 }
 
@@ -484,20 +127,6 @@ function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
     if (node.data.subEntity === 'moral') return filters.showCompanies;
     if (node.data.subEntity === 'natural') return filters.showPersons;
     return filters.showPersons || filters.showCompanies;
-  }
-
-  if (node.type === 'entity') {
-    if (node.data.semanticType === 'event') {
-      return filters.eventFilter === 'all' && filters.attributes.includes('device');
-    }
-    return true;
-  }
-
-  if (node.type === 'typeBundle') {
-    if (node.data.semanticType === 'event') {
-      return filters.eventFilter === 'all' && filters.attributes.includes('device');
-    }
-    return true;
   }
 
   if (node.type === 'pivot') {
@@ -519,50 +148,24 @@ function applyVisibilityFilters(
 }
 
 export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImplProps) {
-  const {
-    showPersons,
-    showCompanies,
-    eventFilter,
-    attributes,
-    showEdgeLabels,
-    setShowEdgeLabels,
-    expandedGroupIds,
-    expandAllGroups,
-    collapseAllGroups,
-    resetExpandedGroups,
-    setSelectedObject,
-  } = useCustomerGraph();
+  const { showPersons, showCompanies, attributes, showEdgeLabels, setShowEdgeLabels, setSelectedObject } =
+    useCustomerGraph();
 
   const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
 
-  const flowGraph = useMemo(
-    () =>
-      transformDataToFlow(data, typeHelpers, {
-        maxDepth: 2,
-        expandLevels: 1,
-        maxExplorationHops,
-      }),
+  const flatGraph = useMemo(
+    () => toFlatFlowElements(data, typeHelpers, { maxExplorationHops }),
     [data, typeHelpers, maxExplorationHops],
   );
 
-  const allGroupIds = useMemo(() => collectMultiMemberGroupIds(flowGraph.root), [flowGraph]);
-
-  useEffect(() => {
-    resetExpandedGroups();
-  }, [flowGraph, resetExpandedGroups]);
-
-  const layout = useMemo(() => buildRadialGraph(flowGraph, expandedGroupIds), [flowGraph, expandedGroupIds]);
-
-  const filteredLayout = useMemo(
-    () =>
-      applyVisibilityFilters(layout.nodes, layout.edges, {
-        showPersons,
-        showCompanies,
-        eventFilter,
-        attributes,
-      }),
-    [layout, showPersons, showCompanies, eventFilter, attributes],
-  );
+  const filteredLayout = useMemo(() => {
+    const filtered = applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, {
+      showPersons,
+      showCompanies,
+      attributes,
+    });
+    return layoutGraphElements(filtered.nodes, filtered.edges, flatGraph.startKey);
+  }, [flatGraph, showPersons, showCompanies, attributes]);
 
   const [nodes, setNodes] = useState(filteredLayout.nodes);
   const [edges, setEdges] = useState(filteredLayout.edges);
@@ -589,7 +192,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
 
   const onNodeClick = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {
-      if (node.type === 'person' || node.type === 'entity') {
+      if (node.type === 'person') {
         setSelectedObject({
           objectType: node.data.objectType,
           objectId: node.data.objectId,
@@ -601,21 +204,15 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     [setSelectedObject],
   );
 
-  const allExpanded = allGroupIds.length > 0 && allGroupIds.every((id) => expandedGroupIds.has(id));
-
   return (
     <ReactFlow
       className="h-full min-h-0"
       nodeTypes={{
         person: PersonNode,
-        typeGroup: GroupNode,
-        entity: EntityNode,
         pivot: PivotNode,
-        typeBundle: TypeBundleNode,
       }}
       edgeTypes={{
         link: LinkEdge,
-        back: BackEdge,
         match: MatchEdge,
       }}
       nodes={nodes}
@@ -627,19 +224,13 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
       proOptions={{ hideAttribution: true }}
     >
       <Controls>
+        <AutoLayoutControlButton layoutElements={autoLayoutElements} />
         <ControlButton
           onClick={() => setShowEdgeLabels(!showEdgeLabels)}
           title={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
           aria-label={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
         >
-          <Icon icon={showEdgeLabels ? 'tip' : 'eye-slash'} className="size-4" />
-        </ControlButton>
-        <ControlButton
-          onClick={() => (allExpanded ? collapseAllGroups() : expandAllGroups(allGroupIds))}
-          title={allExpanded ? 'Collapse all groups' : 'Expand all groups'}
-          aria-label={allExpanded ? 'Collapse all groups' : 'Expand all groups'}
-        >
-          <Icon icon={allExpanded ? 'minus' : 'plus'} className="size-4" />
+          <Icon icon={showEdgeLabels ? 'eye-slash' : 'eye'} className="size-4" />
         </ControlButton>
       </Controls>
     </ReactFlow>

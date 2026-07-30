@@ -1,16 +1,8 @@
-import {
-  type DataModel,
-  type FtmEntityPersonOption,
-  type FtmEntityV2,
-  type TableModel,
-} from '@app-builder/models/data-model';
-
-export type NonPersonSemantic = Exclude<FtmEntityV2, 'person'>;
+import { type DataModel, type FtmEntityPersonOption, type TableModel } from '@app-builder/models/data-model';
 
 export type GraphTypeMeta =
   | { kind: 'person'; semanticType: 'person'; defaultSubEntity: FtmEntityPersonOption }
-  | { kind: 'entity'; semanticType: NonPersonSemantic }
-  | { kind: 'pivot' };
+  | { kind: 'other' };
 
 function metaFromTable(table: TableModel): GraphTypeMeta {
   const semanticType = table.semanticType ?? 'other';
@@ -21,16 +13,16 @@ function metaFromTable(table: TableModel): GraphTypeMeta {
       defaultSubEntity: table.subEntity ?? 'generic',
     };
   }
-  return { kind: 'entity', semanticType };
+  return { kind: 'other' };
 }
 
 /**
- * Infers Marble semantic type from a graph node `type` (= data-model table name).
- * Types with no matching table are pivots — path glue only, not group nodes.
+ * Infers whether a graph node `type` (= data-model table name) is a person table.
+ * Non-person / missing tables are not treated as pivots — pivots use `connector: true`.
  */
 export function graphTypeToSemantic(objectType: string, dataModel: DataModel): GraphTypeMeta {
   const table = dataModel.find((t) => t.name === objectType);
-  if (!table) return { kind: 'pivot' };
+  if (!table) return { kind: 'other' };
   return metaFromTable(table);
 }
 
@@ -46,7 +38,7 @@ export function createGraphTypeHelpers(dataModel: DataModel) {
 
   function resolveGraphTypeMeta(objectType: string): GraphTypeMeta {
     const table = byName.get(objectType);
-    if (!table) return { kind: 'pivot' };
+    if (!table) return { kind: 'other' };
     return metaFromTable(table);
   }
 
@@ -54,14 +46,6 @@ export function createGraphTypeHelpers(dataModel: DataModel) {
     resolveGraphTypeMeta,
     isPersonType(objectType: string): boolean {
       return resolveGraphTypeMeta(objectType).kind === 'person';
-    },
-    isPivotType(objectType: string): boolean {
-      return resolveGraphTypeMeta(objectType).kind === 'pivot';
-    },
-    getNonPersonSemantic(objectType: string): NonPersonSemantic | null {
-      const meta = resolveGraphTypeMeta(objectType);
-      if (meta.kind === 'entity') return meta.semanticType;
-      return null;
     },
     getPersonSubEntity(objectType: string): FtmEntityPersonOption {
       const meta = resolveGraphTypeMeta(objectType);
