@@ -375,7 +375,8 @@ function PastUploads({
               </div>
               <TagStatus status={uploadLog.status} />
             </div>
-            {configsPerObjectType.has(objectType) && (
+            {/* TODO: uncomment when the back send relevant data
+            configsPerObjectType.has(objectType) && (
               <div className="flex gap-sm flex-wrap items-center">
                 <p className="text-sm text-grey-secondary">{t('upload:active_screenings')}</p>
                 {Array.from(configsPerObjectType.get(objectType)!).map((config) => (
@@ -384,7 +385,7 @@ function PastUploads({
                   </Tag>
                 ))}
               </div>
-            )}
+            )*/}
           </Card>
         ))}
     </div>
