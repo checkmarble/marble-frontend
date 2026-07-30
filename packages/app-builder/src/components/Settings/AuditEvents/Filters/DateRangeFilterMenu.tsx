@@ -1,8 +1,7 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
-import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { type FunctionComponent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Separator } from 'ui-design-system';
+import { Button, type DateRangeFilterType, MenuCommand, Separator } from 'ui-design-system';
 
 type DateRangeFilterMenuProps = {
   onSelect: (value: NonNullable<DateRangeFilterType>) => void;

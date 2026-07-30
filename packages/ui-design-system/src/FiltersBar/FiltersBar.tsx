@@ -30,6 +30,8 @@ import {
   type TextOperator,
 } from './types';
 
+export type { DateRangeFilterType } from './types';
+
 export const NUMBER_OPERATORS: Set<NumberOperator> = new Set(['=', '!=', '>', '>=', '<', '<=', 'in']);
 export const TEXT_OPERATORS: Set<TextOperator> = new Set(['in']);
 

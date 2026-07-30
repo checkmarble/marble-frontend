@@ -2,9 +2,9 @@ import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
-import { type IconProps } from 'packages/ui-icons/src/Icon';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { type IconProps } from 'ui-icons';
 
 //TODO(split apps): refactor this to be translation agnostic: directly pass the translated string (it will help separate the navigation.json file per "app")
 export const navigationI18n = ['navigation'] satisfies Namespace;

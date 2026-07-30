@@ -1,11 +1,10 @@
 import { type CaseOutcome, type CaseStatus } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { IconProps } from 'packages/ui-icons/src/Icon';
 import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Icon, type IconProps } from 'ui-icons';
 import { casesI18n } from './cases-i18n';
 
 export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
