@@ -21,11 +21,6 @@ import {
 } from './CustomerGraphContext';
 import { resolveTitle } from './resolve-object-title';
 
-const EVENT_FILTER_LABELS = {
-  all: 'All events',
-  none: 'No events',
-} as const;
-
 function attributesLabel(attributes: GraphAttribute[]): string {
   if (attributes.length === 0) return 'Attributes: none';
   if (attributes.length === GRAPH_ATTRIBUTES.length) {
@@ -121,8 +116,6 @@ export function GraphSettingsPanel() {
     setShowPersons,
     showCompanies,
     setShowCompanies,
-    eventFilter,
-    setEventFilter,
     attributes,
     toggleAttribute,
     showRiskScore,
@@ -167,23 +160,6 @@ export function GraphSettingsPanel() {
           Companies
         </label>
       </div>
-
-      <MenuCommand.Menu>
-        <MenuCommand.Trigger>
-          <MenuCommand.SelectButton className="w-full" size="small">
-            {EVENT_FILTER_LABELS[eventFilter]}
-          </MenuCommand.SelectButton>
-        </MenuCommand.Trigger>
-        <MenuCommand.Content sameWidth align="start" sideOffset={4}>
-          <MenuCommand.List>
-            {(Object.keys(EVENT_FILTER_LABELS) as Array<keyof typeof EVENT_FILTER_LABELS>).map((value) => (
-              <MenuCommand.Item key={value} value={value} onSelect={() => setEventFilter(value)}>
-                {EVENT_FILTER_LABELS[value]}
-              </MenuCommand.Item>
-            ))}
-          </MenuCommand.List>
-        </MenuCommand.Content>
-      </MenuCommand.Menu>
 
       <MenuCommand.Menu persistOnSelect>
         <MenuCommand.Trigger>
