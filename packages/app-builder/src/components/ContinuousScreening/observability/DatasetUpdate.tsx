@@ -85,7 +85,7 @@ function PanelDatasetUpdateContent() {
                   <GridTable.Row key={item.id}>
                     <GridTable.Cell>{dateFormatter(item.createdAt)}</GridTable.Cell>
                     <GridTable.Cell className="truncate">{item.title || item.datasetName}</GridTable.Cell>
-                    <GridTable.Cell className="gap-sm">v.{item.version}</GridTable.Cell>
+                    <GridTable.Cell className="gap-sm">{item.version}</GridTable.Cell>
                     <GridTable.Cell className="justify-end tabular-nums">
                       {item.status === 'processing'
                         ? `${formatNumber(item.completion.itemsProcessed, { language: locale })} / ${formatNumber(
@@ -197,7 +197,7 @@ function DatasetUpdatContent({ data }: DatasetUpdateContentProps) {
             </time>
             <div className="flex min-w-0 items-center gap-sm">
               <span className="truncate">{item.title || item.datasetName}</span>
-              <TagStatus status={item.status ?? 'completed'}>v.{item.version}</TagStatus>
+              <TagStatus status={item.status ?? 'completed'}>{item.version}</TagStatus>
               <DatasetUpdateCompletionDetails completion={item.completion} status={item.status} />
             </div>
           </div>
