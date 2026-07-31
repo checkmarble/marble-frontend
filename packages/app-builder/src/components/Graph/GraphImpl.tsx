@@ -25,7 +25,7 @@ import {
   withBestHandles,
 } from './GraphComponents';
 import { layoutGraphElements } from './layout-graph';
-import { toFlatFlowElements } from './utils';
+import { reachableNodeIds, toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
 
 export { layoutGraphElements };
@@ -89,10 +89,22 @@ function applyVisibilityFilters(
   nodes: GraphRfNode[],
   edges: GraphRfEdge[],
   filters: VisibilityFilters,
+  startKey: string,
 ): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
-  const visibleNodes = nodes.filter((node) => isNodeVisible(node, filters));
+  const typeVisibleNodes = nodes.filter((node) => isNodeVisible(node, filters));
+  const typeVisibleIds = new Set(typeVisibleNodes.map((node) => node.id));
+  const typeVisibleEdges = edges.filter((edge) => typeVisibleIds.has(edge.source) && typeVisibleIds.has(edge.target));
+
+  // Drop nodes disconnected from the start after type/attribute filters
+  // (e.g. children of a hidden company).
+  const reachable = reachableNodeIds(
+    typeVisibleNodes.map((node) => node.id),
+    typeVisibleEdges,
+    startKey,
+  );
+  const visibleNodes = typeVisibleNodes.filter((node) => reachable.has(node.id));
   const visibleIds = new Set(visibleNodes.map((node) => node.id));
-  const visibleEdges = edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
+  const visibleEdges = typeVisibleEdges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
   return { nodes: visibleNodes, edges: visibleEdges };
 }
 
@@ -108,11 +120,16 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
   );
 
   const filteredLayout = useMemo(() => {
-    const filtered = applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, {
-      showPersons,
-      showCompanies,
-      attributes,
-    });
+    const filtered = applyVisibilityFilters(
+      flatGraph.nodes,
+      flatGraph.edges,
+      {
+        showPersons,
+        showCompanies,
+        attributes,
+      },
+      flatGraph.startKey,
+    );
     return layoutGraphElements(filtered.nodes, filtered.edges, flatGraph.startKey);
   }, [flatGraph, showPersons, showCompanies, attributes]);
 
