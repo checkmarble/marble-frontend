@@ -57,7 +57,8 @@ function GridContent({ data, withPanel }: { data: ContinuousScreeningUpdateJobSu
           <GridTable.Cell>{item.version}</GridTable.Cell>
           <GridTable.Cell>{dateFormatter(item.receptionTime)}</GridTable.Cell>
           <GridTable.Cell className="hidden lg:block">{dateFormatter(item.jobStart)}</GridTable.Cell>
-          <GridTable.Cell className="hidden lg:block">
+          <GridTable.Cell className="hidden lg:flex gap-xs">
+            <span>{formatOptionalDuration(item.jobStart, item.jobEnd, { locale })}</span>
             <Tooltip.Default
               content={
                 <span className="flex gap-xs">
@@ -67,7 +68,7 @@ function GridContent({ data, withPanel }: { data: ContinuousScreeningUpdateJobSu
                 </span>
               }
             >
-              <span>{formatOptionalDuration(item.jobStart, item.jobEnd, { locale })}</span>
+              <Icon icon="tip" className="size-4" />
             </Tooltip.Default>
           </GridTable.Cell>
           <GridTable.Cell>{item.configName}</GridTable.Cell>
