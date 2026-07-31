@@ -9,12 +9,16 @@ import { Inbox } from '@app-builder/models/inbox';
 import { useCloseCaseMutation } from '@app-builder/queries/cases/close-case';
 import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries/cases/edit-tags';
 import { useOpenCaseMutation } from '@app-builder/queries/cases/open-case';
+import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
+import { useServerFn } from '@tanstack/react-start';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, cn, TagList } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ReviewStatusBadge } from '../ContinuousScreening/ReviewStatusBadge';
 import { CaseInfo } from './CaseInfo';
@@ -35,6 +39,13 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
   const isUserAdmin = isAdmin(currentUser);
   const revalidate = useLoaderRevalidator();
   const hasRemainingMatchesToExamine = screening.matches.some((match) => match.status === 'pending');
+
+  const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
+  const router = useRouter();
+  const nextUnassignedCaseHref = router.buildLocation({
+    to: '/ressources/cases/next-unassigned/$caseId',
+    params: { caseId: fromUUIDtoSUUID(caseDetail.id) },
+  }).href;
 
   const closeCaseMutation = useCloseCaseMutation();
   const reopenCaseMutation = useOpenCaseMutation();
@@ -89,6 +100,20 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
               {t('cases:case.reopen')}
             </Button>
           )}
+          <a
+            href={nextUnassignedCaseHref}
+            aria-label={t('cases:next_unassigned_case')}
+            className={cn(CtaV2ClassName({ variant: 'secondary' }), 'hover:bg-grey-background')}
+            onClick={(e) => {
+              // let modified clicks (cmd/ctrl/shift/alt) reach the browser to open a new tab
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+              e.preventDefault();
+              getNextUnassignedCase({ data: { caseId: caseDetail.id } });
+            }}
+          >
+            <span>{t('cases:next_unassigned_case')}</span>
+            <Icon icon="arrow-right" className="size-4" />
+          </a>
         </div>
       </Page.Header>
       <Page.Container>
