@@ -25,7 +25,7 @@ export type GraphData = {
 
 export type StartData = GraphData['start'];
 
-export const GRAPH_DATASET_LABELS = ['Minimal', 'Star', 'Company', 'Complete'] as const;
+export const GRAPH_DATASET_LABELS = ['Minimal', 'Simple', 'Star', 'Company', 'Complete'] as const;
 
 /** Test fixtures from simplest to densest. Node ids match seeded DB records. */
 export const graphDatasets: GraphData[] = [
@@ -53,6 +53,68 @@ export const graphDatasets: GraphData[] = [
         to: {
           type: 'users',
           id: 'user_0002',
+        },
+        kind: 'link',
+        label: 'login_user > login_device > login_device > login_user',
+      },
+    ],
+  },
+  {
+    start: {
+      type: 'users',
+      id: 'user_0001',
+    },
+    nodes: [
+      {
+        type: 'users',
+        id: 'user_0001',
+      },
+      {
+        type: 'users',
+        id: 'user_0002',
+      },
+      {
+        type: 'users',
+        id: 'user_0003',
+      },
+      {
+        type: 'users',
+        id: 'user_0004',
+      },
+    ],
+    edges: [
+      {
+        from: {
+          type: 'users',
+          id: 'user_0001',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0002',
+        },
+        kind: 'link',
+        label: 'login_user > login_device > login_device > login_user',
+      },
+      {
+        from: {
+          type: 'users',
+          id: 'user_0001',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0003',
+        },
+        kind: 'link',
+        label: 'login_user > login_device > login_device > login_user',
+      },
+      {
+        from: {
+          type: 'users',
+          id: 'user_0001',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0004',
         },
         kind: 'link',
         label: 'login_user > login_device > login_device > login_user',
