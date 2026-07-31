@@ -17,6 +17,12 @@ export const graphData = {
     { type: 'users', id: 'user_0018' },
     { type: 'users', id: 'user_0021' },
     { type: 'users', id: 'user_0023' },
+    { type: 'users', id: 'user_0029' },
+    { type: 'users', id: 'user_0030' },
+    { type: 'users', id: 'user_0031' },
+    { type: 'users', id: 'user_0032' },
+    { type: 'users', id: 'user_0037' },
+    { type: 'users', id: 'user_0040' },
   ],
   edges: [
     {
@@ -50,6 +56,12 @@ export const graphData = {
       label: 'login_user \u003e login_device \u003e login_device \u003e login_user',
     },
     {
+      from: { type: 'users', id: 'user_0018' },
+      to: { type: 'users', id: 'user_0032' },
+      kind: 'link',
+      label: 'login_user \u003e login_device \u003e login_device \u003e login_user',
+    },
+    {
       from: { type: 'users', id: 'user_0001' },
       to: { type: 'users', id: 'user_0023' },
       kind: 'link',
@@ -63,6 +75,18 @@ export const graphData = {
     },
     {
       from: { type: 'users', id: 'user_0004' },
+      to: { type: 'companies', id: 'comp_0001' },
+      kind: 'link',
+      label: 'login_user \u003e login_device \u003e login_device \u003e login_user',
+    },
+    {
+      from: { type: 'users', id: 'user_0001' },
+      to: { type: 'companies', id: 'comp_0001' },
+      kind: 'link',
+      label: 'login_user \u003e login_device \u003e login_device \u003e login_user',
+    },
+    {
+      from: { type: 'users', id: 'user_0003' },
       to: { type: 'companies', id: 'comp_0001' },
       kind: 'link',
       label: 'login_user \u003e login_device \u003e login_device \u003e login_user',

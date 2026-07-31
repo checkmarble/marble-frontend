@@ -1,6 +1,5 @@
-import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
+import { AutoLayoutControlButton, useLayoutInitializedNodes } from '@app-builder/components/ReactFlow';
 import { type DataModel } from '@app-builder/models/data-model';
-import Dagre from '@dagrejs/dagre';
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -25,11 +24,21 @@ import {
   PivotNode,
   withBestHandles,
 } from './GraphComponents';
-import { bfsSpanningTreeEdges, toFlatFlowElements } from './utils';
+import { layoutGraphElements } from './layout-graph';
+import { toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
 
-const DEFAULT_NODE_WIDTH = 180;
-const DEFAULT_NODE_HEIGHT = 56;
+export { layoutGraphElements };
+
+/** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
+function GraphMeasuredLayout({
+  layoutElements,
+}: {
+  layoutElements: (nodes: GraphRfNode[], edges: GraphRfEdge[]) => { nodes: GraphRfNode[]; edges: GraphRfEdge[] };
+}) {
+  useLayoutInitializedNodes({ mode: 'onNodesInitialized', layoutElements });
+  return null;
+}
 
 export type GraphImplProps = {
   data: GraphData;
@@ -41,69 +50,9 @@ export type GraphImplProps = {
   maxExplorationHops?: number;
 };
 
-function nodeMeasuredSize(node: GraphRfNode): { width: number; height: number } {
-  return {
-    width: node.measured?.width ?? node.width ?? DEFAULT_NODE_WIDTH,
-    height: node.measured?.height ?? node.height ?? DEFAULT_NODE_HEIGHT,
-  };
-}
-
 function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
   const start = nodes.find((n) => n.type === 'person' && n.data.isStart);
   return start?.id ?? fallback;
-}
-
-/**
- * Dagre TB layout using a BFS spanning tree from `startKey` for ranks,
- * then positions are applied to all nodes. All edges remain for rendering.
- */
-export function layoutGraphElements(
-  nodes: GraphRfNode[],
-  edges: GraphRfEdge[],
-  startKey: string,
-): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
-  if (nodes.length === 0) return { nodes, edges };
-
-  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  g.setGraph({
-    rankdir: 'TB',
-    nodesep: 80,
-    ranksep: 100,
-  });
-
-  for (const node of nodes) {
-    const { width, height } = nodeMeasuredSize(node);
-    g.setNode(node.id, { width, height });
-  }
-
-  const treeEdges = bfsSpanningTreeEdges(
-    nodes.map((n) => n.id),
-    edges,
-    startKey,
-  );
-  for (const edge of treeEdges) {
-    g.setEdge(edge.source, edge.target);
-  }
-
-  Dagre.layout(g);
-
-  const laidNodes = nodes.map((node) => {
-    const positioned = g.node(node.id);
-    if (!positioned) return node;
-    const { width, height } = nodeMeasuredSize(node);
-    return {
-      ...node,
-      position: {
-        x: positioned.x - width / 2,
-        y: positioned.y - height / 2,
-      },
-    };
-  });
-
-  return {
-    nodes: laidNodes,
-    edges: withBestHandles(laidNodes, edges),
-  };
 }
 
 /** Stable for AutoLayoutControlButton — start is read from `isStart` person nodes. */
@@ -223,6 +172,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
       fitView
       proOptions={{ hideAttribution: true }}
     >
+      <GraphMeasuredLayout layoutElements={autoLayoutElements} />
       <Controls>
         <AutoLayoutControlButton layoutElements={autoLayoutElements} />
         <ControlButton
