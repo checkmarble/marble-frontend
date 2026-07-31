@@ -1,6 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataListGrid';
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
 import { EntityDatasetsList } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
@@ -97,8 +97,8 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
         <div className="flex justify-between items-center gap-sm">
           <span className="font-medium">{screening.opensanctionEntityPayload.caption}</span>
           <span className="text-small text-grey-placeholder me-auto">{screening.opensanctionEntityPayload.schema}</span>
-          <Button variant="secondary" onClick={() => setOpen(true)}>
-            {t('continuousScreening:review.entity_details.view_all')}
+          <Button variant="primary" mode="icon" appearance="link" onClick={() => setOpen(true)}>
+            <Icon icon="eye" className="size-4" />
           </Button>
         </div>
         <div className="flex flex-wrap items-center gap-sm">
@@ -126,16 +126,12 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
 };
 
 const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPayload }) => {
-  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening', 'screenings']);
 
   return (
     <Panel.Container size="medium">
       <Panel.Content>
         <Panel.Header>
-          <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
-            <Icon icon="left-panel-close" className="size-4" />
-          </Button>
           <div className="text-h1">{t('continuousScreening:review.entity_details.title')}</div>
         </Panel.Header>
         <div className="flex flex-col gap-md">
