@@ -10,6 +10,13 @@ const RANKSEP = 100;
 const RING_RADIUS_MIN = 220;
 /** Extra space between adjacent subtree lateral extents. */
 const RING_PADDING = 60;
+/**
+ * Preferred connector angles within this circular distance are treated as the
+ * same "side" and fanned on an outer arc instead of stacking on one ray.
+ */
+const CONNECTOR_CLUSTER_GAP = Math.PI / 3;
+/** Minimum angular separation between fanned connectors on the outer arc. */
+const CONNECTOR_MIN_ANGLE_GAP = Math.PI / 12;
 
 type RankDir = 'TB' | 'BT' | 'LR' | 'RL';
 type Point = { x: number; y: number };
@@ -23,6 +30,11 @@ function nodeMeasuredSize(node: GraphRfNode): { width: number; height: number } 
 
 function topLeftFromCenter(center: Point, width: number, height: number): Point {
   return { x: center.x - width / 2, y: center.y - height / 2 };
+}
+
+function nodeCenter(node: GraphRfNode, position: Point): Point {
+  const { width, height } = nodeMeasuredSize(node);
+  return { x: position.x + width / 2, y: position.y + height / 2 };
 }
 
 /** Build parent → children adjacency from directed tree edges. */
@@ -120,6 +132,19 @@ export function greedySlotOrder(items: Array<{ id: string; weight: number }>): s
 /** Slot angle: 12 o'clock, increasing clockwise (screen y-down). */
 export function slotAngle(slotIndex: number, slotCount: number): number {
   return Math.PI / 2 + (2 * Math.PI * slotIndex) / slotCount;
+}
+
+/** Normalize angle into (-π, π]. */
+export function normalizeAngle(theta: number): number {
+  let a = theta;
+  while (a <= -Math.PI) a += 2 * Math.PI;
+  while (a > Math.PI) a -= 2 * Math.PI;
+  return a;
+}
+
+/** Smallest signed delta from `from` to `to` in (-π, π]. */
+export function angleDelta(from: number, to: number): number {
+  return normalizeAngle(to - from);
 }
 
 /** Outward Dagre rankdir from angle (nearest cardinal axis). */
@@ -243,9 +268,274 @@ function computeRingRadius(lateralHalves: number[]): number {
   return r;
 }
 
+/** Undirected adjacency over the given undirected edge list. */
+function buildUndirectedAdjacency(
+  nodeIds: string[],
+  edges: Array<{ source: string; target: string }>,
+): Map<string, string[]> {
+  const idSet = new Set(nodeIds);
+  const adj = new Map<string, string[]>();
+  for (const id of nodeIds) {
+    adj.set(id, []);
+  }
+  for (const edge of edges) {
+    if (!idSet.has(edge.source) || !idSet.has(edge.target)) continue;
+    adj.get(edge.source)!.push(edge.target);
+    adj.get(edge.target)!.push(edge.source);
+  }
+  return adj;
+}
+
 /**
- * Radial L1 ring + per-subtree Dagre layout.
- * Uses a BFS spanning tree from `startKey` for structure; all edges remain for rendering.
+ * Preferred pocket angle for a connector: direction from the start center toward
+ * the centroid of already-placed match neighbors.
+ *
+ * Returns `null` when there are no placed anchors (caller should use
+ * {@link largestFreeGapAngle}).
+ */
+export function preferredConnectorAngle(startCenter: Point, placedNeighborCenters: Point[]): number | null {
+  if (placedNeighborCenters.length === 0) return null;
+
+  let sx = 0;
+  let sy = 0;
+  for (const p of placedNeighborCenters) {
+    sx += p.x;
+    sy += p.y;
+  }
+  const cx = sx / placedNeighborCenters.length;
+  const cy = sy / placedNeighborCenters.length;
+  return Math.atan2(cy - startCenter.y, cx - startCenter.x);
+}
+
+/**
+ * Angle in the middle of the largest gap between existing L1 slot angles.
+ * Used when a connector has no placed match anchors. Falls back to east (0)
+ * when there are no L1 slots to avoid.
+ */
+export function largestFreeGapAngle(l1Thetas: number[]): number {
+  if (l1Thetas.length === 0) return 0;
+
+  const sorted = [...l1Thetas].map(normalizeAngle).sort((a, b) => a - b);
+  let bestMid = sorted[0]!;
+  let bestGap = -Infinity;
+
+  for (let i = 0; i < sorted.length; i++) {
+    const cur = sorted[i]!;
+    const next = i + 1 < sorted.length ? sorted[i + 1]! : sorted[0]! + 2 * Math.PI;
+    const gap = next - cur;
+    if (gap > bestGap) {
+      bestGap = gap;
+      bestMid = normalizeAngle(cur + gap / 2);
+    }
+  }
+
+  return bestMid;
+}
+
+/**
+ * Fan connectors that share a preferred side onto an outer arc.
+ *
+ * 1. Sort by preferred angle
+ * 2. Cluster consecutive items within {@link CONNECTOR_CLUSTER_GAP}
+ * 3. Within each cluster, spread around the circular mean with separation
+ *    driven by lateral half-extents at `radius` (same geometric idea as the
+ *    L1 ring radius computation)
+ */
+export function fanConnectorAngles(
+  items: Array<{ id: string; preferredTheta: number; lateralHalf: number }>,
+  radius: number,
+): Map<string, number> {
+  const result = new Map<string, number>();
+  if (items.length === 0) return result;
+  if (items.length === 1) {
+    result.set(items[0]!.id, normalizeAngle(items[0]!.preferredTheta));
+    return result;
+  }
+
+  const sorted = [...items].sort(
+    (a, b) => normalizeAngle(a.preferredTheta) - normalizeAngle(b.preferredTheta) || a.id.localeCompare(b.id),
+  );
+
+  type Cluster = typeof sorted;
+  const clusters: Cluster[] = [];
+  let current: Cluster = [sorted[0]!];
+
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = sorted[i - 1]!;
+    const item = sorted[i]!;
+    const gap = Math.abs(angleDelta(prev.preferredTheta, item.preferredTheta));
+    if (gap > CONNECTOR_CLUSTER_GAP) {
+      clusters.push(current);
+      current = [item];
+    } else {
+      current.push(item);
+    }
+  }
+  clusters.push(current);
+
+  for (const cluster of clusters) {
+    if (cluster.length === 1) {
+      result.set(cluster[0]!.id, normalizeAngle(cluster[0]!.preferredTheta));
+      continue;
+    }
+
+    // Circular mean of preferred angles (average of unit vectors).
+    let ux = 0;
+    let uy = 0;
+    for (const item of cluster) {
+      ux += Math.cos(item.preferredTheta);
+      uy += Math.sin(item.preferredTheta);
+    }
+    const mean = Math.atan2(uy, ux);
+
+    // Adjacent separation from lateral extents; clamp to a readable minimum.
+    const separations: number[] = [];
+    for (let i = 0; i < cluster.length - 1; i++) {
+      const needed =
+        radius > 1e-6
+          ? (cluster[i]!.lateralHalf + cluster[i + 1]!.lateralHalf + RING_PADDING) / radius
+          : CONNECTOR_MIN_ANGLE_GAP;
+      separations.push(Math.max(CONNECTOR_MIN_ANGLE_GAP, needed));
+    }
+    const totalSpan = separations.reduce((a, b) => a + b, 0);
+
+    let cursor = mean - totalSpan / 2;
+    result.set(cluster[0]!.id, normalizeAngle(cursor));
+    for (let i = 0; i < separations.length; i++) {
+      cursor += separations[i]!;
+      result.set(cluster[i + 1]!.id, normalizeAngle(cursor));
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Claim the still-unplaced connected component reachable from `rootId` via
+ * `adj`, removing claimed ids from `unplaced`. First caller wins (stable pivot
+ * id order is the caller's responsibility).
+ *
+ * `skipIds` (typically other pivot ids) are never entered — otherwise a shared
+ * match-only neighbor would let the first connector swallow sibling connectors.
+ *
+ * Returns claimed ids including `rootId`, in BFS order.
+ */
+export function claimUnplacedComponent(
+  rootId: string,
+  unplaced: Set<string>,
+  adj: Map<string, string[]>,
+  skipIds: Set<string> = new Set(),
+): string[] {
+  if (!unplaced.has(rootId)) return [];
+
+  const claimed: string[] = [];
+  const queue = [rootId];
+  unplaced.delete(rootId);
+
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    claimed.push(cur);
+    for (const nxt of adj.get(cur) ?? []) {
+      if (!unplaced.has(nxt)) continue;
+      // Other connectors stay for their own claim pass.
+      if (skipIds.has(nxt) && nxt !== rootId) continue;
+      unplaced.delete(nxt);
+      queue.push(nxt);
+    }
+  }
+
+  return claimed;
+}
+
+/**
+ * BFS spanning-tree edges rooted at `rootId`, restricted to `idSet`.
+ * Used to feed Dagre for connector islands (same shape as L1 subtrees).
+ */
+export function bfsTreeEdgesInSet(
+  rootId: string,
+  idSet: Set<string>,
+  adj: Map<string, string[]>,
+): Array<{ source: string; target: string }> {
+  if (!idSet.has(rootId)) return [];
+
+  const tree: Array<{ source: string; target: string }> = [];
+  const visited = new Set<string>([rootId]);
+  const queue = [rootId];
+
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    for (const nxt of adj.get(cur) ?? []) {
+      if (!idSet.has(nxt) || visited.has(nxt)) continue;
+      visited.add(nxt);
+      tree.push({ source: cur, target: nxt });
+      queue.push(nxt);
+    }
+  }
+
+  return tree;
+}
+
+/**
+ * Radius of the outer connector pocket: clears the axis-aligned bbox of already
+ * placed (person) nodes from the start center, plus padding.
+ */
+export function computeConnectorPocketRadius(
+  placedCentersWithSize: Array<{ center: Point; width: number; height: number }>,
+  startCenter: Point,
+): number {
+  let r = RING_RADIUS_MIN;
+  for (const { center, width, height } of placedCentersWithSize) {
+    const dx = Math.abs(center.x - startCenter.x) + width / 2;
+    const dy = Math.abs(center.y - startCenter.y) + height / 2;
+    // Conservative clearance: distance to farthest bbox corner from start.
+    const dist = Math.hypot(center.x - startCenter.x, center.y - startCenter.y);
+    const halfDiag = Math.hypot(width / 2, height / 2);
+    r = Math.max(r, dist + halfDiag + RING_PADDING, dx + RING_PADDING, dy + RING_PADDING);
+  }
+  return r;
+}
+
+function isLinkEdge(edge: GraphRfEdge): boolean {
+  return edge.data?.kind !== 'match' && edge.type !== 'match';
+}
+
+/**
+ * Translate a locally-laid-out subtree so `rootId`'s center lands on `targetCenter`.
+ */
+function placeSubtreeAt(
+  subtreeIds: string[],
+  localPositions: Map<string, Point>,
+  nodesById: Map<string, GraphRfNode>,
+  rootId: string,
+  targetCenter: Point,
+  positionById: Map<string, Point>,
+): void {
+  const localRoot = localPositions.get(rootId);
+  const rootNode = nodesById.get(rootId);
+  if (!localRoot || !rootNode) return;
+
+  const rootSize = nodeMeasuredSize(rootNode);
+  const localRootCenter = {
+    x: localRoot.x + rootSize.width / 2,
+    y: localRoot.y + rootSize.height / 2,
+  };
+  const dx = targetCenter.x - localRootCenter.x;
+  const dy = targetCenter.y - localRootCenter.y;
+
+  for (const nodeId of subtreeIds) {
+    const local = localPositions.get(nodeId);
+    if (!local) continue;
+    positionById.set(nodeId, { x: local.x + dx, y: local.y + dy });
+  }
+}
+
+/**
+ * Radial L1 ring + per-subtree Dagre for the start's **link** neighborhood,
+ * then outer-arc side pockets for match/connector (pivot) nodes.
+ *
+ * Match edges never participate in the person spanning tree — connectors are
+ * cross-cutting and would otherwise warp the star (deep Dagre branches).
+ * All edges remain for rendering / handle targeting.
  */
 export function layoutGraphElements(
   nodes: GraphRfNode[],
@@ -258,77 +548,175 @@ export function layoutGraphElements(
   const resolvedStart = nodesById.has(startKey) ? startKey : (nodes[0]?.id ?? '');
   if (!resolvedStart) return { nodes, edges };
 
-  const treeEdges = bfsSpanningTreeEdges(
-    nodes.map((n) => n.id),
-    edges,
-    resolvedStart,
-  );
+  const personIds = nodes.filter((n) => n.type !== 'pivot').map((n) => n.id);
+  const pivotIds = nodes
+    .filter((n) => n.type === 'pivot')
+    .map((n) => n.id)
+    .sort((a, b) => a.localeCompare(b));
+  const personIdSet = new Set(personIds);
+
+  // Link-only edges among non-pivots drive the start-centered radial star.
+  const linkEdges = edges.filter((e) => isLinkEdge(e) && personIdSet.has(e.source) && personIdSet.has(e.target));
+
+  const treeEdges = bfsSpanningTreeEdges(personIds, linkEdges, resolvedStart);
   const children = buildChildrenMap(treeEdges);
   const l1Ids = children.get(resolvedStart) ?? [];
 
   const positionById = new Map<string, Point>();
 
-  // Start at origin (center).
   const startNode = nodesById.get(resolvedStart)!;
   const startSize = nodeMeasuredSize(startNode);
-  positionById.set(resolvedStart, topLeftFromCenter({ x: 0, y: 0 }, startSize.width, startSize.height));
+  const startCenter = { x: 0, y: 0 };
+  positionById.set(resolvedStart, topLeftFromCenter(startCenter, startSize.width, startSize.height));
 
-  if (l1Ids.length === 0) {
-    const laidNodes = nodes.map((node) => {
-      const pos = positionById.get(node.id);
-      return pos ? { ...node, position: pos } : node;
+  const l1Thetas: number[] = [];
+
+  if (l1Ids.length > 0) {
+    const weighted = l1Ids.map((id) => ({
+      id,
+      weight: descendantCount(children, id),
+    }));
+    const orderedL1 = greedySlotOrder(weighted);
+    const n = orderedL1.length;
+
+    type SubtreeLayout = {
+      id: string;
+      theta: number;
+      subtreeIds: string[];
+      localPositions: Map<string, Point>;
+      lateralHalf: number;
+    };
+
+    const subtreeLayouts: SubtreeLayout[] = orderedL1.map((id, slotIndex) => {
+      const theta = slotAngle(slotIndex, n);
+      l1Thetas.push(theta);
+      const rankdir = rankdirFromAngle(theta);
+      const subtreeIds = collectSubtreeIds(children, id);
+      const localPositions = layoutSubtreeLocal(subtreeIds, treeEdges, nodesById, rankdir);
+      const lateralHalf = lateralHalfExtent(subtreeIds, localPositions, nodesById, id, rankdir);
+      return { id, theta, subtreeIds, localPositions, lateralHalf };
     });
-    return { nodes: laidNodes, edges: withBestHandles(laidNodes, edges) };
+
+    const radius = computeRingRadius(subtreeLayouts.map((s) => s.lateralHalf));
+
+    for (const layout of subtreeLayouts) {
+      placeSubtreeAt(
+        layout.subtreeIds,
+        layout.localPositions,
+        nodesById,
+        layout.id,
+        { x: radius * Math.cos(layout.theta), y: radius * Math.sin(layout.theta) },
+        positionById,
+      );
+    }
   }
 
-  const weighted = l1Ids.map((id) => ({
-    id,
-    weight: descendantCount(children, id),
-  }));
-  const orderedL1 = greedySlotOrder(weighted);
-  const n = orderedL1.length;
+  // --- Connector side pockets ------------------------------------------------
 
-  type SubtreeLayout = {
-    id: string;
-    theta: number;
-    subtreeIds: string[];
-    localPositions: Map<string, Point>;
-    lateralHalf: number;
-  };
+  if (pivotIds.length > 0) {
+    const allIds = nodes.map((n) => n.id);
+    const fullAdj = buildUndirectedAdjacency(
+      allIds,
+      edges.map((e) => ({ source: e.source, target: e.target })),
+    );
 
-  const subtreeLayouts: SubtreeLayout[] = orderedL1.map((id, slotIndex) => {
-    const theta = slotAngle(slotIndex, n);
-    const rankdir = rankdirFromAngle(theta);
-    const subtreeIds = collectSubtreeIds(children, id);
-    const localPositions = layoutSubtreeLocal(subtreeIds, treeEdges, nodesById, rankdir);
-    const lateralHalf = lateralHalfExtent(subtreeIds, localPositions, nodesById, id, rankdir);
-    return { id, theta, subtreeIds, localPositions, lateralHalf };
-  });
+    // Match adjacency: pivot → already-placed (or any) neighbors for preferred angle.
+    const matchAdj = new Map<string, string[]>();
+    for (const id of pivotIds) {
+      matchAdj.set(id, []);
+    }
+    for (const edge of edges) {
+      if (edge.data?.kind !== 'match' && edge.type !== 'match') continue;
+      if (pivotIds.includes(edge.source)) {
+        matchAdj.get(edge.source)!.push(edge.target);
+      }
+      if (pivotIds.includes(edge.target)) {
+        matchAdj.get(edge.target)!.push(edge.source);
+      }
+    }
 
-  const radius = computeRingRadius(subtreeLayouts.map((s) => s.lateralHalf));
+    const unplaced = new Set(allIds.filter((id) => !positionById.has(id)));
+    const islands = new Map<string, string[]>();
 
-  for (const layout of subtreeLayouts) {
-    const targetCenter = {
-      x: radius * Math.cos(layout.theta),
-      y: radius * Math.sin(layout.theta),
+    const pivotIdSet = new Set(pivotIds);
+
+    // Stable id order: first pivot to BFS-claim a match-only node owns it.
+    // Other pivots are skipped during the walk so siblings are not swallowed.
+    for (const pivotId of pivotIds) {
+      if (!unplaced.has(pivotId)) continue;
+      islands.set(pivotId, claimUnplacedComponent(pivotId, unplaced, fullAdj, pivotIdSet));
+    }
+
+    const placedPersonBoxes: Array<{ center: Point; width: number; height: number }> = [];
+    for (const id of personIds) {
+      const pos = positionById.get(id);
+      const node = nodesById.get(id);
+      if (!pos || !node) continue;
+      const size = nodeMeasuredSize(node);
+      placedPersonBoxes.push({ center: nodeCenter(node, pos), width: size.width, height: size.height });
+    }
+    const pocketRadius = computeConnectorPocketRadius(placedPersonBoxes, startCenter);
+
+    type IslandPrep = {
+      id: string;
+      preferredTheta: number;
+      islandIds: string[];
+      treeEdges: Array<{ source: string; target: string }>;
+      lateralHalf: number;
     };
 
-    const localRoot = layout.localPositions.get(layout.id);
-    const rootNode = nodesById.get(layout.id);
-    if (!localRoot || !rootNode) continue;
+    const prepared: IslandPrep[] = [];
+    for (const pivotId of pivotIds) {
+      const islandIds = islands.get(pivotId);
+      if (!islandIds || islandIds.length === 0) continue;
 
-    const rootSize = nodeMeasuredSize(rootNode);
-    const localRootCenter = {
-      x: localRoot.x + rootSize.width / 2,
-      y: localRoot.y + rootSize.height / 2,
-    };
-    const dx = targetCenter.x - localRootCenter.x;
-    const dy = targetCenter.y - localRootCenter.y;
+      const placedNeighborCenters: Point[] = [];
+      for (const neighborId of matchAdj.get(pivotId) ?? []) {
+        const pos = positionById.get(neighborId);
+        const node = nodesById.get(neighborId);
+        if (!pos || !node) continue;
+        placedNeighborCenters.push(nodeCenter(node, pos));
+      }
 
-    for (const nodeId of layout.subtreeIds) {
-      const local = layout.localPositions.get(nodeId);
-      if (!local) continue;
-      positionById.set(nodeId, { x: local.x + dx, y: local.y + dy });
+      const preferred = preferredConnectorAngle(startCenter, placedNeighborCenters) ?? largestFreeGapAngle(l1Thetas);
+
+      const islandSet = new Set(islandIds);
+      const islandTree = bfsTreeEdgesInSet(pivotId, islandSet, fullAdj);
+      const rankdir = rankdirFromAngle(preferred);
+      const localPositions = layoutSubtreeLocal(islandIds, islandTree, nodesById, rankdir);
+      const lateralHalf = lateralHalfExtent(islandIds, localPositions, nodesById, pivotId, rankdir);
+
+      prepared.push({
+        id: pivotId,
+        preferredTheta: preferred,
+        islandIds,
+        treeEdges: islandTree,
+        lateralHalf,
+      });
+    }
+
+    const finalAngles = fanConnectorAngles(
+      prepared.map((p) => ({
+        id: p.id,
+        preferredTheta: p.preferredTheta,
+        lateralHalf: p.lateralHalf,
+      })),
+      pocketRadius,
+    );
+
+    for (const prep of prepared) {
+      const theta = finalAngles.get(prep.id) ?? prep.preferredTheta;
+      // Always lay out with the fanned angle so rankdir matches the pocket ray.
+      const localPositions = layoutSubtreeLocal(prep.islandIds, prep.treeEdges, nodesById, rankdirFromAngle(theta));
+
+      placeSubtreeAt(
+        prep.islandIds,
+        localPositions,
+        nodesById,
+        prep.id,
+        { x: pocketRadius * Math.cos(theta), y: pocketRadius * Math.sin(theta) },
+        positionById,
+      );
     }
   }
 

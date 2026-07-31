@@ -482,6 +482,19 @@ export const graphDatasets: GraphData[] = [
         connector_kind: 'match',
       },
       {
+        type: 'same_iban',
+        id: 'DE89370400440532013000',
+        connector: true,
+        connector_kind: 'match',
+      },
+      {
+        type: 'same_email',
+        id: 'john.doe@example.com',
+        connector: true,
+        connector_kind: 'match',
+      },
+
+      {
         type: 'users',
         id: 'user_0004',
       },
@@ -609,6 +622,42 @@ export const graphDatasets: GraphData[] = [
       },
       {
         from: {
+          type: 'same_ip',
+          id: '96.220.94.92/32',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0003',
+        },
+        kind: 'match',
+        label: 'same_ip',
+      },
+      {
+        from: {
+          type: 'same_ip',
+          id: '96.220.94.92/32',
+        },
+        to: {
+          type: 'companies',
+          id: 'comp_0001',
+        },
+        kind: 'match',
+        label: 'same_ip',
+      },
+      {
+        from: {
+          type: 'same_ip',
+          id: '96.220.94.92/32',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0004',
+        },
+        kind: 'match',
+        label: 'same_ip',
+      },
+      {
+        from: {
           type: 'users',
           id: 'user_0001',
         },
@@ -681,39 +730,99 @@ export const graphDatasets: GraphData[] = [
       },
       {
         from: {
-          type: 'same_ip',
-          id: '96.220.94.92/32',
+          type: 'same_iban',
+          id: 'DE89370400440532013000',
         },
         to: {
           type: 'users',
-          id: 'user_0003',
+          id: 'user_0001',
         },
         kind: 'match',
-        label: 'same_ip',
+        label: 'same_iban',
       },
       {
         from: {
-          type: 'same_ip',
-          id: '96.220.94.92/32',
+          type: 'same_iban',
+          id: 'DE89370400440532013000',
         },
         to: {
           type: 'companies',
           id: 'comp_0001',
         },
         kind: 'match',
-        label: 'same_ip',
+        label: 'same_iban',
       },
       {
         from: {
-          type: 'same_ip',
-          id: '96.220.94.92/32',
+          type: 'same_iban',
+          id: 'DE89370400440532013000',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0032',
+        },
+        kind: 'match',
+        label: 'same_iban',
+      },
+      {
+        from: {
+          type: 'same_email',
+          id: 'john.doe@example.com',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0001',
+        },
+        kind: 'match',
+        label: 'same_email',
+      },
+      {
+        from: {
+          type: 'same_email',
+          id: 'john.doe@example.com',
         },
         to: {
           type: 'users',
           id: 'user_0004',
         },
         kind: 'match',
-        label: 'same_ip',
+        label: 'same_email',
+      },
+      {
+        from: {
+          type: 'same_email',
+          id: 'john.doe@example.com',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0006',
+        },
+        kind: 'match',
+        label: 'same_email',
+      },
+      {
+        from: {
+          type: 'same_email',
+          id: 'john.doe@example.com',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0021',
+        },
+        kind: 'match',
+        label: 'same_email',
+      },
+      {
+        from: {
+          type: 'same_email',
+          id: 'john.doe@example.com',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0029',
+        },
+        kind: 'match',
+        label: 'same_email',
       },
     ],
   },
