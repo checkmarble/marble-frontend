@@ -2,6 +2,7 @@ import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { useQueryClient } from '@tanstack/react-query';
+import { type GroupedAnnotations } from 'marble-api';
 import { toggle } from 'radash';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -32,31 +33,43 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
     setIsSubmitting(true);
     try {
       const persons = [...checkedKeys].map(parsePersonBulkKey);
-      const results = await Promise.all(
-        persons.map((person) =>
-          createAnnotationMutation.mutateAsync({
-            tableName: person.objectType,
-            objectId: person.objectId,
-            type: 'tag',
-            payload: {
-              addedTags: selectedTagIds,
-              removedAnnotations: [],
-            },
-          }),
-        ),
-      );
+      const personsToUpdate = persons.flatMap((person) => {
+        const cached = queryClient.getQueriesData<{ annotations: GroupedAnnotations }>({
+          queryKey: ['annotations', person.objectType, person.objectId],
+        });
+        const existing =
+          cached.find(([, data]) => data != null)?.[1]?.annotations.tags.map((a) => a.payload.tag_id) ?? [];
+        const addedTags = selectedTagIds.filter((id) => !existing.includes(id));
+        return addedTags.length > 0 ? [{ person, addedTags }] : [];
+      });
 
-      const failed = results.some((result) => !result.success);
-      if (failed) {
-        toast.error(t('common:errors.unknown'));
-        return;
+      if (personsToUpdate.length > 0) {
+        const results = await Promise.all(
+          personsToUpdate.map(({ person, addedTags }) =>
+            createAnnotationMutation.mutateAsync({
+              tableName: person.objectType,
+              objectId: person.objectId,
+              type: 'tag',
+              payload: {
+                addedTags,
+                removedAnnotations: [],
+              },
+            }),
+          ),
+        );
+
+        const failed = results.some((result) => !result.success);
+        if (failed) {
+          toast.error(t('common:errors.unknown'));
+          return;
+        }
+
+        await Promise.all(
+          personsToUpdate.map(({ person }) =>
+            queryClient.invalidateQueries({ queryKey: ['annotations', person.objectType, person.objectId] }),
+          ),
+        );
       }
-
-      await Promise.all(
-        persons.map((person) =>
-          queryClient.invalidateQueries({ queryKey: ['annotations', person.objectType, person.objectId] }),
-        ),
-      );
 
       setSelectedTagIds([]);
       setOpen(false);

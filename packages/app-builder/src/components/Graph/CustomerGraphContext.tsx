@@ -11,19 +11,29 @@ export const GRAPH_ATTRIBUTE_LABELS: Record<GraphAttribute, string> = {
   email: 'Email',
 };
 
-export type SelectedGraphObject = {
+export type GraphPersonRef = {
   objectType: string;
   objectId: string;
 };
 
+export type SelectedGraphObject =
+  | ({
+      nodeType: 'person';
+    } & GraphPersonRef)
+  | ({
+      nodeType: 'pivot';
+      connectedPersons: GraphPersonRef[];
+    } & GraphPersonRef);
+
 /** Same composite key as graph `nodeKey`: `${objectType}:${objectId}` */
-export function personBulkKey(person: SelectedGraphObject): string {
+export function personBulkKey(person: GraphPersonRef): string {
   return `${person.objectType}:${person.objectId}`;
 }
 
 export function parsePersonBulkKey(key: string): SelectedGraphObject {
   const colonIdx = key.indexOf(':');
   return {
+    nodeType: 'person',
     objectType: key.slice(0, colonIdx),
     objectId: key.slice(colonIdx + 1),
   };
@@ -58,8 +68,8 @@ export type CustomerGraphContextValue = {
   enterSelectionMode: () => void;
   exitSelectionMode: () => void;
   checkedPersons: Set<string>;
-  toggleCheckedPerson: (person: SelectedGraphObject) => void;
-  isPersonChecked: (person: SelectedGraphObject) => boolean;
+  toggleCheckedPerson: (person: GraphPersonRef) => void;
+  isPersonChecked: (person: GraphPersonRef) => boolean;
   clearCheckedPersons: () => void;
 };
 
@@ -101,7 +111,7 @@ export function CustomerGraphProvider({
     setCheckedPersons(new Set());
   }, []);
 
-  const toggleCheckedPerson = useCallback((person: SelectedGraphObject) => {
+  const toggleCheckedPerson = useCallback((person: GraphPersonRef) => {
     const key = personBulkKey(person);
     setCheckedPersons((prev) => {
       const next = new Set(prev);
@@ -115,7 +125,7 @@ export function CustomerGraphProvider({
   }, []);
 
   const isPersonChecked = useCallback(
-    (person: SelectedGraphObject) => checkedPersons.has(personBulkKey(person)),
+    (person: GraphPersonRef) => checkedPersons.has(personBulkKey(person)),
     [checkedPersons],
   );
 

@@ -41,7 +41,11 @@ function RouteComponent() {
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
       <CustomerGraphProvider
         key={datasetIndex}
-        initialSelectedObject={{ objectType: data.start.type, objectId: data.start.id }}
+        initialSelectedObject={{
+          nodeType: 'person',
+          objectType: data.start.type,
+          objectId: data.start.id,
+        }}
       >
         <Page.Main className="min-h-0 overflow-hidden">
           <Page.Header className="justify-between gap-md">
@@ -61,7 +65,7 @@ function RouteComponent() {
                       className={cn(
                         'rounded-sm px-xs py-px text-xs font-medium border transition-colors',
                         datasetIndex === index
-                          ? 'bg-purple-primary border-purple-primary text-white'
+                          ? 'bg-purple-primary border-purple-primary text-grey-white'
                           : 'bg-grey-white border-grey-border text-grey-primary hover:bg-grey-background',
                       )}
                     >

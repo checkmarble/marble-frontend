@@ -1,5 +1,5 @@
 import Dagre from '@dagrejs/dagre';
-import { type GraphRfEdge, type GraphRfNode, withBestHandles } from './GraphComponents';
+import { type GraphRfEdge, type GraphRfNode, withBestHandles } from './graphComponents';
 import { bfsSpanningTreeEdges } from './utils';
 
 const DEFAULT_NODE_WIDTH = 180;
