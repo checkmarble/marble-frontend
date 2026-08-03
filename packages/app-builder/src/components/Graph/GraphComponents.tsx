@@ -77,14 +77,14 @@ export function withBestHandles(nodes: GraphRfNode[], edges: GraphRfEdge[]): Gra
 export function FourHandles() {
   return (
     <>
-      <Handle type="target" position={Position.Top} id="t" className="!bg-transparent !border-0" />
-      <Handle type="target" position={Position.Right} id="r" className="!bg-transparent !border-0" />
-      <Handle type="target" position={Position.Bottom} id="b" className="!bg-transparent !border-0" />
-      <Handle type="target" position={Position.Left} id="l" className="!bg-transparent !border-0" />
-      <Handle type="source" position={Position.Top} id="st" className="!bg-transparent !border-0" />
-      <Handle type="source" position={Position.Right} id="sr" className="!bg-transparent !border-0" />
-      <Handle type="source" position={Position.Bottom} id="sb" className="!bg-transparent !border-0" />
-      <Handle type="source" position={Position.Left} id="sl" className="!bg-transparent !border-0" />
+      <Handle type="target" position={Position.Top} id="t" className="bg-transparent! border-0!" />
+      <Handle type="target" position={Position.Right} id="r" className="bg-transparent! border-0!" />
+      <Handle type="target" position={Position.Bottom} id="b" className="bg-transparent! border-0!" />
+      <Handle type="target" position={Position.Left} id="l" className="bg-transparent! border-0!" />
+      <Handle type="source" position={Position.Top} id="st" className="bg-transparent! border-0!" />
+      <Handle type="source" position={Position.Right} id="sr" className="bg-transparent! border-0!" />
+      <Handle type="source" position={Position.Bottom} id="sb" className="bg-transparent! border-0!" />
+      <Handle type="source" position={Position.Left} id="sl" className="bg-transparent! border-0!" />
     </>
   );
 }
@@ -281,13 +281,10 @@ function GraphEdge({
       {showEdgeLabels && label ? (
         <EdgeLabelRenderer>
           <div
-            className={cn('nodrag nopan absolute origin-center rounded-sm', labelClassName)}
+            className={cn('nodrag nopan absolute origin-center rounded-sm p-xs max-w-16 leading-none', labelClassName)}
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               fontSize: '6px',
-              padding: '4px',
-              lineHeight: '1',
-              maxWidth: '4rem',
             }}
           >
             {label}
@@ -299,10 +296,13 @@ function GraphEdge({
 }
 
 export function LinkEdge(props: EdgeProps<GraphRfEdge>) {
+  const { selectionMode, checkedPersons } = useCustomerGraph();
+  const connectsSelected = checkedPersons.has(props.source) && checkedPersons.has(props.target);
+  const highlightEdge = !selectionMode || connectsSelected;
   return (
     <GraphEdge
       {...props}
-      strokeClassName="!stroke-purple-primary !stroke-[2]"
+      strokeClassName={cn('stroke-2!', highlightEdge ? 'stroke-purple-primary!' : 'stroke-purple-border-light!')}
       labelClassName="bg-purple-background-light text-purple-primary border border-purple-border"
     />
   );
@@ -312,8 +312,9 @@ export function MatchEdge(props: EdgeProps<GraphRfEdge>) {
   return (
     <GraphEdge
       {...props}
+      animated
       style={{ ...props.style, strokeDasharray: '2 3' }}
-      strokeClassName="!stroke-orange-primary !stroke-[1.5]"
+      strokeClassName={'stroke-orange-primary! stroke-[1.5]!'}
       labelClassName="bg-orange-background-light text-orange-primary border border-orange-border"
     />
   );

@@ -824,6 +824,18 @@ export const graphDatasets: GraphData[] = [
         kind: 'match',
         label: 'same_email',
       },
+      {
+        from: {
+          type: 'same_email',
+          id: 'john.doe@example.com',
+        },
+        to: {
+          type: 'users',
+          id: 'user_0012',
+        },
+        kind: 'match',
+        label: 'same_email',
+      },
     ],
   },
 ];

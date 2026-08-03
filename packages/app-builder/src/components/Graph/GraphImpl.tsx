@@ -23,7 +23,7 @@ import {
   PersonNode,
   PivotNode,
   withBestHandles,
-} from './GraphComponents';
+} from './graphComponents';
 import { layoutGraphElements } from './layout-graph';
 import { reachableNodeIds, toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
@@ -160,14 +160,33 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     (_event, node) => {
       if (node.type === 'person') {
         setSelectedObject({
+          nodeType: 'person',
           objectType: node.data.objectType,
           objectId: node.data.objectId,
         });
         return;
       }
-      setSelectedObject(null);
+
+      const neighborIds = new Set<string>();
+      for (const edge of edges) {
+        if (edge.source === node.id) neighborIds.add(edge.target);
+        if (edge.target === node.id) neighborIds.add(edge.source);
+      }
+      const connectedPersons = nodes
+        .filter((n): n is Extract<GraphRfNode, { type: 'person' }> => n.type === 'person' && neighborIds.has(n.id))
+        .map((n) => ({
+          objectType: n.data.objectType,
+          objectId: n.data.objectId,
+        }));
+
+      setSelectedObject({
+        nodeType: 'pivot',
+        objectType: node.data.rawType,
+        objectId: node.data.label,
+        connectedPersons,
+      });
     },
-    [setSelectedObject],
+    [edges, nodes, setSelectedObject],
   );
 
   return (
