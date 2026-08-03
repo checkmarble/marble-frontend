@@ -23,7 +23,7 @@ import {
   PersonNode,
   PivotNode,
   withBestHandles,
-} from './graphComponents';
+} from './GraphComponents';
 import { layoutGraphElements } from './layout-graph';
 import { reachableNodeIds, toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
