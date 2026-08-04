@@ -446,6 +446,8 @@ ArchetypeApplyDto:
 
 InboxDto:
   $ref: inboxes.yml#/components/schemas/InboxDto
+UpdateInboxesDto:
+  $ref: inboxes.yml#/components/schemas/UpdateInboxesDto
 InboxMetadataDto:
   $ref: inboxes.yml#/components/schemas/InboxMetadataDto
 CreateInboxBodyDto:
@@ -561,6 +563,8 @@ CaseStatusByDateResponseDto:
   $ref: analytics.yml#/components/schemas/CaseStatusByDateResponseDto
 CaseStatusByInboxResponseDto:
   $ref: analytics.yml#/components/schemas/CaseStatusByInboxResponseDto
+CaseStatusBySlaResponseDto:
+  $ref: analytics.yml#/components/schemas/CaseStatusBySlaResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto
 AnalyticsBracketDto:

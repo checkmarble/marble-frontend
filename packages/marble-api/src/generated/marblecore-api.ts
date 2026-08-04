@@ -73,6 +73,7 @@ export type CaseDto = {
     snoozed_until?: string;
     assigned_to?: string;
     "type": "decision" | "continuous_screening";
+    due_at?: string;
 };
 export type Error = {
     code: number;
@@ -1801,9 +1802,16 @@ export type InboxDto = {
     case_review_manual?: boolean;
     case_review_on_case_created?: boolean;
     case_review_on_escalate?: boolean;
+    sla?: number;
 };
 export type CreateInboxBodyDto = {
     name: string;
+};
+export type UpdateInboxesDto = {
+    inboxes?: {
+        id?: string;
+        sla?: number;
+    }[];
 };
 export type InboxMetadataDto = {
     id: string;
@@ -5808,6 +5816,30 @@ export function createInbox(createInboxBodyDto: CreateInboxBodyDto, opts?: Oazap
         ...opts,
         method: "POST",
         body: createInboxBodyDto
+    })));
+}
+/**
+ * update inboxes sla
+ */
+export function putInboxesSla(updateInboxesDto: UpdateInboxesDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inboxes: {
+                id?: string;
+                sla?: number;
+            }[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/inboxes", oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateInboxesDto
     })));
 }
 /**
