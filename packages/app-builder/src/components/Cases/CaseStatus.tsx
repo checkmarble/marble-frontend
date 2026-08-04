@@ -121,6 +121,18 @@ const badgeTextVariants = cva('', {
   },
 });
 
+const badgeBackgroundVariants = cva('', {
+  variants: {
+    status: {
+      pending: 'bg-yellow-background-light',
+      investigating: 'bg-purple-background-light',
+      closed: 'bg-green-background-light',
+      waiting_for_action: 'bg-orange-background-light',
+      snoozed: 'bg-grey-background-light',
+    },
+  },
+});
+
 const badgeBorderVariants = cva('border', {
   variants: {
     status: {
@@ -155,20 +167,34 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
     );
   }
 
-  if (variant === 'full' || variant === 'icon-only') {
+  if (variant === 'full') {
     return (
       <div
         className={cn(badgeTextVariants({ status }), 'inline-flex items-center gap-sm text-small whitespace-nowrap')}
       >
         <div className="inline-flex items-center gap-xs shrink-0">
           <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
-          {variant === 'full' ? <span className="font-medium">{t(`cases:case.status.${status}`)}</span> : null}
+          <span className="font-medium">{t(`cases:case.status.${status}`)}</span>
         </div>
-        {resolvedOutcome !== 'unset' && variant !== 'icon-only' ? (
+        {resolvedOutcome !== 'unset' ? (
           <div className={cn(outcomeVariants({ outcome: resolvedOutcome }), 'shrink-0 whitespace-nowrap')}>
             {t(`cases:case.outcome.${resolvedOutcome}`)}
           </div>
         ) : null}
+      </div>
+    );
+  }
+
+  if (variant === 'icon-only') {
+    return (
+      <div
+        className={cn(
+          badgeBackgroundVariants({ status }),
+          badgeTextVariants({ status }),
+          'flex items-center justify-center size-8 rounded-sm',
+        )}
+      >
+        <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
       </div>
     );
   }

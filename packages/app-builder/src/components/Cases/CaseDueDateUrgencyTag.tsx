@@ -4,10 +4,10 @@ import { useFormatTimezone } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 
-interface CaseDueDateUrgencyTagProps {
+type CaseDueDateUrgencyTagProps = {
   dueAt?: string | null;
   status: CaseStatus;
-}
+};
 
 export function CaseDueDateUrgencyTag({ dueAt, status }: CaseDueDateUrgencyTagProps) {
   const { t } = useTranslation(['cases']);

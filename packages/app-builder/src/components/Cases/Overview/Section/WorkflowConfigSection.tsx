@@ -77,7 +77,7 @@ export const WorkflowConfigSection = ({
             (i) => i.caseReviewManual || i.caseReviewOnCaseCreated || i.caseReviewOnEscalate,
           ).length;
           const hasWorkflowConfig = workflowConfigured > 0;
-          const slaConfigured = inboxes.filter((i) => i.sla).length;
+          const slaConfigured = inboxes.filter((i) => i.sla !== null && i.sla !== undefined).length;
           const hasSlaConfig = slaConfigured > 0;
 
           return (

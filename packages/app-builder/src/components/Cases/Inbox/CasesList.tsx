@@ -1,7 +1,7 @@
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { SelectionProps } from '@app-builder/hooks/useTanstackTableListSelection';
-import { Case } from '@app-builder/models/cases';
+import { Case, CaseOutcome, CaseReviewLevel } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { isUnsetTimestamp } from '@app-builder/utils/datetime';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -10,7 +10,7 @@ import { Link } from '@tanstack/react-router';
 import { createColumnHelper, getCoreRowModel, OnChangeFn, SortingState } from '@tanstack/react-table';
 import { MouseEvent, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, cn, StickyComponent, Table, Tooltip, useTable } from 'ui-design-system';
+import { Checkbox, cn, StickyComponent, Table, Tag, TagProps, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseDueDateUrgencyTag } from '../CaseDueDateUrgencyTag';
 import { CaseStatusBadgeV2 } from '../CaseStatus';
@@ -193,39 +193,39 @@ export function CasesList({
         enableSorting: false,
         cell: ({ row }) => {
           const { outcome, reviewLevel } = row.original;
+          const outcomeColors: Record<CaseOutcome, TagProps['color']> = {
+            confirmed_risk: 'red',
+            valuable_alert: 'yellow',
+            false_positive: 'green',
+            unset: 'grey',
+          };
+          const reviewLevelColors: Record<CaseReviewLevel, TagProps['color']> = {
+            escalate: 'red',
+            investigate: 'yellow',
+            probable_false_positive: 'green',
+          };
           if (outcome && outcome !== 'unset') {
             return (
-              <div className="flex items-center gap-sm">
+              <div className="flex items-center gap-xs">
                 <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
                   <Icon icon="user" className="size-4 text-grey-placeholder" />
                 </div>
-                <span
-                  className={cn('flex items-center h-6 rounded-full border px-sm text-small text-nowrap', {
-                    'border-red-primary text-red-primary': outcome === 'confirmed_risk',
-                    'border-yellow-primary text-yellow-primary': outcome === 'valuable_alert',
-                    'border-green-primary text-green-primary': outcome === 'false_positive',
-                  })}
-                >
-                  {t(`cases:case.outcome.${outcome}`)}
-                </span>
+
+                <Tag color={outcomeColors[outcome]}>
+                  <span>{t(`cases:case.outcome.${outcome}`)}</span>
+                </Tag>
               </div>
             );
           }
           if (reviewLevel) {
             return (
-              <div className="flex items-center gap-sm">
+              <div className="flex items-center gap-xs">
                 <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
                   <Icon icon="wand" className="size-4 text-grey-placeholder" />
                 </div>
-                <span
-                  className={cn('flex items-center h-6 rounded-full border px-sm text-small text-nowrap', {
-                    'border-red-primary text-red-primary': reviewLevel === 'escalate',
-                    'border-yellow-primary text-yellow-primary': reviewLevel === 'investigate',
-                    'border-green-primary text-green-primary': reviewLevel === 'probable_false_positive',
-                  })}
-                >
-                  {t(`cases:case.review_level.${reviewLevel}`)}
-                </span>
+                <Tag color={reviewLevelColors[reviewLevel]}>
+                  <span>{t(`cases:case.review_level.${reviewLevel}`)}</span>
+                </Tag>
               </div>
             );
           }

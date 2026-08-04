@@ -108,7 +108,6 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
                     settings={settings}
                     onChange={(value) => handleChange(inbox.id, value)}
                     disabled={readOnly}
-                    defaultOpen={inboxes.length < 6}
                   />
                 );
               })}
@@ -134,16 +133,21 @@ type SlaInboxCardProps = {
   settings: SlaSettings;
   onChange: (value: SlaSettings) => void;
   disabled?: boolean;
-  defaultOpen?: boolean;
 };
 
-function SlaInboxCard({ inbox, settings, onChange, disabled, defaultOpen }: SlaInboxCardProps) {
+function SlaInboxCard({ inbox, settings, onChange, disabled }: SlaInboxCardProps) {
   const [isToggled, setIsToggled] = useState(settings !== undefined && settings !== null);
   const { t } = useTranslation('cases');
+
+  const handleIsToggledChange = (checked: boolean) => {
+    setIsToggled(checked);
+    if (!checked) onChange(null);
+  };
+
   return (
     <div className="flex items-center gap-sm justify-between">
       <label className="flex items-center gap-sm" htmlFor={inbox.id}>
-        <Switch id={inbox.id} checked={isToggled} onCheckedChange={setIsToggled} disabled={disabled} />
+        <Switch id={inbox.id} checked={isToggled} onCheckedChange={handleIsToggledChange} disabled={disabled} />
         <span>{inbox.name}</span>
       </label>
       <div className="flex items-center gap-sm">
