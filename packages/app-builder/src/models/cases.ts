@@ -102,6 +102,7 @@ export interface Case {
   tags: CaseTag[];
   snoozedUntil?: string;
   assignedTo?: string;
+  dueAt?: string;
 }
 
 export const adaptCase = (dto: CaseDto): Case => ({
@@ -118,6 +119,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
   tags: dto.tags.map(adaptCaseTag),
   snoozedUntil: dto.snoozed_until,
   assignedTo: dto.assigned_to,
+  dueAt: dto.due_at,
 });
 
 //
