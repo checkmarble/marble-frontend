@@ -35,6 +35,7 @@ import {
   snoozeCasePayloadSchema,
   updateAutoAssignPayloadSchema,
   updateInboxEscalationPayloadSchema,
+  updateInboxesSlaPayloadSchema,
   updateInboxWorkflowPayloadSchema,
 } from '@app-builder/schemas/cases';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
@@ -721,6 +722,17 @@ export const updateInboxWorkflowFn = createServerFn({ method: 'POST' })
       );
     } catch {
       throw new Error('Failed to update inbox workflow');
+    }
+  });
+
+export const updateInboxesSlaFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(updateInboxesSlaPayloadSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      context.authInfo.inbox.updateInboxesSla(data);
+    } catch {
+      throw new Error('Failed to update inboxes sla');
     }
   });
 

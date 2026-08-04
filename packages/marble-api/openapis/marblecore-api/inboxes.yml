@@ -505,16 +505,23 @@ components:
           type: number
     UpdateInboxesDto:
       type: object
+      required:
+        - inboxes
       properties:
         inboxes:
           type: array
           items:
-            properties:
-              id:
-                type: string
-                format: uuid
-              sla:
-                type: number
+            $ref: '#/components/schemas/UpdateInboxDto'
+    UpdateInboxDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        sla:
+          type: number
     InboxMetadataDto:
       type: object
       required:

@@ -1808,8 +1808,8 @@ export type CreateInboxBodyDto = {
     name: string;
 };
 export type UpdateInboxesDto = {
-    inboxes?: {
-        id?: string;
+    inboxes: {
+        id: string;
         sla?: number;
     }[];
 };

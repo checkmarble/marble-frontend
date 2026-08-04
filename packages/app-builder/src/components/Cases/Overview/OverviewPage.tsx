@@ -33,7 +33,7 @@ export const OverviewPage = ({
   return (
     <Page.Main>
       <Page.Content>
-        <div className="grid grid-cols-[1fr_calc(var(--spacing-xs)_*_90)] gap-lg">
+        <div className="grid grid-cols-[1fr_calc(var(--spacing-xs)*90)] gap-lg">
           <div className="flex flex-col gap-md">
             <CasesNavigationTabs />
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-md">
