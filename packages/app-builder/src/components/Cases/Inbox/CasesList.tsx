@@ -1,14 +1,18 @@
-import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { SelectionProps } from '@app-builder/hooks/useTanstackTableListSelection';
+import { Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
+import { isUnsetTimestamp } from '@app-builder/utils/datetime';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
-import { KeyboardEventHandler, MouseEventHandler, useEffect, useRef } from 'react';
+import { createColumnHelper, getCoreRowModel, OnChangeFn, SortingState } from '@tanstack/react-table';
+import { MouseEvent, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, cn, StickyComponent, Tooltip } from 'ui-design-system';
+import { Checkbox, cn, StickyComponent, Table, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CaseDueDateUrgencyTag } from '../CaseDueDateUrgencyTag';
 import { CaseStatusBadgeV2 } from '../CaseStatus';
 import { AssignedContributors } from './AssignedContributors';
 import { PaginationRow, SuccessCasesQuery } from './PaginationRow';
@@ -22,27 +26,9 @@ export type CasesListProps = {
   setLimit: (limit: number) => void;
   currentPage: number;
   setCurrentPage: (page: number) => void;
-};
+} & SelectionProps<Case>;
 
-const getRowLink = (currentTarget: EventTarget | null) => {
-  if (!(currentTarget instanceof HTMLElement)) return null;
-  const rowLink = currentTarget.querySelector('[data-row-link]');
-  return rowLink instanceof HTMLAnchorElement ? rowLink : null;
-};
-
-const handleRowClick: MouseEventHandler = (e) => {
-  const rowLink = getRowLink(e.currentTarget);
-  if (rowLink && rowLink !== e.target) {
-    rowLink.dispatchEvent(new MouseEvent(e.type, e.nativeEvent));
-  }
-};
-
-const handleRowKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
-  if (e.key !== 'Enter' && e.key !== ' ') return;
-
-  e.preventDefault();
-  getRowLink(e.currentTarget)?.click();
-};
+const columnHelper = createColumnHelper<Case>();
 
 export function CasesList({
   sorting,
@@ -53,145 +39,313 @@ export function CasesList({
   currentPage,
   setCurrentPage,
   fromInboxId,
+  selectable,
+  selectionProps,
+  tableProps,
 }: CasesListProps) {
   const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
-  const lastPageRef = useRef<number>(0);
+  const lastPageRef = useRef(0);
+  const lastActionRef = useRef<null | [string, 'select' | 'unselect']>(null);
   const cases = casesQuery.data?.pages[currentPage]?.items ?? casesQuery.data?.pages[lastPageRef.current]?.items ?? [];
   const { orgTags } = useOrganizationTags();
+
   useEffect(() => {
     if (casesQuery.data?.pages[currentPage]?.items) {
       lastPageRef.current = currentPage;
     }
-  }, [casesQuery.data?.pages[currentPage]?.items]);
+  }, [casesQuery.data?.pages[currentPage]?.items, currentPage]);
+
+  const sortingState = useMemo<SortingState>(() => [{ id: 'created_at', desc: sorting === 'DESC' }], [sorting]);
+
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    const next = typeof updater === 'function' ? updater(sortingState) : updater;
+    const sort = next.find((entry) => entry.id === 'created_at') ?? next[0];
+    if (!sort) return;
+    onSortingChange(sort.desc ? 'DESC' : 'ASC');
+  };
+
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: 'status',
+        header: ({ table }) => (
+          <div className="relative flex items-center gap-sm ps-md">
+            {selectable ? (
+              <div
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 p-md"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  table.getToggleAllPageRowsSelectedHandler()(e);
+                  lastActionRef.current = null;
+                }}
+              >
+                <Checkbox
+                  checked={
+                    table.getIsAllPageRowsSelected()
+                      ? true
+                      : table.getIsSomePageRowsSelected()
+                        ? 'indeterminate'
+                        : false
+                  }
+                />
+              </div>
+            ) : null}
+            {t('cases:inbox.heading.status')}
+          </div>
+        ),
+        size: 100,
+        minSize: 80,
+        enableSorting: false,
+        enableResizing: false,
+        cell: ({ row, table }) => {
+          const isSelected = row.getIsSelected();
+
+          const handleSelect = (e: MouseEvent) => {
+            e.stopPropagation();
+
+            const id = row.id;
+            const lastAction = lastActionRef.current;
+            const isIntendingMultiSelection = e.shiftKey;
+            const isMultiSelectionPossible = lastAction !== null && lastAction[1] === 'select' && !isSelected;
+
+            if (isIntendingMultiSelection && isMultiSelectionPossible) {
+              const rows = table.getRowModel().rows;
+              const lastClickedIdIndex = rows.findIndex((r) => r.id === lastAction[0]);
+              const currentIndex = row.index;
+              const [start, end] =
+                currentIndex > lastClickedIdIndex
+                  ? [lastClickedIdIndex, currentIndex]
+                  : [currentIndex, lastClickedIdIndex];
+
+              table.setRowSelection((prev) => {
+                const next = { ...prev };
+                for (let i = start; i <= end; i++) {
+                  const rangeRow = rows[i];
+                  if (rangeRow) next[rangeRow.id] = true;
+                }
+                return next;
+              });
+              lastActionRef.current = [id, 'select'];
+              return;
+            }
+
+            row.toggleSelected(!isSelected);
+            lastActionRef.current = [id, isSelected ? 'unselect' : 'select'];
+          };
+
+          return (
+            <div className="relative flex items-center ps-md">
+              {selectable ? (
+                <div
+                  className={cn(
+                    'absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 p-md opacity-0 group-hover/row:opacity-100',
+                    isSelected && 'opacity-100',
+                  )}
+                  onClick={handleSelect}
+                >
+                  <Checkbox checked={isSelected} />
+                </div>
+              ) : null}
+              <CaseStatusBadgeV2 status={row.original.status} variant="icon-only" />
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor('name', {
+        id: 'name',
+        header: t('cases:inbox.heading.name'),
+        size: 280,
+        minSize: 160,
+        enableSorting: false,
+        cell: ({ getValue }) => (
+          <span className="group-hover/row-link:text-purple-primary group-hover/row-link:underline">{getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor('type', {
+        id: 'type',
+        header: t('cases:inbox.heading.type'),
+        size: 64,
+        minSize: 64,
+        enableSorting: false,
+        enableResizing: false,
+        cell: ({ getValue }) => {
+          const type = getValue();
+          return (
+            <Tooltip.Default content={t(`cases:inbox.tooltip.${type}`)}>
+              <Icon
+                icon={type === 'continuous_screening' ? 'scan-eye' : 'case-manager'}
+                className={cn('size-5', {
+                  'text-blue-58': type === 'decision',
+                  'text-grey-secondary': type === 'continuous_screening',
+                })}
+              />
+            </Tooltip.Default>
+          );
+        },
+      }),
+      columnHelper.display({
+        id: 'review_status',
+        header: t('cases:inbox.heading.review_status'),
+        size: 180,
+        minSize: 140,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const { outcome, reviewLevel } = row.original;
+          if (outcome && outcome !== 'unset') {
+            return (
+              <div className="flex items-center gap-sm">
+                <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                  <Icon icon="user" className="size-4 text-grey-placeholder" />
+                </div>
+                <span
+                  className={cn('flex items-center h-6 rounded-full border px-sm text-small text-nowrap', {
+                    'border-red-primary text-red-primary': outcome === 'confirmed_risk',
+                    'border-yellow-primary text-yellow-primary': outcome === 'valuable_alert',
+                    'border-green-primary text-green-primary': outcome === 'false_positive',
+                  })}
+                >
+                  {t(`cases:case.outcome.${outcome}`)}
+                </span>
+              </div>
+            );
+          }
+          if (reviewLevel) {
+            return (
+              <div className="flex items-center gap-sm">
+                <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                  <Icon icon="wand" className="size-4 text-grey-placeholder" />
+                </div>
+                <span
+                  className={cn('flex items-center h-6 rounded-full border px-sm text-small text-nowrap', {
+                    'border-red-primary text-red-primary': reviewLevel === 'escalate',
+                    'border-yellow-primary text-yellow-primary': reviewLevel === 'investigate',
+                    'border-green-primary text-green-primary': reviewLevel === 'probable_false_positive',
+                  })}
+                >
+                  {t(`cases:case.review_level.${reviewLevel}`)}
+                </span>
+              </div>
+            );
+          }
+          return '-';
+        },
+      }),
+      columnHelper.accessor('createdAt', {
+        id: 'created_at',
+        header: t('cases:inbox.heading.date'),
+        size: 200,
+        minSize: 160,
+        enableSorting: true,
+        cell: ({ getValue, row }) => {
+          const createdAt = getValue();
+          const dueAt = row.original.dueAt;
+          const hasDueAt = !isUnsetTimestamp(dueAt);
+          const formattedCreatedAt = formatDateTime(createdAt, {
+            dateStyle: 'long',
+            timeStyle: 'short',
+          });
+
+          return (
+            <Tooltip.Default
+              content={
+                hasDueAt && dueAt ? (
+                  <div className="flex flex-col gap-xs">
+                    <span>{t('cases:inbox.tooltip.created', { date: formattedCreatedAt })}</span>
+                    <span>
+                      {t('cases:inbox.tooltip.due', {
+                        date: formatDateTime(dueAt, {
+                          dateStyle: 'long',
+                          timeStyle: 'short',
+                        }),
+                      })}
+                    </span>
+                  </div>
+                ) : (
+                  formattedCreatedAt
+                )
+              }
+            >
+              <div className="flex items-center gap-sm">
+                <time dateTime={createdAt}>{formatDateRelative(createdAt, { language })}</time>
+                <CaseDueDateUrgencyTag dueAt={dueAt} status={row.original.status} />
+              </div>
+            </Tooltip.Default>
+          );
+        },
+      }),
+      columnHelper.accessor('tags', {
+        id: 'tags',
+        header: t('cases:inbox.heading.tags'),
+        size: 160,
+        minSize: 100,
+        enableSorting: false,
+        cell: ({ getValue }) => (
+          <div className="flex gap-sm">
+            {getValue().map((tagItem) => {
+              const tag = orgTags.find((orgTag) => orgTag.id === tagItem.tagId);
+              if (!tag) return null;
+              return <TagPreview key={tag.id} name={tag.name} />;
+            })}
+          </div>
+        ),
+      }),
+      columnHelper.display({
+        id: 'assigned',
+        header: () => (
+          <>
+            <span className="hidden lg:inline">{t('cases:inbox.heading.assigned_and_contributors')}</span>
+            <span className="lg:hidden">{t('cases:inbox.heading.assignee')}</span>
+          </>
+        ),
+        size: 140,
+        minSize: 100,
+        enableSorting: false,
+        cell: ({ row }) => (
+          <AssignedContributors assignedTo={row.original.assignedTo} contributors={row.original.contributors} />
+        ),
+      }),
+    ],
+    [t, selectable, formatDateTime, language, orgTags],
+  );
+
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
+    data: cases,
+    columns,
+    state: {
+      sorting: sortingState,
+      rowSelection: selectionProps?.rowSelection,
+    },
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    enableRowSelection: selectable,
+    enableSorting: true,
+    enableSortingRemoval: false,
+    manualSorting: true,
+    onSortingChange: handleSortingChange,
+    ...tableProps,
+    rowLink: (caseItem) => (
+      <Link
+        to="/cases/$caseId"
+        params={{ caseId: fromUUIDtoSUUID(caseItem.id) }}
+        search={{
+          fromInbox: fromInboxId === MY_INBOX_ID ? undefined : fromUUIDtoSUUID(fromInboxId),
+        }}
+      />
+    ),
+  });
 
   return (
     <div className="flex flex-col text-small bg-surface-card">
-      <div className="w-full grid grid-cols-[0px_auto_1fr_repeat(5,_auto)] border border-grey-border rounded-md">
-        <div className="grid grid-cols-subgrid col-span-full items-center group/table-row not-last:border-b border-grey-border">
-          <HeaderCell className="ps-xl relative col-span-2">
-            <MultiSelect.Global>
-              {(state, onSelect) => <SelectionCheckbox selectionState={state} onSelect={onSelect} />}
-            </MultiSelect.Global>
-            {t('cases:inbox.heading.status')}
-          </HeaderCell>
-          <HeaderCell>{t('cases:inbox.heading.name')}</HeaderCell>
-          <HeaderCell>{t('cases:inbox.heading.type')}</HeaderCell>
-          <HeaderCell>{t('cases:inbox.heading.review_status')}</HeaderCell>
-          <HeaderCell className="flex items-center gap-sm justify-between">
-            {t('cases:inbox.heading.date')}
-            <Icon
-              icon="caret-down"
-              className={cn('size-5 cursor-pointer', {
-                'rotate-180': sorting === 'ASC',
-              })}
-              onClick={() => onSortingChange(sorting === 'ASC' ? 'DESC' : 'ASC')}
-            />
-          </HeaderCell>
-          <HeaderCell>{t('cases:inbox.heading.tags')}</HeaderCell>
-          <HeaderCell>
-            <span className="hidden lg:inline">{t('cases:inbox.heading.assigned_and_contributors')}</span>
-            <span className="lg:hidden">{t('cases:inbox.heading.assignee')}</span>
-          </HeaderCell>
-        </div>
-        {cases.map((caseItem, index) => (
-          <div
-            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18 focus-visible:outline-2 -outline-offset-2 outline-purple-primary"
-            key={caseItem.id}
-            role="link"
-            tabIndex={0}
-            onClick={handleRowClick}
-            onKeyDown={handleRowKeyDown}
-          >
-            <div className="invisible">
-              <Link
-                data-row-link
-                to="/cases/$caseId"
-                params={{ caseId: fromUUIDtoSUUID(caseItem.id) }}
-                search={{
-                  fromInbox: fromInboxId === MY_INBOX_ID ? undefined : fromUUIDtoSUUID(fromInboxId),
-                }}
-              />
-            </div>
-            <div className="relative p-md ps-xl w-25">
-              <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>
-                {(isSelected, onSelect) => <SelectionCheckbox selectionState={isSelected} onSelect={onSelect} />}
-              </MultiSelect.Item>
-              <CaseStatusBadgeV2 status={caseItem.status} variant="icon-only" />
-            </div>
-            <div className="p-md group-hover/table-row:text-purple-primary group-hover/table-row:underline">
-              {caseItem.name}
-            </div>
-            <div className="p-md justify-self-center">
-              <Tooltip.Default content={t(`cases:inbox.tooltip.${caseItem.type}`)}>
-                <Icon
-                  icon={caseItem.type === 'continuous_screening' ? 'scan-eye' : 'case-manager'}
-                  className={cn('size-5', {
-                    'text-blue-58': caseItem.type === 'decision',
-                    'text-grey-secondary': caseItem.type === 'continuous_screening',
-                  })}
-                />
-              </Tooltip.Default>
-            </div>
-            <div className="p-md">
-              {caseItem.outcome && caseItem.outcome !== 'unset' ? (
-                <div className="flex items-center gap-sm">
-                  <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
-                    <Icon icon="user" className="size-4 text-grey-placeholder" />
-                  </div>
-                  <span
-                    className={cn('flex items-center h-6 rounded-full border px-sm text-small text-nowrap', {
-                      'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
-                      'border-yellow-primary text-yellow-primary': caseItem.outcome === 'valuable_alert',
-                      'border-green-primary text-green-primary': caseItem.outcome === 'false_positive',
-                    })}
-                  >
-                    {t(`cases:case.outcome.${caseItem.outcome}`)}
-                  </span>
-                </div>
-              ) : caseItem.reviewLevel ? (
-                <div className="flex items-center gap-sm">
-                  <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
-                    <Icon icon="wand" className="size-4 text-grey-placeholder" />
-                  </div>
-                  <span
-                    className={cn('flex items-center h-6 rounded-full border px-sm text-small text-nowrap', {
-                      'border-red-primary text-red-primary': caseItem.reviewLevel === 'escalate',
-                      'border-yellow-primary text-yellow-primary': caseItem.reviewLevel === 'investigate',
-                      'border-green-primary text-green-primary': caseItem.reviewLevel === 'probable_false_positive',
-                    })}
-                  >
-                    {t(`cases:case.review_level.${caseItem.reviewLevel}`)}
-                  </span>
-                </div>
-              ) : (
-                '-'
-              )}
-            </div>
-            <div className="p-md">
-              <Tooltip.Default
-                content={formatDateTime(caseItem.createdAt, {
-                  dateStyle: 'long',
-                  timeStyle: 'short',
-                })}
-              >
-                <time dateTime={caseItem.createdAt}>{formatDateRelative(caseItem.createdAt, { language })}</time>
-              </Tooltip.Default>
-            </div>
-            <div className="p-md flex gap-sm">
-              {caseItem.tags.map((tagItem) => {
-                const tag = orgTags.find((tag) => tag.id === tagItem.tagId);
-                if (!tag) return null;
-                return <TagPreview key={tag.id} name={tag.name} />;
-              })}
-            </div>
-            <div className="p-md">
-              <AssignedContributors assignedTo={caseItem.assignedTo} contributors={caseItem.contributors} />
-            </div>
-          </div>
-        ))}
-      </div>
+      <Table.Container {...getContainerProps()} className="bg-surface-card">
+        <Table.Header headerGroups={table.getHeaderGroups()} />
+        <Table.Body {...getBodyProps()}>
+          {rows.map((row) => (
+            <Table.Row key={row.id} row={row} />
+          ))}
+        </Table.Body>
+      </Table.Container>
       <StickyComponent sentinelClassName="bottom-0 h-px">
         <PaginationRow
           casesQuery={casesQuery}
@@ -205,25 +359,3 @@ export function CasesList({
     </div>
   );
 }
-
-const HeaderCell = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return (
-    <div className={cn('p-md font-normal text-left not-first:border-l border-grey-border', className)}>{children}</div>
-  );
-};
-
-type SelectionCheckboxProps = {
-  selectionState: boolean | 'indeterminate';
-  onSelect: MouseEventHandler;
-};
-
-const SelectionCheckbox = ({ selectionState, onSelect }: SelectionCheckboxProps) => {
-  return (
-    <div
-      className="group/checkbox-parent absolute left-0 top-[50%] translate-[-50%] p-md opacity-0 group-hover/table-row:opacity-100 has-data-[state=checked]:opacity-100"
-      onClick={onSelect}
-    >
-      <Checkbox checked={selectionState} />
-    </div>
-  );
-};
