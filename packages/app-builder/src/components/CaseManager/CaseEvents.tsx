@@ -1,10 +1,12 @@
+import { CaseEventDetail } from '@app-builder/components/Cases/Events/CaseEventDetail';
+import { Panel } from '@app-builder/components/Panel';
 import { type CaseEvent, type CaseEventType, type CaseStatus } from '@app-builder/models/cases';
 import { type CalendarDayDistance, getCalendarDayDistance, getDueDateUrgency } from '@app-builder/utils/datetime';
 import { useFormatTimezone } from '@app-builder/utils/format';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn } from 'ui-design-system';
+import { Button, cn, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseEventsProps = {
@@ -24,9 +26,10 @@ type TimelineStep =
 export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt, status }: CaseEventsProps) {
   const { t } = useTranslation(['cases']);
   const timeZone = useFormatTimezone();
+  const [panelOpen, setPanelOpen] = useState(false);
 
-  const steps = useMemo(() => {
-    const filtered = events.filter((event) => {
+  const filteredEvents = useMemo(() => {
+    return events.filter((event) => {
       if (includeEventTypes !== undefined && !includeEventTypes.includes(event.eventType)) {
         return false;
       }
@@ -35,8 +38,18 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
       }
       return true;
     });
+  }, [events, excludeEventTypes, includeEventTypes]);
 
-    const timelineSteps: TimelineStep[] = filtered.map((event) => ({
+  const allEvents = useMemo(() => {
+    return [...events].sort((a, b) => {
+      const byDate = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (byDate !== 0) return byDate;
+      return a.id.localeCompare(b.id);
+    });
+  }, [events]);
+
+  const steps = useMemo(() => {
+    const timelineSteps: TimelineStep[] = filteredEvents.map((event) => ({
       kind: 'event',
       id: event.id,
       at: event.createdAt,
@@ -60,45 +73,79 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
       if (byDate !== 0) return byDate;
       return a.id.localeCompare(b.id);
     });
-  }, [dueAt, excludeEventTypes, includeEventTypes, events, status, timeZone]);
+  }, [dueAt, filteredEvents, status, timeZone]);
 
   if (steps.length === 0) return null;
 
   return (
-    <ol className="max-h-50 overflow-y-auto">
-      {steps.map((step, index) => {
-        const distance = getCalendarDayDistance(step.at, { timeZone });
-        const relativeLabel = formatCalendarDayDistance(distance, t);
-        const isLast = index === steps.length - 1;
-        const isLateDue = step.kind === 'due' && step.isLate;
+    <div className="relative">
+      {allEvents.length > 0 ? (
+        <div className="absolute inset-e-0 top-0 z-10">
+          <Button
+            variant="primary"
+            mode="icon"
+            appearance="link"
+            onClick={() => setPanelOpen(true)}
+            aria-label={t('cases:manager.timeline.view_all')}
+          >
+            <Icon icon="eye" className="size-4" />
+          </Button>
+        </div>
+      ) : null}
+      <ol className={cn('max-h-50 overflow-y-auto', allEvents.length > 0 && 'pe-lg')}>
+        {steps.map((step, index) => {
+          const distance = getCalendarDayDistance(step.at, { timeZone });
+          const relativeLabel = formatCalendarDayDistance(distance, t);
+          const isLast = index === steps.length - 1;
+          const isLateDue = step.kind === 'due' && step.isLate;
 
-        return (
-          <li key={step.id} className="flex gap-sm">
-            <div className="flex w-2 shrink-0 flex-col items-center" aria-hidden>
-              <span
-                className={cn('mt-1 size-2 shrink-0 rounded-full', isLateDue ? 'bg-red-primary' : 'bg-grey-border')}
-              />
-              {!isLast ? <span className="bg-grey-border w-px min-h-sm flex-1" /> : null}
+          return (
+            <li key={step.id} className="flex gap-sm">
+              <div className="flex w-2 shrink-0 flex-col items-center" aria-hidden>
+                <span
+                  className={cn('mt-1 size-2 shrink-0 rounded-full', isLateDue ? 'bg-red-primary' : 'bg-grey-border')}
+                />
+                {!isLast ? <span className="bg-grey-border w-px min-h-sm flex-1" /> : null}
+              </div>
+              <div
+                className={cn(
+                  'flex min-w-0 items-center gap-2xs pb-sm text-xs text-grey-secondary',
+                  isLast && 'pb-0',
+                  isLateDue && 'text-red-primary',
+                )}
+              >
+                {isLateDue ? <Icon icon="error" className="size-3.5 shrink-0" /> : null}
+                <span className="truncate">
+                  {step.kind === 'event'
+                    ? t(`cases:case_detail.history.event_type.${step.eventType}`)
+                    : t('cases:manager.timeline.due')}{' '}
+                  {relativeLabel}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      <Panel.Root open={panelOpen} onOpenChange={setPanelOpen}>
+        <Panel.Container size="small">
+          <Panel.Content>
+            <Panel.Header>
+              <Typo variant="title2" className="text-grey-primary">
+                {t('cases:manager.timeline.panel_title')}
+              </Typo>
+            </Panel.Header>
+            <div className="relative flex flex-col gap-md py-md">
+              <div className="absolute inset-s-0 top-0 flex h-full w-6 flex-col items-center" aria-hidden>
+                <div className="bg-grey-border -z-10 h-full w-px" />
+              </div>
+              {allEvents.map((event) => (
+                <CaseEventDetail key={event.id} event={event} />
+              ))}
             </div>
-            <div
-              className={cn(
-                'flex min-w-0 items-center gap-2xs pb-sm text-xs text-grey-secondary',
-                isLast && 'pb-0',
-                isLateDue && 'text-red-primary',
-              )}
-            >
-              {isLateDue ? <Icon icon="error" className="size-3.5 shrink-0" /> : null}
-              <span className="truncate">
-                {step.kind === 'event'
-                  ? t(`cases:case_detail.history.event_type.${step.eventType}`)
-                  : t('cases:manager.timeline.due')}{' '}
-                {relativeLabel}
-              </span>
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
+    </div>
   );
 }
 
