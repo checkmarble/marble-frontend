@@ -1,3 +1,4 @@
+import { SlaConfigPanelContent } from '@app-builder/components/Cases/Overview/Panel/SlaConfigPanelContent';
 import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxMetadata } from '@app-builder/models/inbox';
@@ -9,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
 import { EscalationConditionsPanelContent } from '../Panel/EscalationConditionsPanelContent';
-import { SlaConfigPanelContent } from '../Panel/SlaConfigPanelContent';
 import { WorkflowConfigPanelContent } from '../Panel/WorkflowConfigPanelContent';
 import { ConfigRow } from './ConfigRow';
 
@@ -102,47 +102,45 @@ export const WorkflowConfigSection = ({
                 onClick={handleOpenEscalationPanel}
               />
               {isGlobalAdmin ? (
-                <>
-                  <ConfigRow
-                    isRestricted={!aiAssistHasAccess}
-                    canEdit={canEditAiReview}
-                    label={t('cases:overview.config.ai_review_trigger')}
-                    statusTag={
-                      <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small">
-                        {hasWorkflowConfig
-                          ? t('cases:overview.config.x_of_y_configured', {
-                              configured: workflowConfigured,
-                              total: inboxesTotal,
-                            })
-                          : t('cases:overview.config.not_configured')}
-                      </Tag>
-                    }
-                    editIcon="arrow-right"
-                    upsaleTitle={t('cases:overview.upsale.workflow_config.title')}
-                    upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
-                    onClick={handleOpenWorkflowPanel}
-                  />
-                  <ConfigRow
-                    isRestricted={false}
-                    canEdit={true}
-                    label={t('cases:overview.config.sla_config_trigger')}
-                    statusTag={
-                      <Tag color={hasSlaConfig ? 'green' : 'orange'} size="small">
-                        {hasSlaConfig
-                          ? t('cases:overview.config.x_of_y_configured', {
-                              configured: slaConfigured,
-                              total: inboxesTotal,
-                            })
-                          : t('cases:overview.config.not_configured')}
-                      </Tag>
-                    }
-                    editIcon="arrow-right"
-                    upsaleTitle={t('cases:overview.upsale.sla_config.title')}
-                    upsaleDescription={t('cases:overview.upsale.sla_config.description')}
-                    onClick={handleOpenSlaPanel}
-                  />
-                </>
+                <ConfigRow
+                  isRestricted={!aiAssistHasAccess}
+                  canEdit={canEditAiReview}
+                  label={t('cases:overview.config.ai_review_trigger')}
+                  statusTag={
+                    <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small">
+                      {hasWorkflowConfig
+                        ? t('cases:overview.config.x_of_y_configured', {
+                            configured: workflowConfigured,
+                            total: inboxesTotal,
+                          })
+                        : t('cases:overview.config.not_configured')}
+                    </Tag>
+                  }
+                  editIcon="arrow-right"
+                  upsaleTitle={t('cases:overview.upsale.workflow_config.title')}
+                  upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
+                  onClick={handleOpenWorkflowPanel}
+                />
               ) : null}
+              <ConfigRow
+                isRestricted={false}
+                canEdit={isGlobalAdmin}
+                label={t('cases:overview.config.sla_config_trigger')}
+                statusTag={
+                  <Tag color={hasSlaConfig ? 'green' : 'orange'} size="small">
+                    {hasSlaConfig
+                      ? t('cases:overview.config.x_of_y_configured', {
+                          configured: slaConfigured,
+                          total: inboxesTotal,
+                        })
+                      : t('cases:overview.config.not_configured')}
+                  </Tag>
+                }
+                editIcon="arrow-right"
+                upsaleTitle={t('cases:overview.upsale.sla_config.title')}
+                upsaleDescription={t('cases:overview.upsale.sla_config.description')}
+                onClick={handleOpenSlaPanel}
+              />
             </>
           );
         })

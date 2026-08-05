@@ -730,7 +730,7 @@ export const updateInboxesSlaFn = createServerFn({ method: 'POST' })
   .validator(updateInboxesSlaPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      context.authInfo.inbox.updateInboxesSla(data);
+      await context.authInfo.inbox.updateInboxesSla(data);
     } catch {
       throw new Error('Failed to update inboxes sla');
     }

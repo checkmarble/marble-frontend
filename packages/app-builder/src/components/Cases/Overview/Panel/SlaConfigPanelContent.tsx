@@ -3,15 +3,28 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
-import { useUpdateInboxesSlaMutation } from '@app-builder/queries/cases/update-inboxes';
-import { useEffect, useState } from 'react';
+import { type UpdateInboxesSlaPayload, useUpdateInboxesSlaMutation } from '@app-builder/queries/cases/update-inboxes';
+import { handleSubmit } from '@app-builder/utils/form';
+import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Input, Switch } from 'ui-design-system';
+import { z } from 'zod/v4';
 
-type SlaSettings = number | null | undefined;
-type InboxSlaState = Map<string, SlaSettings>;
+const SLA_FORM_ID = 'sla-config-panel-form';
+
+const slaInboxSchema = z.object({
+  inboxId: z.uuid(),
+  enabled: z.boolean(),
+  sla: z.number().nullable(),
+});
+
+const slaFormSchema = z.object({
+  inboxes: z.array(slaInboxSchema),
+});
+
+type SlaInboxValue = z.infer<typeof slaInboxSchema>;
 
 interface SlaConfigPanelContentProps {
   readOnly?: boolean;
@@ -24,64 +37,22 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
   const updateSlaMutation = useUpdateInboxesSlaMutation();
   const revalidate = useLoaderRevalidator();
 
-  const [slaState, setSlaState] = useState<InboxSlaState>(new Map());
-
-  const inboxes = inboxesQuery.data?.inboxes ?? [];
-
-  // Sync sla state when query data updates
-  useEffect(() => {
-    if (inboxesQuery.isSuccess) {
-      const initialState = new Map<string, SlaSettings>();
-      for (const inbox of inboxesQuery.data?.inboxes ?? []) {
-        initialState.set(inbox.id, inbox.sla);
-      }
-      setSlaState(initialState);
-    }
-  }, [inboxesQuery.data]);
-
-  const handleChange = (inboxId: string, value: SlaSettings) => {
-    setSlaState((prev) => {
-      const newState = new Map(prev);
-      newState.set(inboxId, value);
-      return newState;
-    });
-  };
-
-  const handleSave = () => {
-    const updates: {
-      inboxId: string;
-      sla: SlaSettings;
-    }[] = [];
-
-    for (const inbox of inboxes) {
-      const currentSettings = slaState.get(inbox.id);
-      if (currentSettings === undefined) continue;
-
-      // Check if settings changed
-      const hasChanged = currentSettings !== inbox.sla;
-
-      if (hasChanged) {
-        updates.push({
-          inboxId: inbox.id,
-          sla: currentSettings,
-        });
-      }
-    }
-
-    if (updates.length > 0) {
-      updateSlaMutation.mutate(updates, {
-        onSuccess: () => {
-          toast.success(t('cases:overview.panel.sla.saved'));
-          revalidate();
-          panelSharp.actions.close();
-        },
-        onError: () => {
-          toast.error(t('common:errors.unknown'));
-        },
-      });
-    } else {
+  const saveSla = (updates: UpdateInboxesSlaPayload) => {
+    if (updates.length === 0) {
       panelSharp.actions.close();
+      return Promise.resolve();
     }
+
+    return updateSlaMutation
+      .mutateAsync(updates)
+      .then(() => {
+        toast.success(t('cases:overview.panel.sla.saved'));
+        revalidate();
+        panelSharp.actions.close();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (
@@ -97,27 +68,15 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
           .with({ isError: true }, () => (
             <div className="text-s text-grey-secondary py-sm">{t('cases:overview.config.error_loading')}</div>
           ))
-          .with({ isSuccess: true }, () => (
-            <div className="flex flex-col gap-md">
-              {inboxes.map((inbox) => {
-                const settings = slaState.get(inbox.id);
-                return (
-                  <SlaInboxCard
-                    key={inbox.id}
-                    inbox={inbox}
-                    settings={settings}
-                    onChange={(value) => handleChange(inbox.id, value)}
-                    disabled={readOnly}
-                  />
-                );
-              })}
-            </div>
+          .with({ isSuccess: true }, ({ data }) => (
+            <SlaConfigForm inboxes={data.inboxes} onSave={saveSla} readOnly={readOnly} />
           ))
           .exhaustive()}
         {readOnly ? null : (
           <Panel.Footer>
             <Panel.FooterButton
-              onClick={handleSave}
+              type="submit"
+              form={SLA_FORM_ID}
               isLoading={updateSlaMutation.isPending}
               label={t('cases:overview.validate_config')}
             />
@@ -128,34 +87,75 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
   );
 };
 
+type SlaConfigFormProps = {
+  inboxes: InboxWithCasesCount[];
+  onSave: (updates: UpdateInboxesSlaPayload) => Promise<void>;
+  readOnly?: boolean;
+};
+
+function SlaConfigForm({ inboxes, onSave, readOnly }: SlaConfigFormProps) {
+  const form = useForm({
+    defaultValues: {
+      inboxes: inboxes.map((inbox) => ({
+        inboxId: inbox.id,
+        enabled: inbox.sla !== undefined && inbox.sla !== null,
+        sla: inbox.sla ?? null,
+      })),
+    },
+    validators: {
+      onSubmit: slaFormSchema,
+    },
+    onSubmit: ({ value }) => {
+      const initialSla = new Map(inboxes.map((inbox) => [inbox.id, inbox.sla ?? null]));
+
+      const updates = value.inboxes
+        .map(({ inboxId, enabled, sla }) => ({ inboxId, sla: enabled ? sla : null }))
+        .filter(({ inboxId, sla }) => sla !== initialSla.get(inboxId));
+
+      return onSave(updates);
+    },
+  });
+
+  return (
+    <form id={SLA_FORM_ID} className="flex flex-col gap-md" onSubmit={handleSubmit(form)}>
+      {inboxes.map((inbox, index) => (
+        <form.Field key={inbox.id} name={`inboxes[${index}]`}>
+          {(field) => (
+            <SlaInboxCard inbox={inbox} value={field.state.value} onChange={field.handleChange} disabled={readOnly} />
+          )}
+        </form.Field>
+      ))}
+    </form>
+  );
+}
+
 type SlaInboxCardProps = {
   inbox: InboxWithCasesCount;
-  settings: SlaSettings;
-  onChange: (value: SlaSettings) => void;
+  value: SlaInboxValue;
+  onChange: (value: SlaInboxValue) => void;
   disabled?: boolean;
 };
 
-function SlaInboxCard({ inbox, settings, onChange, disabled }: SlaInboxCardProps) {
-  const [isToggled, setIsToggled] = useState(settings !== undefined && settings !== null);
+function SlaInboxCard({ inbox, value, onChange, disabled }: SlaInboxCardProps) {
   const { t } = useTranslation('cases');
-
-  const handleIsToggledChange = (checked: boolean) => {
-    setIsToggled(checked);
-    if (!checked) onChange(null);
-  };
 
   return (
     <div className="flex items-center gap-sm justify-between">
       <label className="flex items-center gap-sm" htmlFor={inbox.id}>
-        <Switch id={inbox.id} checked={isToggled} onCheckedChange={handleIsToggledChange} disabled={disabled} />
+        <Switch
+          id={inbox.id}
+          checked={value.enabled}
+          onCheckedChange={(checked) => onChange({ ...value, enabled: checked, sla: checked ? value.sla : null })}
+          disabled={disabled}
+        />
         <span>{inbox.name}</span>
       </label>
       <div className="flex items-center gap-sm">
         <Input
           type="number"
-          value={settings ?? ''}
-          onChange={(e) => onChange(Number(e.target.value))}
-          disabled={disabled || !isToggled}
+          value={value.sla ?? ''}
+          onChange={(e) => onChange({ ...value, sla: e.target.value === '' ? null : Number(e.target.value) })}
+          disabled={disabled || !value.enabled}
           className="w-16"
         />
         <span className="text-xs text-grey-secondary">{t('cases:overview.panel.sla.days')}</span>

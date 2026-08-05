@@ -189,6 +189,8 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
     return (
       <Tooltip.Default content={t(`cases:case.status.${status}`)}>
         <div
+          role="img"
+          aria-label={t(`cases:case.status.${status}`)}
           className={cn(
             badgeBackgroundVariants({ status }),
             badgeTextVariants({ status }),

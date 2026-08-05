@@ -1,7 +1,12 @@
 import { CaseEventDetail } from '@app-builder/components/Cases/Events/CaseEventDetail';
 import { Panel } from '@app-builder/components/Panel';
 import { type CaseEvent, type CaseEventType, type CaseStatus } from '@app-builder/models/cases';
-import { type CalendarDayDistance, getCalendarDayDistance, getDueDateUrgency } from '@app-builder/utils/datetime';
+import {
+  type CalendarDayDistance,
+  getCalendarDayDistance,
+  getDueDateUrgency,
+  normalizeTimestampForInstant,
+} from '@app-builder/utils/datetime';
 import { useFormatTimezone } from '@app-builder/utils/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +47,9 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
 
   const allEvents = useMemo(() => {
     return [...events].sort((a, b) => {
-      const byDate = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      const byDate =
+        new Date(normalizeTimestampForInstant(a.createdAt)).getTime() -
+        new Date(normalizeTimestampForInstant(b.createdAt)).getTime();
       if (byDate !== 0) return byDate;
       return a.id.localeCompare(b.id);
     });
@@ -69,7 +76,8 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
     }
 
     return timelineSteps.sort((a, b) => {
-      const byDate = new Date(a.at).getTime() - new Date(b.at).getTime();
+      const byDate =
+        new Date(normalizeTimestampForInstant(a.at)).getTime() - new Date(normalizeTimestampForInstant(b.at)).getTime();
       if (byDate !== 0) return byDate;
       return a.id.localeCompare(b.id);
     });

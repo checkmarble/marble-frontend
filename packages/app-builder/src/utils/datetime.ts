@@ -47,7 +47,8 @@ function getSignedCalendarDays(timestamp: string | null | undefined, options?: C
     const timeZone = options?.timeZone ?? Temporal.Now.timeZoneId();
     const now = options?.now ?? Temporal.Now.zonedDateTimeISO(timeZone);
     const targetDate = toInstant(timestamp).toZonedDateTimeISO(timeZone).toPlainDate();
-    return now.toPlainDate().until(targetDate, { largestUnit: 'day' }).days;
+    const nowDate = now.withTimeZone(timeZone).toPlainDate();
+    return nowDate.until(targetDate, { largestUnit: 'day' }).days;
   } catch {
     return null;
   }

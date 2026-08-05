@@ -312,6 +312,8 @@
   "inbox.need_first_inbox": "Create a first inbox to start using the case manager",
   "inbox.need_inbox_contact_admin": "Please contact your admin to get access to an inbox",
   "inbox.remove_favorite": "Remove from favorites",
+  "inbox.select_all_cases": "Select all cases on this page",
+  "inbox.select_case": "Select case {{name}}",
   "inbox.set_as_favorite": "Set as favorite",
   "inbox.tooltip.continuous_screening": "Case with monitoring",
   "inbox.tooltip.created": "Created: {{date}}",

@@ -1,7 +1,8 @@
+import { CaseDueDateUrgencyTag } from '@app-builder/components/Cases/CaseDueDateUrgencyTag';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { SelectionProps } from '@app-builder/hooks/useTanstackTableListSelection';
-import { Case, CaseOutcome, CaseReviewLevel } from '@app-builder/models/cases';
+import { Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { isUnsetTimestamp } from '@app-builder/utils/datetime';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -10,9 +11,9 @@ import { Link } from '@tanstack/react-router';
 import { createColumnHelper, getCoreRowModel, OnChangeFn, SortingState } from '@tanstack/react-table';
 import { MouseEvent, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Checkbox, cn, StickyComponent, Table, Tag, TagProps, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { CaseDueDateUrgencyTag } from '../CaseDueDateUrgencyTag';
 import { CaseStatusBadgeV2 } from '../CaseStatus';
 import { AssignedContributors } from './AssignedContributors';
 import { PaginationRow, SuccessCasesQuery } from './PaginationRow';
@@ -82,6 +83,7 @@ export function CasesList({
                 }}
               >
                 <Checkbox
+                  aria-label={t('cases:inbox.select_all_cases')}
                   checked={
                     table.getIsAllPageRowsSelected()
                       ? true
@@ -113,22 +115,26 @@ export function CasesList({
             if (isIntendingMultiSelection && isMultiSelectionPossible) {
               const rows = table.getRowModel().rows;
               const lastClickedIdIndex = rows.findIndex((r) => r.id === lastAction[0]);
-              const currentIndex = row.index;
-              const [start, end] =
-                currentIndex > lastClickedIdIndex
-                  ? [lastClickedIdIndex, currentIndex]
-                  : [currentIndex, lastClickedIdIndex];
 
-              table.setRowSelection((prev) => {
-                const next = { ...prev };
-                for (let i = start; i <= end; i++) {
-                  const rangeRow = rows[i];
-                  if (rangeRow) next[rangeRow.id] = true;
-                }
-                return next;
-              });
-              lastActionRef.current = [id, 'select'];
-              return;
+              // The anchor row is no longer displayed (filtered out, other page…): start a new range from here.
+              if (lastClickedIdIndex >= 0) {
+                const currentIndex = row.index;
+                const [start, end] =
+                  currentIndex > lastClickedIdIndex
+                    ? [lastClickedIdIndex, currentIndex]
+                    : [currentIndex, lastClickedIdIndex];
+
+                table.setRowSelection((prev) => {
+                  const next = { ...prev };
+                  for (let i = start; i <= end; i++) {
+                    const rangeRow = rows[i];
+                    if (rangeRow) next[rangeRow.id] = true;
+                  }
+                  return next;
+                });
+                lastActionRef.current = [id, 'select'];
+                return;
+              }
             }
 
             row.toggleSelected(!isSelected);
@@ -140,12 +146,15 @@ export function CasesList({
               {selectable ? (
                 <div
                   className={cn(
-                    'absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 p-md opacity-0 group-hover/row:opacity-100',
+                    'absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 p-md opacity-0 focus-within:opacity-100 group-hover/row:opacity-100',
                     isSelected && 'opacity-100',
                   )}
                   onClick={handleSelect}
                 >
-                  <Checkbox checked={isSelected} />
+                  <Checkbox
+                    aria-label={t('cases:inbox.select_case', { name: row.original.name })}
+                    checked={isSelected}
+                  />
                 </div>
               ) : null}
               <CaseStatusBadgeV2 status={row.original.status} variant="icon-only" />
@@ -193,43 +202,37 @@ export function CasesList({
         enableSorting: false,
         cell: ({ row }) => {
           const { outcome, reviewLevel } = row.original;
-          const outcomeColors: Record<CaseOutcome, TagProps['color']> = {
-            confirmed_risk: 'red',
-            valuable_alert: 'yellow',
-            false_positive: 'green',
-            unset: 'grey',
-          };
-          const reviewLevelColors: Record<CaseReviewLevel, TagProps['color']> = {
-            escalate: 'red',
-            investigate: 'yellow',
-            probable_false_positive: 'green',
-          };
-          if (outcome && outcome !== 'unset') {
-            return (
-              <div className="flex items-center gap-xs">
-                <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
-                  <Icon icon="user" className="size-4 text-grey-placeholder" />
-                </div>
+          const renderStatus = (icon: 'user' | 'wand', color: TagProps['color'], label: string) => (
+            <div className="flex items-center gap-xs">
+              <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                <Icon icon={icon} className="size-4 text-grey-placeholder" />
+              </div>
+              <Tag color={color}>
+                <span>{label}</span>
+              </Tag>
+            </div>
+          );
 
-                <Tag color={outcomeColors[outcome]}>
-                  <span>{t(`cases:case.outcome.${outcome}`)}</span>
-                </Tag>
-              </div>
-            );
-          }
-          if (reviewLevel) {
-            return (
-              <div className="flex items-center gap-xs">
-                <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
-                  <Icon icon="wand" className="size-4 text-grey-placeholder" />
-                </div>
-                <Tag color={reviewLevelColors[reviewLevel]}>
-                  <span>{t(`cases:case.review_level.${reviewLevel}`)}</span>
-                </Tag>
-              </div>
-            );
-          }
-          return '-';
+          return match({ outcome, reviewLevel })
+            .with({ outcome: 'confirmed_risk' }, ({ outcome }) =>
+              renderStatus('user', 'red', t(`cases:case.outcome.${outcome}`)),
+            )
+            .with({ outcome: 'valuable_alert' }, ({ outcome }) =>
+              renderStatus('user', 'yellow', t(`cases:case.outcome.${outcome}`)),
+            )
+            .with({ outcome: 'false_positive' }, ({ outcome }) =>
+              renderStatus('user', 'green', t(`cases:case.outcome.${outcome}`)),
+            )
+            .with({ reviewLevel: 'escalate' }, ({ reviewLevel }) =>
+              renderStatus('wand', 'red', t(`cases:case.review_level.${reviewLevel}`)),
+            )
+            .with({ reviewLevel: 'investigate' }, ({ reviewLevel }) =>
+              renderStatus('wand', 'yellow', t(`cases:case.review_level.${reviewLevel}`)),
+            )
+            .with({ reviewLevel: 'probable_false_positive' }, ({ reviewLevel }) =>
+              renderStatus('wand', 'green', t(`cases:case.review_level.${reviewLevel}`)),
+            )
+            .otherwise(() => '-');
         },
       }),
       columnHelper.accessor('createdAt', {
