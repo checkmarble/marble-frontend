@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewCard } from './AiReview/AiReviewCard';
+import { CaseEvents } from './CaseEvents';
 import { CaseInfo } from './CaseInfo';
 import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
 import { EscalateCaseButton } from './EscalateCaseButton';
@@ -109,6 +110,12 @@ export function CaseManagerPrincipalPage({
             </div>
             <div className="grid grid-cols-[2fr_1fr] gap-sm">
               <CaseInfo caseDetail={caseDetail} currentUser={currentUser} />
+              <CaseEvents
+                events={caseDetail.events}
+                includeEventTypes={['case_created', 'inbox_changed', 'case_snoozed', 'case_unsnoozed', 'case_assigned']}
+                dueAt={caseDetail.dueAt}
+                status={caseDetail.status}
+              />
             </div>
           </Card>
 

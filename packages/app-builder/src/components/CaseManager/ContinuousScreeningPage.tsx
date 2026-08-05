@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ReviewStatusBadge } from '../ContinuousScreening/ReviewStatusBadge';
+import { CaseEvents } from './CaseEvents';
 import { CaseInfo } from './CaseInfo';
 import { ScreeningMatchList } from './ContinuousScreening/MatchList';
 import { RequestSideInfo } from './ContinuousScreening/RequestSideInfo';
@@ -144,8 +145,20 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
                   ) : null}
                 </div>
               </div>
-              <Card className="text-small">
+              <Card className="grid grid-cols-[2fr_1fr] gap-sm">
                 <CaseInfo caseDetail={caseDetail} currentUser={currentUser} />
+                <CaseEvents
+                  events={caseDetail.events}
+                  includeEventTypes={[
+                    'case_created',
+                    'inbox_changed',
+                    'case_snoozed',
+                    'case_unsnoozed',
+                    'case_assigned',
+                  ]}
+                  dueAt={caseDetail.dueAt}
+                  status={caseDetail.status}
+                />
               </Card>
             </div>
             <ScreeningMatchList screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />

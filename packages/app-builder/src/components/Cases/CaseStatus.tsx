@@ -4,7 +4,7 @@ import { IconProps } from 'packages/ui-icons/src/Icon';
 import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn } from 'ui-design-system';
+import { cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { casesI18n } from './cases-i18n';
 
@@ -187,15 +187,17 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
 
   if (variant === 'icon-only') {
     return (
-      <div
-        className={cn(
-          badgeBackgroundVariants({ status }),
-          badgeTextVariants({ status }),
-          'flex items-center justify-center size-8 rounded-sm',
-        )}
-      >
-        <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
-      </div>
+      <Tooltip.Default content={t(`cases:case.status.${status}`)}>
+        <div
+          className={cn(
+            badgeBackgroundVariants({ status }),
+            badgeTextVariants({ status }),
+            'flex items-center justify-center size-8 rounded-sm',
+          )}
+        >
+          <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
+        </div>
+      </Tooltip.Default>
     );
   }
 
