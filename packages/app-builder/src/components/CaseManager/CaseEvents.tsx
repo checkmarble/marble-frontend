@@ -42,7 +42,7 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
 
   const allEvents = useMemo(() => {
     return [...events].sort((a, b) => {
-      const byDate = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      const byDate = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (byDate !== 0) return byDate;
       return a.id.localeCompare(b.id);
     });
