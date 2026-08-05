@@ -55,7 +55,7 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
 
     for (const inbox of inboxes) {
       const currentSettings = slaState.get(inbox.id);
-      if (!currentSettings) continue;
+      if (currentSettings === undefined) continue;
 
       // Check if settings changed
       const hasChanged = currentSettings !== inbox.sla;

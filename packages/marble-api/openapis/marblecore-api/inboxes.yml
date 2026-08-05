@@ -522,6 +522,7 @@ components:
           format: uuid
         sla:
           type: number
+          nullable: true
     InboxMetadataDto:
       type: object
       required:

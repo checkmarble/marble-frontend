@@ -1810,7 +1810,7 @@ export type CreateInboxBodyDto = {
 export type UpdateInboxesDto = {
     inboxes: {
         id: string;
-        sla?: number;
+        sla?: number | null;
     }[];
 };
 export type InboxMetadataDto = {

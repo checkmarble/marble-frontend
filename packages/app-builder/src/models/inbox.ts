@@ -159,7 +159,7 @@ export function adaptUpdateInboxesSla(inboxes: UpdateInboxesSlaPayload): UpdateI
   return {
     inboxes: inboxes.map((inbox) => ({
       id: inbox.inboxId,
-      sla: inbox.sla ?? undefined,
+      sla: inbox.sla,
     })),
   };
 }
