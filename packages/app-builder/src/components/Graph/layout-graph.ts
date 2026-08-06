@@ -1,9 +1,22 @@
 import Dagre from '@dagrejs/dagre';
-import { type GraphRfEdge, type GraphRfNode, withBestHandles } from './GraphComponents';
-import { bfsSpanningTreeEdges } from './utils';
+import {
+  DEFAULT_NODE_WIDTH,
+  nodeCenter,
+  nodeMeasuredSize,
+  type Point,
+  topLeftFromCenter,
+  withBestHandles,
+} from './graph-handles';
+import { type GraphRfEdge, type GraphRfNode, isLinkEdge, isMatchEdge } from './graph-rf-types';
+import {
+  bfsSpanningTreeEdges,
+  bfsTreeEdges,
+  buildChildrenMap,
+  buildUndirectedAdjacency,
+  collectSubtreeIds,
+  type SimpleEdge,
+} from './graph-traversal';
 
-const DEFAULT_NODE_WIDTH = 180;
-const DEFAULT_NODE_HEIGHT = 56;
 const NODESEP = 80;
 const RANKSEP = 100;
 /** Minimum ring radius so L1 nodes clear the start node. */
@@ -19,34 +32,6 @@ const CONNECTOR_CLUSTER_GAP = Math.PI / 3;
 const CONNECTOR_MIN_ANGLE_GAP = Math.PI / 12;
 
 type RankDir = 'TB' | 'BT' | 'LR' | 'RL';
-type Point = { x: number; y: number };
-
-function nodeMeasuredSize(node: GraphRfNode): { width: number; height: number } {
-  return {
-    width: node.measured?.width ?? node.width ?? DEFAULT_NODE_WIDTH,
-    height: node.measured?.height ?? node.height ?? DEFAULT_NODE_HEIGHT,
-  };
-}
-
-function topLeftFromCenter(center: Point, width: number, height: number): Point {
-  return { x: center.x - width / 2, y: center.y - height / 2 };
-}
-
-function nodeCenter(node: GraphRfNode, position: Point): Point {
-  const { width, height } = nodeMeasuredSize(node);
-  return { x: position.x + width / 2, y: position.y + height / 2 };
-}
-
-/** Build parent → children adjacency from directed tree edges. */
-function buildChildrenMap(treeEdges: Array<{ source: string; target: string }>): Map<string, string[]> {
-  const children = new Map<string, string[]>();
-  for (const { source, target } of treeEdges) {
-    const list = children.get(source) ?? [];
-    list.push(target);
-    children.set(source, list);
-  }
-  return children;
-}
 
 /** A cluster chip stands in for the whole branch it folded away. */
 function nodeWeight(node: GraphRfNode | undefined): number {
@@ -60,22 +45,6 @@ function descendantCount(children: Map<string, string[]>, id: string, nodesById:
     count += descendantCount(children, child, nodesById);
   }
   return count;
-}
-
-function collectSubtreeIds(children: Map<string, string[]>, rootId: string): string[] {
-  const ids: string[] = [];
-  const stack = [rootId];
-  while (stack.length > 0) {
-    const cur = stack.pop()!;
-    ids.push(cur);
-    const kids = children.get(cur);
-    if (kids) {
-      for (let i = kids.length - 1; i >= 0; i--) {
-        stack.push(kids[i]!);
-      }
-    }
-  }
-  return ids;
 }
 
 /**
@@ -168,7 +137,7 @@ export function rankdirFromAngle(theta: number): RankDir {
  */
 function layoutSubtreeLocal(
   subtreeIds: string[],
-  treeEdges: Array<{ source: string; target: string }>,
+  treeEdges: SimpleEdge[],
   nodesById: Map<string, GraphRfNode>,
   rankdir: RankDir,
 ): Map<string, Point> {
@@ -271,24 +240,6 @@ function computeRingRadius(lateralHalves: number[]): number {
     }
   }
   return r;
-}
-
-/** Undirected adjacency over the given undirected edge list. */
-function buildUndirectedAdjacency(
-  nodeIds: string[],
-  edges: Array<{ source: string; target: string }>,
-): Map<string, string[]> {
-  const idSet = new Set(nodeIds);
-  const adj = new Map<string, string[]>();
-  for (const id of nodeIds) {
-    adj.set(id, []);
-  }
-  for (const edge of edges) {
-    if (!idSet.has(edge.source) || !idSet.has(edge.target)) continue;
-    adj.get(edge.source)!.push(edge.target);
-    adj.get(edge.target)!.push(edge.source);
-  }
-  return adj;
 }
 
 /**
@@ -453,34 +404,6 @@ export function claimUnplacedComponent(
 }
 
 /**
- * BFS spanning-tree edges rooted at `rootId`, restricted to `idSet`.
- * Used to feed Dagre for connector islands (same shape as L1 subtrees).
- */
-export function bfsTreeEdgesInSet(
-  rootId: string,
-  idSet: Set<string>,
-  adj: Map<string, string[]>,
-): Array<{ source: string; target: string }> {
-  if (!idSet.has(rootId)) return [];
-
-  const tree: Array<{ source: string; target: string }> = [];
-  const visited = new Set<string>([rootId]);
-  const queue = [rootId];
-
-  while (queue.length > 0) {
-    const cur = queue.shift()!;
-    for (const nxt of adj.get(cur) ?? []) {
-      if (!idSet.has(nxt) || visited.has(nxt)) continue;
-      visited.add(nxt);
-      tree.push({ source: cur, target: nxt });
-      queue.push(nxt);
-    }
-  }
-
-  return tree;
-}
-
-/**
  * Radius of the outer connector pocket: clears the axis-aligned bbox of already
  * placed (person) nodes from the start center, plus padding.
  */
@@ -498,10 +421,6 @@ export function computeConnectorPocketRadius(
     r = Math.max(r, dist + halfDiag + RING_PADDING, dx + RING_PADDING, dy + RING_PADDING);
   }
   return r;
-}
-
-function isLinkEdge(edge: GraphRfEdge): boolean {
-  return edge.data?.kind !== 'match' && edge.type !== 'match';
 }
 
 /**
@@ -631,7 +550,7 @@ export function layoutGraphElements(
       matchAdj.set(id, []);
     }
     for (const edge of edges) {
-      if (edge.data?.kind !== 'match' && edge.type !== 'match') continue;
+      if (!isMatchEdge(edge)) continue;
       if (pivotIds.includes(edge.source)) {
         matchAdj.get(edge.source)!.push(edge.target);
       }
@@ -666,7 +585,7 @@ export function layoutGraphElements(
       id: string;
       preferredTheta: number;
       islandIds: string[];
-      treeEdges: Array<{ source: string; target: string }>;
+      treeEdges: SimpleEdge[];
       lateralHalf: number;
     };
 
@@ -685,8 +604,7 @@ export function layoutGraphElements(
 
       const preferred = preferredConnectorAngle(startCenter, placedNeighborCenters) ?? largestFreeGapAngle(l1Thetas);
 
-      const islandSet = new Set(islandIds);
-      const islandTree = bfsTreeEdgesInSet(pivotId, islandSet, fullAdj);
+      const islandTree = bfsTreeEdges(pivotId, fullAdj, new Set(islandIds));
       const rankdir = rankdirFromAngle(preferred);
       const localPositions = layoutSubtreeLocal(islandIds, islandTree, nodesById, rankdir);
       const lateralHalf = lateralHalfExtent(islandIds, localPositions, nodesById, pivotId, rankdir);

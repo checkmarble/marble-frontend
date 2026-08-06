@@ -9,7 +9,8 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { parsePersonBulkKey, useCustomerGraph } from './CustomerGraphContext';
+import { useCustomerGraph } from './CustomerGraphContext';
+import { parseNodeKey } from './graph-keys';
 
 function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; disabled: boolean }) {
   const { t } = useTranslation(['common', 'cases']);
@@ -32,7 +33,7 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
 
     setIsSubmitting(true);
     try {
-      const persons = [...checkedKeys].map(parsePersonBulkKey);
+      const persons = [...checkedKeys].map(parseNodeKey);
       const personsToUpdate = persons.flatMap((person) => {
         const cached = queryClient.getQueriesData<{ annotations: GroupedAnnotations }>({
           queryKey: ['annotations', person.objectType, person.objectId],
@@ -136,17 +137,17 @@ export function GraphSelectionToolbar() {
     selectionMode,
     enterSelectionMode,
     exitSelectionMode,
-    checkedPersons,
-    clearCheckedPersons,
+    checkedNodeIds,
+    clearCheckedNodes,
     hideNodes,
     graphStats,
   } = useCustomerGraph();
-  const hasCheckedPersons = checkedPersons.size > 0;
+  const hasCheckedNodes = checkedNodeIds.size > 0;
 
   const handleHide = () => {
-    hideNodes([...checkedPersons]);
+    hideNodes([...checkedNodeIds]);
     // Stay in selection mode so pruning can continue.
-    clearCheckedPersons();
+    clearCheckedNodes();
   };
 
   if (!selectionMode) {
@@ -176,17 +177,17 @@ export function GraphSelectionToolbar() {
       <Button type="button" variant="primary" appearance="stroked" size="small" disabled>
         Add to case
       </Button>
-      <BulkAddTagsMenu checkedKeys={checkedPersons} disabled={!hasCheckedPersons} />
+      <BulkAddTagsMenu checkedKeys={checkedNodeIds} disabled={!hasCheckedNodes} />
       <Button
         type="button"
         variant="secondary"
         appearance="stroked"
         size="small"
-        disabled={!hasCheckedPersons}
+        disabled={!hasCheckedNodes}
         onClick={handleHide}
       >
         <Icon icon="eye-slash" className="size-4" />
-        Hide {checkedPersons.size}
+        Hide {checkedNodeIds.size}
         {graphStats.hidePreviewOrphans > 0 ? ` (+${graphStats.hidePreviewOrphans} orphaned)` : null}
       </Button>
       <Button type="button" variant="secondary" appearance="link" size="small" onClick={exitSelectionMode}>

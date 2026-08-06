@@ -1,11 +1,7 @@
 import { type EdgeData, type GraphData, type NodeData } from '../../routes/_app/_builder/test-graph/-data';
 import { type GraphTypeHelpers } from './data-model-map';
+import { nodeKey } from './graph-keys';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
-
-/** Composite key: `${type}:${id}` e.g. "users:user_0001" */
-export function nodeKey(ref: { type: string; id: string }): string {
-  return `${ref.type}:${ref.id}`;
-}
 
 export function isConnectorNode(node: NodeData): boolean {
   return 'connector' in node && node.connector === true;
@@ -35,8 +31,8 @@ function buildUndirectedAdjacency(edges: EdgeData[]): Map<string, AdjEntry[]> {
     adj.set(from, list);
   };
   for (const edge of edges) {
-    const fromKey = nodeKey(edge.from);
-    const toKey = nodeKey(edge.to);
+    const fromKey = nodeKey(edge.from.type, edge.from.id);
+    const toKey = nodeKey(edge.to.type, edge.to.id);
     add(fromKey, toKey, edge);
     add(toKey, fromKey, edge);
   }
@@ -85,10 +81,10 @@ export function toFlatFlowElements(
   options: TransformOptions = {},
 ): FlatFlowElements {
   const maxExplorationHops = options.maxExplorationHops ?? 0;
-  const nodesByKey = new Map(data.nodes.map((n) => [nodeKey(n), n]));
+  const nodesByKey = new Map(data.nodes.map((n) => [nodeKey(n.type, n.id), n]));
   const fullAdj = buildUndirectedAdjacency(data.edges);
 
-  const startKey = nodeKey(data.start);
+  const startKey = nodeKey(data.start.type, data.start.id);
   const startNode = nodesByKey.get(startKey);
   if (!startNode) throw new Error(`Start node ${startKey} missing from nodes`);
   if (!typeHelpers.isPersonType(startNode.type)) {
@@ -146,8 +142,8 @@ export function toFlatFlowElements(
   const edges: GraphRfEdge[] = [];
   const seenEdges = new Set<string>();
   for (const edge of data.edges) {
-    const fromKey = nodeKey(edge.from);
-    const toKey = nodeKey(edge.to);
+    const fromKey = nodeKey(edge.from.type, edge.from.id);
+    const toKey = nodeKey(edge.to.type, edge.to.id);
     if (!keptKeys.has(fromKey) || !keptKeys.has(toKey)) continue;
 
     const edgeId = `${fromKey}->${toKey}:${edge.label}`;
@@ -167,82 +163,4 @@ export function toFlatFlowElements(
   }
 
   return { nodes, edges, startKey };
-}
-
-/** Undirected adjacency for the given node ids and edges. */
-function buildUndirectedIdAdjacency(
-  nodeIds: string[],
-  edges: Array<{ source: string; target: string }>,
-): Map<string, string[]> {
-  const idSet = new Set(nodeIds);
-  const adj = new Map<string, string[]>();
-  for (const id of nodeIds) {
-    adj.set(id, []);
-  }
-  for (const edge of edges) {
-    if (!idSet.has(edge.source) || !idSet.has(edge.target)) continue;
-    adj.get(edge.source)!.push(edge.target);
-    adj.get(edge.target)!.push(edge.source);
-  }
-  return adj;
-}
-
-/**
- * Node ids reachable from `startKey` via undirected edges.
- * Falls back to the first node id when `startKey` is missing.
- */
-export function reachableNodeIds(
-  nodeIds: string[],
-  edges: Array<{ source: string; target: string }>,
-  startKey: string,
-): Set<string> {
-  const idSet = new Set(nodeIds);
-  const root = idSet.has(startKey) ? startKey : (nodeIds[0] ?? '');
-  if (!root) return new Set();
-
-  const adj = buildUndirectedIdAdjacency(nodeIds, edges);
-  const visited = new Set<string>([root]);
-  const queue = [root];
-
-  while (queue.length > 0) {
-    const cur = queue.shift()!;
-    for (const nxt of adj.get(cur) ?? []) {
-      if (visited.has(nxt)) continue;
-      visited.add(nxt);
-      queue.push(nxt);
-    }
-  }
-
-  return visited;
-}
-
-/**
- * BFS spanning-tree edges from `startKey` (parent → child) for Dagre ranking.
- * Handles cycles by only recording the first discovery edge.
- */
-export function bfsSpanningTreeEdges(
-  nodeIds: string[],
-  edges: Array<{ source: string; target: string }>,
-  startKey: string,
-): Array<{ source: string; target: string }> {
-  const idSet = new Set(nodeIds);
-  const root = idSet.has(startKey) ? startKey : (nodeIds[0] ?? '');
-  if (!root) return [];
-
-  const adj = buildUndirectedIdAdjacency(nodeIds, edges);
-  const tree: Array<{ source: string; target: string }> = [];
-  const visited = new Set<string>([root]);
-  const queue = [root];
-
-  while (queue.length > 0) {
-    const cur = queue.shift()!;
-    for (const nxt of adj.get(cur) ?? []) {
-      if (visited.has(nxt)) continue;
-      visited.add(nxt);
-      tree.push({ source: cur, target: nxt });
-      queue.push(nxt);
-    }
-  }
-
-  return tree;
 }
