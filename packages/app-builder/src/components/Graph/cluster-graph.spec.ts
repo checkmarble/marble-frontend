@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { clusterGraphElements, clusterNodeId } from './cluster-graph';
+import { clusterGraphElements } from './cluster-graph';
+import { clusterNodeId } from './graph-keys';
 import { type ClusterRfNode, type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 
 function personNode(id: string, isStart = false): GraphRfNode {
@@ -85,10 +86,18 @@ describe('clusterGraphElements', () => {
     expect(result.nodes).toHaveLength(5);
   });
 
-  it('collapses a subtree at the threshold into one chip', () => {
-    // root + 9 children = 10 foldable nodes, 10 internal edges.
+  it('leaves a subtree exactly on the threshold untouched', () => {
+    // root + 9 children = 10 foldable nodes; a threshold of 10 is not exceeded.
     const { nodes, edges } = fanFixture(9);
     const result = clusterGraphElements(nodes, edges, options(10));
+
+    expect(clustersOf(result.nodes)).toHaveLength(0);
+  });
+
+  it('collapses a subtree above the threshold into one chip', () => {
+    // root + 9 children = 10 foldable nodes, one over the threshold of 9.
+    const { nodes, edges } = fanFixture(9);
+    const result = clusterGraphElements(nodes, edges, options(9));
 
     const clusters = clustersOf(result.nodes);
     expect(clusters).toHaveLength(1);
@@ -124,10 +133,11 @@ describe('clusterGraphElements', () => {
       }
     }
 
-    const collapsed = clusterGraphElements(nodes, edges, options(6));
+    // Threshold 5: root (13 foldable) and each of a / b (6) are over it.
+    const collapsed = clusterGraphElements(nodes, edges, options(5));
     expect(clustersOf(collapsed.nodes).map((c) => c.id)).toEqual([clusterNodeId('root')]);
 
-    const expanded = clusterGraphElements(nodes, edges, options(6, ['root']));
+    const expanded = clusterGraphElements(nodes, edges, options(5, ['root']));
     const nested = clustersOf(expanded.nodes);
     expect(nested.map((c) => c.id).sort()).toEqual([clusterNodeId('a'), clusterNodeId('b')]);
     expect(nested.every((c) => c.data.nodeCount === 6)).toBe(true);
@@ -154,7 +164,7 @@ describe('clusterGraphElements', () => {
     edges.push(matchEdge('same_ip:1.2.3.4', 'c1'));
     edges.push(matchEdge('same_ip:1.2.3.4', 'c2'));
 
-    const result = clusterGraphElements(nodes, edges, options(10));
+    const result = clusterGraphElements(nodes, edges, options(9));
 
     expect(result.nodes.some((n) => n.id === 'same_ip:1.2.3.4')).toBe(true);
     expect(clustersOf(result.nodes)).toHaveLength(1);
@@ -175,7 +185,7 @@ describe('clusterGraphElements', () => {
       edges.push(linkEdge(`c${i}`, 'outsider'));
     }
 
-    const result = clusterGraphElements(nodes, edges, options(10));
+    const result = clusterGraphElements(nodes, edges, options(9));
     const crossEdges = result.edges.filter((e) => e.source === 'outsider' || e.target === 'outsider');
 
     // start->outsider passes through; the five member links merge into one.
@@ -197,7 +207,8 @@ describe('clusterGraphElements', () => {
     // Three cross-branch links.
     edges.push(linkEdge('a0', 'b0'), linkEdge('a1', 'b1'), linkEdge('a2', 'b2'));
 
-    const result = clusterGraphElements(nodes, edges, options(5));
+    // Each branch is 5 foldable nodes, one over the threshold of 4.
+    const result = clusterGraphElements(nodes, edges, options(4));
     const chipA = clusterNodeId('a');
     const chipB = clusterNodeId('b');
 
@@ -247,7 +258,7 @@ describe('clusterGraphElements', () => {
     nodes.push(pivotNode('same_iban:DE00'));
     edges.push(matchEdge('same_iban:DE00', 'c0'));
 
-    const result = clusterGraphElements(nodes, edges, options(10));
+    const result = clusterGraphElements(nodes, edges, options(9));
     const cluster = clustersOf(result.nodes)[0]!;
 
     expect(cluster.data.nodeCount).toBe(10);

@@ -16,9 +16,11 @@ export type PivotRfData = {
   rawType: string;
 };
 
-/** A collapsed branch. `memberIds` are the node ids folded away, `rootId` the branch root. */
+/**
+ * A collapsed branch. `memberIds` are the node ids folded away; the branch root
+ * is `root`, and the chip's own id is `clusterNodeId(<root node id>)`.
+ */
 export type ClusterRfData = {
-  rootId: string;
   /** The branch entry point, rendered on the chip like a person node. */
   root: PersonRfData;
   nodeCount: number;
@@ -33,3 +35,12 @@ export type GraphRfNode = PersonRfNode | PivotRfNode | ClusterRfNode;
 
 /** `mergedCount` is set on synthetic edges standing in for N collapsed member edges. */
 export type GraphRfEdge = Edge<{ kind?: string; mergedCount?: number }, 'link' | 'match'>;
+
+/** `type` and `data.kind` can each carry the match flag depending on who built the edge. */
+export function isMatchEdge(edge: GraphRfEdge): boolean {
+  return edge.type === 'match' || edge.data?.kind === 'match';
+}
+
+export function isLinkEdge(edge: GraphRfEdge): boolean {
+  return !isMatchEdge(edge);
+}

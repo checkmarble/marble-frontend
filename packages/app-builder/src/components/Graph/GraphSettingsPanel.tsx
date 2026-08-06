@@ -7,21 +7,11 @@ import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotation
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
-import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { type ScoringScore } from 'marble-api';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import {
-  Button,
-  Checkbox,
-  type CheckedState,
-  ExpandableGroupTagLine,
-  MenuCommand,
-  Switch,
-  Tag,
-  ThresholdRange,
-} from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, MenuCommand, Switch, Tag, ThresholdRange } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   CLUSTER_THRESHOLD_OPTIONS,
@@ -29,9 +19,10 @@ import {
   GRAPH_ATTRIBUTE_LABELS,
   GRAPH_ATTRIBUTES,
   type GraphAttribute,
-  type GraphPersonRef,
   useCustomerGraph,
 } from './CustomerGraphContext';
+import { type GraphObjectRef, nodeKey } from './graph-keys';
+import { ObjectTagLine, ObjectTagLineSkeleton, useObjectTags } from './ObjectTags';
 import { resolveTitle } from './resolve-object-title';
 
 function isClusterThreshold(value: number): value is ClusterThreshold {
@@ -56,14 +47,14 @@ function ClusterThresholdControl() {
         <div className="p-md" onPointerDown={(event) => event.stopPropagation()}>
           <ThresholdRange
             title="Cluster at"
-            defaultDescription="Collapse branches with at least this many nodes. Off keeps every node expanded."
+            defaultDescription="Collapse branches larger than this many nodes. Off keeps every node expanded."
             value={clusterThreshold}
             onChange={(value) => {
               if (isClusterThreshold(value)) setClusterThreshold(value);
             }}
             values={CLUSTER_THRESHOLD_OPTIONS.map((option) => ({
               value: option,
-              label: option === 0 ? 'Off — no clustering' : `Cluster branches of ${option}+ nodes`,
+              label: option === 0 ? 'Off — no clustering' : `Cluster branches over ${option} nodes`,
               color: 'var(--color-purple-primary)',
             }))}
             initialColor="var(--color-purple-primary)"
@@ -94,10 +85,7 @@ function DetailCardSkeleton() {
         <div className="bg-grey-border h-4 w-28 animate-pulse rounded-md" />
         <div className="bg-grey-border h-5 w-24 animate-pulse rounded-full" />
       </div>
-      <div className="flex flex-wrap gap-xs">
-        <div className="bg-grey-border h-5 w-16 animate-pulse rounded-full" />
-        <div className="bg-grey-border h-5 w-14 animate-pulse rounded-full" />
-      </div>
+      <ObjectTagLineSkeleton />
       <div className="flex flex-col gap-xs">
         <div className="bg-grey-border h-6 w-full animate-pulse rounded-sm" />
         <div className="bg-grey-border h-6 w-full animate-pulse rounded-sm" />
@@ -164,7 +152,8 @@ function RiskBadge({
   );
 }
 
-function ConnectedPersonRisk({ objectType, objectId }: GraphPersonRef) {
+/** Latest score for an object as a badge, or nothing when it has none. */
+function ObjectRiskBadge({ objectType, objectId }: GraphObjectRef) {
   const scoreQuery = useScoreLatestQuery(objectType, objectId);
   const settingsQuery = useScoringSettingsQuery();
 
@@ -190,55 +179,20 @@ function ConnectedPersonRisk({ objectType, objectId }: GraphPersonRef) {
     .otherwise(() => null);
 }
 
-function ConnectedPersonTags({ objectType, objectId }: GraphPersonRef) {
-  const { orgObjectTags } = useOrganizationObjectTags();
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
+function ObjectTags({ objectType, objectId }: GraphObjectRef) {
+  const { isPending, tags } = useObjectTags(objectType, objectId);
 
-  if (annotationsQuery.isPending) {
-    return (
-      <div className="flex flex-wrap gap-xs">
-        <div className="bg-grey-border h-5 w-16 animate-pulse rounded-full" />
-        <div className="bg-grey-border h-5 w-14 animate-pulse rounded-full" />
-      </div>
-    );
-  }
-
-  if (annotationsQuery.isError) return null;
-
-  const tagIds = annotationsQuery.data.annotations.tags.map((annotation) => annotation.payload.tag_id);
-  const tags = tagIds
-    .map((tagId) => orgObjectTags.find((tag) => tag.id === tagId))
-    .filter((tag): tag is NonNullable<typeof tag> => tag != null);
-
+  if (isPending) return <ObjectTagLineSkeleton />;
   if (tags.length === 0) return null;
-
-  const tagItems = tags.map((tag) => (
-    <Tag key={tag.id} size="small" color="purple">
-      <div className="size-3 shrink-0 rounded-full me-xs" style={{ backgroundColor: tag.color }} />
-      {tag.name}
-    </Tag>
-  ));
-
-  return (
-    <ExpandableGroupTagLine
-      items={tagItems}
-      classname="gap-xs"
-      overflowBehavior="popover"
-      moreButton={(overflow, onExpand) => (
-        <Tag color="purple" size="small" className="cursor-pointer shrink-0" onClick={onExpand}>
-          +{overflow}
-        </Tag>
-      )}
-    />
-  );
+  return <ObjectTagLine tags={tags} />;
 }
 
-function ConnectedPersonRow({
+function PersonRow({
   person,
   showRiskScore,
   showTags,
 }: {
-  person: GraphPersonRef;
+  person: GraphObjectRef;
   showRiskScore: boolean;
   showTags: boolean;
 }) {
@@ -252,17 +206,17 @@ function ConnectedPersonRow({
       <div className="flex flex-col gap-xs">
         <div className="flex flex-wrap items-center gap-sm">
           <span className="text-sm">{title}</span>
-          {showRiskScore ? <ConnectedPersonRisk {...person} /> : null}
+          {showRiskScore ? <ObjectRiskBadge {...person} /> : null}
         </div>
-        {showTags ? <ConnectedPersonTags {...person} /> : null}
+        {showTags ? <ObjectTags {...person} /> : null}
       </div>
     </li>
   );
 }
 
-const CONNECTED_PERSONS_PREVIEW_COUNT = 5;
+const PERSON_LIST_PREVIEW_COUNT = 5;
 
-/** Preview-capped person list, shared by person, pivot, and cluster detail cards. */
+/** Preview-capped person list, shared by the person, pivot, and cluster detail cards. */
 function PersonListDetail({
   header,
   persons,
@@ -270,21 +224,20 @@ function PersonListDetail({
   showTags,
 }: {
   header: ReactNode;
-  persons: GraphPersonRef[];
+  persons: GraphObjectRef[];
   showRiskScore: boolean;
   showTags: boolean;
 }) {
   const [showAll, setShowAll] = useState(false);
   const total = persons.length;
-  const hasMore = total > CONNECTED_PERSONS_PREVIEW_COUNT;
-  const displayedPersons = showAll || !hasMore ? persons : persons.slice(0, CONNECTED_PERSONS_PREVIEW_COUNT);
-  const showTotalTag = total > displayedPersons.length;
+  const hasMore = total > PERSON_LIST_PREVIEW_COUNT;
+  const displayedPersons = showAll || !hasMore ? persons : persons.slice(0, PERSON_LIST_PREVIEW_COUNT);
 
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-start justify-between gap-sm">
         {header}
-        {showTotalTag ? (
+        {total > displayedPersons.length ? (
           <Tag size="small" color="grey">
             {total} items
           </Tag>
@@ -296,8 +249,8 @@ function PersonListDetail({
         <>
           <ul className="list-outside list-disc space-y-sm ps-md">
             {displayedPersons.map((person) => (
-              <ConnectedPersonRow
-                key={`${person.objectType}:${person.objectId}`}
+              <PersonRow
+                key={nodeKey(person.objectType, person.objectId)}
                 person={person}
                 showRiskScore={showRiskScore}
                 showTags={showTags}
@@ -312,66 +265,6 @@ function PersonListDetail({
         </>
       )}
     </div>
-  );
-}
-
-function PivotDetail({
-  objectType,
-  objectId,
-  connectedPersons,
-  showRiskScore,
-  showTags,
-}: {
-  objectType: string;
-  objectId: string;
-  connectedPersons: GraphPersonRef[];
-  showRiskScore: boolean;
-  showTags: boolean;
-}) {
-  return (
-    <PersonListDetail
-      header={
-        <div className="min-w-0">
-          <div className="text-grey-secondary text-xs leading-none">{objectType}</div>
-          <div className="text-orange-primary truncate text-sm font-semibold">{objectId}</div>
-        </div>
-      }
-      persons={connectedPersons}
-      showRiskScore={showRiskScore}
-      showTags={showTags}
-    />
-  );
-}
-
-function ClusterDetail({
-  nodeCount,
-  internalEdgeCount,
-  members,
-  showRiskScore,
-  showTags,
-}: {
-  nodeCount: number;
-  internalEdgeCount: number;
-  members: GraphPersonRef[];
-  showRiskScore: boolean;
-  showTags: boolean;
-}) {
-  return (
-    <PersonListDetail
-      header={
-        <div className="min-w-0">
-          <div className="text-grey-secondary text-xs leading-none">Grouped branch</div>
-          <div className="truncate text-sm flex gap-xs items-center">
-            <span className="text-grey-primary font-semibold">{nodeCount} Nodes</span>
-            <Icon icon="dot" className="size-3 text-grey-secondary" />
-            <span className="text-grey-secondary">{internalEdgeCount} edges</span>
-          </div>
-        </div>
-      }
-      persons={members}
-      showRiskScore={showRiskScore}
-      showTags={showTags}
-    />
   );
 }
 
@@ -402,8 +295,6 @@ export function GraphSettingsPanel() {
     objectId,
     hasSelection && selectedObject.nodeType === 'person',
   );
-  const scoreQuery = useScoreLatestQuery(objectType, objectId);
-  const settingsQuery = useScoringSettingsQuery();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
 
   return (
@@ -440,22 +331,19 @@ export function GraphSettingsPanel() {
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth align="start" sideOffset={4}>
           <MenuCommand.List>
-            {GRAPH_ATTRIBUTES.map((attribute) => {
-              const checked = attributes.includes(attribute);
-              return (
-                <MenuCommand.Item
-                  key={attribute}
-                  value={attribute}
-                  className="flex items-center gap-sm"
-                  onSelect={() => toggleAttribute(attribute)}
-                >
-                  <label htmlFor={attribute} className="flex cursor-pointer items-center gap-sm text-sm">
-                    <Checkbox id={attribute} size="small" checked={checked} />
-                    {GRAPH_ATTRIBUTE_LABELS[attribute]}
-                  </label>
-                </MenuCommand.Item>
-              );
-            })}
+            {GRAPH_ATTRIBUTES.map((attribute) => (
+              <MenuCommand.Item
+                key={attribute}
+                value={attribute}
+                className="flex items-center gap-sm"
+                onSelect={() => toggleAttribute(attribute)}
+              >
+                <label htmlFor={attribute} className="flex cursor-pointer items-center gap-sm text-sm">
+                  <Checkbox id={attribute} size="small" checked={attributes.includes(attribute)} />
+                  {GRAPH_ATTRIBUTE_LABELS[attribute]}
+                </label>
+              </MenuCommand.Item>
+            ))}
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
@@ -468,55 +356,31 @@ export function GraphSettingsPanel() {
       ) : null}
 
       <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-md border p-md">
-        {hasSelection ? (
+        {selectedObject ? (
           match(selectedObject)
             .with({ nodeType: 'person' }, (person) => (
               <>
                 {match(detailsQuery)
                   .with({ isError: true }, () => <QueryError onRetry={() => detailsQuery.refetch()} />)
                   .with({ isPending: true }, () => <DetailCardSkeleton />)
-                  .with({ isSuccess: true }, ({ data: objectDetails }) => {
-                    const title = resolveTitle(objectDetails.data, objectId);
+                  .with({ isSuccess: true }, ({ data: objectDetails }) => (
+                    <>
+                      <div className="flex flex-wrap items-center gap-sm">
+                        <span className="text-purple-primary text-sm font-semibold">
+                          {resolveTitle(objectDetails.data, objectId)}
+                        </span>
+                        {showRiskScore ? <ObjectRiskBadge objectType={objectType} objectId={objectId} /> : null}
+                      </div>
 
-                    return (
-                      <>
-                        <div className="flex flex-wrap items-center gap-sm">
-                          <span className="text-purple-primary text-sm font-semibold">{title}</span>
-                          {showRiskScore
-                            ? match({ scoreQuery, settingsQuery })
-                                .with({ scoreQuery: { isError: true } }, () => null)
-                                .with(
-                                  P.union({ scoreQuery: { isPending: true } }, { settingsQuery: { isPending: true } }),
-                                  () => <RiskBadgeSkeleton />,
-                                )
-                                .with(
-                                  {
-                                    scoreQuery: { isSuccess: true, data: { score: P.nonNullable } },
-                                    settingsQuery: { isSuccess: true, data: { settings: P.nonNullable } },
-                                  },
-                                  ({
-                                    scoreQuery: {
-                                      data: { score },
-                                    },
-                                    settingsQuery: {
-                                      data: { settings },
-                                    },
-                                  }) => <RiskBadge objectType={objectType} score={score} scoringSettings={settings} />,
-                                )
-                                .otherwise(() => null)
-                            : null}
-                        </div>
+                      {showTags ? <ClientObjectTagList tableName={objectType} objectId={objectId} /> : null}
 
-                        {showTags ? <ClientObjectTagList tableName={objectType} objectId={objectId} /> : null}
-
-                        <DataFields
-                          table={objectType}
-                          object={objectDetails}
-                          options={{ hideLinks: true, maxVisibleFields: 6, displayExpandButton: true }}
-                        />
-                      </>
-                    );
-                  })
+                      <DataFields
+                        table={objectType}
+                        object={objectDetails}
+                        options={{ hideLinks: true, maxVisibleFields: 6, displayExpandButton: true }}
+                      />
+                    </>
+                  ))
                   .exhaustive()}
                 <ClientComments
                   objectType={objectType}
@@ -526,26 +390,38 @@ export function GraphSettingsPanel() {
                 />
                 <PersonListDetail
                   header={<div className="text-sm font-semibold">Connected nodes</div>}
-                  persons={person.connectedPersons}
+                  persons={person.persons}
                   showRiskScore={showRiskScore}
                   showTags={showTags}
                 />
               </>
             ))
             .with({ nodeType: 'pivot' }, (pivot) => (
-              <PivotDetail
-                objectType={pivot.objectType}
-                objectId={pivot.objectId}
-                connectedPersons={pivot.connectedPersons}
+              <PersonListDetail
+                header={
+                  <div className="min-w-0">
+                    <div className="text-grey-secondary text-xs leading-none">{pivot.objectType}</div>
+                    <div className="text-orange-primary truncate text-sm font-semibold">{pivot.objectId}</div>
+                  </div>
+                }
+                persons={pivot.persons}
                 showRiskScore={showRiskScore}
                 showTags={showTags}
               />
             ))
             .with({ nodeType: 'cluster' }, (cluster) => (
-              <ClusterDetail
-                nodeCount={cluster.nodeCount}
-                internalEdgeCount={cluster.internalEdgeCount}
-                members={cluster.members}
+              <PersonListDetail
+                header={
+                  <div className="min-w-0">
+                    <div className="text-grey-secondary text-xs leading-none">Grouped branch</div>
+                    <div className="truncate text-sm flex gap-xs items-center">
+                      <span className="text-grey-primary font-semibold">{cluster.nodeCount} Nodes</span>
+                      <Icon icon="dot" className="size-3 text-grey-secondary" />
+                      <span className="text-grey-secondary">{cluster.internalEdgeCount} edges</span>
+                    </div>
+                  </div>
+                }
+                persons={cluster.persons}
                 showRiskScore={showRiskScore}
                 showTags={showTags}
               />

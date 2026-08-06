@@ -127,7 +127,7 @@ function RouteComponent() {
           nodeType: 'person',
           objectType: data.start.type,
           objectId: data.start.id,
-          connectedPersons: [],
+          persons: [],
         }}
       >
         <Page.Main className="min-h-0 overflow-hidden">

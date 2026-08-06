@@ -16,17 +16,19 @@ import { type GraphData } from '../../routes/_app/_builder/test-graph/-data';
 import {
   type CustomerGraphContextValue,
   type GraphAttribute,
-  parsePersonBulkKey,
+  PIVOT_TYPE_ATTRIBUTES,
   useCustomerGraph,
 } from './CustomerGraphContext';
 import { clusterGraphElements } from './cluster-graph';
 import { createGraphTypeHelpers } from './data-model-map';
-import { type GraphRfEdge, type GraphRfNode, graphEdgeTypes, graphNodeTypes, withBestHandles } from './GraphComponents';
+import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
+import { withBestHandles } from './graph-handles';
+import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
+import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
+import { reachableNodeIds } from './graph-traversal';
 import { layoutGraphElements } from './layout-graph';
-import { reachableNodeIds, toFlatFlowElements } from './utils';
+import { toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
-
-export { layoutGraphElements };
 
 /** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
 function GraphMeasuredLayout({
@@ -64,11 +66,8 @@ type VisibilityFilters = Pick<
 >;
 
 function attributeAllowsPivot(rawType: string, attributes: GraphAttribute[]): boolean {
-  if (rawType === 'same_ip') return attributes.includes('ip');
-  if (rawType === 'same_iban') return attributes.includes('iban');
-  if (rawType === 'same_device') return attributes.includes('device');
-  if (rawType === 'same_email') return attributes.includes('email');
-  return true;
+  const attribute = PIVOT_TYPE_ATTRIBUTES[rawType];
+  return attribute == null || attributes.includes(attribute);
 }
 
 function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
@@ -112,6 +111,12 @@ function applyVisibilityFilters(
   return { nodes: visibleNodes, edges: visibleEdges };
 }
 
+function sameRefs(a: GraphObjectRef[], b: GraphObjectRef[]): boolean {
+  return (
+    a.length === b.length && a.every((ref, i) => ref.objectType === b[i]?.objectType && ref.objectId === b[i]?.objectId)
+  );
+}
+
 export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImplProps) {
   const {
     showPersons,
@@ -122,10 +127,10 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     selectedObject,
     setSelectedObject,
     selectionMode,
-    setHoveredPersonId,
+    setHoveredNodeId,
     hiddenNodeIds,
     expandedRootIds,
-    checkedPersons,
+    checkedNodeIds,
     setGraphStats,
     clusterThreshold,
   } = useCustomerGraph();
@@ -171,11 +176,11 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     const unhiddenCount = hiddenNodeIds.size === 0 ? visibleGraph.nodes.length : countWith(new Set());
     const hiddenCount = unhiddenCount - visibleGraph.nodes.length;
 
-    if (checkedPersons.size === 0) return { hiddenCount, hidePreviewOrphans: 0 };
-    const withChecked = countWith(new Set([...hiddenNodeIds, ...checkedPersons]));
+    if (checkedNodeIds.size === 0) return { hiddenCount, hidePreviewOrphans: 0 };
+    const withChecked = countWith(new Set([...hiddenNodeIds, ...checkedNodeIds]));
     const removed = visibleGraph.nodes.length - withChecked;
-    return { hiddenCount, hidePreviewOrphans: Math.max(0, removed - checkedPersons.size) };
-  }, [flatGraph, typeFilters, hiddenNodeIds, checkedPersons, visibleGraph]);
+    return { hiddenCount, hidePreviewOrphans: Math.max(0, removed - checkedNodeIds.size) };
+  }, [flatGraph, typeFilters, hiddenNodeIds, checkedNodeIds, visibleGraph]);
 
   useEffect(() => {
     setGraphStats(graphStats);
@@ -205,7 +210,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
   }, []);
 
   const connectedPersonsForNode = useCallback(
-    (nodeId: string) => {
+    (nodeId: string): GraphObjectRef[] => {
       const neighborIds = new Set<string>();
       for (const edge of edges) {
         if (edge.source === nodeId) neighborIds.add(edge.target);
@@ -213,10 +218,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
       }
       return nodes
         .filter((n): n is Extract<GraphRfNode, { type: 'person' }> => n.type === 'person' && neighborIds.has(n.id))
-        .map((n) => ({
-          objectType: n.data.objectType,
-          objectId: n.data.objectId,
-        }));
+        .map((n) => ({ objectType: n.data.objectType, objectId: n.data.objectId }));
     },
     [edges, nodes],
   );
@@ -224,21 +226,15 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
   // Keep person/pivot neighbor lists in sync when the graph remounts or filters change
   // (e.g. initial selection before the first click).
   useEffect(() => {
-    if (!selectedObject || (selectedObject.nodeType !== 'person' && selectedObject.nodeType !== 'pivot')) return;
+    if (!selectedObject || selectedObject.nodeType === 'cluster') return;
 
-    const nodeId = `${selectedObject.objectType}:${selectedObject.objectId}`;
+    const nodeId = nodeKey(selectedObject.objectType, selectedObject.objectId);
     if (!nodes.some((n) => n.id === nodeId)) return;
 
-    const connectedPersons = connectedPersonsForNode(nodeId);
-    const prev = selectedObject.connectedPersons;
-    const same =
-      prev.length === connectedPersons.length &&
-      prev.every(
-        (p, i) => p.objectType === connectedPersons[i]?.objectType && p.objectId === connectedPersons[i]?.objectId,
-      );
-    if (same) return;
+    const persons = connectedPersonsForNode(nodeId);
+    if (sameRefs(selectedObject.persons, persons)) return;
 
-    setSelectedObject({ ...selectedObject, connectedPersons });
+    setSelectedObject({ ...selectedObject, persons });
   }, [connectedPersonsForNode, nodes, selectedObject, setSelectedObject]);
 
   const onNodeClick = useCallback<NodeMouseHandler<GraphRfNode>>(
@@ -248,22 +244,20 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
           nodeType: 'person',
           objectType: node.data.objectType,
           objectId: node.data.objectId,
-          connectedPersons: connectedPersonsForNode(node.id),
+          persons: connectedPersonsForNode(node.id),
         });
         return;
       }
 
       if (node.type === 'cluster') {
-        // Members are never pivots, so every id parses as a person ref.
-        const { objectType, objectId } = parsePersonBulkKey(node.data.rootId);
         setSelectedObject({
           nodeType: 'cluster',
-          rootId: node.data.rootId,
+          objectType: node.data.root.objectType,
+          objectId: node.data.root.objectId,
           nodeCount: node.data.nodeCount,
           internalEdgeCount: node.data.internalEdgeCount,
-          members: node.data.memberIds.map(parsePersonBulkKey),
-          objectType,
-          objectId,
+          // Members are never pivots, so every id parses as a person ref.
+          persons: node.data.memberIds.map(parseNodeKey),
         });
         return;
       }
@@ -272,7 +266,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
         nodeType: 'pivot',
         objectType: node.data.rawType,
         objectId: node.data.label,
-        connectedPersons: connectedPersonsForNode(node.id),
+        persons: connectedPersonsForNode(node.id),
       });
     },
     [connectedPersonsForNode, setSelectedObject],
@@ -281,14 +275,14 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
   const onNodeMouseEnter = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {
       if (selectionMode || (node.type !== 'person' && node.type !== 'cluster')) return;
-      setHoveredPersonId(node.id);
+      setHoveredNodeId(node.id);
     },
-    [selectionMode, setHoveredPersonId],
+    [selectionMode, setHoveredNodeId],
   );
 
   const onNodeMouseLeave = useCallback<NodeMouseHandler<GraphRfNode>>(() => {
-    setHoveredPersonId(null);
-  }, [setHoveredPersonId]);
+    setHoveredNodeId(null);
+  }, [setHoveredNodeId]);
 
   return (
     <ReactFlow

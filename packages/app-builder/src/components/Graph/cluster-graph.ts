@@ -1,16 +1,10 @@
-import { type ClusterRfNode, type GraphRfEdge, type GraphRfNode, type PersonRfData } from './graph-rf-types';
-import { bfsSpanningTreeEdges } from './utils';
-
-/** Prefix keeps chip ids out of the `${objectType}:${objectId}` key space. */
-const CLUSTER_ID_PREFIX = '__cluster__:';
-
-export function clusterNodeId(rootId: string): string {
-  return `${CLUSTER_ID_PREFIX}${rootId}`;
-}
+import { clusterNodeId } from './graph-keys';
+import { type ClusterRfNode, type GraphRfEdge, type GraphRfNode, isMatchEdge } from './graph-rf-types';
+import { bfsSpanningTreeEdges, buildChildrenMap, collectSubtreeIds } from './graph-traversal';
 
 export type ClusterOptions = {
   startKey: string;
-  /** Subtree size at which a branch collapses. `0` disables clustering. */
+  /** A branch collapses once its foldable size *exceeds* this. `0` disables clustering. */
   threshold: number;
   /** Branch roots the user drilled into; their chips are suppressed. */
   expandedRootIds: Set<string>;
@@ -25,32 +19,6 @@ export type ClusterResult = {
 function isPinned(node: GraphRfNode, startKey: string): boolean {
   if (node.type === 'pivot') return true;
   return node.id === startKey;
-}
-
-function buildChildrenMap(treeEdges: Array<{ source: string; target: string }>): Map<string, string[]> {
-  const children = new Map<string, string[]>();
-  for (const { source, target } of treeEdges) {
-    const list = children.get(source) ?? [];
-    list.push(target);
-    children.set(source, list);
-  }
-  return children;
-}
-
-function collectSubtreeIds(children: Map<string, string[]>, rootId: string): string[] {
-  const ids: string[] = [];
-  const stack = [rootId];
-  while (stack.length > 0) {
-    const cur = stack.pop()!;
-    ids.push(cur);
-    const kids = children.get(cur);
-    if (kids) {
-      for (let i = kids.length - 1; i >= 0; i--) {
-        stack.push(kids[i]!);
-      }
-    }
-  }
-  return ids;
 }
 
 /**
@@ -80,7 +48,7 @@ function pairKey(a: string, b: string): string {
  * Fold branches of the start-rooted BFS tree into single chip nodes.
  *
  * Walks down from the start and collapses the *shallowest* subtree whose
- * foldable size reaches `threshold`, so expanding a chip re-applies the rule to
+ * foldable size exceeds `threshold`, so expanding a chip re-applies the rule to
  * its children — clusters nest. Pivots stay on canvas even when they sit inside
  * a collapsed branch; their edges to members merge into the chip.
  */
@@ -108,8 +76,7 @@ export function clusterGraphElements(
   buildSubtreeWeights(children, resolvedStart, pinnedIds, weights);
 
   // Walk down; collapse the first child that qualifies, otherwise recurse.
-  const membersByClusterId = new Map<string, string[]>();
-  const rootDataByClusterId = new Map<string, PersonRfData>();
+  const clusterNodes: ClusterRfNode[] = [];
   const memberOf = new Map<string, string>();
   /** Roots that would have collapsed but for `expandedRootIds` — they can regroup. */
   const expandedRoots = new Set<string>();
@@ -120,6 +87,7 @@ export function clusterGraphElements(
       const weight = weights.get(child) ?? 0;
       const rootNode = nodesById.get(child);
       // A chip renders its root like a person node, so only persons can head one.
+      // Strictly greater: a threshold of N collapses branches *larger* than N.
       const qualifies = weight > options.threshold && !pinnedIds.has(child) && rootNode?.type === 'person';
 
       if (!qualifies || options.expandedRootIds.has(child)) {
@@ -131,22 +99,35 @@ export function clusterGraphElements(
       // Pinned descendants stay on canvas, but everything below them is still
       // part of this subtree — do not re-explore from them or their children
       // would be claimed twice.
-      const members = collectSubtreeIds(children, child).filter((id) => !pinnedIds.has(id));
-      if (members.length === 0) {
+      const memberIds = collectSubtreeIds(children, child).filter((id) => !pinnedIds.has(id));
+      if (memberIds.length === 0) {
         queue.push(child);
         continue;
       }
 
       const clusterId = clusterNodeId(child);
-      rootDataByClusterId.set(clusterId, rootNode.data);
-      membersByClusterId.set(clusterId, members);
-      for (const id of members) {
+      clusterNodes.push({
+        id: clusterId,
+        position: { x: 0, y: 0 },
+        // Explicit size: the first layout pass runs before React Flow measures.
+        // Matches the person node's tag-card footprint.
+        width: 192,
+        height: 72,
+        type: 'cluster',
+        data: {
+          root: rootNode.data,
+          nodeCount: memberIds.length,
+          internalEdgeCount: 0,
+          memberIds,
+        },
+      });
+      for (const id of memberIds) {
         memberOf.set(id, clusterId);
       }
     }
   }
 
-  if (membersByClusterId.size === 0 && expandedRoots.size === 0) {
+  if (clusterNodes.length === 0 && expandedRoots.size === 0) {
     return { nodes, edges };
   }
 
@@ -175,7 +156,7 @@ export function clusterGraphElements(
     const target = targetCluster ?? edge.target;
     const key = pairKey(source, target);
     const existing = mergedByPair.get(key);
-    const isMatch = edge.data?.kind === 'match' || edge.type === 'match';
+    const isMatch = isMatchEdge(edge);
 
     if (existing) {
       if (sourceCluster != null) existing.memberIds.add(edge.source);
@@ -190,24 +171,8 @@ export function clusterGraphElements(
     mergedByPair.set(key, { source, target, memberIds, allMatch: isMatch });
   }
 
-  const clusterNodes: ClusterRfNode[] = [];
-  for (const [clusterId, memberIds] of membersByClusterId) {
-    clusterNodes.push({
-      id: clusterId,
-      position: { x: 0, y: 0 },
-      // Explicit size: the first layout pass runs before React Flow measures.
-      // Matches the person node's tag-card footprint.
-      width: 192,
-      height: 72,
-      type: 'cluster',
-      data: {
-        rootId: clusterId.slice(CLUSTER_ID_PREFIX.length),
-        root: rootDataByClusterId.get(clusterId)!,
-        nodeCount: memberIds.length,
-        internalEdgeCount: internalEdgeCount.get(clusterId) ?? 0,
-        memberIds,
-      },
-    });
+  for (const cluster of clusterNodes) {
+    cluster.data.internalEdgeCount = internalEdgeCount.get(cluster.id) ?? 0;
   }
 
   const mergedEdges: GraphRfEdge[] = [...mergedByPair.values()].map(({ source, target, memberIds, allMatch }) => ({

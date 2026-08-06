@@ -1,5 +1,6 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type GraphObjectRef } from './graph-keys';
 
 export const GRAPH_ATTRIBUTES = ['ip', 'iban', 'device', 'email'] as const;
 export type GraphAttribute = (typeof GRAPH_ATTRIBUTES)[number];
@@ -11,32 +12,27 @@ export const GRAPH_ATTRIBUTE_LABELS: Record<GraphAttribute, string> = {
   email: 'Email',
 };
 
-/** Branch sizes at which a subtree can collapse into a cluster chip. `0` disables clustering. */
-export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15] as const;
+/** Pivot `rawType` → the attribute filter governing it. Unlisted pivot types are always shown. */
+export const PIVOT_TYPE_ATTRIBUTES: Record<string, GraphAttribute> = {
+  same_ip: 'ip',
+  same_iban: 'iban',
+  same_device: 'device',
+  same_email: 'email',
+};
+
+/** Branch sizes a subtree must exceed to collapse into a cluster chip. `0` disables clustering. */
+export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15, 30, 50] as const;
 export type ClusterThreshold = (typeof CLUSTER_THRESHOLD_OPTIONS)[number];
 export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
 
-export type GraphPersonRef = {
-  objectType: string;
-  objectId: string;
-};
-
-export type SelectedGraphObject =
-  | ({
-      nodeType: 'person';
-      connectedPersons: GraphPersonRef[];
-    } & GraphPersonRef)
-  | ({
-      nodeType: 'pivot';
-      connectedPersons: GraphPersonRef[];
-    } & GraphPersonRef)
-  | ({
-      nodeType: 'cluster';
-      rootId: string;
-      nodeCount: number;
-      internalEdgeCount: number;
-      members: GraphPersonRef[];
-    } & GraphPersonRef);
+/**
+ * The node backing the settings panel's detail card. `persons` are the selection's
+ * connected persons, or the folded members of a cluster.
+ */
+export type SelectedGraphObject = GraphObjectRef & { persons: GraphObjectRef[] } & (
+    | { nodeType: 'person' | 'pivot' }
+    | { nodeType: 'cluster'; nodeCount: number; internalEdgeCount: number }
+  );
 
 /**
  * Counts only `GraphImpl` can compute, since the toolbar and settings panel are
@@ -50,19 +46,6 @@ export type GraphStats = {
 };
 
 const EMPTY_GRAPH_STATS: GraphStats = { hiddenCount: 0, hidePreviewOrphans: 0 };
-
-/** Same composite key as graph `nodeKey`: `${objectType}:${objectId}` */
-export function personBulkKey(person: GraphPersonRef): string {
-  return `${person.objectType}:${person.objectId}`;
-}
-
-export function parsePersonBulkKey(key: string): GraphPersonRef {
-  const colonIdx = key.indexOf(':');
-  return {
-    objectType: key.slice(0, colonIdx),
-    objectId: key.slice(colonIdx + 1),
-  };
-}
 
 export type CustomerGraphContextValue = {
   // Node type filters
@@ -81,6 +64,8 @@ export type CustomerGraphContextValue = {
   setShowRiskScore: (value: boolean) => void;
   showTags: boolean;
   setShowTags: (value: boolean) => void;
+  /** `showTags`, forced on while bulk-tagging so the canvas shows what changed. */
+  nodeTagsVisible: boolean;
   showEdgeLabels: boolean;
   setShowEdgeLabels: (value: boolean) => void;
 
@@ -92,18 +77,19 @@ export type CustomerGraphContextValue = {
   selectedObject: SelectedGraphObject | null;
   setSelectedObject: (value: SelectedGraphObject | null) => void;
 
-  // Selection mode + bulk selection (person checkboxes)
+  // Selection mode + bulk selection. Keys are node ids; cluster chips contribute
+  // their branch root, so `rootNodeId` maps any endpoint into this set.
   selectionMode: boolean;
   enterSelectionMode: () => void;
   exitSelectionMode: () => void;
-  checkedPersons: Set<string>;
-  toggleCheckedPerson: (person: GraphPersonRef) => void;
-  isPersonChecked: (person: GraphPersonRef) => boolean;
-  clearCheckedPersons: () => void;
+  checkedNodeIds: Set<string>;
+  toggleCheckedNode: (nodeId: string) => void;
+  isNodeChecked: (nodeId: string) => boolean;
+  clearCheckedNodes: () => void;
 
   // Hover highlight (person or cluster node id; ignored while selectionMode is on)
-  hoveredPersonId: string | null;
-  setHoveredPersonId: (id: string | null) => void;
+  hoveredNodeId: string | null;
+  setHoveredNodeId: (id: string | null) => void;
 
   // Manually hidden nodes (node ids). Orphans cascade out via the reachability sweep.
   hiddenNodeIds: Set<string>;
@@ -121,6 +107,16 @@ export type CustomerGraphContextValue = {
 const CustomerGraphContext = createSimpleContext<CustomerGraphContextValue>('CustomerGraph');
 
 export const useCustomerGraph = CustomerGraphContext.useValue;
+
+function toggleInSet(set: Set<string>, value: string): Set<string> {
+  const next = new Set(set);
+  if (next.has(value)) {
+    next.delete(value);
+  } else {
+    next.add(value);
+  }
+  return next;
+}
 
 export function CustomerGraphProvider({
   children,
@@ -154,8 +150,8 @@ export function CustomerGraphProvider({
   );
   const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
   const [selectionMode, setSelectionMode] = useState(false);
-  const [checkedPersons, setCheckedPersons] = useState<Set<string>>(() => new Set());
-  const [hoveredPersonId, setHoveredPersonId] = useState<string | null>(null);
+  const [checkedNodeIds, setCheckedNodeIds] = useState<Set<string>>(() => new Set());
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hiddenNodeIds, setHiddenNodeIds] = useState<Set<string>>(() => new Set());
   const [expandedRootIds, setExpandedRootIds] = useState<Set<string>>(() => new Set());
   const [graphStats, setGraphStats] = useState<GraphStats>(EMPTY_GRAPH_STATS);
@@ -170,52 +166,32 @@ export function CustomerGraphProvider({
   }, []);
 
   const toggleClusterExpanded = useCallback((rootId: string) => {
-    setExpandedRootIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(rootId)) {
-        next.delete(rootId);
-      } else {
-        next.add(rootId);
-      }
-      return next;
-    });
+    setExpandedRootIds((prev) => toggleInSet(prev, rootId));
   }, []);
 
   const toggleAttribute = useCallback((attribute: GraphAttribute) => {
     setAttributes((prev) => (prev.includes(attribute) ? prev.filter((a) => a !== attribute) : [...prev, attribute]));
   }, []);
 
-  const clearCheckedPersons = useCallback(() => {
-    setCheckedPersons(new Set());
+  const clearCheckedNodes = useCallback(() => {
+    setCheckedNodeIds(new Set());
   }, []);
 
   const enterSelectionMode = useCallback(() => {
     setSelectionMode(true);
-    setHoveredPersonId(null);
+    setHoveredNodeId(null);
   }, []);
 
   const exitSelectionMode = useCallback(() => {
     setSelectionMode(false);
-    setCheckedPersons(new Set());
+    setCheckedNodeIds(new Set());
   }, []);
 
-  const toggleCheckedPerson = useCallback((person: GraphPersonRef) => {
-    const key = personBulkKey(person);
-    setCheckedPersons((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
+  const toggleCheckedNode = useCallback((nodeId: string) => {
+    setCheckedNodeIds((prev) => toggleInSet(prev, nodeId));
   }, []);
 
-  const isPersonChecked = useCallback(
-    (person: GraphPersonRef) => checkedPersons.has(personBulkKey(person)),
-    [checkedPersons],
-  );
+  const isNodeChecked = useCallback((nodeId: string) => checkedNodeIds.has(nodeId), [checkedNodeIds]);
 
   const value = useMemo(
     () => ({
@@ -228,8 +204,9 @@ export function CustomerGraphProvider({
       toggleAttribute,
       showRiskScore,
       setShowRiskScore,
-      showTags: showTags || selectionMode,
+      showTags,
       setShowTags,
+      nodeTagsVisible: showTags || selectionMode,
       showEdgeLabels,
       setShowEdgeLabels,
       clusterThreshold,
@@ -239,12 +216,12 @@ export function CustomerGraphProvider({
       selectionMode,
       enterSelectionMode,
       exitSelectionMode,
-      checkedPersons,
-      toggleCheckedPerson,
-      isPersonChecked,
-      clearCheckedPersons,
-      hoveredPersonId,
-      setHoveredPersonId,
+      checkedNodeIds,
+      toggleCheckedNode,
+      isNodeChecked,
+      clearCheckedNodes,
+      hoveredNodeId,
+      setHoveredNodeId,
       hiddenNodeIds,
       hideNodes,
       restoreHiddenNodes,
@@ -267,11 +244,11 @@ export function CustomerGraphProvider({
       selectionMode,
       enterSelectionMode,
       exitSelectionMode,
-      checkedPersons,
-      toggleCheckedPerson,
-      isPersonChecked,
-      clearCheckedPersons,
-      hoveredPersonId,
+      checkedNodeIds,
+      toggleCheckedNode,
+      isNodeChecked,
+      clearCheckedNodes,
+      hoveredNodeId,
       hiddenNodeIds,
       hideNodes,
       restoreHiddenNodes,
