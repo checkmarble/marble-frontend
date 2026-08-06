@@ -160,6 +160,7 @@ export function toFlatFlowElements(
       source: fromKey,
       target: toKey,
       type: isMatch ? 'match' : 'link',
+      animated: isMatch,
       label: edge.label,
       data: { kind: edge.kind },
     });

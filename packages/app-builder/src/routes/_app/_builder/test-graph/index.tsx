@@ -1,5 +1,9 @@
 import { Page } from '@app-builder/components';
-import { CustomerGraphProvider } from '@app-builder/components/Graph/CustomerGraphContext';
+import {
+  type ClusterThreshold,
+  CustomerGraphProvider,
+  DEFAULT_CLUSTER_THRESHOLD,
+} from '@app-builder/components/Graph/CustomerGraphContext';
 import { GraphImpl } from '@app-builder/components/Graph/GraphImpl';
 import { GraphSelectionToolbar } from '@app-builder/components/Graph/GraphSelectionToolbar';
 import { GraphSettingsPanel } from '@app-builder/components/Graph/GraphSettingsPanel';
@@ -92,6 +96,7 @@ function RouteComponent() {
   const [nodeCount, setNodeCount] = useState<(typeof NODE_COUNT_OPTIONS)[number]>(NODE_COUNT_OPTIONS[0]);
   const [startConnections, setStartConnections] = useState<(typeof START_CONNECTION_OPTIONS)[number]>(5);
   const [customSeed, setCustomSeed] = useState(0);
+  const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
   const isCustom = dataset === 'custom';
 
   const startConnectionOptions = useMemo(
@@ -116,10 +121,13 @@ function RouteComponent() {
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
       <CustomerGraphProvider
         key={graphKey}
+        clusterThreshold={clusterThreshold}
+        onClusterThresholdChange={setClusterThreshold}
         initialSelectedObject={{
           nodeType: 'person',
           objectType: data.start.type,
           objectId: data.start.id,
+          connectedPersons: [],
         }}
       >
         <Page.Main className="min-h-0 overflow-hidden">

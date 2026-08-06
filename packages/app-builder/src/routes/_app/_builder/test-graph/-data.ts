@@ -2,6 +2,7 @@ const USER_ID_MIN = 100;
 const USER_ID_MAX = 300;
 const COMPANY_ID_MIN = 100;
 const COMPANY_ID_MAX = 299;
+const EDGE_DENSITY = 0.5;
 
 const PIVOT_TYPES = ['same_ip', 'same_iban', 'same_email', 'same_device'] as const;
 type PivotType = (typeof PIVOT_TYPES)[number];
@@ -961,16 +962,17 @@ function isSameRef(a: GraphNodeRef, b: GraphNodeRef): boolean {
 function generateEdges(nodes: NodeData[], edgeCount?: number, start?: GraphNodeRef, startConnections = 5): EdgeData[] {
   const entities = nodes.filter((n) => !n.connector);
   const pivots = nodes.filter((n) => n.connector);
-  const linkEdgeCount = edgeCount ?? entities.length * 0.5;
+  const linkEdgeCount = edgeCount ?? entities.length * EDGE_DENSITY;
   const edges: EdgeData[] = [];
   const seenPairs = new Set<string>();
+  const randomizedStart = Math.ceil(startConnections / 2 + randomInt(0, startConnections / 2));
 
   const startNode =
     (start ? entities.find((n) => isSameRef(n, start)) : undefined) ?? entities.find((n) => n.type === 'users');
   const others = startNode ? entities.filter((n) => !isSameRef(n, startNode)) : entities;
 
   if (startNode && others.length > 0) {
-    const targetDegree = Math.min(Math.max(1, startConnections), others.length);
+    const targetDegree = Math.min(Math.max(1, randomizedStart), others.length);
     for (const neighbor of sampleUnique(others, targetDegree)) {
       const key = pairKey(startNode, neighbor);
       seenPairs.add(key);

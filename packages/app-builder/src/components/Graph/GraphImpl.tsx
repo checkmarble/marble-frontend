@@ -119,6 +119,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     attributes,
     showEdgeLabels,
     setShowEdgeLabels,
+    selectedObject,
     setSelectedObject,
     selectionMode,
     setHoveredPersonId,
@@ -203,6 +204,43 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
 
+  const connectedPersonsForNode = useCallback(
+    (nodeId: string) => {
+      const neighborIds = new Set<string>();
+      for (const edge of edges) {
+        if (edge.source === nodeId) neighborIds.add(edge.target);
+        if (edge.target === nodeId) neighborIds.add(edge.source);
+      }
+      return nodes
+        .filter((n): n is Extract<GraphRfNode, { type: 'person' }> => n.type === 'person' && neighborIds.has(n.id))
+        .map((n) => ({
+          objectType: n.data.objectType,
+          objectId: n.data.objectId,
+        }));
+    },
+    [edges, nodes],
+  );
+
+  // Keep person/pivot neighbor lists in sync when the graph remounts or filters change
+  // (e.g. initial selection before the first click).
+  useEffect(() => {
+    if (!selectedObject || (selectedObject.nodeType !== 'person' && selectedObject.nodeType !== 'pivot')) return;
+
+    const nodeId = `${selectedObject.objectType}:${selectedObject.objectId}`;
+    if (!nodes.some((n) => n.id === nodeId)) return;
+
+    const connectedPersons = connectedPersonsForNode(nodeId);
+    const prev = selectedObject.connectedPersons;
+    const same =
+      prev.length === connectedPersons.length &&
+      prev.every(
+        (p, i) => p.objectType === connectedPersons[i]?.objectType && p.objectId === connectedPersons[i]?.objectId,
+      );
+    if (same) return;
+
+    setSelectedObject({ ...selectedObject, connectedPersons });
+  }, [connectedPersonsForNode, nodes, selectedObject, setSelectedObject]);
+
   const onNodeClick = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {
       if (node.type === 'person') {
@@ -210,6 +248,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
           nodeType: 'person',
           objectType: node.data.objectType,
           objectId: node.data.objectId,
+          connectedPersons: connectedPersonsForNode(node.id),
         });
         return;
       }
@@ -222,36 +261,21 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
           rootId: node.data.rootId,
           nodeCount: node.data.nodeCount,
           internalEdgeCount: node.data.internalEdgeCount,
-          members: node.data.memberIds.map((id) => {
-            const ref = parsePersonBulkKey(id);
-            return { objectType: ref.objectType, objectId: ref.objectId };
-          }),
+          members: node.data.memberIds.map(parsePersonBulkKey),
           objectType,
           objectId,
         });
         return;
       }
 
-      const neighborIds = new Set<string>();
-      for (const edge of edges) {
-        if (edge.source === node.id) neighborIds.add(edge.target);
-        if (edge.target === node.id) neighborIds.add(edge.source);
-      }
-      const connectedPersons = nodes
-        .filter((n): n is Extract<GraphRfNode, { type: 'person' }> => n.type === 'person' && neighborIds.has(n.id))
-        .map((n) => ({
-          objectType: n.data.objectType,
-          objectId: n.data.objectId,
-        }));
-
       setSelectedObject({
         nodeType: 'pivot',
         objectType: node.data.rawType,
         objectId: node.data.label,
-        connectedPersons,
+        connectedPersons: connectedPersonsForNode(node.id),
       });
     },
-    [edges, nodes, setSelectedObject],
+    [connectedPersonsForNode, setSelectedObject],
   );
 
   const onNodeMouseEnter = useCallback<NodeMouseHandler<GraphRfNode>>(

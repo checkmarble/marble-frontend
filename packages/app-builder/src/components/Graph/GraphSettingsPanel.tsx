@@ -251,7 +251,7 @@ function ConnectedPersonRow({
     <li>
       <div className="flex flex-col gap-xs">
         <div className="flex flex-wrap items-center gap-sm">
-          <span className="text-sm font-semibold">{title}</span>
+          <span className="text-sm">{title}</span>
           {showRiskScore ? <ConnectedPersonRisk {...person} /> : null}
         </div>
         {showTags ? <ConnectedPersonTags {...person} /> : null}
@@ -262,7 +262,7 @@ function ConnectedPersonRow({
 
 const CONNECTED_PERSONS_PREVIEW_COUNT = 5;
 
-/** Preview-capped person list, shared by the pivot and cluster detail cards. */
+/** Preview-capped person list, shared by person, pivot, and cluster detail cards. */
 function PersonListDetail({
   header,
   persons,
@@ -361,8 +361,10 @@ function ClusterDetail({
       header={
         <div className="min-w-0">
           <div className="text-grey-secondary text-xs leading-none">Grouped branch</div>
-          <div className="text-grey-primary truncate text-sm font-semibold">
-            {nodeCount} nodes · {internalEdgeCount} edges
+          <div className="truncate text-sm flex gap-xs items-center">
+            <span className="text-grey-primary font-semibold">{nodeCount} Nodes</span>
+            <Icon icon="dot" className="size-3 text-grey-secondary" />
+            <span className="text-grey-secondary">{internalEdgeCount} edges</span>
           </div>
         </div>
       }
@@ -468,7 +470,7 @@ export function GraphSettingsPanel() {
       <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-md border p-md">
         {hasSelection ? (
           match(selectedObject)
-            .with({ nodeType: 'person' }, () => (
+            .with({ nodeType: 'person' }, (person) => (
               <>
                 {match(detailsQuery)
                   .with({ isError: true }, () => <QueryError onRetry={() => detailsQuery.refetch()} />)
@@ -521,6 +523,12 @@ export function GraphSettingsPanel() {
                   objectId={objectId}
                   annotationsQuery={annotationsQuery}
                   root={asideRef}
+                />
+                <PersonListDetail
+                  header={<div className="text-sm font-semibold">Connected nodes</div>}
+                  persons={person.connectedPersons}
+                  showRiskScore={showRiskScore}
+                  showTags={showTags}
                 />
               </>
             ))

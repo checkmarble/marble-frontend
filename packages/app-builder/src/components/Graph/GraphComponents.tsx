@@ -358,7 +358,7 @@ export function ClusterNode({ data }: NodeProps<ClusterRfNode>) {
 
 export function PivotNode({ data }: NodeProps<PivotRfNode>) {
   return (
-    <div className="border-orange-border bg-orange-background-light text-orange-primary relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm">
+    <div className="border-orange-border bg-orange-background-light text-orange-primary relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer">
       <FourHandles />
       <Icon icon="tip" className="size-3.5 shrink-0" />
       <div className="min-w-0">
@@ -461,12 +461,26 @@ export function LinkEdge(props: EdgeProps<GraphRfEdge>) {
 }
 
 export function MatchEdge(props: EdgeProps<GraphRfEdge>) {
+  const { selectionMode, checkedPersons, hoveredPersonId } = useCustomerGraph();
+
+  const highlightEdge = (() => {
+    if (selectionMode) {
+      return checkedPersons.has(endpointPersonKey(props.source)) && checkedPersons.has(endpointPersonKey(props.target));
+    }
+    if (hoveredPersonId != null) {
+      return props.source === hoveredPersonId || props.target === hoveredPersonId;
+    }
+    return true;
+  })();
+
   return (
     <GraphEdge
       {...props}
-      animated
       style={{ ...props.style, strokeDasharray: '2 3' }}
-      strokeClassName={'stroke-orange-primary! stroke-[1.5]!'}
+      strokeClassName={cn(
+        'transition-colors duration-200 stroke-[1.5]!',
+        highlightEdge ? 'stroke-orange-primary!' : 'stroke-orange-background-light!',
+      )}
       labelClassName="bg-orange-background-light text-orange-primary border border-orange-border"
     />
   );
