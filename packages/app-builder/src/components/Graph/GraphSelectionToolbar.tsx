@@ -132,8 +132,22 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
 }
 
 export function GraphSelectionToolbar() {
-  const { selectionMode, enterSelectionMode, exitSelectionMode, checkedPersons } = useCustomerGraph();
+  const {
+    selectionMode,
+    enterSelectionMode,
+    exitSelectionMode,
+    checkedPersons,
+    clearCheckedPersons,
+    hideNodes,
+    graphStats,
+  } = useCustomerGraph();
   const hasCheckedPersons = checkedPersons.size > 0;
+
+  const handleHide = () => {
+    hideNodes([...checkedPersons]);
+    // Stay in selection mode so pruning can continue.
+    clearCheckedPersons();
+  };
 
   if (!selectionMode) {
     return (
@@ -163,6 +177,18 @@ export function GraphSelectionToolbar() {
         Add to case
       </Button>
       <BulkAddTagsMenu checkedKeys={checkedPersons} disabled={!hasCheckedPersons} />
+      <Button
+        type="button"
+        variant="secondary"
+        appearance="stroked"
+        size="small"
+        disabled={!hasCheckedPersons}
+        onClick={handleHide}
+      >
+        <Icon icon="eye-slash" className="size-4" />
+        Hide {checkedPersons.size}
+        {graphStats.hidePreviewOrphans > 0 ? ` (+${graphStats.hidePreviewOrphans} orphaned)` : null}
+      </Button>
       <Button type="button" variant="secondary" appearance="link" size="small" onClick={exitSelectionMode}>
         Cancel
       </Button>

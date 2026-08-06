@@ -13,17 +13,15 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { type GraphData } from '../../routes/_app/_builder/test-graph/-data';
-import { type CustomerGraphContextValue, type GraphAttribute, useCustomerGraph } from './CustomerGraphContext';
-import { createGraphTypeHelpers } from './data-model-map';
 import {
-  type GraphRfEdge,
-  type GraphRfNode,
-  LinkEdge,
-  MatchEdge,
-  PersonNode,
-  PivotNode,
-  withBestHandles,
-} from './GraphComponents';
+  type CustomerGraphContextValue,
+  type GraphAttribute,
+  parsePersonBulkKey,
+  useCustomerGraph,
+} from './CustomerGraphContext';
+import { clusterGraphElements } from './cluster-graph';
+import { createGraphTypeHelpers } from './data-model-map';
+import { type GraphRfEdge, type GraphRfNode, graphEdgeTypes, graphNodeTypes, withBestHandles } from './GraphComponents';
 import { layoutGraphElements } from './layout-graph';
 import { reachableNodeIds, toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
@@ -60,7 +58,10 @@ function autoLayoutElements(nodes: GraphRfNode[], edges: GraphRfEdge[]) {
   return layoutGraphElements(nodes, edges, resolveStartKey(nodes, nodes[0]?.id ?? ''));
 }
 
-type VisibilityFilters = Pick<CustomerGraphContextValue, 'showPersons' | 'showCompanies' | 'attributes'>;
+type VisibilityFilters = Pick<
+  CustomerGraphContextValue,
+  'showPersons' | 'showCompanies' | 'attributes' | 'hiddenNodeIds'
+>;
 
 function attributeAllowsPivot(rawType: string, attributes: GraphAttribute[]): boolean {
   if (rawType === 'same_ip') return attributes.includes('ip');
@@ -72,17 +73,20 @@ function attributeAllowsPivot(rawType: string, attributes: GraphAttribute[]): bo
 
 function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
   if (node.type === 'person') {
+    // The start node outranks every filter, including the hidden set.
     if (node.data.isStart) return true;
+    if (filters.hiddenNodeIds.has(node.id)) return false;
     if (node.data.subEntity === 'moral') return filters.showCompanies;
     if (node.data.subEntity === 'natural') return filters.showPersons;
     return filters.showPersons || filters.showCompanies;
   }
 
   if (node.type === 'pivot') {
+    if (filters.hiddenNodeIds.has(node.id)) return false;
     return attributeAllowsPivot(node.data.rawType, filters.attributes);
   }
 
-  return true;
+  return !filters.hiddenNodeIds.has(node.id);
 }
 
 function applyVisibilityFilters(
@@ -118,6 +122,11 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     setSelectedObject,
     selectionMode,
     setHoveredPersonId,
+    hiddenNodeIds,
+    expandedRootIds,
+    checkedPersons,
+    setGraphStats,
+    clusterThreshold,
   } = useCustomerGraph();
 
   const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
@@ -127,19 +136,49 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     [data, typeHelpers, maxExplorationHops],
   );
 
+  const typeFilters = useMemo(
+    () => ({ showPersons, showCompanies, attributes }),
+    [showPersons, showCompanies, attributes],
+  );
+
+  const visibleGraph = useMemo(
+    () =>
+      applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, { ...typeFilters, hiddenNodeIds }, flatGraph.startKey),
+    [flatGraph, typeFilters, hiddenNodeIds],
+  );
+
   const filteredLayout = useMemo(() => {
-    const filtered = applyVisibilityFilters(
-      flatGraph.nodes,
-      flatGraph.edges,
-      {
-        showPersons,
-        showCompanies,
-        attributes,
-      },
-      flatGraph.startKey,
-    );
-    return layoutGraphElements(filtered.nodes, filtered.edges, flatGraph.startKey);
-  }, [flatGraph, showPersons, showCompanies, attributes]);
+    const clustered = clusterGraphElements(visibleGraph.nodes, visibleGraph.edges, {
+      startKey: flatGraph.startKey,
+      threshold: clusterThreshold,
+      expandedRootIds,
+    });
+    return layoutGraphElements(clustered.nodes, clustered.edges, flatGraph.startKey);
+  }, [visibleGraph, flatGraph.startKey, clusterThreshold, expandedRootIds]);
+
+  // Counts the toolbar and settings panel cannot derive: they are siblings of
+  // this component and never see the node arrays.
+  const graphStats = useMemo(() => {
+    const countWith = (hidden: Set<string>) =>
+      applyVisibilityFilters(
+        flatGraph.nodes,
+        flatGraph.edges,
+        { ...typeFilters, hiddenNodeIds: hidden },
+        flatGraph.startKey,
+      ).nodes.length;
+
+    const unhiddenCount = hiddenNodeIds.size === 0 ? visibleGraph.nodes.length : countWith(new Set());
+    const hiddenCount = unhiddenCount - visibleGraph.nodes.length;
+
+    if (checkedPersons.size === 0) return { hiddenCount, hidePreviewOrphans: 0 };
+    const withChecked = countWith(new Set([...hiddenNodeIds, ...checkedPersons]));
+    const removed = visibleGraph.nodes.length - withChecked;
+    return { hiddenCount, hidePreviewOrphans: Math.max(0, removed - checkedPersons.size) };
+  }, [flatGraph, typeFilters, hiddenNodeIds, checkedPersons, visibleGraph]);
+
+  useEffect(() => {
+    setGraphStats(graphStats);
+  }, [graphStats, setGraphStats]);
 
   const [nodes, setNodes] = useState(filteredLayout.nodes);
   const [edges, setEdges] = useState(filteredLayout.edges);
@@ -175,6 +214,24 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
         return;
       }
 
+      if (node.type === 'cluster') {
+        // Members are never pivots, so every id parses as a person ref.
+        const { objectType, objectId } = parsePersonBulkKey(node.data.rootId);
+        setSelectedObject({
+          nodeType: 'cluster',
+          rootId: node.data.rootId,
+          nodeCount: node.data.nodeCount,
+          internalEdgeCount: node.data.internalEdgeCount,
+          members: node.data.memberIds.map((id) => {
+            const ref = parsePersonBulkKey(id);
+            return { objectType: ref.objectType, objectId: ref.objectId };
+          }),
+          objectType,
+          objectId,
+        });
+        return;
+      }
+
       const neighborIds = new Set<string>();
       for (const edge of edges) {
         if (edge.source === node.id) neighborIds.add(edge.target);
@@ -199,7 +256,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
 
   const onNodeMouseEnter = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {
-      if (selectionMode || node.type !== 'person') return;
+      if (selectionMode || (node.type !== 'person' && node.type !== 'cluster')) return;
       setHoveredPersonId(node.id);
     },
     [selectionMode, setHoveredPersonId],
@@ -212,14 +269,8 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
   return (
     <ReactFlow
       className="h-full min-h-0"
-      nodeTypes={{
-        person: PersonNode,
-        pivot: PivotNode,
-      }}
-      edgeTypes={{
-        link: LinkEdge,
-        match: MatchEdge,
-      }}
+      nodeTypes={graphNodeTypes}
+      edgeTypes={graphEdgeTypes}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}

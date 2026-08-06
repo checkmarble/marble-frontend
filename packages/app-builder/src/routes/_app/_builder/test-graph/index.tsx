@@ -10,7 +10,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect, useMemo, useState } from 'react';
-import { Card, cn, MenuCommand } from 'ui-design-system';
+import { Button, Card, cn, MenuCommand } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { GRAPH_DATASET_LABELS, generateCustomGraph, graphDatasets } from './-data';
 
 const HOP_OPTIONS = [0, 1, 2, 3, 4, 5] as const;
@@ -90,6 +91,7 @@ function RouteComponent() {
   const [maxExplorationHops, setMaxExplorationHops] = useState(0);
   const [nodeCount, setNodeCount] = useState<(typeof NODE_COUNT_OPTIONS)[number]>(NODE_COUNT_OPTIONS[0]);
   const [startConnections, setStartConnections] = useState<(typeof START_CONNECTION_OPTIONS)[number]>(5);
+  const [customSeed, setCustomSeed] = useState(0);
   const isCustom = dataset === 'custom';
 
   const startConnectionOptions = useMemo(
@@ -103,12 +105,12 @@ function RouteComponent() {
     }
   }, [startConnectionOptions, startConnections]);
 
-  const graphKey = isCustom ? `${dataset}-${nodeCount}-${startConnections}` : dataset;
+  const graphKey = isCustom ? `${dataset}-${nodeCount}-${startConnections}-${customSeed}` : dataset;
 
   const data = useMemo(() => {
     if (isCustom) return generateCustomGraph(nodeCount, startConnections);
     return graphDatasets[dataset] ?? graphDatasets[GRAPH_DATASET_LABELS[0]!]!;
-  }, [dataset, isCustom, nodeCount, startConnections]);
+  }, [dataset, isCustom, nodeCount, startConnections, customSeed]);
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
@@ -164,6 +166,16 @@ function RouteComponent() {
                   formatLabel={(hops) => (hops === 0 ? 'All' : String(hops))}
                 />
               </div>
+              <Button
+                variant="secondary"
+                size="small"
+                disabled={!isCustom}
+                aria-label="Regenerate custom graph"
+                onClick={() => setCustomSeed((seed) => seed + 1)}
+              >
+                <Icon icon="restart-alt" className="size-4" />
+                Regenerate
+              </Button>
             </div>
           </Page.Header>
           <Page.Container className="min-h-0">

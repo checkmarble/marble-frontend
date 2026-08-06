@@ -48,11 +48,16 @@ function buildChildrenMap(treeEdges: Array<{ source: string; target: string }>):
   return children;
 }
 
-/** Subtree size including `id` itself. */
-function descendantCount(children: Map<string, string[]>, id: string): number {
-  let count = 1;
+/** A cluster chip stands in for the whole branch it folded away. */
+function nodeWeight(node: GraphRfNode | undefined): number {
+  return node?.type === 'cluster' ? node.data.nodeCount : 1;
+}
+
+/** Subtree size including `id` itself, counting a chip as the branch it represents. */
+function descendantCount(children: Map<string, string[]>, id: string, nodesById: Map<string, GraphRfNode>): number {
+  let count = nodeWeight(nodesById.get(id));
   for (const child of children.get(id) ?? []) {
-    count += descendantCount(children, child);
+    count += descendantCount(children, child, nodesById);
   }
   return count;
 }
@@ -574,7 +579,7 @@ export function layoutGraphElements(
   if (l1Ids.length > 0) {
     const weighted = l1Ids.map((id) => ({
       id,
-      weight: descendantCount(children, id),
+      weight: descendantCount(children, id, nodesById),
     }));
     const orderedL1 = greedySlotOrder(weighted);
     const n = orderedL1.length;

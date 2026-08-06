@@ -961,7 +961,7 @@ function isSameRef(a: GraphNodeRef, b: GraphNodeRef): boolean {
 function generateEdges(nodes: NodeData[], edgeCount?: number, start?: GraphNodeRef, startConnections = 5): EdgeData[] {
   const entities = nodes.filter((n) => !n.connector);
   const pivots = nodes.filter((n) => n.connector);
-  const linkEdgeCount = edgeCount ?? entities.length * 3;
+  const linkEdgeCount = edgeCount ?? entities.length * 0.5;
   const edges: EdgeData[] = [];
   const seenPairs = new Set<string>();
 

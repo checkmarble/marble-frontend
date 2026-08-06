@@ -9,7 +9,7 @@ import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-late
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { type ScoringScore } from 'marble-api';
-import { useRef, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 import {
@@ -20,9 +20,12 @@ import {
   MenuCommand,
   Switch,
   Tag,
+  ThresholdRange,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
+  CLUSTER_THRESHOLD_OPTIONS,
+  type ClusterThreshold,
   GRAPH_ATTRIBUTE_LABELS,
   GRAPH_ATTRIBUTES,
   type GraphAttribute,
@@ -30,6 +33,47 @@ import {
   useCustomerGraph,
 } from './CustomerGraphContext';
 import { resolveTitle } from './resolve-object-title';
+
+function isClusterThreshold(value: number): value is ClusterThreshold {
+  return (CLUSTER_THRESHOLD_OPTIONS as readonly number[]).includes(value);
+}
+
+function clusterThresholdLabel(value: number): string {
+  return value === 0 ? 'Off' : String(value);
+}
+
+function ClusterThresholdControl() {
+  const { clusterThreshold, setClusterThreshold } = useCustomerGraph();
+
+  return (
+    <MenuCommand.Menu>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton className="w-full" size="medium">
+          Cluster threshold: {clusterThresholdLabel(clusterThreshold)}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content sameWidth align="start" sideOffset={4} className="min-w-72">
+        <div className="p-md" onPointerDown={(event) => event.stopPropagation()}>
+          <ThresholdRange
+            title="Cluster at"
+            defaultDescription="Collapse branches with at least this many nodes. Off keeps every node expanded."
+            value={clusterThreshold}
+            onChange={(value) => {
+              if (isClusterThreshold(value)) setClusterThreshold(value);
+            }}
+            values={CLUSTER_THRESHOLD_OPTIONS.map((option) => ({
+              value: option,
+              label: option === 0 ? 'Off — no clustering' : `Cluster branches of ${option}+ nodes`,
+              color: 'var(--color-purple-primary)',
+            }))}
+            initialColor="var(--color-purple-primary)"
+            max={CLUSTER_THRESHOLD_OPTIONS.at(-1)}
+          />
+        </div>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
+  );
+}
 
 function attributesLabel(attributes: GraphAttribute[]): string {
   if (attributes.length === 0) return 'Attributes: none';
@@ -218,33 +262,28 @@ function ConnectedPersonRow({
 
 const CONNECTED_PERSONS_PREVIEW_COUNT = 5;
 
-function PivotDetail({
-  objectType,
-  objectId,
-  connectedPersons,
+/** Preview-capped person list, shared by the pivot and cluster detail cards. */
+function PersonListDetail({
+  header,
+  persons,
   showRiskScore,
   showTags,
 }: {
-  objectType: string;
-  objectId: string;
-  connectedPersons: GraphPersonRef[];
+  header: ReactNode;
+  persons: GraphPersonRef[];
   showRiskScore: boolean;
   showTags: boolean;
 }) {
   const [showAll, setShowAll] = useState(false);
-  const total = connectedPersons.length;
+  const total = persons.length;
   const hasMore = total > CONNECTED_PERSONS_PREVIEW_COUNT;
-  const displayedPersons =
-    showAll || !hasMore ? connectedPersons : connectedPersons.slice(0, CONNECTED_PERSONS_PREVIEW_COUNT);
+  const displayedPersons = showAll || !hasMore ? persons : persons.slice(0, CONNECTED_PERSONS_PREVIEW_COUNT);
   const showTotalTag = total > displayedPersons.length;
 
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-start justify-between gap-sm">
-        <div className="min-w-0">
-          <div className="text-grey-secondary text-xs leading-none">{objectType}</div>
-          <div className="text-orange-primary truncate text-sm font-semibold">{objectId}</div>
-        </div>
+        {header}
         {showTotalTag ? (
           <Tag size="small" color="grey">
             {total} items
@@ -276,6 +315,64 @@ function PivotDetail({
   );
 }
 
+function PivotDetail({
+  objectType,
+  objectId,
+  connectedPersons,
+  showRiskScore,
+  showTags,
+}: {
+  objectType: string;
+  objectId: string;
+  connectedPersons: GraphPersonRef[];
+  showRiskScore: boolean;
+  showTags: boolean;
+}) {
+  return (
+    <PersonListDetail
+      header={
+        <div className="min-w-0">
+          <div className="text-grey-secondary text-xs leading-none">{objectType}</div>
+          <div className="text-orange-primary truncate text-sm font-semibold">{objectId}</div>
+        </div>
+      }
+      persons={connectedPersons}
+      showRiskScore={showRiskScore}
+      showTags={showTags}
+    />
+  );
+}
+
+function ClusterDetail({
+  nodeCount,
+  internalEdgeCount,
+  members,
+  showRiskScore,
+  showTags,
+}: {
+  nodeCount: number;
+  internalEdgeCount: number;
+  members: GraphPersonRef[];
+  showRiskScore: boolean;
+  showTags: boolean;
+}) {
+  return (
+    <PersonListDetail
+      header={
+        <div className="min-w-0">
+          <div className="text-grey-secondary text-xs leading-none">Grouped branch</div>
+          <div className="text-grey-primary truncate text-sm font-semibold">
+            {nodeCount} nodes · {internalEdgeCount} edges
+          </div>
+        </div>
+      }
+      persons={members}
+      showRiskScore={showRiskScore}
+      showTags={showTags}
+    />
+  );
+}
+
 export function GraphSettingsPanel() {
   const {
     showPersons,
@@ -289,6 +386,8 @@ export function GraphSettingsPanel() {
     showTags,
     setShowTags,
     selectedObject,
+    graphStats,
+    restoreHiddenNodes,
   } = useCustomerGraph();
 
   const objectType = selectedObject?.objectType ?? '';
@@ -359,6 +458,13 @@ export function GraphSettingsPanel() {
         </MenuCommand.Content>
       </MenuCommand.Menu>
 
+      {graphStats.hiddenCount > 0 ? (
+        <Button variant="secondary" appearance="stroked" size="small" onClick={restoreHiddenNodes}>
+          <Icon icon="eye" className="size-4" />
+          Show {graphStats.hiddenCount} hidden nodes
+        </Button>
+      ) : null}
+
       <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-md border p-md">
         {hasSelection ? (
           match(selectedObject)
@@ -427,6 +533,15 @@ export function GraphSettingsPanel() {
                 showTags={showTags}
               />
             ))
+            .with({ nodeType: 'cluster' }, (cluster) => (
+              <ClusterDetail
+                nodeCount={cluster.nodeCount}
+                internalEdgeCount={cluster.internalEdgeCount}
+                members={cluster.members}
+                showRiskScore={showRiskScore}
+                showTags={showTags}
+              />
+            ))
             .exhaustive()
         ) : (
           <p className="text-grey-secondary text-xs">Select a node to see details.</p>
@@ -446,6 +561,7 @@ export function GraphSettingsPanel() {
           </label>
           <Switch id="show-tags" checked={showTags} onCheckedChange={setShowTags} />
         </div>
+        <ClusterThresholdControl />
       </div>
     </aside>
   );
