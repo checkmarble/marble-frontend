@@ -89,9 +89,6 @@ const entityTypesRequiringLink = ['transaction', 'event', 'account'] as const;
 type EntityTypeRequiringLink = (typeof entityTypesRequiringLink)[number];
 
 const tableEntityStepCommonShape = {
-  name: z.string().min(1).regex(dataModelNameRegex, {
-    error: 'Table/name: Only lower case alphanumeric and _, must start with a letter',
-  }),
   alias: z.string(),
   belongsToTableId: z.string(),
 };
@@ -99,6 +96,9 @@ const tableEntityStepCommonShape = {
 export const createTableEntityStepSchema = z
   .object({
     ...tableEntityStepCommonShape,
+    name: z.string().min(1).regex(dataModelNameRegex, {
+      error: 'Table/name: Only lower case alphanumeric and _, must start with a letter',
+    }),
     entityType: z.enum(ftmEntities),
     subEntity: z.enum(ftmEntityPersonOptions).optional(),
   })
@@ -121,6 +121,7 @@ export const createTableEntityStepSchema = z
 const editTableEntityStepSchema = z
   .object({
     ...tableEntityStepCommonShape,
+    name: z.string().min(1),
     entityType: z.union([z.enum(ftmEntities), z.literal('unset')]),
     subEntity: z.union([z.enum(ftmEntityPersonOptions), z.literal('unset')]).optional(),
   })
