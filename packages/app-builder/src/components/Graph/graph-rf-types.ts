@@ -7,6 +7,8 @@ export type PersonRfData = {
   isStart: boolean;
   objectType: string;
   objectId: string;
+  /** Set on a branch root the user drilled into: it can be regrouped. */
+  isExpandedClusterRoot?: boolean;
 };
 
 export type PivotRfData = {
@@ -14,8 +16,20 @@ export type PivotRfData = {
   rawType: string;
 };
 
+/** A collapsed branch. `memberIds` are the node ids folded away, `rootId` the branch root. */
+export type ClusterRfData = {
+  rootId: string;
+  /** The branch entry point, rendered on the chip like a person node. */
+  root: PersonRfData;
+  nodeCount: number;
+  internalEdgeCount: number;
+  memberIds: string[];
+};
+
 export type PersonRfNode = Node<PersonRfData, 'person'>;
 export type PivotRfNode = Node<PivotRfData, 'pivot'>;
-export type GraphRfNode = PersonRfNode | PivotRfNode;
+export type ClusterRfNode = Node<ClusterRfData, 'cluster'>;
+export type GraphRfNode = PersonRfNode | PivotRfNode | ClusterRfNode;
 
-export type GraphRfEdge = Edge<{ kind?: string }, 'link' | 'match'>;
+/** `mergedCount` is set on synthetic edges standing in for N collapsed member edges. */
+export type GraphRfEdge = Edge<{ kind?: string; mergedCount?: number }, 'link' | 'match'>;
