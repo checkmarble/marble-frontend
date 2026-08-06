@@ -71,6 +71,10 @@ export type CustomerGraphContextValue = {
   toggleCheckedPerson: (person: GraphPersonRef) => void;
   isPersonChecked: (person: GraphPersonRef) => boolean;
   clearCheckedPersons: () => void;
+
+  // Hover highlight (person node id; ignored while selectionMode is on)
+  hoveredPersonId: string | null;
+  setHoveredPersonId: (id: string | null) => void;
 };
 
 const CustomerGraphContext = createSimpleContext<CustomerGraphContextValue>('CustomerGraph');
@@ -93,6 +97,7 @@ export function CustomerGraphProvider({
   const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
   const [selectionMode, setSelectionMode] = useState(false);
   const [checkedPersons, setCheckedPersons] = useState<Set<string>>(() => new Set());
+  const [hoveredPersonId, setHoveredPersonId] = useState<string | null>(null);
 
   const toggleAttribute = useCallback((attribute: GraphAttribute) => {
     setAttributes((prev) => (prev.includes(attribute) ? prev.filter((a) => a !== attribute) : [...prev, attribute]));
@@ -104,6 +109,7 @@ export function CustomerGraphProvider({
 
   const enterSelectionMode = useCallback(() => {
     setSelectionMode(true);
+    setHoveredPersonId(null);
   }, []);
 
   const exitSelectionMode = useCallback(() => {
@@ -140,7 +146,7 @@ export function CustomerGraphProvider({
       toggleAttribute,
       showRiskScore,
       setShowRiskScore,
-      showTags,
+      showTags: showTags || selectionMode,
       setShowTags,
       showEdgeLabels,
       setShowEdgeLabels,
@@ -153,6 +159,8 @@ export function CustomerGraphProvider({
       toggleCheckedPerson,
       isPersonChecked,
       clearCheckedPersons,
+      hoveredPersonId,
+      setHoveredPersonId,
     }),
     [
       showPersons,
@@ -170,6 +178,7 @@ export function CustomerGraphProvider({
       toggleCheckedPerson,
       isPersonChecked,
       clearCheckedPersons,
+      hoveredPersonId,
     ],
   );
 

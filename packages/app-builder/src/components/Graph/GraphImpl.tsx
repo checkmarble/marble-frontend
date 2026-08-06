@@ -109,8 +109,16 @@ function applyVisibilityFilters(
 }
 
 export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImplProps) {
-  const { showPersons, showCompanies, attributes, showEdgeLabels, setShowEdgeLabels, setSelectedObject } =
-    useCustomerGraph();
+  const {
+    showPersons,
+    showCompanies,
+    attributes,
+    showEdgeLabels,
+    setShowEdgeLabels,
+    setSelectedObject,
+    selectionMode,
+    setHoveredPersonId,
+  } = useCustomerGraph();
 
   const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
 
@@ -189,6 +197,18 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
     [edges, nodes, setSelectedObject],
   );
 
+  const onNodeMouseEnter = useCallback<NodeMouseHandler<GraphRfNode>>(
+    (_event, node) => {
+      if (selectionMode || node.type !== 'person') return;
+      setHoveredPersonId(node.id);
+    },
+    [selectionMode, setHoveredPersonId],
+  );
+
+  const onNodeMouseLeave = useCallback<NodeMouseHandler<GraphRfNode>>(() => {
+    setHoveredPersonId(null);
+  }, [setHoveredPersonId]);
+
   return (
     <ReactFlow
       className="h-full min-h-0"
@@ -205,7 +225,11 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onNodeClick={onNodeClick}
+      onNodeMouseEnter={onNodeMouseEnter}
+      onNodeMouseLeave={onNodeMouseLeave}
       fitView
+      maxZoom={5}
+      minZoom={0.1}
       proOptions={{ hideAttribution: true }}
     >
       <GraphMeasuredLayout layoutElements={autoLayoutElements} />

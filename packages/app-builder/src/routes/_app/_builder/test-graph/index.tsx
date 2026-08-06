@@ -9,11 +9,13 @@ import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-mo
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { ReactFlowProvider } from '@xyflow/react';
-import { useState } from 'react';
-import { Card, cn } from 'ui-design-system';
-import { GRAPH_DATASET_LABELS, graphDatasets } from './-data';
+import { useEffect, useMemo, useState } from 'react';
+import { Card, cn, MenuCommand } from 'ui-design-system';
+import { GRAPH_DATASET_LABELS, generateCustomGraph, graphDatasets } from './-data';
 
 const HOP_OPTIONS = [0, 1, 2, 3, 4, 5] as const;
+const NODE_COUNT_OPTIONS = [20, 40, 75, 100, 150, 200] as const;
+const START_CONNECTION_OPTIONS = [1, 2, 5, 10, 20, 50] as const;
 
 const uploadLoader = createServerFn()
   .middleware([authMiddleware])
@@ -31,16 +33,87 @@ export const Route = createFileRoute('/_app/_builder/test-graph/')({
   component: RouteComponent,
 });
 
+function OptionSelect<T extends string | number>({
+  value,
+  options,
+  onChange,
+  disabled,
+  ariaLabel,
+  formatLabel = String,
+  className,
+}: {
+  value: T;
+  options: readonly T[];
+  onChange: (value: T) => void;
+  disabled?: boolean;
+  ariaLabel: string;
+  formatLabel?: (value: T) => string;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton
+          size="small"
+          disabled={disabled}
+          aria-label={ariaLabel}
+          className={cn('min-w-16', disabled && 'opacity-40', className)}
+        >
+          {formatLabel(value)}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content sameWidth>
+        <MenuCommand.List>
+          {options.map((option) => (
+            <MenuCommand.Item
+              key={String(option)}
+              value={String(option)}
+              onSelect={() => {
+                onChange(option);
+                setOpen(false);
+              }}
+            >
+              {formatLabel(option)}
+            </MenuCommand.Item>
+          ))}
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
+  );
+}
+
 function RouteComponent() {
   const { dataModel, dataModelFeatureAccess } = Route.useLoaderData();
-  const [datasetIndex, setDatasetIndex] = useState(0);
+  const [dataset, setDataset] = useState<(typeof GRAPH_DATASET_LABELS)[number]>(GRAPH_DATASET_LABELS[0]!);
   const [maxExplorationHops, setMaxExplorationHops] = useState(0);
-  const data = graphDatasets[datasetIndex] ?? graphDatasets[0]!;
+  const [nodeCount, setNodeCount] = useState<(typeof NODE_COUNT_OPTIONS)[number]>(NODE_COUNT_OPTIONS[0]);
+  const [startConnections, setStartConnections] = useState<(typeof START_CONNECTION_OPTIONS)[number]>(5);
+  const isCustom = dataset === 'custom';
+
+  const startConnectionOptions = useMemo(
+    () => START_CONNECTION_OPTIONS.filter((count) => count < nodeCount),
+    [nodeCount],
+  );
+
+  useEffect(() => {
+    if (!startConnectionOptions.includes(startConnections)) {
+      setStartConnections(startConnectionOptions[startConnectionOptions.length - 1] ?? 1);
+    }
+  }, [startConnectionOptions, startConnections]);
+
+  const graphKey = isCustom ? `${dataset}-${nodeCount}-${startConnections}` : dataset;
+
+  const data = useMemo(() => {
+    if (isCustom) return generateCustomGraph(nodeCount, startConnections);
+    return graphDatasets[dataset] ?? graphDatasets[GRAPH_DATASET_LABELS[0]!]!;
+  }, [dataset, isCustom, nodeCount, startConnections]);
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
       <CustomerGraphProvider
-        key={datasetIndex}
+        key={graphKey}
         initialSelectedObject={{
           nodeType: 'person',
           objectType: data.start.type,
@@ -53,49 +126,43 @@ function RouteComponent() {
             <div className="flex flex-wrap items-center justify-end gap-md">
               <div className="flex items-center gap-xs">
                 <span className="text-grey-secondary text-xs whitespace-nowrap">Dataset</span>
-                <div className="flex flex-wrap items-center gap-xs">
-                  {GRAPH_DATASET_LABELS.map((label, index) => (
-                    <button
-                      key={label}
-                      type="button"
-                      onClick={() => setDatasetIndex(index)}
-                      title={label}
-                      aria-label={`Dataset ${label}`}
-                      aria-pressed={datasetIndex === index}
-                      className={cn(
-                        'rounded-sm px-xs py-px text-xs font-medium border transition-colors',
-                        datasetIndex === index
-                          ? 'bg-purple-primary border-purple-primary text-grey-white'
-                          : 'bg-grey-white border-grey-border text-grey-primary hover:bg-grey-background',
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
+                <OptionSelect
+                  value={dataset}
+                  options={GRAPH_DATASET_LABELS}
+                  onChange={setDataset}
+                  ariaLabel="Dataset"
+                  className="min-w-24"
+                />
+              </div>
+              <div className="flex items-center gap-xs">
+                <span className="text-grey-secondary text-xs whitespace-nowrap">Nodes</span>
+                <OptionSelect
+                  value={nodeCount}
+                  options={NODE_COUNT_OPTIONS}
+                  onChange={setNodeCount}
+                  disabled={!isCustom}
+                  ariaLabel="Number of nodes"
+                />
+              </div>
+              <div className="flex items-center gap-xs">
+                <span className="text-grey-secondary text-xs whitespace-nowrap">Start links</span>
+                <OptionSelect
+                  value={startConnections}
+                  options={startConnectionOptions}
+                  onChange={setStartConnections}
+                  disabled={!isCustom}
+                  ariaLabel="Start node connections"
+                />
               </div>
               <div className="flex items-center gap-xs">
                 <span className="text-grey-secondary text-xs whitespace-nowrap">Max hops</span>
-                <div className="flex flex-wrap items-center gap-xs">
-                  {HOP_OPTIONS.map((hops) => (
-                    <button
-                      key={hops}
-                      type="button"
-                      onClick={() => setMaxExplorationHops(hops)}
-                      title={hops === 0 ? 'Explore all' : `Stop after ${hops} hops`}
-                      aria-label={hops === 0 ? 'Explore all hops' : `Max ${hops} hops`}
-                      aria-pressed={maxExplorationHops === hops}
-                      className={cn(
-                        'min-w-7 rounded-sm px-xs py-px text-xs font-medium border transition-colors',
-                        maxExplorationHops === hops
-                          ? 'bg-purple-primary border-purple-primary text-white'
-                          : 'bg-grey-white border-grey-border text-grey-primary hover:bg-grey-background',
-                      )}
-                    >
-                      {hops === 0 ? 'All' : hops}
-                    </button>
-                  ))}
-                </div>
+                <OptionSelect
+                  value={maxExplorationHops}
+                  options={HOP_OPTIONS}
+                  onChange={setMaxExplorationHops}
+                  ariaLabel="Max exploration hops"
+                  formatLabel={(hops) => (hops === 0 ? 'All' : String(hops))}
+                />
               </div>
             </div>
           </Page.Header>
@@ -103,7 +170,7 @@ function RouteComponent() {
             <Page.Content className="min-h-0 flex-1" width="fluid">
               <Card className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row overflow-hidden p-sm">
                 <GraphSettingsPanel />
-                <ReactFlowProvider key={datasetIndex}>
+                <ReactFlowProvider key={graphKey}>
                   <div className="relative min-h-0 flex-1">
                     <GraphSelectionToolbar />
                     <GraphImpl data={data} dataModel={dataModel} maxExplorationHops={maxExplorationHops} />

@@ -296,13 +296,25 @@ function GraphEdge({
 }
 
 export function LinkEdge(props: EdgeProps<GraphRfEdge>) {
-  const { selectionMode, checkedPersons } = useCustomerGraph();
-  const connectsSelected = checkedPersons.has(props.source) && checkedPersons.has(props.target);
-  const highlightEdge = !selectionMode || connectsSelected;
+  const { selectionMode, checkedPersons, hoveredPersonId } = useCustomerGraph();
+
+  const highlightEdge = (() => {
+    if (selectionMode) {
+      return checkedPersons.has(props.source) && checkedPersons.has(props.target);
+    }
+    if (hoveredPersonId != null) {
+      return props.source === hoveredPersonId || props.target === hoveredPersonId;
+    }
+    return true;
+  })();
+
   return (
     <GraphEdge
       {...props}
-      strokeClassName={cn('stroke-2!', highlightEdge ? 'stroke-purple-primary!' : 'stroke-purple-border-light!')}
+      strokeClassName={cn(
+        'transition-colors duration-200 stroke-2!',
+        highlightEdge ? 'stroke-purple-primary!' : 'stroke-purple-border-light!',
+      )}
       labelClassName="bg-purple-background-light text-purple-primary border border-purple-border"
     />
   );
