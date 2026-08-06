@@ -14,7 +14,7 @@ export const GRAPH_ATTRIBUTE_LABELS: Record<GraphAttribute, string> = {
 /** Branch sizes at which a subtree can collapse into a cluster chip. `0` disables clustering. */
 export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15] as const;
 export type ClusterThreshold = (typeof CLUSTER_THRESHOLD_OPTIONS)[number];
-const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
+export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
 
 export type GraphPersonRef = {
   objectType: string;
@@ -24,6 +24,7 @@ export type GraphPersonRef = {
 export type SelectedGraphObject =
   | ({
       nodeType: 'person';
+      connectedPersons: GraphPersonRef[];
     } & GraphPersonRef)
   | ({
       nodeType: 'pivot';
@@ -55,10 +56,9 @@ export function personBulkKey(person: GraphPersonRef): string {
   return `${person.objectType}:${person.objectId}`;
 }
 
-export function parsePersonBulkKey(key: string): SelectedGraphObject {
+export function parsePersonBulkKey(key: string): GraphPersonRef {
   const colonIdx = key.indexOf(':');
   return {
-    nodeType: 'person',
     objectType: key.slice(0, colonIdx),
     objectId: key.slice(colonIdx + 1),
   };
@@ -125,9 +125,14 @@ export const useCustomerGraph = CustomerGraphContext.useValue;
 export function CustomerGraphProvider({
   children,
   initialSelectedObject = null,
+  clusterThreshold: controlledClusterThreshold,
+  onClusterThresholdChange,
 }: {
   children: ReactNode;
   initialSelectedObject?: SelectedGraphObject | null;
+  /** When provided with `onClusterThresholdChange`, survives provider remounts (e.g. graph regenerate). */
+  clusterThreshold?: ClusterThreshold;
+  onClusterThresholdChange?: (value: ClusterThreshold) => void;
 }) {
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
@@ -135,7 +140,18 @@ export function CustomerGraphProvider({
   const [showRiskScore, setShowRiskScore] = useState(false);
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
-  const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
+  const [uncontrolledClusterThreshold, setUncontrolledClusterThreshold] =
+    useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
+  const clusterThreshold = controlledClusterThreshold ?? uncontrolledClusterThreshold;
+  const setClusterThreshold = useCallback(
+    (value: ClusterThreshold) => {
+      onClusterThresholdChange?.(value);
+      if (controlledClusterThreshold === undefined) {
+        setUncontrolledClusterThreshold(value);
+      }
+    },
+    [controlledClusterThreshold, onClusterThresholdChange],
+  );
   const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
   const [selectionMode, setSelectionMode] = useState(false);
   const [checkedPersons, setCheckedPersons] = useState<Set<string>>(() => new Set());
@@ -246,6 +262,7 @@ export function CustomerGraphProvider({
       showTags,
       showEdgeLabels,
       clusterThreshold,
+      setClusterThreshold,
       selectedObject,
       selectionMode,
       enterSelectionMode,

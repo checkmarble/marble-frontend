@@ -66,6 +66,7 @@ function matchEdge(source: string, target: string, label = 'same_ip'): GraphRfEd
     source,
     target,
     type: 'match',
+    animated: true,
     label,
     data: { kind: 'match' },
   };
