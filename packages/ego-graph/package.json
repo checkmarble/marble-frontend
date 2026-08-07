@@ -1,0 +1,28 @@
+{
+  "name": "ego-graph",
+  "version": "0.0.0",
+  "description": "Radial ego-network layouts with branch folding, for React Flow and anything else",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "lint": "biome lint",
+    "type-check": "tsc --noEmit",
+    "unit-tests": "vitest run"
+  },
+  "peerDependencies": {
+    "@dagrejs/dagre": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@dagrejs/dagre": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@dagrejs/dagre": "^3.0.0",
+    "vite": "^7.3.6",
+    "vite-tsconfig-paths": "6.1.1",
+    "vitest": "4.1.8"
+  }
+}

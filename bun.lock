@@ -74,6 +74,7 @@
         "decode-formdata": "^0.9.0",
         "deepsignal": "^1.6.0",
         "dinero.js": "2.0.2",
+        "ego-graph": "workspace:*",
         "embla-carousel-react": "^8.6.0",
         "firebase": "^12.13.0",
         "i18next": "^26.3.0",
@@ -137,6 +138,22 @@
         "vite-tsconfig-paths": "^6.1.1",
         "vitest": "4.1.8",
       },
+    },
+    "packages/ego-graph": {
+      "name": "ego-graph",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@dagrejs/dagre": "^3.0.0",
+        "vite": "^7.3.6",
+        "vite-tsconfig-paths": "6.1.1",
+        "vitest": "4.1.8",
+      },
+      "peerDependencies": {
+        "@dagrejs/dagre": "^3.0.0",
+      },
+      "optionalPeers": [
+        "@dagrejs/dagre",
+      ],
     },
     "packages/marble-api": {
       "name": "marble-api",
@@ -1730,6 +1747,8 @@
     "earcut": ["earcut@3.2.3", "", {}, "sha512-vnS4AVwp1KHAF13i1vp1/2D5evWy3k5u/iW/B81QVsUZtV8cv2tU0b2VNFlqvh4kYwrFMDdjPCfAmfyJW9y14Q=="],
 
     "eastasianwidth": ["eastasianwidth@0.2.0", "", {}, "sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA=="],
+
+    "ego-graph": ["ego-graph@workspace:packages/ego-graph"],
 
     "electron-to-chromium": ["electron-to-chromium@1.5.389", "", {}, "sha512-cEto7aeOqBfU1D+c5py5pE+ooscKE75JifxLBdFUZsqAxRS6y7kebtxAZvICszSl05gPjYHDTjY+lXpyGvpJbg=="],
 
