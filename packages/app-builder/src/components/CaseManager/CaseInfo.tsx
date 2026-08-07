@@ -14,7 +14,7 @@ export function CaseInfo({ caseDetail, currentUser }: CaseInfoProps) {
   const { t } = useTranslation(['cases']);
 
   return (
-    <div className="grid grid-cols-[6rem_1fr] gap-y-sm gap-x-md items-center">
+    <div className="grid grid-cols-[6rem_1fr] gap-y-sm gap-x-md items-center h-fit">
       <span className="text-grey-secondary">{t('cases:case.id')}</span>
       <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
 

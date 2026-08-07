@@ -255,6 +255,17 @@ export const updateInboxWorkflowPayloadSchema = z.object({
 
 export type UpdateInboxWorkflowPayload = z.infer<typeof updateInboxWorkflowPayloadSchema>;
 
+// Update inboxes sla
+
+export const updateInboxesSlaPayloadSchema = z.array(
+  z.object({
+    inboxId: z.uuid(),
+    sla: z.number().nullable().optional(),
+  }),
+);
+
+export type UpdateInboxesSlaPayload = z.infer<typeof updateInboxesSlaPayloadSchema>;
+
 // Case review feedback
 
 export const caseReviewReactionSchema = z.enum(['ok', 'ko']);

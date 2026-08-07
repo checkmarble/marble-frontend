@@ -1,3 +1,4 @@
+import { SlaConfigPanelContent } from '@app-builder/components/Cases/Overview/Panel/SlaConfigPanelContent';
 import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxMetadata } from '@app-builder/models/inbox';
@@ -26,6 +27,7 @@ export const WorkflowConfigSection = ({
   const { t } = useTranslation(['cases']);
   const [escalationPanelOpen, setEscalationPanelOpen] = useState(false);
   const [workflowPanelOpen, setWorkflowPanelOpen] = useState(false);
+  const [slaPanelOpen, setSlaPanelOpen] = useState(false);
   const inboxesQuery = useGetInboxesQuery();
 
   const aiAssistHasAccess = isAccessible(aiAssistAccess);
@@ -40,6 +42,10 @@ export const WorkflowConfigSection = ({
     setWorkflowPanelOpen(true);
   };
 
+  const handleOpenSlaPanel = () => {
+    setSlaPanelOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-sm">
       {/* Section header */}
@@ -49,12 +55,12 @@ export const WorkflowConfigSection = ({
 
       {match(inboxesQuery)
         .with({ isPending: true }, () => (
-          <div className="border border-grey-border rounded-lg p-md bg-surface-card flex items-center justify-center min-h-[100px]">
+          <div className="border border-grey-border rounded-lg p-md bg-surface-card flex items-center justify-center min-h-25">
             <Spinner className="size-6" />
           </div>
         ))
         .with({ isError: true }, () => (
-          <div className="border border-grey-border rounded-lg p-md bg-surface-card flex items-center justify-center min-h-[100px] text-red-primary">
+          <div className="border border-grey-border rounded-lg p-md bg-surface-card flex items-center justify-center min-h-25 text-red-primary">
             {t('cases:overview.config.error_loading')}
           </div>
         ))
@@ -63,7 +69,7 @@ export const WorkflowConfigSection = ({
 
           // Count escalation configurations
           const escalationConfigured = inboxes.filter((i) => i.escalationInboxId).length;
-          const escalationTotal = inboxes.length;
+          const inboxesTotal = inboxes.length;
           const hasEscalationConfig = escalationConfigured > 0;
 
           // Count workflow configurations (inboxes with at least one case review trigger)
@@ -71,6 +77,8 @@ export const WorkflowConfigSection = ({
             (i) => i.caseReviewManual || i.caseReviewOnCaseCreated || i.caseReviewOnEscalate,
           ).length;
           const hasWorkflowConfig = workflowConfigured > 0;
+          const slaConfigured = inboxes.filter((i) => i.sla !== null && i.sla !== undefined).length;
+          const hasSlaConfig = slaConfigured > 0;
 
           return (
             <>
@@ -83,7 +91,7 @@ export const WorkflowConfigSection = ({
                     {hasEscalationConfig
                       ? t('cases:overview.config.x_of_y_configured', {
                           configured: escalationConfigured,
-                          total: escalationTotal,
+                          total: inboxesTotal,
                         })
                       : t('cases:overview.config.not_configured')}
                   </Tag>
@@ -103,7 +111,7 @@ export const WorkflowConfigSection = ({
                       {hasWorkflowConfig
                         ? t('cases:overview.config.x_of_y_configured', {
                             configured: workflowConfigured,
-                            total: escalationTotal,
+                            total: inboxesTotal,
                           })
                         : t('cases:overview.config.not_configured')}
                     </Tag>
@@ -114,6 +122,25 @@ export const WorkflowConfigSection = ({
                   onClick={handleOpenWorkflowPanel}
                 />
               ) : null}
+              <ConfigRow
+                isRestricted={false}
+                canEdit={isGlobalAdmin}
+                label={t('cases:overview.config.sla_config_trigger')}
+                statusTag={
+                  <Tag color={hasSlaConfig ? 'green' : 'orange'} size="small">
+                    {hasSlaConfig
+                      ? t('cases:overview.config.x_of_y_configured', {
+                          configured: slaConfigured,
+                          total: inboxesTotal,
+                        })
+                      : t('cases:overview.config.not_configured')}
+                  </Tag>
+                }
+                editIcon="arrow-right"
+                upsaleTitle={t('cases:overview.upsale.sla_config.title')}
+                upsaleDescription={t('cases:overview.upsale.sla_config.description')}
+                onClick={handleOpenSlaPanel}
+              />
             </>
           );
         })
@@ -123,6 +150,9 @@ export const WorkflowConfigSection = ({
       </Panel.Root>
       <Panel.Root open={workflowPanelOpen} onOpenChange={setWorkflowPanelOpen}>
         <WorkflowConfigPanelContent readOnly={!canEditAiReview} />
+      </Panel.Root>
+      <Panel.Root open={slaPanelOpen} onOpenChange={setSlaPanelOpen}>
+        <SlaConfigPanelContent readOnly={!isGlobalAdmin} />
       </Panel.Root>
     </div>
   );

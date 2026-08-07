@@ -7,6 +7,7 @@ import {
   adaptInboxUserUpdateBody,
   adaptInboxWithCasesCount,
   adaptUpdateInboxDto,
+  adaptUpdateInboxesSla,
   type Inbox,
   type InboxCreateBody,
   type InboxMetadata,
@@ -16,6 +17,7 @@ import {
   type InboxUserUpdateBody,
   type InboxWithCasesCount,
 } from '@app-builder/models/inbox';
+import { UpdateInboxesSlaPayload } from '@app-builder/schemas/cases';
 import * as R from 'remeda';
 
 export interface InboxRepository {
@@ -31,6 +33,7 @@ export interface InboxRepository {
   createInboxUser(inboxId: string, data: InboxUserCreateBody): Promise<InboxUser>;
   updateInboxUser(inboxUserId: string, data: InboxUserUpdateBody): Promise<InboxUser>;
   deleteInboxUser(inboxUserId: string): Promise<void>;
+  updateInboxesSla(inboxes: UpdateInboxesSlaPayload): Promise<void>;
 }
 
 export function makeGetInboxRepository() {
@@ -92,6 +95,9 @@ export function makeGetInboxRepository() {
     },
     deleteInboxUser: async (inboxUserId) => {
       await marbleCoreApiClient.deleteInboxUser(inboxUserId);
+    },
+    updateInboxesSla: async (data) => {
+      await marbleCoreApiClient.putInboxesSla(adaptUpdateInboxesSla(data));
     },
   });
 }

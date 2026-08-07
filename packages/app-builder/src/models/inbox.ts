@@ -1,5 +1,12 @@
+import { UpdateInboxesSlaPayload } from '@app-builder/schemas/cases';
 import { type ParseKeys } from 'i18next';
-import { type AddInboxUserBodyDto, type InboxDto, type InboxMetadataDto, type InboxUserDto } from 'marble-api';
+import {
+  type AddInboxUserBodyDto,
+  type InboxDto,
+  type InboxMetadataDto,
+  type InboxUserDto,
+  UpdateInboxesDto,
+} from 'marble-api';
 import invariant from 'tiny-invariant';
 
 export interface Inbox {
@@ -8,6 +15,7 @@ export interface Inbox {
   createdAt: string;
   updatedAt: string;
   status: 'active' | 'archived';
+  sla?: number | null;
   users: InboxUser[];
   escalationInboxId?: string;
   autoAssignEnabled: boolean;
@@ -23,6 +31,7 @@ export function adaptInbox(inbox: InboxDto): Inbox {
     createdAt: inbox.created_at,
     updatedAt: inbox.updated_at,
     status: inbox.status,
+    sla: inbox.sla,
     users: (inbox.users ?? []).map(adaptInboxUser),
     escalationInboxId: inbox.escalation_inbox_id,
     autoAssignEnabled: inbox.auto_assign_enabled,
@@ -144,4 +153,13 @@ export function tKeyForInboxUserRole(role: string): ParseKeys<['settings']> {
     default:
       return 'settings:inboxes.user_role.unknown';
   }
+}
+
+export function adaptUpdateInboxesSla(inboxes: UpdateInboxesSlaPayload): UpdateInboxesDto {
+  return {
+    inboxes: inboxes.map((inbox) => ({
+      id: inbox.inboxId,
+      sla: inbox.sla,
+    })),
+  };
 }

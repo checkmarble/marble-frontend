@@ -1,4 +1,5 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { CaseDueDateUrgencyTag } from '@app-builder/components/Cases/CaseDueDateUrgencyTag';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { caseDetailMiddleware } from '@app-builder/middlewares/case-detail-middleware';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -19,7 +20,7 @@ const caseDetailLayoutLoader = createServerFn()
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function caseDetailLayoutLoader({ context }) {
     return {
-      detail: R.pick(context.case.detail, ['id', 'name']),
+      detail: R.pick(context.case.detail, ['id', 'name', 'dueAt', 'status']),
       inbox: R.pick(context.case.inbox, ['id', 'name']),
     };
   });
@@ -40,9 +41,12 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail')({
       },
       ({ isLast, data }: BreadCrumbProps<Awaited<ReturnType<typeof caseDetailLayoutLoader>>>) => {
         return (
-          <BreadCrumbLink to="/cases/$caseId" params={{ caseId: fromUUIDtoSUUID(data.detail.id) }} isLast={isLast}>
-            <span className="line-clamp-2 text-start">{data.detail.name}</span>
-          </BreadCrumbLink>
+          <>
+            <BreadCrumbLink to="/cases/$caseId" params={{ caseId: fromUUIDtoSUUID(data.detail.id) }} isLast={isLast}>
+              <span className="line-clamp-2 text-start">{data.detail.name}</span>
+            </BreadCrumbLink>
+            <CaseDueDateUrgencyTag dueAt={data.detail.dueAt} status={data.detail.status} />
+          </>
         );
       },
     ],

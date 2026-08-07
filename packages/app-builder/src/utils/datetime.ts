@@ -25,6 +25,73 @@ export function isUnsetTimestamp(timestamp: string | null | undefined): boolean 
   return !timestamp || timestamp.startsWith('0001-');
 }
 
+export type DueDateUrgency = { kind: 'left'; days: 0 | 1 | 2 } | { kind: 'late'; days: number };
+
+export type CalendarDayDistance =
+  | { kind: 'today' }
+  | { kind: 'yesterday' }
+  | { kind: 'tomorrow' }
+  | { kind: 'ago'; days: number }
+  | { kind: 'in'; days: number };
+
+type CalendarDayOptions = { timeZone?: string; now?: Temporal.ZonedDateTime };
+
+/**
+ * Signed calendar-day delta from today to `timestamp` in the given timezone.
+ * Positive = future, negative = past, `0` = today. Returns `null` when unset/invalid.
+ */
+function getSignedCalendarDays(timestamp: string | null | undefined, options?: CalendarDayOptions): number | null {
+  if (!timestamp || isUnsetTimestamp(timestamp)) return null;
+
+  try {
+    const timeZone = options?.timeZone ?? Temporal.Now.timeZoneId();
+    const now = options?.now ?? Temporal.Now.zonedDateTimeISO(timeZone);
+    const targetDate = toInstant(timestamp).toZonedDateTimeISO(timeZone).toPlainDate();
+    const nowDate = now.withTimeZone(timeZone).toPlainDate();
+    return nowDate.until(targetDate, { largestUnit: 'day' }).days;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Calendar-day urgency between now and `dueAt` in the given timezone.
+ * Returns `left` for 0–2 days remaining, `late` when overdue, otherwise `null`.
+ */
+export function getDueDateUrgency(
+  dueAt: string | null | undefined,
+  options?: CalendarDayOptions,
+): DueDateUrgency | null {
+  const days = getSignedCalendarDays(dueAt, options);
+  if (days === null) return null;
+
+  if (days < 0) {
+    return { kind: 'late', days: Math.abs(days) };
+  }
+  if (days <= 2) {
+    return { kind: 'left', days: days as 0 | 1 | 2 };
+  }
+  return null;
+}
+
+/**
+ * Calendar-day distance from now to `timestamp` for compact relative labels
+ * (today / yesterday / tomorrow / Nd ago / in Nd).
+ */
+export function getCalendarDayDistance(
+  timestamp: string | null | undefined,
+  options?: CalendarDayOptions,
+): CalendarDayDistance | null {
+  const days = getSignedCalendarDays(timestamp, options);
+  if (days === null) return null;
+
+  if (days === 0) return { kind: 'today' };
+  if (days === 1) return { kind: 'tomorrow' };
+  if (days === -1) return { kind: 'yesterday' };
+  if (days > 1) return { kind: 'in', days };
+  return { kind: 'ago', days: Math.abs(days) };
+}
+
 function toInstant(timestamp: string | Date): Temporal.Instant {
   return typeof timestamp === 'string'
     ? Temporal.Instant.from(normalizeTimestampForInstant(timestamp))

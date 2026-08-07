@@ -61,6 +61,43 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+  patch:
+    tags:
+      - Inboxes
+    summary: update inboxes sla
+    operationId: putInboxesSla
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: array of inboxes id and sla
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateInboxesDto'
+      required: true
+    responses:
+      '200':
+        description: The inboxes
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inboxes
+              properties:
+                inboxes:
+                  type: array
+                  items:
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      sla:
+                        type: number
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
 /inboxes/metadata:
   get:
     tags:
@@ -464,6 +501,28 @@ components:
           type: boolean
         case_review_on_escalate:
           type: boolean
+        sla:
+          type: number
+    UpdateInboxesDto:
+      type: object
+      required:
+        - inboxes
+      properties:
+        inboxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UpdateInboxDto'
+    UpdateInboxDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        sla:
+          type: number
+          nullable: true
     InboxMetadataDto:
       type: object
       required:

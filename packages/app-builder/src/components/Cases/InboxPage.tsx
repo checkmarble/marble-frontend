@@ -2,11 +2,11 @@ import { Page } from '@app-builder/components';
 import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
 import { FavoriteInboxButton } from '@app-builder/components/Cases/Inbox/FavoriteInboxButton';
 import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar/FilterBar';
-import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { Panel } from '@app-builder/components/Panel';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
+import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { Case } from '@app-builder/models/cases';
 import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { PaginatedResponse } from '@app-builder/models/pagination';
@@ -112,6 +112,14 @@ export const InboxPage = ({
   }, [casesQuery.data?.pages[0]]);
   // endregion
 
+  const casesForSelection = casesQuery.data?.pages[currentPage]?.items ?? [];
+  const { hasSelectedRows, getSelectedRows, selectionProps, tableProps, setRowSelection } =
+    useTanstackTableListSelection<Case>(casesForSelection, (row) => row.id);
+
+  useEffect(() => {
+    setRowSelection({});
+  }, [currentPage, limit, order, query, inboxId, setRowSelection]);
+
   const onMassUpdateCases: MassUpdateCasesFn = (items, params) => {
     const caseIds = items.map((item) => item.id);
     massUpdateCasesMutation.mutateAsync({ caseIds, ...params }).then((res) => {
@@ -150,106 +158,101 @@ export const InboxPage = ({
       <Page.Content width="table">
         {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
         <div className="flex flex-col gap-md relative">
-          <MultiSelect.Root id={inboxId}>
-            <div className="flex justify-between">
-              <div className="flex gap-sm items-center">
-                <MultiSelect.Subscribe<Case>>
-                  {(count, items) => {
-                    if (count === 0 || !casesQuery.isSuccess) return null;
-
-                    return (
-                      <BatchActions
-                        selectedCases={items}
-                        inboxes={inboxes}
-                        assignableUsers={assignableUsers}
-                        onMassUpdateCases={onMassUpdateCases}
-                      />
-                    );
-                  }}
-                </MultiSelect.Subscribe>
-                <InboxFilterBar
-                  inboxId={inboxId}
+          <div className="flex justify-between">
+            <div className="flex gap-sm items-center">
+              {hasSelectedRows && casesQuery.isSuccess ? (
+                <BatchActions
+                  selectedCases={getSelectedRows()}
                   inboxes={inboxes}
-                  allowedFilters={allowedFilters}
-                  filters={parsedQuery.asArray}
-                  updateFilters={parsedQuery.update}
-                  onInboxSelect={onInboxSelect}
+                  assignableUsers={assignableUsers}
+                  onMassUpdateCases={onMassUpdateCases}
                 />
-              </div>
-              <div className="flex gap-sm items-center">
-                <FavoriteInboxButton
-                  inboxId={inboxId}
-                  isFavorite={favoriteInboxId === (inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId))}
-                  onToggle={setFavoriteInboxId}
-                />
-                <SelectCaseById onNavigate={handleNavigate} />
-                <SearchInput
-                  size="medium"
-                  className="w-60"
-                  placeholder={t('cases:search.placeholder')}
-                  value={searchValue}
-                  onChange={setSearchValue}
-                  onEnterKeyDown={(value) => {
-                    parsedQuery.update({ name: value });
-                    setSearchValue('');
-                  }}
-                />
-                <Button
-                  size="medium"
-                  variant="primary"
-                  appearance="stroked"
-                  mode="icon"
-                  data-test="create-case-trigger"
-                  onClick={() => {
-                    setIsAddingCase(true);
-                  }}
-                >
-                  <Icon icon="plus" className="size-4" />
-                </Button>
-                <Panel.Root open={isAddingCase} onOpenChange={setIsAddingCase}>
-                  <CreateCase inboxId={inboxId === MY_INBOX_ID ? null : inboxId} />
-                </Panel.Root>
-              </div>
+              ) : null}
+              <InboxFilterBar
+                inboxId={inboxId}
+                inboxes={inboxes}
+                allowedFilters={allowedFilters}
+                filters={parsedQuery.asArray}
+                updateFilters={parsedQuery.update}
+                onInboxSelect={onInboxSelect}
+              />
             </div>
+            <div className="flex gap-sm items-center">
+              <FavoriteInboxButton
+                inboxId={inboxId}
+                isFavorite={favoriteInboxId === (inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId))}
+                onToggle={setFavoriteInboxId}
+              />
+              <SelectCaseById onNavigate={handleNavigate} />
+              <SearchInput
+                size="medium"
+                className="w-60"
+                placeholder={t('cases:search.placeholder')}
+                value={searchValue}
+                onChange={setSearchValue}
+                onEnterKeyDown={(value) => {
+                  parsedQuery.update({ name: value });
+                  setSearchValue('');
+                }}
+              />
+              <Button
+                size="medium"
+                variant="primary"
+                appearance="stroked"
+                mode="icon"
+                data-test="create-case-trigger"
+                onClick={() => {
+                  setIsAddingCase(true);
+                }}
+              >
+                <Icon icon="plus" className="size-4" />
+              </Button>
+              <Panel.Root open={isAddingCase} onOpenChange={setIsAddingCase}>
+                <CreateCase inboxId={inboxId === MY_INBOX_ID ? null : inboxId} />
+              </Panel.Root>
+            </div>
+          </div>
 
-            {match(casesQuery)
-              .with({ isPending: true }, () => {
-                return (
-                  <div className=" border border-grey-border rounded-md">
-                    <div className="h-13 border-b border-grey-border"></div>
-                    <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
-                      <Spinner className="size-12" />
-                    </div>
+          {match(casesQuery)
+            .with({ isPending: true }, () => {
+              return (
+                <div className=" border border-grey-border rounded-md">
+                  <div className="h-13 border-b border-grey-border"></div>
+                  <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
+                    <Spinner className="size-12" />
                   </div>
-                );
-              })
-              .with({ isError: true }, () => {
-                return (
-                  <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border p-lg flex flex-col gap-sm items-center">
-                    <span>{t('cases:errors.fetching_cases')}</span>
-                    <Button variant="secondary" onClick={() => casesQuery.refetch()}>
-                      {t('common:retry')}
-                    </Button>
-                  </div>
-                );
-              })
-              .with({ isSuccess: true }, (successCasesQuery) => {
-                return (
-                  <CasesList
-                    key={inboxId}
-                    casesQuery={successCasesQuery}
-                    sorting={order}
-                    limit={limit}
-                    setLimit={(newLimit) => updatePage(query, newLimit, order)}
-                    onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    fromInboxId={inboxId}
-                  />
-                );
-              })
-              .exhaustive()}
-          </MultiSelect.Root>
+                </div>
+              );
+            })
+            .with({ isError: true }, () => {
+              return (
+                <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border p-lg flex flex-col gap-sm items-center">
+                  <span>{t('cases:errors.fetching_cases')}</span>
+                  <Button variant="secondary" onClick={() => casesQuery.refetch()}>
+                    {t('common:retry')}
+                  </Button>
+                </div>
+              );
+            })
+            .with({ isSuccess: true }, (successCasesQuery) => {
+              return (
+                <CasesList
+                  key={inboxId}
+                  casesQuery={successCasesQuery}
+                  sorting={order}
+                  limit={limit}
+                  setLimit={(newLimit) => updatePage(query, newLimit, order)}
+                  onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  fromInboxId={inboxId}
+                  selectable
+                  selectionProps={selectionProps}
+                  tableProps={tableProps}
+                />
+              );
+            })
+            .exhaustive()}
         </div>
       </Page.Content>
     </Page.Main>
