@@ -2,7 +2,7 @@ const USER_ID_MIN = 100;
 const USER_ID_MAX = 300;
 const COMPANY_ID_MIN = 100;
 const COMPANY_ID_MAX = 299;
-const EDGE_DENSITY = 0.5;
+const DEFAULT_EDGE_DENSITY = 0.5;
 
 const PIVOT_TYPES = ['same_ip', 'same_iban', 'same_email', 'same_device'] as const;
 type PivotType = (typeof PIVOT_TYPES)[number];
@@ -39,36 +39,6 @@ export type StartData = GraphData['start'];
 
 /** Test fixtures from simplest to densest. Node ids match seeded DB records. */
 export const graphDatasets: Record<string, GraphData> = {
-  minimal: {
-    start: {
-      type: 'users',
-      id: 'user_0001',
-    },
-    nodes: [
-      {
-        type: 'users',
-        id: 'user_0001',
-      },
-      {
-        type: 'users',
-        id: 'user_0002',
-      },
-    ],
-    edges: [
-      {
-        from: {
-          type: 'users',
-          id: 'user_0001',
-        },
-        to: {
-          type: 'users',
-          id: 'user_0002',
-        },
-        kind: 'link',
-        label: 'login_user > login_device > login_device > login_user',
-      },
-    ],
-  },
   simple: {
     start: {
       type: 'users',
@@ -853,14 +823,18 @@ export const graphDatasets: Record<string, GraphData> = {
 
 export const GRAPH_DATASET_LABELS = Object.keys(graphDatasets);
 
-export function generateCustomGraph(nodeCount = 20, startConnections = 5): GraphData {
+export function generateCustomGraph(
+  nodeCount = 20,
+  startConnections = 5,
+  edgeDensity = DEFAULT_EDGE_DENSITY,
+): GraphData {
   const nodes = generateNodes(nodeCount);
   const startUser = nodes.find((n) => n.type === 'users') ?? nodes[0]!;
   const start = { type: startUser.type, id: startUser.id };
   return {
     start,
     nodes,
-    edges: generateEdges(nodes, undefined, start, startConnections),
+    edges: generateEdges(nodes, undefined, start, startConnections, edgeDensity),
   };
 }
 
@@ -959,13 +933,19 @@ function isSameRef(a: GraphNodeRef, b: GraphNodeRef): boolean {
   return a.type === b.type && a.id === b.id;
 }
 
-function generateEdges(nodes: NodeData[], edgeCount?: number, start?: GraphNodeRef, startConnections = 5): EdgeData[] {
+function generateEdges(
+  nodes: NodeData[],
+  edgeCount?: number,
+  start?: GraphNodeRef,
+  startConnections = 5,
+  edgeDensity = DEFAULT_EDGE_DENSITY,
+): EdgeData[] {
   const entities = nodes.filter((n) => !n.connector);
   const pivots = nodes.filter((n) => n.connector);
-  const linkEdgeCount = edgeCount ?? entities.length * EDGE_DENSITY;
+  const linkEdgeCount = edgeCount ?? entities.length * edgeDensity;
   const edges: EdgeData[] = [];
   const seenPairs = new Set<string>();
-  const randomizedStart = Math.ceil(startConnections / 2 + randomInt(0, startConnections / 2));
+  const randomizedStart = Math.ceil(randomInt(0, startConnections));
 
   const startNode =
     (start ? entities.find((n) => isSameRef(n, start)) : undefined) ?? entities.find((n) => n.type === 'users');
