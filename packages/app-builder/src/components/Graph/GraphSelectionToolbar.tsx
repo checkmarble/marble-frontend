@@ -96,7 +96,7 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
           Add tags
         </Button>
       </MenuCommand.Trigger>
-      <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-[340px]">
+      <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-85">
         <MenuCommand.List>
           {orgObjectTags.map((tag) => (
             <MenuCommand.Item
