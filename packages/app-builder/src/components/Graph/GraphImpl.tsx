@@ -295,7 +295,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode 
 
   const onNodeMouseEnter = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {
-      if (selectionMode || (node.type !== 'person' && node.type !== 'cluster')) return;
+      if (selectionMode) return;
       setHoveredNodeId(node.id);
     },
     [selectionMode, setHoveredNodeId],

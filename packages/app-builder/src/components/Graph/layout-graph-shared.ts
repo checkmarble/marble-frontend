@@ -1,7 +1,7 @@
 import Dagre from '@dagrejs/dagre';
 import { DEFAULT_NODE_WIDTH, nodeCenter, nodeMeasuredSize, type Point, topLeftFromCenter } from './graph-handles';
 import { type GraphRfEdge, type GraphRfNode, isMatchEdge } from './graph-rf-types';
-import { bfsTreeEdges, buildUndirectedAdjacency, type SimpleEdge } from './graph-traversal';
+import { bfsTreeEdges, buildChildrenMap, buildUndirectedAdjacency, type SimpleEdge } from './graph-traversal';
 
 export const NODESEP = 80;
 export const RANKSEP = 100;
@@ -458,6 +458,163 @@ export function placeSubtreeAt(
   }
 }
 
+/** How to size and place a connector's unplaced island under its pivot. */
+export type ConnectorIslandLayout = {
+  measureLateralHalf: (args: {
+    islandIds: string[];
+    treeEdges: SimpleEdge[];
+    rootId: string;
+    preferredTheta: number;
+    nodesById: Map<string, GraphRfNode>;
+  }) => number;
+  place: (args: {
+    islandIds: string[];
+    treeEdges: SimpleEdge[];
+    rootId: string;
+    targetCenter: Point;
+    theta: number;
+    nodesById: Map<string, GraphRfNode>;
+    positionById: Map<string, Point>;
+  }) => void;
+};
+
+/** Default: Dagre subtree translated so the pivot sits on the outer pocket. */
+export const dagreConnectorIslandLayout: ConnectorIslandLayout = {
+  measureLateralHalf({ islandIds, treeEdges, rootId, preferredTheta, nodesById }) {
+    const rankdir = rankdirFromAngle(preferredTheta);
+    const localPositions = layoutSubtreeLocal(islandIds, treeEdges, nodesById, rankdir);
+    return lateralHalfExtent(islandIds, localPositions, nodesById, rootId, rankdir);
+  },
+  place({ islandIds, treeEdges, rootId, targetCenter, theta, nodesById, positionById }) {
+    const localPositions = layoutSubtreeLocal(islandIds, treeEdges, nodesById, rankdirFromAngle(theta));
+    placeSubtreeAt(islandIds, localPositions, nodesById, rootId, targetCenter, positionById);
+  },
+};
+
+/** Sector center angles: full circle when `outboundTheta` is null, else outward hemisphere. */
+export function polarSectorAngles(sectorCount: number, outboundTheta: number | null): number[] {
+  if (sectorCount <= 0) return [];
+  if (outboundTheta == null) {
+    return Array.from({ length: sectorCount }, (_, i) => slotAngle(i, sectorCount));
+  }
+  const span = Math.PI;
+  const start = outboundTheta - span / 2;
+  const width = span / sectorCount;
+  return Array.from({ length: sectorCount }, (_, i) => start + width * (i + 0.5));
+}
+
+/** Half-extent of an axis-aligned box perpendicular to angle `theta`. */
+export function aabbHalfPerp(width: number, height: number, theta: number): number {
+  return (width / 2) * Math.abs(Math.sin(theta)) + (height / 2) * Math.abs(Math.cos(theta));
+}
+
+/** Half-extent of an axis-aligned box along angle `theta`. */
+export function aabbHalfRadial(width: number, height: number, theta: number): number {
+  return (width / 2) * Math.abs(Math.cos(theta)) + (height / 2) * Math.abs(Math.sin(theta));
+}
+
+/**
+ * Pure polar flower-petal placement: 360° at a root (`outboundTheta == null`),
+ * else 180° hemisphere centered on the outbound ray.
+ */
+export function layoutPolarTreeRecursive(args: {
+  nodeId: string;
+  outboundTheta: number | null;
+  children: Map<string, string[]>;
+  nodesById: Map<string, GraphRfNode>;
+  positionById: Map<string, Point>;
+  l1Thetas: number[];
+  isStart: boolean;
+}): void {
+  const { nodeId, outboundTheta, children, nodesById, positionById, l1Thetas, isStart } = args;
+  const kidIds = children.get(nodeId) ?? [];
+  const n = kidIds.length;
+  if (n === 0) return;
+
+  const parentPos = positionById.get(nodeId);
+  const parentNode = nodesById.get(nodeId);
+  if (!parentPos || !parentNode) return;
+
+  const parentSize = nodeMeasuredSize(parentNode);
+  const parentCenter = nodeCenter(parentNode, parentPos);
+
+  const weighted = kidIds.map((id) => ({
+    id,
+    weight: descendantCount(children, id, nodesById),
+  }));
+  const ordered = greedySlotOrder(weighted);
+  const thetas = polarSectorAngles(n, outboundTheta);
+  const closed = outboundTheta == null;
+
+  const lateralHalves = ordered.map((id, i) => {
+    const kidNode = nodesById.get(id)!;
+    const { width, height } = nodeMeasuredSize(kidNode);
+    return aabbHalfPerp(width, height, thetas[i]!);
+  });
+
+  const siblingRadius = closed ? computeRingRadius(lateralHalves) : computeArcRadius(lateralHalves, Math.PI / n, false);
+
+  for (let i = 0; i < ordered.length; i++) {
+    const kidId = ordered[i]!;
+    const theta = thetas[i]!;
+    const kidNode = nodesById.get(kidId)!;
+    const kidSize = nodeMeasuredSize(kidNode);
+    const parentClearance =
+      aabbHalfRadial(parentSize.width, parentSize.height, theta) +
+      aabbHalfRadial(kidSize.width, kidSize.height, theta) +
+      RING_PADDING;
+    const r = Math.max(siblingRadius, parentClearance);
+    const cx = parentCenter.x + r * Math.cos(theta);
+    const cy = parentCenter.y + r * Math.sin(theta);
+    positionById.set(kidId, topLeftFromCenter({ x: cx, y: cy }, kidSize.width, kidSize.height));
+
+    if (isStart) l1Thetas.push(theta);
+
+    layoutPolarTreeRecursive({
+      nodeId: kidId,
+      outboundTheta: theta,
+      children,
+      nodesById,
+      positionById,
+      l1Thetas,
+      isStart: false,
+    });
+  }
+}
+
+/** Polar petal islands under each connector (same pattern as the radial person tree). */
+export const radialConnectorIslandLayout: ConnectorIslandLayout = {
+  measureLateralHalf({ islandIds, preferredTheta, nodesById }) {
+    let half = 0;
+    for (const id of islandIds) {
+      const node = nodesById.get(id);
+      if (!node) continue;
+      const { width, height } = nodeMeasuredSize(node);
+      half = Math.max(half, aabbHalfPerp(width, height, preferredTheta));
+    }
+    return half;
+  },
+  place({ islandIds, treeEdges, rootId, targetCenter, theta, nodesById, positionById }) {
+    const rootNode = nodesById.get(rootId);
+    if (!rootNode) return;
+
+    const rootSize = nodeMeasuredSize(rootNode);
+    positionById.set(rootId, topLeftFromCenter(targetCenter, rootSize.width, rootSize.height));
+
+    if (islandIds.length <= 1) return;
+
+    layoutPolarTreeRecursive({
+      nodeId: rootId,
+      outboundTheta: theta,
+      children: buildChildrenMap(treeEdges),
+      nodesById,
+      positionById,
+      l1Thetas: [],
+      isStart: false,
+    });
+  },
+};
+
 /**
  * Outer-arc side pockets for match/connector (pivot) nodes.
  * Mutates `positionById` in place.
@@ -471,8 +628,20 @@ export function layoutConnectorPockets(args: {
   positionById: Map<string, Point>;
   startCenter: Point;
   l1Thetas: number[];
+  /** Defaults to {@link dagreConnectorIslandLayout}. */
+  islandLayout?: ConnectorIslandLayout;
 }): void {
-  const { nodes, edges, personIds, pivotIds, nodesById, positionById, startCenter, l1Thetas } = args;
+  const {
+    nodes,
+    edges,
+    personIds,
+    pivotIds,
+    nodesById,
+    positionById,
+    startCenter,
+    l1Thetas,
+    islandLayout = dagreConnectorIslandLayout,
+  } = args;
   if (pivotIds.length === 0) return;
 
   const allIds = nodes.map((n) => n.id);
@@ -538,9 +707,13 @@ export function layoutConnectorPockets(args: {
     const preferred = preferredConnectorAngle(startCenter, placedNeighborCenters) ?? largestFreeGapAngle(l1Thetas);
 
     const islandTree = bfsTreeEdges(pivotId, fullAdj, new Set(islandIds));
-    const rankdir = rankdirFromAngle(preferred);
-    const localPositions = layoutSubtreeLocal(islandIds, islandTree, nodesById, rankdir);
-    const lateralHalf = lateralHalfExtent(islandIds, localPositions, nodesById, pivotId, rankdir);
+    const lateralHalf = islandLayout.measureLateralHalf({
+      islandIds,
+      treeEdges: islandTree,
+      rootId: pivotId,
+      preferredTheta: preferred,
+      nodesById,
+    });
 
     prepared.push({
       id: pivotId,
@@ -562,15 +735,14 @@ export function layoutConnectorPockets(args: {
 
   for (const prep of prepared) {
     const theta = finalAngles.get(prep.id) ?? prep.preferredTheta;
-    const localPositions = layoutSubtreeLocal(prep.islandIds, prep.treeEdges, nodesById, rankdirFromAngle(theta));
-
-    placeSubtreeAt(
-      prep.islandIds,
-      localPositions,
+    islandLayout.place({
+      islandIds: prep.islandIds,
+      treeEdges: prep.treeEdges,
+      rootId: prep.id,
+      targetCenter: { x: pocketRadius * Math.cos(theta), y: pocketRadius * Math.sin(theta) },
+      theta,
       nodesById,
-      prep.id,
-      { x: pocketRadius * Math.cos(theta), y: pocketRadius * Math.sin(theta) },
       positionById,
-    );
+    });
   }
 }

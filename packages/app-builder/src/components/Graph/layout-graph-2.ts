@@ -2,8 +2,10 @@ import { nodeCenter, nodeMeasuredSize, type Point, topLeftFromCenter, withBestHa
 import { type GraphRfEdge, type GraphRfNode, isLinkEdge } from './graph-rf-types';
 import { bfsSpanningTreeEdges, buildChildrenMap, type SimpleEdge } from './graph-traversal';
 import {
+  type ConnectorIslandLayout,
   computeArcRadius,
   computeRingRadius,
+  dagreConnectorIslandLayout,
   descendantCount,
   greedySlotOrder,
   lateralHalfExtent,
@@ -14,7 +16,7 @@ import {
   slotAngle,
 } from './layout-graph-shared';
 
-const BUSHY_THRESHOLD = 3;
+const BUSHY_THRESHOLD = 5;
 
 function rankdirAxisAngle(rankdir: RankDir): number {
   switch (rankdir) {
@@ -212,8 +214,35 @@ function layoutNodeRecursive(args: {
 }
 
 /**
+ * Sector + shallow-Dagre islands under each connector (same rules as person nodes).
+ * Lateral half for outer-arc fanning still uses the Dagre measure.
+ */
+const balancedConnectorIslandLayout: ConnectorIslandLayout = {
+  measureLateralHalf: dagreConnectorIslandLayout.measureLateralHalf,
+  place({ islandIds, treeEdges, rootId, targetCenter, theta, nodesById, positionById }) {
+    const rootNode = nodesById.get(rootId);
+    if (!rootNode) return;
+
+    const rootSize = nodeMeasuredSize(rootNode);
+    positionById.set(rootId, topLeftFromCenter(targetCenter, rootSize.width, rootSize.height));
+
+    if (islandIds.length <= 1) return;
+
+    layoutNodeRecursive({
+      nodeId: rootId,
+      outboundTheta: theta,
+      children: buildChildrenMap(treeEdges),
+      nodesById,
+      positionById,
+      l1Thetas: [],
+      isStart: false,
+    });
+  },
+};
+
+/**
  * Recursive sector + shallow-Dagre layout for the start's **link** neighborhood,
- * then the shared outer-arc connector pockets.
+ * then the same balanced rules for connector islands on the outer arc.
  */
 export function layoutGraphElements(
   nodes: GraphRfNode[],
@@ -264,6 +293,7 @@ export function layoutGraphElements(
     positionById,
     startCenter,
     l1Thetas,
+    islandLayout: balancedConnectorIslandLayout,
   });
 
   const laidNodes = nodes.map((node) => {

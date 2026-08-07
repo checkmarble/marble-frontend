@@ -87,7 +87,7 @@ export type CustomerGraphContextValue = {
   isNodeChecked: (nodeId: string) => boolean;
   clearCheckedNodes: () => void;
 
-  // Hover highlight (person or cluster node id; ignored while selectionMode is on)
+  // Hover highlight (any node id; ignored while selectionMode is on)
   hoveredNodeId: string | null;
   setHoveredNodeId: (id: string | null) => void;
 
@@ -166,6 +166,7 @@ export function CustomerGraphProvider({
   }, []);
 
   const toggleClusterExpanded = useCallback((rootId: string) => {
+    setHoveredNodeId(null);
     setExpandedRootIds((prev) => toggleInSet(prev, rootId));
   }, []);
 

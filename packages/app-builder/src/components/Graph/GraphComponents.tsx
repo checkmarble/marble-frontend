@@ -11,6 +11,7 @@ import {
   Handle,
   type NodeProps,
   Position,
+  useEdges,
 } from '@xyflow/react';
 import { type ReactNode } from 'react';
 import { Button, Checkbox, cn } from 'ui-design-system';
@@ -26,6 +27,23 @@ import {
 } from './graph-rf-types';
 import { ObjectTagLine, useObjectTags } from './ObjectTags';
 import { resolveTitle } from './resolve-object-title';
+
+/**
+ * A node stays fully opaque when nothing is hovered, when it is the hovered
+ * node, or when it shares an edge with the hovered node. Everything else dims.
+ */
+function useNodeHighlighted(nodeId: string): boolean {
+  const { selectionMode, hoveredNodeId } = useCustomerGraph();
+  const edges = useEdges();
+
+  if (selectionMode || hoveredNodeId == null) return true;
+  if (nodeId === hoveredNodeId) return true;
+  return edges.some(
+    (edge) =>
+      (edge.source === hoveredNodeId && edge.target === nodeId) ||
+      (edge.target === hoveredNodeId && edge.source === nodeId),
+  );
+}
 
 function FourHandles() {
   return (
@@ -205,10 +223,16 @@ function NodeShell({
   children: ReactNode;
 }) {
   const { selectionMode, toggleCheckedNode, isNodeChecked } = useCustomerGraph();
+  const highlighted = useNodeHighlighted(nodeId);
   const checkableId = rootNodeId(nodeId);
 
   return (
-    <div className="relative flex w-fit cursor-pointer flex-col items-center pt-md">
+    <div
+      className={cn(
+        'relative flex w-fit cursor-pointer flex-col items-center pt-md transition-opacity duration-200',
+        !highlighted && 'opacity-60',
+      )}
+    >
       <FourHandles />
       <div className="flex items-center gap-sm">
         {selectionMode ? (
@@ -279,9 +303,19 @@ function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
   );
 }
 
-function PivotNode({ data }: NodeProps<PivotRfNode>) {
+function PivotNode({ id, data }: NodeProps<PivotRfNode>) {
+  const { selectionMode, hoveredNodeId } = useCustomerGraph();
+  const highlighted = useNodeHighlighted(id);
+  const isHovered = !selectionMode && hoveredNodeId === id;
+
   return (
-    <div className="border-orange-border bg-orange-background-light text-orange-primary relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer">
+    <div
+      className={cn(
+        'border-orange-border bg-orange-background-light text-orange-primary relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        isHovered && 'ring-2 ring-orange-primary ring-offset-2',
+        !highlighted && 'opacity-60',
+      )}
+    >
       <FourHandles />
       <Icon icon="tip" className="size-3.5 shrink-0" />
       <div className="min-w-0">

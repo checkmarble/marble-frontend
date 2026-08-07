@@ -1,106 +1,11 @@
-import { nodeCenter, nodeMeasuredSize, type Point, topLeftFromCenter, withBestHandles } from './graph-handles';
+import { nodeMeasuredSize, type Point, topLeftFromCenter, withBestHandles } from './graph-handles';
 import { type GraphRfEdge, type GraphRfNode, isLinkEdge } from './graph-rf-types';
 import { bfsSpanningTreeEdges, buildChildrenMap } from './graph-traversal';
-import {
-  computeArcRadius,
-  computeRingRadius,
-  descendantCount,
-  greedySlotOrder,
-  layoutConnectorPockets,
-  RING_PADDING,
-  slotAngle,
-} from './layout-graph-shared';
-
-/** Sector center angles: full circle at the start, outward hemisphere when nested. */
-function sectorAngles(sectorCount: number, outboundTheta: number | null): number[] {
-  if (sectorCount <= 0) return [];
-  if (outboundTheta == null) {
-    return Array.from({ length: sectorCount }, (_, i) => slotAngle(i, sectorCount));
-  }
-  const span = Math.PI;
-  const start = outboundTheta - span / 2;
-  const width = span / sectorCount;
-  return Array.from({ length: sectorCount }, (_, i) => start + width * (i + 0.5));
-}
-
-/** Half-extent of an axis-aligned box perpendicular to angle `theta`. */
-function aabbHalfPerp(width: number, height: number, theta: number): number {
-  return (width / 2) * Math.abs(Math.sin(theta)) + (height / 2) * Math.abs(Math.cos(theta));
-}
-
-/** Half-extent of an axis-aligned box along angle `theta`. */
-function aabbHalfRadial(width: number, height: number, theta: number): number {
-  return (width / 2) * Math.abs(Math.cos(theta)) + (height / 2) * Math.abs(Math.sin(theta));
-}
-
-function layoutNodeRecursive(args: {
-  nodeId: string;
-  outboundTheta: number | null;
-  children: Map<string, string[]>;
-  nodesById: Map<string, GraphRfNode>;
-  positionById: Map<string, Point>;
-  l1Thetas: number[];
-  isStart: boolean;
-}): void {
-  const { nodeId, outboundTheta, children, nodesById, positionById, l1Thetas, isStart } = args;
-  const kidIds = children.get(nodeId) ?? [];
-  const n = kidIds.length;
-  if (n === 0) return;
-
-  const parentPos = positionById.get(nodeId);
-  const parentNode = nodesById.get(nodeId);
-  if (!parentPos || !parentNode) return;
-
-  const parentSize = nodeMeasuredSize(parentNode);
-  const parentCenter = nodeCenter(parentNode, parentPos);
-
-  const weighted = kidIds.map((id) => ({
-    id,
-    weight: descendantCount(children, id, nodesById),
-  }));
-  const ordered = greedySlotOrder(weighted);
-  const thetas = sectorAngles(n, outboundTheta);
-  const closed = outboundTheta == null;
-
-  const lateralHalves = ordered.map((id, i) => {
-    const kidNode = nodesById.get(id)!;
-    const { width, height } = nodeMeasuredSize(kidNode);
-    return aabbHalfPerp(width, height, thetas[i]!);
-  });
-
-  const siblingRadius = closed ? computeRingRadius(lateralHalves) : computeArcRadius(lateralHalves, Math.PI / n, false);
-
-  for (let i = 0; i < ordered.length; i++) {
-    const kidId = ordered[i]!;
-    const theta = thetas[i]!;
-    const kidNode = nodesById.get(kidId)!;
-    const kidSize = nodeMeasuredSize(kidNode);
-    const parentClearance =
-      aabbHalfRadial(parentSize.width, parentSize.height, theta) +
-      aabbHalfRadial(kidSize.width, kidSize.height, theta) +
-      RING_PADDING;
-    const r = Math.max(siblingRadius, parentClearance);
-    const cx = parentCenter.x + r * Math.cos(theta);
-    const cy = parentCenter.y + r * Math.sin(theta);
-    positionById.set(kidId, topLeftFromCenter({ x: cx, y: cy }, kidSize.width, kidSize.height));
-
-    if (isStart) l1Thetas.push(theta);
-
-    layoutNodeRecursive({
-      nodeId: kidId,
-      outboundTheta: theta,
-      children,
-      nodesById,
-      positionById,
-      l1Thetas,
-      isStart: false,
-    });
-  }
-}
+import { layoutConnectorPockets, layoutPolarTreeRecursive, radialConnectorIslandLayout } from './layout-graph-shared';
 
 /**
  * Pure polar “flower petal” layout for the start's **link** neighborhood,
- * then the shared outer-arc connector pockets. No Dagre.
+ * then radial connector islands (same petal pattern). No Dagre.
  */
 export function layoutGraphElements(
   nodes: GraphRfNode[],
@@ -132,7 +37,7 @@ export function layoutGraphElements(
 
   const l1Thetas: number[] = [];
 
-  layoutNodeRecursive({
+  layoutPolarTreeRecursive({
     nodeId: resolvedStart,
     outboundTheta: null,
     children,
@@ -151,6 +56,7 @@ export function layoutGraphElements(
     positionById,
     startCenter,
     l1Thetas,
+    islandLayout: radialConnectorIslandLayout,
   });
 
   const laidNodes = nodes.map((node) => {
