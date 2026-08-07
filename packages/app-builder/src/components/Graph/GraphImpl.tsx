@@ -10,6 +10,7 @@ import {
   type NodeMouseHandler,
   ReactFlow,
 } from '@xyflow/react';
+import { reachableNodeIds } from 'ego-graph';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { type GraphData } from '../../routes/_app/_builder/test-graph/-data';
@@ -19,21 +20,15 @@ import {
   PIVOT_TYPE_ATTRIBUTES,
   useCustomerGraph,
 } from './CustomerGraphContext';
-import { clusterGraphElements } from './cluster-graph';
 import { createGraphTypeHelpers } from './data-model-map';
 import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
-import { withBestHandles } from './graph-handles';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
+import { clusterGraphElements, type GraphLayoutMode, layoutByMode, withBestHandles } from './graph-layout';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
-import { reachableNodeIds } from './graph-traversal';
-import { layoutGraphElements as layoutGraphElementsRadDagre } from './layout-graph';
-import { layoutGraphElements as layoutGraphElementsBalanced } from './layout-graph-2';
-import { layoutGraphElements as layoutGraphElementsRadial } from './layout-graph-3';
 import { toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
-import { match } from 'ts-pattern';
 
-export type GraphLayoutMode = 'rad-dagre' | 'balanced' | 'radial';
+export type { GraphLayoutMode };
 
 /** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
 function GraphMeasuredLayout({
@@ -60,19 +55,6 @@ export type GraphImplProps = {
 function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
   const start = nodes.find((n) => n.type === 'person' && n.data.isStart);
   return start?.id ?? fallback;
-}
-
-function layoutByMode(
-  mode: GraphLayoutMode,
-  nodes: GraphRfNode[],
-  edges: GraphRfEdge[],
-  startKey: string,
-): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
-  return match(mode)
-    .with('balanced', () => layoutGraphElementsBalanced(nodes, edges, startKey))
-    .with('rad-dagre', () => layoutGraphElementsRadDagre(nodes, edges, startKey))
-    .with('radial', () => layoutGraphElementsRadial(nodes, edges, startKey))
-    .exhaustive();
 }
 
 type VisibilityFilters = Pick<

@@ -1,0 +1,8 @@
+dist
+node_modules
+.cursor
+.claude
+
+# Published glossary — the repo root ignores CONTEXT.md as a local agent file,
+# but here it is part of the package and the README links to it.
+!CONTEXT.md
