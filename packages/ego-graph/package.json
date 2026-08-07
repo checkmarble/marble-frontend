@@ -1,0 +1,81 @@
+{
+  "name": "ego-graph",
+  "version": "0.1.0",
+  "description": "Radial ego-network layouts with branch folding, for React Flow and anything else",
+  "keywords": [
+    "graph",
+    "layout",
+    "react-flow",
+    "xyflow",
+    "ego-network",
+    "radial",
+    "dagre",
+    "visualization"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/checkmarble/ego-graph.git"
+  },
+  "homepage": "https://github.com/checkmarble/ego-graph#readme",
+  "bugs": "https://github.com/checkmarble/ego-graph/issues",
+  "sideEffects": false,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./fold": {
+      "types": "./dist/fold.d.mts",
+      "import": "./dist/fold.mjs"
+    },
+    "./react-flow": {
+      "types": "./dist/react-flow.d.mts",
+      "import": "./dist/react-flow.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "fold": [
+        "./dist/fold.d.mts"
+      ],
+      "react-flow": [
+        "./dist/react-flow.d.mts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "lint": "biome lint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "check-package": "publint --strict && attw --pack . --ignore-rules cjs-resolves-to-esm",
+    "prepublishOnly": "bun run build && bun run check-package",
+    "unit-tests": "vitest run"
+  },
+  "peerDependencies": {
+    "@dagrejs/dagre": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@dagrejs/dagre": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@dagrejs/dagre": "^3.0.0",
+    "publint": "^0.3.23",
+    "tsdown": "^0.22.14",
+    "typescript": "^5.8.2",
+    "vite": "^7.3.6",
+    "vite-tsconfig-paths": "6.1.1",
+    "vitest": "4.1.8"
+  }
+}
