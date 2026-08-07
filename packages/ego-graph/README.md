@@ -10,7 +10,18 @@ is *about*: a customer and their connections, a person and their network, an
 account and everything touching it. That is an ego graph, and it wants the root
 in the middle with its neighbourhood arranged around it.
 
-> **Not published yet.** Currently consumed from source inside a workspace.
+## Install
+
+```sh
+npm install ego-graph
+```
+
+Zero dependencies. `@dagrejs/dagre` is an **optional** peer — install it only if
+you use `radialDagre` or `sectoredDagre`:
+
+```sh
+npm install ego-graph @dagrejs/dagre
+```
 
 ## Quick start
 

@@ -55,9 +55,10 @@
     "build": "tsdown",
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "unit-tests": "vitest run",
+    "test": "vitest run",
     "check-package": "publint --strict && attw --pack . --ignore-rules cjs-resolves-to-esm",
-    "prepublishOnly": "bun run build && bun run check-package"
+    "prepublishOnly": "bun run build && bun run check-package",
+    "unit-tests": "vitest run"
   },
   "peerDependencies": {
     "@dagrejs/dagre": "^3.0.0"
@@ -72,6 +73,7 @@
     "@dagrejs/dagre": "^3.0.0",
     "publint": "^0.3.23",
     "tsdown": "^0.22.14",
+    "typescript": "^5.8.2",
     "vite": "^7.3.6",
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.8"
