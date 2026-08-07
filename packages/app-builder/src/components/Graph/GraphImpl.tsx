@@ -28,11 +28,12 @@ import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 import { reachableNodeIds } from './graph-traversal';
 import { layoutGraphElements as layoutGraphElementsRadDagre } from './layout-graph';
 import { layoutGraphElements as layoutGraphElementsBalanced } from './layout-graph-2';
+import { layoutGraphElements as layoutGraphElementsRadial } from './layout-graph-3';
 import { toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
 import { match } from 'ts-pattern';
 
-export type GraphLayoutMode = 'rad-dagre' | 'balanced';
+export type GraphLayoutMode = 'rad-dagre' | 'balanced' | 'radial';
 
 /** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
 function GraphMeasuredLayout({
@@ -70,6 +71,7 @@ function layoutByMode(
   return match(mode)
     .with('balanced', () => layoutGraphElementsBalanced(nodes, edges, startKey))
     .with('rad-dagre', () => layoutGraphElementsRadDagre(nodes, edges, startKey))
+    .with('radial', () => layoutGraphElementsRadial(nodes, edges, startKey))
     .exhaustive();
 }
 
