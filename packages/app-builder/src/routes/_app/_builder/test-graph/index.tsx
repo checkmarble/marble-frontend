@@ -22,7 +22,7 @@ const HOP_OPTIONS = [0, 1, 2, 3, 4, 5] as const;
 const NODE_COUNT_OPTIONS = [20, 40, 75, 100, 150, 200] as const;
 const START_CONNECTION_OPTIONS = [1, 2, 5, 10, 20, 50] as const;
 const EDGE_DENSITY_OPTIONS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 5] as const;
-const LAYOUT_MODE_OPTIONS = ['rad-dagre', 'balanced'] as const;
+const LAYOUT_MODE_OPTIONS = ['rad-dagre', 'balanced', 'radial'] as const;
 
 const uploadLoader = createServerFn()
   .middleware([authMiddleware])
