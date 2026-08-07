@@ -196,13 +196,22 @@ function PersonRow({
   showRiskScore: boolean;
   showTags: boolean;
 }) {
+  const { selectionMode, setHoveredNodeId, setSelectedObject } = useCustomerGraph();
   const detailsQuery = useObjectDetailsQuery(person.objectType, person.objectId);
   const title = match(detailsQuery)
     .with({ isSuccess: true }, ({ data }) => resolveTitle(data.data, person.objectId))
     .otherwise(() => person.objectId);
+  const id = nodeKey(person.objectType, person.objectId);
 
   return (
-    <li>
+    <li
+      className="-mx-xs rounded-sm px-xs py-2xs transition-colors border border-transparent hover:bg-purple-background-light hover:border hover:border-purple-border cursor-pointer"
+      onMouseEnter={() => {
+        if (!selectionMode) setHoveredNodeId(id);
+      }}
+      onMouseLeave={() => setHoveredNodeId(null)}
+      onClick={() => setSelectedObject({ ...person, nodeType: 'person', persons: [person] })}
+    >
       <div className="flex flex-col gap-xs">
         <div className="flex flex-wrap items-center gap-sm">
           <span className="text-sm">{title}</span>
@@ -247,7 +256,7 @@ function PersonListDetail({
         <p className="text-grey-secondary text-xs">No connected nodes.</p>
       ) : (
         <>
-          <ul className="list-outside list-disc space-y-sm ps-md">
+          <ul className="space-y-sm ps-md">
             {displayedPersons.map((person) => (
               <PersonRow
                 key={nodeKey(person.objectType, person.objectId)}

@@ -26,9 +26,13 @@ import { withBestHandles } from './graph-handles';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 import { reachableNodeIds } from './graph-traversal';
-import { layoutGraphElements } from './layout-graph';
+import { layoutGraphElements as layoutGraphElementsRadDagre } from './layout-graph';
+import { layoutGraphElements as layoutGraphElementsBalanced } from './layout-graph-2';
 import { toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
+import { match } from 'ts-pattern';
+
+export type GraphLayoutMode = 'rad-dagre' | 'balanced';
 
 /** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
 function GraphMeasuredLayout({
@@ -48,6 +52,8 @@ export type GraphImplProps = {
    * `0` (default) explores the full reachable graph; `N > 0` stops after N hops.
    */
   maxExplorationHops?: number;
+  /** Layout algorithm for A/B testing on the test-graph page. Defaults to rad1. */
+  layoutMode?: GraphLayoutMode;
 };
 
 function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
@@ -55,9 +61,16 @@ function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
   return start?.id ?? fallback;
 }
 
-/** Stable for AutoLayoutControlButton — start is read from `isStart` person nodes. */
-function autoLayoutElements(nodes: GraphRfNode[], edges: GraphRfEdge[]) {
-  return layoutGraphElements(nodes, edges, resolveStartKey(nodes, nodes[0]?.id ?? ''));
+function layoutByMode(
+  mode: GraphLayoutMode,
+  nodes: GraphRfNode[],
+  edges: GraphRfEdge[],
+  startKey: string,
+): { nodes: GraphRfNode[]; edges: GraphRfEdge[] } {
+  return match(mode)
+    .with('balanced', () => layoutGraphElementsBalanced(nodes, edges, startKey))
+    .with('rad-dagre', () => layoutGraphElementsRadDagre(nodes, edges, startKey))
+    .exhaustive();
 }
 
 type VisibilityFilters = Pick<
@@ -117,7 +130,7 @@ function sameRefs(a: GraphObjectRef[], b: GraphObjectRef[]): boolean {
   );
 }
 
-export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImplProps) {
+export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode = 'rad-dagre' }: GraphImplProps) {
   const {
     showPersons,
     showCompanies,
@@ -159,8 +172,14 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0 }: GraphImpl
       threshold: clusterThreshold,
       expandedRootIds,
     });
-    return layoutGraphElements(clustered.nodes, clustered.edges, flatGraph.startKey);
-  }, [visibleGraph, flatGraph.startKey, clusterThreshold, expandedRootIds]);
+    return layoutByMode(layoutMode, clustered.nodes, clustered.edges, flatGraph.startKey);
+  }, [visibleGraph, flatGraph.startKey, clusterThreshold, expandedRootIds, layoutMode]);
+
+  const autoLayoutElements = useCallback(
+    (layoutNodes: GraphRfNode[], layoutEdges: GraphRfEdge[]) =>
+      layoutByMode(layoutMode, layoutNodes, layoutEdges, resolveStartKey(layoutNodes, layoutNodes[0]?.id ?? '')),
+    [layoutMode],
+  );
 
   // Counts the toolbar and settings panel cannot derive: they are siblings of
   // this component and never see the node arrays.

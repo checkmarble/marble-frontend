@@ -102,7 +102,15 @@ function usePersonTitle(data: PersonRfData): string {
  * Name pill with its sub-entity + risk badges. `capped` straddles it over the top
  * edge of a {@link PersonCard} instead of standing on its own.
  */
-function PersonPill({ data, capped = false }: { data: PersonRfData; capped?: boolean }) {
+function PersonPill({
+  data,
+  capped = false,
+  isHovered = false,
+}: {
+  data: PersonRfData;
+  capped?: boolean;
+  isHovered?: boolean;
+}) {
   const { showRiskScore, selectedObject } = useCustomerGraph();
   const title = usePersonTitle(data);
 
@@ -120,15 +128,16 @@ function PersonPill({ data, capped = false }: { data: PersonRfData; capped?: boo
   return (
     <div
       className={cn(
-        'rounded-full border bg-purple-border border-purple-disabled px-md py-sm text-sm font-medium text-purple-primary shadow-sm',
+        'rounded-full border bg-purple-border border-purple-disabled px-md py-sm text-sm font-medium text-purple-primary shadow-sm transition-shadow duration-200',
         isHighlighted && 'bg-purple-primary border-white text-white',
+        (isHovered || isSelected) && 'ring-2 ring-purple-primary ring-offset-2',
         capped ? 'absolute left-1/2 top-0 z-10 max-w-full -translate-x-1/2 -translate-y-1/2' : 'relative',
       )}
     >
       <div className="absolute left-1/2 -top-1 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center">
         <div
           className={cn(
-            'rounded-full shrink-0 border bg-purple-border border-purple-disabled p-xs',
+            'relative rounded-full shrink-0 border bg-purple-border border-purple-disabled p-xs',
             isHighlighted && 'bg-purple-primary border-white',
           )}
         >
@@ -136,6 +145,7 @@ function PersonPill({ data, capped = false }: { data: PersonRfData; capped?: boo
             icon={subEntityIcon(data.subEntity)}
             className={cn('size-4 text-purple-primary', isHighlighted && 'text-white')}
           />
+          {isHovered && <div className="absolute inset-0 rounded-full bg-purple-primary animate-ping" />}
         </div>
         {showRiskScore && score && scoreColor ? (
           <span
@@ -154,11 +164,26 @@ function PersonPill({ data, capped = false }: { data: PersonRfData; capped?: boo
 }
 
 /** Card with the name pill straddling its top edge — the tag-card layout. */
-function PersonCard({ data, children }: { data: PersonRfData; children: ReactNode }) {
+function PersonCard({
+  data,
+  children,
+  isHovered = false,
+}: {
+  data: PersonRfData;
+  children: ReactNode;
+  isHovered?: boolean;
+}) {
   return (
     <div className="relative w-48 min-w-44">
       <PersonPill data={data} capped />
-      <div className="border-grey-border bg-grey-white rounded-lg border px-sm pt-lg pb-sm shadow-sm">{children}</div>
+      <div
+        className={cn(
+          'border-grey-border bg-grey-white rounded-lg border px-sm pt-lg pb-sm shadow-sm',
+          isHovered && 'ring-2 ring-purple-primary ring-offset-2 animate-pulse',
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -204,9 +229,10 @@ function NodeShell({
 }
 
 function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
-  const { nodeTagsVisible, toggleClusterExpanded } = useCustomerGraph();
+  const { nodeTagsVisible, toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
   const title = usePersonTitle(data);
   const { tags } = useObjectTags(data.objectType, data.objectId, nodeTagsVisible);
+  const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (
     <NodeShell
@@ -219,23 +245,24 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
       }
     >
       {tags.length > 0 ? (
-        <PersonCard data={data}>
+        <PersonCard data={data} isHovered={isHovered}>
           <ObjectTagLine tags={tags} className="nodrag nopan" />
         </PersonCard>
       ) : (
-        <PersonPill data={data} />
+        <PersonPill data={data} isHovered={isHovered} />
       )}
     </NodeShell>
   );
 }
 
 function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
-  const { toggleClusterExpanded } = useCustomerGraph();
+  const { toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
   const title = usePersonTitle(data.root);
+  const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (
     <NodeShell nodeId={id} label={title}>
-      <PersonCard data={data.root}>
+      <PersonCard data={data.root} isHovered={isHovered}>
         <div className="text-grey-primary flex items-center justify-between gap-sm text-xs">
           <div className="min-w-0 truncate">
             <span className="font-medium">{data.nodeCount} nodes</span>
