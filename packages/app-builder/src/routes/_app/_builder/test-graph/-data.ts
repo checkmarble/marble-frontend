@@ -945,7 +945,7 @@ function generateEdges(
   const linkEdgeCount = edgeCount ?? entities.length * edgeDensity;
   const edges: EdgeData[] = [];
   const seenPairs = new Set<string>();
-  const randomizedStart = Math.ceil(randomInt(0, startConnections));
+  const randomizedStart = randomInt(startConnections * 0.8, startConnections);
 
   const startNode =
     (start ? entities.find((n) => isSameRef(n, start)) : undefined) ?? entities.find((n) => n.type === 'users');
