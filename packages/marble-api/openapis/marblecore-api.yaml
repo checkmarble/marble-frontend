@@ -468,6 +468,8 @@ paths:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1cases_duration
   /analytics/cases/open_cases_by_age:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1open_cases_by_age
+  /analytics/cases/case_sla_status_by_date:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1case_sla_status_by_date
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 

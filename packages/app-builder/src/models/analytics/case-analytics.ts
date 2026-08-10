@@ -1,5 +1,6 @@
 import type { BarDatum } from '@nivo/bar';
 import type {
+  CaseSlaStatusByDateResponseDto,
   CasesCreatedResponseDto,
   CasesDurationResponseDto,
   CasesFalsePositiveRateResponseDto,
@@ -53,6 +54,14 @@ export interface PeriodCount {
   count: number;
 }
 
+export interface CaseSlaStatusByDate {
+  period: string;
+  count: number;
+  completedWithinSla: number;
+  slaBreached: number;
+  stillOpenWithinSla: number;
+}
+
 export interface FalsePositiveRate {
   period: string;
   rate: number;
@@ -68,6 +77,15 @@ export interface CaseAnalyticsResponse {
   falsePositiveRateByPeriod: FalsePositiveRate[];
   caseDurationByPeriod: PeriodDuration[];
   openCasesByAge: BucketCount[];
+  caseSlaStatusByDate: CaseSlaStatusByDate[];
+}
+
+/**
+ * Share of `part` in `total`, as a percentage rounded to one decimal. Returns 0 when `total` is 0.
+ */
+export function toPercent(part: number, total: number): number {
+  if (total <= 0) return 0;
+  return Math.round((part / total) * 1000) / 10;
 }
 
 // Adapters
@@ -100,7 +118,7 @@ export function adaptFalsePositiveRate(dto: CasesFalsePositiveRateResponseDto): 
   const fpCount = dto.false_positives;
   return {
     period: dto.date,
-    rate: closedCount > 0 ? Math.round((fpCount / closedCount) * 1000) / 10 : 0,
+    rate: toPercent(fpCount, closedCount),
     fpCount,
     closedCount,
   };
@@ -119,6 +137,16 @@ export function adaptOpenCasesByAge(dto: OpenCasesByAgeResponseDto): BucketCount
   return {
     bucket: dto.bracket,
     count: dto.count,
+  };
+}
+
+export function adaptCaseSlaStatusByDate(dto: CaseSlaStatusByDateResponseDto): CaseSlaStatusByDate {
+  return {
+    period: dto.date,
+    count: dto.completed_within_sla + dto.sla_breached + dto.still_open_within_sla,
+    completedWithinSla: dto.completed_within_sla,
+    slaBreached: dto.sla_breached,
+    stillOpenWithinSla: dto.still_open_within_sla,
   };
 }
 
@@ -152,58 +180,61 @@ function getBucketKey(isoDate: string, bucket: TimeBucket): string {
   }
 }
 
-export function aggregatePeriodDuration(items: PeriodDuration[], bucket: TimeBucket): PeriodDuration[] {
+/**
+ * Collapses period-keyed series into `bucket` granularity, chronologically sorted.
+ *
+ * `merge` folds a later item into the bucket accumulated so far and owns every field but `period`,
+ * which is always the bucket key. Neither the input array nor its items are mutated. The day bucket
+ * is already at target granularity, so items are returned as-is.
+ */
+function aggregateByBucket<T extends { period: string }>(
+  items: T[],
+  bucket: TimeBucket,
+  merge: (accumulated: T, item: T) => T,
+): T[] {
   if (bucket === 'day') return items;
-  const map = new Map<string, PeriodDuration>();
+  const map = new Map<string, T>();
   for (const item of items) {
-    const key = getBucketKey(item.period, bucket);
-    const existing = map.get(key);
-    if (existing) {
-      existing.sumDays += item.sumDays;
-      existing.count += item.count;
-      existing.maxDays = Math.max(existing.maxDays, item.maxDays);
-    } else {
-      map.set(key, { period: key, sumDays: item.sumDays, maxDays: item.maxDays, count: item.count });
-    }
+    const period = getBucketKey(item.period, bucket);
+    const accumulated = map.get(period);
+    map.set(period, { ...(accumulated ? merge(accumulated, item) : item), period });
   }
   return Array.from(map.values()).sort((a, b) => a.period.localeCompare(b.period));
+}
+
+export function aggregatePeriodDuration(items: PeriodDuration[], bucket: TimeBucket): PeriodDuration[] {
+  return aggregateByBucket(items, bucket, (accumulated, item) => ({
+    ...accumulated,
+    sumDays: accumulated.sumDays + item.sumDays,
+    maxDays: Math.max(accumulated.maxDays, item.maxDays),
+    count: accumulated.count + item.count,
+  }));
 }
 
 export function aggregatePeriodCount(items: PeriodCount[], bucket: TimeBucket): PeriodCount[] {
-  if (bucket === 'day') return items;
-  const map = new Map<string, PeriodCount>();
-  for (const item of items) {
-    const key = getBucketKey(item.period, bucket);
-    const existing = map.get(key);
-    if (existing) {
-      existing.count += item.count;
-    } else {
-      map.set(key, { period: key, count: item.count });
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => a.period.localeCompare(b.period));
+  return aggregateByBucket(items, bucket, (accumulated, item) => ({
+    ...accumulated,
+    count: accumulated.count + item.count,
+  }));
 }
 
 export function aggregateFalsePositiveRate(items: FalsePositiveRate[], bucket: TimeBucket): FalsePositiveRate[] {
-  if (bucket === 'day') return items;
-  const map = new Map<string, FalsePositiveRate>();
-  for (const item of items) {
-    const key = getBucketKey(item.period, bucket);
-    const existing = map.get(key);
-    if (existing) {
-      existing.fpCount += item.fpCount;
-      existing.closedCount += item.closedCount;
-    } else {
-      map.set(key, { period: key, rate: 0, fpCount: item.fpCount, closedCount: item.closedCount });
-    }
-  }
-  // Recompute rate from totals (weighted aggregation, not average of averages)
-  return Array.from(map.values())
-    .map((item) => ({
-      ...item,
-      rate: item.closedCount > 0 ? Math.round((item.fpCount / item.closedCount) * 1000) / 10 : 0,
-    }))
-    .sort((a, b) => a.period.localeCompare(b.period));
+  // Rate is recomputed from the bucket totals (weighted aggregation, not average of averages).
+  return aggregateByBucket(items, bucket, (accumulated, item) => ({
+    ...accumulated,
+    fpCount: accumulated.fpCount + item.fpCount,
+    closedCount: accumulated.closedCount + item.closedCount,
+  })).map((item) => ({ ...item, rate: toPercent(item.fpCount, item.closedCount) }));
+}
+
+export function aggregateCaseSlaStatusByDate(items: CaseSlaStatusByDate[], bucket: TimeBucket): CaseSlaStatusByDate[] {
+  return aggregateByBucket(items, bucket, (accumulated, item) => ({
+    ...accumulated,
+    count: accumulated.count + item.count,
+    completedWithinSla: accumulated.completedWithinSla + item.completedWithinSla,
+    slaBreached: accumulated.slaBreached + item.slaBreached,
+    stillOpenWithinSla: accumulated.stillOpenWithinSla + item.stillOpenWithinSla,
+  }));
 }
 
 // endregion

@@ -3,12 +3,13 @@ import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Ta
 import { Page } from '@app-builder/components/Page';
 import { Spinner } from '@app-builder/components/Spinner';
 import {
+  aggregateCaseSlaStatusByDate,
   aggregateFalsePositiveRate,
   aggregatePeriodCount,
   aggregatePeriodDuration,
   type TimeBucket,
 } from '@app-builder/models/analytics/case-analytics';
-import type { Inbox } from '@app-builder/models/inbox';
+import { hasSlaConfigured, type Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
 import { useCaseAnalytics } from '@app-builder/queries/cases/case-analytics';
 import { add, subMonths } from 'date-fns';
@@ -24,6 +25,7 @@ import { AlertProcessingChart } from './AlertProcessingChart';
 import { CaseAnalyticsFilters } from './CaseAnalyticsFilters';
 import { SarDelayChart } from './SarDelayChart';
 import { SarReportsGauge } from './SarReportsGauge';
+import { SlaChart } from './SlaChart';
 import { TimeBucketToggle } from './TimeBucketToggle';
 
 interface AnalyticsPageProps {
@@ -86,6 +88,8 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
     userId,
   });
 
+  const showSlaChart = useMemo(() => hasSlaConfigured(inboxes, inboxId), [inboxes, inboxId]);
+
   const aggregated = useMemo(() => {
     if (!query.data) return null;
     return {
@@ -96,6 +100,7 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
       falsePositiveRateByPeriod: aggregateFalsePositiveRate(query.data.falsePositiveRateByPeriod, timeBucket),
       caseDurationByPeriod: aggregatePeriodDuration(query.data.caseDurationByPeriod, timeBucket),
       openCasesByAge: query.data.openCasesByAge,
+      caseSlaStatusByDate: aggregateCaseSlaStatusByDate(query.data.caseSlaStatusByDate, timeBucket),
     };
   }, [query.data, timeBucket]);
 
@@ -147,6 +152,10 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
 
             return (
               <div className="flex flex-col gap-md">
+                {isAnalyticsAvailable && showSlaChart ? (
+                  <SlaChart caseSlaStatusByDate={aggregated.caseSlaStatusByDate} />
+                ) : null}
+
                 <div className="grid grid-cols-1 gap-md xl:grid-cols-3">
                   <SarReportsGauge total={aggregated.sarTotalCompleted} />
                   <div className="xl:col-span-2">

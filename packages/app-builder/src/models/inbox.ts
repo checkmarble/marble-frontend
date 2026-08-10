@@ -41,6 +41,15 @@ export function adaptInbox(inbox: InboxDto): Inbox {
   };
 }
 
+/**
+ * Whether SLA data is relevant for the given selection: the selected inbox has an SLA, or — when no
+ * inbox is selected — at least one of them does.
+ */
+export function hasSlaConfigured(inboxes: Inbox[], inboxId?: string): boolean {
+  if (!inboxId) return inboxes.some((inbox) => inbox.sla != null);
+  return inboxes.find((inbox) => inbox.id === inboxId)?.sla != null;
+}
+
 export interface InboxMetadata {
   id: string;
   name: string;

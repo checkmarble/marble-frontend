@@ -150,6 +150,7 @@ export const getCaseAnalyticsFn = createServerFn({ method: 'POST' })
       falsePositiveRateByPeriod,
       caseDurationByPeriod,
       openCasesByAge,
+      caseSlaStatusByDate,
     ] = await Promise.all([
       analytics.getCasesSarCompleted(query),
       analytics.getCasesSarDelay(query),
@@ -158,6 +159,7 @@ export const getCaseAnalyticsFn = createServerFn({ method: 'POST' })
       analytics.getCasesFalsePositiveRate(query),
       analytics.getCasesDuration(query),
       analytics.getOpenCasesByAge(query),
+      analytics.getCaseSlaStatusByDate(query),
     ]);
 
     return {
@@ -169,6 +171,7 @@ export const getCaseAnalyticsFn = createServerFn({ method: 'POST' })
         falsePositiveRateByPeriod,
         caseDurationByPeriod,
         openCasesByAge,
+        caseSlaStatusByDate,
       },
     };
   });

@@ -21,6 +21,7 @@ import {
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
 import {
+  adaptCaseSlaStatusByDate,
   adaptCasesCreated,
   adaptCasesDuration,
   adaptFalsePositiveRate,
@@ -28,6 +29,7 @@ import {
   adaptSarDelay,
   adaptSarDelayDistribution,
   type BucketCount,
+  type CaseSlaStatusByDate,
   type FalsePositiveRate,
   type PeriodCount,
   type PeriodDuration,
@@ -96,6 +98,7 @@ export interface AnalyticsRepository {
   getCasesFalsePositiveRate(query: CaseAnalyticsQueryDto): Promise<FalsePositiveRate[]>;
   getCasesDuration(query: CaseAnalyticsQueryDto): Promise<PeriodDuration[]>;
   getOpenCasesByAge(query: CaseAnalyticsQueryDto): Promise<BucketCount[]>;
+  getCaseSlaStatusByDate(query: CaseAnalyticsQueryDto): Promise<CaseSlaStatusByDate[]>;
 }
 
 export function makeGetAnalyticsRepository() {
@@ -222,6 +225,10 @@ export function makeGetAnalyticsRepository() {
     getOpenCasesByAge: async (query: CaseAnalyticsQueryDto): Promise<BucketCount[]> => {
       const result = await client.getCasesAnalyticsOpenCasesByAge(query);
       return (result ?? []).map(adaptOpenCasesByAge);
+    },
+    getCaseSlaStatusByDate: async (query: CaseAnalyticsQueryDto): Promise<CaseSlaStatusByDate[]> => {
+      const result = await client.getCaseSlaStatusByDate(query);
+      return (result ?? []).map(adaptCaseSlaStatusByDate);
     },
   });
 }

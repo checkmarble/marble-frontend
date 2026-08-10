@@ -2073,6 +2073,12 @@ export type OpenCasesByAgeResponseDto = {
     bracket: AnalyticsBracketDto;
     count: number;
 };
+export type CaseSlaStatusByDateResponseDto = {
+    date: string;
+    completed_within_sla: number;
+    sla_breached: number;
+    still_open_within_sla: number;
+};
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
     start: string;
@@ -6986,6 +6992,31 @@ export function getCasesAnalyticsOpenCasesByAge(caseAnalyticsQueryDto: CaseAnaly
         status: 403;
         data: string;
     }>("/analytics/cases/open_cases_by_age", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get case SLA status by date
+ */
+export function getCaseSlaStatusByDate(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseSlaStatusByDateResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/cases/case_sla_status_by_date", oazapfts.json({
         ...opts,
         method: "POST",
         body: caseAnalyticsQueryDto
