@@ -1,0 +1,64 @@
+name: Publish ego-graph
+
+on:
+  push:
+    tags:
+      - "ego-graph-v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.1
+
+      # Node 24 ships an npm CLI new enough for trusted publishing (OIDC).
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Verify tag matches package.json
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#ego-graph-v}"
+          PACKAGE_VERSION="$(node -p \"require('./packages/ego-graph/package.json').version\")"
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match ego-graph@$PACKAGE_VERSION"
+            exit 1
+          fi
+
+      - name: Type-check, test, and lint
+        run: |
+          bun run -F ego-graph type-check
+          bun run -F ego-graph unit-tests
+          bun run -F ego-graph lint
+
+      - name: Build and check package
+        run: |
+          bun run -F ego-graph prepublishOnly
+          bun run -F ego-graph check-package
+
+      # Trusted publishing: configure this workflow as a trusted publisher on
+      # npmjs.com (package settings → Trusted Publisher). No NPM_TOKEN is used.
+      - name: Publish to npm
+        run: npm publish --workspace ego-graph --access public
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag

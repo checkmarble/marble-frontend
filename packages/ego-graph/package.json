@@ -1,6 +1,6 @@
 {
   "name": "ego-graph",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Radial ego-network layouts with branch folding, for React Flow and anything else",
   "keywords": [
     "graph",
@@ -13,12 +13,31 @@
     "visualization"
   ],
   "license": "MIT",
+  "author": {
+    "name": "Checkmarble",
+    "url": "https://checkmarble.com"
+  },
+  "maintainers": [
+    {
+      "name": "William Schlegel",
+      "url": "https://github.com/william-schlegel"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/checkmarble/ego-graph.git"
+    "url": "git+https://github.com/checkmarble/marble-frontend.git",
+    "directory": "packages/ego-graph"
   },
-  "homepage": "https://github.com/checkmarble/ego-graph#readme",
-  "bugs": "https://github.com/checkmarble/ego-graph/issues",
+  "homepage": "https://github.com/checkmarble/marble-frontend/tree/main/packages/ego-graph#readme",
+  "bugs": {
+    "url": "https://github.com/checkmarble/marble-frontend/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "sideEffects": false,
   "type": "module",
   "files": [
@@ -53,11 +72,13 @@
   },
   "scripts": {
     "build": "tsdown",
-    "lint": "biome lint",
+    "lint": "biome lint .",
+    "format": "biome format . --write",
+    "format:check": "biome format .",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "check-package": "publint --strict && attw --pack . --ignore-rules cjs-resolves-to-esm",
-    "prepublishOnly": "bun run build && bun run check-package",
+    "prepublishOnly": "bun run build",
     "unit-tests": "vitest run"
   },
   "peerDependencies": {

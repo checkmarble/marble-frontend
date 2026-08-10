@@ -1,12 +1,8 @@
 # Releasing
 
-**This directory is the source of truth.** `github.com/checkmarble/ego-graph` is a
-mirror, regenerated from here on every release. Never commit to the mirror
-directly — the next release overwrites it.
-
-The one file that differs: the mirror needs its own `biome.json`, because here
-the monorepo root config governs. Everything else is identical, deliberately, so
-the split is lossless.
+**This directory is the source of truth** for the published `ego-graph` npm
+package. The standalone `github.com/checkmarble/ego-graph` repository is kept
+for now, but it is not a release source and must not be kept in sync manually.
 
 ## Release
 
@@ -16,40 +12,30 @@ From the repo root, with a clean tree:
 # 1. Everything green
 bun run -F ego-graph type-check
 bun run -F ego-graph unit-tests
+bun run -F ego-graph lint
 bun run -F ego-graph build
 bun run -F ego-graph check-package
 
-# 2. Bump the version in packages/ego-graph/package.json, commit.
+# 2. Bump the version in packages/ego-graph/package.json and commit it.
 
-# 3. Regenerate the mirror
-git subtree split --prefix=packages/ego-graph -b ego-graph-release
-
-# 4. Push it (force: the split rewrites history each time)
-git push --force git@github.com:checkmarble/ego-graph.git ego-graph-release:main
-
-# 5. Publish from a fresh clone of the mirror
-git clone git@github.com:checkmarble/ego-graph.git /tmp/ego-graph-publish
-cd /tmp/ego-graph-publish
-bun install
-# biome.json is mirror-only; add it if the lint script is needed there.
-npm publish --otp=<code>
-
-# 6. Tag
-git tag v<version> && git push --tags
+# 3. Create and push the package-specific release tag.
+git tag ego-graph-v<version>
+git push origin ego-graph-v<version>
 ```
 
-`prepublishOnly` rebuilds and runs `publint` + `attw`, so a malformed package
-cannot get out.
+Pushing `ego-graph-v<version>` starts the `Publish ego-graph` GitHub Actions
+workflow. It verifies that the tag and `package.json` agree, runs the package
+checks, publishes from `packages/ego-graph`, and creates a GitHub Release in
+this repository. The workflow runs `publint` + `attw` before npm publishing,
+while `prepublishOnly` independently rebuilds the package.
 
-## npm requires 2FA
+## npm trusted publishing
 
-`npm publish` fails with `E403 ... Two-factor authentication or granular access
-token with bypass 2fa enabled is required`. Two ways through:
-
-- **Publishing by hand:** enable 2FA on the npm account, then pass `--otp=<code>`.
-- **From CI:** create a *granular* access token with "Bypass 2FA" enabled, scoped
-  to this package, and set `NODE_AUTH_TOKEN`. Classic automation tokens no
-  longer satisfy the requirement.
+The workflow uses npm trusted publishing (OIDC), so it does not use an npm
+token. Before the first release from this repository, configure npm with the
+`checkmarble/marble-frontend` repository and
+`.github/workflows/publish-ego-graph.yml` workflow. That npm-side change cannot
+be made from this repository.
 
 ## Gotchas
 
@@ -57,6 +43,4 @@ token with bypass 2fa enabled is required`. Two ways through:
   unit-tests`; rename it and this package silently drops out of `test:all`.
 - **`CONTEXT.md` is force-included** by this directory's `.gitignore`. The repo
   root ignores that filename as a local agent file, and without the negation the
-  subtree split drops the glossary the README links to.
-- **`tsconfig.json` is self-contained**, not extending the monorepo base. That is
-  what lets the same file work in the mirror. Do not re-add `extends`.
+  published package would omit the glossary the README links to.

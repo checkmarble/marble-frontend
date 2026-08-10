@@ -1,5 +1,9 @@
 # ego-graph
 
+[![npm version](https://img.shields.io/npm/v/ego-graph.svg)](https://www.npmjs.com/package/ego-graph)
+[![CI](https://github.com/checkmarble/marble-frontend/actions/workflows/ego-graph.yml/badge.svg)](https://github.com/checkmarble/marble-frontend/actions/workflows/ego-graph.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 Radial layouts for **ego graphs** — a graph seen from one node — with optional
 branch folding. Built for [React Flow](https://reactflow.dev), but the core
 knows nothing about it.
@@ -173,6 +177,13 @@ nodes it is spacing.
 | `minSatelliteGap` | `π/12` | floor on the gap between fanned satellites |
 
 Exported as `DEFAULT_SPACING`.
+
+## Contributing
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md). Short version: **open an issue
+first** — we triage there and invite collaborators when we want a change.
+Unsolicited PRs may be closed. See also the [Code of Conduct](./CODE_OF_CONDUCT.md)
+and [security policy](./SECURITY.md).
 
 ## Licence
 
