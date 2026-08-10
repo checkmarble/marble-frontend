@@ -29,20 +29,76 @@ export const defaultDataModelEdgeOptions: DefaultEdgeOptions = {
   },
 };
 
+export type DataModelHandleSide = 'l' | 'r';
+
+export function relatedHandleId(fieldName: string, side: DataModelHandleSide) {
+  return `related:${fieldName}:${side}`;
+}
+
+export function belongsToHandleId(side: DataModelHandleSide) {
+  return `belongs_to:header:${side}`;
+}
+
 export function getLinkToSingleDataEdgeId(linkToSingleData: LinkToSingleData) {
   const { original } = linkToSingleData;
   return original.childTableId + original.name;
 }
 
+/** Default LR wiring (child right → parent left); geometry may retarget sides later. */
 export function getLinkToSingleDataEdge(linkToSingleData: LinkToSingleData) {
   const { original } = linkToSingleData;
   const isRelated = original.relationType === 'related';
   return {
     source: original.childTableName,
-    sourceHandle: isRelated ? `related:${original.childFieldName}` : 'belongs_to:header',
+    sourceHandle: isRelated ? relatedHandleId(original.childFieldName, 'r') : belongsToHandleId('r'),
     target: original.parentTableName,
-    targetHandle: isRelated ? `related:${original.parentFieldName}` : 'belongs_to:header',
+    targetHandle: isRelated ? relatedHandleId(original.parentFieldName, 'l') : belongsToHandleId('l'),
   };
+}
+
+/** Pick left/right handles from node centers (Δx ≥ 0 → source right / target left). */
+export function retargetDataModelHandles<
+  N extends {
+    id: string;
+    position: { x: number; y: number };
+    measured?: { width?: number | null; height?: number | null } | null;
+    width?: number | null;
+    height?: number | null;
+  },
+  E extends {
+    source: string;
+    target: string;
+    sourceHandle?: string | null;
+    targetHandle?: string | null;
+    data?: LinkToSingleData | null;
+  },
+>(nodes: N[], edges: E[]): E[] {
+  const centers = new Map<string, { x: number; y: number }>();
+  for (const node of nodes) {
+    const width = node.measured?.width ?? node.width ?? 0;
+    const height = node.measured?.height ?? node.height ?? 0;
+    centers.set(node.id, { x: node.position.x + width / 2, y: node.position.y + height / 2 });
+  }
+
+  return edges.map((edge) => {
+    const from = centers.get(edge.source);
+    const to = centers.get(edge.target);
+    const original = edge.data?.original;
+    if (!from || !to || !original) return edge;
+
+    const sourceSide: DataModelHandleSide = to.x - from.x >= 0 ? 'r' : 'l';
+    const targetSide: DataModelHandleSide = to.x - from.x >= 0 ? 'l' : 'r';
+    const isRelated = original.relationType === 'related';
+    const sourceHandle = isRelated
+      ? relatedHandleId(original.childFieldName, sourceSide)
+      : belongsToHandleId(sourceSide);
+    const targetHandle = isRelated
+      ? relatedHandleId(original.parentFieldName, targetSide)
+      : belongsToHandleId(targetSide);
+
+    if (edge.sourceHandle === sourceHandle && edge.targetHandle === targetHandle) return edge;
+    return { ...edge, sourceHandle, targetHandle };
+  });
 }
 
 export function LinkRelation({

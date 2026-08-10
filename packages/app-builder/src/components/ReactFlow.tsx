@@ -27,6 +27,7 @@ export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>(
 }) {
   const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow<NodeType, EdgeType>();
   const layoutElementsRef = useRef(layoutElements);
+  layoutElementsRef.current = layoutElements;
   return useCallback(
     (options: { fitView?: boolean }) => {
       const { nodes, edges } = layoutElementsRef.current(getNodes(), getEdges());

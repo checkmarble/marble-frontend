@@ -16,8 +16,46 @@ import { adaptUpdateTableValue } from '../EditTable/updateTable-adapter';
 import { DatatypeIcon } from '../Shared/DatatypeOption';
 import { ChangeRecord, LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
 import { UploadTableDrawer } from '../UploadData/UploadTableDrawer';
+import { belongsToHandleId, relatedHandleId } from './LinkRelation';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
 import '@xyflow/react/dist/style.css';
+
+const transparentHandleStyle = { background: 'transparent', border: 'none' } as const;
+
+function SideHandles({ leftId, rightId }: { leftId: string; rightId: string }) {
+  return (
+    <>
+      <Handle
+        type="target"
+        id={leftId}
+        position={Position.Left}
+        isConnectable={false}
+        style={{ ...transparentHandleStyle, left: 'calc(-1 * var(--spacing-md))' }}
+      />
+      <Handle
+        type="source"
+        id={leftId}
+        position={Position.Left}
+        isConnectable={false}
+        style={{ ...transparentHandleStyle, left: 'calc(-1 * var(--spacing-md))' }}
+      />
+      <Handle
+        type="target"
+        id={rightId}
+        position={Position.Right}
+        isConnectable={false}
+        style={{ ...transparentHandleStyle, right: 'calc(-1 * var(--spacing-md))' }}
+      />
+      <Handle
+        type="source"
+        id={rightId}
+        position={Position.Right}
+        isConnectable={false}
+        style={{ ...transparentHandleStyle, right: 'calc(-1 * var(--spacing-md))' }}
+      />
+    </>
+  );
+}
 
 export interface TableDetailsProps {
   tableModel: TableModel;
@@ -93,27 +131,12 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
         )}
       >
         {hasHandles && (
-          <Handle
-            type="target"
-            id={`related:${field.name}`}
-            position={Position.Left}
-            isConnectable={false}
-            style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-md))' }}
-          />
+          <SideHandles leftId={relatedHandleId(field.name, 'l')} rightId={relatedHandleId(field.name, 'r')} />
         )}
         <div className="flex items-center gap-xs justify-between">
           <span title={field.name}>{field.alias || field.name}</span>
           {extended && field.dataType !== 'String' && <DatatypeIcon dataType={field.dataType as PrimitiveTypes} />}
         </div>
-        {hasHandles && (
-          <Handle
-            type="source"
-            id={`related:${field.name}`}
-            position={Position.Right}
-            isConnectable={false}
-            style={{ background: 'transparent', border: 'none', right: 'calc(-1 * var(--spacing-md))' }}
-          />
-        )}
       </div>
     );
   };
@@ -168,17 +191,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
     <>
       <div className="relative border border-purple-border-light bg-purple-background-light rounded-lg px-md py-xl">
         <div className="relative flex items-center gap-sm">
-          <Handle
-            type="target"
-            id="belongs_to:header"
-            position={Position.Left}
-            isConnectable={false}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              left: 'calc(-1 * var(--spacing-md))',
-            }}
-          />
+          <SideHandles leftId={belongsToHandleId('l')} rightId={belongsToHandleId('r')} />
           <div className="flex-1 flex flex-col gap-xs">
             <Typo variant="subtitle2" className="text-purple-primary" title={data.tableModel.name}>
               {data.tableModel.alias || data.tableModel.name}
@@ -242,17 +255,6 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
               </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
-          <Handle
-            type="source"
-            id="belongs_to:header"
-            position={Position.Right}
-            isConnectable={false}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              right: 'calc(-1 * var(--spacing-md))',
-            }}
-          />
         </div>
         <div className="mt-md flex flex-col gap-sm">
           {isNumberOfFieldsOpen ? (
