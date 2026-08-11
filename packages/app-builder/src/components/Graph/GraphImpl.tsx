@@ -18,12 +18,11 @@ import { type CustomerGraphContextValue, useCustomerGraph } from './CustomerGrap
 import { createGraphTypeHelpers } from './data-model-map';
 import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
-import { clusterGraphElements, type GraphLayoutMode, layoutByMode, withBestHandles } from './graph-layout';
+import { clusterGraphElements, layoutByMode, withBestHandles } from './graph-layout';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
+import { allowsPivot } from './relation-filter';
 import { toFlatFlowElements } from './utils';
 import '@xyflow/react/dist/style.css';
-
-export type { GraphLayoutMode };
 
 /** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
 function GraphMeasuredLayout({
@@ -38,13 +37,6 @@ function GraphMeasuredLayout({
 export type GraphImplProps = {
   data: GraphData;
   dataModel: DataModel;
-  /**
-   * Max graph hops from the start node.
-   * `0` (default) explores the full reachable graph; `N > 0` stops after N hops.
-   */
-  maxExplorationHops?: number;
-  /** Layout algorithm. Defaults to rad-dagre; can also be controlled via CustomerGraphContext. */
-  layoutMode?: GraphLayoutMode;
 };
 
 function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
@@ -54,14 +46,8 @@ function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
 
 type VisibilityFilters = Pick<
   CustomerGraphContextValue,
-  'showPersons' | 'showCompanies' | 'relationLabels' | 'selectedRelationLabels' | 'hiddenNodeIds'
+  'showPersons' | 'showCompanies' | 'relationFilter' | 'hiddenNodeIds'
 >;
-
-function relationAllowsPivot(rawType: string, relationLabels: string[], selectedRelationLabels: string[]): boolean {
-  // Pivots that don't match any configured relation label stay visible.
-  if (!relationLabels.includes(rawType)) return true;
-  return selectedRelationLabels.includes(rawType);
-}
 
 function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
   if (node.type === 'person') {
@@ -75,7 +61,7 @@ function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
 
   if (node.type === 'pivot') {
     if (filters.hiddenNodeIds.has(node.id)) return false;
-    return relationAllowsPivot(node.data.rawType, filters.relationLabels, filters.selectedRelationLabels);
+    return allowsPivot(filters.relationFilter, node.data.rawType);
   }
 
   // Hypernodes and clusters are not relation-filtered.
@@ -111,12 +97,11 @@ function sameRefs(a: GraphObjectRef[], b: GraphObjectRef[]): boolean {
   );
 }
 
-export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode: layoutModeProp }: GraphImplProps) {
+export function GraphImpl({ data, dataModel }: GraphImplProps) {
   const {
     showPersons,
     showCompanies,
-    relationLabels,
-    selectedRelationLabels,
+    relationFilter,
     showEdgeLabels,
     setShowEdgeLabels,
     selectedObject,
@@ -128,20 +113,16 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode:
     checkedNodeIds,
     setGraphStats,
     clusterThreshold,
-    layoutMode: layoutModeFromContext,
+    layoutMode,
   } = useCustomerGraph();
-  const layoutMode = layoutModeProp ?? layoutModeFromContext;
 
   const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
 
-  const flatGraph = useMemo(
-    () => toFlatFlowElements(data, typeHelpers, { maxExplorationHops }),
-    [data, typeHelpers, maxExplorationHops],
-  );
+  const flatGraph = useMemo(() => toFlatFlowElements(data, typeHelpers), [data, typeHelpers]);
 
   const typeFilters = useMemo(
-    () => ({ showPersons, showCompanies, relationLabels, selectedRelationLabels }),
-    [showPersons, showCompanies, relationLabels, selectedRelationLabels],
+    () => ({ showPersons, showCompanies, relationFilter }),
+    [showPersons, showCompanies, relationFilter],
   );
 
   const visibleGraph = useMemo(

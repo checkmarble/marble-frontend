@@ -1,7 +1,9 @@
+import { useControllableState } from '@app-builder/hooks/useControllableState';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { type GraphObjectRef } from './graph-keys';
 import { type GraphLayoutMode } from './graph-layout';
+import { EMPTY_RELATION_FILTER, type RelationFilter, withAvailableLabels, withLabelToggled } from './relation-filter';
 
 /** Branch sizes a subtree must exceed to collapse into a cluster chip. `0` disables clustering. */
 export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15, 30, 50] as const;
@@ -40,12 +42,10 @@ export type CustomerGraphContextValue = {
   showCompanies: boolean;
   setShowCompanies: (value: boolean) => void;
 
-  /** Configured relation labels available for filtering pivots. */
-  relationLabels: string[];
-  setRelationLabels: (labels: string[]) => void;
-  /** Selected relation labels (pivots matching these labels are shown). */
-  selectedRelationLabels: string[];
-  setSelectedRelationLabels: (labels: string[]) => void;
+  /** Which relation labels exist and which of them let pivots through. */
+  relationFilter: RelationFilter;
+  /** Reconcile the filter with the configured labels; keeps the user's picks. */
+  syncRelationLabels: (labels: string[]) => void;
   toggleRelationLabel: (label: string) => void;
 
   // Display options
@@ -128,33 +128,19 @@ export function CustomerGraphProvider({
 }) {
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
-  const [relationLabels, setRelationLabels] = useState<string[]>([]);
-  const [selectedRelationLabels, setSelectedRelationLabels] = useState<string[]>([]);
+  const [relationFilter, setRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
   const [showRiskScore, setShowRiskScore] = useState(false);
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
-  const [uncontrolledLayoutMode, setUncontrolledLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
-  const layoutMode = controlledLayoutMode ?? uncontrolledLayoutMode;
-  const setLayoutMode = useCallback(
-    (value: GraphLayoutMode) => {
-      onLayoutModeChange?.(value);
-      if (controlledLayoutMode === undefined) {
-        setUncontrolledLayoutMode(value);
-      }
-    },
-    [controlledLayoutMode, onLayoutModeChange],
+  const [layoutMode, setLayoutMode] = useControllableState<GraphLayoutMode>(
+    'rad-dagre',
+    controlledLayoutMode,
+    onLayoutModeChange,
   );
-  const [uncontrolledClusterThreshold, setUncontrolledClusterThreshold] =
-    useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
-  const clusterThreshold = controlledClusterThreshold ?? uncontrolledClusterThreshold;
-  const setClusterThreshold = useCallback(
-    (value: ClusterThreshold) => {
-      onClusterThresholdChange?.(value);
-      if (controlledClusterThreshold === undefined) {
-        setUncontrolledClusterThreshold(value);
-      }
-    },
-    [controlledClusterThreshold, onClusterThresholdChange],
+  const [clusterThreshold, setClusterThreshold] = useControllableState<ClusterThreshold>(
+    DEFAULT_CLUSTER_THRESHOLD,
+    controlledClusterThreshold,
+    onClusterThresholdChange,
   );
   const [selectedObject, setSelectedObject] = useState<SelectedGraphObject | null>(initialSelectedObject);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -179,21 +165,11 @@ export function CustomerGraphProvider({
   }, []);
 
   const toggleRelationLabel = useCallback((label: string) => {
-    setSelectedRelationLabels((prev) =>
-      prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label],
-    );
+    setRelationFilter((prev) => withLabelToggled(prev, label));
   }, []);
 
   const syncRelationLabels = useCallback((labels: string[]) => {
-    const uniqueLabels = [...new Set(labels)];
-    setRelationLabels(uniqueLabels);
-    setSelectedRelationLabels((prev) => {
-      // First load → select all; otherwise keep selection and auto-select newly added labels.
-      if (prev.length === 0) return uniqueLabels;
-      const kept = prev.filter((label) => uniqueLabels.includes(label));
-      const added = uniqueLabels.filter((label) => !prev.includes(label));
-      return [...kept, ...added];
-    });
+    setRelationFilter((prev) => withAvailableLabels(prev, labels));
   }, []);
 
   const clearCheckedNodes = useCallback(() => {
@@ -222,10 +198,8 @@ export function CustomerGraphProvider({
       setShowPersons,
       showCompanies,
       setShowCompanies,
-      relationLabels,
-      setRelationLabels: syncRelationLabels,
-      selectedRelationLabels,
-      setSelectedRelationLabels,
+      relationFilter,
+      syncRelationLabels,
       toggleRelationLabel,
       showRiskScore,
       setShowRiskScore,
@@ -260,9 +234,8 @@ export function CustomerGraphProvider({
     [
       showPersons,
       showCompanies,
-      relationLabels,
+      relationFilter,
       syncRelationLabels,
-      selectedRelationLabels,
       toggleRelationLabel,
       showRiskScore,
       showTags,

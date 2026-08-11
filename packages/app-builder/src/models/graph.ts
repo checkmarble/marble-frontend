@@ -12,11 +12,12 @@ export type GraphNodeRef = {
   id: string;
 };
 
-export type GraphNodeData = GraphNodeRef & {
-  connector?: boolean;
-  connector_kind?: string;
-  hypernode_count?: number;
-};
+/**
+ * A node is one of three things: an entity record, a connector the API matched
+ * records on, or a hypernode standing in for `hypernodeCount` collapsed records.
+ */
+export type GraphNodeData = GraphNodeRef &
+  ({ kind: 'record' } | { kind: 'connector' } | { kind: 'hypernode'; hypernodeCount: number });
 
 export type GraphEdgeData = {
   from: GraphNodeRef;
@@ -56,13 +57,14 @@ function adaptGraphNodeRef(dto: GraphNodeRefDto): GraphNodeRef {
 }
 
 function adaptGraphNode(dto: GraphNodeDto): GraphNodeData {
-  return {
-    type: dto.type ?? '',
-    id: dto.id ?? '',
-    connector: dto.connector,
-    connector_kind: dto.connector_kind,
-    hypernode_count: dto.hypernode_count,
-  };
+  const ref = adaptGraphNodeRef(dto);
+  if (dto.hypernode_count != null) {
+    return { ...ref, kind: 'hypernode', hypernodeCount: dto.hypernode_count };
+  }
+  if (dto.connector === true) {
+    return { ...ref, kind: 'connector' };
+  }
+  return { ...ref, kind: 'record' };
 }
 
 function adaptGraphEdge(dto: GraphEdgeDto): GraphEdgeData {

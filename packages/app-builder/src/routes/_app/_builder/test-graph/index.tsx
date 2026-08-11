@@ -5,10 +5,13 @@ import {
   DEFAULT_CLUSTER_THRESHOLD,
   useCustomerGraph,
 } from '@app-builder/components/Graph/CustomerGraphContext';
-import { GraphImpl, type GraphLayoutMode } from '@app-builder/components/Graph/GraphImpl';
+import { GraphImpl } from '@app-builder/components/Graph/GraphImpl';
+import { GraphOptionSelect } from '@app-builder/components/Graph/GraphOptionSelect';
 import { GraphRelationsSettings } from '@app-builder/components/Graph/GraphRelationsSettings';
 import { GraphSelectionToolbar } from '@app-builder/components/Graph/GraphSelectionToolbar';
 import { GraphSettingsPanel } from '@app-builder/components/Graph/GraphSettingsPanel';
+import { GraphTabSwitch } from '@app-builder/components/Graph/GraphTabSwitch';
+import { type GraphLayoutMode } from '@app-builder/components/Graph/graph-layout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type GraphData } from '@app-builder/models/graph';
 import { useGenerateGraphMutation } from '@app-builder/queries/graph/generate-graph';
@@ -19,7 +22,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect, useState } from 'react';
-import { Button, Card, cn, Input, MenuCommand, Tabs, tabClassName } from 'ui-design-system';
+import { Button, Card, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const uploadLoader = createServerFn()
@@ -38,17 +41,22 @@ export const Route = createFileRoute('/_app/_builder/test-graph/')({
   component: RouteComponent,
 });
 
-type PageTab = 'graph' | 'settings';
+const PAGE_TAB_OPTIONS = [
+  { value: 'graph', label: 'Graph' },
+  { value: 'settings', label: 'Settings' },
+] as const;
+
+type PageTab = (typeof PAGE_TAB_OPTIONS)[number]['value'];
 
 function RelationsLabelSync() {
   const relationsQuery = useListGraphRelationsQuery();
-  const { setRelationLabels } = useCustomerGraph();
+  const { syncRelationLabels } = useCustomerGraph();
 
   useEffect(() => {
     if (!relationsQuery.isSuccess) return;
     // Multiple relations can share a label; the filter UI is label-based.
-    setRelationLabels([...new Set(relationsQuery.data.map((relation) => relation.label))]);
-  }, [relationsQuery.data, relationsQuery.isSuccess, setRelationLabels]);
+    syncRelationLabels(relationsQuery.data.map((relation) => relation.label));
+  }, [relationsQuery.data, relationsQuery.isSuccess, syncRelationLabels]);
 
   return null;
 }
@@ -61,7 +69,6 @@ function StartRecordPicker({
   onRecordIdChange,
   onLoad,
   isLoading,
-  errorMessage,
 }: {
   tableNames: string[];
   recordType: string;
@@ -70,10 +77,7 @@ function StartRecordPicker({
   onRecordIdChange: (value: string) => void;
   onLoad: () => void;
   isLoading: boolean;
-  errorMessage: string | null;
 }) {
-  const [tableOpen, setTableOpen] = useState(false);
-
   return (
     <form
       onSubmit={(e) => {
@@ -85,29 +89,14 @@ function StartRecordPicker({
       <div className="flex flex-wrap items-end gap-md">
         <div className="flex flex-col gap-xs">
           <span className="text-grey-secondary text-xs">Table</span>
-          <MenuCommand.Menu open={tableOpen} onOpenChange={setTableOpen}>
-            <MenuCommand.Trigger>
-              <MenuCommand.SelectButton className="min-w-40" size="small">
-                {recordType || 'Select table'}
-              </MenuCommand.SelectButton>
-            </MenuCommand.Trigger>
-            <MenuCommand.Content sameWidth>
-              <MenuCommand.List>
-                {tableNames.map((name) => (
-                  <MenuCommand.Item
-                    key={name}
-                    value={name}
-                    onSelect={() => {
-                      onRecordTypeChange(name);
-                      setTableOpen(false);
-                    }}
-                  >
-                    {name}
-                  </MenuCommand.Item>
-                ))}
-              </MenuCommand.List>
-            </MenuCommand.Content>
-          </MenuCommand.Menu>
+          <GraphOptionSelect
+            className="min-w-40"
+            size="small"
+            value={recordType}
+            placeholder="Select table"
+            options={tableNames.map((name) => ({ value: name, label: name }))}
+            onChange={onRecordTypeChange}
+          />
         </div>
         <div className="flex flex-col gap-xs">
           <label htmlFor="graph-record-id" className="text-grey-secondary text-xs">
@@ -136,7 +125,6 @@ function StartRecordPicker({
           )}
         </Button>
       </div>
-      {errorMessage ? <p className="text-red-primary text-xs">{errorMessage}</p> : null}
     </form>
   );
 }
@@ -193,24 +181,7 @@ function RouteComponent() {
           <Page.Header className="justify-between gap-md">
             <div className="flex items-center gap-lg">
               <span>Test graph</span>
-              <Tabs>
-                <button
-                  type="button"
-                  className={tabClassName}
-                  data-status={activeTab === 'graph' ? 'active' : undefined}
-                  onClick={() => setActiveTab('graph')}
-                >
-                  Graph
-                </button>
-                <button
-                  type="button"
-                  className={tabClassName}
-                  data-status={activeTab === 'settings' ? 'active' : undefined}
-                  onClick={() => setActiveTab('settings')}
-                >
-                  Settings
-                </button>
-              </Tabs>
+              <GraphTabSwitch value={activeTab} options={PAGE_TAB_OPTIONS} onChange={setActiveTab} />
             </div>
           </Page.Header>
           <Page.Container className="min-h-0">
@@ -229,7 +200,6 @@ function RouteComponent() {
                     onRecordIdChange={setRecordId}
                     onLoad={onLoad}
                     isLoading={generateMutation.isPending}
-                    errorMessage={generateMutation.isError ? 'Failed to load graph.' : null}
                   />
                   {graphData ? (
                     <Card className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row overflow-hidden p-sm">
@@ -237,7 +207,7 @@ function RouteComponent() {
                       <ReactFlowProvider key={graphKey}>
                         <div className="relative min-h-0 flex-1">
                           <GraphSelectionToolbar />
-                          <GraphImpl key={graphKey} data={graphData} dataModel={dataModel} layoutMode={layoutMode} />
+                          <GraphImpl key={graphKey} data={graphData} dataModel={dataModel} />
                         </div>
                       </ReactFlowProvider>
                     </Card>

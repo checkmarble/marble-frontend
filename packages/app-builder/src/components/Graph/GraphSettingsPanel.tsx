@@ -11,17 +11,7 @@ import { type ScoringScore } from 'marble-api';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import {
-  Button,
-  Checkbox,
-  type CheckedState,
-  MenuCommand,
-  Switch,
-  Tabs,
-  Tag,
-  ThresholdRange,
-  tabClassName,
-} from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, MenuCommand, Switch, Tag, ThresholdRange } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   CLUSTER_THRESHOLD_OPTIONS,
@@ -29,9 +19,11 @@ import {
   LAYOUT_MODE_OPTIONS,
   useCustomerGraph,
 } from './CustomerGraphContext';
+import { GraphTabSwitch } from './GraphTabSwitch';
 import { type GraphObjectRef, nodeKey } from './graph-keys';
 import { type GraphLayoutMode } from './graph-layout';
 import { ObjectTagLine, ObjectTagLineSkeleton, useObjectTags } from './ObjectTags';
+import { relationFilterLabel } from './relation-filter';
 import { resolveTitle } from './resolve-object-title';
 
 function isClusterThreshold(value: number): value is ClusterThreshold {
@@ -75,39 +67,18 @@ function ClusterThresholdControl() {
   );
 }
 
-function relationsLabel(selected: string[], available: string[]): string {
-  if (available.length === 0) return 'Relations: none';
-  if (selected.length === 0) return 'Relations: none';
-  if (selected.length === available.length) return `Relations: ${available.join(', ')}`;
-  return `Relations: ${selected.join(', ')}`;
-}
-
 const LAYOUT_MODE_LABELS: Record<GraphLayoutMode, string> = {
   'rad-dagre': 'Rad dagre',
   balanced: 'Balanced',
   radial: 'Radial',
 };
 
+const LAYOUT_MODE_TABS = LAYOUT_MODE_OPTIONS.map((mode) => ({ value: mode, label: LAYOUT_MODE_LABELS[mode] }));
+
 function LayoutModeControl() {
   const { layoutMode, setLayoutMode } = useCustomerGraph();
 
-  return (
-    <Tabs>
-      {LAYOUT_MODE_OPTIONS.map((mode) => (
-        <button
-          key={mode}
-          type="button"
-          className={tabClassName}
-          data-status={layoutMode === mode ? 'active' : undefined}
-          onClick={() => {
-            setLayoutMode(mode);
-          }}
-        >
-          {LAYOUT_MODE_LABELS[mode]}
-        </button>
-      ))}
-    </Tabs>
-  );
+  return <GraphTabSwitch value={layoutMode} options={LAYOUT_MODE_TABS} onChange={setLayoutMode} />;
 }
 
 function asBoolean(value: CheckedState): boolean {
@@ -319,8 +290,7 @@ export function GraphSettingsPanel() {
     setShowPersons,
     showCompanies,
     setShowCompanies,
-    relationLabels,
-    selectedRelationLabels,
+    relationFilter,
     toggleRelationLabel,
     showRiskScore,
     setShowRiskScore,
@@ -369,16 +339,16 @@ export function GraphSettingsPanel() {
         </label>
       </div>
 
-      {relationLabels.length > 0 ? (
+      {relationFilter.available.length > 0 ? (
         <MenuCommand.Menu persistOnSelect>
           <MenuCommand.Trigger>
             <MenuCommand.SelectButton className="w-full">
-              {relationsLabel(selectedRelationLabels, relationLabels)}
+              {relationFilterLabel(relationFilter)}
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content sameWidth align="start" sideOffset={4}>
             <MenuCommand.List>
-              {relationLabels.map((label) => (
+              {relationFilter.available.map((label) => (
                 <MenuCommand.Item
                   key={label}
                   value={label}
@@ -386,7 +356,7 @@ export function GraphSettingsPanel() {
                   onSelect={() => toggleRelationLabel(label)}
                 >
                   <label htmlFor={label} className="flex cursor-pointer items-center gap-sm text-sm">
-                    <Checkbox id={label} size="small" checked={selectedRelationLabels.includes(label)} />
+                    <Checkbox id={label} size="small" checked={relationFilter.selected.includes(label)} />
                     {label}
                   </label>
                 </MenuCommand.Item>

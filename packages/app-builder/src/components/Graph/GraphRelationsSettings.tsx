@@ -1,10 +1,17 @@
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type DataModel, type DataModelField, type TableModel } from '@app-builder/models/data-model';
 import { useCreateGraphRelationMutation } from '@app-builder/queries/graph/create-relation';
 import { useDeleteGraphRelationMutation } from '@app-builder/queries/graph/delete-relation';
 import { useListGraphRelationsQuery } from '@app-builder/queries/graph/list-relations';
-import { useEffect, useMemo, useState } from 'react';
-import { Button, cn, Input, MenuCommand } from 'ui-design-system';
+import { createGraphRelationPayloadSchema } from '@app-builder/schemas/graph';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
+import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
+import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { GraphOptionSelect } from './GraphOptionSelect';
+import { GraphTabSwitch } from './GraphTabSwitch';
 
 function fieldSemanticKey(field: DataModelField): string | null {
   if (!field.semanticType) return null;
@@ -14,6 +21,26 @@ function fieldSemanticKey(field: DataModelField): string | null {
 function defaultLabelForField(field: DataModelField): string {
   return field.semanticSubType || field.semanticType || field.name;
 }
+
+/** Fields that can anchor a relation: only those carrying a semantic type. */
+function semanticFields(table: TableModel | undefined): DataModelField[] {
+  return (table?.fields ?? []).filter((field) => fieldSemanticKey(field) != null);
+}
+
+/** The right side can only join fields sharing the left side's semantic key. */
+function joinableFields(rightTable: TableModel | undefined, leftField: DataModelField | undefined): DataModelField[] {
+  if (!rightTable || !leftField) return [];
+  const leftKey = fieldSemanticKey(leftField);
+  if (!leftKey) return [];
+  return rightTable.fields.filter((field) => fieldSemanticKey(field) === leftKey);
+}
+
+const RELATION_SCOPE_OPTIONS = [
+  { value: 'same-table', label: 'Same table' },
+  { value: 'cross-table', label: 'Cross table' },
+] as const;
+
+type RelationScope = (typeof RELATION_SCOPE_OPTIONS)[number]['value'];
 
 function TableFieldSelect({
   label,
@@ -34,60 +61,26 @@ function TableFieldSelect({
   fieldOptions: DataModelField[];
   disabled?: boolean;
 }) {
-  const [tableOpen, setTableOpen] = useState(false);
-  const [fieldOpen, setFieldOpen] = useState(false);
-
   return (
     <div className="flex flex-col gap-xs">
       <span className="text-grey-secondary text-xs">{label}</span>
       <div className="flex flex-wrap gap-sm">
-        <MenuCommand.Menu open={tableOpen} onOpenChange={setTableOpen}>
-          <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="min-w-40" disabled={disabled}>
-              {tableName || 'Table'}
-            </MenuCommand.SelectButton>
-          </MenuCommand.Trigger>
-          <MenuCommand.Content sameWidth>
-            <MenuCommand.List>
-              {tables.map((table) => (
-                <MenuCommand.Item
-                  key={table.id}
-                  value={table.name}
-                  onSelect={() => {
-                    onTableChange(table.name);
-                    setTableOpen(false);
-                  }}
-                >
-                  {table.name}
-                </MenuCommand.Item>
-              ))}
-            </MenuCommand.List>
-          </MenuCommand.Content>
-        </MenuCommand.Menu>
-
-        <MenuCommand.Menu open={fieldOpen} onOpenChange={setFieldOpen}>
-          <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="min-w-40" disabled={disabled || !tableName}>
-              {fieldName || 'Field'}
-            </MenuCommand.SelectButton>
-          </MenuCommand.Trigger>
-          <MenuCommand.Content sameWidth>
-            <MenuCommand.List>
-              {fieldOptions.map((field) => (
-                <MenuCommand.Item
-                  key={field.id}
-                  value={field.name}
-                  onSelect={() => {
-                    onFieldChange(field.name);
-                    setFieldOpen(false);
-                  }}
-                >
-                  {field.alias || field.name}
-                </MenuCommand.Item>
-              ))}
-            </MenuCommand.List>
-          </MenuCommand.Content>
-        </MenuCommand.Menu>
+        <GraphOptionSelect
+          className="min-w-40"
+          value={tableName}
+          placeholder="Table"
+          disabled={disabled}
+          options={tables.map((table) => ({ value: table.name, label: table.name }))}
+          onChange={onTableChange}
+        />
+        <GraphOptionSelect
+          className="min-w-40"
+          value={fieldName}
+          placeholder="Field"
+          disabled={disabled || !tableName}
+          options={fieldOptions.map((field) => ({ value: field.name, label: field.alias || field.name }))}
+          onChange={onFieldChange}
+        />
       </div>
     </div>
   );
@@ -98,66 +91,52 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
   const createMutation = useCreateGraphRelationMutation();
   const deleteMutation = useDeleteGraphRelationMutation();
 
-  const [selfRelation, setSelfRelation] = useState(true);
-  const [label, setLabel] = useState('');
+  const [scope, setScope] = useState<RelationScope>('same-table');
+  // Once the user edits the label we stop deriving it from the selected field.
   const [labelTouched, setLabelTouched] = useState(false);
-  const [leftType, setLeftType] = useState('');
-  const [leftField, setLeftField] = useState('');
-  const [rightType, setRightType] = useState('');
-  const [rightField, setRightField] = useState('');
 
-  const leftTable = useMemo(() => dataModel.find((table) => table.name === leftType), [dataModel, leftType]);
-  const rightTable = useMemo(() => dataModel.find((table) => table.name === rightType), [dataModel, rightType]);
+  const form = useForm({
+    defaultValues: { label: '', leftType: '', leftField: '', rightType: '', rightField: '' },
+    validators: { onSubmit: createGraphRelationPayloadSchema },
+    onSubmit: ({ value, formApi }) => {
+      if (!formApi.state.isValid) return;
+      createMutation.mutateAsync(value).then(() => {
+        // Keep the selected tables so several relations can be added in a row.
+        formApi.setFieldValue('label', '');
+        formApi.setFieldValue('leftField', '');
+        formApi.setFieldValue('rightField', '');
+        setLabelTouched(false);
+      });
+    },
+  });
 
-  const leftFieldOptions = useMemo(
-    () => (leftTable?.fields ?? []).filter((field) => fieldSemanticKey(field) != null),
-    [leftTable],
-  );
+  const isSelfRelation = scope === 'same-table';
 
-  const selectedLeftField = useMemo(
-    () => leftFieldOptions.find((field) => field.name === leftField),
-    [leftField, leftFieldOptions],
-  );
+  const onScopeChange = (next: RelationScope) => {
+    setScope(next);
+    if (next === 'same-table') {
+      form.setFieldValue('rightType', form.state.values.leftType);
+      form.setFieldValue('rightField', form.state.values.leftField);
+    }
+  };
 
-  const rightFieldOptions = useMemo(() => {
-    if (!rightTable || !selectedLeftField) return [];
-    const leftKey = fieldSemanticKey(selectedLeftField);
-    if (!leftKey) return [];
-    return rightTable.fields.filter((field) => fieldSemanticKey(field) === leftKey);
-  }, [rightTable, selectedLeftField]);
+  const onLeftTableChange = (tableName: string) => {
+    form.setFieldValue('leftType', tableName);
+    form.setFieldValue('leftField', '');
+    if (isSelfRelation) {
+      form.setFieldValue('rightType', tableName);
+      form.setFieldValue('rightField', '');
+    }
+  };
 
-  useEffect(() => {
-    if (labelTouched || !selectedLeftField) return;
-    setLabel(defaultLabelForField(selectedLeftField));
-  }, [labelTouched, selectedLeftField]);
-
-  useEffect(() => {
-    if (!selfRelation) return;
-    setRightType(leftType);
-    setRightField(leftField);
-  }, [selfRelation, leftType, leftField]);
-
-  const canSubmit =
-    label.trim().length > 0 && leftType && leftField && rightType && rightField && !createMutation.isPending;
-
-  const onCreate = () => {
-    if (!canSubmit) return;
-    createMutation.mutate(
-      {
-        label: label.trim(),
-        leftType,
-        leftField,
-        rightType: selfRelation ? leftType : rightType,
-        rightField: selfRelation ? leftField : rightField,
-      },
-      {
-        onSuccess: () => {
-          setLabelTouched(false);
-          setLeftField('');
-          setRightField('');
-        },
-      },
-    );
+  const onLeftFieldChange = (fieldName: string, field: DataModelField | undefined) => {
+    form.setFieldValue('leftField', fieldName);
+    if (!labelTouched && field) {
+      form.setFieldValue('label', defaultLabelForField(field));
+    }
+    if (isSelfRelation) {
+      form.setFieldValue('rightField', fieldName);
+    }
   };
 
   return (
@@ -203,89 +182,102 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
         )}
       </section>
 
-      <section className="border-grey-border flex flex-col gap-md rounded-md border p-md">
+      <form onSubmit={handleSubmit(form)} className="border-grey-border flex flex-col gap-md rounded-md border p-md">
         <h2 className="text-grey-primary text-sm font-semibold">Create relation</h2>
 
-        <div className="flex flex-wrap items-center gap-md">
-          <button
-            type="button"
-            className={cn(
-              'rounded-sm border px-sm py-xs text-sm',
-              selfRelation
-                ? 'border-purple-border bg-purple-background-light text-purple-primary'
-                : 'border-grey-border text-grey-secondary',
-            )}
-            onClick={() => setSelfRelation(true)}
-          >
-            Same table
-          </button>
-          <button
-            type="button"
-            className={cn(
-              'rounded-sm border px-sm py-xs text-sm',
-              !selfRelation
-                ? 'border-purple-border bg-purple-background-light text-purple-primary'
-                : 'border-grey-border text-grey-secondary',
-            )}
-            onClick={() => setSelfRelation(false)}
-          >
-            Cross table
-          </button>
-        </div>
+        <GraphTabSwitch value={scope} options={RELATION_SCOPE_OPTIONS} onChange={onScopeChange} />
 
-        <div className="flex flex-col gap-xs">
-          <label htmlFor="relation-label" className="text-grey-secondary text-xs">
-            Label
-          </label>
-          <Input
-            id="relation-label"
-            value={label}
-            onChange={(event) => {
-              setLabelTouched(true);
-              setLabel(event.target.value);
-            }}
-            placeholder="e.g. iban"
-          />
-        </div>
-
-        <TableFieldSelect
-          label="Left"
-          tables={dataModel}
-          tableName={leftType}
-          fieldName={leftField}
-          fieldOptions={leftFieldOptions}
-          onTableChange={(name) => {
-            setLeftType(name);
-            setLeftField('');
+        <form.Field
+          name="label"
+          validators={{
+            onBlur: createGraphRelationPayloadSchema.shape.label,
+            onChange: createGraphRelationPayloadSchema.shape.label,
           }}
-          onFieldChange={setLeftField}
-        />
+        >
+          {(field) => (
+            <div className="flex flex-col gap-xs">
+              <FormLabel name={field.name} className="text-grey-secondary text-xs">
+                Label
+              </FormLabel>
+              <Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                onChange={(event) => {
+                  setLabelTouched(true);
+                  field.handleChange(event.currentTarget.value);
+                }}
+                onBlur={field.handleBlur}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                placeholder="e.g. iban"
+              />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
 
-        {!selfRelation ? (
-          <TableFieldSelect
-            label="Right"
-            tables={dataModel}
-            tableName={rightType}
-            fieldName={rightField}
-            fieldOptions={rightFieldOptions}
-            onTableChange={(name) => {
-              setRightType(name);
-              setRightField('');
-            }}
-            onFieldChange={setRightField}
-            disabled={!selectedLeftField}
-          />
-        ) : null}
+        <form.Subscribe selector={(state) => state.values}>
+          {({ leftType, leftField, rightType, rightField }) => {
+            const leftFieldOptions = semanticFields(dataModel.find((table) => table.name === leftType));
+            const selectedLeftField = leftFieldOptions.find((field) => field.name === leftField);
 
-        {createMutation.isError ? <p className="text-red-primary text-xs">Failed to create relation.</p> : null}
+            return (
+              <>
+                <TableFieldSelect
+                  label="Left"
+                  tables={dataModel}
+                  tableName={leftType}
+                  fieldName={leftField}
+                  fieldOptions={leftFieldOptions}
+                  onTableChange={onLeftTableChange}
+                  onFieldChange={(name) =>
+                    onLeftFieldChange(
+                      name,
+                      leftFieldOptions.find((field) => field.name === name),
+                    )
+                  }
+                />
 
-        <div>
-          <Button variant="primary" disabled={!canSubmit} onClick={onCreate}>
-            <Icon icon="plus" className="size-4" />
-            Create relation
-          </Button>
-        </div>
-      </section>
+                {isSelfRelation ? null : (
+                  <TableFieldSelect
+                    label="Right"
+                    tables={dataModel}
+                    tableName={rightType}
+                    fieldName={rightField}
+                    fieldOptions={joinableFields(
+                      dataModel.find((table) => table.name === rightType),
+                      selectedLeftField,
+                    )}
+                    onTableChange={(name) => {
+                      form.setFieldValue('rightType', name);
+                      form.setFieldValue('rightField', '');
+                    }}
+                    onFieldChange={(name) => form.setFieldValue('rightField', name)}
+                    disabled={!selectedLeftField}
+                  />
+                )}
+              </>
+            );
+          }}
+        </form.Subscribe>
+
+        <form.Subscribe
+          selector={(state) => [createGraphRelationPayloadSchema.safeParse(state.values).success, state.isSubmitting]}
+        >
+          {([isComplete, isSubmitting]) => (
+            <div>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={!isComplete || isSubmitting || createMutation.isPending}
+              >
+                <Icon icon="plus" className="size-4" />
+                Create relation
+              </Button>
+            </div>
+          )}
+        </form.Subscribe>
+      </form>
     </div>
   );
 }
