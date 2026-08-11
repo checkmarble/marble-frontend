@@ -25,6 +25,105 @@ function handleData(data: unknown) {
 
 ---
 
+## Inference First
+
+Prefer TypeScript inference over annotations and assertions. Let values, parameters, and returns carry their types from construction — annotate only when a contract requires it.
+
+### Return types
+
+Omit return-type annotations. Infer from the implementation.
+
+```typescript
+// Prefer — return type inferred as Case
+function adaptCase(dto: CaseDto) {
+  return {
+    id: dto.id,
+    name: dto.name,
+    status: dto.status,
+    createdAt: dto.created_at,
+    inboxId: dto.inbox_id,
+  };
+}
+
+// Avoid — annotation freezes the return and can hide drift from the body
+function adaptCase(dto: CaseDto): Case {
+  return {
+    id: dto.id,
+    name: dto.name,
+    status: dto.status,
+    createdAt: dto.created_at,
+    inboxId: dto.inbox_id,
+  };
+}
+```
+
+Annotate the return only when the caller (or an interface/`implements`) imposes the type — e.g. fulfilling a shared contract, or a public boundary that must stay stable while the body changes.
+
+```typescript
+// OK — return type imposed by the interface
+const repository: CaseRepository = {
+  getById(id: string): Promise<Case> {
+    return fetchCase(id);
+  },
+};
+```
+
+### Assertions (`as`)
+
+Do not use `as` to silence the type checker. Narrow, parse, or rebuild the value so the type follows from control flow.
+
+```typescript
+// Prefer — type guard / narrowing
+function handle(data: unknown) {
+  if (isCase(data)) {
+    return data.id;
+  }
+}
+
+// Prefer — Zod (or other) parse; type comes from schema
+const payload = createListPayloadSchema.parse(raw);
+
+// Prefer — `satisfies` checks shape without widening or lying
+const statusLabels = {
+  open: 'Open',
+  closed: 'Closed',
+} as const satisfies Record<CaseStatus, string>;
+
+// Avoid — assertion that can lie
+const caseData = response as Case;
+const fieldType = field.dataType as PrimitiveTypes;
+```
+
+Allowed `as` uses (rare):
+
+- `as const` for literal / tuple narrowing
+- `as const satisfies T` to pin literals while checking against `T`
+- bridging a typed third-party API that is wrong or incomplete — keep the cast at the boundary, in one place, with a short comment why
+
+Never `as any`, `as unknown as T`, or double casts. If the value is untrusted, validate (`unknown` → guard / Zod); if it is trusted domain data, model it so inference works.
+
+### Locals and parameters
+
+Annotate parameters at function boundaries. Prefer inferring locals from initializers and generics.
+
+```typescript
+// Prefer
+const cases = await getCases(filters);
+const ids = cases.map((c) => c.id);
+
+// Avoid — redundant annotations that fight inference
+const cases: Case[] = await getCases(filters);
+const ids: string[] = cases.map((c: Case) => c.id);
+```
+
+Use explicit types on empty collections or placeholders where inference would collapse to `never` / `any`:
+
+```typescript
+const selectedIds: string[] = [];
+```
+
+---
+
 ## Type Imports
 
 Use `type` keyword for type-only imports:
@@ -100,16 +199,18 @@ export interface Case {
   tags: CaseTag[];
 }
 
-// DTO -> Domain
-export const adaptCase = (dto: CaseDto): Case => ({
-  id: dto.id,
-  name: dto.name,
-  status: dto.status,
-  createdAt: dto.created_at,
-  inboxId: dto.inbox_id,
-  contributors: dto.contributors.map(adaptCaseContributor),
-  tags: dto.tags.map(adaptCaseTag),
-});
+// DTO -> Domain — return type inferred from the object literal
+export function adaptCase(dto: CaseDto) {
+  return {
+    id: dto.id,
+    name: dto.name,
+    status: dto.status,
+    createdAt: dto.created_at,
+    inboxId: dto.inbox_id,
+    contributors: dto.contributors.map(adaptCaseContributor),
+    tags: dto.tags.map(adaptCaseTag),
+  };
+}
 ```
 
 ### Bidirectional Adapters
@@ -117,8 +218,8 @@ export const adaptCase = (dto: CaseDto): Case => ({
 For mutations, also adapt domain -> DTO:
 
 ```typescript
-// Domain -> DTO (for API requests)
-export function adaptCreateRuleBodyDto(input: CreateRuleInput): CreateRuleBodyDto {
+// Domain -> DTO (for API requests) — return type inferred
+export function adaptCreateRuleBodyDto(input: CreateRuleInput) {
   return {
     scenario_iteration_id: input.scenarioIterationId,
     display_order: input.displayOrder,
@@ -179,6 +280,8 @@ type StatusMap = Record<CaseStatus, string>;
 ## Summary
 
 - Strict mode, no `any`
+- Inference first: omit return annotations and `as` unless a contract or boundary requires them
+- Narrow / parse / `satisfies` instead of asserting
 - `import type` for type-only imports
 - `import { z } from 'zod/v4'` (not `zod`)
 - Model adapters for DTO <-> domain transforms

@@ -202,6 +202,7 @@ import {
   PanelHeader,
   PanelContent,
   PanelFooter,
+  PanelFooterButton
 } from '@app-builder/components/Panel/Panel';
 
 export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
@@ -213,7 +214,8 @@ export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChang
           {/* Scrollable content */}
         </PanelContent>
         <PanelFooter>
-          <Button onClick={() => onOpenChange(false)}>Close</Button>
+          <Panel.FooterButton variant="secondary" label={t('common:close')} isCloseButton />
+          <Panel.FooterButton variant="primary" onClick={handleValidateClick} label={t('common:save')} />
         </PanelFooter>
       </PanelContainer>
     </PanelRoot>
@@ -225,12 +227,9 @@ export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChang
 
 | Size | Max Width |
 |------|-----------|
-| `sm` | 24rem |
-| `md` | 28rem |
-| `lg` | 32rem |
-| `xl` | 36rem |
-| `2xl` | 42rem |
-| `3xl` | 48rem |
-| `max` | 1000px |
+|  small | 'max-w-[calc(100vw_/_3)]' |
+|  medium | 'max-w-[50vw]' |
+|  large | 'max-w-[calc(100vw_*_(2_/_3))]' |
+
 
 Features: slide animation, focus trapping, Escape to close, portal rendering.
