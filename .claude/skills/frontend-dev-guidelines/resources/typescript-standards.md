@@ -34,30 +34,18 @@ Prefer TypeScript inference over annotations and assertions. Let values, paramet
 Omit return-type annotations. Infer from the implementation.
 
 ```typescript
-// Prefer — return type inferred as Case
-function adaptCase(dto: CaseDto) {
-  return {
-    id: dto.id,
-    name: dto.name,
-    status: dto.status,
-    createdAt: dto.created_at,
-    inboxId: dto.inbox_id,
-  };
+// Prefer — return type inferred
+function getOpenCases(cases: Case[]) {
+  return cases.filter((c) => c.status !== 'closed');
 }
 
-// Avoid — annotation freezes the return and can hide drift from the body
-function adaptCase(dto: CaseDto): Case {
-  return {
-    id: dto.id,
-    name: dto.name,
-    status: dto.status,
-    createdAt: dto.created_at,
-    inboxId: dto.inbox_id,
-  };
+// Avoid — annotation restates what the body already says
+function getOpenCases(cases: Case[]): Case[] {
+  return cases.filter((c) => c.status !== 'closed');
 }
 ```
 
-Annotate the return only when the caller (or an interface/`implements`) imposes the type — e.g. fulfilling a shared contract, or a public boundary that must stay stable while the body changes.
+Annotate the return when a contract imposes the type — an interface / `implements`, a public boundary that must stay stable while the body changes, or an adapter that must produce a domain model.
 
 ```typescript
 // OK — return type imposed by the interface
@@ -66,6 +54,33 @@ const repository: CaseRepository = {
     return fetchCase(id);
   },
 };
+
+// OK — the annotation checks required and compatible fields at the adapter
+function adaptCase(dto: CaseDto): Case {
+  return {
+    id: dto.id,
+    name: dto.name,
+    status: dto.status,
+    createdAt: dto.created_at,
+    inboxId: dto.inbox_id,
+    contributors: dto.contributors.map(adaptCaseContributor),
+    tags: dto.tags.map(adaptCaseTag),
+  };
+}
+```
+
+Without the annotation, a missing or mistyped field is not an error in `adaptCase` — it surfaces at the callers, or nowhere.
+
+Use `satisfies Case` instead when callers must keep the narrower inferred shape and you still want the check at the adapter:
+
+```typescript
+// Callers see `status: 'open'`, not `status: CaseStatus`; `Case` compatibility is still enforced here
+function adaptNewCase(dto: CaseDto) {
+  return {
+    ...adaptCase(dto),
+    status: 'open',
+  } satisfies Case;
+}
 ```
 
 ### Assertions (`as`)
@@ -199,8 +214,8 @@ export interface Case {
   tags: CaseTag[];
 }
 
-// DTO -> Domain — return type inferred from the object literal
-export function adaptCase(dto: CaseDto) {
+// DTO -> Domain — annotated so missing or mistyped fields fail here, not at the callers
+export function adaptCase(dto: CaseDto): Case {
   return {
     id: dto.id,
     name: dto.name,
@@ -218,8 +233,8 @@ export function adaptCase(dto: CaseDto) {
 For mutations, also adapt domain -> DTO:
 
 ```typescript
-// Domain -> DTO (for API requests) — return type inferred
-export function adaptCreateRuleBodyDto(input: CreateRuleInput) {
+// Domain -> DTO (for API requests) — annotated with the DTO the API expects
+export function adaptCreateRuleBodyDto(input: CreateRuleInput): CreateRuleBodyDto {
   return {
     scenario_iteration_id: input.scenarioIterationId,
     display_order: input.displayOrder,
@@ -281,6 +296,7 @@ type StatusMap = Record<CaseStatus, string>;
 
 - Strict mode, no `any`
 - Inference first: omit return annotations and `as` unless a contract or boundary requires them
+- Annotate adapter returns (`: Case`) so field drift fails at the adapter; `satisfies Case` when callers need the narrower shape
 - Narrow / parse / `satisfies` instead of asserting
 - `import type` for type-only imports
 - `import { z } from 'zod/v4'` (not `zod`)
