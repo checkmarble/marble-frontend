@@ -116,6 +116,8 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
   }, []);
 
+  const { fitView, getEdges, getNodes } = useDataModelReactFlow();
+
   useEffect(() => {
     setIsInitialLayoutSettled(false);
     hasScheduledInitialStabilizationRef.current = false;
@@ -150,8 +152,8 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
         }),
       ),
     );
-    setEdges((currentEdges) =>
-      R.pipe(
+    setEdges((currentEdges) => {
+      const nextEdges = R.pipe(
         dataModel,
         R.flatMap((tableModel) => tableModel.linksToSingle),
         R.filter((link) => link.parentTableId !== link.childTableId),
@@ -164,8 +166,6 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
             if (existingEdge.data === undefined) return existingEdge;
             return {
               ...existingEdge,
-              sourceHandle: endpoints.sourceHandle,
-              targetHandle: endpoints.targetHandle,
               data: {
                 ...existingEdge.data,
                 ...linkToSingleData,
@@ -184,11 +184,13 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
             hidden: true,
           } satisfies Edge<DataModelEdgeData>;
         }),
-      ),
-    );
-  }, [dataModel]);
+      );
 
-  const { fitView, getEdges, getNodes } = useDataModelReactFlow();
+      // Reused edges keep the sides geometry gave them; recompute from current node positions
+      // instead of falling back to the default LR endpoints.
+      return retargetDataModelHandles(getNodes(), nextEdges);
+    });
+  }, [dataModel, getNodes]);
 
   const onNodeDragStop = useCallback(() => {
     setEdges((eds) => retargetDataModelHandles(getNodes(), eds));
