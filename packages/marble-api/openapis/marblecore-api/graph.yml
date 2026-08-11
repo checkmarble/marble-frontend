@@ -1,0 +1,217 @@
+/graph/relations:
+  get:
+    tags:
+      - Graph exploration
+    summary: List same-field relations configurations
+    operationId: listGraphRelations
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: List of same-field relation configurations
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GraphRelation"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+  post:
+    tags:
+      - Graph exploration
+    summary: Create a same-field relation configuration
+    operationId: createGraphRelation
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: Graph relation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateGraphRelation'
+      required: true
+    responses:
+      "201":
+        description: Configuration created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GraphRelation"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/graph/relations/{relationId}:
+  delete:
+    tags:
+      - Graph exploration
+    summary: Delete a same-field relation configuration
+    operationId: deleteGraphRelation
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: relationId
+        description: ID of the configuration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "204":
+        description: Configuration was deleted
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/graph/{recordType}/{recordId}:
+  get:
+    tags:
+      - Graph exploration
+    summary: Generate the relationship graph from a starting record
+    operationId: generateRelationshipGraph
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: recordType
+        description: Record table name
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        description: Record ID
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Relationship graph
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Graph"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+components:
+  schemas:
+    GraphRelation:
+      type: object
+      required:
+        - id
+        - label
+        - left_type
+        - left_field
+        - right_type
+        - right_field
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        left_type:
+          type: string
+        left_field:
+          type: string
+        right_type:
+          type: string
+        right_field:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CreateGraphRelation:
+      type: object
+      required:
+        - label
+        - left_type
+        - left_field
+        - right_typeÀ
+        - right_field
+      properties:
+        label:
+          type: string
+        left_type:
+          type: string
+        left_field:
+          type: string
+        right_type:
+          type: string
+        right_field:
+          type: string
+
+    Graph:
+      type: object
+      required:
+        - start
+        - nodes
+        - edges
+      properties:
+        start:
+          $ref: "#/components/schemas/GraphNodeRef"
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/GraphNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/GraphEdge"
+
+    GraphNodeRef:
+      type: object
+      required: [type, id]
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+
+    GraphNode:
+      allOf:
+        - $ref: "#/components/schemas/GraphNodeRef"
+        - type: object
+          properties:
+            type:
+              type: string
+            id:
+              type: string
+            connector:
+              type: boolean
+            connector_kind:
+              type: string
+              enum: [match, link]
+            hypernode_count:
+              type: integer
+
+    GraphEdge:
+      type: object
+      required:
+        - kind
+        - label
+        - from
+        - to
+      properties:
+        kind:
+          type: string
+        label:
+          type: string
+        from:
+          $ref: "#/components/schemas/GraphNodeRef"
+        to:
+          $ref: "#/components/schemas/GraphNodeRef"
+        field:
+          type: string
+        value:
+          type: string

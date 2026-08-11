@@ -473,7 +473,7 @@ paths:
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 
- # SCORING
+# SCORING
 
   /scoring/settings:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1settings
@@ -493,6 +493,15 @@ paths:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1risk-levels~1{recordType}~1{recordId}~1history
   /scoring/distribution/{recordType}:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1distribution~1{recordType}
+
+# GRAPH EXPLORATION
+
+  /graph/relations:
+    $ref: ./marblecore-api/graph.yml#/~1graph~1relations
+  /graph/relations/{relationId}:
+    $ref: ./marblecore-api/graph.yml#/~1graph~1relations~1{relationId}
+  /graph/{recordType}/{recordId}:
+    $ref: ./marblecore-api/graph.yml#/~1graph~1{recordType}~1{recordId}
 
 components:
   securitySchemes:
