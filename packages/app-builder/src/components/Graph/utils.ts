@@ -1,10 +1,14 @@
-import { type EdgeData, type GraphData, type NodeData } from '../../routes/_app/_builder/test-graph/-data';
+import { type GraphData, type GraphEdgeData, type GraphNodeData } from '@app-builder/models/graph';
 import { type GraphTypeHelpers } from './data-model-map';
 import { nodeKey } from './graph-keys';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 
-export function isConnectorNode(node: NodeData): boolean {
-  return 'connector' in node && node.connector === true;
+export function isConnectorNode(node: GraphNodeData): boolean {
+  return node.connector === true;
+}
+
+export function isHypernode(node: GraphNodeData): boolean {
+  return node.hypernode_count != null;
 }
 
 export type TransformOptions = {
@@ -21,11 +25,11 @@ export type FlatFlowElements = {
   startKey: string;
 };
 
-type AdjEntry = { key: string; edge: EdgeData };
+type AdjEntry = { key: string; edge: GraphEdgeData };
 
-function buildUndirectedAdjacency(edges: EdgeData[]): Map<string, AdjEntry[]> {
+function buildUndirectedAdjacency(edges: GraphEdgeData[]): Map<string, AdjEntry[]> {
   const adj = new Map<string, AdjEntry[]>();
-  const add = (from: string, to: string, edge: EdgeData) => {
+  const add = (from: string, to: string, edge: GraphEdgeData) => {
     const list = adj.get(from) ?? [];
     list.push({ key: to, edge });
     adj.set(from, list);
@@ -72,8 +76,9 @@ function filterAdjacencyByHops(
 }
 
 /**
- * Resolve graph data to a flat person + pivot React Flow graph.
- * Persons come from the data model; pivots are nodes with `connector: true`.
+ * Resolve graph data to a flat React Flow graph.
+ * Entity records render as `person` nodes; `connector: true` → pivots;
+ * `hypernode_count` → hypernodes.
  */
 export function toFlatFlowElements(
   data: GraphData,
@@ -87,9 +92,6 @@ export function toFlatFlowElements(
   const startKey = nodeKey(data.start.type, data.start.id);
   const startNode = nodesByKey.get(startKey);
   if (!startNode) throw new Error(`Start node ${startKey} missing from nodes`);
-  if (!typeHelpers.isPersonType(startNode.type)) {
-    throw new Error(`Start node ${startKey} is not a person type`);
-  }
 
   const adj = filterAdjacencyByHops(fullAdj, startKey, maxExplorationHops);
 
@@ -103,17 +105,34 @@ export function toFlatFlowElements(
 
   const keptKeys = new Set<string>();
   for (const key of candidateKeys) {
-    const node = nodesByKey.get(key);
-    if (!node) continue;
-    if (typeHelpers.isPersonType(node.type) || isConnectorNode(node)) {
-      keptKeys.add(key);
-    }
+    if (nodesByKey.has(key)) keptKeys.add(key);
   }
 
   const nodes: GraphRfNode[] = [];
   for (const key of keptKeys) {
     const node = nodesByKey.get(key)!;
-    if (typeHelpers.isPersonType(node.type)) {
+    if (isHypernode(node)) {
+      nodes.push({
+        id: key,
+        position: { x: 0, y: 0 },
+        type: 'hypernode',
+        data: {
+          count: node.hypernode_count!,
+          objectType: node.type,
+          objectId: node.id,
+        },
+      });
+    } else if (isConnectorNode(node)) {
+      nodes.push({
+        id: key,
+        position: { x: 0, y: 0 },
+        type: 'pivot',
+        data: {
+          label: node.id,
+          rawType: node.type,
+        },
+      });
+    } else {
       nodes.push({
         id: key,
         position: { x: 0, y: 0 },
@@ -124,16 +143,6 @@ export function toFlatFlowElements(
           isStart: key === startKey,
           objectType: node.type,
           objectId: node.id,
-        },
-      });
-    } else {
-      nodes.push({
-        id: key,
-        position: { x: 0, y: 0 },
-        type: 'pivot',
-        data: {
-          label: node.id,
-          rawType: node.type,
         },
       });
     }

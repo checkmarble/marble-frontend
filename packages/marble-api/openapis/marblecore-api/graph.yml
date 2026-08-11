@@ -12,7 +12,9 @@
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/GraphRelation"
+              type: array
+              items:
+                $ref: "#/components/schemas/GraphRelation"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -137,7 +139,7 @@ components:
         - label
         - left_type
         - left_field
-        - right_typeÀ
+        - right_type
         - right_field
       properties:
         label:

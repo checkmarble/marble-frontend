@@ -16,6 +16,12 @@ export type PivotRfData = {
   rawType: string;
 };
 
+export type HypernodeRfData = {
+  count: number;
+  objectType: string;
+  objectId: string;
+};
+
 /**
  * A collapsed branch. `memberIds` are the node ids folded away; the branch root
  * is `root`, and the chip's own id is `clusterNodeId(<root node id>)`.
@@ -30,8 +36,9 @@ export type ClusterRfData = {
 
 export type PersonRfNode = Node<PersonRfData, 'person'>;
 export type PivotRfNode = Node<PivotRfData, 'pivot'>;
+export type HypernodeRfNode = Node<HypernodeRfData, 'hypernode'>;
 export type ClusterRfNode = Node<ClusterRfData, 'cluster'>;
-export type GraphRfNode = PersonRfNode | PivotRfNode | ClusterRfNode;
+export type GraphRfNode = PersonRfNode | PivotRfNode | HypernodeRfNode | ClusterRfNode;
 
 /** `mergedCount` is set on synthetic edges standing in for N collapsed member edges. */
 export type GraphRfEdge = Edge<{ kind?: string; mergedCount?: number }, 'link' | 'match'>;

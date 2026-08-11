@@ -21,6 +21,7 @@ import { rootNodeId } from './graph-keys';
 import {
   type ClusterRfNode,
   type GraphRfEdge,
+  type HypernodeRfNode,
   type PersonRfData,
   type PersonRfNode,
   type PivotRfNode,
@@ -326,6 +327,25 @@ function PivotNode({ id, data }: NodeProps<PivotRfNode>) {
   );
 }
 
+function HypernodeNode({ id, data }: NodeProps<HypernodeRfNode>) {
+  const { selectionMode, hoveredNodeId } = useCustomerGraph();
+  const highlighted = useNodeHighlighted(id);
+  const isHovered = !selectionMode && hoveredNodeId === id;
+
+  return (
+    <div
+      className={cn(
+        'border-grey-border bg-grey-white text-grey-primary relative flex w-fit items-center rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        isHovered && 'ring-2 ring-grey-primary ring-offset-2',
+        !highlighted && 'opacity-60',
+      )}
+    >
+      <FourHandles />
+      <span className="font-medium tabular-nums">{data.count}</span>
+    </div>
+  );
+}
+
 const EDGE_APPEARANCE = {
   link: {
     dash: undefined,
@@ -432,6 +452,7 @@ function GraphEdge({
 export const graphNodeTypes = {
   person: PersonNode,
   pivot: PivotNode,
+  hypernode: HypernodeNode,
   cluster: ClusterNode,
 };
 

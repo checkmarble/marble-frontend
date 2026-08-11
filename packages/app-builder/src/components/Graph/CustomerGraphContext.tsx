@@ -1,29 +1,14 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { type GraphObjectRef } from './graph-keys';
-
-export const GRAPH_ATTRIBUTES = ['ip', 'iban', 'device', 'email'] as const;
-export type GraphAttribute = (typeof GRAPH_ATTRIBUTES)[number];
-
-export const GRAPH_ATTRIBUTE_LABELS: Record<GraphAttribute, string> = {
-  ip: 'IP',
-  iban: 'IBAN',
-  device: 'Device',
-  email: 'Email',
-};
-
-/** Pivot `rawType` → the attribute filter governing it. Unlisted pivot types are always shown. */
-export const PIVOT_TYPE_ATTRIBUTES: Record<string, GraphAttribute> = {
-  same_ip: 'ip',
-  same_iban: 'iban',
-  same_device: 'device',
-  same_email: 'email',
-};
+import { type GraphLayoutMode } from './graph-layout';
 
 /** Branch sizes a subtree must exceed to collapse into a cluster chip. `0` disables clustering. */
 export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15, 30, 50] as const;
 export type ClusterThreshold = (typeof CLUSTER_THRESHOLD_OPTIONS)[number];
 export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
+
+export const LAYOUT_MODE_OPTIONS = ['rad-dagre', 'balanced', 'radial'] as const satisfies readonly GraphLayoutMode[];
 
 /**
  * The node backing the settings panel's detail card. `persons` are the selection's
@@ -32,6 +17,7 @@ export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
 export type SelectedGraphObject = GraphObjectRef & { persons: GraphObjectRef[] } & (
     | { nodeType: 'person' | 'pivot' }
     | { nodeType: 'cluster'; nodeCount: number; internalEdgeCount: number }
+    | { nodeType: 'hypernode'; hypernodeCount: number }
   );
 
 /**
@@ -54,10 +40,13 @@ export type CustomerGraphContextValue = {
   showCompanies: boolean;
   setShowCompanies: (value: boolean) => void;
 
-  // Attribute filters (pivots)
-  attributes: GraphAttribute[];
-  setAttributes: (value: GraphAttribute[]) => void;
-  toggleAttribute: (attribute: GraphAttribute) => void;
+  /** Configured relation labels available for filtering pivots. */
+  relationLabels: string[];
+  setRelationLabels: (labels: string[]) => void;
+  /** Selected relation labels (pivots matching these labels are shown). */
+  selectedRelationLabels: string[];
+  setSelectedRelationLabels: (labels: string[]) => void;
+  toggleRelationLabel: (label: string) => void;
 
   // Display options
   showRiskScore: boolean;
@@ -68,6 +57,9 @@ export type CustomerGraphContextValue = {
   nodeTagsVisible: boolean;
   showEdgeLabels: boolean;
   setShowEdgeLabels: (value: boolean) => void;
+
+  layoutMode: GraphLayoutMode;
+  setLayoutMode: (value: GraphLayoutMode) => void;
 
   // Clustering (branch size at which a subtree collapses; `0` disables)
   clusterThreshold: ClusterThreshold;
@@ -123,19 +115,35 @@ export function CustomerGraphProvider({
   initialSelectedObject = null,
   clusterThreshold: controlledClusterThreshold,
   onClusterThresholdChange,
+  layoutMode: controlledLayoutMode,
+  onLayoutModeChange,
 }: {
   children: ReactNode;
   initialSelectedObject?: SelectedGraphObject | null;
   /** When provided with `onClusterThresholdChange`, survives provider remounts (e.g. graph regenerate). */
   clusterThreshold?: ClusterThreshold;
   onClusterThresholdChange?: (value: ClusterThreshold) => void;
+  layoutMode?: GraphLayoutMode;
+  onLayoutModeChange?: (value: GraphLayoutMode) => void;
 }) {
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
-  const [attributes, setAttributes] = useState<GraphAttribute[]>([...GRAPH_ATTRIBUTES]);
+  const [relationLabels, setRelationLabels] = useState<string[]>([]);
+  const [selectedRelationLabels, setSelectedRelationLabels] = useState<string[]>([]);
   const [showRiskScore, setShowRiskScore] = useState(false);
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
+  const [uncontrolledLayoutMode, setUncontrolledLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
+  const layoutMode = controlledLayoutMode ?? uncontrolledLayoutMode;
+  const setLayoutMode = useCallback(
+    (value: GraphLayoutMode) => {
+      onLayoutModeChange?.(value);
+      if (controlledLayoutMode === undefined) {
+        setUncontrolledLayoutMode(value);
+      }
+    },
+    [controlledLayoutMode, onLayoutModeChange],
+  );
   const [uncontrolledClusterThreshold, setUncontrolledClusterThreshold] =
     useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
   const clusterThreshold = controlledClusterThreshold ?? uncontrolledClusterThreshold;
@@ -170,8 +178,22 @@ export function CustomerGraphProvider({
     setExpandedRootIds((prev) => toggleInSet(prev, rootId));
   }, []);
 
-  const toggleAttribute = useCallback((attribute: GraphAttribute) => {
-    setAttributes((prev) => (prev.includes(attribute) ? prev.filter((a) => a !== attribute) : [...prev, attribute]));
+  const toggleRelationLabel = useCallback((label: string) => {
+    setSelectedRelationLabels((prev) =>
+      prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label],
+    );
+  }, []);
+
+  const syncRelationLabels = useCallback((labels: string[]) => {
+    const uniqueLabels = [...new Set(labels)];
+    setRelationLabels(uniqueLabels);
+    setSelectedRelationLabels((prev) => {
+      // First load → select all; otherwise keep selection and auto-select newly added labels.
+      if (prev.length === 0) return uniqueLabels;
+      const kept = prev.filter((label) => uniqueLabels.includes(label));
+      const added = uniqueLabels.filter((label) => !prev.includes(label));
+      return [...kept, ...added];
+    });
   }, []);
 
   const clearCheckedNodes = useCallback(() => {
@@ -200,9 +222,11 @@ export function CustomerGraphProvider({
       setShowPersons,
       showCompanies,
       setShowCompanies,
-      attributes,
-      setAttributes,
-      toggleAttribute,
+      relationLabels,
+      setRelationLabels: syncRelationLabels,
+      selectedRelationLabels,
+      setSelectedRelationLabels,
+      toggleRelationLabel,
       showRiskScore,
       setShowRiskScore,
       showTags,
@@ -210,6 +234,8 @@ export function CustomerGraphProvider({
       nodeTagsVisible: showTags || selectionMode,
       showEdgeLabels,
       setShowEdgeLabels,
+      layoutMode,
+      setLayoutMode,
       clusterThreshold,
       setClusterThreshold,
       selectedObject,
@@ -234,11 +260,15 @@ export function CustomerGraphProvider({
     [
       showPersons,
       showCompanies,
-      attributes,
-      toggleAttribute,
+      relationLabels,
+      syncRelationLabels,
+      selectedRelationLabels,
+      toggleRelationLabel,
       showRiskScore,
       showTags,
       showEdgeLabels,
+      layoutMode,
+      setLayoutMode,
       clusterThreshold,
       setClusterThreshold,
       selectedObject,

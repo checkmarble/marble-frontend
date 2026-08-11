@@ -11,17 +11,26 @@ import { type ScoringScore } from 'marble-api';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Button, Checkbox, type CheckedState, MenuCommand, Switch, Tag, ThresholdRange } from 'ui-design-system';
+import {
+  Button,
+  Checkbox,
+  type CheckedState,
+  MenuCommand,
+  Switch,
+  Tabs,
+  Tag,
+  ThresholdRange,
+  tabClassName,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   CLUSTER_THRESHOLD_OPTIONS,
   type ClusterThreshold,
-  GRAPH_ATTRIBUTE_LABELS,
-  GRAPH_ATTRIBUTES,
-  type GraphAttribute,
+  LAYOUT_MODE_OPTIONS,
   useCustomerGraph,
 } from './CustomerGraphContext';
 import { type GraphObjectRef, nodeKey } from './graph-keys';
+import { type GraphLayoutMode } from './graph-layout';
 import { ObjectTagLine, ObjectTagLineSkeleton, useObjectTags } from './ObjectTags';
 import { resolveTitle } from './resolve-object-title';
 
@@ -66,12 +75,39 @@ function ClusterThresholdControl() {
   );
 }
 
-function attributesLabel(attributes: GraphAttribute[]): string {
-  if (attributes.length === 0) return 'Attributes: none';
-  if (attributes.length === GRAPH_ATTRIBUTES.length) {
-    return `Attributes: ${GRAPH_ATTRIBUTES.map((a) => GRAPH_ATTRIBUTE_LABELS[a]).join(', ')}`;
-  }
-  return `Attributes: ${attributes.map((a) => GRAPH_ATTRIBUTE_LABELS[a]).join(', ')}`;
+function relationsLabel(selected: string[], available: string[]): string {
+  if (available.length === 0) return 'Relations: none';
+  if (selected.length === 0) return 'Relations: none';
+  if (selected.length === available.length) return `Relations: ${available.join(', ')}`;
+  return `Relations: ${selected.join(', ')}`;
+}
+
+const LAYOUT_MODE_LABELS: Record<GraphLayoutMode, string> = {
+  'rad-dagre': 'Rad dagre',
+  balanced: 'Balanced',
+  radial: 'Radial',
+};
+
+function LayoutModeControl() {
+  const { layoutMode, setLayoutMode } = useCustomerGraph();
+
+  return (
+    <Tabs>
+      {LAYOUT_MODE_OPTIONS.map((mode) => (
+        <button
+          key={mode}
+          type="button"
+          className={tabClassName}
+          data-status={layoutMode === mode ? 'active' : undefined}
+          onClick={() => {
+            setLayoutMode(mode);
+          }}
+        >
+          {LAYOUT_MODE_LABELS[mode]}
+        </button>
+      ))}
+    </Tabs>
+  );
 }
 
 function asBoolean(value: CheckedState): boolean {
@@ -283,8 +319,9 @@ export function GraphSettingsPanel() {
     setShowPersons,
     showCompanies,
     setShowCompanies,
-    attributes,
-    toggleAttribute,
+    relationLabels,
+    selectedRelationLabels,
+    toggleRelationLabel,
     showRiskScore,
     setShowRiskScore,
     showTags,
@@ -332,30 +369,34 @@ export function GraphSettingsPanel() {
         </label>
       </div>
 
-      <MenuCommand.Menu persistOnSelect>
-        <MenuCommand.Trigger>
-          <MenuCommand.SelectButton className="w-full" size="small">
-            {attributesLabel(attributes)}
-          </MenuCommand.SelectButton>
-        </MenuCommand.Trigger>
-        <MenuCommand.Content sameWidth align="start" sideOffset={4}>
-          <MenuCommand.List>
-            {GRAPH_ATTRIBUTES.map((attribute) => (
-              <MenuCommand.Item
-                key={attribute}
-                value={attribute}
-                className="flex items-center gap-sm"
-                onSelect={() => toggleAttribute(attribute)}
-              >
-                <label htmlFor={attribute} className="flex cursor-pointer items-center gap-sm text-sm">
-                  <Checkbox id={attribute} size="small" checked={attributes.includes(attribute)} />
-                  {GRAPH_ATTRIBUTE_LABELS[attribute]}
-                </label>
-              </MenuCommand.Item>
-            ))}
-          </MenuCommand.List>
-        </MenuCommand.Content>
-      </MenuCommand.Menu>
+      {relationLabels.length > 0 ? (
+        <MenuCommand.Menu persistOnSelect>
+          <MenuCommand.Trigger>
+            <MenuCommand.SelectButton className="w-full">
+              {relationsLabel(selectedRelationLabels, relationLabels)}
+            </MenuCommand.SelectButton>
+          </MenuCommand.Trigger>
+          <MenuCommand.Content sameWidth align="start" sideOffset={4}>
+            <MenuCommand.List>
+              {relationLabels.map((label) => (
+                <MenuCommand.Item
+                  key={label}
+                  value={label}
+                  className="flex items-center gap-sm"
+                  onSelect={() => toggleRelationLabel(label)}
+                >
+                  <label htmlFor={label} className="flex cursor-pointer items-center gap-sm text-sm">
+                    <Checkbox id={label} size="small" checked={selectedRelationLabels.includes(label)} />
+                    {label}
+                  </label>
+                </MenuCommand.Item>
+              ))}
+            </MenuCommand.List>
+          </MenuCommand.Content>
+        </MenuCommand.Menu>
+      ) : null}
+
+      <LayoutModeControl />
 
       {graphStats.hiddenCount > 0 ? (
         <Button variant="secondary" appearance="stroked" size="small" onClick={restoreHiddenNodes}>
@@ -434,6 +475,14 @@ export function GraphSettingsPanel() {
                 showRiskScore={showRiskScore}
                 showTags={showTags}
               />
+            ))
+            .with({ nodeType: 'hypernode' }, (hypernode) => (
+              <div className="flex flex-col gap-xs">
+                <div className="text-grey-secondary text-xs leading-none">Hypernode</div>
+                <div className="text-grey-primary text-sm font-semibold tabular-nums">
+                  {hypernode.hypernodeCount} records
+                </div>
+              </div>
             ))
             .exhaustive()
         ) : (

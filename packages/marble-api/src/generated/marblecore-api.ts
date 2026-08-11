@@ -2162,7 +2162,7 @@ export type CreateGraphRelation = {
     label: string;
     left_type: string;
     left_field: string;
-    right_type?: string;
+    right_type: string;
     right_field: string;
 };
 export type GraphNodeRef = {
@@ -7304,7 +7304,7 @@ export function getScoreDistribution(recordType: string, opts?: Oazapfts.Request
 export function listGraphRelations(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: GraphRelation;
+        data: GraphRelation[];
     } | {
         status: 401;
         data: string;

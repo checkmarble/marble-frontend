@@ -1,5 +1,6 @@
 import { AutoLayoutControlButton, useLayoutInitializedNodes } from '@app-builder/components/ReactFlow';
 import { type DataModel } from '@app-builder/models/data-model';
+import { type GraphData } from '@app-builder/models/graph';
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -13,13 +14,7 @@ import {
 import { reachableNodeIds } from 'ego-graph';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
-import { type GraphData } from '../../routes/_app/_builder/test-graph/-data';
-import {
-  type CustomerGraphContextValue,
-  type GraphAttribute,
-  PIVOT_TYPE_ATTRIBUTES,
-  useCustomerGraph,
-} from './CustomerGraphContext';
+import { type CustomerGraphContextValue, useCustomerGraph } from './CustomerGraphContext';
 import { createGraphTypeHelpers } from './data-model-map';
 import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
@@ -48,7 +43,7 @@ export type GraphImplProps = {
    * `0` (default) explores the full reachable graph; `N > 0` stops after N hops.
    */
   maxExplorationHops?: number;
-  /** Layout algorithm for A/B testing on the test-graph page. Defaults to rad1. */
+  /** Layout algorithm. Defaults to rad-dagre; can also be controlled via CustomerGraphContext. */
   layoutMode?: GraphLayoutMode;
 };
 
@@ -59,12 +54,13 @@ function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
 
 type VisibilityFilters = Pick<
   CustomerGraphContextValue,
-  'showPersons' | 'showCompanies' | 'attributes' | 'hiddenNodeIds'
+  'showPersons' | 'showCompanies' | 'relationLabels' | 'selectedRelationLabels' | 'hiddenNodeIds'
 >;
 
-function attributeAllowsPivot(rawType: string, attributes: GraphAttribute[]): boolean {
-  const attribute = PIVOT_TYPE_ATTRIBUTES[rawType];
-  return attribute == null || attributes.includes(attribute);
+function relationAllowsPivot(rawType: string, relationLabels: string[], selectedRelationLabels: string[]): boolean {
+  // Pivots that don't match any configured relation label stay visible.
+  if (!relationLabels.includes(rawType)) return true;
+  return selectedRelationLabels.includes(rawType);
 }
 
 function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
@@ -79,9 +75,10 @@ function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
 
   if (node.type === 'pivot') {
     if (filters.hiddenNodeIds.has(node.id)) return false;
-    return attributeAllowsPivot(node.data.rawType, filters.attributes);
+    return relationAllowsPivot(node.data.rawType, filters.relationLabels, filters.selectedRelationLabels);
   }
 
+  // Hypernodes and clusters are not relation-filtered.
   return !filters.hiddenNodeIds.has(node.id);
 }
 
@@ -114,11 +111,12 @@ function sameRefs(a: GraphObjectRef[], b: GraphObjectRef[]): boolean {
   );
 }
 
-export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode = 'rad-dagre' }: GraphImplProps) {
+export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode: layoutModeProp }: GraphImplProps) {
   const {
     showPersons,
     showCompanies,
-    attributes,
+    relationLabels,
+    selectedRelationLabels,
     showEdgeLabels,
     setShowEdgeLabels,
     selectedObject,
@@ -130,7 +128,9 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode 
     checkedNodeIds,
     setGraphStats,
     clusterThreshold,
+    layoutMode: layoutModeFromContext,
   } = useCustomerGraph();
+  const layoutMode = layoutModeProp ?? layoutModeFromContext;
 
   const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
 
@@ -140,8 +140,8 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode 
   );
 
   const typeFilters = useMemo(
-    () => ({ showPersons, showCompanies, attributes }),
-    [showPersons, showCompanies, attributes],
+    () => ({ showPersons, showCompanies, relationLabels, selectedRelationLabels }),
+    [showPersons, showCompanies, relationLabels, selectedRelationLabels],
   );
 
   const visibleGraph = useMemo(
@@ -229,7 +229,7 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode 
   // Keep person/pivot neighbor lists in sync when the graph remounts or filters change
   // (e.g. initial selection before the first click).
   useEffect(() => {
-    if (!selectedObject || selectedObject.nodeType === 'cluster') return;
+    if (!selectedObject || selectedObject.nodeType === 'cluster' || selectedObject.nodeType === 'hypernode') return;
 
     const nodeId = nodeKey(selectedObject.objectType, selectedObject.objectId);
     if (!nodes.some((n) => n.id === nodeId)) return;
@@ -261,6 +261,17 @@ export function GraphImpl({ data, dataModel, maxExplorationHops = 0, layoutMode 
           internalEdgeCount: node.data.internalEdgeCount,
           // Members are never pivots, so every id parses as a person ref.
           persons: node.data.memberIds.map(parseNodeKey),
+        });
+        return;
+      }
+
+      if (node.type === 'hypernode') {
+        setSelectedObject({
+          nodeType: 'hypernode',
+          objectType: node.data.objectType,
+          objectId: node.data.objectId,
+          hypernodeCount: node.data.count,
+          persons: [],
         });
         return;
       }
