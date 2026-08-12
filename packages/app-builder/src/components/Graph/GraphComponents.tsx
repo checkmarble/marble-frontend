@@ -255,12 +255,12 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   const { nodeTagsVisible, nodeTagIdOverrides, addedNodeTagIds, toggleClusterExpanded, selectionMode, hoveredNodeId } =
     useCustomerGraph();
   const title = usePersonTitle(data);
-  // Payload metadata is static; session edits from the settings panel (full list)
-  // or bulk-tag (additive) replace/merge it for the canvas.
+  // Payload metadata is static; session edits from the settings panel replace it
+  // as a whole, then bulk-tag additions merge on top of whichever list won.
   const overrideTagIds = nodeTagIdOverrides.get(id);
-  const sessionTagIds = addedNodeTagIds.get(id);
-  const tagIds =
-    overrideTagIds ?? (sessionTagIds?.length ? [...new Set([...data.tagIds, ...sessionTagIds])] : data.tagIds);
+  const addedTagIds = addedNodeTagIds.get(id);
+  const baseTagIds = overrideTagIds ?? data.tagIds;
+  const tagIds = addedTagIds?.length ? [...new Set([...baseTagIds, ...addedTagIds])] : baseTagIds;
   const tags = useTagsByIds(tagIds, nodeTagsVisible);
   const isHovered = !selectionMode && hoveredNodeId === id;
 

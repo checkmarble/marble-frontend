@@ -72,7 +72,9 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
           ),
         );
 
-        // Nodes render tags from static graph metadata — patch the canvas immediately.
+        // Nodes render tags from static graph metadata, so patch it for this session.
+        // A checked cluster chip contributes its fold root, which is off-canvas while
+        // folded: that patch only shows once the cluster is expanded.
         addTagsToNodes(
           personsToUpdate.map(({ person, addedTags }) => ({
             nodeId: nodeKey(person.objectType, person.objectId),

@@ -30,6 +30,8 @@ export type TestGraphSessionContextValue = {
   setShowRiskScore: (value: boolean) => void;
   showTags: boolean;
   setShowTags: (value: boolean) => void;
+  showEdgeLabels: boolean;
+  setShowEdgeLabels: (value: boolean) => void;
   clusterThreshold: ClusterThreshold;
   setClusterThreshold: (value: ClusterThreshold) => void;
   layoutMode: GraphLayoutMode;
@@ -51,6 +53,7 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
   const [showCompanies, setShowCompanies] = useState(true);
   const [showRiskScore, setShowRiskScore] = useState(false);
   const [showTags, setShowTags] = useState(false);
+  const [showEdgeLabels, setShowEdgeLabels] = useState(false);
   const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
   const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
   const [relationFilter, setRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
@@ -95,6 +98,8 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
       setShowRiskScore,
       showTags,
       setShowTags,
+      showEdgeLabels,
+      setShowEdgeLabels,
       clusterThreshold,
       setClusterThreshold,
       layoutMode,
@@ -114,6 +119,7 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
       showCompanies,
       showRiskScore,
       showTags,
+      showEdgeLabels,
       clusterThreshold,
       layoutMode,
       relationFilter,

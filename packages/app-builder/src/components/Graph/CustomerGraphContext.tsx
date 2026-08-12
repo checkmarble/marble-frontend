@@ -94,10 +94,11 @@ export type CustomerGraphContextValue = {
 
   /**
    * Session tag ids for person nodes. Payload metadata is static, so the canvas
-   * reads these instead after bulk-tag or settings-panel edits.
-   * - `nodeTagIdOverrides`: full list (add + remove from the settings panel)
-   * - `addedNodeTagIds`: additive-only (bulk toolbar, which does not know the base list)
-   * Override wins when both are set for a node.
+   * reads these on top of it after bulk-tag or settings-panel edits.
+   * - `nodeTagIdOverrides`: full list, replacing the payload's (settings panel)
+   * - `addedNodeTagIds`: additions only, merged over whichever list applies. The
+   *   bulk toolbar cannot supply a full list: it reads the base from the
+   *   annotations cache, which may be cold for a node it never opened.
    */
   nodeTagIdOverrides: ReadonlyMap<string, readonly string[]>;
   setNodeTagIds: (nodeId: string, tagIds: readonly string[]) => void;
@@ -133,6 +134,8 @@ export function CustomerGraphProvider({
   onShowRiskScoreChange,
   showTags: controlledShowTags,
   onShowTagsChange,
+  showEdgeLabels: controlledShowEdgeLabels,
+  onShowEdgeLabelsChange,
   clusterThreshold: controlledClusterThreshold,
   onClusterThresholdChange,
   layoutMode: controlledLayoutMode,
@@ -151,6 +154,8 @@ export function CustomerGraphProvider({
   onShowRiskScoreChange?: (value: boolean) => void;
   showTags?: boolean;
   onShowTagsChange?: (value: boolean) => void;
+  showEdgeLabels?: boolean;
+  onShowEdgeLabelsChange?: (value: boolean) => void;
   clusterThreshold?: ClusterThreshold;
   onClusterThresholdChange?: (value: ClusterThreshold) => void;
   layoutMode?: GraphLayoutMode;
@@ -169,7 +174,11 @@ export function CustomerGraphProvider({
   const setRelationFilter = onRelationFilterChange ?? setUncontrolledRelationFilter;
   const [showRiskScore, setShowRiskScore] = useControllableState(false, controlledShowRiskScore, onShowRiskScoreChange);
   const [showTags, setShowTags] = useControllableState(false, controlledShowTags, onShowTagsChange);
-  const [showEdgeLabels, setShowEdgeLabels] = useState(false);
+  const [showEdgeLabels, setShowEdgeLabels] = useControllableState(
+    false,
+    controlledShowEdgeLabels,
+    onShowEdgeLabelsChange,
+  );
   const [layoutMode, setLayoutMode] = useControllableState<GraphLayoutMode>(
     'rad-dagre',
     controlledLayoutMode,
@@ -222,7 +231,8 @@ export function CustomerGraphProvider({
       next.set(nodeId, [...tagIds]);
       return next;
     });
-    // Full list replaces any pending additive bulk patches for this node.
+    // Drop earlier additions for this node: the panel's list is authoritative, and
+    // additions merge on top, so a stale one would re-add a tag just removed here.
     setAddedNodeTagIds((prev) => {
       if (!prev.has(nodeId)) return prev;
       const next = new Map(prev);
@@ -321,6 +331,7 @@ export function CustomerGraphProvider({
       showTags,
       setShowTags,
       showEdgeLabels,
+      setShowEdgeLabels,
       layoutMode,
       setLayoutMode,
       clusterThreshold,

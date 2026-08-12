@@ -117,6 +117,8 @@ function TestGraphRoute() {
     setShowRiskScore,
     showTags,
     setShowTags,
+    showEdgeLabels,
+    setShowEdgeLabels,
     clusterThreshold,
     setClusterThreshold,
     layoutMode,
@@ -156,6 +158,8 @@ function TestGraphRoute() {
             onShowRiskScoreChange={setShowRiskScore}
             showTags={showTags}
             onShowTagsChange={setShowTags}
+            showEdgeLabels={showEdgeLabels}
+            onShowEdgeLabelsChange={setShowEdgeLabels}
             clusterThreshold={clusterThreshold}
             onClusterThresholdChange={setClusterThreshold}
             layoutMode={layoutMode}
