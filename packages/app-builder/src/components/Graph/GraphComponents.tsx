@@ -335,13 +335,14 @@ function HypernodeNode({ id, data }: NodeProps<HypernodeRfNode>) {
   return (
     <div
       className={cn(
-        'border-grey-border bg-grey-white text-grey-primary relative flex w-fit items-center rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        'border-grey-border bg-grey-white text-grey-primary relative flex gap-xs w-fit items-center rounded-md border p-md text-xs shadow-sm cursor-pointer transition-opacity duration-200',
         isHovered && 'ring-2 ring-grey-primary ring-offset-2',
         !highlighted && 'opacity-60',
       )}
     >
       <FourHandles />
-      <span className="font-medium tabular-nums">{data.count}</span>
+      <span>Too many nodes to display</span>
+      <span className="font-medium tabular-nums">({data.count})</span>
     </div>
   );
 }
@@ -360,6 +361,13 @@ const EDGE_APPEARANCE = {
     active: 'stroke-orange-primary!',
     dimmed: 'stroke-orange-background-light!',
     label: 'bg-orange-background-light text-orange-primary border border-orange-border',
+  },
+  hypernode: {
+    dash: '3 2',
+    stroke: 'stroke-2!',
+    active: 'stroke-grey-primary!',
+    dimmed: 'stroke-grey-border-light!',
+    label: 'bg-grey-background-light text-grey-primary border border-grey-border',
   },
 } as const;
 
@@ -397,7 +405,7 @@ function GraphEdge({
 }: EdgeProps<GraphRfEdge>) {
   const { showEdgeLabels } = useCustomerGraph();
   const highlighted = useEdgeHighlighted(source, target);
-  const appearance = EDGE_APPEARANCE[type === 'match' ? 'match' : 'link'];
+  const appearance = EDGE_APPEARANCE[type ?? 'link'];
 
   const [path, labelX, labelY] = getBezierPath({
     sourceX,
@@ -459,4 +467,5 @@ export const graphNodeTypes = {
 export const graphEdgeTypes = {
   link: GraphEdge,
   match: GraphEdge,
+  hypernode: GraphEdge,
 };

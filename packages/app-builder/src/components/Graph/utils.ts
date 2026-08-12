@@ -100,13 +100,16 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
     if (seenEdges.has(edgeId)) continue;
     seenEdges.add(edgeId);
 
+    const fromNode = nodesByKey.get(fromKey);
+    const toNode = nodesByKey.get(toKey);
+    const touchesHypernode = fromNode?.kind === 'hypernode' || toNode?.kind === 'hypernode';
     const isMatch = edge.kind === 'match';
     edges.push({
       id: edgeId,
       source: fromKey,
       target: toKey,
-      type: isMatch ? 'match' : 'link',
-      animated: isMatch,
+      type: touchesHypernode ? 'hypernode' : isMatch ? 'match' : 'link',
+      animated: touchesHypernode || isMatch,
       label: edge.label,
       data: { kind: edge.kind },
     });

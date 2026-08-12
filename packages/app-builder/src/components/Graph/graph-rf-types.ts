@@ -41,10 +41,11 @@ export type ClusterRfNode = Node<ClusterRfData, 'cluster'>;
 export type GraphRfNode = PersonRfNode | PivotRfNode | HypernodeRfNode | ClusterRfNode;
 
 /** `mergedCount` is set on synthetic edges standing in for N collapsed member edges. */
-export type GraphRfEdge = Edge<{ kind?: string; mergedCount?: number }, 'link' | 'match'>;
+export type GraphRfEdge = Edge<{ kind?: string; mergedCount?: number }, 'link' | 'match' | 'hypernode'>;
 
 /** `type` and `data.kind` can each carry the match flag depending on who built the edge. */
 export function isMatchEdge(edge: GraphRfEdge): boolean {
+  if (edge.type === 'hypernode') return false;
   return edge.type === 'match' || edge.data?.kind === 'match';
 }
 

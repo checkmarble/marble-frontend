@@ -90,6 +90,7 @@ function TableFieldSelect({
   onFieldChange,
   fieldOptions,
   disabled,
+  tableDisabled,
 }: {
   label: string;
   tables: TableModel[];
@@ -99,6 +100,8 @@ function TableFieldSelect({
   onFieldChange: (fieldName: string) => void;
   fieldOptions: DataModelField[];
   disabled?: boolean;
+  /** Lock the table select (e.g. same-table relations) while still allowing a field pick. */
+  tableDisabled?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-xs">
@@ -108,7 +111,7 @@ function TableFieldSelect({
           className="min-w-40"
           value={tableName}
           placeholder="Table"
-          disabled={disabled}
+          disabled={disabled || tableDisabled}
           options={tables.map((table) => ({ value: table.name, label: table.name }))}
           onChange={onTableChange}
         />
@@ -291,7 +294,7 @@ function RelationSettingPanel({
     setScope(next);
     if (next === 'same-table') {
       form.setFieldValue('rightType', form.state.values.leftType);
-      form.setFieldValue('rightField', form.state.values.leftField);
+      form.setFieldValue('rightField', '');
     }
   };
 
@@ -306,8 +309,9 @@ function RelationSettingPanel({
 
   const onLeftFieldChange = (fieldName: string) => {
     form.setFieldValue('leftField', fieldName);
+    // Same-table relations still join two (possibly different) fields; clear right so the user re-picks.
     if (isSelfRelation) {
-      form.setFieldValue('rightField', fieldName);
+      form.setFieldValue('rightField', '');
     }
   };
 
@@ -341,26 +345,25 @@ function RelationSettingPanel({
                         onFieldChange={onLeftFieldChange}
                       />
 
-                      {isSelfRelation ? null : (
-                        <TableFieldSelect
-                          label="Right"
-                          tables={dataModel}
-                          tableName={rightType}
-                          fieldName={rightField}
-                          fieldOptions={joinableFields(
-                            dataModel.find((table) => table.name === rightType),
-                            selectedLeftField,
-                          )}
-                          onTableChange={(name) => {
-                            form.setFieldValue('rightType', name);
-                            form.setFieldValue('rightField', '');
-                          }}
-                          onFieldChange={(name) => {
-                            form.setFieldValue('rightField', name);
-                          }}
-                          disabled={!selectedLeftField}
-                        />
-                      )}
+                      <TableFieldSelect
+                        label="Right"
+                        tables={dataModel}
+                        tableName={rightType}
+                        fieldName={rightField}
+                        fieldOptions={joinableFields(
+                          dataModel.find((table) => table.name === rightType),
+                          selectedLeftField,
+                        )}
+                        onTableChange={(name) => {
+                          form.setFieldValue('rightType', name);
+                          form.setFieldValue('rightField', '');
+                        }}
+                        onFieldChange={(name) => {
+                          form.setFieldValue('rightField', name);
+                        }}
+                        tableDisabled={isSelfRelation}
+                        disabled={!selectedLeftField}
+                      />
                     </>
                   );
                 }}
