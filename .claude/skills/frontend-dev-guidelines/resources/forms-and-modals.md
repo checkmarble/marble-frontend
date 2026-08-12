@@ -196,27 +196,29 @@ Wrap `<form>` around `Modal.Title`, content, and `Modal.Footer`:
 Right-side sliding panel for detail views. Import from app-builder components.
 
 ```typescript
-import {
-  PanelRoot,
-  PanelContainer,
-  PanelHeader,
-  PanelContent,
-  PanelFooter,
-} from '@app-builder/components/Panel/Panel';
+import { Panel } from '@app-builder/components/Panel';
+import { useTranslation } from 'react-i18next';
 
 export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const { t } = useTranslation(['common']);
+
+  const handleValidateClick = () => {
+    onOpenChange(false);
+  };
+
   return (
-    <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="md">
-        <PanelHeader>Detail View</PanelHeader>
-        <PanelContent>
+    <Panel.Root open={open} onOpenChange={onOpenChange}>
+      <Panel.Container size="medium">
+        <Panel.Content>
+          <Panel.Header>Detail View</Panel.Header>
           {/* Scrollable content */}
-        </PanelContent>
-        <PanelFooter>
-          <Button onClick={() => onOpenChange(false)}>Close</Button>
-        </PanelFooter>
-      </PanelContainer>
-    </PanelRoot>
+          <Panel.Footer>
+            <Panel.FooterButton variant="secondary" label={t('common:close')} isCloseButton />
+            <Panel.FooterButton variant="primary" onClick={handleValidateClick} label={t('common:save')} />
+          </Panel.Footer>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
 ```
@@ -225,12 +227,9 @@ export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChang
 
 | Size | Max Width |
 |------|-----------|
-| `sm` | 24rem |
-| `md` | 28rem |
-| `lg` | 32rem |
-| `xl` | 36rem |
-| `2xl` | 42rem |
-| `3xl` | 48rem |
-| `max` | 1000px |
+|  small | 'max-w-[calc(100vw_/_3)]' |
+|  medium | 'max-w-[50vw]' |
+|  large | 'max-w-[calc(100vw_*_(2_/_3))]' |
+
 
 Features: slide animation, focus trapping, Escape to close, portal rendering.
