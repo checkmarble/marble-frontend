@@ -207,12 +207,12 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/analytics/cases/case_status_by_sla:
+/analytics/cases/case_sla_status_by_date:
   post:
     tags:
       - Analytics
-    summary: Get case status by sla
-    operationId: getCaseStatusBySla
+    summary: Get case SLA status by date
+    operationId: getCaseSlaStatusByDate
     security:
       - bearerAuth: []
     requestBody:
@@ -223,13 +223,13 @@
             $ref: '#/components/schemas/CaseAnalyticsQueryDto'
     responses:
       '200':
-        description: The case status by sla
+        description: The case SLA status by date
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/CaseStatusBySlaResponseDto'
+                $ref: '#/components/schemas/CaseSlaStatusByDateResponseDto'
       '400':
         $ref: 'components.yml#/responses/400'
       '401':
@@ -648,22 +648,6 @@ components:
           type: integer
         snoozed:
           type: integer
-    CaseStatusBySlaResponseDto:
-      type: object
-      required:
-        - inbox
-        - completed
-        - breached
-        - open
-      properties:
-        inbox:
-          type: string
-        completed:
-          type: integer
-        breached:
-          type: integer
-        open:
-          type: integer
     AvailableFiltersRequestDto:
       type: object
       required:
@@ -810,4 +794,20 @@ components:
           $ref: '#/components/schemas/AnalyticsBracketDto'
         count:
           type: integer
-
+    CaseSlaStatusByDateResponseDto:
+      type: object
+      required:
+        - date
+        - completed_within_sla
+        - sla_breached
+        - still_open_within_sla
+      properties:
+        date:
+          type: string
+          format: date
+        completed_within_sla:
+          type: integer
+        sla_breached:
+          type: integer
+        still_open_within_sla:
+          type: integer

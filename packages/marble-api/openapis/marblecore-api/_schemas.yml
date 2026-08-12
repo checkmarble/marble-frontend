@@ -563,8 +563,6 @@ CaseStatusByDateResponseDto:
   $ref: analytics.yml#/components/schemas/CaseStatusByDateResponseDto
 CaseStatusByInboxResponseDto:
   $ref: analytics.yml#/components/schemas/CaseStatusByInboxResponseDto
-CaseStatusBySlaResponseDto:
-  $ref: analytics.yml#/components/schemas/CaseStatusBySlaResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto
 AnalyticsBracketDto:
@@ -585,6 +583,8 @@ CasesDurationResponseDto:
   $ref: analytics.yml#/components/schemas/CasesDurationResponseDto
 OpenCasesByAgeResponseDto:
   $ref: analytics.yml#/components/schemas/OpenCasesByAgeResponseDto
+CaseSlaStatusByDateResponseDto:
+  $ref: analytics.yml#/components/schemas/CaseSlaStatusByDateResponseDto
 
 # CONTINUOUS SCREENINGS
 
