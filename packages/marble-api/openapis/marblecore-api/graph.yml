@@ -91,6 +91,18 @@
         required: true
         schema:
           type: string
+      - name: types
+        description: Comma-separated entity types to look for
+        in: query
+        schema:
+          type: string
+      - name: degrees
+        description: Depth to walk the graph for
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 5
     responses:
       "200":
         description: Relationship graph
@@ -196,6 +208,17 @@ components:
               enum: [match, link]
             hypernode_count:
               type: integer
+            metadata:
+              type: object
+              properties:
+                risk_level:
+                  type: integer
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+
 
     GraphEdge:
       type: object

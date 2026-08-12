@@ -2175,6 +2175,10 @@ export type GraphNode = GraphNodeRef & {
     connector?: boolean;
     connector_kind?: "match" | "link";
     hypernode_count?: number;
+    metadata?: {
+        risk_level?: number;
+        tags?: string[];
+    };
 };
 export type GraphEdge = {
     kind: string;
@@ -7354,7 +7358,10 @@ export function deleteGraphRelation(relationId: string, opts?: Oazapfts.RequestO
 /**
  * Generate the relationship graph from a starting record
  */
-export function generateRelationshipGraph(recordType: string, recordId: string, opts?: Oazapfts.RequestOpts) {
+export function generateRelationshipGraph(recordType: string, recordId: string, { types, degrees }: {
+    types?: string;
+    degrees?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Graph;
@@ -7364,7 +7371,10 @@ export function generateRelationshipGraph(recordType: string, recordId: string, 
     } | {
         status: 403;
         data: string;
-    }>(`/graph/${encodeURIComponent(recordType)}/${encodeURIComponent(recordId)}`, {
+    }>(`/graph/${encodeURIComponent(recordType)}/${encodeURIComponent(recordId)}${QS.query(QS.explode({
+        types,
+        degrees
+    }))}`, {
         ...opts
     }));
 }
