@@ -1,4 +1,3 @@
-import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
@@ -31,8 +30,12 @@ import {
   getLinkToSingleDataEdgeId,
   LinkRelation,
   type LinkToSingleData,
+  retargetDataModelHandles,
 } from './LinkRelation';
 import { TableDetails, TableDetailsProps } from './TableDetails';
+
+const ORPHAN_COLUMN_GAP = 100;
+const ORPHAN_STACK_GAP = 100;
 
 type CommonData<T extends string, D> = D & {
   type: T;
@@ -113,6 +116,8 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
   }, []);
 
+  const { fitView, getEdges, getNodes } = useDataModelReactFlow();
+
   useEffect(() => {
     setIsInitialLayoutSettled(false);
     hasScheduledInitialStabilizationRef.current = false;
@@ -147,8 +152,8 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
         }),
       ),
     );
-    setEdges((currentEdges) =>
-      R.pipe(
+    setEdges((currentEdges) => {
+      const nextEdges = R.pipe(
         dataModel,
         R.flatMap((tableModel) => tableModel.linksToSingle),
         R.filter((link) => link.parentTableId !== link.childTableId),
@@ -156,6 +161,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
         R.map((linkToSingleData) => {
           const edgeId = getLinkToSingleDataEdgeId(linkToSingleData);
           const existingEdge = currentEdges.find((ed) => ed.id === edgeId);
+          const endpoints = getLinkToSingleDataEdge(linkToSingleData);
           if (existingEdge) {
             if (existingEdge.data === undefined) return existingEdge;
             return {
@@ -169,7 +175,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
           return {
             id: edgeId,
             type: 'link_to_single_edge',
-            ...getLinkToSingleDataEdge(linkToSingleData),
+            ...endpoints,
             data: {
               ...linkToSingleData,
               type: 'link_to_single_edge',
@@ -178,11 +184,23 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
             hidden: true,
           } satisfies Edge<DataModelEdgeData>;
         }),
-      ),
-    );
-  }, [dataModel]);
+      );
 
-  const { fitView, getEdges, getNodes } = useDataModelReactFlow();
+      // Reused edges keep the sides geometry gave them; recompute from current node positions
+      // instead of falling back to the default LR endpoints.
+      return retargetDataModelHandles(getNodes(), nextEdges);
+    });
+  }, [dataModel, getNodes]);
+
+  const onNodeDragStop = useCallback(() => {
+    setEdges((eds) => retargetDataModelHandles(getNodes(), eds));
+  }, [getNodes]);
+
+  const onAutoLayout = useCallback(() => {
+    const layout = layoutElements(getNodes(), getEdges());
+    setNodes(layout.nodes);
+    setEdges(layout.edges);
+  }, [getEdges, getNodes]);
 
   useIsomorphicLayoutEffect(() => {
     if (!nodesInitialized) return;
@@ -337,12 +355,13 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
         minZoom={0.3}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeDragStop={onNodeDragStop}
         defaultEdgeOptions={defaultDataModelEdgeOptions}
         connectionLineStyle={defaultDataModelEdgeOptions.style}
         colorMode={theme.theme}
       >
         <Controls position="bottom-left" className="z-10">
-          <CustomControls />
+          <CustomControls onAutoLayout={onAutoLayout} />
         </Controls>
         {children}
       </ReactFlow>
@@ -350,7 +369,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   );
 }
 
-function CustomControls() {
+function CustomControls({ onAutoLayout }: { onAutoLayout: () => void }) {
   const { getNodes, fitView } = useDataModelReactFlow();
 
   return (
@@ -373,51 +392,98 @@ function CustomControls() {
         </SchemaMenuMenuPopover>
       </SchemaMenuRoot>
 
-      <AutoLayoutControlButton layoutElements={layoutElements} />
+      <button className="react-flow__controls-button" title="Automatic layout" type="button" onClick={onAutoLayout}>
+        <Icon icon="tree-schema" />
+      </button>
     </>
   );
 }
 
+function withPosition(nd: Node<DataModelNodeData>, position: { x: number; y: number }): Node<DataModelNodeData> {
+  if (position.x === nd.position.x && position.y === nd.position.y) return nd;
+  return { ...nd, position } satisfies Node<DataModelNodeData>;
+}
+
+function stackOrphans(
+  orphans: Array<Node<DataModelNodeData>>,
+  origin: { x: number; y: number },
+): Array<Node<DataModelNodeData>> {
+  let y = origin.y;
+  return orphans.map((nd) => {
+    const { height } = nodeMeasured(nd);
+    const positioned = withPosition(nd, { x: origin.x, y });
+    y += (height ?? 0) + ORPHAN_STACK_GAP;
+    return positioned;
+  });
+}
+
 function layoutElements(nodes: Array<Node<DataModelNodeData>>, edges: Array<Edge<DataModelEdgeData>>) {
-  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  g.setGraph({
-    rankdir: 'LR',
-    nodesep: 100,
-    ranksep: 100,
-  });
+  const linkedIds = new Set<string>();
+  for (const edge of edges) {
+    linkedIds.add(edge.source);
+    linkedIds.add(edge.target);
+  }
 
-  edges.forEach((edge) => g.setEdge(edge.source, edge.target));
-  nodes.forEach((node) => {
-    const { width, height } = nodeMeasured(node);
-    return g.setNode(node.id, {
-      width,
-      height,
+  const orphans = nodes.filter((nd) => !linkedIds.has(nd.id)).sort((a, b) => a.id.localeCompare(b.id));
+  const linked = nodes.filter((nd) => linkedIds.has(nd.id));
+
+  // Orphan rail always occupies the top-left of the layout coordinate space.
+  const maxOrphanWidth = orphans.reduce((max, nd) => Math.max(max, nodeMeasured(nd).width ?? 0), 0);
+  const laidOrphans = stackOrphans(orphans, { x: 0, y: 0 });
+  const linkedOriginX = orphans.length > 0 ? maxOrphanWidth + ORPHAN_COLUMN_GAP : 0;
+
+  let laidLinked: Array<Node<DataModelNodeData>> = [];
+
+  if (linked.length > 0) {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+    g.setGraph({
+      rankdir: 'LR',
+      nodesep: 100,
+      ranksep: 100,
     });
-  });
 
-  Dagre.layout(g, {
-    weight: 1000,
-    minlen: 3,
-  });
+    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+    linked.forEach((node) => {
+      const { width, height } = nodeMeasured(node);
+      g.setNode(node.id, { width, height });
+    });
 
-  return {
-    nodes: nodes.map((nd) => {
+    Dagre.layout(g, {
+      weight: 1000,
+      minlen: 3,
+    });
+
+    const dagreLinked = linked.map((nd) => {
       const { x, y } = g.node(nd.id);
       const { width, height } = nodeMeasured(nd);
-      const position = {
+      return withPosition(nd, {
         x: x - (width ?? 0) / 2,
         y: y - (height ?? 0) / 2,
-      };
+      });
+    });
 
-      if (position.x === nd.position.x && position.y === nd.position.y) {
-        return nd;
-      }
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    for (const nd of dagreLinked) {
+      minX = Math.min(minX, nd.position.x);
+      minY = Math.min(minY, nd.position.y);
+    }
 
-      return {
-        ...nd,
-        position,
-      } satisfies Node<DataModelNodeData>;
-    }),
-    edges: edges,
+    const shiftX = linkedOriginX - minX;
+    const shiftY = -minY;
+    laidLinked = dagreLinked.map((nd) =>
+      withPosition(nd, {
+        x: nd.position.x + shiftX,
+        y: nd.position.y + shiftY,
+      }),
+    );
+  }
+
+  const byId = new Map([...laidLinked, ...laidOrphans].map((nd) => [nd.id, nd]));
+  const laidOutNodes = nodes.map((nd) => byId.get(nd.id) ?? nd);
+
+  return {
+    nodes: laidOutNodes,
+    edges: retargetDataModelHandles(laidOutNodes, edges),
   };
 }
