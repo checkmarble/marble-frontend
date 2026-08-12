@@ -4,6 +4,7 @@ import { Panel } from '@app-builder/components/Panel';
 import { CollapsiblePaper } from '@app-builder/components/Paper';
 import { type DataModel, type DataModelField, type TableModel } from '@app-builder/models/data-model';
 import { type GraphRelation } from '@app-builder/models/graph';
+import { type SemanticTypeField } from '@app-builder/models/semantic-types';
 import { useCreateGraphRelationMutation } from '@app-builder/queries/graph/create-relation';
 import { useDeleteGraphRelationMutation } from '@app-builder/queries/graph/delete-relation';
 import { useDeleteGraphRelationsMutation } from '@app-builder/queries/graph/delete-relations';
@@ -24,17 +25,38 @@ function fieldSemanticKey(field: DataModelField): string | null {
   return `${field.semanticType}:${field.semanticSubType ?? ''}`;
 }
 
+/**
+ * Semantic types that can join across type boundaries (bidirectional).
+ * Exact same-type matches still use `fieldSemanticKey` (including subtype).
+ */
+const COMPATIBLE_SEMANTIC_TYPES: ReadonlyArray<ReadonlySet<SemanticTypeField>> = [
+  new Set(['foreign_key', 'unique_id']),
+];
+
+function areSemanticTypesCompatible(left: SemanticTypeField, right: SemanticTypeField): boolean {
+  if (left === right) return true;
+  return COMPATIBLE_SEMANTIC_TYPES.some((group) => group.has(left) && group.has(right));
+}
+
+function areFieldsJoinable(left: DataModelField, right: DataModelField): boolean {
+  const leftKey = fieldSemanticKey(left);
+  const rightKey = fieldSemanticKey(right);
+  if (!leftKey || !rightKey || !left.semanticType || !right.semanticType) return false;
+  if (leftKey === rightKey) return true;
+  // Same semantic type with a different subtype is not joinable.
+  if (left.semanticType === right.semanticType) return false;
+  return areSemanticTypesCompatible(left.semanticType, right.semanticType);
+}
+
 /** Fields that can anchor a relation: only those carrying a semantic type. */
 function semanticFields(table: TableModel | undefined): DataModelField[] {
   return (table?.fields ?? []).filter((field) => fieldSemanticKey(field) != null);
 }
 
-/** The right side can only join fields sharing the left side's semantic key. */
+/** Right-side fields that share the left field's semantic key, or a compatible semantic type. */
 function joinableFields(rightTable: TableModel | undefined, leftField: DataModelField | undefined): DataModelField[] {
   if (!rightTable || !leftField) return [];
-  const leftKey = fieldSemanticKey(leftField);
-  if (!leftKey) return [];
-  return rightTable.fields.filter((field) => fieldSemanticKey(field) === leftKey);
+  return rightTable.fields.filter((field) => areFieldsJoinable(leftField, field));
 }
 
 /** The relations sharing one label, which is what the settings UI calls a "setting". */

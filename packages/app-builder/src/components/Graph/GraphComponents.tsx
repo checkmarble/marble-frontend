@@ -1,7 +1,6 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
 import { SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
-import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import {
   BaseEdge,
@@ -26,7 +25,7 @@ import {
   type PersonRfNode,
   type PivotRfNode,
 } from './graph-rf-types';
-import { ObjectTagLine, useObjectTags } from './ObjectTags';
+import { ObjectTagLine, useTagsByIds } from './ObjectTags';
 import { resolveTitle } from './resolve-object-title';
 
 /**
@@ -136,13 +135,12 @@ function PersonPill({
   const isSelected = selectedObject?.objectType === data.objectType && selectedObject?.objectId === data.objectId;
   const isHighlighted = data.isStart || isSelected;
 
-  const scoreQuery = useScoreLatestQuery(data.objectType, data.objectId, showRiskScore);
+  // Org-level palette only — risk level itself comes from graph node metadata.
   const settingsQuery = useScoringSettingsQuery(showRiskScore);
-
-  const score = scoreQuery.data?.score;
   const maxRiskLevel = settingsQuery.data?.settings?.maxRiskLevel as 3 | 4 | 5 | 6 | undefined;
+  const riskLevel = data.riskLevel;
   const scoreColor =
-    score && maxRiskLevel ? (SCORING_LEVELS_COLORS[maxRiskLevel][score.risk_level] ?? undefined) : undefined;
+    riskLevel != null && maxRiskLevel ? (SCORING_LEVELS_COLORS[maxRiskLevel][riskLevel] ?? undefined) : undefined;
 
   return (
     <div
@@ -166,12 +164,12 @@ function PersonPill({
           />
           {isHovered && <div className="absolute inset-0 rounded-full bg-purple-primary animate-ping" />}
         </div>
-        {showRiskScore && score && scoreColor ? (
+        {showRiskScore && riskLevel != null && scoreColor ? (
           <span
             className="rounded-full border p-px text-xs font-normal h-7 min-w-7 grid place-items-center text-white border-white -ml-1"
             style={{ backgroundColor: scoreColor }}
           >
-            {score.risk_level}
+            {riskLevel}
           </span>
         ) : null}
       </div>
@@ -256,7 +254,7 @@ function NodeShell({
 function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   const { nodeTagsVisible, toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
   const title = usePersonTitle(data);
-  const { tags } = useObjectTags(data.objectType, data.objectId, nodeTagsVisible);
+  const tags = useTagsByIds(data.tagIds, nodeTagsVisible);
   const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (

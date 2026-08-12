@@ -311,7 +311,13 @@ export function GraphSettingsPanel() {
     objectId,
     hasSelection && selectedObject.nodeType === 'person',
   );
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
+  // Live annotations/score/tags fetches stay in this panel for the selected node only.
+  const annotationsQuery = useGetAnnotationsQuery(
+    objectType,
+    objectId,
+    false,
+    hasSelection && selectedObject.nodeType === 'person',
+  );
 
   return (
     <aside

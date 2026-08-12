@@ -7,6 +7,10 @@ export type PersonRfData = {
   isStart: boolean;
   objectType: string;
   objectId: string;
+  /** Risk level from the graph payload metadata (not a live score fetch). */
+  riskLevel?: number;
+  /** Tag ids from the graph payload metadata (not a live annotations fetch). */
+  tagIds: string[];
   /** Set on a branch root the user drilled into: it can be regrouped. */
   isExpandedClusterRoot?: boolean;
 };

@@ -12,12 +12,22 @@ export type GraphNodeRef = {
   id: string;
 };
 
+/** Per-node annotations returned with the graph payload (structural/record nodes). */
+export type GraphNodeMetadata = {
+  riskLevel?: number;
+  tagIds: string[];
+};
+
 /**
  * A node is one of three things: an entity record, a connector the API matched
  * records on, or a hypernode standing in for `hypernodeCount` collapsed records.
  */
 export type GraphNodeData = GraphNodeRef &
-  ({ kind: 'record' } | { kind: 'connector' } | { kind: 'hypernode'; hypernodeCount: number });
+  (
+    | { kind: 'record'; metadata: GraphNodeMetadata }
+    | { kind: 'connector' }
+    | { kind: 'hypernode'; hypernodeCount: number }
+  );
 
 export type GraphEdgeData = {
   from: GraphNodeRef;
@@ -56,6 +66,13 @@ function adaptGraphNodeRef(dto: GraphNodeRefDto): GraphNodeRef {
   return { type: dto.type, id: dto.id };
 }
 
+function adaptGraphNodeMetadata(dto: GraphNodeDto): GraphNodeMetadata {
+  return {
+    riskLevel: dto.metadata?.risk_level,
+    tagIds: dto.metadata?.tags ?? [],
+  };
+}
+
 function adaptGraphNode(dto: GraphNodeDto): GraphNodeData {
   const ref = adaptGraphNodeRef(dto);
   if (dto.hypernode_count != null) {
@@ -64,7 +81,7 @@ function adaptGraphNode(dto: GraphNodeDto): GraphNodeData {
   if (dto.connector === true) {
     return { ...ref, kind: 'connector' };
   }
-  return { ...ref, kind: 'record' };
+  return { ...ref, kind: 'record', metadata: adaptGraphNodeMetadata(dto) };
 }
 
 function adaptGraphEdge(dto: GraphEdgeDto): GraphEdgeData {

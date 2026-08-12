@@ -14,7 +14,7 @@ function personNode(id: string, isStart = false): GraphRfNode {
     id,
     position: { x: 0, y: 0 },
     type: 'person',
-    data: { label: id, subEntity: 'natural', isStart, objectType: 'users', objectId: id },
+    data: { label: id, subEntity: 'natural', isStart, objectType: 'users', objectId: id, tagIds: [] },
   };
 }
 

@@ -4,8 +4,19 @@ import { type Tag as TagModel } from 'marble-api';
 import { cn, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 
 /**
- * Org tags currently annotating an object. `enabled: false` skips the request
- * entirely, so callers can gate on a display toggle.
+ * Resolve org tag models from ids already present on the graph payload.
+ * No network call — org tags are loaded once for the organization.
+ */
+export function useTagsByIds(tagIds: readonly string[] | undefined, enabled = true): TagModel[] {
+  const { getTagById } = useOrganizationObjectTags();
+  if (!enabled || !tagIds?.length) return [];
+  return tagIds.map((id) => getTagById(id)).filter((tag): tag is TagModel => tag != null);
+}
+
+/**
+ * Org tags currently annotating an object (live annotations fetch).
+ * Prefer {@link useTagsByIds} for graph node chrome; keep this for the settings panel.
+ * `enabled: false` skips the request entirely, so callers can gate on a display toggle.
  */
 export function useObjectTags(
   objectType: string,

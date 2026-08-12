@@ -73,7 +73,7 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
           type: 'pivot',
           data: { label: node.id, rawType: node.type },
         }))
-        .with({ kind: 'record' }, () => ({
+        .with({ kind: 'record' }, (record) => ({
           id: key,
           position,
           type: 'person',
@@ -83,6 +83,8 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
             isStart: key === startKey,
             objectType: node.type,
             objectId: node.id,
+            riskLevel: record.metadata.riskLevel,
+            tagIds: record.metadata.tagIds,
           },
         }))
         .exhaustive(),

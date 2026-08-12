@@ -29,7 +29,8 @@ export function makeGetGraphRepository() {
       await marbleCoreApiClient.deleteGraphRelation(relationId);
     },
     generateGraph: async (recordType, recordId) => {
-      const graph = await marbleCoreApiClient.generateRelationshipGraph(recordType, recordId);
+      // Empty query-params object so auth opts are not bound to { types, degrees }.
+      const graph = await marbleCoreApiClient.generateRelationshipGraph(recordType, recordId, {});
       return adaptGraphData(graph);
     },
   });
