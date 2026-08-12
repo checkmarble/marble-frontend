@@ -1,6 +1,6 @@
 import { useControllableState } from '@app-builder/hooks/useControllableState';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo, useState } from 'react';
 import { type GraphObjectRef } from './graph-keys';
 import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter, withAvailableLabels, withLabelToggled } from './relation-filter';
@@ -117,6 +117,8 @@ export function CustomerGraphProvider({
   onClusterThresholdChange,
   layoutMode: controlledLayoutMode,
   onLayoutModeChange,
+  relationFilter: controlledRelationFilter,
+  onRelationFilterChange,
 }: {
   children: ReactNode;
   initialSelectedObject?: SelectedGraphObject | null;
@@ -125,10 +127,18 @@ export function CustomerGraphProvider({
   onClusterThresholdChange?: (value: ClusterThreshold) => void;
   layoutMode?: GraphLayoutMode;
   onLayoutModeChange?: (value: GraphLayoutMode) => void;
+  /** When provided with `onRelationFilterChange`, the user's label picks survive provider remounts. */
+  relationFilter?: RelationFilter;
+  onRelationFilterChange?: Dispatch<SetStateAction<RelationFilter>>;
 }) {
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
-  const [relationFilter, setRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
+  const [uncontrolledRelationFilter, setUncontrolledRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
+  // Not `useControllableState`: the mutators below update from the previous filter,
+  // and taking an updater is what keeps their identity stable for `syncRelationLabels`'
+  // caller effect.
+  const relationFilter = controlledRelationFilter ?? uncontrolledRelationFilter;
+  const setRelationFilter = onRelationFilterChange ?? setUncontrolledRelationFilter;
   const [showRiskScore, setShowRiskScore] = useState(false);
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
@@ -164,13 +174,19 @@ export function CustomerGraphProvider({
     setExpandedRootIds((prev) => toggleInSet(prev, rootId));
   }, []);
 
-  const toggleRelationLabel = useCallback((label: string) => {
-    setRelationFilter((prev) => withLabelToggled(prev, label));
-  }, []);
+  const toggleRelationLabel = useCallback(
+    (label: string) => {
+      setRelationFilter((prev) => withLabelToggled(prev, label));
+    },
+    [setRelationFilter],
+  );
 
-  const syncRelationLabels = useCallback((labels: string[]) => {
-    setRelationFilter((prev) => withAvailableLabels(prev, labels));
-  }, []);
+  const syncRelationLabels = useCallback(
+    (labels: string[]) => {
+      setRelationFilter((prev) => withAvailableLabels(prev, labels));
+    },
+    [setRelationFilter],
+  );
 
   const clearCheckedNodes = useCallback(() => {
     setCheckedNodeIds(new Set());

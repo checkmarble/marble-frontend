@@ -22,6 +22,7 @@ import { Route as AppBuilderRouteImport } from './routes/_app/_builder'
 import { Route as AppAuthRouteImport } from './routes/_app/_auth'
 import { Route as RessourcesDataExportOrgRouteImport } from './routes/ressources/data/export-org'
 import { Route as AppBuilderUserScoringRouteImport } from './routes/_app/_builder/user-scoring'
+import { Route as AppBuilderTestGraphRouteImport } from './routes/_app/_builder/test-graph'
 import { Route as AppBuilderSettingsRouteImport } from './routes/_app/_builder/settings'
 import { Route as AppBuilderScreeningSearchRouteImport } from './routes/_app/_builder/screening-search'
 import { Route as AppBuilderDetectionRouteImport } from './routes/_app/_builder/detection'
@@ -50,6 +51,7 @@ import { Route as RessourcesCasesDownloadFileFileIdRouteImport } from './routes/
 import { Route as RessourcesCasesDownloadDataCaseIdRouteImport } from './routes/ressources/cases/download-data.$caseId'
 import { Route as AppBuilderUserScoringOverviewRouteImport } from './routes/_app/_builder/user-scoring/overview'
 import { Route as AppBuilderUploadObjectTypeRouteImport } from './routes/_app/_builder/upload/$objectType'
+import { Route as AppBuilderTestGraphSettingsRouteImport } from './routes/_app/_builder/test-graph/settings'
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
@@ -183,6 +185,11 @@ const AppBuilderUserScoringRoute = AppBuilderUserScoringRouteImport.update({
   path: '/user-scoring',
   getParentRoute: () => AppBuilderRoute,
 } as any)
+const AppBuilderTestGraphRoute = AppBuilderTestGraphRouteImport.update({
+  id: '/test-graph',
+  path: '/test-graph',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
 const AppBuilderSettingsRoute = AppBuilderSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -260,9 +267,9 @@ const AppBuilderUserScoringIndexRoute =
   } as any)
 const AppBuilderTestGraphIndexRoute =
   AppBuilderTestGraphIndexRouteImport.update({
-    id: '/test-graph/',
-    path: '/test-graph/',
-    getParentRoute: () => AppBuilderRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderTestGraphRoute,
   } as any)
 const AppBuilderSettingsIndexRoute = AppBuilderSettingsIndexRouteImport.update({
   id: '/',
@@ -338,6 +345,12 @@ const AppBuilderUploadObjectTypeRoute =
     id: '/upload/$objectType',
     path: '/upload/$objectType',
     getParentRoute: () => AppBuilderRoute,
+  } as any)
+const AppBuilderTestGraphSettingsRoute =
+  AppBuilderTestGraphSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AppBuilderTestGraphRoute,
   } as any)
 const AppBuilderSettingsWebhooksRoute =
   AppBuilderSettingsWebhooksRouteImport.update({
@@ -790,6 +803,7 @@ export interface FileRoutesByFullPath {
   '/detection': typeof AppBuilderDetectionRouteWithChildren
   '/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/settings': typeof AppBuilderSettingsRouteWithChildren
+  '/test-graph': typeof AppBuilderTestGraphRouteWithChildren
   '/user-scoring': typeof AppBuilderUserScoringRouteWithChildren
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
   '/cases/$caseId': typeof AppBuilderCasesCaseIdRouteWithChildren
@@ -813,6 +827,7 @@ export interface FileRoutesByFullPath {
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
+  '/test-graph/settings': typeof AppBuilderTestGraphSettingsRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
   '/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
@@ -908,6 +923,7 @@ export interface FileRoutesByTo {
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
+  '/test-graph/settings': typeof AppBuilderTestGraphSettingsRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
   '/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
@@ -990,6 +1006,7 @@ export interface FileRoutesById {
   '/_app/_builder/detection': typeof AppBuilderDetectionRouteWithChildren
   '/_app/_builder/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/_app/_builder/settings': typeof AppBuilderSettingsRouteWithChildren
+  '/_app/_builder/test-graph': typeof AppBuilderTestGraphRouteWithChildren
   '/_app/_builder/user-scoring': typeof AppBuilderUserScoringRouteWithChildren
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
   '/_app/_builder/cases/$caseId': typeof AppBuilderCasesCaseIdRouteWithChildren
@@ -1014,6 +1031,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/_app/_builder/settings/users': typeof AppBuilderSettingsUsersRoute
   '/_app/_builder/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
+  '/_app/_builder/test-graph/settings': typeof AppBuilderTestGraphSettingsRoute
   '/_app/_builder/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
   '/_app/_builder/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
@@ -1102,6 +1120,7 @@ export interface FileRouteTypes {
     | '/detection'
     | '/screening-search'
     | '/settings'
+    | '/test-graph'
     | '/user-scoring'
     | '/ressources/data/export-org'
     | '/cases/$caseId'
@@ -1125,6 +1144,7 @@ export interface FileRouteTypes {
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
+    | '/test-graph/settings'
     | '/upload/$objectType'
     | '/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
@@ -1220,6 +1240,7 @@ export interface FileRouteTypes {
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
+    | '/test-graph/settings'
     | '/upload/$objectType'
     | '/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
@@ -1301,6 +1322,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection'
     | '/_app/_builder/screening-search'
     | '/_app/_builder/settings'
+    | '/_app/_builder/test-graph'
     | '/_app/_builder/user-scoring'
     | '/ressources/data/export-org'
     | '/_app/_builder/cases/$caseId'
@@ -1325,6 +1347,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/tags'
     | '/_app/_builder/settings/users'
     | '/_app/_builder/settings/webhooks'
+    | '/_app/_builder/test-graph/settings'
     | '/_app/_builder/upload/$objectType'
     | '/_app/_builder/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
@@ -1503,6 +1526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderUserScoringRouteImport
       parentRoute: typeof AppBuilderRoute
     }
+    '/_app/_builder/test-graph': {
+      id: '/_app/_builder/test-graph'
+      path: '/test-graph'
+      fullPath: '/test-graph'
+      preLoaderRoute: typeof AppBuilderTestGraphRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
     '/_app/_builder/settings': {
       id: '/_app/_builder/settings'
       path: '/settings'
@@ -1603,10 +1633,10 @@ declare module '@tanstack/react-router' {
     }
     '/_app/_builder/test-graph/': {
       id: '/_app/_builder/test-graph/'
-      path: '/test-graph'
+      path: '/'
       fullPath: '/test-graph/'
       preLoaderRoute: typeof AppBuilderTestGraphIndexRouteImport
-      parentRoute: typeof AppBuilderRoute
+      parentRoute: typeof AppBuilderTestGraphRoute
     }
     '/_app/_builder/settings/': {
       id: '/_app/_builder/settings/'
@@ -1698,6 +1728,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/upload/$objectType'
       preLoaderRoute: typeof AppBuilderUploadObjectTypeRouteImport
       parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/test-graph/settings': {
+      id: '/_app/_builder/test-graph/settings'
+      path: '/settings'
+      fullPath: '/test-graph/settings'
+      preLoaderRoute: typeof AppBuilderTestGraphSettingsRouteImport
+      parentRoute: typeof AppBuilderTestGraphRoute
     }
     '/_app/_builder/settings/webhooks': {
       id: '/_app/_builder/settings/webhooks'
@@ -2685,6 +2722,19 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
 const AppBuilderSettingsRouteWithChildren =
   AppBuilderSettingsRoute._addFileChildren(AppBuilderSettingsRouteChildren)
 
+interface AppBuilderTestGraphRouteChildren {
+  AppBuilderTestGraphSettingsRoute: typeof AppBuilderTestGraphSettingsRoute
+  AppBuilderTestGraphIndexRoute: typeof AppBuilderTestGraphIndexRoute
+}
+
+const AppBuilderTestGraphRouteChildren: AppBuilderTestGraphRouteChildren = {
+  AppBuilderTestGraphSettingsRoute: AppBuilderTestGraphSettingsRoute,
+  AppBuilderTestGraphIndexRoute: AppBuilderTestGraphIndexRoute,
+}
+
+const AppBuilderTestGraphRouteWithChildren =
+  AppBuilderTestGraphRoute._addFileChildren(AppBuilderTestGraphRouteChildren)
+
 interface AppBuilderUserScoringRouteChildren {
   AppBuilderUserScoringOverviewRoute: typeof AppBuilderUserScoringOverviewRoute
   AppBuilderUserScoringIndexRoute: typeof AppBuilderUserScoringIndexRoute
@@ -2712,10 +2762,10 @@ interface AppBuilderRouteChildren {
   AppBuilderDetectionRoute: typeof AppBuilderDetectionRouteWithChildren
   AppBuilderScreeningSearchRoute: typeof AppBuilderScreeningSearchRouteWithChildren
   AppBuilderSettingsRoute: typeof AppBuilderSettingsRouteWithChildren
+  AppBuilderTestGraphRoute: typeof AppBuilderTestGraphRouteWithChildren
   AppBuilderUserScoringRoute: typeof AppBuilderUserScoringRouteWithChildren
   AppBuilderUploadObjectTypeRoute: typeof AppBuilderUploadObjectTypeRoute
   AppBuilderClientDetailIndexRoute: typeof AppBuilderClientDetailIndexRoute
-  AppBuilderTestGraphIndexRoute: typeof AppBuilderTestGraphIndexRoute
   AppBuilderClientDetailObjectTypeObjectIdRoute: typeof AppBuilderClientDetailObjectTypeObjectIdRoute
 }
 
@@ -2729,10 +2779,10 @@ const AppBuilderRouteChildren: AppBuilderRouteChildren = {
   AppBuilderDetectionRoute: AppBuilderDetectionRouteWithChildren,
   AppBuilderScreeningSearchRoute: AppBuilderScreeningSearchRouteWithChildren,
   AppBuilderSettingsRoute: AppBuilderSettingsRouteWithChildren,
+  AppBuilderTestGraphRoute: AppBuilderTestGraphRouteWithChildren,
   AppBuilderUserScoringRoute: AppBuilderUserScoringRouteWithChildren,
   AppBuilderUploadObjectTypeRoute: AppBuilderUploadObjectTypeRoute,
   AppBuilderClientDetailIndexRoute: AppBuilderClientDetailIndexRoute,
-  AppBuilderTestGraphIndexRoute: AppBuilderTestGraphIndexRoute,
   AppBuilderClientDetailObjectTypeObjectIdRoute:
     AppBuilderClientDetailObjectTypeObjectIdRoute,
 }

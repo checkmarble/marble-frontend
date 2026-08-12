@@ -1,52 +1,21 @@
 import { Page } from '@app-builder/components';
-import {
-  type ClusterThreshold,
-  CustomerGraphProvider,
-  DEFAULT_CLUSTER_THRESHOLD,
-  useCustomerGraph,
-} from '@app-builder/components/Graph/CustomerGraphContext';
+import { CustomerGraphProvider, useCustomerGraph } from '@app-builder/components/Graph/CustomerGraphContext';
 import { GraphImpl } from '@app-builder/components/Graph/GraphImpl';
 import { GraphOptionSelect } from '@app-builder/components/Graph/GraphOptionSelect';
-import { GraphRelationsSettings } from '@app-builder/components/Graph/GraphRelationsSettings';
 import { GraphSelectionToolbar } from '@app-builder/components/Graph/GraphSelectionToolbar';
 import { GraphSettingsPanel } from '@app-builder/components/Graph/GraphSettingsPanel';
-import { GraphTabSwitch } from '@app-builder/components/Graph/GraphTabSwitch';
-import { type GraphLayoutMode } from '@app-builder/components/Graph/graph-layout';
-import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { type GraphData } from '@app-builder/models/graph';
-import { useGenerateGraphMutation } from '@app-builder/queries/graph/generate-graph';
+import { useTestGraphSession } from '@app-builder/components/Graph/TestGraphSessionContext';
 import { useListGraphRelationsQuery } from '@app-builder/queries/graph/list-relations';
-import { DataModelContextProvider } from '@app-builder/services/data/data-model';
-import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { createFileRoute } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
 import { ReactFlowProvider } from '@xyflow/react';
-import { useEffect, useState } from 'react';
-import { Button, Card, cn, Input } from 'ui-design-system';
+import { useEffect } from 'react';
+import { Button, Card, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const uploadLoader = createServerFn()
-  .middleware([authMiddleware])
-  .handler(async function testGraphLoader({ context }) {
-    const { user, dataModelRepository, entitlements } = context.authInfo;
-    const dataModel = await dataModelRepository.getDataModel();
-    return {
-      dataModel,
-      dataModelFeatureAccess: dataModelFeatureAccessLoader(user, entitlements),
-    };
-  });
-
 export const Route = createFileRoute('/_app/_builder/test-graph/')({
-  loader: () => uploadLoader(),
-  component: RouteComponent,
+  component: TestGraphRoute,
 });
-
-const PAGE_TAB_OPTIONS = [
-  { value: 'graph', label: 'Graph' },
-  { value: 'settings', label: 'Settings' },
-] as const;
-
-type PageTab = (typeof PAGE_TAB_OPTIONS)[number]['value'];
 
 function RelationsLabelSync() {
   const relationsQuery = useListGraphRelationsQuery();
@@ -129,101 +98,77 @@ function StartRecordPicker({
   );
 }
 
-function RouteComponent() {
-  const { dataModel, dataModelFeatureAccess } = Route.useLoaderData();
-  const [activeTab, setActiveTab] = useState<PageTab>('graph');
-  const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
-  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
-  const [recordType, setRecordType] = useState('');
-  const [recordId, setRecordId] = useState('');
-  const [graphData, setGraphData] = useState<GraphData | null>(null);
-  const [graphKey, setGraphKey] = useState(0);
-  const generateMutation = useGenerateGraphMutation();
+function TestGraphRoute() {
+  const dataModel = useDataModel();
+  const {
+    recordType,
+    setRecordType,
+    recordId,
+    setRecordId,
+    graphData,
+    graphGeneration,
+    isGeneratingGraph,
+    loadGraph,
+    clusterThreshold,
+    setClusterThreshold,
+    layoutMode,
+    setLayoutMode,
+    relationFilter,
+    setRelationFilter,
+  } = useTestGraphSession();
 
   const tableNames = dataModel
     .filter((table) => table.semanticType === 'person')
     .map((table) => table.name)
     .sort((a, b) => a.localeCompare(b));
 
-  const onLoad = () => {
-    generateMutation.mutate(
-      { recordType, recordId: recordId.trim() },
-      {
-        onSuccess: (data) => {
-          setGraphData(data);
-          setGraphKey((key) => key + 1);
-        },
-      },
-    );
-  };
-
   return (
-    <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-      <CustomerGraphProvider
-        key={graphKey}
-        clusterThreshold={clusterThreshold}
-        onClusterThresholdChange={setClusterThreshold}
-        layoutMode={layoutMode}
-        onLayoutModeChange={setLayoutMode}
-        initialSelectedObject={
-          graphData
-            ? {
-                nodeType: 'person',
-                objectType: graphData.start.type,
-                objectId: graphData.start.id,
-                persons: [],
-              }
-            : null
-        }
-      >
-        <RelationsLabelSync />
-        <Page.Main className="min-h-0 overflow-hidden">
-          <Page.Header className="justify-between gap-md">
-            <div className="flex items-center gap-lg">
-              <span>Test graph</span>
-              <GraphTabSwitch value={activeTab} options={PAGE_TAB_OPTIONS} onChange={setActiveTab} />
-            </div>
-          </Page.Header>
-          <Page.Container className="min-h-0">
-            <Page.Content className="min-h-0 flex-1" width="fluid">
-              {activeTab === 'settings' ? (
-                <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden max-w-150">
-                  <GraphRelationsSettings dataModel={dataModel} />
-                </Card>
-              ) : (
-                <div className="flex min-h-0 flex-1 flex-col gap-md">
-                  <StartRecordPicker
-                    tableNames={tableNames}
-                    recordType={recordType}
-                    recordId={recordId}
-                    onRecordTypeChange={setRecordType}
-                    onRecordIdChange={setRecordId}
-                    onLoad={onLoad}
-                    isLoading={generateMutation.isPending}
-                  />
-                  {graphData ? (
-                    <Card className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row overflow-hidden p-sm">
-                      <GraphSettingsPanel />
-                      <ReactFlowProvider key={graphKey}>
-                        <div className="relative min-h-0 flex-1">
-                          <GraphSelectionToolbar />
-                          <GraphImpl key={graphKey} data={graphData} dataModel={dataModel} />
-                        </div>
-                      </ReactFlowProvider>
-                    </Card>
-                  ) : (
-                    <Card
-                      className={cn('text-grey-secondary flex min-h-0 flex-1 items-center justify-center p-lg text-sm')}
-                    >
-                      Select a table and object id, then load the graph.
-                    </Card>
-                  )}
+    <Page.Content className="min-h-0 flex-1" width="fluid">
+      <div className="flex min-h-0 flex-1 flex-col gap-md">
+        <StartRecordPicker
+          tableNames={tableNames}
+          recordType={recordType}
+          recordId={recordId}
+          onRecordTypeChange={setRecordType}
+          onRecordIdChange={setRecordId}
+          onLoad={loadGraph}
+          isLoading={isGeneratingGraph}
+        />
+        {graphData ? (
+          // Keyed on the generation so every fetch starts from a clean canvas:
+          // selection, hidden nodes and expanded clusters all refer to the old data.
+          <CustomerGraphProvider
+            key={graphGeneration}
+            clusterThreshold={clusterThreshold}
+            onClusterThresholdChange={setClusterThreshold}
+            layoutMode={layoutMode}
+            onLayoutModeChange={setLayoutMode}
+            relationFilter={relationFilter}
+            onRelationFilterChange={setRelationFilter}
+            initialSelectedObject={{
+              nodeType: 'person',
+              objectType: graphData.start.type,
+              objectId: graphData.start.id,
+              persons: [],
+            }}
+          >
+            <RelationsLabelSync />
+            <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-sm lg:flex-row">
+              <GraphSettingsPanel />
+              <ReactFlowProvider>
+                <div className="relative min-h-0 flex-1">
+                  <GraphSelectionToolbar />
+                  <GraphImpl data={graphData} dataModel={dataModel} />
                 </div>
-              )}
-            </Page.Content>
-          </Page.Container>
-        </Page.Main>
-      </CustomerGraphProvider>
-    </DataModelContextProvider>
+              </ReactFlowProvider>
+            </Card>
+          </CustomerGraphProvider>
+        ) : (
+          <Card className="text-grey-secondary flex min-h-0 flex-1 items-center justify-center p-lg text-sm">
+            Select a table and object id, then load the graph.
+          </Card>
+        )}
+      </div>
+    </Page.Content>
   );
 }
