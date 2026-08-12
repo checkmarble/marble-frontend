@@ -92,6 +92,18 @@ export type CustomerGraphContextValue = {
   expandedRootIds: Set<string>;
   toggleClusterExpanded: (rootId: string) => void;
 
+  /**
+   * Session tag ids for person nodes. Payload metadata is static, so the canvas
+   * reads these instead after bulk-tag or settings-panel edits.
+   * - `nodeTagIdOverrides`: full list (add + remove from the settings panel)
+   * - `addedNodeTagIds`: additive-only (bulk toolbar, which does not know the base list)
+   * Override wins when both are set for a node.
+   */
+  nodeTagIdOverrides: ReadonlyMap<string, readonly string[]>;
+  setNodeTagIds: (nodeId: string, tagIds: readonly string[]) => void;
+  addedNodeTagIds: ReadonlyMap<string, readonly string[]>;
+  addTagsToNodes: (updates: ReadonlyArray<{ nodeId: string; tagIds: readonly string[] }>) => void;
+
   graphStats: GraphStats;
   setGraphStats: (stats: GraphStats) => void;
 };
@@ -113,6 +125,14 @@ function toggleInSet(set: Set<string>, value: string): Set<string> {
 export function CustomerGraphProvider({
   children,
   initialSelectedObject = null,
+  showPersons: controlledShowPersons,
+  onShowPersonsChange,
+  showCompanies: controlledShowCompanies,
+  onShowCompaniesChange,
+  showRiskScore: controlledShowRiskScore,
+  onShowRiskScoreChange,
+  showTags: controlledShowTags,
+  onShowTagsChange,
   clusterThreshold: controlledClusterThreshold,
   onClusterThresholdChange,
   layoutMode: controlledLayoutMode,
@@ -122,7 +142,15 @@ export function CustomerGraphProvider({
 }: {
   children: ReactNode;
   initialSelectedObject?: SelectedGraphObject | null;
-  /** When provided with `onClusterThresholdChange`, survives provider remounts (e.g. graph regenerate). */
+  /** When provided with matching onChange, survives provider remounts (e.g. graph regenerate). */
+  showPersons?: boolean;
+  onShowPersonsChange?: (value: boolean) => void;
+  showCompanies?: boolean;
+  onShowCompaniesChange?: (value: boolean) => void;
+  showRiskScore?: boolean;
+  onShowRiskScoreChange?: (value: boolean) => void;
+  showTags?: boolean;
+  onShowTagsChange?: (value: boolean) => void;
   clusterThreshold?: ClusterThreshold;
   onClusterThresholdChange?: (value: ClusterThreshold) => void;
   layoutMode?: GraphLayoutMode;
@@ -131,16 +159,16 @@ export function CustomerGraphProvider({
   relationFilter?: RelationFilter;
   onRelationFilterChange?: Dispatch<SetStateAction<RelationFilter>>;
 }) {
-  const [showPersons, setShowPersons] = useState(true);
-  const [showCompanies, setShowCompanies] = useState(true);
+  const [showPersons, setShowPersons] = useControllableState(true, controlledShowPersons, onShowPersonsChange);
+  const [showCompanies, setShowCompanies] = useControllableState(true, controlledShowCompanies, onShowCompaniesChange);
   const [uncontrolledRelationFilter, setUncontrolledRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
   // Not `useControllableState`: the mutators below update from the previous filter,
   // and taking an updater is what keeps their identity stable for `syncRelationLabels`'
   // caller effect.
   const relationFilter = controlledRelationFilter ?? uncontrolledRelationFilter;
   const setRelationFilter = onRelationFilterChange ?? setUncontrolledRelationFilter;
-  const [showRiskScore, setShowRiskScore] = useState(false);
-  const [showTags, setShowTags] = useState(false);
+  const [showRiskScore, setShowRiskScore] = useControllableState(false, controlledShowRiskScore, onShowRiskScoreChange);
+  const [showTags, setShowTags] = useControllableState(false, controlledShowTags, onShowTagsChange);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
   const [layoutMode, setLayoutMode] = useControllableState<GraphLayoutMode>(
     'rad-dagre',
@@ -158,6 +186,8 @@ export function CustomerGraphProvider({
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hiddenNodeIds, setHiddenNodeIds] = useState<Set<string>>(() => new Set());
   const [expandedRootIds, setExpandedRootIds] = useState<Set<string>>(() => new Set());
+  const [addedNodeTagIds, setAddedNodeTagIds] = useState<Map<string, string[]>>(() => new Map());
+  const [nodeTagIdOverrides, setNodeTagIdOverrides] = useState<Map<string, string[]>>(() => new Map());
   const [graphStats, setGraphStats] = useState<GraphStats>(EMPTY_GRAPH_STATS);
 
   const hideNodes = useCallback((ids: string[]) => {
@@ -172,6 +202,33 @@ export function CustomerGraphProvider({
   const toggleClusterExpanded = useCallback((rootId: string) => {
     setHoveredNodeId(null);
     setExpandedRootIds((prev) => toggleInSet(prev, rootId));
+  }, []);
+
+  const addTagsToNodes = useCallback((updates: ReadonlyArray<{ nodeId: string; tagIds: readonly string[] }>) => {
+    if (updates.length === 0) return;
+    setAddedNodeTagIds((prev) => {
+      const next = new Map(prev);
+      for (const { nodeId, tagIds } of updates) {
+        if (tagIds.length === 0) continue;
+        next.set(nodeId, [...new Set([...(next.get(nodeId) ?? []), ...tagIds])]);
+      }
+      return next;
+    });
+  }, []);
+
+  const setNodeTagIds = useCallback((nodeId: string, tagIds: readonly string[]) => {
+    setNodeTagIdOverrides((prev) => {
+      const next = new Map(prev);
+      next.set(nodeId, [...tagIds]);
+      return next;
+    });
+    // Full list replaces any pending additive bulk patches for this node.
+    setAddedNodeTagIds((prev) => {
+      if (!prev.has(nodeId)) return prev;
+      const next = new Map(prev);
+      next.delete(nodeId);
+      return next;
+    });
   }, []);
 
   const toggleRelationLabel = useCallback(
@@ -244,17 +301,25 @@ export function CustomerGraphProvider({
       restoreHiddenNodes,
       expandedRootIds,
       toggleClusterExpanded,
+      nodeTagIdOverrides,
+      setNodeTagIds,
+      addedNodeTagIds,
+      addTagsToNodes,
       graphStats,
       setGraphStats,
     }),
     [
       showPersons,
+      setShowPersons,
       showCompanies,
+      setShowCompanies,
       relationFilter,
       syncRelationLabels,
       toggleRelationLabel,
       showRiskScore,
+      setShowRiskScore,
       showTags,
+      setShowTags,
       showEdgeLabels,
       layoutMode,
       setLayoutMode,
@@ -274,6 +339,10 @@ export function CustomerGraphProvider({
       restoreHiddenNodes,
       expandedRootIds,
       toggleClusterExpanded,
+      nodeTagIdOverrides,
+      setNodeTagIds,
+      addedNodeTagIds,
+      addTagsToNodes,
       graphStats,
     ],
   );

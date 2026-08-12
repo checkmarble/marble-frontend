@@ -109,6 +109,14 @@ function TestGraphRoute() {
     graphGeneration,
     isGeneratingGraph,
     loadGraph,
+    showPersons,
+    setShowPersons,
+    showCompanies,
+    setShowCompanies,
+    showRiskScore,
+    setShowRiskScore,
+    showTags,
+    setShowTags,
     clusterThreshold,
     setClusterThreshold,
     layoutMode,
@@ -137,8 +145,17 @@ function TestGraphRoute() {
         {graphData ? (
           // Keyed on the generation so every fetch starts from a clean canvas:
           // selection, hidden nodes and expanded clusters all refer to the old data.
+          // Display filters/options are lifted into the session so they survive remounts.
           <CustomerGraphProvider
             key={graphGeneration}
+            showPersons={showPersons}
+            onShowPersonsChange={setShowPersons}
+            showCompanies={showCompanies}
+            onShowCompaniesChange={setShowCompanies}
+            showRiskScore={showRiskScore}
+            onShowRiskScoreChange={setShowRiskScore}
+            showTags={showTags}
+            onShowTagsChange={setShowTags}
             clusterThreshold={clusterThreshold}
             onClusterThresholdChange={setClusterThreshold}
             layoutMode={layoutMode}

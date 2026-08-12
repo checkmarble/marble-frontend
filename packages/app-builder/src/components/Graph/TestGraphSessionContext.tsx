@@ -22,6 +22,14 @@ export type TestGraphSessionContextValue = {
   reloadGraph: () => void;
 
   // Graph options the provider borrows, so they outlive the remount above.
+  showPersons: boolean;
+  setShowPersons: (value: boolean) => void;
+  showCompanies: boolean;
+  setShowCompanies: (value: boolean) => void;
+  showRiskScore: boolean;
+  setShowRiskScore: (value: boolean) => void;
+  showTags: boolean;
+  setShowTags: (value: boolean) => void;
   clusterThreshold: ClusterThreshold;
   setClusterThreshold: (value: ClusterThreshold) => void;
   layoutMode: GraphLayoutMode;
@@ -39,6 +47,10 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
   const [recordId, setRecordId] = useState('');
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [graphGeneration, setGraphGeneration] = useState(0);
+  const [showPersons, setShowPersons] = useState(true);
+  const [showCompanies, setShowCompanies] = useState(true);
+  const [showRiskScore, setShowRiskScore] = useState(false);
+  const [showTags, setShowTags] = useState(false);
   const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
   const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
   const [relationFilter, setRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
@@ -75,6 +87,14 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
       isGeneratingGraph,
       loadGraph,
       reloadGraph,
+      showPersons,
+      setShowPersons,
+      showCompanies,
+      setShowCompanies,
+      showRiskScore,
+      setShowRiskScore,
+      showTags,
+      setShowTags,
       clusterThreshold,
       setClusterThreshold,
       layoutMode,
@@ -90,6 +110,10 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
       isGeneratingGraph,
       loadGraph,
       reloadGraph,
+      showPersons,
+      showCompanies,
+      showRiskScore,
+      showTags,
       clusterThreshold,
       layoutMode,
       relationFilter,

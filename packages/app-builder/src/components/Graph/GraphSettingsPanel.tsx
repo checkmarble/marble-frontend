@@ -299,6 +299,7 @@ export function GraphSettingsPanel() {
     selectedObject,
     graphStats,
     restoreHiddenNodes,
+    setNodeTagIds,
   } = useCustomerGraph();
 
   const objectType = selectedObject?.objectType ?? '';
@@ -398,7 +399,13 @@ export function GraphSettingsPanel() {
                         {showRiskScore ? <ObjectRiskBadge objectType={objectType} objectId={objectId} /> : null}
                       </div>
 
-                      {showTags ? <ClientObjectTagList tableName={objectType} objectId={objectId} /> : null}
+                      {showTags ? (
+                        <ClientObjectTagList
+                          tableName={objectType}
+                          objectId={objectId}
+                          onTagIdsChange={(tagIds) => setNodeTagIds(nodeKey(objectType, objectId), tagIds)}
+                        />
+                      ) : null}
 
                       <DataFields
                         table={objectType}

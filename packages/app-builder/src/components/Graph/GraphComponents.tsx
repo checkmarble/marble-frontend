@@ -252,9 +252,16 @@ function NodeShell({
 }
 
 function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
-  const { nodeTagsVisible, toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
+  const { nodeTagsVisible, nodeTagIdOverrides, addedNodeTagIds, toggleClusterExpanded, selectionMode, hoveredNodeId } =
+    useCustomerGraph();
   const title = usePersonTitle(data);
-  const tags = useTagsByIds(data.tagIds, nodeTagsVisible);
+  // Payload metadata is static; session edits from the settings panel (full list)
+  // or bulk-tag (additive) replace/merge it for the canvas.
+  const overrideTagIds = nodeTagIdOverrides.get(id);
+  const sessionTagIds = addedNodeTagIds.get(id);
+  const tagIds =
+    overrideTagIds ?? (sessionTagIds?.length ? [...new Set([...data.tagIds, ...sessionTagIds])] : data.tagIds);
+  const tags = useTagsByIds(tagIds, nodeTagsVisible);
   const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (
@@ -438,7 +445,7 @@ function GraphEdge({
         <EdgeLabelRenderer>
           <div
             className={cn(
-              'nodrag nopan absolute origin-center rounded-sm p-xs max-w-16 leading-none',
+              'nodrag nopan absolute origin-center rounded-sm p-xs w-min leading-none',
               isMerged && 'font-semibold',
               appearance.label,
             )}

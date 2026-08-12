@@ -10,10 +10,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
-import { parseNodeKey } from './graph-keys';
+import { nodeKey, parseNodeKey } from './graph-keys';
 
 function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; disabled: boolean }) {
   const { t } = useTranslation(['common', 'cases']);
+  const { addTagsToNodes } = useCustomerGraph();
   const { orgObjectTags } = useOrganizationObjectTags();
   const createAnnotationMutation = useCreateAnnotationMutation();
   const queryClient = useQueryClient();
@@ -69,6 +70,14 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
           personsToUpdate.map(({ person }) =>
             queryClient.invalidateQueries({ queryKey: ['annotations', person.objectType, person.objectId] }),
           ),
+        );
+
+        // Nodes render tags from static graph metadata — patch the canvas immediately.
+        addTagsToNodes(
+          personsToUpdate.map(({ person, addedTags }) => ({
+            nodeId: nodeKey(person.objectType, person.objectId),
+            tagIds: addedTags,
+          })),
         );
       }
 
