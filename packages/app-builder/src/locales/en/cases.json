@@ -358,6 +358,7 @@
   "manager.sar_modal.status_pending": "SAR to do",
   "manager.sar_modal.title": "Report suspicious activity",
   "manager.tab.clients_concerned": "Clients concerned",
+  "manager.tab.links_to_other": "Links to other",
   "manager.timeline.days_ago": "{{count}}d ago",
   "manager.timeline.due": "Due",
   "manager.timeline.in_days": "in {{count}}d",

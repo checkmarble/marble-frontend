@@ -13,9 +13,11 @@ import {
   useEdges,
 } from '@xyflow/react';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, cn } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
+import { graphI18n } from './graph-i18n';
 import { rootNodeId } from './graph-keys';
 import {
   type ClusterRfNode,
@@ -195,7 +197,7 @@ function PersonCard({
       <PersonPill data={data} capped />
       <div
         className={cn(
-          'border-grey-border bg-grey-white rounded-lg border px-sm pt-lg pb-sm shadow-sm',
+          'border-grey-border bg-surface-card rounded-lg border px-sm pt-lg pb-sm shadow-sm',
           isHovered && 'ring-2 ring-purple-primary ring-offset-2 animate-pulse',
         )}
       >
@@ -222,6 +224,7 @@ function NodeShell({
   children: ReactNode;
 }) {
   const { selectionMode, toggleCheckedNode, isNodeChecked } = useCustomerGraph();
+  const { t } = useTranslation(graphI18n);
   const highlighted = useNodeHighlighted(nodeId);
   const checkableId = rootNodeId(nodeId);
 
@@ -240,7 +243,7 @@ function NodeShell({
               size="small"
               checked={isNodeChecked(checkableId)}
               onCheckedChange={() => toggleCheckedNode(checkableId)}
-              aria-label={`Select ${label}`}
+              aria-label={t('graph:node.select', { label })}
             />
           </NoCanvasEvents>
         ) : null}
@@ -254,6 +257,7 @@ function NodeShell({
 function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   const { nodeTagsVisible, nodeTagIdOverrides, addedNodeTagIds, toggleClusterExpanded, selectionMode, hoveredNodeId } =
     useCustomerGraph();
+  const { t } = useTranslation(graphI18n);
   const title = usePersonTitle(data);
   // Payload metadata is static; session edits from the settings panel replace it
   // as a whole, then bulk-tag additions merge on top of whichever list won.
@@ -270,7 +274,11 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
       label={title}
       action={
         data.isExpandedClusterRoot
-          ? { icon: 'unfold_less', label: `Regroup branch ${title}`, onPress: () => toggleClusterExpanded(id) }
+          ? {
+              icon: 'unfold_less',
+              label: t('graph:node.regroup_branch', { title }),
+              onPress: () => toggleClusterExpanded(id),
+            }
           : undefined
       }
     >
@@ -287,6 +295,7 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
 
 function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
   const { toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
+  const { t } = useTranslation(graphI18n);
   const title = usePersonTitle(data.root);
   const isHovered = !selectionMode && hoveredNodeId === id;
 
@@ -295,12 +304,12 @@ function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
       <PersonCard data={data.root} isHovered={isHovered}>
         <div className="text-grey-primary flex items-center justify-between gap-sm text-xs">
           <div className="min-w-0 truncate">
-            <span className="font-medium">{data.nodeCount} nodes</span>
-            <span className="opacity-70"> · {data.internalEdgeCount} edges</span>
+            <span className="font-medium">{t('graph:node.nodes_count', { count: data.nodeCount })}</span>
+            <span className="opacity-70"> · {t('graph:node.edges_count', { count: data.internalEdgeCount })}</span>
           </div>
           <NodeActionButton
             icon="unfold_more"
-            label={`Expand ${data.nodeCount} nodes`}
+            label={t('graph:node.expand', { count: data.nodeCount })}
             onPress={() => toggleClusterExpanded(rootNodeId(id))}
           />
         </div>
@@ -317,7 +326,7 @@ function PivotNode({ id, data }: NodeProps<PivotRfNode>) {
   return (
     <div
       className={cn(
-        'border-orange-border bg-orange-background-light text-orange-primary relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        'border-orange-border bg-orange-background-light dark:bg-orange-primary text-orange-primary dark:text-orange-background-light relative flex w-fit max-w-52 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
         isHovered && 'ring-2 ring-orange-primary ring-offset-2',
         !highlighted && 'opacity-60',
       )}
@@ -334,19 +343,20 @@ function PivotNode({ id, data }: NodeProps<PivotRfNode>) {
 
 function HypernodeNode({ id, data }: NodeProps<HypernodeRfNode>) {
   const { selectionMode, hoveredNodeId } = useCustomerGraph();
+  const { t } = useTranslation(graphI18n);
   const highlighted = useNodeHighlighted(id);
   const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (
     <div
       className={cn(
-        'border-grey-border bg-grey-white text-grey-primary relative flex gap-xs w-fit items-center rounded-md border p-md text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        'border-grey-border bg-surface-card text-grey-primary relative flex gap-xs w-fit items-center rounded-md border p-md text-xs shadow-sm cursor-pointer transition-opacity duration-200',
         isHovered && 'ring-2 ring-grey-primary ring-offset-2',
         !highlighted && 'opacity-60',
       )}
     >
       <FourHandles />
-      <span>Too many nodes to display</span>
+      <span>{t('graph:node.too_many')}</span>
       <span className="font-medium tabular-nums">({data.count})</span>
     </div>
   );
@@ -372,7 +382,7 @@ const EDGE_APPEARANCE = {
     stroke: 'stroke-2!',
     active: 'stroke-grey-primary!',
     dimmed: 'stroke-grey-border-light!',
-    label: 'bg-grey-background-light text-grey-primary border border-grey-border',
+    label: 'bg-surface-background text-grey-primary border border-grey-border',
   },
 } as const;
 

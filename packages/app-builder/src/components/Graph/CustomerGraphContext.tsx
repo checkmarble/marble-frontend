@@ -1,6 +1,7 @@
 import { useControllableState } from '@app-builder/hooks/useControllableState';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo, useState } from 'react';
+import { type IconName } from 'ui-icons';
 import { type GraphObjectRef } from './graph-keys';
 import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter, withAvailableLabels, withLabelToggled } from './relation-filter';
@@ -10,7 +11,11 @@ export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15, 30, 50] as const;
 export type ClusterThreshold = (typeof CLUSTER_THRESHOLD_OPTIONS)[number];
 export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
 
-export const LAYOUT_MODE_OPTIONS = ['rad-dagre', 'balanced', 'radial'] as const satisfies readonly GraphLayoutMode[];
+export const LAYOUT_MODE_OPTIONS = [
+  { value: 'rad-dagre', icon: 'radial-dagre' },
+  { value: 'balanced', icon: 'radial-adptative' },
+  { value: 'radial', icon: 'radial-petals' },
+] as const satisfies readonly { value: GraphLayoutMode; icon: IconName }[];
 
 /**
  * The node backing the settings panel's detail card. `persons` are the selection's

@@ -1,6 +1,6 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { TestGraphSessionProvider } from '@app-builder/components/Graph/TestGraphSessionContext';
+import { GraphSessionProvider } from '@app-builder/components/Graph/GraphSessionContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
@@ -38,7 +38,7 @@ function TestGraphLayout() {
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-      <TestGraphSessionProvider>
+      <GraphSessionProvider>
         <Page.Main className="min-h-0 overflow-hidden">
           <Page.Header className="h-auto flex-col items-start justify-center gap-sm py-md">
             <BreadCrumbs />
@@ -55,7 +55,7 @@ function TestGraphLayout() {
             <Outlet />
           </Page.Container>
         </Page.Main>
-      </TestGraphSessionProvider>
+      </GraphSessionProvider>
     </DataModelContextProvider>
   );
 }

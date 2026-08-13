@@ -10,10 +10,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
+import { graphI18n } from './graph-i18n';
 import { nodeKey, parseNodeKey } from './graph-keys';
 
 function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; disabled: boolean }) {
-  const { t } = useTranslation(['common', 'cases']);
+  const { t } = useTranslation(['graph', 'common', 'cases']);
   const { addTagsToNodes } = useCustomerGraph();
   const { orgObjectTags } = useOrganizationObjectTags();
   const createAnnotationMutation = useCreateAnnotationMutation();
@@ -95,7 +96,7 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
   if (disabled) {
     return (
       <Button type="button" variant="primary" appearance="stroked" size="small" disabled>
-        Add tags
+        {t('graph:selection.add_tags')}
       </Button>
     );
   }
@@ -104,7 +105,7 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
     <MenuCommand.Menu persistOnSelect open={open} onOpenChange={handleOpenChange}>
       <MenuCommand.Trigger>
         <Button type="button" variant="primary" appearance="stroked" size="small">
-          Add tags
+          {t('graph:selection.add_tags')}
         </Button>
       </MenuCommand.Trigger>
       <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-85">
@@ -132,7 +133,7 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
                 </Button>
               ) : (
                 <Button size="small" type="button" onClick={handleConfirm}>
-                  Confirm
+                  {t('graph:selection.confirm')}
                 </Button>
               )}
             </MenuCommand.HeadlessItem>
@@ -144,6 +145,7 @@ function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; 
 }
 
 export function GraphSelectionToolbar() {
+  const { t } = useTranslation(graphI18n);
   const {
     selectionMode,
     enterSelectionMode,
@@ -169,10 +171,10 @@ export function GraphSelectionToolbar() {
           variant="secondary"
           appearance="stroked"
           size="small"
-          className="pointer-events-auto bg-grey-white text-purple-primary shadow-md border-transparent hover:bg-grey-white"
+          className="pointer-events-auto"
           onClick={enterSelectionMode}
         >
-          Select entities
+          {t('graph:selection.select_entities')}
         </Button>
       </div>
     );
@@ -182,11 +184,11 @@ export function GraphSelectionToolbar() {
     <div
       className={cn(
         'pointer-events-auto absolute top-sm right-sm z-20',
-        'bg-grey-white flex items-center gap-sm rounded-lg px-sm py-xs shadow-md',
+        'bg-surface-card flex items-center gap-sm rounded-lg px-sm py-xs shadow-md',
       )}
     >
       <Button type="button" variant="primary" appearance="stroked" size="small" disabled>
-        Add to case
+        {t('graph:selection.add_to_case')}
       </Button>
       <BulkAddTagsMenu checkedKeys={checkedNodeIds} disabled={!hasCheckedNodes} />
       <Button
@@ -198,11 +200,13 @@ export function GraphSelectionToolbar() {
         onClick={handleHide}
       >
         <Icon icon="eye-slash" className="size-4" />
-        Hide {checkedNodeIds.size}
-        {graphStats.hidePreviewOrphans > 0 ? ` (+${graphStats.hidePreviewOrphans} orphaned)` : null}
+        {t('graph:selection.hide', { count: checkedNodeIds.size })}
+        {graphStats.hidePreviewOrphans > 0
+          ? t('graph:selection.hide_orphans', { count: graphStats.hidePreviewOrphans })
+          : null}
       </Button>
       <Button type="button" variant="secondary" appearance="link" size="small" onClick={exitSelectionMode}>
-        Cancel
+        {t('common:cancel')}
       </Button>
     </div>
   );

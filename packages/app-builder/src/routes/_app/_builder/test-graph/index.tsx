@@ -1,34 +1,15 @@
 import { Page } from '@app-builder/components';
-import { CustomerGraphProvider, useCustomerGraph } from '@app-builder/components/Graph/CustomerGraphContext';
-import { GraphImpl } from '@app-builder/components/Graph/GraphImpl';
 import { GraphOptionSelect } from '@app-builder/components/Graph/GraphOptionSelect';
-import { GraphSelectionToolbar } from '@app-builder/components/Graph/GraphSelectionToolbar';
-import { GraphSettingsPanel } from '@app-builder/components/Graph/GraphSettingsPanel';
-import { useTestGraphSession } from '@app-builder/components/Graph/TestGraphSessionContext';
-import { useListGraphRelationsQuery } from '@app-builder/queries/graph/list-relations';
+import { useGraphSession } from '@app-builder/components/Graph/GraphSessionContext';
+import { SessionGraphCanvas } from '@app-builder/components/Graph/SessionGraphCanvas';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { createFileRoute } from '@tanstack/react-router';
-import { ReactFlowProvider } from '@xyflow/react';
-import { useEffect } from 'react';
 import { Button, Card, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const Route = createFileRoute('/_app/_builder/test-graph/')({
   component: TestGraphRoute,
 });
-
-function RelationsLabelSync() {
-  const relationsQuery = useListGraphRelationsQuery();
-  const { syncRelationLabels } = useCustomerGraph();
-
-  useEffect(() => {
-    if (!relationsQuery.isSuccess) return;
-    // Multiple relations can share a label; the filter UI is label-based.
-    syncRelationLabels(relationsQuery.data.map((relation) => relation.label));
-  }, [relationsQuery.data, relationsQuery.isSuccess, syncRelationLabels]);
-
-  return null;
-}
 
 function StartRecordPicker({
   tableNames,
@@ -100,32 +81,7 @@ function StartRecordPicker({
 
 function TestGraphRoute() {
   const dataModel = useDataModel();
-  const {
-    recordType,
-    setRecordType,
-    recordId,
-    setRecordId,
-    graphData,
-    graphGeneration,
-    isGeneratingGraph,
-    loadGraph,
-    showPersons,
-    setShowPersons,
-    showCompanies,
-    setShowCompanies,
-    showRiskScore,
-    setShowRiskScore,
-    showTags,
-    setShowTags,
-    showEdgeLabels,
-    setShowEdgeLabels,
-    clusterThreshold,
-    setClusterThreshold,
-    layoutMode,
-    setLayoutMode,
-    relationFilter,
-    setRelationFilter,
-  } = useTestGraphSession();
+  const { recordType, setRecordType, recordId, setRecordId, isGeneratingGraph, loadGraph } = useGraphSession();
 
   const tableNames = dataModel
     .filter((table) => table.semanticType === 'person')
@@ -144,51 +100,13 @@ function TestGraphRoute() {
           onLoad={loadGraph}
           isLoading={isGeneratingGraph}
         />
-        {graphData ? (
-          // Keyed on the generation so every fetch starts from a clean canvas:
-          // selection, hidden nodes and expanded clusters all refer to the old data.
-          // Display filters/options are lifted into the session so they survive remounts.
-          <CustomerGraphProvider
-            key={graphGeneration}
-            showPersons={showPersons}
-            onShowPersonsChange={setShowPersons}
-            showCompanies={showCompanies}
-            onShowCompaniesChange={setShowCompanies}
-            showRiskScore={showRiskScore}
-            onShowRiskScoreChange={setShowRiskScore}
-            showTags={showTags}
-            onShowTagsChange={setShowTags}
-            showEdgeLabels={showEdgeLabels}
-            onShowEdgeLabelsChange={setShowEdgeLabels}
-            clusterThreshold={clusterThreshold}
-            onClusterThresholdChange={setClusterThreshold}
-            layoutMode={layoutMode}
-            onLayoutModeChange={setLayoutMode}
-            relationFilter={relationFilter}
-            onRelationFilterChange={setRelationFilter}
-            initialSelectedObject={{
-              nodeType: 'person',
-              objectType: graphData.start.type,
-              objectId: graphData.start.id,
-              persons: [],
-            }}
-          >
-            <RelationsLabelSync />
-            <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-sm lg:flex-row">
-              <GraphSettingsPanel />
-              <ReactFlowProvider>
-                <div className="relative min-h-0 flex-1">
-                  <GraphSelectionToolbar />
-                  <GraphImpl data={graphData} dataModel={dataModel} />
-                </div>
-              </ReactFlowProvider>
+        <SessionGraphCanvas
+          placeholder={
+            <Card className="text-grey-secondary flex min-h-0 flex-1 items-center justify-center p-lg text-sm">
+              Select a table and object id, then load the graph.
             </Card>
-          </CustomerGraphProvider>
-        ) : (
-          <Card className="text-grey-secondary flex min-h-0 flex-1 items-center justify-center p-lg text-sm">
-            Select a table and object id, then load the graph.
-          </Card>
-        )}
+          }
+        />
       </div>
     </Page.Content>
   );

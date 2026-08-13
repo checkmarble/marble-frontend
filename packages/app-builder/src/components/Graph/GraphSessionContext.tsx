@@ -8,7 +8,12 @@ import { type ClusterThreshold, DEFAULT_CLUSTER_THRESHOLD } from './CustomerGrap
 import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter } from './relation-filter';
 
-export type TestGraphSessionContextValue = {
+export type GraphRecordRef = {
+  recordType: string;
+  recordId: string;
+};
+
+export type GraphSessionContextValue = {
   recordType: string;
   setRecordType: (value: string) => void;
   recordId: string;
@@ -42,15 +47,29 @@ export type TestGraphSessionContextValue = {
   setRelationFilter: Dispatch<SetStateAction<RelationFilter>>;
 };
 
-const TestGraphSessionContext = createSimpleContext<TestGraphSessionContextValue>('TestGraphSession');
+const GraphSessionContext = createSimpleContext<GraphSessionContextValue>('GraphSession');
 
-export const useTestGraphSession = TestGraphSessionContext.useValue;
+export const useGraphSession = GraphSessionContext.useValue;
 
-export function TestGraphSessionProvider({ children }: { children: ReactNode }) {
+function toLoadedRecord(record: GraphRecordRef | undefined): GraphRecordRef | null {
+  if (!record) return null;
+  const recordId = record.recordId.trim();
+  if (!record.recordType || !recordId) return null;
+  return { recordType: record.recordType, recordId };
+}
+
+export function GraphSessionProvider({
+  children,
+  initialRecord,
+}: {
+  children: ReactNode;
+  initialRecord?: GraphRecordRef;
+}) {
   const { t } = useTranslation(['common']);
-  const [recordType, setRecordType] = useState('');
-  const [recordId, setRecordId] = useState('');
-  const [loadedRecord, setLoadedRecord] = useState<{ recordType: string; recordId: string } | null>(null);
+  const seed = toLoadedRecord(initialRecord);
+  const [recordType, setRecordType] = useState(seed?.recordType ?? '');
+  const [recordId, setRecordId] = useState(seed?.recordId ?? '');
+  const [loadedRecord, setLoadedRecord] = useState<GraphRecordRef | null>(seed);
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
   const [showRiskScore, setShowRiskScore] = useState(false);
@@ -137,5 +156,5 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
     ],
   );
 
-  return <TestGraphSessionContext.Provider value={value}>{children}</TestGraphSessionContext.Provider>;
+  return <GraphSessionContext.Provider value={value}>{children}</GraphSessionContext.Provider>;
 }

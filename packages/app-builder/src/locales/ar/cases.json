@@ -358,6 +358,7 @@
   "manager.sar_modal.status_pending": "SAR قيد الانتظار",
   "manager.sar_modal.title": "الإبلاغ عن نشاط مشبوه",
   "manager.tab.clients_concerned": "العملاء المعنيون",
+  "manager.tab.links_to_other": "روابط إلى أخرى",
   "manager.timeline.days_ago": "منذ {{count}} يوم",
   "manager.timeline.due": "الاستحقاق",
   "manager.timeline.in_days": "خلال {{count}} يوم",

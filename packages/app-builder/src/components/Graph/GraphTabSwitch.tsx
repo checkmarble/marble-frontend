@@ -1,8 +1,10 @@
-import { Tabs, tabClassName } from 'ui-design-system';
+import { cn, Tabs, tabClassName } from 'ui-design-system';
+import { Icon, type IconName } from 'ui-icons';
 
 export type TabSwitchOption<T extends string> = {
   value: T;
   label: string;
+  icon?: IconName;
 };
 
 /** A `Tabs` bar driven by a value, for the graph page's mutually exclusive modes. */
@@ -21,10 +23,11 @@ export function GraphTabSwitch<T extends string>({
         <button
           key={option.value}
           type="button"
-          className={tabClassName}
+          className={cn(tabClassName, option.icon && 'gap-xs')}
           data-status={value === option.value ? 'active' : undefined}
           onClick={() => onChange(option.value)}
         >
+          {option.icon ? <Icon icon={option.icon} className="size-4 shrink-0" /> : null}
           {option.label}
         </button>
       ))}

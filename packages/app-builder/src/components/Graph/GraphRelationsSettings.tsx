@@ -13,12 +13,14 @@ import { createGraphRelationPayloadSchema } from '@app-builder/schemas/graph';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { GraphOptionSelect } from './GraphOptionSelect';
+import { useGraphSession } from './GraphSessionContext';
 import { GraphTabSwitch } from './GraphTabSwitch';
-import { useTestGraphSession } from './TestGraphSessionContext';
+import { graphI18n } from './graph-i18n';
 
 function fieldSemanticKey(field: DataModelField): string | null {
   if (!field.semanticType) return null;
@@ -90,12 +92,14 @@ function isDuplicateRelation(
   );
 }
 
-const RELATION_SCOPE_OPTIONS = [
-  { value: 'same-table', label: 'Same table' },
-  { value: 'cross-table', label: 'Cross table' },
-] as const;
+const RELATION_SCOPE_OPTIONS = ['same-table', 'cross-table'] as const;
 
-type RelationScope = (typeof RELATION_SCOPE_OPTIONS)[number]['value'];
+type RelationScope = (typeof RELATION_SCOPE_OPTIONS)[number];
+
+const RELATION_SCOPE_KEYS = {
+  'same-table': 'graph:settings.scope.same_table',
+  'cross-table': 'graph:settings.scope.cross_table',
+} as const satisfies Record<RelationScope, string>;
 
 const createLabelSchema = z.object({
   label: z.string().trim().min(1),
@@ -125,6 +129,8 @@ function TableFieldSelect({
   /** Lock the table select (e.g. same-table relations) while still allowing a field pick. */
   tableDisabled?: boolean;
 }) {
+  const { t } = useTranslation(graphI18n);
+
   return (
     <div className="flex flex-col gap-xs">
       <span className="text-grey-secondary text-xs">{label}</span>
@@ -132,7 +138,7 @@ function TableFieldSelect({
         <GraphOptionSelect
           className="min-w-40"
           value={tableName}
-          placeholder="Table"
+          placeholder={t('graph:settings.placeholder.table')}
           disabled={disabled || tableDisabled}
           options={tables.map((table) => ({ value: table.name, label: table.name }))}
           onChange={onTableChange}
@@ -140,7 +146,7 @@ function TableFieldSelect({
         <GraphOptionSelect
           className="min-w-40"
           value={fieldName}
-          placeholder="Field"
+          placeholder={t('graph:settings.placeholder.field')}
           disabled={disabled || !tableName}
           options={fieldOptions.map((field) => ({ value: field.name, label: field.alias || field.name }))}
           onChange={onFieldChange}
@@ -173,6 +179,7 @@ function CreateLabelModal({
   onOpenChange: (open: boolean) => void;
   onSubmitLabel: (label: string) => void;
 }) {
+  const { t } = useTranslation(graphI18n);
   const form = useForm({
     defaultValues: { label: '' },
     validators: { onSubmit: createLabelSchema },
@@ -195,7 +202,7 @@ function CreateLabelModal({
     >
       <Modal.Content>
         <form onSubmit={handleSubmit(form)}>
-          <Modal.Title>Create setting</Modal.Title>
+          <Modal.Title>{t('graph:settings.create_label.title')}</Modal.Title>
           <div className="flex flex-col gap-lg p-lg">
             <form.Field
               name="label"
@@ -207,7 +214,7 @@ function CreateLabelModal({
               {(field) => (
                 <div className="flex flex-col gap-xs">
                   <FormLabel name={field.name} className="text-grey-secondary text-xs">
-                    Label
+                    {t('graph:settings.create_label.field')}
                   </FormLabel>
                   <Input
                     id={field.name}
@@ -216,7 +223,7 @@ function CreateLabelModal({
                     onChange={(event) => field.handleChange(event.currentTarget.value)}
                     onBlur={field.handleBlur}
                     borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                    placeholder="e.g. iban"
+                    placeholder={t('graph:settings.create_label.placeholder')}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
@@ -224,9 +231,16 @@ function CreateLabelModal({
             </form.Field>
           </div>
           <Modal.Footer>
-            <Modal.FooterButton isCloseButton label="Cancel" />
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
             <form.Subscribe selector={(state) => createLabelSchema.safeParse(state.values).success}>
-              {(isValid) => <Modal.FooterButton type="submit" variant="primary" label="Continue" disabled={!isValid} />}
+              {(isValid) => (
+                <Modal.FooterButton
+                  type="submit"
+                  variant="primary"
+                  label={t('graph:settings.create_label.continue')}
+                  disabled={!isValid}
+                />
+              )}
             </form.Subscribe>
           </Modal.Footer>
         </form>
@@ -246,23 +260,23 @@ function DeleteSettingModal({
   onConfirm: () => void;
   isPending: boolean;
 }) {
+  const { t } = useTranslation(graphI18n);
   const relationCount = group.relations.length;
 
   return (
     <Modal.Root open onOpenChange={onOpenChange}>
       <Modal.Content>
-        <Modal.Title>Delete setting</Modal.Title>
+        <Modal.Title>{t('graph:settings.delete.title')}</Modal.Title>
         <div className="flex flex-col gap-lg p-lg">
           <p className="text-s text-grey-primary text-center">
-            Delete setting “{group.label}” and its {relationCount} relation{relationCount === 1 ? '' : 's'}? This cannot
-            be undone.
+            {t('graph:settings.delete.description', { label: group.label, count: relationCount })}
           </p>
         </div>
         <Modal.Footer>
-          <Modal.FooterButton isCloseButton label="Cancel" disabled={isPending} />
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} disabled={isPending} />
           <Modal.FooterButton
             variant="destructive"
-            label="Delete"
+            label={t('common:delete')}
             leadingIcon="delete"
             onClick={onConfirm}
             disabled={isPending}
@@ -287,7 +301,8 @@ function RelationSettingPanel({
   dataModel: DataModel;
   relations: GraphRelation[];
 }) {
-  const { reloadGraph } = useTestGraphSession();
+  const { t } = useTranslation(graphI18n);
+  const { reloadGraph } = useGraphSession();
   const createMutation = useCreateGraphRelationMutation();
   const deleteMutation = useDeleteGraphRelationMutation();
   const [scope, setScope] = useState<RelationScope>('same-table');
@@ -347,8 +362,15 @@ function RelationSettingPanel({
               onSubmit={handleSubmit(form)}
               className="border-grey-border flex flex-col gap-md rounded-md border p-md"
             >
-              <h2 className="text-grey-primary text-sm font-semibold">Add relation</h2>
-              <GraphTabSwitch value={scope} options={RELATION_SCOPE_OPTIONS} onChange={onScopeChange} />
+              <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.add_relation')}</h2>
+              <GraphTabSwitch
+                value={scope}
+                options={RELATION_SCOPE_OPTIONS.map((value) => ({
+                  value,
+                  label: t(RELATION_SCOPE_KEYS[value]),
+                }))}
+                onChange={onScopeChange}
+              />
 
               <form.Subscribe selector={(state) => state.values}>
                 {({ leftType, leftField, rightType, rightField }) => {
@@ -358,7 +380,7 @@ function RelationSettingPanel({
                   return (
                     <>
                       <TableFieldSelect
-                        label="Left"
+                        label={t('graph:settings.endpoint.left')}
                         tables={dataModel}
                         tableName={leftType}
                         fieldName={leftField}
@@ -368,7 +390,7 @@ function RelationSettingPanel({
                       />
 
                       <TableFieldSelect
-                        label="Right"
+                        label={t('graph:settings.endpoint.right')}
                         tables={dataModel}
                         tableName={rightType}
                         fieldName={rightField}
@@ -398,9 +420,7 @@ function RelationSettingPanel({
 
                   return (
                     <>
-                      {isDuplicate ? (
-                        <p className="text-red-primary text-xs">This relation already exists for this label.</p>
-                      ) : null}
+                      {isDuplicate ? <p className="text-red-primary text-xs">{t('graph:settings.duplicate')}</p> : null}
                       <div>
                         <Button
                           variant="primary"
@@ -408,7 +428,7 @@ function RelationSettingPanel({
                           disabled={!isComplete || isDuplicate || createMutation.isPending}
                         >
                           <Icon icon="plus" className="size-4" />
-                          Create relation
+                          {t('graph:settings.create_relation')}
                         </Button>
                       </div>
                     </>
@@ -418,9 +438,9 @@ function RelationSettingPanel({
             </form>
 
             <section className="flex flex-col gap-md">
-              <h2 className="text-grey-primary text-sm font-semibold">Relations</h2>
+              <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.relations')}</h2>
               {relations.length === 0 ? (
-                <p className="text-grey-secondary text-sm">No relations yet. Add one above.</p>
+                <p className="text-grey-secondary text-sm">{t('graph:settings.relations_empty')}</p>
               ) : (
                 <ul className="flex flex-col gap-sm">
                   {relations.map((relation) => (
@@ -433,7 +453,7 @@ function RelationSettingPanel({
                         variant="secondary"
                         appearance="stroked"
                         mode="icon"
-                        aria-label="Delete relation"
+                        aria-label={t('graph:settings.delete_relation')}
                         disabled={deleteMutation.isPending}
                         onClick={() => deleteMutation.mutate({ relationId: relation.id }, { onSuccess: reloadGraph })}
                       >
@@ -446,7 +466,7 @@ function RelationSettingPanel({
             </section>
           </div>
           <Panel.Footer>
-            <Panel.FooterButton variant="secondary" label="Close" isCloseButton />
+            <Panel.FooterButton variant="secondary" label={t('common:close')} isCloseButton />
           </Panel.Footer>
         </Panel.Content>
       </Panel.Container>
@@ -455,8 +475,9 @@ function RelationSettingPanel({
 }
 
 export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) {
+  const { t } = useTranslation(graphI18n);
   const relationsQuery = useListGraphRelationsQuery();
-  const { reloadGraph } = useTestGraphSession();
+  const { reloadGraph } = useGraphSession();
   const deleteRelationsMutation = useDeleteGraphRelationsMutation();
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -491,24 +512,24 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
     <div className="flex min-h-0 flex-1 flex-col gap-lg overflow-y-auto">
       <section className="flex flex-col gap-md">
         <div className="flex items-center justify-between gap-md">
-          <h2 className="text-grey-primary text-sm font-semibold">Configured relations</h2>
+          <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.configured_relations')}</h2>
           <Button variant="primary" onClick={() => setCreateModalOpen(true)}>
             <Icon icon="plus" className="size-4" />
-            Create
+            {t('common:create')}
           </Button>
         </div>
 
         {relationsQuery.isPending ? (
-          <p className="text-grey-secondary text-sm">Loading relations…</p>
+          <p className="text-grey-secondary text-sm">{t('graph:settings.loading')}</p>
         ) : relationsQuery.isError ? (
           <div className="flex items-center gap-sm">
-            <p className="text-grey-secondary text-sm">Failed to load relations.</p>
+            <p className="text-grey-secondary text-sm">{t('graph:settings.load_error')}</p>
             <Button variant="secondary" onClick={() => relationsQuery.refetch()}>
-              Retry
+              {t('common:retry')}
             </Button>
           </div>
         ) : groups.length === 0 ? (
-          <p className="text-grey-secondary text-sm">No relations configured yet.</p>
+          <p className="text-grey-secondary text-sm">{t('graph:settings.empty')}</p>
         ) : (
           <div className="flex flex-col gap-md">
             {groups.map((group) => (
@@ -521,13 +542,13 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
                     onKeyDown={(event) => event.stopPropagation()}
                   >
                     <Button variant="secondary" appearance="stroked" onClick={() => setPanelLabel(group.label)}>
-                      Edit
+                      {t('common:edit')}
                     </Button>
                     <Button
                       variant="destructive"
                       appearance="stroked"
                       mode="icon"
-                      aria-label={`Delete ${group.label}`}
+                      aria-label={t('graph:settings.delete_group', { label: group.label })}
                       onClick={() => setDeleteTarget(group)}
                     >
                       <Icon icon="delete" className="size-4" />

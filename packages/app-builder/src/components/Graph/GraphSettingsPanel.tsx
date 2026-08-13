@@ -7,6 +7,7 @@ import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotation
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
+import { type TFunction } from 'i18next';
 import { type ScoringScore } from 'marble-api';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,42 +21,50 @@ import {
   useCustomerGraph,
 } from './CustomerGraphContext';
 import { GraphTabSwitch } from './GraphTabSwitch';
+import { graphI18n } from './graph-i18n';
 import { type GraphObjectRef, nodeKey } from './graph-keys';
 import { type GraphLayoutMode } from './graph-layout';
 import { ObjectTagLine, ObjectTagLineSkeleton, useObjectTags } from './ObjectTags';
-import { relationFilterLabel } from './relation-filter';
+import { type RelationFilter } from './relation-filter';
 import { resolveTitle } from './resolve-object-title';
 
 function isClusterThreshold(value: number): value is ClusterThreshold {
   return (CLUSTER_THRESHOLD_OPTIONS as readonly number[]).includes(value);
 }
 
-function clusterThresholdLabel(value: number): string {
-  return value === 0 ? 'Off' : String(value);
-}
+const LAYOUT_MODE_KEYS = {
+  'rad-dagre': 'graph:layout.rad_dagre',
+  balanced: 'graph:layout.balanced',
+  radial: 'graph:layout.radial',
+} as const satisfies Record<GraphLayoutMode, string>;
 
 function ClusterThresholdControl() {
+  const { t } = useTranslation(graphI18n);
   const { clusterThreshold, setClusterThreshold } = useCustomerGraph();
+  const thresholdValue = clusterThreshold === 0 ? t('graph:cluster.threshold.off') : String(clusterThreshold);
 
   return (
     <MenuCommand.Menu>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton className="w-full" size="medium">
-          Cluster threshold: {clusterThresholdLabel(clusterThreshold)}
+          {t('graph:cluster.threshold.button', { value: thresholdValue })}
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content sameWidth align="start" sideOffset={4} className="min-w-72">
         <div className="p-md" onPointerDown={(event) => event.stopPropagation()}>
           <ThresholdRange
-            title="Cluster at"
-            defaultDescription="Collapse branches larger than this many nodes. Off keeps every node expanded."
+            title={t('graph:cluster.threshold.title')}
+            defaultDescription={t('graph:cluster.threshold.description')}
             value={clusterThreshold}
             onChange={(value) => {
               if (isClusterThreshold(value)) setClusterThreshold(value);
             }}
             values={CLUSTER_THRESHOLD_OPTIONS.map((option) => ({
               value: option,
-              label: option === 0 ? 'Off — no clustering' : `Cluster branches over ${option} nodes`,
+              label:
+                option === 0
+                  ? t('graph:cluster.threshold.option_off')
+                  : t('graph:cluster.threshold.option', { count: option }),
               color: 'var(--color-purple-primary)',
             }))}
             initialColor="var(--color-purple-primary)"
@@ -67,18 +76,28 @@ function ClusterThresholdControl() {
   );
 }
 
-const LAYOUT_MODE_LABELS: Record<GraphLayoutMode, string> = {
-  'rad-dagre': 'Rad dagre',
-  balanced: 'Balanced',
-  radial: 'Radial',
-};
-
-const LAYOUT_MODE_TABS = LAYOUT_MODE_OPTIONS.map((mode) => ({ value: mode, label: LAYOUT_MODE_LABELS[mode] }));
-
 function LayoutModeControl() {
+  const { t } = useTranslation(graphI18n);
   const { layoutMode, setLayoutMode } = useCustomerGraph();
 
-  return <GraphTabSwitch value={layoutMode} options={LAYOUT_MODE_TABS} onChange={setLayoutMode} />;
+  return (
+    <GraphTabSwitch
+      value={layoutMode}
+      options={LAYOUT_MODE_OPTIONS.map((mode) => ({
+        value: mode.value,
+        label: t(LAYOUT_MODE_KEYS[mode.value]),
+        icon: mode.icon,
+      }))}
+      onChange={setLayoutMode}
+    />
+  );
+}
+
+function relationFilterButtonLabel(filter: RelationFilter, t: TFunction): string {
+  if (filter.selected.length === 0) return t('graph:filter.relations.none');
+  const labels =
+    filter.selected.length === filter.available.length ? filter.available.join(', ') : filter.selected.join(', ');
+  return t('graph:filter.relations.selected', { labels });
 }
 
 function asBoolean(value: CheckedState): boolean {
@@ -244,6 +263,7 @@ function PersonListDetail({
   showRiskScore: boolean;
   showTags: boolean;
 }) {
+  const { t } = useTranslation(graphI18n);
   const [showAll, setShowAll] = useState(false);
   const total = persons.length;
   const hasMore = total > PERSON_LIST_PREVIEW_COUNT;
@@ -255,12 +275,12 @@ function PersonListDetail({
         {header}
         {total > displayedPersons.length ? (
           <Tag size="small" color="grey">
-            {total} items
+            {t('graph:panel.items', { count: total })}
           </Tag>
         ) : null}
       </div>
       {total === 0 ? (
-        <p className="text-grey-secondary text-xs">No connected nodes.</p>
+        <p className="text-grey-secondary text-xs">{t('graph:panel.no_connected_nodes')}</p>
       ) : (
         <>
           <ul className="space-y-sm ps-md">
@@ -275,7 +295,7 @@ function PersonListDetail({
           </ul>
           {hasMore ? (
             <Button variant="secondary" size="small" onClick={() => setShowAll((prev) => !prev)}>
-              {showAll ? 'Show less' : 'Show more'}
+              {showAll ? t('graph:panel.show_less') : t('graph:panel.show_more')}
             </Button>
           ) : null}
         </>
@@ -285,6 +305,7 @@ function PersonListDetail({
 }
 
 export function GraphSettingsPanel() {
+  const { t } = useTranslation(graphI18n);
   const {
     showPersons,
     setShowPersons,
@@ -323,7 +344,7 @@ export function GraphSettingsPanel() {
   return (
     <aside
       ref={asideRef}
-      className="border-grey-border bg-grey-white flex min-h-0 flex-col gap-md overflow-y-auto rounded-lg border p-md h-fit min-w-md"
+      className="border-grey-border bg-surface-card flex min-h-0 flex-col gap-md overflow-y-auto rounded-lg border p-md h-fit min-w-md"
     >
       <div className="flex flex-wrap items-center gap-md">
         <label htmlFor="filter-persons" className="flex cursor-pointer items-center gap-sm text-sm">
@@ -333,7 +354,7 @@ export function GraphSettingsPanel() {
             checked={showPersons}
             onCheckedChange={(v) => setShowPersons(asBoolean(v))}
           />
-          Persons
+          {t('graph:filter.persons')}
         </label>
         <label htmlFor="filter-companies" className="flex cursor-pointer items-center gap-sm text-sm">
           <Checkbox
@@ -342,7 +363,7 @@ export function GraphSettingsPanel() {
             checked={showCompanies}
             onCheckedChange={(v) => setShowCompanies(asBoolean(v))}
           />
-          Companies
+          {t('graph:filter.companies')}
         </label>
       </div>
 
@@ -350,7 +371,7 @@ export function GraphSettingsPanel() {
         <MenuCommand.Menu persistOnSelect>
           <MenuCommand.Trigger>
             <MenuCommand.SelectButton className="w-full">
-              {relationFilterLabel(relationFilter)}
+              {relationFilterButtonLabel(relationFilter, t)}
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content sameWidth align="start" sideOffset={4}>
@@ -378,7 +399,7 @@ export function GraphSettingsPanel() {
       {graphStats.hiddenCount > 0 ? (
         <Button variant="secondary" appearance="stroked" size="small" onClick={restoreHiddenNodes}>
           <Icon icon="eye" className="size-4" />
-          Show {graphStats.hiddenCount} hidden nodes
+          {t('graph:panel.show_hidden_nodes', { count: graphStats.hiddenCount })}
         </Button>
       ) : null}
 
@@ -422,7 +443,7 @@ export function GraphSettingsPanel() {
                   root={asideRef}
                 />
                 <PersonListDetail
-                  header={<div className="text-sm font-semibold">Connected nodes</div>}
+                  header={<div className="text-sm font-semibold">{t('graph:panel.connected_nodes')}</div>}
                   persons={person.persons}
                   showRiskScore={showRiskScore}
                   showTags={showTags}
@@ -446,11 +467,15 @@ export function GraphSettingsPanel() {
               <PersonListDetail
                 header={
                   <div className="min-w-0">
-                    <div className="text-grey-secondary text-xs leading-none">Grouped branch</div>
+                    <div className="text-grey-secondary text-xs leading-none">{t('graph:panel.grouped_branch')}</div>
                     <div className="truncate text-sm flex gap-xs items-center">
-                      <span className="text-grey-primary font-semibold">{cluster.nodeCount} Nodes</span>
+                      <span className="text-grey-primary font-semibold">
+                        {t('graph:panel.nodes_count', { count: cluster.nodeCount })}
+                      </span>
                       <Icon icon="dot" className="size-3 text-grey-secondary" />
-                      <span className="text-grey-secondary">{cluster.internalEdgeCount} edges</span>
+                      <span className="text-grey-secondary">
+                        {t('graph:panel.edges_count', { count: cluster.internalEdgeCount })}
+                      </span>
                     </div>
                   </div>
                 }
@@ -461,28 +486,28 @@ export function GraphSettingsPanel() {
             ))
             .with({ nodeType: 'hypernode' }, (hypernode) => (
               <div className="flex flex-col gap-xs">
-                <div className="text-grey-secondary text-xs leading-none">Hypernode</div>
+                <div className="text-grey-secondary text-xs leading-none">{t('graph:panel.hypernode')}</div>
                 <div className="text-grey-primary text-sm font-semibold tabular-nums">
-                  {hypernode.hypernodeCount} records
+                  {t('graph:panel.records_count', { count: hypernode.hypernodeCount })}
                 </div>
               </div>
             ))
             .exhaustive()
         ) : (
-          <p className="text-grey-secondary text-xs">Select a node to see details.</p>
+          <p className="text-grey-secondary text-xs">{t('graph:panel.select_node')}</p>
         )}
       </div>
 
       <div className="flex flex-col gap-sm">
         <div className="flex items-center justify-between gap-sm">
           <label htmlFor="show-risk-score" className="text-grey-primary cursor-pointer text-sm">
-            Show risk score
+            {t('graph:panel.show_risk_score')}
           </label>
           <Switch id="show-risk-score" checked={showRiskScore} onCheckedChange={setShowRiskScore} />
         </div>
         <div className="flex items-center justify-between gap-sm">
           <label htmlFor="show-tags" className="text-grey-primary cursor-pointer text-sm">
-            Show tags
+            {t('graph:panel.show_tags')}
           </label>
           <Switch id="show-tags" checked={showTags} onCheckedChange={setShowTags} />
         </div>

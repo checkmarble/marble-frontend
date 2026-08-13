@@ -1,0 +1,88 @@
+import { CustomerGraphProvider, useCustomerGraph } from '@app-builder/components/Graph/CustomerGraphContext';
+import { GraphImpl } from '@app-builder/components/Graph/GraphImpl';
+import { GraphSelectionToolbar } from '@app-builder/components/Graph/GraphSelectionToolbar';
+import { useGraphSession } from '@app-builder/components/Graph/GraphSessionContext';
+import { GraphSettingsPanel } from '@app-builder/components/Graph/GraphSettingsPanel';
+import { useListGraphRelationsQuery } from '@app-builder/queries/graph/list-relations';
+import { useDataModel } from '@app-builder/services/data/data-model';
+import { ReactFlowProvider } from '@xyflow/react';
+import { type ReactNode, useEffect } from 'react';
+import { Card } from 'ui-design-system';
+
+function RelationsLabelSync() {
+  const relationsQuery = useListGraphRelationsQuery();
+  const { syncRelationLabels } = useCustomerGraph();
+
+  useEffect(() => {
+    if (!relationsQuery.isSuccess) return;
+    // Multiple relations can share a label; the filter UI is label-based.
+    syncRelationLabels(relationsQuery.data.map((relation) => relation.label));
+  }, [relationsQuery.data, relationsQuery.isSuccess, syncRelationLabels]);
+
+  return null;
+}
+
+export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) {
+  const dataModel = useDataModel();
+  const {
+    graphData,
+    graphGeneration,
+    showPersons,
+    setShowPersons,
+    showCompanies,
+    setShowCompanies,
+    showRiskScore,
+    setShowRiskScore,
+    showTags,
+    setShowTags,
+    showEdgeLabels,
+    setShowEdgeLabels,
+    clusterThreshold,
+    setClusterThreshold,
+    layoutMode,
+    setLayoutMode,
+    relationFilter,
+    setRelationFilter,
+  } = useGraphSession();
+
+  if (!graphData) return placeholder;
+
+  return (
+    <CustomerGraphProvider
+      key={graphGeneration}
+      showPersons={showPersons}
+      onShowPersonsChange={setShowPersons}
+      showCompanies={showCompanies}
+      onShowCompaniesChange={setShowCompanies}
+      showRiskScore={showRiskScore}
+      onShowRiskScoreChange={setShowRiskScore}
+      showTags={showTags}
+      onShowTagsChange={setShowTags}
+      showEdgeLabels={showEdgeLabels}
+      onShowEdgeLabelsChange={setShowEdgeLabels}
+      clusterThreshold={clusterThreshold}
+      onClusterThresholdChange={setClusterThreshold}
+      layoutMode={layoutMode}
+      onLayoutModeChange={setLayoutMode}
+      relationFilter={relationFilter}
+      onRelationFilterChange={setRelationFilter}
+      initialSelectedObject={{
+        nodeType: 'person',
+        objectType: graphData.start.type,
+        objectId: graphData.start.id,
+        persons: [],
+      }}
+    >
+      <RelationsLabelSync />
+      <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-sm lg:flex-row">
+        <GraphSettingsPanel />
+        <ReactFlowProvider>
+          <div className="relative min-h-0 flex-1">
+            <GraphSelectionToolbar />
+            <GraphImpl data={graphData} dataModel={dataModel} />
+          </div>
+        </ReactFlowProvider>
+      </Card>
+    </CustomerGraphProvider>
+  );
+}

@@ -37,10 +37,3 @@ export function withLabelToggled(filter: RelationFilter, label: string): Relatio
     : [...filter.selected, label];
   return { ...filter, selected };
 }
-
-/** Menu button text: the labels currently letting pivots through. */
-export function relationFilterLabel(filter: RelationFilter): string {
-  if (filter.selected.length === 0) return 'Relations: none';
-  if (filter.selected.length === filter.available.length) return `Relations: ${filter.available.join(', ')}`;
-  return `Relations: ${filter.selected.join(', ')}`;
-}

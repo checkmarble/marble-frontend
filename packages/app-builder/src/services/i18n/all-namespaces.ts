@@ -14,6 +14,7 @@ export const ALL_NAMESPACES = [
   'data',
   'decisions',
   'filters',
+  'graph',
   'lists',
   'navigation',
   'scenarios',

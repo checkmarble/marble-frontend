@@ -1,11 +1,14 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
+import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type GraphData } from '@app-builder/models/graph';
 import { ControlButton, Controls, type NodeMouseHandler, ReactFlow } from '@xyflow/react';
 import { useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
 import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
+import { graphI18n } from './graph-i18n';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
 import { type GraphRfNode } from './graph-rf-types';
 import { applyVisibilityFilters, GraphMeasuredLayout, useLaidOutGraph } from './use-laid-out-graph';
@@ -23,6 +26,8 @@ function sameRefs(a: GraphObjectRef[], b: GraphObjectRef[]): boolean {
 }
 
 export function GraphImpl({ data, dataModel }: GraphImplProps) {
+  const { t } = useTranslation(graphI18n);
+  const theme = useTheme();
   const {
     showEdgeLabels,
     setShowEdgeLabels,
@@ -164,14 +169,15 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
       maxZoom={5}
       minZoom={0.1}
       proOptions={{ hideAttribution: true }}
+      colorMode={theme.theme}
     >
       <GraphMeasuredLayout layoutElements={autoLayoutElements} />
-      <Controls>
+      <Controls position="bottom-left" className="z-10">
         <AutoLayoutControlButton layoutElements={autoLayoutElements} />
         <ControlButton
           onClick={() => setShowEdgeLabels(!showEdgeLabels)}
-          title={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
-          aria-label={showEdgeLabels ? 'Hide edge labels' : 'Show edge labels'}
+          title={showEdgeLabels ? t('graph:controls.hide_edge_labels') : t('graph:controls.show_edge_labels')}
+          aria-label={showEdgeLabels ? t('graph:controls.hide_edge_labels') : t('graph:controls.show_edge_labels')}
         >
           <Icon icon={showEdgeLabels ? 'eye-slash' : 'eye'} className="size-4" />
         </ControlButton>
