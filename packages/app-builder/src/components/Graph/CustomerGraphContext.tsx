@@ -1,7 +1,6 @@
 import { useControllableState } from '@app-builder/hooks/useControllableState';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo, useState } from 'react';
-import { type IconName } from 'ui-icons';
 import { type GraphObjectRef } from './graph-keys';
 import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter, withAvailableLabels, withLabelToggled } from './relation-filter';
@@ -10,12 +9,6 @@ import { EMPTY_RELATION_FILTER, type RelationFilter, withAvailableLabels, withLa
 export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15, 30, 50] as const;
 export type ClusterThreshold = (typeof CLUSTER_THRESHOLD_OPTIONS)[number];
 export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
-
-export const LAYOUT_MODE_OPTIONS = [
-  { value: 'rad-dagre', icon: 'radial-dagre' },
-  { value: 'balanced', icon: 'radial-adptative' },
-  { value: 'radial', icon: 'radial-petals' },
-] as const satisfies readonly { value: GraphLayoutMode; icon: IconName }[];
 
 /**
  * The node backing the settings panel's detail card. `persons` are the selection's
@@ -39,6 +32,29 @@ export type GraphStats = {
 };
 
 const EMPTY_GRAPH_STATS: GraphStats = { hiddenCount: 0, hidePreviewOrphans: 0 };
+
+/**
+ * The view settings a host can own instead of the provider. Handed over whole, they
+ * survive the provider's remount when the graph regenerates.
+ */
+export type ControlledGraphSettings = {
+  showPersons: boolean;
+  onShowPersonsChange: (value: boolean) => void;
+  showCompanies: boolean;
+  onShowCompaniesChange: (value: boolean) => void;
+  showRiskScore: boolean;
+  onShowRiskScoreChange: (value: boolean) => void;
+  showTags: boolean;
+  onShowTagsChange: (value: boolean) => void;
+  showEdgeLabels: boolean;
+  onShowEdgeLabelsChange: (value: boolean) => void;
+  clusterThreshold: ClusterThreshold;
+  onClusterThresholdChange: (value: ClusterThreshold) => void;
+  layoutMode: GraphLayoutMode;
+  onLayoutModeChange: (value: GraphLayoutMode) => void;
+  relationFilter: RelationFilter;
+  onRelationFilterChange: Dispatch<SetStateAction<RelationFilter>>;
+};
 
 export type CustomerGraphContextValue = {
   // Node type filters
@@ -147,27 +163,9 @@ export function CustomerGraphProvider({
   onLayoutModeChange,
   relationFilter: controlledRelationFilter,
   onRelationFilterChange,
-}: {
+}: Partial<ControlledGraphSettings> & {
   children: ReactNode;
   initialSelectedObject?: SelectedGraphObject | null;
-  /** When provided with matching onChange, survives provider remounts (e.g. graph regenerate). */
-  showPersons?: boolean;
-  onShowPersonsChange?: (value: boolean) => void;
-  showCompanies?: boolean;
-  onShowCompaniesChange?: (value: boolean) => void;
-  showRiskScore?: boolean;
-  onShowRiskScoreChange?: (value: boolean) => void;
-  showTags?: boolean;
-  onShowTagsChange?: (value: boolean) => void;
-  showEdgeLabels?: boolean;
-  onShowEdgeLabelsChange?: (value: boolean) => void;
-  clusterThreshold?: ClusterThreshold;
-  onClusterThresholdChange?: (value: ClusterThreshold) => void;
-  layoutMode?: GraphLayoutMode;
-  onLayoutModeChange?: (value: GraphLayoutMode) => void;
-  /** When provided with `onRelationFilterChange`, the user's label picks survive provider remounts. */
-  relationFilter?: RelationFilter;
-  onRelationFilterChange?: Dispatch<SetStateAction<RelationFilter>>;
 }) {
   const [showPersons, setShowPersons] = useControllableState(true, controlledShowPersons, onShowPersonsChange);
   const [showCompanies, setShowCompanies] = useControllableState(true, controlledShowCompanies, onShowCompaniesChange);
@@ -185,7 +183,7 @@ export function CustomerGraphProvider({
     onShowEdgeLabelsChange,
   );
   const [layoutMode, setLayoutMode] = useControllableState<GraphLayoutMode>(
-    'rad-dagre',
+    'radialDagre',
     controlledLayoutMode,
     onLayoutModeChange,
   );

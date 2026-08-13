@@ -1,10 +1,10 @@
 import { type GraphData } from '@app-builder/models/graph';
 import { useGenerateGraphQuery } from '@app-builder/queries/graph/generate-graph';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { type ClusterThreshold, DEFAULT_CLUSTER_THRESHOLD } from './CustomerGraphContext';
+import { type ClusterThreshold, type ControlledGraphSettings, DEFAULT_CLUSTER_THRESHOLD } from './CustomerGraphContext';
 import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter } from './relation-filter';
 
@@ -28,23 +28,8 @@ export type GraphSessionContextValue = {
   /** Refetch the graph on screen, after the relation settings changed. */
   reloadGraph: () => void;
 
-  // Graph options the provider borrows, so they outlive the remount above.
-  showPersons: boolean;
-  setShowPersons: (value: boolean) => void;
-  showCompanies: boolean;
-  setShowCompanies: (value: boolean) => void;
-  showRiskScore: boolean;
-  setShowRiskScore: (value: boolean) => void;
-  showTags: boolean;
-  setShowTags: (value: boolean) => void;
-  showEdgeLabels: boolean;
-  setShowEdgeLabels: (value: boolean) => void;
-  clusterThreshold: ClusterThreshold;
-  setClusterThreshold: (value: ClusterThreshold) => void;
-  layoutMode: GraphLayoutMode;
-  setLayoutMode: (value: GraphLayoutMode) => void;
-  relationFilter: RelationFilter;
-  setRelationFilter: Dispatch<SetStateAction<RelationFilter>>;
+  /** Graph view settings the provider borrows, so they outlive the remount above. */
+  graphSettings: ControlledGraphSettings;
 };
 
 const GraphSessionContext = createSimpleContext<GraphSessionContextValue>('GraphSession');
@@ -76,7 +61,7 @@ export function GraphSessionProvider({
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
   const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
-  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
+  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('radialDagre');
   const [relationFilter, setRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
 
   const { data, dataUpdatedAt, error, isFetching, refetch } = useGenerateGraphQuery(
@@ -109,6 +94,28 @@ export function GraphSessionProvider({
     void refetch();
   }, [data, refetch]);
 
+  const graphSettings = useMemo<ControlledGraphSettings>(
+    () => ({
+      showPersons,
+      onShowPersonsChange: setShowPersons,
+      showCompanies,
+      onShowCompaniesChange: setShowCompanies,
+      showRiskScore,
+      onShowRiskScoreChange: setShowRiskScore,
+      showTags,
+      onShowTagsChange: setShowTags,
+      showEdgeLabels,
+      onShowEdgeLabelsChange: setShowEdgeLabels,
+      clusterThreshold,
+      onClusterThresholdChange: setClusterThreshold,
+      layoutMode,
+      onLayoutModeChange: setLayoutMode,
+      relationFilter,
+      onRelationFilterChange: setRelationFilter,
+    }),
+    [showPersons, showCompanies, showRiskScore, showTags, showEdgeLabels, clusterThreshold, layoutMode, relationFilter],
+  );
+
   const value = useMemo(
     () => ({
       recordType,
@@ -120,40 +127,9 @@ export function GraphSessionProvider({
       isGeneratingGraph: isFetching,
       loadGraph,
       reloadGraph,
-      showPersons,
-      setShowPersons,
-      showCompanies,
-      setShowCompanies,
-      showRiskScore,
-      setShowRiskScore,
-      showTags,
-      setShowTags,
-      showEdgeLabels,
-      setShowEdgeLabels,
-      clusterThreshold,
-      setClusterThreshold,
-      layoutMode,
-      setLayoutMode,
-      relationFilter,
-      setRelationFilter,
+      graphSettings,
     }),
-    [
-      recordType,
-      recordId,
-      data,
-      dataUpdatedAt,
-      isFetching,
-      loadGraph,
-      reloadGraph,
-      showPersons,
-      showCompanies,
-      showRiskScore,
-      showTags,
-      showEdgeLabels,
-      clusterThreshold,
-      layoutMode,
-      relationFilter,
-    ],
+    [recordType, recordId, data, dataUpdatedAt, isFetching, loadGraph, reloadGraph, graphSettings],
   );
 
   return <GraphSessionContext.Provider value={value}>{children}</GraphSessionContext.Provider>;

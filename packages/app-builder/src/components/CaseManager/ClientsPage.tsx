@@ -22,9 +22,12 @@ import { ClientCommentsListCard } from './ClientComments';
 import { ClientRelatedAlertCasesCard } from './ClientRelatedAlertCasesCard';
 import { isGraphEligiblePivot } from './graph-pivots';
 import { CommentContext } from './hooks/comment-context';
-import { MainLinksGraph } from './MainLinksGraph';
+import { MainLinksGraph, mainLinksGraphMinHeight } from './MainLinksGraph';
 import { NavigationOptions } from './NavigationOptions';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
+
+/** Fills the viewport so the embedded graph gets its height without the page scrolling. */
+const clientColumnMinHeight = 'min-h-[calc(100dvh-12rem)]';
 
 export type CaseManagerClientsPageProps = {
   caseDetail: CaseDetail;
@@ -59,7 +62,7 @@ export function CaseManagerClientsPage({
 
   return (
     <div className={cn('grid grid-cols-1 lg:grid-cols-2', pageLayoutGutter.gap)}>
-      <div className="flex flex-col gap-sm">
+      <div className={cn('flex flex-col gap-sm', showMainLinks && ingestedInfo && clientColumnMinHeight)}>
         <div className="flex justify-between items-center">
           <span className="font-medium">{clientName}</span>
           <div className="flex items-center gap-sm">
@@ -112,8 +115,8 @@ export function CaseManagerClientsPage({
           </div>
         </Card>
         {showMainLinks && ingestedInfo ? (
-          <div className="space-y-sm">
-            <div className="flex justify-between items-center">
+          <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
+            <div className="flex shrink-0 justify-between items-center">
               <Typo variant="title2">{t('cases:manager.clients.main_links_title')}</Typo>
               <Link
                 from="/cases/s/$caseId/clients/$pivotValue"

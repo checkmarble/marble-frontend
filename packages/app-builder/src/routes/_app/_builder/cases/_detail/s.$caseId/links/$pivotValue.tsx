@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/lin
     return { pivotObject };
   },
   loader: ({ context: { pivotObject } }) => {
-    return { objectId: pivotObject.pivotObjectId!, objectType: pivotObject.pivotObjectName };
+    return { objectId: pivotObject.pivotObjectId, objectType: pivotObject.pivotObjectName };
   },
   component: RouteComponent,
 });

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { clusterNodeId } from './graph-keys';
-import { clusterGraphElements, layoutByMode } from './graph-layout';
+import { clusterGraphElements, GRAPH_LAYOUT_MODES, layoutByMode } from './graph-layout';
 import { type ClusterRfNode, type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 
 /**
  * Covers Marble's half of the `ego-graph` contract: turning a fold plan into
  * chips, and applying positions and handles. The planning and geometry
- * themselves are tested in `packages/ego-graph`.
+ * themselves are tested in the `ego-graph` package.
  */
 
 function personNode(id: string, isStart = false): GraphRfNode {
@@ -138,8 +138,7 @@ describe('clusterGraphElements', () => {
   });
 
   it('will not fold an island reachable only through a pivot', () => {
-    // One spanning tree: a pivot cannot hold a branch together. See
-    // packages/ego-graph/docs/adr/0001-one-spanning-tree.md.
+    // One spanning tree: a pivot cannot hold a branch together.
     const nodes: GraphRfNode[] = [personNode('start', true), personNode('neighbor'), pivotNode('same_ip:9.9.9.9')];
     const edges: GraphRfEdge[] = [linkEdge('start', 'neighbor'), matchEdge('same_ip:9.9.9.9', 'neighbor')];
     let prev = 'same_ip:9.9.9.9';
@@ -156,7 +155,7 @@ describe('clusterGraphElements', () => {
 });
 
 describe('layoutByMode', () => {
-  it.each(['rad-dagre', 'balanced', 'radial'] as const)('%s positions every node and wires handles', (mode) => {
+  it.each(GRAPH_LAYOUT_MODES)('%s positions every node and wires handles', (mode) => {
     const { nodes, edges } = fanFixture(6);
     nodes.push(pivotNode('same_ip:1'));
     edges.push(matchEdge('same_ip:1', 'c0'));

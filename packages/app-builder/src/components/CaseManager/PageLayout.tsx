@@ -84,7 +84,11 @@ export function CaseManagerPageLayout({
     clientsPivotValue ?? (pivotObjects[0] ? getPivotObjectKey(pivotObjects[0]) : undefined);
   const defaultLinksPivotValue =
     linksPivotValue ?? (eligiblePivots[0] ? getPivotObjectKey(eligiblePivots[0]) : undefined);
-  const isLinksTab = useMatches().some((m) => m.routeId.includes('/s/$caseId/links'));
+  // The links tab is the only one that owns the viewport height, so the layout has to
+  // stop scrolling and let it flex. Compared by route id, so a rename breaks the build.
+  const isLinksTab = useMatches({
+    select: (matches) => matches.some((m) => m.routeId === '/_app/_builder/cases/_detail/s/$caseId/links'),
+  });
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
   const router = useRouter();
   const nextUnassignedCaseHref = router.buildLocation({

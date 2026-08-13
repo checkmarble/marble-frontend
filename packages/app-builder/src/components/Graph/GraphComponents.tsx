@@ -147,7 +147,7 @@ function PersonPill({
   return (
     <div
       className={cn(
-        'rounded-full border bg-purple-border border-purple-disabled px-md py-sm text-sm font-medium text-purple-primary shadow-sm transition-shadow duration-200',
+        'rounded-full border bg-purple-border border-purple-disabled px-md py-sm text-sm font-medium text-purple-primary shadow-sm transition-shadow duration-200 isolate',
         isHighlighted && 'bg-purple-primary border-white text-white',
         (isHovered || isSelected) && 'ring-2 ring-purple-primary ring-offset-2',
         capped ? 'absolute left-1/2 top-0 z-10 max-w-full -translate-x-1/2 -translate-y-1/2' : 'relative',
@@ -168,7 +168,7 @@ function PersonPill({
         </div>
         {showRiskScore && riskLevel != null && scoreColor ? (
           <span
-            className="rounded-full border p-px text-xs font-normal h-7 min-w-7 grid place-items-center text-white border-white -ml-1"
+            className="rounded-full border p-px text-xs font-normal h-7 min-w-7 grid place-items-center text-white border-white -ml-1 z-10"
             style={{ backgroundColor: scoreColor }}
           >
             {riskLevel}
@@ -304,8 +304,8 @@ function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
       <PersonCard data={data.root} isHovered={isHovered}>
         <div className="text-grey-primary flex items-center justify-between gap-sm text-xs">
           <div className="min-w-0 truncate">
-            <span className="font-medium">{t('graph:node.nodes_count', { count: data.nodeCount })}</span>
-            <span className="opacity-70"> · {t('graph:node.edges_count', { count: data.internalEdgeCount })}</span>
+            <span className="font-medium">{t('graph:count.nodes', { count: data.nodeCount })}</span>
+            <span className="opacity-70"> · {t('graph:count.edges', { count: data.internalEdgeCount })}</span>
           </div>
           <NodeActionButton
             icon="unfold_more"

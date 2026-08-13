@@ -1,11 +1,17 @@
-import { polarPetal, radialDagre, sectoredDagre } from 'ego-graph';
+import { LAYOUT_NAMES, type LayoutName, polarPetal, radialDagre, sectoredDagre } from 'ego-graph';
 import { type FoldPlan, foldGraph } from 'ego-graph/fold';
 import { applyPositions, retargetHandles, toLayoutGraph } from 'ego-graph/react-flow';
-import { match } from 'ts-pattern';
 import { clusterNodeId } from './graph-keys';
 import { type ClusterRfNode, type GraphRfEdge, type GraphRfNode, isMatchEdge } from './graph-rf-types';
 
-export type GraphLayoutMode = 'rad-dagre' | 'balanced' | 'radial';
+export const GRAPH_LAYOUT_MODES = LAYOUT_NAMES;
+export type GraphLayoutMode = LayoutName;
+
+const LAYOUTS = {
+  radialDagre,
+  sectoredDagre,
+  polarPetal,
+} satisfies Record<GraphLayoutMode, typeof radialDagre>;
 
 /**
  * Marble's half of the contract with `ego-graph`: which of our node types the
@@ -30,11 +36,7 @@ export function layoutByMode(
   if (nodes.length === 0) return { nodes, edges };
 
   const graph = toLayoutGraph(nodes, edges, startKey);
-  const positions = match(mode)
-    .with('balanced', () => sectoredDagre(graph, CLASSIFY))
-    .with('rad-dagre', () => radialDagre(graph, CLASSIFY))
-    .with('radial', () => polarPetal(graph, CLASSIFY))
-    .exhaustive();
+  const positions = LAYOUTS[mode](graph, CLASSIFY);
 
   const laid = applyPositions(nodes, positions);
   return { nodes: laid, edges: retargetHandles(laid, edges) };

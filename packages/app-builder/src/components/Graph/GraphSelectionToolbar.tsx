@@ -14,7 +14,7 @@ import { graphI18n } from './graph-i18n';
 import { nodeKey, parseNodeKey } from './graph-keys';
 
 function BulkAddTagsMenu({ checkedKeys, disabled }: { checkedKeys: Set<string>; disabled: boolean }) {
-  const { t } = useTranslation(['graph', 'common', 'cases']);
+  const { t } = useTranslation([...graphI18n, 'cases']);
   const { addTagsToNodes } = useCustomerGraph();
   const { orgObjectTags } = useOrganizationObjectTags();
   const createAnnotationMutation = useCreateAnnotationMutation();

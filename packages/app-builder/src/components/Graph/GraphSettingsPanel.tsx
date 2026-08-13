@@ -13,17 +13,12 @@ import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 import { Button, Checkbox, type CheckedState, MenuCommand, Switch, Tag, ThresholdRange } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-import {
-  CLUSTER_THRESHOLD_OPTIONS,
-  type ClusterThreshold,
-  LAYOUT_MODE_OPTIONS,
-  useCustomerGraph,
-} from './CustomerGraphContext';
-import { GraphTabSwitch } from './GraphTabSwitch';
+import { Icon, type IconName } from 'ui-icons';
+import { CLUSTER_THRESHOLD_OPTIONS, type ClusterThreshold, useCustomerGraph } from './CustomerGraphContext';
+import { GraphTabSwitch, tabSwitchOptions } from './GraphTabSwitch';
 import { graphI18n } from './graph-i18n';
 import { type GraphObjectRef, nodeKey } from './graph-keys';
-import { type GraphLayoutMode } from './graph-layout';
+import { GRAPH_LAYOUT_MODES, type GraphLayoutMode } from './graph-layout';
 import { ObjectTagLine, ObjectTagLineSkeleton, useObjectTags } from './ObjectTags';
 import { type RelationFilter } from './relation-filter';
 import { resolveTitle } from './resolve-object-title';
@@ -33,10 +28,16 @@ function isClusterThreshold(value: number): value is ClusterThreshold {
 }
 
 const LAYOUT_MODE_KEYS = {
-  'rad-dagre': 'graph:layout.rad_dagre',
-  balanced: 'graph:layout.balanced',
-  radial: 'graph:layout.radial',
+  radialDagre: 'graph:layout.radial_dagre',
+  sectoredDagre: 'graph:layout.sectored_dagre',
+  polarPetal: 'graph:layout.polar_petal',
 } as const satisfies Record<GraphLayoutMode, string>;
+
+const LAYOUT_MODE_ICONS = {
+  radialDagre: 'radial-dagre',
+  sectoredDagre: 'radial-adptative',
+  polarPetal: 'radial-petals',
+} as const satisfies Record<GraphLayoutMode, IconName>;
 
 function ClusterThresholdControl() {
   const { t } = useTranslation(graphI18n);
@@ -83,11 +84,7 @@ function LayoutModeControl() {
   return (
     <GraphTabSwitch
       value={layoutMode}
-      options={LAYOUT_MODE_OPTIONS.map((mode) => ({
-        value: mode.value,
-        label: t(LAYOUT_MODE_KEYS[mode.value]),
-        icon: mode.icon,
-      }))}
+      options={tabSwitchOptions(GRAPH_LAYOUT_MODES, (mode) => t(LAYOUT_MODE_KEYS[mode]), LAYOUT_MODE_ICONS)}
       onChange={setLayoutMode}
     />
   );
@@ -470,11 +467,11 @@ export function GraphSettingsPanel() {
                     <div className="text-grey-secondary text-xs leading-none">{t('graph:panel.grouped_branch')}</div>
                     <div className="truncate text-sm flex gap-xs items-center">
                       <span className="text-grey-primary font-semibold">
-                        {t('graph:panel.nodes_count', { count: cluster.nodeCount })}
+                        {t('graph:count.nodes', { count: cluster.nodeCount })}
                       </span>
                       <Icon icon="dot" className="size-3 text-grey-secondary" />
                       <span className="text-grey-secondary">
-                        {t('graph:panel.edges_count', { count: cluster.internalEdgeCount })}
+                        {t('graph:count.edges', { count: cluster.internalEdgeCount })}
                       </span>
                     </div>
                   </div>

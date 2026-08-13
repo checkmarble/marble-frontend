@@ -6,10 +6,13 @@ import { type GraphData } from '@app-builder/models/graph';
 import { useGenerateGraphQuery } from '@app-builder/queries/graph/generate-graph';
 import { ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import { useTranslation } from 'react-i18next';
-import { Card, Typo } from 'ui-design-system';
+import { Card, cn, Typo } from 'ui-design-system';
 import '@xyflow/react/dist/style.css';
 
 const MAIN_LINKS_DEGREES = 1;
+/** Floor for the embedded graph, so it stays readable however short its column is. */
+export const mainLinksGraphMinHeight = 'min-h-[450px]';
+const graphFrameClassName = cn('flex flex-1 flex-col overflow-hidden', mainLinksGraphMinHeight);
 
 interface MainLinksGraphProps {
   objectType: string;
@@ -26,26 +29,26 @@ export function MainLinksGraph({ objectType, objectId, dataModel }: MainLinksGra
   });
 
   if (query.isPending) {
-    return <Card className="h-96 animate-pulse bg-grey-background" />;
+    return <Card className={cn(graphFrameClassName, 'animate-pulse bg-grey-background')} />;
   }
 
   if (query.isError) {
-    return <Card className="h-96" />;
+    return <Card className={graphFrameClassName} />;
   }
 
   if (!query.data || query.data.edges.length === 0) {
     return (
-      <Card className="h-96 grid place-items-center">
+      <Card className={cn(graphFrameClassName, 'items-center justify-center')}>
         <Typo className="text-grey-primary">{t('cases:manager.clients.main_links_empty')}</Typo>
       </Card>
     );
   }
 
   return (
-    <Card className="h-96 overflow-hidden p-0">
-      <CustomerGraphProvider clusterThreshold={5} layoutMode="rad-dagre">
+    <Card className={cn(graphFrameClassName, 'p-0')}>
+      <CustomerGraphProvider clusterThreshold={5} layoutMode="radialDagre">
         <ReactFlowProvider>
-          <div className="relative h-full min-h-0">
+          <div className="relative min-h-0 flex-1">
             <MainLinksGraphCanvas data={query.data} dataModel={dataModel} />
           </div>
         </ReactFlowProvider>

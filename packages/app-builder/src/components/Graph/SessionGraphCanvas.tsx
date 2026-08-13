@@ -24,48 +24,14 @@ function RelationsLabelSync() {
 
 export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) {
   const dataModel = useDataModel();
-  const {
-    graphData,
-    graphGeneration,
-    showPersons,
-    setShowPersons,
-    showCompanies,
-    setShowCompanies,
-    showRiskScore,
-    setShowRiskScore,
-    showTags,
-    setShowTags,
-    showEdgeLabels,
-    setShowEdgeLabels,
-    clusterThreshold,
-    setClusterThreshold,
-    layoutMode,
-    setLayoutMode,
-    relationFilter,
-    setRelationFilter,
-  } = useGraphSession();
+  const { graphData, graphGeneration, graphSettings } = useGraphSession();
 
   if (!graphData) return placeholder;
 
   return (
     <CustomerGraphProvider
       key={graphGeneration}
-      showPersons={showPersons}
-      onShowPersonsChange={setShowPersons}
-      showCompanies={showCompanies}
-      onShowCompaniesChange={setShowCompanies}
-      showRiskScore={showRiskScore}
-      onShowRiskScoreChange={setShowRiskScore}
-      showTags={showTags}
-      onShowTagsChange={setShowTags}
-      showEdgeLabels={showEdgeLabels}
-      onShowEdgeLabelsChange={setShowEdgeLabels}
-      clusterThreshold={clusterThreshold}
-      onClusterThresholdChange={setClusterThreshold}
-      layoutMode={layoutMode}
-      onLayoutModeChange={setLayoutMode}
-      relationFilter={relationFilter}
-      onRelationFilterChange={setRelationFilter}
+      {...graphSettings}
       initialSelectedObject={{
         nodeType: 'person',
         objectType: graphData.start.type,

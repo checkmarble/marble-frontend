@@ -7,6 +7,15 @@ export type TabSwitchOption<T extends string> = {
   icon?: IconName;
 };
 
+/** Pairs a mode list with its translated labels, and optionally an icon per mode. */
+export function tabSwitchOptions<T extends string>(
+  values: readonly T[],
+  getLabel: (value: T) => string,
+  icons?: Record<T, IconName>,
+): TabSwitchOption<T>[] {
+  return values.map((value) => ({ value, label: getLabel(value), icon: icons?.[value] }));
+}
+
 /** A `Tabs` bar driven by a value, for the graph page's mutually exclusive modes. */
 export function GraphTabSwitch<T extends string>({
   value,

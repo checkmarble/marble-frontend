@@ -19,7 +19,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { GraphOptionSelect } from './GraphOptionSelect';
 import { useGraphSession } from './GraphSessionContext';
-import { GraphTabSwitch } from './GraphTabSwitch';
+import { GraphTabSwitch, tabSwitchOptions } from './GraphTabSwitch';
 import { graphI18n } from './graph-i18n';
 
 function fieldSemanticKey(field: DataModelField): string | null {
@@ -365,10 +365,7 @@ function RelationSettingPanel({
               <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.add_relation')}</h2>
               <GraphTabSwitch
                 value={scope}
-                options={RELATION_SCOPE_OPTIONS.map((value) => ({
-                  value,
-                  label: t(RELATION_SCOPE_KEYS[value]),
-                }))}
+                options={tabSwitchOptions(RELATION_SCOPE_OPTIONS, (value) => t(RELATION_SCOPE_KEYS[value]))}
                 onChange={onScopeChange}
               />
 
