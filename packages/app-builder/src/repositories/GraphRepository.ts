@@ -8,11 +8,16 @@ import {
   type GraphRelation,
 } from '@app-builder/models/graph';
 
+export type GenerateGraphQuery = {
+  degrees?: number;
+  types?: string;
+};
+
 export interface GraphRepository {
   listRelations(): Promise<GraphRelation[]>;
   createRelation(body: CreateGraphRelationBody): Promise<GraphRelation>;
   deleteRelation(relationId: string): Promise<void>;
-  generateGraph(recordType: string, recordId: string): Promise<GraphData>;
+  generateGraph(recordType: string, recordId: string, query?: GenerateGraphQuery): Promise<GraphData>;
 }
 
 export function makeGetGraphRepository() {
@@ -28,9 +33,8 @@ export function makeGetGraphRepository() {
     deleteRelation: async (relationId) => {
       await marbleCoreApiClient.deleteGraphRelation(relationId);
     },
-    generateGraph: async (recordType, recordId) => {
-      // Empty query-params object so auth opts are not bound to { types, degrees }.
-      const graph = await marbleCoreApiClient.generateRelationshipGraph(recordType, recordId, {});
+    generateGraph: async (recordType, recordId, query = {}) => {
+      const graph = await marbleCoreApiClient.generateRelationshipGraph(recordType, recordId, query);
       return adaptGraphData(graph);
     },
   });

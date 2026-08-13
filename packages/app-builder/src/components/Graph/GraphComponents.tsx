@@ -259,7 +259,7 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   // as a whole, then bulk-tag additions merge on top of whichever list won.
   const overrideTagIds = nodeTagIdOverrides.get(id);
   const addedTagIds = addedNodeTagIds.get(id);
-  const baseTagIds = overrideTagIds ?? data.tagIds;
+  const baseTagIds = overrideTagIds ?? data.tagIds ?? [];
   const tagIds = addedTagIds?.length ? [...new Set([...baseTagIds, ...addedTagIds])] : baseTagIds;
   const tags = useTagsByIds(tagIds, nodeTagsVisible);
   const isHovered = !selectionMode && hoveredNodeId === id;

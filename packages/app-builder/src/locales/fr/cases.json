@@ -346,6 +346,8 @@
   "manager.actions.sar_completed": "SAR terminée",
   "manager.client.risk_label": "Risque",
   "manager.clients.last_comments_title": "Derniers commentaires",
+  "manager.clients.main_links_empty": "Aucun lien principal",
+  "manager.clients.main_links_title": "Liens principaux",
   "manager.comments.empty": "Aucun commentaire pour le moment",
   "manager.comments.investigations_header": "Investigations",
   "manager.principal.add_tag_placeholder": "Ajouter un tag",

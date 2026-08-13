@@ -67,9 +67,10 @@ function adaptGraphNodeRef(dto: GraphNodeRefDto): GraphNodeRef {
 }
 
 function adaptGraphNodeMetadata(dto: GraphNodeDto): GraphNodeMetadata {
+  const rawTags = dto.metadata?.tags;
   return {
     riskLevel: dto.metadata?.risk_level,
-    tagIds: dto.metadata?.tags ?? [],
+    tagIds: Array.isArray(rawTags) ? rawTags.map(String).filter(Boolean) : [],
   };
 }
 

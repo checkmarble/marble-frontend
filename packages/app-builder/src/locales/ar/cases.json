@@ -346,6 +346,8 @@
   "manager.actions.sar_completed": "اكتملت SAR",
   "manager.client.risk_label": "المخاطر",
   "manager.clients.last_comments_title": "آخر التعليقات",
+  "manager.clients.main_links_empty": "لا توجد روابط رئيسية",
+  "manager.clients.main_links_title": "الروابط الرئيسية",
   "manager.comments.empty": "لا توجد تعليقات حتى الآن",
   "manager.comments.investigations_header": "التحقيقات",
   "manager.principal.add_tag_placeholder": "إضافة وسم",

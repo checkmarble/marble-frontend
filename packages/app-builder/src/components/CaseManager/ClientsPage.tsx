@@ -14,12 +14,13 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, Popover, Tag } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, Popover, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { ClientCommentsListCard } from './ClientComments';
 import { ClientRelatedAlertCasesCard } from './ClientRelatedAlertCasesCard';
 import { CommentContext } from './hooks/comment-context';
+import { MainLinksGraph } from './MainLinksGraph';
 import { NavigationOptions } from './NavigationOptions';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
 
@@ -107,6 +108,16 @@ export function CaseManagerClientsPage({
             ) : null}
           </div>
         </Card>
+        {ingestedInfo ? (
+          <div className="space-y-sm">
+            <Typo variant="title2">{t('cases:manager.clients.main_links_title')}</Typo>
+            <MainLinksGraph
+              objectType={ingestedInfo.objectType}
+              objectId={ingestedInfo.objectId}
+              dataModel={dataModel}
+            />
+          </div>
+        ) : null}
       </div>
       <div className="flex flex-col gap-lg">
         {ingestedInfo ? (

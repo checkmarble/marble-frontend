@@ -1,7 +1,9 @@
 import { type GraphData } from '@app-builder/models/graph';
-import { useGenerateGraphMutation } from '@app-builder/queries/graph/generate-graph';
+import { useGenerateGraphQuery } from '@app-builder/queries/graph/generate-graph';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo, useState } from 'react';
+import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { type ClusterThreshold, DEFAULT_CLUSTER_THRESHOLD } from './CustomerGraphContext';
 import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter } from './relation-filter';
@@ -45,10 +47,10 @@ const TestGraphSessionContext = createSimpleContext<TestGraphSessionContextValue
 export const useTestGraphSession = TestGraphSessionContext.useValue;
 
 export function TestGraphSessionProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation(['common']);
   const [recordType, setRecordType] = useState('');
   const [recordId, setRecordId] = useState('');
-  const [graphData, setGraphData] = useState<GraphData | null>(null);
-  const [graphGeneration, setGraphGeneration] = useState(0);
+  const [loadedRecord, setLoadedRecord] = useState<{ recordType: string; recordId: string } | null>(null);
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
   const [showRiskScore, setShowRiskScore] = useState(false);
@@ -57,27 +59,36 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
   const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
   const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('rad-dagre');
   const [relationFilter, setRelationFilter] = useState<RelationFilter>(EMPTY_RELATION_FILTER);
-  const { mutate: generateGraph, isPending: isGeneratingGraph } = useGenerateGraphMutation();
+
+  const { data, dataUpdatedAt, error, isFetching, refetch } = useGenerateGraphQuery(
+    {
+      recordType: loadedRecord?.recordType ?? '',
+      recordId: loadedRecord?.recordId ?? '',
+    },
+    loadedRecord != null,
+  );
+
+  useEffect(() => {
+    if (!error) return;
+    toast.error(error.message ?? t('common:errors.unknown'));
+  }, [error, t]);
 
   const loadGraph = useCallback(() => {
     const trimmedRecordId = recordId.trim();
     if (!recordType || !trimmedRecordId) return;
 
-    generateGraph(
-      { recordType, recordId: trimmedRecordId },
-      {
-        onSuccess: (data) => {
-          setGraphData(data);
-          setGraphGeneration((generation) => generation + 1);
-        },
-      },
-    );
-  }, [generateGraph, recordId, recordType]);
+    if (loadedRecord?.recordType === recordType && loadedRecord?.recordId === trimmedRecordId) {
+      void refetch();
+      return;
+    }
+
+    setLoadedRecord({ recordType, recordId: trimmedRecordId });
+  }, [loadedRecord, recordId, recordType, refetch]);
 
   const reloadGraph = useCallback(() => {
-    if (!graphData) return;
-    loadGraph();
-  }, [graphData, loadGraph]);
+    if (!data) return;
+    void refetch();
+  }, [data, refetch]);
 
   const value = useMemo(
     () => ({
@@ -85,9 +96,9 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
       setRecordType,
       recordId,
       setRecordId,
-      graphData,
-      graphGeneration,
-      isGeneratingGraph,
+      graphData: data ?? null,
+      graphGeneration: dataUpdatedAt,
+      isGeneratingGraph: isFetching,
       loadGraph,
       reloadGraph,
       showPersons,
@@ -110,9 +121,9 @@ export function TestGraphSessionProvider({ children }: { children: ReactNode }) 
     [
       recordType,
       recordId,
-      graphData,
-      graphGeneration,
-      isGeneratingGraph,
+      data,
+      dataUpdatedAt,
+      isFetching,
       loadGraph,
       reloadGraph,
       showPersons,

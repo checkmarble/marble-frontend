@@ -30,5 +30,8 @@ export const generateGraphFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(generateGraphPayloadSchema)
   .handler(async ({ context, data }) => {
-    return context.authInfo.graph.generateGraph(data.recordType, data.recordId);
+    return context.authInfo.graph.generateGraph(data.recordType, data.recordId, {
+      degrees: data.degrees,
+      types: data.types,
+    });
   });
