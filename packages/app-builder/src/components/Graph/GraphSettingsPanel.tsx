@@ -210,15 +210,7 @@ function ObjectTags({ objectType, objectId }: GraphObjectRef) {
   return <ObjectTagLine tags={tags} />;
 }
 
-function PersonRow({
-  person,
-  showRiskScore,
-  showTags,
-}: {
-  person: GraphObjectRef;
-  showRiskScore: boolean;
-  showTags: boolean;
-}) {
+function PersonRow({ person, showTags }: { person: GraphObjectRef; showTags: boolean }) {
   const { selectionMode, setHoveredNodeId, setSelectedObject } = useCustomerGraph();
   const detailsQuery = useObjectDetailsQuery(person.objectType, person.objectId);
   const title = match(detailsQuery)
@@ -238,7 +230,7 @@ function PersonRow({
       <div className="flex flex-col gap-xs">
         <div className="flex flex-wrap items-center gap-sm">
           <span className="text-sm">{title}</span>
-          {showRiskScore ? <ObjectRiskBadge {...person} /> : null}
+          <ObjectRiskBadge {...person} />
         </div>
         {showTags ? <ObjectTags {...person} /> : null}
       </div>
@@ -252,12 +244,10 @@ const PERSON_LIST_PREVIEW_COUNT = 5;
 function PersonListDetail({
   header,
   persons,
-  showRiskScore,
   showTags,
 }: {
   header: ReactNode;
   persons: GraphObjectRef[];
-  showRiskScore: boolean;
   showTags: boolean;
 }) {
   const { t } = useTranslation(graphI18n);
@@ -282,12 +272,7 @@ function PersonListDetail({
         <>
           <ul className="space-y-sm ps-md">
             {displayedPersons.map((person) => (
-              <PersonRow
-                key={nodeKey(person.objectType, person.objectId)}
-                person={person}
-                showRiskScore={showRiskScore}
-                showTags={showTags}
-              />
+              <PersonRow key={nodeKey(person.objectType, person.objectId)} person={person} showTags={showTags} />
             ))}
           </ul>
           {hasMore ? (
@@ -414,7 +399,7 @@ export function GraphSettingsPanel() {
                         <span className="text-purple-primary text-sm font-semibold">
                           {resolveTitle(objectDetails.data, objectId)}
                         </span>
-                        {showRiskScore ? <ObjectRiskBadge objectType={objectType} objectId={objectId} /> : null}
+                        <ObjectRiskBadge objectType={objectType} objectId={objectId} />
                       </div>
 
                       {showTags ? (
@@ -442,7 +427,6 @@ export function GraphSettingsPanel() {
                 <PersonListDetail
                   header={<div className="text-sm font-semibold">{t('graph:panel.connected_nodes')}</div>}
                   persons={person.persons}
-                  showRiskScore={showRiskScore}
                   showTags={showTags}
                 />
               </>
@@ -456,7 +440,6 @@ export function GraphSettingsPanel() {
                   </div>
                 }
                 persons={pivot.persons}
-                showRiskScore={showRiskScore}
                 showTags={showTags}
               />
             ))
@@ -477,7 +460,6 @@ export function GraphSettingsPanel() {
                   </div>
                 }
                 persons={cluster.persons}
-                showRiskScore={showRiskScore}
                 showTags={showTags}
               />
             ))

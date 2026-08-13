@@ -17,7 +17,9 @@ export type DeleteGraphRelationPayload = z.infer<typeof deleteGraphRelationPaylo
 export const generateGraphPayloadSchema = z.object({
   recordType: z.string().min(1),
   recordId: z.string().min(1),
-  degrees: z.number().int().min(1).optional(),
+  degrees: z.number().int().min(1).max(5).optional(),
   types: z.string().optional(),
+  skip_same_field_relations: z.boolean().optional(),
+  same_field_relations: z.string().optional(),
 });
 export type GenerateGraphPayload = z.infer<typeof generateGraphPayloadSchema>;

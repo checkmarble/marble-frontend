@@ -11,6 +11,8 @@ import {
 export type GenerateGraphQuery = {
   degrees?: number;
   types?: string;
+  skip_same_field_relations?: boolean;
+  same_field_relations?: string;
 };
 
 export interface GraphRepository {

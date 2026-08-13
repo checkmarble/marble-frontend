@@ -26,6 +26,7 @@ export function MainLinksGraph({ objectType, objectId, dataModel }: MainLinksGra
     recordType: objectType,
     recordId: objectId,
     degrees: MAIN_LINKS_DEGREES,
+    skip_same_field_relations: true,
   });
 
   if (query.isPending) {
