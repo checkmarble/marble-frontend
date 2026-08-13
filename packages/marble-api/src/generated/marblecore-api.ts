@@ -7358,9 +7358,11 @@ export function deleteGraphRelation(relationId: string, opts?: Oazapfts.RequestO
 /**
  * Generate the relationship graph from a starting record
  */
-export function generateRelationshipGraph(recordType: string, recordId: string, { types, degrees }: {
+export function generateRelationshipGraph(recordType: string, recordId: string, { types, degrees, skipSameFieldRelations, sameFieldRelations }: {
     types?: string;
     degrees?: number;
+    skipSameFieldRelations?: boolean;
+    sameFieldRelations?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -7373,7 +7375,9 @@ export function generateRelationshipGraph(recordType: string, recordId: string, 
         data: string;
     }>(`/graph/${encodeURIComponent(recordType)}/${encodeURIComponent(recordId)}${QS.query(QS.explode({
         types,
-        degrees
+        degrees,
+        skip_same_field_relations: skipSameFieldRelations,
+        same_field_relations: sameFieldRelations
     }))}`, {
         ...opts
     }));
