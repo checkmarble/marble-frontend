@@ -103,6 +103,17 @@
           type: integer
           minimum: 1
           maximum: 5
+      - name: skip_same_field_relations
+        description: Whether or not to walk through same field edges
+        in: query
+        schema:
+          type: boolean
+          default: false
+      - name: same_field_relations
+        description: Comma-separated list of relations to walk through
+        in: query
+        schema:
+          type: string
     responses:
       "200":
         description: Relationship graph
