@@ -11,13 +11,16 @@ import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 import { allowsPivot } from './relation-filter';
 import { toFlatFlowElements } from './utils';
 
+/** Caps auto-fit at native node size so sparse graphs don't fill the pane. */
+export const graphFitViewOptions = { maxZoom: 1 } as const;
+
 /** Re-run layout once React Flow has measured node sizes (must be a ReactFlow child). */
 export function GraphMeasuredLayout({
   layoutElements,
 }: {
   layoutElements: (nodes: GraphRfNode[], edges: GraphRfEdge[]) => { nodes: GraphRfNode[]; edges: GraphRfEdge[] };
 }) {
-  useLayoutInitializedNodes({ mode: 'onNodesInitialized', layoutElements });
+  useLayoutInitializedNodes({ mode: 'onNodesInitialized', layoutElements, fitViewOptions: graphFitViewOptions });
   return null;
 }
 

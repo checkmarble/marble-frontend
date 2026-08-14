@@ -11,7 +11,12 @@ import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
 import { graphI18n } from './graph-i18n';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
 import { type GraphRfNode } from './graph-rf-types';
-import { applyVisibilityFilters, GraphMeasuredLayout, useLaidOutGraph } from './use-laid-out-graph';
+import {
+  applyVisibilityFilters,
+  GraphMeasuredLayout,
+  graphFitViewOptions,
+  useLaidOutGraph,
+} from './use-laid-out-graph';
 import '@xyflow/react/dist/style.css';
 
 export type GraphImplProps = {
@@ -166,13 +171,14 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
       onNodeMouseEnter={onNodeMouseEnter}
       onNodeMouseLeave={onNodeMouseLeave}
       fitView
+      fitViewOptions={graphFitViewOptions}
       maxZoom={5}
       minZoom={0.1}
       proOptions={{ hideAttribution: true }}
       colorMode={theme.theme}
     >
       <GraphMeasuredLayout layoutElements={autoLayoutElements} />
-      <Controls position="bottom-left" className="z-10">
+      <Controls position="bottom-left" className="z-10" fitViewOptions={graphFitViewOptions}>
         <AutoLayoutControlButton layoutElements={autoLayoutElements} />
         <ControlButton
           onClick={() => setShowEdgeLabels(!showEdgeLabels)}

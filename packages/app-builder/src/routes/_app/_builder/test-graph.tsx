@@ -4,9 +4,8 @@ import { GraphSessionProvider } from '@app-builder/components/Graph/GraphSession
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { Tabs, tabClassName } from 'ui-design-system';
 
 const testGraphLayoutLoader = createServerFn()
   .middleware([authMiddleware])
@@ -42,14 +41,6 @@ function TestGraphLayout() {
         <Page.Main className="min-h-0 overflow-hidden">
           <Page.Header className="h-auto flex-col items-start justify-center gap-sm py-md">
             <BreadCrumbs />
-            <Tabs>
-              <Link to="/test-graph" activeOptions={{ exact: true }} className={tabClassName}>
-                Graph
-              </Link>
-              <Link to="/test-graph/settings" className={tabClassName}>
-                Settings
-              </Link>
-            </Tabs>
           </Page.Header>
           <Page.Container className="min-h-0">
             <Outlet />

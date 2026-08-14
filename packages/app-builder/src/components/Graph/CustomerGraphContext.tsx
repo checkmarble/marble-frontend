@@ -6,9 +6,9 @@ import { type GraphLayoutMode } from './graph-layout';
 import { EMPTY_RELATION_FILTER, type RelationFilter, withAvailableLabels, withLabelToggled } from './relation-filter';
 
 /** Branch sizes a subtree must exceed to collapse into a cluster chip. `0` disables clustering. */
-export const CLUSTER_THRESHOLD_OPTIONS = [0, 2, 5, 7, 10, 15, 30, 50] as const;
+export const CLUSTER_THRESHOLD_OPTIONS = [0, 1, 2, 3, 5, 8, 13, 21, 34] as const;
 export type ClusterThreshold = (typeof CLUSTER_THRESHOLD_OPTIONS)[number];
-export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 10;
+export const DEFAULT_CLUSTER_THRESHOLD: ClusterThreshold = 8;
 
 /**
  * The node backing the settings panel's detail card. `persons` are the selection's

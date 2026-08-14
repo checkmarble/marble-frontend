@@ -57,7 +57,7 @@ export function GraphSessionProvider({
   const [loadedRecord, setLoadedRecord] = useState<GraphRecordRef | null>(seed);
   const [showPersons, setShowPersons] = useState(true);
   const [showCompanies, setShowCompanies] = useState(true);
-  const [showRiskScore, setShowRiskScore] = useState(false);
+  const [showRiskScore, setShowRiskScore] = useState(true);
   const [showTags, setShowTags] = useState(false);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
   const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);

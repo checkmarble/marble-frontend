@@ -12,13 +12,13 @@ import { useListGraphRelationsQuery } from '@app-builder/queries/graph/list-rela
 import { createGraphRelationPayloadSchema } from '@app-builder/schemas/graph';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal } from 'ui-design-system';
+import { Button, Input, Modal, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { GraphOptionSelect } from './GraphOptionSelect';
-import { useGraphSession } from './GraphSessionContext';
 import { GraphTabSwitch, tabSwitchOptions } from './GraphTabSwitch';
 import { graphI18n } from './graph-i18n';
 
@@ -63,6 +63,8 @@ function joinableFields(rightTable: TableModel | undefined, leftField: DataModel
 
 /** The relations sharing one label, which is what the settings UI calls a "setting". */
 type RelationGroup = { label: string; relations: GraphRelation[] };
+
+const relationGroupColumnHelper = createColumnHelper<RelationGroup>();
 
 function groupRelationsByLabel(relations: GraphRelation[]): RelationGroup[] {
   const groups = new Map<string, GraphRelation[]>();
@@ -158,7 +160,7 @@ function TableFieldSelect({
 
 function RelationEndpoints({ relation }: { relation: GraphRelation }) {
   return (
-    <div className="text-grey-secondary flex min-w-0 items-center gap-xs text-xs">
+    <div className="text-grey-secondary flex min-w-0 items-center gap-xs text-sm">
       <span className="truncate">
         {relation.leftType}.{relation.leftField}
       </span>
@@ -302,7 +304,6 @@ function RelationSettingPanel({
   relations: GraphRelation[];
 }) {
   const { t } = useTranslation(graphI18n);
-  const { reloadGraph } = useGraphSession();
   const createMutation = useCreateGraphRelationMutation();
   const deleteMutation = useDeleteGraphRelationMutation();
   const [scope, setScope] = useState<RelationScope>('same-table');
@@ -316,7 +317,6 @@ function RelationSettingPanel({
         { ...value, label },
         {
           onSuccess: () => {
-            reloadGraph();
             formApi.setFieldValue('leftField', '');
             formApi.setFieldValue('rightField', '');
           },
@@ -452,7 +452,7 @@ function RelationSettingPanel({
                         mode="icon"
                         aria-label={t('graph:settings.delete_relation')}
                         disabled={deleteMutation.isPending}
-                        onClick={() => deleteMutation.mutate({ relationId: relation.id }, { onSuccess: reloadGraph })}
+                        onClick={() => deleteMutation.mutate({ relationId: relation.id })}
                       >
                         <Icon icon="delete" className="size-4" />
                       </Button>
@@ -474,7 +474,6 @@ function RelationSettingPanel({
 export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) {
   const { t } = useTranslation(graphI18n);
   const relationsQuery = useListGraphRelationsQuery();
-  const { reloadGraph } = useGraphSession();
   const deleteRelationsMutation = useDeleteGraphRelationsMutation();
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -491,13 +490,86 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
     return relationsQuery.data.filter((relation) => relation.label === panelLabel);
   }, [panelLabel, relationsQuery.data]);
 
+  const columns = useMemo(
+    () => [
+      relationGroupColumnHelper.accessor((row) => row.label, {
+        id: 'label',
+        header: t('graph:settings.create_label.field'),
+        size: 200,
+      }),
+      relationGroupColumnHelper.accessor((row) => row.relations, {
+        id: 'relations',
+        header: t('graph:settings.relations'),
+        size: 400,
+        cell: ({ getValue }) => {
+          const relations = getValue();
+          if (relations.length === 0) return null;
+
+          return (
+            <ul className="flex flex-col gap-xs py-xs">
+              {relations.map((relation) => (
+                <li key={relation.id}>
+                  <RelationEndpoints relation={relation} />
+                </li>
+              ))}
+            </ul>
+          );
+        },
+      }),
+      relationGroupColumnHelper.display({
+        id: 'actions',
+        size: 80,
+        cell: ({ cell }) => {
+          const group = cell.row.original;
+          const buttonClass = 'group-hover:visible invisible';
+          return (
+            <div className="flex gap-sm">
+              <div className={buttonClass}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  appearance="stroked"
+                  mode="icon"
+                  aria-label={t('common:edit')}
+                  onClick={() => setPanelLabel(group.label)}
+                >
+                  <Icon icon="edit-square" className="size-6 shrink-0" />
+                </Button>
+              </div>
+              <div className={buttonClass}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  appearance="stroked"
+                  mode="icon"
+                  aria-label={t('graph:settings.delete_group', { label: group.label })}
+                  onClick={() => setDeleteTarget(group)}
+                >
+                  <Icon icon="delete" className="size-6 shrink-0" />
+                </Button>
+              </div>
+            </div>
+          );
+        },
+      }),
+    ],
+    [t],
+  );
+
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
+    data: groups,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    enableSorting: false,
+  });
+
   // On failure the modal stays open, so the user can retry what is left of the setting.
   const onDeleteSetting = (group: RelationGroup) => {
     deleteRelationsMutation.mutate(
       group.relations.map((relation) => relation.id),
       {
         onSuccess: () => {
-          reloadGraph();
           if (panelLabel === group.label) setPanelLabel(null);
           setDeleteTarget(null);
         },
@@ -506,66 +578,42 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-lg overflow-y-auto">
-      <section className="flex flex-col gap-md">
-        <div className="flex items-center justify-between gap-md">
-          <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.configured_relations')}</h2>
-          <Button variant="primary" onClick={() => setCreateModalOpen(true)}>
-            <Icon icon="plus" className="size-4" />
+    <>
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('graph:settings.configured_relations')}</span>
+          <Button
+            onClick={(event) => {
+              event.stopPropagation();
+              setCreateModalOpen(true);
+            }}
+          >
+            <Icon icon="plus" className="size-5" />
             {t('common:create')}
           </Button>
-        </div>
-
-        {relationsQuery.isPending ? (
-          <p className="text-grey-secondary text-sm">{t('graph:settings.loading')}</p>
-        ) : relationsQuery.isError ? (
-          <div className="flex items-center gap-sm">
-            <p className="text-grey-secondary text-sm">{t('graph:settings.load_error')}</p>
-            <Button variant="secondary" onClick={() => relationsQuery.refetch()}>
-              {t('common:retry')}
-            </Button>
-          </div>
-        ) : groups.length === 0 ? (
-          <p className="text-grey-secondary text-sm">{t('graph:settings.empty')}</p>
-        ) : (
-          <div className="flex flex-col gap-md">
-            {groups.map((group) => (
-              <CollapsiblePaper.Container key={group.label} defaultOpen={false}>
-                <CollapsiblePaper.Title size="small" iconPosition="left">
-                  <span className="text-grey-primary min-w-0 flex-1 truncate text-sm font-medium">{group.label}</span>
-                  <div
-                    className="flex shrink-0 items-center gap-sm"
-                    onClick={(event) => event.stopPropagation()}
-                    onKeyDown={(event) => event.stopPropagation()}
-                  >
-                    <Button variant="secondary" appearance="stroked" onClick={() => setPanelLabel(group.label)}>
-                      {t('common:edit')}
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      appearance="stroked"
-                      mode="icon"
-                      aria-label={t('graph:settings.delete_group', { label: group.label })}
-                      onClick={() => setDeleteTarget(group)}
-                    >
-                      <Icon icon="delete" className="size-4" />
-                    </Button>
-                  </div>
-                </CollapsiblePaper.Title>
-                <CollapsiblePaper.Content>
-                  <ul className="divide-grey-border flex flex-col divide-y">
-                    {group.relations.map((relation) => (
-                      <li key={relation.id} className="py-sm first:pt-0 last:pb-0">
-                        <RelationEndpoints relation={relation} />
-                      </li>
-                    ))}
-                  </ul>
-                </CollapsiblePaper.Content>
-              </CollapsiblePaper.Container>
-            ))}
-          </div>
-        )}
-      </section>
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          {relationsQuery.isPending ? (
+            <p className="text-grey-secondary text-sm">{t('graph:settings.loading')}</p>
+          ) : relationsQuery.isError ? (
+            <div className="flex items-center gap-sm">
+              <p className="text-grey-secondary text-sm">{t('graph:settings.load_error')}</p>
+              <Button variant="secondary" onClick={() => relationsQuery.refetch()}>
+                {t('common:retry')}
+              </Button>
+            </div>
+          ) : (
+            <Table.Container {...getContainerProps()} className="max-h-96">
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => (
+                  <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />
+                ))}
+              </Table.Body>
+            </Table.Container>
+          )}
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
 
       <CreateLabelModal open={createModalOpen} onOpenChange={setCreateModalOpen} onSubmitLabel={setPanelLabel} />
 
@@ -592,6 +640,6 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
           relations={panelRelations}
         />
       ) : null}
-    </div>
+    </>
   );
 }

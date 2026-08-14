@@ -24,6 +24,7 @@ export type Sections = {
   users: Section;
   scenarios: Section;
   case_manager: Section;
+  graph_relations: Section;
   audit: Section;
   ip_whitelisting: Section;
   screening_providers: Section;
@@ -57,6 +58,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
           ? [{ title: 'case_manager', to: '/settings/inboxes' }]
           : []),
       ],
+    },
+    graph_relations: {
+      icon: 'tree-schema',
+      settings: [...(isAdmin(user) ? [{ title: 'graph_relations', to: '/settings/graph-relations' }] : [])],
     },
     audit: {
       icon: 'history',

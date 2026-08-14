@@ -1,6 +1,10 @@
 import { CustomerGraphProvider } from '@app-builder/components/Graph/CustomerGraphContext';
 import { graphEdgeTypes, graphNodeTypes } from '@app-builder/components/Graph/GraphComponents';
-import { GraphMeasuredLayout, useLaidOutGraph } from '@app-builder/components/Graph/use-laid-out-graph';
+import {
+  GraphMeasuredLayout,
+  graphFitViewOptions,
+  useLaidOutGraph,
+} from '@app-builder/components/Graph/use-laid-out-graph';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type GraphData } from '@app-builder/models/graph';
 import { useGenerateGraphQuery } from '@app-builder/queries/graph/generate-graph';
@@ -71,6 +75,7 @@ function MainLinksGraphCanvas({ data, dataModel }: { data: GraphData; dataModel:
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       fitView
+      fitViewOptions={graphFitViewOptions}
       maxZoom={5}
       minZoom={0.1}
       nodesDraggable={false}

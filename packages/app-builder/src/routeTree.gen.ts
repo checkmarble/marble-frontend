@@ -51,7 +51,6 @@ import { Route as RessourcesCasesDownloadFileFileIdRouteImport } from './routes/
 import { Route as RessourcesCasesDownloadDataCaseIdRouteImport } from './routes/ressources/cases/download-data.$caseId'
 import { Route as AppBuilderUserScoringOverviewRouteImport } from './routes/_app/_builder/user-scoring/overview'
 import { Route as AppBuilderUploadObjectTypeRouteImport } from './routes/_app/_builder/upload/$objectType'
-import { Route as AppBuilderTestGraphSettingsRouteImport } from './routes/_app/_builder/test-graph/settings'
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
@@ -59,6 +58,7 @@ import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './rout
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
 import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
 import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
+import { Route as AppBuilderSettingsGraphRelationsRouteImport } from './routes/_app/_builder/settings/graph-relations'
 import { Route as AppBuilderSettingsAuditLogsRouteImport } from './routes/_app/_builder/settings/audit-logs'
 import { Route as AppBuilderSettingsApiKeysRouteImport } from './routes/_app/_builder/settings/api-keys'
 import { Route as AppBuilderSettingsAnalyticsRouteImport } from './routes/_app/_builder/settings/analytics'
@@ -349,12 +349,6 @@ const AppBuilderUploadObjectTypeRoute =
     path: '/upload/$objectType',
     getParentRoute: () => AppBuilderRoute,
   } as any)
-const AppBuilderTestGraphSettingsRoute =
-  AppBuilderTestGraphSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AppBuilderTestGraphRoute,
-  } as any)
 const AppBuilderSettingsWebhooksRoute =
   AppBuilderSettingsWebhooksRouteImport.update({
     id: '/webhooks',
@@ -393,6 +387,12 @@ const AppBuilderSettingsInboxesRoute =
   AppBuilderSettingsInboxesRouteImport.update({
     id: '/inboxes',
     path: '/inboxes',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsGraphRelationsRoute =
+  AppBuilderSettingsGraphRelationsRouteImport.update({
+    id: '/graph-relations',
+    path: '/graph-relations',
     getParentRoute: () => AppBuilderSettingsRoute,
   } as any)
 const AppBuilderSettingsAuditLogsRoute =
@@ -841,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/settings/graph-relations': typeof AppBuilderSettingsGraphRelationsRoute
   '/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
@@ -848,7 +849,6 @@ export interface FileRoutesByFullPath {
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
-  '/test-graph/settings': typeof AppBuilderTestGraphSettingsRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
   '/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
@@ -941,13 +941,13 @@ export interface FileRoutesByTo {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/settings/graph-relations': typeof AppBuilderSettingsGraphRelationsRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
-  '/test-graph/settings': typeof AppBuilderTestGraphSettingsRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
   '/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
@@ -1050,6 +1050,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/_app/_builder/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/_app/_builder/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/_app/_builder/settings/graph-relations': typeof AppBuilderSettingsGraphRelationsRoute
   '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
@@ -1057,7 +1058,6 @@ export interface FileRoutesById {
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/_app/_builder/settings/users': typeof AppBuilderSettingsUsersRoute
   '/_app/_builder/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
-  '/_app/_builder/test-graph/settings': typeof AppBuilderTestGraphSettingsRoute
   '/_app/_builder/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
   '/_app/_builder/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
@@ -1166,6 +1166,7 @@ export interface FileRouteTypes {
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
+    | '/settings/graph-relations'
     | '/settings/inboxes'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
@@ -1173,7 +1174,6 @@ export interface FileRouteTypes {
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
-    | '/test-graph/settings'
     | '/upload/$objectType'
     | '/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
@@ -1266,13 +1266,13 @@ export interface FileRouteTypes {
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
+    | '/settings/graph-relations'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
-    | '/test-graph/settings'
     | '/upload/$objectType'
     | '/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
@@ -1374,6 +1374,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/analytics'
     | '/_app/_builder/settings/api-keys'
     | '/_app/_builder/settings/audit-logs'
+    | '/_app/_builder/settings/graph-relations'
     | '/_app/_builder/settings/inboxes'
     | '/_app/_builder/settings/ip-whitelisting'
     | '/_app/_builder/settings/scenarios'
@@ -1381,7 +1382,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/tags'
     | '/_app/_builder/settings/users'
     | '/_app/_builder/settings/webhooks'
-    | '/_app/_builder/test-graph/settings'
     | '/_app/_builder/upload/$objectType'
     | '/_app/_builder/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
@@ -1766,13 +1766,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderUploadObjectTypeRouteImport
       parentRoute: typeof AppBuilderRoute
     }
-    '/_app/_builder/test-graph/settings': {
-      id: '/_app/_builder/test-graph/settings'
-      path: '/settings'
-      fullPath: '/test-graph/settings'
-      preLoaderRoute: typeof AppBuilderTestGraphSettingsRouteImport
-      parentRoute: typeof AppBuilderTestGraphRoute
-    }
     '/_app/_builder/settings/webhooks': {
       id: '/_app/_builder/settings/webhooks'
       path: '/webhooks'
@@ -1820,6 +1813,13 @@ declare module '@tanstack/react-router' {
       path: '/inboxes'
       fullPath: '/settings/inboxes'
       preLoaderRoute: typeof AppBuilderSettingsInboxesRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/graph-relations': {
+      id: '/_app/_builder/settings/graph-relations'
+      path: '/graph-relations'
+      fullPath: '/settings/graph-relations'
+      preLoaderRoute: typeof AppBuilderSettingsGraphRelationsRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
     '/_app/_builder/settings/audit-logs': {
@@ -2769,6 +2769,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsAnalyticsRoute: typeof AppBuilderSettingsAnalyticsRouteWithChildren
   AppBuilderSettingsApiKeysRoute: typeof AppBuilderSettingsApiKeysRoute
   AppBuilderSettingsAuditLogsRoute: typeof AppBuilderSettingsAuditLogsRoute
+  AppBuilderSettingsGraphRelationsRoute: typeof AppBuilderSettingsGraphRelationsRoute
   AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRouteWithChildren
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
@@ -2785,6 +2786,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
     AppBuilderSettingsAnalyticsRouteWithChildren,
   AppBuilderSettingsApiKeysRoute: AppBuilderSettingsApiKeysRoute,
   AppBuilderSettingsAuditLogsRoute: AppBuilderSettingsAuditLogsRoute,
+  AppBuilderSettingsGraphRelationsRoute: AppBuilderSettingsGraphRelationsRoute,
   AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRouteWithChildren,
   AppBuilderSettingsIpWhitelistingRoute: AppBuilderSettingsIpWhitelistingRoute,
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,
@@ -2802,12 +2804,10 @@ const AppBuilderSettingsRouteWithChildren =
   AppBuilderSettingsRoute._addFileChildren(AppBuilderSettingsRouteChildren)
 
 interface AppBuilderTestGraphRouteChildren {
-  AppBuilderTestGraphSettingsRoute: typeof AppBuilderTestGraphSettingsRoute
   AppBuilderTestGraphIndexRoute: typeof AppBuilderTestGraphIndexRoute
 }
 
 const AppBuilderTestGraphRouteChildren: AppBuilderTestGraphRouteChildren = {
-  AppBuilderTestGraphSettingsRoute: AppBuilderTestGraphSettingsRoute,
   AppBuilderTestGraphIndexRoute: AppBuilderTestGraphIndexRoute,
 }
 
