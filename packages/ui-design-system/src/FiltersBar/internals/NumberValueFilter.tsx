@@ -103,12 +103,7 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
               <MenuCommand.Content sameWidth>
                 <MenuCommand.List>
                   {Array.from(NUMBER_OPERATORS).map((op) => (
-                    <MenuCommand.Item
-                      key={op}
-                      value={op}
-                      selected={localValue.op === op}
-                      onSelect={() => onOperatorChange(op)}
-                    >
+                    <MenuCommand.Item key={op} value={op} onSelect={() => onOperatorChange(op)}>
                       {op}
                     </MenuCommand.Item>
                   ))}

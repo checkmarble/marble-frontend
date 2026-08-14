@@ -215,7 +215,6 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
                 key={c.isoAlpha3}
                 value={itemFilterValue(c, locale)}
                 className="cursor-pointer"
-                selected={c.isoAlpha3 === listIso3}
                 onSelect={() => handleListChange(c)}
               >
                 <CountryFlagItem country={c} selected={c.isoAlpha3 === listIso3} />

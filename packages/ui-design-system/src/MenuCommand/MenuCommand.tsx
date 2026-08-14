@@ -402,9 +402,12 @@ const KeyboardNav = () => {
   return <Command.Input ref={inputRef} className="fixed left-[-10000px]" />;
 };
 
-type ItemProps = Omit<React.ComponentProps<typeof Command.Item>, 'asChild'> & {
-  selected?: boolean;
-};
+/**
+ * `asChild` is intentionally kept (it used to be omitted): it lets a menu entry render as its
+ * single child element -- e.g. a router `Link` -- so navigation items stay real anchors and keep
+ * cmd-click, middle-click and prefetch. MenuCommand.spec.tsx covers it.
+ */
+type ItemProps = React.ComponentProps<typeof Command.Item>;
 const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function HeadlessItem(
   { onSelect, ...props },
   ref,
@@ -421,7 +424,7 @@ const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, Ite
   return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
 });
 const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function Item(
-  { className, selected = false, ...props },
+  { className, ...props },
   ref,
 ) {
   return (
@@ -432,7 +435,7 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
           'aria-selected:bg-purple-background-light data-[state=open]:bg-purple-background-light aria-disabled:text-grey-disabled outline-hidden',
           'flex h-10 scroll-mb-sm scroll-mt-2xl flex-row items-center justify-between gap-sm rounded-xs p-sm',
         ],
-        { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
+        { 'cursor-pointer': props.onSelect && !props.disabled },
         className,
       )}
       {...props}

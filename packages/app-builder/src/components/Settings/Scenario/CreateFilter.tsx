@@ -98,15 +98,9 @@ export function CreateFilter({
                   <MenuCommand.List>
                     <MenuCommand.Group>
                       {triggerFieldItems.map((item) => {
-                        const v = form.state.values as CreateExportedFieldPayload;
-                        const isSelected =
-                          selectedTableId === item.tableId &&
-                          'triggerObjectField' in v &&
-                          v.triggerObjectField === item.fieldName;
                         return (
                           <MenuCommand.Item
                             key={`trigger-${item.tableId}-${item.fieldName}`}
-                            selected={isSelected}
                             onSelect={() => {
                               setSelectedTableId(item.tableId);
                               // choose trigger; clear ingested
@@ -123,17 +117,9 @@ export function CreateFilter({
                     <MenuCommand.Separator />
                     <MenuCommand.Group>
                       {linkedFieldItems.map((item) => {
-                        const v = form.state.values as CreateExportedFieldPayload;
-                        const isSelected =
-                          'ingestedDataField' in v &&
-                          !!v.ingestedDataField &&
-                          v.ingestedDataField.name === item.fieldName &&
-                          v.ingestedDataField.path.join('.') === item.pathLinks.join('.') &&
-                          selectedTableId === item.baseTableId;
                         return (
                           <MenuCommand.Item
                             key={`pivot-${item.baseTableId}-${item.label}`}
-                            selected={isSelected}
                             onSelect={() => {
                               setSelectedTableId(item.baseTableId);
                               // choose ingested; clear trigger
