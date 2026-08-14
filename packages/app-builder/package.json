@@ -39,7 +39,6 @@
     "vitest": "4.1.10"
   },
   "dependencies": {
-    "@ariakit/react": "^0.4.35",
     "@dagrejs/dagre": "^3.0.0",
     "@dinero.js/currencies": "2.0.0-alpha.14",
     "@hello-pangea/dnd": "^18.0.1",
