@@ -19,7 +19,6 @@ export * from './Kbd/Kbd';
 export * from './LinkWrapper/LinkWrapper';
 export * from './Markdown/Markdown';
 export * from './Markdown/ReleaseMarkdown';
-export * from './Menu/Menu';
 export * from './MenuCommand/MenuCommand';
 export * from './Modal/Modal';
 export * from './Popover/Popover';
