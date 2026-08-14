@@ -33,7 +33,7 @@ export const generateGraphFn = createServerFn({ method: 'POST' })
     return context.authInfo.graph.generateGraph(data.recordType, data.recordId, {
       degrees: data.degrees,
       types: data.types,
-      skip_same_field_relations: data.skip_same_field_relations,
-      same_field_relations: data.same_field_relations,
+      skipSameFieldRelations: data.skip_same_field_relations,
+      sameFieldRelations: data.same_field_relations,
     });
   });
