@@ -8,7 +8,6 @@ export * from './Card/Card';
 export * from './Checkbox/Checkbox';
 export * from './Code/Code';
 export * from './Collapsible/Collapsible';
-export * from './Combobox/Combobox';
 export * from './Command/Command';
 export * from './contexts/FormattingContext';
 export * from './contexts/I18nContext';
