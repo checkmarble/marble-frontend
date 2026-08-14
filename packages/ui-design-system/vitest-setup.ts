@@ -26,3 +26,6 @@ window.HTMLElement.prototype.scrollIntoView = vi.fn();
 window.HTMLElement.prototype.setPointerCapture = vi.fn();
 window.HTMLElement.prototype.releasePointerCapture = vi.fn();
 window.HTMLElement.prototype.hasPointerCapture = vi.fn(() => true);
+// jsdom exposes window.CSS but not CSS.supports, which Ariakit's dialog calls to
+// feature-detect `scrollbar-gutter`. Report unsupported to take the fallback path.
+window.CSS.supports = vi.fn(() => false);
