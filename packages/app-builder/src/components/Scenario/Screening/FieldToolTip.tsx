@@ -1,22 +1,19 @@
-import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react';
+import { Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const FieldToolTip = ({ children }: { children: React.ReactNode }) => {
   return (
-    <HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
-      <HovercardAnchor
-        tabIndex={-1}
-        className="hover:text-purple-primary text-purple-disabled cursor-pointer transition-colors"
-      >
+    <Tooltip.Default
+      arrow={false}
+      delayDuration={0}
+      side="right"
+      sideOffset={16}
+      content={children}
+      className="border-grey-border text-s flex w-fit max-w-80 border shadow-md"
+    >
+      <button type="button" className="hover:text-purple-primary text-purple-disabled cursor-pointer transition-colors">
         <Icon icon="tip" className="size-5" />
-      </HovercardAnchor>
-      <Hovercard
-        portal
-        gutter={16}
-        className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md z-100 text-s"
-      >
-        {children}
-      </Hovercard>
-    </HovercardProvider>
+      </button>
+    </Tooltip.Default>
   );
 };

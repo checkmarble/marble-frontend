@@ -21,7 +21,6 @@ import { createDecisionDocHref } from '@app-builder/services/documentation-href'
 import { isEditScenarioAvailable, isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
 import { formatSchedule } from '@app-builder/utils/format';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -31,7 +30,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, cn, HiddenInputs, Typo } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, HiddenInputs, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -477,21 +476,21 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
             <div className="bg-purple-background-light text-s text-purple-primary flex h-10 flex-row items-center gap-sm rounded-sm px-xs uppercase">
               {tag}
               {tooltip ? (
-                <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
-                  <Ariakit.HovercardAnchor
-                    tabIndex={-1}
+                <Tooltip.Default
+                  arrow={false}
+                  delayDuration={0}
+                  side="right"
+                  sideOffset={8}
+                  content={tooltip}
+                  className="border-grey-border flex w-fit max-w-80 border shadow-md"
+                >
+                  <button
+                    type="button"
                     className="text-purple-disabled hover:text-purple-primary cursor-pointer transition-colors"
                   >
                     <Icon icon="tip" className="size-5" />
-                  </Ariakit.HovercardAnchor>
-                  <Ariakit.Hovercard
-                    portal
-                    gutter={8}
-                    className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md"
-                  >
-                    {tooltip}
-                  </Ariakit.Hovercard>
-                </Ariakit.HovercardProvider>
+                  </button>
+                </Tooltip.Default>
               ) : null}
             </div>
           ) : null}

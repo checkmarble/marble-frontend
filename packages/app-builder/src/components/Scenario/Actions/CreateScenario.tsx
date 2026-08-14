@@ -13,13 +13,12 @@ import {
 } from '@app-builder/queries/scenarios/create-scenario';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
-import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
 import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Modal, SelectV2 } from 'ui-design-system';
+import { Modal, SelectV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
@@ -135,25 +134,21 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
               <div className="group flex w-full flex-col gap-sm">
                 <FormLabel name={field.name} className="flex flex-row items-center gap-xs">
                   {t('scenarios:create_scenario.trigger_object_title')}
-                  <Ariakit.HovercardProvider
-                    showTimeout={0}
-                    hideTimeout={0}
-                    placement={i18n.dir() === 'ltr' ? 'right' : 'left'}
+                  <Tooltip.Default
+                    arrow={false}
+                    delayDuration={0}
+                    side={i18n.dir() === 'ltr' ? 'right' : 'left'}
+                    sideOffset={4}
+                    content={t('scenarios:trigger_object.description')}
+                    className="border-grey-border flex w-fit max-w-80 border shadow-md"
                   >
-                    <Ariakit.HovercardAnchor
-                      tabIndex={-1}
+                    <button
+                      type="button"
                       className="text-grey-disabled hover:text-grey-secondary cursor-pointer transition-colors"
                     >
                       <Icon icon="tip" className="size-5" />
-                    </Ariakit.HovercardAnchor>
-                    <Ariakit.Hovercard
-                      portal
-                      gutter={4}
-                      className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md"
-                    >
-                      {t('scenarios:trigger_object.description')}
-                    </Ariakit.Hovercard>
-                  </Ariakit.HovercardProvider>
+                    </button>
+                  </Tooltip.Default>
                 </FormLabel>
                 <SelectV2
                   placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}

@@ -1,9 +1,8 @@
 import { type DataModel, type DataModelField, getDataTypeIcon } from '@app-builder/models';
-import * as Ariakit from '@ariakit/react';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { MenuCommand } from 'ui-design-system';
+import { MenuCommand, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type DataModelFieldOption = {
@@ -134,26 +133,24 @@ function FieldInfo({ field }: { field: DataModelField }) {
   const { i18n } = useTranslation();
 
   return (
-    <Ariakit.HovercardProvider
-      showTimeout={0}
-      hideTimeout={0}
-      placement={i18n.dir() === 'ltr' ? 'right-start' : 'left-start'}
+    <Tooltip.Default
+      arrow={false}
+      delayDuration={0}
+      side={i18n.dir() === 'ltr' ? 'right' : 'left'}
+      align="start"
+      sideOffset={24}
+      alignOffset={-8}
+      content={<div className="p-md">{field.description}</div>}
+      // Field descriptions can be long, so opt out of Tooltip.Default's max-h-40
+      // clamp and keep the original 400px ceiling.
+      className="border-grey-border text-s flex max-h-[min(var(--radix-tooltip-content-available-height),400px)] max-w-[var(--radix-tooltip-content-available-width)] border p-0 shadow-md"
     >
-      <Ariakit.HovercardAnchor tabIndex={-1}>
+      <button type="button">
         <Icon
           icon="tip"
           className="hover:group-hover:text-purple-primary group-hover:text-purple-disabled size-5 shrink-0 text-transparent transition-colors"
         />
-      </Ariakit.HovercardAnchor>
-      <Ariakit.Hovercard
-        unmountOnHide
-        gutter={24}
-        shift={-8}
-        portal
-        className="bg-surface-card border-grey-border text-s flex max-h-[min(var(--popover-available-height),400px)] max-w-(--popover-available-width) rounded-sm border shadow-md"
-      >
-        <div className="p-md">{field.description}</div>
-      </Ariakit.Hovercard>
-    </Ariakit.HovercardProvider>
+      </button>
+    </Tooltip.Default>
   );
 }
