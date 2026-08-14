@@ -1,7 +1,6 @@
 import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { matchSorter } from '@app-builder/utils/search';
-import * as Ariakit from '@ariakit/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { flat, map, pipe } from 'remeda';
@@ -77,9 +76,7 @@ export function OutcomeAndReviewStatusFilter() {
             return (
               <SelectWithCombobox.ComboboxItem key={value} value={value}>
                 <OutcomeBadge outcome={outcomeValue} reviewStatus={reviewStatusValue} size="md" />
-                <Ariakit.SelectItemCheck className="text-purple-primary shrink-0">
-                  <Icon icon="tick" className="size-5" />
-                </Ariakit.SelectItemCheck>
+                {selectedValue === value ? <Icon icon="tick" className="text-purple-primary size-5 shrink-0" /> : null}
               </SelectWithCombobox.ComboboxItem>
             );
           })}
