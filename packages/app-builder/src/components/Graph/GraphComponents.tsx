@@ -258,7 +258,6 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   const { nodeTagsVisible, nodeTagIdOverrides, addedNodeTagIds, toggleClusterExpanded, selectionMode, hoveredNodeId } =
     useCustomerGraph();
   const { t } = useTranslation(graphI18n);
-  const title = usePersonTitle(data);
   // Payload metadata is static; session edits from the settings panel replace it
   // as a whole, then bulk-tag additions merge on top of whichever list won.
   const overrideTagIds = nodeTagIdOverrides.get(id);
@@ -271,12 +270,12 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   return (
     <NodeShell
       nodeId={id}
-      label={title}
+      label={data.label}
       action={
         data.isExpandedClusterRoot
           ? {
               icon: 'unfold_less',
-              label: t('graph:node.regroup_branch', { title }),
+              label: t('graph:node.regroup_branch', { title: data.label }),
               onPress: () => toggleClusterExpanded(id),
             }
           : undefined
@@ -296,11 +295,10 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
 function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
   const { toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
   const { t } = useTranslation(graphI18n);
-  const title = usePersonTitle(data.root);
   const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (
-    <NodeShell nodeId={id} label={title}>
+    <NodeShell nodeId={id} label={data.root.label}>
       <PersonCard data={data.root} isHovered={isHovered}>
         <div className="text-grey-primary flex items-center justify-between gap-sm text-xs">
           <div className="min-w-0 truncate">
@@ -350,14 +348,22 @@ function HypernodeNode({ id, data }: NodeProps<HypernodeRfNode>) {
   return (
     <div
       className={cn(
-        'border-grey-border bg-surface-card text-grey-primary relative flex gap-xs w-fit items-center rounded-md border p-md text-xs shadow-sm cursor-pointer transition-opacity duration-200',
-        isHovered && 'ring-2 ring-grey-primary ring-offset-2',
+        'border-grey-border bg-surface-card text-grey-primary relative flex w-fit max-w-96 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        isHovered && 'ring-2 ring-orange-primary ring-offset-2',
         !highlighted && 'opacity-60',
       )}
     >
       <FourHandles />
-      <span>{t('graph:node.too_many')}</span>
-      <span className="font-medium tabular-nums">({data.count})</span>
+      <Icon icon="tip" className="size-3.5 shrink-0" />
+      <div className="min-w-0">
+        <div className="text-xs leading-none opacity-70">{data.label ?? data.objectType}</div>
+        <div className="truncate font-medium">{data.objectId}</div>
+        <p className={cn('text-2xs flex gap-xs mr-2 mt-1')}>
+          <span>
+            {t('graph:node.too_many')} (≈ {data.count})
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

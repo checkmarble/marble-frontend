@@ -22,7 +22,7 @@
   "node.expand_other": "Expand {{count}} nodes",
   "node.regroup_branch": "Regroup branch {{title}}",
   "node.select": "Select {{label}}",
-  "node.too_many": "Too many nodes to display",
+  "node.too_many": "Graph truncated due to hyperconnected entity",
   "panel.connected_nodes": "Connected nodes",
   "panel.grouped_branch": "Grouped branch",
   "panel.hypernode": "Hypernode",

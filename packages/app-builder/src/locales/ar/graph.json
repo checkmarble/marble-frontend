@@ -22,7 +22,7 @@
   "node.expand_other": "توسيع {{count}} عقد",
   "node.regroup_branch": "إعادة تجميع الفرع {{title}}",
   "node.select": "تحديد {{label}}",
-  "node.too_many": "عدد كبير جدًا من العقد للعرض",
+  "node.too_many": "مخطط مجتزأ بسبب كيان فائق الترابط",
   "panel.connected_nodes": "العقد المتصلة",
   "panel.grouped_branch": "فرع مجمّع",
   "panel.hypernode": "عقدة فائقة",
