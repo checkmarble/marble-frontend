@@ -116,9 +116,7 @@ export const ObjectSelector = ({
           const value = String(index);
 
           return (
-            <label key={value} className="flex cursor-pointer items-center gap-md">
-              <Radio.Item value={value} />
-
+            <Radio.Item key={value} value={value} className="gap-md">
               <div className="flex flex-col gap-2xs">
                 {/* Table name + info icon */}
                 <div className="flex items-center gap-xs">
@@ -129,7 +127,7 @@ export const ObjectSelector = ({
                 {/* Path breadcrumb */}
                 <PathBreadcrumb segments={option.pathSegments} />
               </div>
-            </label>
+            </Radio.Item>
           );
         })}
       </Radio.Root>

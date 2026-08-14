@@ -251,14 +251,12 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
                   onValueChange={(v) => field.handleChange(v as SuspiciousActivityReportStatus)}
                   className="flex flex-col"
                 >
-                  <label className="flex gap-md px-md items-center h-9">
-                    <Radio.Item value="pending" />
+                  <Radio.Item value="pending" className="gap-md px-md h-9">
                     <span className="font-medium">{t('cases:manager.sar_modal.status_pending')}</span>
-                  </label>
-                  <label className="flex gap-md px-md items-center h-9">
-                    <Radio.Item value="completed" />
+                  </Radio.Item>
+                  <Radio.Item value="completed" className="gap-md px-md h-9">
                     <span className="font-medium">{t('cases:manager.sar_modal.status_completed')}</span>
-                  </label>
+                  </Radio.Item>
                 </Radio.Root>
               )}
             </form.Field>
