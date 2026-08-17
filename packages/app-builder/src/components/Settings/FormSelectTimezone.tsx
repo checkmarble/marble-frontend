@@ -2,7 +2,8 @@ import { Highlight } from '@app-builder/components/Highlight';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 const MAX_TIMEZONE_MATCHES = 50;
 
@@ -22,6 +23,7 @@ export const FormSelectTimezone = ({
   onBlur?: () => void;
 }) => {
   const { t } = useTranslation(['settings']);
+  const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const deferredSearchValue = useDeferredValue(searchValue);
 
@@ -31,23 +33,26 @@ export const FormSelectTimezone = ({
   );
 
   return (
-    <SelectWithCombobox.Root
-      selectedValue={selectedTimezone}
-      searchValue={searchValue}
-      onSearchValueChange={setSearchValue}
-      onSelectedValueChange={onSelectedValueChange}
+    <MenuCommand.Menu
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) setSearchValue('');
+      }}
     >
-      <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className="w-fit">
-        {selectedTimezone}
-        <SelectWithCombobox.Arrow />
-      </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-sm p-sm" unmountOnHide>
-        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton name={name} disabled={disabled} onBlur={onBlur} className="w-fit">
+          {selectedTimezone}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="start" sideOffset={4} className="z-50">
+        <MenuCommand.Combobox onValueChange={setSearchValue} />
+        <MenuCommand.List>
           {matches.slice(0, MAX_TIMEZONE_MATCHES).map((tz) => (
-            <SelectWithCombobox.ComboboxItem key={tz} value={tz}>
+            <MenuCommand.Item key={tz} value={tz} onSelect={() => onSelectedValueChange?.(tz)}>
               <Highlight text={tz} query={deferredSearchValue} />
-            </SelectWithCombobox.ComboboxItem>
+              {selectedTimezone === tz ? <Icon icon="tick" className="text-purple-primary size-6 shrink-0" /> : null}
+            </MenuCommand.Item>
           ))}
           {matches.length === 0 ? (
             <p className="text-s text-grey-secondary flex items-center justify-center p-sm">
@@ -61,8 +66,8 @@ export const FormSelectTimezone = ({
               })}
             </p>
           ) : null}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Popover>
-    </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 };

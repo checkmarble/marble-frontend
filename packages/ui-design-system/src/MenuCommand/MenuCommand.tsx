@@ -69,7 +69,8 @@ type RootProps = Omit<React.ComponentProps<typeof Popover.Root>, 'className'> & 
   persistOnSelect?: boolean;
 };
 /**
- * A Menu command, it can be used as a select, a menu, can have a search bar and be nested
+ * A Menu command, it can be used as a select, a menu, can have a search bar and be nested.
+ * Use `MenuCommand.Inline` for an always-visible list (e.g. inside an existing popover).
  *
  * @example
  *  <MenuCommand.Menu>
@@ -464,6 +465,37 @@ function List({ className, ...props }: ListProps) {
   );
 }
 
+type InlineProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * Always-visible combobox list. Use inside an existing popover/panel instead of `Menu` + `Content`.
+ * Filtering is left to the caller (`shouldFilter={false}`), matching the previous SelectWithCombobox inline mode.
+ */
+function Inline({ children, className }: InlineProps) {
+  const menuSharp = MenuCommandSharpFactory.createSharp();
+  const internalSharp = InternalMenuSharpFactory.createSharp({
+    hover: false,
+    persistOnSelect: true,
+    onSelect: () => {
+      // The host popover owns open/close; selecting an item must not dismiss it.
+    },
+  });
+
+  return (
+    <MenuCommandSharpFactory.Provider value={menuSharp}>
+      <InternalMenuSharpFactory.Provider value={internalSharp}>
+        <Command shouldFilter={false} className={cn('flex min-h-0 flex-col', className)}>
+          {children}
+          <InsertKeyboardNav />
+        </Command>
+      </InternalMenuSharpFactory.Provider>
+    </MenuCommandSharpFactory.Provider>
+  );
+}
+
 export const MenuCommand = {
   Arrow: MenuArrow,
   Anchor: Popover.Anchor,
@@ -471,6 +503,7 @@ export const MenuCommand = {
   Content,
   Group: Command.Group,
   HeadlessItem,
+  Inline,
   Item,
   List,
   Menu,

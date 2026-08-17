@@ -143,7 +143,7 @@ function FieldInfo({ field }: { field: DataModelField }) {
       content={<div className="p-md">{field.description}</div>}
       // Field descriptions can be long, so opt out of Tooltip.Default's max-h-40
       // clamp and keep the original 400px ceiling.
-      className="border-grey-border text-s flex max-h-[min(var(--radix-tooltip-content-available-height),400px)] max-w-[var(--radix-tooltip-content-available-width)] border p-0 shadow-md"
+      className="border-grey-border text-s flex max-h-[min(var(--radix-tooltip-content-available-height),400px)] max-w-(--radix-tooltip-content-available-width) border p-0 shadow-md"
     >
       <button type="button">
         <Icon

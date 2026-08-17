@@ -1,8 +1,7 @@
 import { OutcomeBadge } from '@app-builder/components/Decisions';
 import { type ScreeningOutcome } from '@app-builder/models/outcome';
-import { matchSorter } from 'match-sorter';
-import { useDeferredValue, useMemo, useState } from 'react';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { useState } from 'react';
+import { MenuCommand } from 'ui-design-system';
 
 export const FieldOutcomes = ({
   selectedOutcome,
@@ -19,37 +18,43 @@ export const FieldOutcomes = ({
   onChange?: (value: ScreeningOutcome) => void;
   onBlur?: () => void;
 }) => {
-  const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
-
-  const matches = useMemo(() => matchSorter(outcomes, deferredSearchValue), [outcomes, deferredSearchValue]);
+  const [open, setOpen] = useState(false);
 
   return (
-    <SelectWithCombobox.Root
-      selectedValue={selectedOutcome}
-      searchValue={searchValue}
-      onSearchValueChange={setSearchValue}
-      onSelectedValueChange={onChange}
+    <MenuCommand.Menu
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+          onBlur?.();
+        }
+      }}
     >
-      <SelectWithCombobox.Select
-        name={name}
-        disabled={disabled}
-        onBlur={onBlur}
-        className="hover:bg-grey-background-light w-full border-0 transition-colors"
-      >
-        {selectedOutcome ? <OutcomeBadge size="sm" outcome={selectedOutcome} /> : null}
-        <SelectWithCombobox.Arrow />
-      </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-sm p-sm">
-        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList>
-          {matches.map((outcome) => (
-            <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton
+          name={name}
+          disabled={disabled}
+          className="hover:bg-grey-background-light w-full border-0 transition-colors"
+        >
+          {selectedOutcome ? <OutcomeBadge size="sm" outcome={selectedOutcome} /> : null}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="start" className="mt-sm">
+        <MenuCommand.List>
+          {outcomes.map((outcome) => (
+            <MenuCommand.Item
+              key={outcome}
+              value={outcome}
+              onSelect={() => {
+                onChange?.(outcome);
+                setOpen(false);
+              }}
+            >
               <OutcomeBadge size="sm" outcome={outcome} />
-            </SelectWithCombobox.ComboboxItem>
+            </MenuCommand.Item>
           ))}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Popover>
-    </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 };

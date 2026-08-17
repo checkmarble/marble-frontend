@@ -3,9 +3,11 @@ import { eventTypes } from '@app-builder/models/webhook';
 import clsx from 'clsx';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { matchSorter } from 'match-sorter';
+import { toggle } from 'radash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, SelectWithCombobox, Tooltip } from 'ui-design-system';
+import { MenuCommand, Tooltip } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export function SelectEvents({
   selectedEventTypes,
@@ -25,48 +27,62 @@ export function SelectEvents({
   onBlur?: () => void;
 }) {
   const { t } = useTranslation(['settings']);
+  const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState('');
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(() => matchSorter(eventTypes, deferredSearchValue), [deferredSearchValue]);
 
   return (
-    <SelectWithCombobox.Root
-      selectedValue={selectedEventTypes}
-      searchValue={searchValue}
-      onSearchValueChange={setSearchValue}
-      onSelectedValueChange={onChange}
+    <MenuCommand.Menu
+      persistOnSelect
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) setSearchValue('');
+      }}
     >
-      <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className={className}>
-        {selectedEventTypes.length > 0 ? (
-          <EventTypes eventTypes={selectedEventTypes} />
-        ) : (
-          <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>
-        )}
-        <SelectWithCombobox.Arrow />
-      </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-sm p-sm">
-        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList>
-          {matches.map((event) => (
-            <SelectWithCombobox.ComboboxItem
-              key={event}
-              value={event}
-              disabled={webhookStatus === 'restricted' && !event.includes('decision.')}
-            >
-              <EventType>
-                <Highlight text={event} query={deferredSearchValue} />
-              </EventType>
-            </SelectWithCombobox.ComboboxItem>
-          ))}
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton
+          name={name}
+          disabled={disabled}
+          onBlur={onBlur}
+          className={clsx('h-auto min-h-10', className)}
+        >
+          {selectedEventTypes.length > 0 ? (
+            <EventTypes eventTypes={selectedEventTypes} />
+          ) : (
+            <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>
+          )}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="start" sideOffset={4} sameWidth className="z-50">
+        <MenuCommand.Combobox onValueChange={setSearchValue} />
+        <MenuCommand.List>
+          {matches.map((event) => {
+            const isSelected = selectedEventTypes.includes(event);
+            return (
+              <MenuCommand.Item
+                key={event}
+                value={event}
+                disabled={webhookStatus === 'restricted' && !event.includes('decision.')}
+                onSelect={() => onChange?.(toggle(selectedEventTypes, event))}
+              >
+                <EventType>
+                  <Highlight text={event} query={deferredSearchValue} />
+                </EventType>
+                {isSelected ? <Icon icon="tick" className="text-purple-primary size-6 shrink-0" /> : null}
+              </MenuCommand.Item>
+            );
+          })}
           {matches.length === 0 ? (
             <p className="text-grey-secondary flex items-center justify-center p-sm">
               {t('settings:webhooks.event_types.empty_matches')}
             </p>
           ) : null}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Popover>
-    </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 }
 

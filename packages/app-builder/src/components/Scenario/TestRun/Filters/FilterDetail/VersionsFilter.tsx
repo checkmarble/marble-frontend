@@ -1,7 +1,9 @@
 import { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { matchSorter } from '@app-builder/utils/search';
+import { toggle } from 'radash';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { useRefVersionFilter, useTestVersionFilter } from '../TestRunsFiltersContext';
 
 export function VersionsFilter({
@@ -15,6 +17,8 @@ export function VersionsFilter({
   const { refVersion, setRefVersion } = useRefVersionFilter();
   const { testVersion, setTestVersion } = useTestVersionFilter();
   const deferredValue = useDeferredValue(value);
+  const selected = (type === 'ref' ? refVersion : testVersion) ?? [];
+  const setSelected = type === 'ref' ? setRefVersion : setTestVersion;
 
   const filteredIterations = scenarioIterations.filter(({ type }) => type !== 'draft');
 
@@ -25,23 +29,24 @@ export function VersionsFilter({
 
   return (
     <div className="flex flex-col gap-sm p-sm">
-      <SelectWithCombobox.Root
-        open
-        onSearchValueChange={setSearchValue}
-        selectedValue={type === 'ref' ? refVersion : testVersion}
-        onSelectedValueChange={type === 'ref' ? setRefVersion : setTestVersion}
-      >
-        <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList className="max-h-40">
+      <MenuCommand.Inline>
+        <MenuCommand.Combobox className="m-0" onValueChange={setSearchValue} />
+        <MenuCommand.List className="max-h-40">
           {matches.map((iteration) => {
+            const isSelected = selected.includes(iteration.id);
             return (
-              <SelectWithCombobox.ComboboxItem key={iteration.id} value={iteration.id} className="align-baseline">
+              <MenuCommand.Item
+                key={iteration.id}
+                value={`${iteration.version} ${iteration.id}`}
+                onSelect={() => setSelected(toggle(selected, iteration.id))}
+              >
                 <span className="text-grey-primary text-s">{`V${iteration.version}`}</span>
-              </SelectWithCombobox.ComboboxItem>
+                {isSelected ? <Icon icon="tick" className="text-purple-primary size-6 shrink-0" /> : null}
+              </MenuCommand.Item>
             );
           })}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Inline>
     </div>
   );
 }

@@ -2,7 +2,8 @@ import { testRunStatuses as statuses } from '@app-builder/models/testrun';
 import { matchSorter } from '@app-builder/utils/search';
 import { toggle } from 'radash';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { TestRunStatus } from '../../TestRunStatus';
 import { useStatusesFilter } from '../TestRunsFiltersContext';
@@ -11,28 +12,30 @@ export function StatusesFilter() {
   const [value, setSearchValue] = useState('');
   const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
+  const selected = selectedStatuses ?? [];
 
   const matches = useMemo(() => matchSorter(toggle(statuses, 'unknown'), deferredValue), [deferredValue]);
 
   return (
     <div className="flex flex-col gap-sm p-sm">
-      <SelectWithCombobox.Root
-        open
-        onSearchValueChange={setSearchValue}
-        selectedValue={selectedStatuses}
-        onSelectedValueChange={setSelectedStatuses}
-      >
-        <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList className="max-h-40">
+      <MenuCommand.Inline>
+        <MenuCommand.Combobox className="m-0" onValueChange={setSearchValue} />
+        <MenuCommand.List className="max-h-40">
           {matches.map((status) => {
+            const isSelected = selected.includes(status);
             return (
-              <SelectWithCombobox.ComboboxItem key={status} value={status} className="align-baseline">
+              <MenuCommand.Item
+                key={status}
+                value={status}
+                onSelect={() => setSelectedStatuses(toggle(selected, status))}
+              >
                 <TestRunStatus status={status} />
-              </SelectWithCombobox.ComboboxItem>
+                {isSelected ? <Icon icon="tick" className="text-purple-primary size-6 shrink-0" /> : null}
+              </MenuCommand.Item>
             );
           })}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Inline>
     </div>
   );
 }

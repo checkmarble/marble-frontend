@@ -1,7 +1,9 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { matchSorter } from '@app-builder/utils/search';
+import { toggle } from 'radash';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { useCaseInboxFilter } from '../DecisionFiltersContext';
 
@@ -14,23 +16,24 @@ export function CaseInboxFilter() {
 
   return (
     <div className="flex flex-col gap-sm p-sm">
-      <SelectWithCombobox.Root
-        open
-        onSearchValueChange={setSearchValue}
-        selectedValue={selectedCaseInboxIds}
-        onSelectedValueChange={setSelectedCaseInboxIds}
-      >
-        <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList className="max-h-40">
+      <MenuCommand.Inline>
+        <MenuCommand.Combobox className="m-0" onValueChange={setSearchValue} />
+        <MenuCommand.List className="max-h-40">
           {matches.map((inbox) => {
+            const isSelected = selectedCaseInboxIds.includes(inbox.id);
             return (
-              <SelectWithCombobox.ComboboxItem key={inbox.id} value={inbox.id}>
+              <MenuCommand.Item
+                key={inbox.id}
+                value={`${inbox.name} ${inbox.id}`}
+                onSelect={() => setSelectedCaseInboxIds(toggle(selectedCaseInboxIds, inbox.id))}
+              >
                 <Highlight text={inbox.name} query={searchValue} />
-              </SelectWithCombobox.ComboboxItem>
+                {isSelected ? <Icon icon="tick" className="text-purple-primary size-6 shrink-0" /> : null}
+              </MenuCommand.Item>
             );
           })}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Inline>
     </div>
   );
 }

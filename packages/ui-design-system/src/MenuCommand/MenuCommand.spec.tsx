@@ -83,6 +83,29 @@ describe('MenuCommand', () => {
     expect(screen.queryByRole('option', { name: 'apple' })).not.toBeInTheDocument();
   });
 
+  it('renders an always-open inline list without a trigger', async () => {
+    const onSelect = vi.fn();
+    render(
+      <MenuCommand.Inline>
+        <MenuCommand.Combobox placeholder="Search..." />
+        <MenuCommand.List>
+          {fruits.map((fruit) => (
+            <MenuCommand.Item key={fruit} value={fruit} onSelect={() => onSelect(fruit)}>
+              {fruit}
+            </MenuCommand.Item>
+          ))}
+        </MenuCommand.List>
+      </MenuCommand.Inline>,
+    );
+
+    fruits.forEach((fruit) => expect(screen.getByRole('option', { name: fruit })).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole('option', { name: 'banana' }));
+
+    expect(onSelect).toHaveBeenCalledWith('banana');
+    expect(screen.getByRole('option', { name: 'banana' })).toBeInTheDocument();
+  });
+
   // Pins the `asChild` passthrough: cmdk forwards it to a Radix Primitive, which is what lets
   // navigation menus render real anchors. A cmdk change that drops this would break silently.
   it('renders an item as its child element when asChild is set', async () => {
