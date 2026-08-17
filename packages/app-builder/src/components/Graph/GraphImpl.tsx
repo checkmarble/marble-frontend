@@ -1,7 +1,7 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type GraphData } from '@app-builder/models/graph';
+import { type GraphData, GraphNodeData } from '@app-builder/models/graph';
 import { ControlButton, Controls, EdgeMouseHandler, type NodeMouseHandler, ReactFlow } from '@xyflow/react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
