@@ -34,7 +34,7 @@ export type GraphEdgeData = {
   from: GraphNodeRef;
   to: GraphNodeRef;
   kind: string;
-  label: string;
+  through: string[];
   field?: string;
   value?: string;
 };
@@ -92,7 +92,7 @@ function adaptGraphEdge(dto: GraphEdgeDto): GraphEdgeData {
     from: adaptGraphNodeRef(dto.from),
     to: adaptGraphNodeRef(dto.to),
     kind: dto.kind,
-    label: dto.label,
+    through: dto.through ?? [],
     field: dto.field,
     value: dto.value,
   };

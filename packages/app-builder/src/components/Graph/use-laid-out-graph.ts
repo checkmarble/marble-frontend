@@ -46,7 +46,7 @@ function isNodeVisible(node: GraphRfNode, filters: VisibilityFilters): boolean {
 
   if (node.type === 'pivot') {
     if (filters.hiddenNodeIds.has(node.id)) return false;
-    return allowsPivot(filters.relationFilter, node.data.rawType);
+    return allowsPivot(filters.relationFilter, node.data.label ?? '');
   }
 
   // Hypernodes and clusters are not relation-filtered.

@@ -7,6 +7,8 @@
 export type GraphObjectRef = {
   objectType: string;
   objectId: string;
+  /** Graph node metadata label. */
+  label?: string;
 };
 
 export function nodeKey(objectType: string, objectId: string): string {

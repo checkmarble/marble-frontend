@@ -1,13 +1,12 @@
-import { type DataModelObjectValue } from '@app-builder/models/data-model';
+import { type GraphEdgeData } from '@app-builder/models/graph';
 
-const TITLE_FIELD_CANDIDATES = ['name', 'full_name', 'company_name', 'display_name', 'label'] as const;
-
-export function resolveTitle(data: Record<string, DataModelObjectValue>, objectId: string): string {
-  for (const key of TITLE_FIELD_CANDIDATES) {
-    const value = data[key];
-    if (typeof value === 'string' && value.trim()) return value;
-  }
-  const objectIdValue = data['object_id'];
-  if (typeof objectIdValue === 'string' && objectIdValue.trim()) return objectIdValue;
+export function resolveTitle(label: string | undefined, objectId: string) {
+  const trimmed = label?.trim();
+  if (trimmed && trimmed !== '-') return trimmed;
   return objectId;
+}
+
+/** Placeholder: edge metadata will produce the displayed label. */
+export function resolveEdgeLabel(_edge: GraphEdgeData): string | undefined {
+  return undefined;
 }

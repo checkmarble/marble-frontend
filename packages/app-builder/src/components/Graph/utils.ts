@@ -3,6 +3,7 @@ import { match } from 'ts-pattern';
 import { type GraphTypeHelpers } from './data-model-map';
 import { nodeKey } from './graph-keys';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
+import { resolveEdgeLabel, resolveTitle } from './resolve-object-title';
 
 export type FlatFlowElements = {
   nodes: GraphRfNode[];
@@ -83,7 +84,7 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
           position,
           type: 'person',
           data: {
-            label: node.metadata?.label ?? '-',
+            label: resolveTitle(node.metadata?.label, node.id),
             subEntity: typeHelpers.getPersonSubEntity(node.type),
             isStart: key === startKey,
             objectType: node.type,
@@ -103,7 +104,8 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
     const toKey = nodeKey(edge.to.type, edge.to.id);
     if (!keptKeys.has(fromKey) || !keptKeys.has(toKey)) continue;
 
-    const edgeId = `${fromKey}->${toKey}:${edge.label}`;
+    const throughKey = edge.through.join(',');
+    const edgeId = `${fromKey}->${toKey}:${throughKey}`;
     if (seenEdges.has(edgeId)) continue;
     seenEdges.add(edgeId);
 
@@ -117,7 +119,7 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
       target: toKey,
       type: touchesHypernode ? 'hypernode' : isMatch ? 'match' : 'link',
       animated: touchesHypernode || isMatch,
-      label: edge.label,
+      label: resolveEdgeLabel(edge),
       data: { kind: edge.kind },
     });
   }

@@ -1,6 +1,5 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
 import { SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
-import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import {
   BaseEdge,
@@ -28,7 +27,6 @@ import {
   type PivotRfNode,
 } from './graph-rf-types';
 import { ObjectTagLine, useTagsByIds } from './ObjectTags';
-import { resolveTitle } from './resolve-object-title';
 
 /**
  * A node stays fully opaque when nothing is hovered, when it is the hovered
@@ -110,12 +108,6 @@ function subEntityIcon(subEntity: FtmEntityPersonOption): IconName {
     default:
       return 'person';
   }
-}
-
-/** Resolved object title, falling back to the raw id while the details load. */
-function usePersonTitle(data: PersonRfData): string {
-  const detailsQuery = useObjectDetailsQuery(data.objectType, data.objectId);
-  return detailsQuery.data?.data != null ? resolveTitle(detailsQuery.data.data, data.objectId) : data.label;
 }
 
 /**

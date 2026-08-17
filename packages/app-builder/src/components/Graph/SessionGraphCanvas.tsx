@@ -28,6 +28,10 @@ export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) 
 
   if (!graphData) return placeholder;
 
+  const startNode = graphData.nodes.find(
+    (node) => node.type === graphData.start.type && node.id === graphData.start.id,
+  );
+
   return (
     <CustomerGraphProvider
       key={graphGeneration}
@@ -36,6 +40,7 @@ export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) 
         nodeType: 'person',
         objectType: graphData.start.type,
         objectId: graphData.start.id,
+        label: startNode?.metadata?.label,
         persons: [],
       }}
     >
