@@ -76,7 +76,7 @@ export function OutcomeAndReviewStatusFilter() {
               >
                 <OutcomeBadge outcome={outcomeValue} reviewStatus={reviewStatusValue} size="md" />
                 {selectedValue === itemValue ? (
-                  <Icon icon="tick" className="text-purple-primary size-5 shrink-0" />
+                  <Icon icon="tick" className="text-purple-primary size-6 shrink-0" />
                 ) : null}
               </MenuCommand.Item>
             );
