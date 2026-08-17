@@ -177,9 +177,16 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
     [setHoveredEdgeId],
   );
 
-  const onEdgeMouseLeave = useCallback<EdgeMouseHandler<GraphRfEdge>>(() => {
-    setHoveredEdgeId(null);
-  }, [setHoveredEdgeId]);
+  const onEdgeMouseLeave = useCallback<EdgeMouseHandler<GraphRfEdge>>(
+    (event) => {
+      // The HTML label sits on top of the SVG edge. Leaving the stroke for the
+      // label must not clear hover, or the popover trigger unmounts on click.
+      const next = event.relatedTarget;
+      if (next instanceof Element && next.closest('[data-graph-edge-label]')) return;
+      setHoveredEdgeId(null);
+    },
+    [setHoveredEdgeId],
+  );
 
   return (
     <ReactFlow

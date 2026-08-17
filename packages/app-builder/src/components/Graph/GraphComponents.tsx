@@ -11,9 +11,9 @@ import {
   Position,
   useEdges,
 } from '@xyflow/react';
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, cn } from 'ui-design-system';
+import { Button, Checkbox, cn, Popover } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useCustomerGraph } from './CustomerGraphContext';
 import { graphI18n } from './graph-i18n';
@@ -62,16 +62,11 @@ function FourHandles() {
 
 /** Keeps clicks off the canvas: no node drag, no pan, no node-click selection. */
 function NoCanvasEvents({ children }: { children: ReactNode }) {
+  const stop = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation();
+  };
   return (
-    <div
-      className="nodrag nopan shrink-0"
-      onClick={(e) => {
-        e.stopPropagation();
-      }}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-      }}
-    >
+    <div className="nodrag nopan shrink-0" onClick={stop} onMouseDown={stop} onPointerDown={stop}>
       {children}
     </div>
   );
@@ -339,13 +334,12 @@ function HypernodeNode({ id, data }: NodeProps<HypernodeRfNode>) {
   return (
     <div
       className={cn(
-        'border-grey-border bg-surface-card text-grey-primary relative flex w-fit max-w-96 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        'border-grey-border bg-surface-page text-grey-primary relative flex w-fit max-w-96 items-center gap-xs rounded-md border p-sm text-xs shadow-sm cursor-pointer transition-opacity duration-200',
         isHovered && 'ring-2 ring-orange-primary ring-offset-2',
         !highlighted && 'opacity-60',
       )}
     >
       <FourHandles />
-      <Icon icon="tip" className="size-3.5 shrink-0" />
       <div className="min-w-0">
         <div className="text-xs leading-none opacity-70">{data.label ?? data.objectType}</div>
         <div className="truncate font-medium">{data.objectId}</div>
@@ -379,7 +373,7 @@ const EDGE_APPEARANCE = {
     stroke: 'stroke-2!',
     active: 'stroke-grey-primary!',
     dimmed: 'stroke-grey-border-light!',
-    label: 'bg-surface-background text-grey-primary border border-grey-border',
+    label: 'bg-surface-page text-grey-primary border border-grey-border',
   },
 } as const;
 
@@ -412,12 +406,12 @@ function GraphEdge({
   targetPosition,
   style,
   markerEnd,
-  label,
   data,
 }: EdgeProps<GraphRfEdge>) {
-  const { showEdgeLabels, hoveredEdgeId } = useCustomerGraph();
+  const { showEdgeLabels, hoveredEdgeId, setHoveredEdgeId } = useCustomerGraph();
   const highlighted = useEdgeHighlighted(source, target);
   const appearance = EDGE_APPEARANCE[type ?? 'link'];
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const [path, labelX, labelY] = getBezierPath({
     sourceX,
@@ -433,7 +427,8 @@ function GraphEdge({
   // structural rather than a label.
   const mergedCount = data?.mergedCount;
   const isMerged = mergedCount != null;
-  const labelContent = isMerged ? mergedCount : showEdgeLabels || hoveredEdgeId === id ? label : null;
+  const showLabel =
+    (isMerged || showEdgeLabels || hoveredEdgeId === id || popoverOpen) && (mergedCount || data?.through?.length);
 
   return (
     <>
@@ -448,11 +443,12 @@ function GraphEdge({
           highlighted ? appearance.active : appearance.dimmed,
         )}
       />
-      {labelContent ? (
+      {showLabel ? (
         <EdgeLabelRenderer>
           <div
+            data-graph-edge-label=""
             className={cn(
-              'nodrag nopan absolute origin-center rounded-sm p-xs w-min leading-none',
+              'nodrag nopan pointer-events-auto absolute origin-center rounded-sm p-xs w-min leading-none',
               isMerged && 'font-semibold',
               appearance.label,
             )}
@@ -460,8 +456,13 @@ function GraphEdge({
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               fontSize: isMerged ? '9px' : '6px',
             }}
+            onMouseEnter={() => setHoveredEdgeId(id)}
+            onMouseLeave={() => {
+              if (!popoverOpen) setHoveredEdgeId(null);
+            }}
           >
-            {labelContent}
+            {isMerged ? mergedCount : null}
+            <EdgeLabel through={data?.through} onOpenChange={setPopoverOpen} />
           </div>
         </EdgeLabelRenderer>
       ) : null}
@@ -481,3 +482,35 @@ export const graphEdgeTypes = {
   match: GraphEdge,
   hypernode: GraphEdge,
 };
+
+export function EdgeLabel({ through, onOpenChange }: { through?: string[]; onOpenChange?: (open: boolean) => void }) {
+  const [open, setOpen] = useState(false);
+  if (!through || through.length === 0) return null;
+  if (through.length === 1) return <span>{through[0]}</span>;
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    onOpenChange?.(next);
+  };
+
+  return (
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
+      <NoCanvasEvents>
+        <Popover.Trigger asChild>
+          <button type="button" className="nodrag nopan cursor-pointer shrink-0 flex items-center gap-xs">
+            <span>{through.length}</span> <span>Tables</span>
+            <Icon icon="arrow-right" className="size-3" />
+          </button>
+        </Popover.Trigger>
+      </NoCanvasEvents>
+      <Popover.Content side="bottom" align="start" className="p-sm">
+        {through.map((item) => (
+          <div className="flex gap-xs flex-wrap items-center">
+            <span key={item}>{item}</span>
+            <Icon icon="arrow-right" className="size-3 text-purple-primary" />
+          </div>
+        ))}
+      </Popover.Content>
+    </Popover.Root>
+  );
+}

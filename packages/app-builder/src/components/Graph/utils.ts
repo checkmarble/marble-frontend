@@ -3,7 +3,7 @@ import { match } from 'ts-pattern';
 import { type GraphTypeHelpers } from './data-model-map';
 import { nodeKey } from './graph-keys';
 import { type GraphRfEdge, type GraphRfNode } from './graph-rf-types';
-import { resolveEdgeLabel, resolveTitle } from './resolve-object-title';
+import { resolveTitle } from './resolve-object-title';
 
 export type FlatFlowElements = {
   nodes: GraphRfNode[];
@@ -119,8 +119,7 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
       target: toKey,
       type: touchesHypernode ? 'hypernode' : isMatch ? 'match' : 'link',
       animated: touchesHypernode || isMatch,
-      label: resolveEdgeLabel(edge),
-      data: { kind: edge.kind },
+      data: { kind: edge.kind, through: edge.through },
     });
   }
 
