@@ -2,6 +2,7 @@ import { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/i
 import { matchSorter } from '@app-builder/utils/search';
 import { toggle } from 'radash';
 import { useDeferredValue, useMemo, useState } from 'react';
+import { match } from 'ts-pattern';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { useRefVersionFilter, useTestVersionFilter } from '../TestRunsFiltersContext';
@@ -17,8 +18,10 @@ export function VersionsFilter({
   const { refVersion, setRefVersion } = useRefVersionFilter();
   const { testVersion, setTestVersion } = useTestVersionFilter();
   const deferredValue = useDeferredValue(value);
-  const selected = (type === 'ref' ? refVersion : testVersion) ?? [];
-  const setSelected = type === 'ref' ? setRefVersion : setTestVersion;
+  const [selected, setSelected] = match(type)
+    .with('ref', () => [refVersion ?? [], setRefVersion] as const)
+    .with('test', () => [testVersion ?? [], setTestVersion] as const)
+    .exhaustive();
 
   const filteredIterations = scenarioIterations.filter(({ type }) => type !== 'draft');
 

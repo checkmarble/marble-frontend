@@ -90,10 +90,8 @@ function ScenarioIterationContent({ labelledScenarioIteration, scenario }: Scena
   );
 
   return (
-    <MenuCommand.List>
-      {iterations.length === 0 ? (
-        <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
-      ) : (
+    <>
+      <MenuCommand.List>
         <MenuCommand.Group
           className="flex flex-col gap-sm"
           heading={<div className="px-sm">{t('scenarios:home.versions_label')}</div>}
@@ -102,6 +100,11 @@ function ScenarioIterationContent({ labelledScenarioIteration, scenario }: Scena
             <MenuCommand.Item
               key={iteration.id}
               value={iteration.id}
+              keywords={[
+                iteration.formattedVersion,
+                iteration.formattedUpdatedAt,
+                ...(iteration.formattedLive ? [iteration.formattedLive] : []),
+              ]}
               asChild
               className="bg-surface-card aria-selected:border-purple-primary h-auto scroll-my-sm py-xs px-sm"
             >
@@ -126,7 +129,10 @@ function ScenarioIterationContent({ labelledScenarioIteration, scenario }: Scena
             </MenuCommand.Item>
           ))}
         </MenuCommand.Group>
-      )}
-    </MenuCommand.List>
+        <MenuCommand.Empty>
+          <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
+        </MenuCommand.Empty>
+      </MenuCommand.List>
+    </>
   );
 }

@@ -1,8 +1,6 @@
 import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { DataModel } from '@app-builder/models';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
@@ -18,7 +16,7 @@ import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Modal, SelectV2, Tooltip } from 'ui-design-system';
+import { Input, Modal, SelectV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
@@ -95,13 +93,14 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
           >
             {(field) => (
               <div className="group flex w-full flex-col gap-sm">
-                <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
-                <FormInput
+                <label htmlFor={field.name}>{t('scenarios:create_scenario.name')}</label>
+                <Input
                   type="text"
+                  id={field.name}
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  valid={field.state.meta.errors.length === 0}
+                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                   placeholder={t('scenarios:create_scenario.name_placeholder')}
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -111,13 +110,14 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
           <form.Field name="description">
             {(field) => (
               <div className="group flex w-full flex-col gap-sm">
-                <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>
-                <FormInput
+                <label htmlFor={field.name}>{t('scenarios:create_scenario.description')}</label>
+                <Input
                   type="text"
+                  id={field.name}
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  valid={field.state.meta.errors.length === 0}
+                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                   placeholder={t('scenarios:create_scenario.description_placeholder')}
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -132,7 +132,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
           >
             {(field) => (
               <div className="group flex w-full flex-col gap-sm">
-                <FormLabel name={field.name} className="flex flex-row items-center gap-xs">
+                <label htmlFor={field.name} className="flex flex-row items-center gap-xs">
                   {t('scenarios:create_scenario.trigger_object_title')}
                   <Tooltip.Default
                     arrow={false}
@@ -144,12 +144,13 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
                   >
                     <button
                       type="button"
+                      aria-label={t('scenarios:create_scenario.trigger_object_tooltip_aria_label')}
                       className="text-grey-disabled hover:text-grey-secondary cursor-pointer transition-colors"
                     >
                       <Icon icon="tip" className="size-5" />
                     </button>
                   </Tooltip.Default>
-                </FormLabel>
+                </label>
                 <SelectV2
                   placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}
                   value={field.state.value}

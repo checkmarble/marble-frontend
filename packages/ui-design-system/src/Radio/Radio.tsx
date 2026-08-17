@@ -9,6 +9,7 @@ type RadioSize = 'regular' | 'small';
 type RadioContextValue = {
   value: string;
   size: RadioSize;
+  disabled: boolean;
 };
 
 const RadioContext = createContext<RadioContextValue | null>(null);
@@ -90,19 +91,20 @@ export type RadioRootProps = Omit<ComponentPropsWithoutRef<typeof Root>, 'value'
   };
 
 export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function RadioRoot(
-  { className, value, onValueChange, children, name, size = 'regular', ...props },
+  { className, value, onValueChange, children, name, size = 'regular', disabled = false, ...props },
   ref,
 ) {
   const generatedName = useId();
 
   return (
-    <RadioContext.Provider value={{ value, size }}>
+    <RadioContext.Provider value={{ value, size, disabled }}>
       <Root
         {...props}
         ref={ref}
         name={name ?? generatedName}
         value={value}
         onValueChange={onValueChange}
+        disabled={disabled}
         className={cn(radioRoot(), className)}
       >
         {children}
@@ -123,25 +125,26 @@ export const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(function 
   { className, value, disabled = false, children, ...props },
   ref,
 ) {
-  const { size, value: selectedValue } = useRadioContext();
+  const { size, value: selectedValue, disabled: groupDisabled } = useRadioContext();
   const isChecked = selectedValue === value;
+  const isDisabled = disabled || groupDisabled;
 
-  const state = disabled ? (isChecked ? 'selected-disabled' : 'disabled') : isChecked ? 'selected' : 'unselected';
+  const state = isDisabled ? (isChecked ? 'selected-disabled' : 'disabled') : isChecked ? 'selected' : 'unselected';
 
   return (
     <Item
       {...props}
       ref={ref}
       value={value}
-      disabled={disabled}
+      disabled={isDisabled}
       className={cn(
         'flex items-center gap-sm text-left',
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+        isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
         className,
       )}
     >
       <span className={radioIndicator({ size, state })}>
-        <Indicator className={radioInnerDot({ size, state: disabled ? 'selected-disabled' : 'selected' })} />
+        <Indicator className={radioInnerDot({ size, state: isDisabled ? 'selected-disabled' : 'selected' })} />
       </span>
       {children}
     </Item>

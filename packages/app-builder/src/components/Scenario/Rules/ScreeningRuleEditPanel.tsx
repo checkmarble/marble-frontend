@@ -491,7 +491,9 @@ export function ScreeningRuleEditPanel({
             <div className="flex flex-col gap-sm">
               <span className="text-s inline-flex items-center gap-sm font-semibold">
                 {t('scenarios:sanction_counterparty_id')}
-                <FieldToolTip>{t('scenarios:sanction_counterparty_id.tooltip')}</FieldToolTip>
+                <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
+                  {t('scenarios:sanction_counterparty_id.tooltip')}
+                </FieldToolTip>
               </span>
               <form.Field name="counterPartyId">
                 {(field) => (
@@ -520,7 +522,9 @@ export function ScreeningRuleEditPanel({
                   <div className="flex flex-col gap-xs">
                     <span className="text-s inline-flex items-center gap-xs">
                       {t('scenarios:edit_sanction.entity_type.heading')}
-                      <FieldToolTip>{t('scenarios:edit_sanction.entity_type.tooltip')}</FieldToolTip>
+                      <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
+                        {t('scenarios:edit_sanction.entity_type.tooltip')}
+                      </FieldToolTip>
                     </span>
                     <form.Field name="entityType">
                       {(field) => <FieldEntityType entityType={field.state.value} onChange={field.handleChange} />}
@@ -536,7 +540,9 @@ export function ScreeningRuleEditPanel({
                               <div className="flex flex-col gap-xs">
                                 <span className="text-s inline-flex items-center gap-xs">
                                   {t('scenarios:screening.filter.name')}
-                                  <FieldToolTip>{t('scenarios:screening.filter.name.tooltip')}</FieldToolTip>
+                                  <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
+                                    {t('scenarios:screening.filter.name.tooltip')}
+                                  </FieldToolTip>
                                 </span>
                                 <FieldNodeConcat
                                   value={value && isStringConcatAstNode(value) ? value : undefined}
@@ -573,7 +579,9 @@ export function ScreeningRuleEditPanel({
                             <label htmlFor="exclude-numbers" className="text-s">
                               {t('scenarios:edit_sanction.exclude_numbers')}
                             </label>
-                            <FieldToolTip>{t('scenarios:edit_sanction.exclude_numbers.tooltip')}</FieldToolTip>
+                            <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
+                              {t('scenarios:edit_sanction.exclude_numbers.tooltip')}
+                            </FieldToolTip>
                           </div>
                         )}
                       </form.Field>
@@ -602,7 +610,7 @@ export function ScreeningRuleEditPanel({
                               <label htmlFor="enable-entity-recognition" className="text-s">
                                 {t('scenarios:edit_sanction.enable_entity_recognition')}
                               </label>
-                              <FieldToolTip>
+                              <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
                                 {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
                               </FieldToolTip>
                               <span className="text-xs rounded-full bg-purple-primary px-xs py-0.5 text-grey-white">
@@ -622,7 +630,7 @@ export function ScreeningRuleEditPanel({
                                 onBlur={field.handleBlur}
                               />
                               <span className="text-s">{t('scenarios:edit_sanction.skip_entity_recognition')}</span>
-                              <FieldToolTip>
+                              <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
                                 {t('scenarios:edit_sanction.skip_entity_recognition.tooltip')}
                               </FieldToolTip>
                             </div>

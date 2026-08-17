@@ -486,6 +486,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
                 >
                   <button
                     type="button"
+                    aria-label={t('scenarios:home.workflow_type.tooltip_aria_label')}
                     className="text-purple-disabled hover:text-purple-primary cursor-pointer transition-colors"
                   >
                     <Icon icon="tip" className="size-5" />
