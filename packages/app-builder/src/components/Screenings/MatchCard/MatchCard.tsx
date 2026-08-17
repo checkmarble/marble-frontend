@@ -46,40 +46,45 @@ export const MatchCard = ({
   return (
     <Collapsible.Container defaultOpen={defaultOpen}>
       <Collapsible.Title size="small">
-        <div className="flex grow items-center justify-between gap-sm">
-          <div className="flex flex-wrap items-center gap-sm">
-            <span className="text-s font-medium">{entity.caption}</span>
-            {hasAiSuggestion ? (
+        <div className="flex flex-col gap-sm">
+          <div className="flex grow items-center justify-between gap-sm">
+            <div className="flex flex-wrap items-center gap-sm">
+              <span className="text-s font-medium">{entity.caption}</span>
+              {hasAiSuggestion ? (
+                <Tag color="grey">
+                  {t(`screenings:match.ai_suggestion.${aiSuggestion.confidence}`)}
+                  <Icon icon="wand" className="size-4" />
+                </Tag>
+              ) : null}
               <Tag color="grey">
-                {t(`screenings:match.ai_suggestion.${aiSuggestion.confidence}`)}
-                <Icon icon="wand" className="size-4" />
+                {t('screenings:match.similarity', {
+                  percent: Math.round(entity.score * 100),
+                })}
               </Tag>
-            ) : null}
-            <Tag color="grey">
-              {t('screenings:match.similarity', {
-                percent: Math.round(entity.score * 100),
-              })}
-            </Tag>
+            </div>
+            <div className="flex items-center gap-sm" onClick={(e) => e.stopPropagation()}>
+              {!hideEnrich && !match.enriched ? <EnrichMatchButton matchId={match.id} /> : null}
+              {!hideReview ? (
+                <div className="inline-flex h-8 shrink-0 text-nowrap">
+                  {unreviewable ? (
+                    <Tag color="grey">{t('screenings:match.not_reviewable')}</Tag>
+                  ) : canReview ? (
+                    <ReviewMatchPopover
+                      screening={screening}
+                      screeningMatch={match}
+                      open={isPopoverOpen}
+                      onOpenChange={setIsPopoverOpen}
+                    />
+                  ) : (
+                    <StatusTag status={match.status} disabled />
+                  )}
+                </div>
+              ) : null}
+            </div>
           </div>
-          <div className="flex items-center gap-sm" onClick={(e) => e.stopPropagation()}>
-            {!hideEnrich && !match.enriched ? <EnrichMatchButton matchId={match.id} /> : null}
-            {!hideReview ? (
-              <div className="inline-flex h-8 shrink-0 text-nowrap">
-                {unreviewable ? (
-                  <Tag color="grey">{t('screenings:match.not_reviewable')}</Tag>
-                ) : canReview ? (
-                  <ReviewMatchPopover
-                    screening={screening}
-                    screeningMatch={match}
-                    open={isPopoverOpen}
-                    onOpenChange={setIsPopoverOpen}
-                  />
-                ) : (
-                  <StatusTag status={match.status} disabled />
-                )}
-              </div>
-            ) : null}
-          </div>
+          {match.comments.map((comment) => {
+            return <CommentLine key={comment.id} comment={comment} />;
+          })}
         </div>
       </Collapsible.Title>
       {hasAiSuggestion && aiSuggestion.reason ? (
@@ -108,9 +113,6 @@ export const MatchCard = ({
             </div>
           ) : null}
 
-          {match.comments.map((comment) => {
-            return <CommentLine key={comment.id} comment={comment} />;
-          })}
           <MatchDetails entity={entity} />
         </div>
       </Collapsible.Content>

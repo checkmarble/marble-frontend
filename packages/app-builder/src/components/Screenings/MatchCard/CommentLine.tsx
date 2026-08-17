@@ -11,7 +11,7 @@ export const CommentLine = ({ comment }: { comment: ScreeningMatch['comments'][n
   const fullName = getFullName(user);
 
   return (
-    <div key={comment.id} className="flex flex-col gap-sm">
+    <div key={comment.id} className="flex flex-col text-s gap-sm font-normal">
       <div className="flex items-center gap-xs">
         <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
         <span className="flex items-baseline gap-xs">

@@ -27,7 +27,6 @@ import { Button, Switch } from 'ui-design-system';
 type DecisionPanelProps = {
   decision: DetailedCaseDecision;
   dataModel: DataModel;
-  onClose: () => void;
   onScreeningSelect: (screeningId: string) => void;
   withReviewOpened?: boolean;
 };
@@ -35,7 +34,6 @@ type DecisionPanelProps = {
 export function DecisionPanel({
   decision,
   dataModel,
-  onClose,
   onScreeningSelect,
   withReviewOpened = false,
 }: DecisionPanelProps) {
