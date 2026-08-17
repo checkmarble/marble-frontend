@@ -104,6 +104,9 @@ export type CustomerGraphContextValue = {
   hoveredNodeId: string | null;
   setHoveredNodeId: (id: string | null) => void;
 
+  hoveredEdgeId: string | null;
+  setHoveredEdgeId: (id: string | null) => void;
+
   // Manually hidden nodes (node ids). Orphans cascade out via the reachability sweep.
   hiddenNodeIds: Set<string>;
   hideNodes: (ids: string[]) => void;
@@ -196,6 +199,7 @@ export function CustomerGraphProvider({
   const [selectionMode, setSelectionMode] = useState(false);
   const [checkedNodeIds, setCheckedNodeIds] = useState<Set<string>>(() => new Set());
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [hiddenNodeIds, setHiddenNodeIds] = useState<Set<string>>(() => new Set());
   const [expandedRootIds, setExpandedRootIds] = useState<Set<string>>(() => new Set());
   const [addedNodeTagIds, setAddedNodeTagIds] = useState<Map<string, string[]>>(() => new Map());
@@ -309,6 +313,8 @@ export function CustomerGraphProvider({
       clearCheckedNodes,
       hoveredNodeId,
       setHoveredNodeId,
+      hoveredEdgeId,
+      setHoveredEdgeId,
       hiddenNodeIds,
       hideNodes,
       restoreHiddenNodes,
@@ -348,6 +354,7 @@ export function CustomerGraphProvider({
       isNodeChecked,
       clearCheckedNodes,
       hoveredNodeId,
+      hoveredEdgeId,
       hiddenNodeIds,
       hideNodes,
       restoreHiddenNodes,

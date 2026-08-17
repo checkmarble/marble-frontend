@@ -418,7 +418,7 @@ function GraphEdge({
   label,
   data,
 }: EdgeProps<GraphRfEdge>) {
-  const { showEdgeLabels } = useCustomerGraph();
+  const { showEdgeLabels, hoveredEdgeId } = useCustomerGraph();
   const highlighted = useEdgeHighlighted(source, target);
   const appearance = EDGE_APPEARANCE[type ?? 'link'];
 
@@ -436,7 +436,7 @@ function GraphEdge({
   // structural rather than a label.
   const mergedCount = data?.mergedCount;
   const isMerged = mergedCount != null;
-  const labelContent = isMerged ? mergedCount : showEdgeLabels ? label : null;
+  const labelContent = isMerged ? mergedCount : showEdgeLabels || hoveredEdgeId === id ? label : null;
 
   return (
     <>

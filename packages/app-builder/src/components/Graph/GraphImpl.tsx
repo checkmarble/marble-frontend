@@ -2,7 +2,7 @@ import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type GraphData } from '@app-builder/models/graph';
-import { ControlButton, Controls, type NodeMouseHandler, ReactFlow } from '@xyflow/react';
+import { ControlButton, Controls, EdgeMouseHandler, type NodeMouseHandler, ReactFlow } from '@xyflow/react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -10,7 +10,7 @@ import { useCustomerGraph } from './CustomerGraphContext';
 import { graphEdgeTypes, graphNodeTypes } from './GraphComponents';
 import { graphI18n } from './graph-i18n';
 import { type GraphObjectRef, nodeKey, parseNodeKey } from './graph-keys';
-import { type GraphRfNode } from './graph-rf-types';
+import { GraphRfEdge, type GraphRfNode } from './graph-rf-types';
 import {
   applyVisibilityFilters,
   GraphMeasuredLayout,
@@ -40,6 +40,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
     setSelectedObject,
     selectionMode,
     setHoveredNodeId,
+    setHoveredEdgeId,
     hiddenNodeIds,
     checkedNodeIds,
     setGraphStats,
@@ -158,6 +159,17 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
     setHoveredNodeId(null);
   }, [setHoveredNodeId]);
 
+  const onEdgeMouseEnter = useCallback<EdgeMouseHandler<GraphRfEdge>>(
+    (_event, edge) => {
+      setHoveredEdgeId(edge.id);
+    },
+    [setHoveredEdgeId],
+  );
+
+  const onEdgeMouseLeave = useCallback<EdgeMouseHandler<GraphRfEdge>>(() => {
+    setHoveredEdgeId(null);
+  }, [setHoveredEdgeId]);
+
   return (
     <ReactFlow
       className="h-full min-h-0"
@@ -170,6 +182,8 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
       onNodeClick={onNodeClick}
       onNodeMouseEnter={onNodeMouseEnter}
       onNodeMouseLeave={onNodeMouseLeave}
+      onEdgeMouseEnter={onEdgeMouseEnter}
+      onEdgeMouseLeave={onEdgeMouseLeave}
       fitView
       fitViewOptions={graphFitViewOptions}
       maxZoom={5}
