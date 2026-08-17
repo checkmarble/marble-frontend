@@ -1,7 +1,7 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type GraphData } from '@app-builder/models/graph';
+import { type GraphData, GraphNodeData } from '@app-builder/models/graph';
 import { ControlButton, Controls, EdgeMouseHandler, type NodeMouseHandler, ReactFlow } from '@xyflow/react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,16 @@ function sameRefs(a: GraphObjectRef[], b: GraphObjectRef[]): boolean {
   return (
     a.length === b.length && a.every((ref, i) => ref.objectType === b[i]?.objectType && ref.objectId === b[i]?.objectId)
   );
+}
+
+function personRefFromRfNode(node: Extract<GraphRfNode, { type: 'person' }>): GraphObjectRef {
+  return { objectType: node.data.objectType, objectId: node.data.objectId, label: node.data.label };
+}
+
+function personRefFromGraphData(nodes: GraphNodeData[], key: string): GraphObjectRef {
+  const ref = parseNodeKey(key);
+  const node = nodes.find((n) => n.type === ref.objectType && n.id === ref.objectId);
+  return { ...ref, label: node?.metadata?.label };
 }
 
 export function GraphImpl({ data, dataModel }: GraphImplProps) {
@@ -82,7 +92,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
       }
       return nodes
         .filter((n): n is Extract<GraphRfNode, { type: 'person' }> => n.type === 'person' && neighborIds.has(n.id))
-        .map((n) => ({ objectType: n.data.objectType, objectId: n.data.objectId }));
+        .map(personRefFromRfNode);
     },
     [edges, nodes],
   );
@@ -108,6 +118,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
           nodeType: 'person',
           objectType: node.data.objectType,
           objectId: node.data.objectId,
+          label: node.data.label,
           persons: connectedPersonsForNode(node.id),
         });
         return;
@@ -118,10 +129,10 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
           nodeType: 'cluster',
           objectType: node.data.root.objectType,
           objectId: node.data.root.objectId,
+          label: node.data.root.label,
           nodeCount: node.data.nodeCount,
           internalEdgeCount: node.data.internalEdgeCount,
-          // Members are never pivots, so every id parses as a person ref.
-          persons: node.data.memberIds.map(parseNodeKey),
+          persons: node.data.memberIds.map((memberId) => personRefFromGraphData(data.nodes, memberId)),
         });
         return;
       }
@@ -139,12 +150,12 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
 
       setSelectedObject({
         nodeType: 'pivot',
-        objectType: node.data.rawType,
-        objectId: node.data.label,
+        objectType: node.data.label ?? '',
+        objectId: node.data.value,
         persons: connectedPersonsForNode(node.id),
       });
     },
-    [connectedPersonsForNode, setSelectedObject],
+    [connectedPersonsForNode, data.nodes, setSelectedObject],
   );
 
   const onNodeMouseEnter = useCallback<NodeMouseHandler<GraphRfNode>>(

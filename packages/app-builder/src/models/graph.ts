@@ -14,6 +14,7 @@ export type GraphNodeRef = {
 
 /** Per-node annotations returned with the graph payload (structural/record nodes). */
 export type GraphNodeMetadata = {
+  label?: string;
   riskLevel?: number;
   tagIds: string[];
 };
@@ -24,16 +25,16 @@ export type GraphNodeMetadata = {
  */
 export type GraphNodeData = GraphNodeRef &
   (
-    | { kind: 'record'; metadata: GraphNodeMetadata }
-    | { kind: 'connector' }
-    | { kind: 'hypernode'; hypernodeCount: number }
+    | { kind: 'record'; metadata?: GraphNodeMetadata }
+    | { kind: 'connector'; metadata?: GraphNodeMetadata }
+    | { kind: 'hypernode'; hypernodeCount: number; metadata?: GraphNodeMetadata }
   );
 
 export type GraphEdgeData = {
   from: GraphNodeRef;
   to: GraphNodeRef;
   kind: string;
-  label: string;
+  through: string[];
   field?: string;
   value?: string;
 };
@@ -69,6 +70,7 @@ function adaptGraphNodeRef(dto: GraphNodeRefDto): GraphNodeRef {
 function adaptGraphNodeMetadata(dto: GraphNodeDto): GraphNodeMetadata {
   const rawTags = dto.metadata?.tags;
   return {
+    label: dto.metadata?.label,
     riskLevel: dto.metadata?.risk_level,
     tagIds: Array.isArray(rawTags) ? rawTags.map(String).filter(Boolean) : [],
   };
@@ -77,10 +79,10 @@ function adaptGraphNodeMetadata(dto: GraphNodeDto): GraphNodeMetadata {
 function adaptGraphNode(dto: GraphNodeDto): GraphNodeData {
   const ref = adaptGraphNodeRef(dto);
   if (dto.hypernode_count != null) {
-    return { ...ref, kind: 'hypernode', hypernodeCount: dto.hypernode_count };
+    return { ...ref, kind: 'hypernode', hypernodeCount: dto.hypernode_count, metadata: adaptGraphNodeMetadata(dto) };
   }
   if (dto.connector === true) {
-    return { ...ref, kind: 'connector' };
+    return { ...ref, kind: 'connector', metadata: adaptGraphNodeMetadata(dto) };
   }
   return { ...ref, kind: 'record', metadata: adaptGraphNodeMetadata(dto) };
 }
@@ -90,7 +92,7 @@ function adaptGraphEdge(dto: GraphEdgeDto): GraphEdgeData {
     from: adaptGraphNodeRef(dto.from),
     to: adaptGraphNodeRef(dto.to),
     kind: dto.kind,
-    label: dto.label,
+    through: dto.through ?? [],
     field: dto.field,
     value: dto.value,
   };

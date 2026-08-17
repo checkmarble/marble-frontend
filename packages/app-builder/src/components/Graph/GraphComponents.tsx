@@ -1,6 +1,5 @@
 import { type FtmEntityPersonOption } from '@app-builder/models/data-model';
 import { SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
-import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import {
   BaseEdge,
@@ -28,7 +27,6 @@ import {
   type PivotRfNode,
 } from './graph-rf-types';
 import { ObjectTagLine, useTagsByIds } from './ObjectTags';
-import { resolveTitle } from './resolve-object-title';
 
 /**
  * A node stays fully opaque when nothing is hovered, when it is the hovered
@@ -112,12 +110,6 @@ function subEntityIcon(subEntity: FtmEntityPersonOption): IconName {
   }
 }
 
-/** Resolved object title, falling back to the raw id while the details load. */
-function usePersonTitle(data: PersonRfData): string {
-  const detailsQuery = useObjectDetailsQuery(data.objectType, data.objectId);
-  return detailsQuery.data?.data != null ? resolveTitle(detailsQuery.data.data, data.objectId) : data.label;
-}
-
 /**
  * Name pill with its sub-entity + risk badges. `capped` straddles it over the top
  * edge of a {@link PersonCard} instead of standing on its own.
@@ -132,7 +124,6 @@ function PersonPill({
   isHovered?: boolean;
 }) {
   const { showRiskScore, selectedObject } = useCustomerGraph();
-  const title = usePersonTitle(data);
 
   const isSelected = selectedObject?.objectType === data.objectType && selectedObject?.objectId === data.objectId;
   const isHighlighted = data.isStart || isSelected;
@@ -175,8 +166,8 @@ function PersonPill({
           </span>
         ) : null}
       </div>
-      <span className={cn('block truncate', !capped && 'max-w-48')} title={title}>
-        {title}
+      <span className={cn('block truncate', !capped && 'max-w-48')} title={data.label}>
+        {data.label}
       </span>
     </div>
   );
@@ -258,7 +249,6 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   const { nodeTagsVisible, nodeTagIdOverrides, addedNodeTagIds, toggleClusterExpanded, selectionMode, hoveredNodeId } =
     useCustomerGraph();
   const { t } = useTranslation(graphI18n);
-  const title = usePersonTitle(data);
   // Payload metadata is static; session edits from the settings panel replace it
   // as a whole, then bulk-tag additions merge on top of whichever list won.
   const overrideTagIds = nodeTagIdOverrides.get(id);
@@ -271,12 +261,12 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
   return (
     <NodeShell
       nodeId={id}
-      label={title}
+      label={data.label}
       action={
         data.isExpandedClusterRoot
           ? {
               icon: 'unfold_less',
-              label: t('graph:node.regroup_branch', { title }),
+              label: t('graph:node.regroup_branch', { title: data.label }),
               onPress: () => toggleClusterExpanded(id),
             }
           : undefined
@@ -296,11 +286,10 @@ function PersonNode({ id, data }: NodeProps<PersonRfNode>) {
 function ClusterNode({ id, data }: NodeProps<ClusterRfNode>) {
   const { toggleClusterExpanded, selectionMode, hoveredNodeId } = useCustomerGraph();
   const { t } = useTranslation(graphI18n);
-  const title = usePersonTitle(data.root);
   const isHovered = !selectionMode && hoveredNodeId === id;
 
   return (
-    <NodeShell nodeId={id} label={title}>
+    <NodeShell nodeId={id} label={data.root.label}>
       <PersonCard data={data.root} isHovered={isHovered}>
         <div className="text-grey-primary flex items-center justify-between gap-sm text-xs">
           <div className="min-w-0 truncate">
@@ -334,8 +323,8 @@ function PivotNode({ id, data }: NodeProps<PivotRfNode>) {
       <FourHandles />
       <Icon icon="tip" className="size-3.5 shrink-0" />
       <div className="min-w-0">
-        <div className="text-xs leading-none opacity-70">{data.rawType}</div>
-        <div className="truncate font-medium">{data.label}</div>
+        <div className="text-xs leading-none opacity-70">{data.label}</div>
+        <div className="truncate font-medium">{data.value}</div>
       </div>
     </div>
   );
@@ -350,14 +339,22 @@ function HypernodeNode({ id, data }: NodeProps<HypernodeRfNode>) {
   return (
     <div
       className={cn(
-        'border-grey-border bg-surface-card text-grey-primary relative flex gap-xs w-fit items-center rounded-md border p-md text-xs shadow-sm cursor-pointer transition-opacity duration-200',
-        isHovered && 'ring-2 ring-grey-primary ring-offset-2',
+        'border-grey-border bg-surface-card text-grey-primary relative flex w-fit max-w-96 items-center gap-xs rounded-full border px-sm py-xs text-xs shadow-sm cursor-pointer transition-opacity duration-200',
+        isHovered && 'ring-2 ring-orange-primary ring-offset-2',
         !highlighted && 'opacity-60',
       )}
     >
       <FourHandles />
-      <span>{t('graph:node.too_many')}</span>
-      <span className="font-medium tabular-nums">({data.count})</span>
+      <Icon icon="tip" className="size-3.5 shrink-0" />
+      <div className="min-w-0">
+        <div className="text-xs leading-none opacity-70">{data.label ?? data.objectType}</div>
+        <div className="truncate font-medium">{data.objectId}</div>
+        <p className={cn('text-2xs flex gap-xs mr-2 mt-1')}>
+          <span>
+            {t('graph:node.too_many')} (≈ {data.count})
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

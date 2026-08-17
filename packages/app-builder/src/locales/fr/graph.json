@@ -22,7 +22,7 @@
   "node.expand_other": "Déployer {{count}} nœuds",
   "node.regroup_branch": "Regrouper la branche {{title}}",
   "node.select": "Sélectionner {{label}}",
-  "node.too_many": "Trop de nœuds à afficher",
+  "node.too_many": "Graphe tronqué dû à une entité hyperconnectée",
   "panel.connected_nodes": "Nœuds connectés",
   "panel.grouped_branch": "Branche regroupée",
   "panel.hypernode": "Hypernœud",

@@ -101,14 +101,10 @@ function asBoolean(value: CheckedState): boolean {
   return value === true;
 }
 
-function DetailCardSkeleton() {
+function DetailCardSkeleton({ showTags }: { showTags: boolean }) {
   return (
     <div className="flex flex-col gap-sm">
-      <div className="flex flex-wrap items-center gap-sm">
-        <div className="bg-grey-border h-4 w-28 animate-pulse rounded-md" />
-        <div className="bg-grey-border h-5 w-24 animate-pulse rounded-full" />
-      </div>
-      <ObjectTagLineSkeleton />
+      {showTags ? <ObjectTagLineSkeleton /> : null}
       <div className="flex flex-col gap-xs">
         <div className="bg-grey-border h-6 w-full animate-pulse rounded-sm" />
         <div className="bg-grey-border h-6 w-full animate-pulse rounded-sm" />
@@ -212,10 +208,7 @@ function ObjectTags({ objectType, objectId }: GraphObjectRef) {
 
 function PersonRow({ person, showTags }: { person: GraphObjectRef; showTags: boolean }) {
   const { selectionMode, setHoveredNodeId, setSelectedObject } = useCustomerGraph();
-  const detailsQuery = useObjectDetailsQuery(person.objectType, person.objectId);
-  const title = match(detailsQuery)
-    .with({ isSuccess: true }, ({ data }) => resolveTitle(data.data, person.objectId))
-    .otherwise(() => person.objectId);
+  const title = resolveTitle(person.label, person.objectId);
   const id = nodeKey(person.objectType, person.objectId);
 
   return (
@@ -390,18 +383,17 @@ export function GraphSettingsPanel() {
           match(selectedObject)
             .with({ nodeType: 'person' }, (person) => (
               <>
+                <div className="flex flex-wrap items-center gap-sm">
+                  <span className="text-purple-primary text-sm font-semibold">
+                    {resolveTitle(person.label, person.objectId)}
+                  </span>
+                  <ObjectRiskBadge objectType={objectType} objectId={objectId} />
+                </div>
                 {match(detailsQuery)
                   .with({ isError: true }, () => <QueryError onRetry={() => detailsQuery.refetch()} />)
-                  .with({ isPending: true }, () => <DetailCardSkeleton />)
+                  .with({ isPending: true }, () => <DetailCardSkeleton showTags={showTags} />)
                   .with({ isSuccess: true }, ({ data: objectDetails }) => (
                     <>
-                      <div className="flex flex-wrap items-center gap-sm">
-                        <span className="text-purple-primary text-sm font-semibold">
-                          {resolveTitle(objectDetails.data, objectId)}
-                        </span>
-                        <ObjectRiskBadge objectType={objectType} objectId={objectId} />
-                      </div>
-
                       {showTags ? (
                         <ClientObjectTagList
                           tableName={objectType}

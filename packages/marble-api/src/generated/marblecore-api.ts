@@ -2151,6 +2151,7 @@ export type ScoringScore = {
 };
 export type GraphRelation = {
     id: string;
+    group_id: string;
     label: string;
     left_type: string;
     left_field: string;
@@ -2159,6 +2160,7 @@ export type GraphRelation = {
     created_at: string;
 };
 export type CreateGraphRelation = {
+    group_id?: string;
     label: string;
     left_type: string;
     left_field: string;
@@ -2176,15 +2178,16 @@ export type GraphNode = GraphNodeRef & {
     connector_kind?: "match" | "link";
     hypernode_count?: number;
     metadata?: {
+        label?: string;
         risk_level?: number;
         tags?: string[];
     };
 };
 export type GraphEdge = {
     kind: string;
-    label: string;
     "from": GraphNodeRef;
     to: GraphNodeRef;
+    through?: string[];
     field?: string;
     value?: string;
 };
