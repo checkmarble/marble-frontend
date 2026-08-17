@@ -33,7 +33,7 @@ describe('Combobox', () => {
   it('should select element on click', async () => {
     render(<FruitCombobox />);
 
-    const input = screen.getByLabelText('Fruits');
+    const input = screen.getByRole('combobox', { name: 'Fruits' });
     await userEvent.click(input);
 
     fruits.forEach((fruit) =>
@@ -55,7 +55,7 @@ describe('Combobox', () => {
   it('should filter elements', async () => {
     render(<FruitCombobox />);
 
-    const input = screen.getByLabelText('Fruits');
+    const input = screen.getByRole('combobox', { name: 'Fruits' });
     await userEvent.click(input);
 
     const fruitOptions = screen.getAllByRole('option');

@@ -22,6 +22,8 @@ class MockPointerEvent extends Event {
 
 //@ts-expect-error Mock is missing some properties but the current implementation cover our needs
 window.PointerEvent = MockPointerEvent;
+// jsdom exposes CSS.escape but not CSS.supports; Ariakit modal scroll-lock calls it.
+window.CSS = { ...window.CSS, supports: () => false };
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
 window.HTMLElement.prototype.setPointerCapture = vi.fn();
 window.HTMLElement.prototype.releasePointerCapture = vi.fn();
