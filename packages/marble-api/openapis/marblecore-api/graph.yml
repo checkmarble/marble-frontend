@@ -132,6 +132,7 @@ components:
       type: object
       required:
         - id
+        - group_id
         - label
         - left_type
         - left_field
@@ -140,6 +141,9 @@ components:
         - created_at
       properties:
         id:
+          type: string
+          format: uuid
+        group_id:
           type: string
           format: uuid
         label:
@@ -165,6 +169,9 @@ components:
         - right_type
         - right_field
       properties:
+        group_id:
+          type: string
+          format: uuid
         label:
           type: string
         left_type:
@@ -232,7 +239,6 @@ components:
                     type: string
                     format: uuid
 
-
     GraphEdge:
       type: object
       required:
@@ -243,12 +249,14 @@ components:
       properties:
         kind:
           type: string
-        label:
-          type: string
         from:
           $ref: "#/components/schemas/GraphNodeRef"
         to:
           $ref: "#/components/schemas/GraphNodeRef"
+        through:
+          type: array
+          items:
+            type: string
         field:
           type: string
         value:
