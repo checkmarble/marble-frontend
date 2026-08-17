@@ -19,7 +19,7 @@ function personNode(id: string, isStart = false): GraphRfNode {
 }
 
 function pivotNode(id: string): GraphRfNode {
-  return { id, position: { x: 0, y: 0 }, type: 'pivot', data: { label: id, rawType: 'same_ip' } };
+  return { id, position: { x: 0, y: 0 }, type: 'pivot', data: { value: id, label: 'same_ip' } };
 }
 
 function linkEdge(source: string, target: string): GraphRfEdge {

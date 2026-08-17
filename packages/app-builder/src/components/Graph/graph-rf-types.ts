@@ -16,11 +16,12 @@ export type PersonRfData = {
 };
 
 export type PivotRfData = {
-  label: string;
-  rawType: string;
+  label?: string;
+  value: string;
 };
 
 export type HypernodeRfData = {
+  label?: string;
   count: number;
   objectType: string;
   objectId: string;

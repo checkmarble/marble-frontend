@@ -65,26 +65,31 @@ export function toFlatFlowElements(data: GraphData, typeHelpers: GraphTypeHelper
           id: key,
           position,
           type: 'hypernode',
-          data: { count: hypernode.hypernodeCount, objectType: node.type, objectId: node.id },
+          data: {
+            count: hypernode.hypernodeCount,
+            objectType: node.type,
+            objectId: node.id,
+            label: node.metadata?.label,
+          },
         }))
         .with({ kind: 'connector' }, () => ({
           id: key,
           position,
           type: 'pivot',
-          data: { label: node.id, rawType: node.type },
+          data: { value: node.id, label: node.metadata?.label },
         }))
         .with({ kind: 'record' }, (record) => ({
           id: key,
           position,
           type: 'person',
           data: {
-            label: node.id,
+            label: node.metadata?.label ?? '-',
             subEntity: typeHelpers.getPersonSubEntity(node.type),
             isStart: key === startKey,
             objectType: node.type,
             objectId: node.id,
-            riskLevel: record.metadata.riskLevel,
-            tagIds: record.metadata.tagIds,
+            riskLevel: record.metadata?.riskLevel,
+            tagIds: record.metadata?.tagIds ?? [],
           },
         }))
         .exhaustive(),

@@ -132,7 +132,6 @@ function PersonPill({
   isHovered?: boolean;
 }) {
   const { showRiskScore, selectedObject } = useCustomerGraph();
-  const title = usePersonTitle(data);
 
   const isSelected = selectedObject?.objectType === data.objectType && selectedObject?.objectId === data.objectId;
   const isHighlighted = data.isStart || isSelected;
@@ -175,8 +174,8 @@ function PersonPill({
           </span>
         ) : null}
       </div>
-      <span className={cn('block truncate', !capped && 'max-w-48')} title={title}>
-        {title}
+      <span className={cn('block truncate', !capped && 'max-w-48')} title={data.label}>
+        {data.label}
       </span>
     </div>
   );
@@ -332,8 +331,8 @@ function PivotNode({ id, data }: NodeProps<PivotRfNode>) {
       <FourHandles />
       <Icon icon="tip" className="size-3.5 shrink-0" />
       <div className="min-w-0">
-        <div className="text-xs leading-none opacity-70">{data.rawType}</div>
-        <div className="truncate font-medium">{data.label}</div>
+        <div className="text-xs leading-none opacity-70">{data.label}</div>
+        <div className="truncate font-medium">{data.value}</div>
       </div>
     </div>
   );

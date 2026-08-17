@@ -222,6 +222,8 @@ components:
             metadata:
               type: object
               properties:
+                label:
+                  type: string
                 risk_level:
                   type: integer
                 tags:

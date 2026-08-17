@@ -139,8 +139,8 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
 
       setSelectedObject({
         nodeType: 'pivot',
-        objectType: node.data.rawType,
-        objectId: node.data.label,
+        objectType: node.data.label ?? '',
+        objectId: node.data.value,
         persons: connectedPersonsForNode(node.id),
       });
     },

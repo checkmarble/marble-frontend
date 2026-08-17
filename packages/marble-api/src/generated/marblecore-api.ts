@@ -2176,6 +2176,7 @@ export type GraphNode = GraphNodeRef & {
     connector_kind?: "match" | "link";
     hypernode_count?: number;
     metadata?: {
+        label?: string;
         risk_level?: number;
         tags?: string[];
     };
