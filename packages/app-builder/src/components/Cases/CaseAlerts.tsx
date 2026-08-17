@@ -237,7 +237,6 @@ export const AlertCard = ({
             <DecisionPanel
               dataModel={dataModel}
               decision={decision}
-              onClose={() => setOpenDetails(null)}
               onScreeningSelect={setPanelScreeningId}
               withReviewOpened={openDetails.withReview}
             />
@@ -278,7 +277,7 @@ const TriggerFieldsRow = ({
     <span key={field.id} data-field-item className="inline-flex shrink-0 items-baseline gap-xs">
       {index > 0 ? <span className="text-grey-placeholder">&middot;</span> : null}
       <span className="font-medium">{field.name}:</span>
-      <span className="max-w-[120px] truncate">
+      <span className="max-w-30 truncate">
         <FormatData data={parseUnknownData(triggerObject[field.name])} />
       </span>
     </span>
