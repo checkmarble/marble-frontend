@@ -32,7 +32,9 @@ export function LinkForm({
   return (
     <Collapsible.Container className={cn('border-none p-0', hasError && 'bg-red-primary/5')} defaultOpen>
       <Collapsible.Title size="xs" iconPosition="left">
-        <Typo variant="subtitle2">{t('data:upload_data.links_title')}</Typo>
+        <button type="button">
+          <Typo variant="subtitle2">{t('data:upload_data.links_title')}</Typo>
+        </button>
       </Collapsible.Title>
       <Collapsible.Content className="border-none" size="xs">
         <div className="flex flex-col gap-md">
