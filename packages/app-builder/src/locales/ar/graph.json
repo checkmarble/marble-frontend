@@ -47,7 +47,6 @@
   "selection.select_entities": "تحديد الكيانات",
   "settings.add_relation": "إضافة علاقة",
   "settings.configured_relations": "العلاقات المُعدّة",
-  "settings.create_label.continue": "متابعة",
   "settings.create_label.field": "التسمية",
   "settings.create_label.placeholder": "مثال: iban",
   "settings.create_label.title": "إنشاء إعداد",

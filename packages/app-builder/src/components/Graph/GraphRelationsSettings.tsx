@@ -61,32 +61,31 @@ function joinableFields(rightTable: TableModel | undefined, leftField: DataModel
   return rightTable.fields.filter((field) => areFieldsJoinable(leftField, field));
 }
 
-/** The relations sharing one label, which is what the settings UI calls a "setting". */
-type RelationGroup = { label: string; relations: GraphRelation[] };
+/** The relations sharing one server-side group id, which is what the settings UI calls a "setting". */
+type RelationGroup = { id: string; label: string; relations: GraphRelation[] };
 
 const relationGroupColumnHelper = createColumnHelper<RelationGroup>();
 
-function groupRelationsByLabel(relations: GraphRelation[]): RelationGroup[] {
-  const groups = new Map<string, GraphRelation[]>();
+function groupRelationsByGroupId(relations: GraphRelation[]): RelationGroup[] {
+  const groups = new Map<string, RelationGroup>();
   for (const relation of relations) {
-    const existing = groups.get(relation.label);
+    const existing = groups.get(relation.groupId);
     if (existing) {
-      existing.push(relation);
+      existing.relations.push(relation);
     } else {
-      groups.set(relation.label, [relation]);
+      groups.set(relation.groupId, { id: relation.groupId, label: relation.label, relations: [relation] });
     }
   }
-  return [...groups.entries()].map(([label, grouped]) => ({ label, relations: grouped }));
+  return [...groups.values()];
 }
 
+/** `relations` is already scoped to one group, so only the endpoints are compared. */
 function isDuplicateRelation(
   relations: GraphRelation[],
-  label: string,
   candidate: Pick<GraphRelation, 'leftType' | 'leftField' | 'rightType' | 'rightField'>,
 ): boolean {
   return relations.some(
     (relation) =>
-      relation.label === label &&
       relation.leftType === candidate.leftType &&
       relation.leftField === candidate.leftField &&
       relation.rightType === candidate.rightType &&
@@ -103,11 +102,10 @@ const RELATION_SCOPE_KEYS = {
   'cross-table': 'graph:settings.scope.cross_table',
 } as const satisfies Record<RelationScope, string>;
 
-const createLabelSchema = z.object({
-  label: z.string().trim().min(1),
-});
-
-const relationFormSchema = createGraphRelationPayloadSchema.omit({ label: true });
+/** One panel form covering the group label and the relation being added. */
+const relationFormSchema = createGraphRelationPayloadSchema
+  .omit({ groupId: true })
+  .extend({ label: z.string().trim().min(1) });
 
 function TableFieldSelect({
   label,
@@ -172,85 +170,6 @@ function RelationEndpoints({ relation }: { relation: GraphRelation }) {
   );
 }
 
-function CreateLabelModal({
-  open,
-  onOpenChange,
-  onSubmitLabel,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmitLabel: (label: string) => void;
-}) {
-  const { t } = useTranslation(graphI18n);
-  const form = useForm({
-    defaultValues: { label: '' },
-    validators: { onSubmit: createLabelSchema },
-    onSubmit: ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
-      const label = value.label.trim();
-      formApi.reset();
-      onOpenChange(false);
-      onSubmitLabel(label);
-    },
-  });
-
-  return (
-    <Modal.Root
-      open={open}
-      onOpenChange={(next) => {
-        if (!next) form.reset();
-        onOpenChange(next);
-      }}
-    >
-      <Modal.Content>
-        <form onSubmit={handleSubmit(form)}>
-          <Modal.Title>{t('graph:settings.create_label.title')}</Modal.Title>
-          <div className="flex flex-col gap-lg p-lg">
-            <form.Field
-              name="label"
-              validators={{
-                onBlur: createLabelSchema.shape.label,
-                onChange: createLabelSchema.shape.label,
-              }}
-            >
-              {(field) => (
-                <div className="flex flex-col gap-xs">
-                  <FormLabel name={field.name} className="text-grey-secondary text-xs">
-                    {t('graph:settings.create_label.field')}
-                  </FormLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(event) => field.handleChange(event.currentTarget.value)}
-                    onBlur={field.handleBlur}
-                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                    placeholder={t('graph:settings.create_label.placeholder')}
-                  />
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                </div>
-              )}
-            </form.Field>
-          </div>
-          <Modal.Footer>
-            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-            <form.Subscribe selector={(state) => createLabelSchema.safeParse(state.values).success}>
-              {(isValid) => (
-                <Modal.FooterButton
-                  type="submit"
-                  variant="primary"
-                  label={t('graph:settings.create_label.continue')}
-                  disabled={!isValid}
-                />
-              )}
-            </form.Subscribe>
-          </Modal.Footer>
-        </form>
-      </Modal.Content>
-    </Modal.Root>
-  );
-}
-
 function DeleteSettingModal({
   group,
   onOpenChange,
@@ -294,12 +213,20 @@ function RelationSettingPanel({
   open,
   onOpenChange,
   label,
+  groupId,
+  onGroupCreated,
+  onGroupEmptied,
   dataModel,
   relations,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Empty for a group that does not exist yet, where the user still has to name it. */
   label: string;
+  /** `null` until the first relation is created: the API then mints the group id. */
+  groupId: string | null;
+  onGroupCreated: (group: { id: string; label: string }) => void;
+  onGroupEmptied: () => void;
   dataModel: DataModel;
   relations: GraphRelation[];
 }) {
@@ -309,14 +236,18 @@ function RelationSettingPanel({
   const [scope, setScope] = useState<RelationScope>('same-table');
 
   const form = useForm({
-    defaultValues: { leftType: '', leftField: '', rightType: '', rightField: '' },
+    defaultValues: { label, leftType: '', leftField: '', rightType: '', rightField: '' },
     validators: { onSubmit: relationFormSchema },
     onSubmit: ({ value, formApi }) => {
-      if (!formApi.state.isValid || isDuplicateRelation(relations, label, value)) return;
+      if (!formApi.state.isValid || isDuplicateRelation(relations, value)) return;
+      const trimmedLabel = value.label.trim();
       createMutation.mutate(
-        { ...value, label },
+        // No group id yet means "create a new group"; the response tells us which one it became.
+        { ...value, label: trimmedLabel, groupId: groupId ?? undefined },
         {
-          onSuccess: () => {
+          onSuccess: (created) => {
+            if (!groupId) onGroupCreated({ id: created.groupId, label: created.label });
+            formApi.setFieldValue('label', trimmedLabel);
             formApi.setFieldValue('leftField', '');
             formApi.setFieldValue('rightField', '');
           },
@@ -325,6 +256,8 @@ function RelationSettingPanel({
     },
   });
 
+  // The label belongs to the group, so it is frozen as soon as the group exists.
+  const isLabelLocked = groupId !== null;
   const isSelfRelation = scope === 'same-table';
 
   const onScopeChange = (next: RelationScope) => {
@@ -356,82 +289,112 @@ function RelationSettingPanel({
     <Panel.Root open={open} onOpenChange={onOpenChange}>
       <Panel.Container size="small">
         <Panel.Content>
-          <Panel.Header>{label}</Panel.Header>
+          <Panel.Header>{label || t('graph:settings.create_label.title')}</Panel.Header>
           <div className="flex min-h-0 flex-1 flex-col gap-lg overflow-y-auto p-md">
-            <form
-              onSubmit={handleSubmit(form)}
-              className="border-grey-border flex flex-col gap-md rounded-md border p-md"
-            >
-              <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.add_relation')}</h2>
-              <GraphTabSwitch
-                value={scope}
-                options={tabSwitchOptions(RELATION_SCOPE_OPTIONS, (value) => t(RELATION_SCOPE_KEYS[value]))}
-                onChange={onScopeChange}
-              />
-
-              <form.Subscribe selector={(state) => state.values}>
-                {({ leftType, leftField, rightType, rightField }) => {
-                  const leftFieldOptions = semanticFields(dataModel.find((table) => table.name === leftType));
-                  const selectedLeftField = leftFieldOptions.find((field) => field.name === leftField);
-
-                  return (
-                    <>
-                      <TableFieldSelect
-                        label={t('graph:settings.endpoint.left')}
-                        tables={dataModel}
-                        tableName={leftType}
-                        fieldName={leftField}
-                        fieldOptions={leftFieldOptions}
-                        onTableChange={onLeftTableChange}
-                        onFieldChange={onLeftFieldChange}
-                      />
-
-                      <TableFieldSelect
-                        label={t('graph:settings.endpoint.right')}
-                        tables={dataModel}
-                        tableName={rightType}
-                        fieldName={rightField}
-                        fieldOptions={joinableFields(
-                          dataModel.find((table) => table.name === rightType),
-                          selectedLeftField,
-                        )}
-                        onTableChange={(name) => {
-                          form.setFieldValue('rightType', name);
-                          form.setFieldValue('rightField', '');
-                        }}
-                        onFieldChange={(name) => {
-                          form.setFieldValue('rightField', name);
-                        }}
-                        tableDisabled={isSelfRelation}
-                        disabled={!selectedLeftField}
-                      />
-                    </>
-                  );
+            <form onSubmit={handleSubmit(form)} className="flex flex-col gap-lg">
+              <form.Field
+                name="label"
+                validators={{
+                  onBlur: relationFormSchema.shape.label,
+                  onChange: relationFormSchema.shape.label,
                 }}
-              </form.Subscribe>
+              >
+                {(field) => (
+                  <div className="flex flex-col gap-xs">
+                    <FormLabel name={field.name} className="text-grey-secondary text-xs">
+                      {t('graph:settings.create_label.field')}
+                    </FormLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(event) => field.handleChange(event.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                      placeholder={t('graph:settings.create_label.placeholder')}
+                      disabled={isLabelLocked}
+                      // Naming the setting is the first step of a creation, so start there.
+                      autoFocus={!isLabelLocked}
+                    />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
 
-              <form.Subscribe selector={(state) => state.values}>
-                {(values) => {
-                  const isComplete = relationFormSchema.safeParse(values).success;
-                  const isDuplicate = isComplete && isDuplicateRelation(relations, label, values);
+              <div className="border-grey-border flex flex-col gap-md rounded-md border p-md">
+                <h2 className="text-grey-primary text-sm font-semibold">{t('graph:settings.add_relation')}</h2>
+                <GraphTabSwitch
+                  value={scope}
+                  options={tabSwitchOptions(RELATION_SCOPE_OPTIONS, (value) => t(RELATION_SCOPE_KEYS[value]))}
+                  onChange={onScopeChange}
+                />
 
-                  return (
-                    <>
-                      {isDuplicate ? <p className="text-red-primary text-xs">{t('graph:settings.duplicate')}</p> : null}
-                      <div>
-                        <Button
-                          variant="primary"
-                          type="submit"
-                          disabled={!isComplete || isDuplicate || createMutation.isPending}
-                        >
-                          <Icon icon="plus" className="size-4" />
-                          {t('graph:settings.create_relation')}
-                        </Button>
-                      </div>
-                    </>
-                  );
-                }}
-              </form.Subscribe>
+                <form.Subscribe selector={(state) => state.values}>
+                  {({ leftType, leftField, rightType, rightField }) => {
+                    const leftFieldOptions = semanticFields(dataModel.find((table) => table.name === leftType));
+                    const selectedLeftField = leftFieldOptions.find((field) => field.name === leftField);
+
+                    return (
+                      <>
+                        <TableFieldSelect
+                          label={t('graph:settings.endpoint.left')}
+                          tables={dataModel}
+                          tableName={leftType}
+                          fieldName={leftField}
+                          fieldOptions={leftFieldOptions}
+                          onTableChange={onLeftTableChange}
+                          onFieldChange={onLeftFieldChange}
+                        />
+
+                        <TableFieldSelect
+                          label={t('graph:settings.endpoint.right')}
+                          tables={dataModel}
+                          tableName={rightType}
+                          fieldName={rightField}
+                          fieldOptions={joinableFields(
+                            dataModel.find((table) => table.name === rightType),
+                            selectedLeftField,
+                          )}
+                          onTableChange={(name) => {
+                            form.setFieldValue('rightType', name);
+                            form.setFieldValue('rightField', '');
+                          }}
+                          onFieldChange={(name) => {
+                            form.setFieldValue('rightField', name);
+                          }}
+                          tableDisabled={isSelfRelation}
+                          disabled={!selectedLeftField}
+                        />
+                      </>
+                    );
+                  }}
+                </form.Subscribe>
+
+                <form.Subscribe selector={(state) => state.values}>
+                  {(values) => {
+                    const isComplete = relationFormSchema.safeParse(values).success;
+                    const isDuplicate = isComplete && isDuplicateRelation(relations, values);
+
+                    return (
+                      <>
+                        {isDuplicate ? (
+                          <p className="text-red-primary text-xs">{t('graph:settings.duplicate')}</p>
+                        ) : null}
+                        <div>
+                          <Button
+                            variant="primary"
+                            type="submit"
+                            disabled={!isComplete || isDuplicate || createMutation.isPending}
+                          >
+                            <Icon icon="plus" className="size-4" />
+                            {t('graph:settings.create_relation')}
+                          </Button>
+                        </div>
+                      </>
+                    );
+                  }}
+                </form.Subscribe>
+              </div>
             </form>
 
             <section className="flex flex-col gap-md">
@@ -452,7 +415,18 @@ function RelationSettingPanel({
                         mode="icon"
                         aria-label={t('graph:settings.delete_relation')}
                         disabled={deleteMutation.isPending}
-                        onClick={() => deleteMutation.mutate({ relationId: relation.id })}
+                        onClick={() =>
+                          deleteMutation.mutate(
+                            { relationId: relation.id },
+                            {
+                              // Removing the last relation removes the group itself: forget its id so
+                              // the next relation starts a new group instead of a dead one.
+                              onSuccess: () => {
+                                if (relations.length === 1) onGroupEmptied();
+                              },
+                            },
+                          )
+                        }
                       >
                         <Icon icon="delete" className="size-4" />
                       </Button>
@@ -471,24 +445,33 @@ function RelationSettingPanel({
   );
 }
 
+/**
+ * The setting the panel is editing. `groupId` is `null` while a brand new group has no relation yet
+ * (its label is then still empty and editable); `key` stays stable across that transition so filling
+ * it in does not remount (and reset) the panel.
+ */
+type PanelTarget = { key: string; label: string; groupId: string | null };
+
+const NEW_GROUP_TARGET: PanelTarget = { key: 'new-group', label: '', groupId: null };
+
 export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) {
   const { t } = useTranslation(graphI18n);
   const relationsQuery = useListGraphRelationsQuery();
   const deleteRelationsMutation = useDeleteGraphRelationsMutation();
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [panelLabel, setPanelLabel] = useState<string | null>(null);
+  const [panelTarget, setPanelTarget] = useState<PanelTarget | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<RelationGroup | null>(null);
 
   const groups = useMemo(
-    () => (relationsQuery.data ? groupRelationsByLabel(relationsQuery.data) : []),
+    () => (relationsQuery.data ? groupRelationsByGroupId(relationsQuery.data) : []),
     [relationsQuery.data],
   );
 
   const panelRelations = useMemo(() => {
-    if (!panelLabel || !relationsQuery.data) return [];
-    return relationsQuery.data.filter((relation) => relation.label === panelLabel);
-  }, [panelLabel, relationsQuery.data]);
+    const groupId = panelTarget?.groupId;
+    if (!groupId || !relationsQuery.data) return [];
+    return relationsQuery.data.filter((relation) => relation.groupId === groupId);
+  }, [panelTarget?.groupId, relationsQuery.data]);
 
   const columns = useMemo(
     () => [
@@ -531,7 +514,7 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
                   appearance="stroked"
                   mode="icon"
                   aria-label={t('common:edit')}
-                  onClick={() => setPanelLabel(group.label)}
+                  onClick={() => setPanelTarget({ key: group.id, label: group.label, groupId: group.id })}
                 >
                   <Icon icon="edit-square" className="size-6 shrink-0" />
                 </Button>
@@ -559,6 +542,7 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: groups,
     columns,
+    getRowId: (row) => row.id,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     enableSorting: false,
@@ -570,7 +554,7 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
       group.relations.map((relation) => relation.id),
       {
         onSuccess: () => {
-          if (panelLabel === group.label) setPanelLabel(null);
+          if (panelTarget?.groupId === group.id) setPanelTarget(null);
           setDeleteTarget(null);
         },
       },
@@ -585,7 +569,7 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
           <Button
             onClick={(event) => {
               event.stopPropagation();
-              setCreateModalOpen(true);
+              setPanelTarget(NEW_GROUP_TARGET);
             }}
           >
             <Icon icon="plus" className="size-5" />
@@ -615,8 +599,6 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
         </CollapsiblePaper.Content>
       </CollapsiblePaper.Container>
 
-      <CreateLabelModal open={createModalOpen} onOpenChange={setCreateModalOpen} onSubmitLabel={setPanelLabel} />
-
       {deleteTarget ? (
         <DeleteSettingModal
           group={deleteTarget}
@@ -628,14 +610,19 @@ export function GraphRelationsSettings({ dataModel }: { dataModel: DataModel }) 
         />
       ) : null}
 
-      {panelLabel ? (
+      {panelTarget ? (
         <RelationSettingPanel
-          key={panelLabel}
+          key={panelTarget.key}
           open
           onOpenChange={(open) => {
-            if (!open) setPanelLabel(null);
+            if (!open) setPanelTarget(null);
           }}
-          label={panelLabel}
+          label={panelTarget.label}
+          groupId={panelTarget.groupId}
+          onGroupCreated={(group) =>
+            setPanelTarget((current) => (current ? { ...current, groupId: group.id, label: group.label } : current))
+          }
+          onGroupEmptied={() => setPanelTarget((current) => (current ? { ...current, groupId: null } : current))}
           dataModel={dataModel}
           relations={panelRelations}
         />

@@ -47,7 +47,6 @@
   "selection.select_entities": "Select entities",
   "settings.add_relation": "Add relation",
   "settings.configured_relations": "Configured relations",
-  "settings.create_label.continue": "Continue",
   "settings.create_label.field": "Label",
   "settings.create_label.placeholder": "e.g. iban",
   "settings.create_label.title": "Create setting",

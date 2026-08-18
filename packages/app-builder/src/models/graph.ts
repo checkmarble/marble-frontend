@@ -47,6 +47,7 @@ export type GraphData = {
 
 export type GraphRelation = {
   id: string;
+  groupId: string;
   label: string;
   leftType: string;
   leftField: string;
@@ -56,6 +57,8 @@ export type GraphRelation = {
 };
 
 export type CreateGraphRelationBody = {
+  /** Omitted to start a new group: the created relation then carries the generated group id. */
+  groupId?: string;
   label: string;
   leftType: string;
   leftField: string;
@@ -109,6 +112,7 @@ export function adaptGraphData(dto: GraphDto): GraphData {
 export function adaptGraphRelation(dto: GraphRelationDto): GraphRelation {
   return {
     id: dto.id,
+    groupId: dto.group_id,
     label: dto.label,
     leftType: dto.left_type,
     leftField: dto.left_field,
@@ -120,6 +124,7 @@ export function adaptGraphRelation(dto: GraphRelationDto): GraphRelation {
 
 export function adaptCreateGraphRelationDto(body: CreateGraphRelationBody): CreateGraphRelationDto {
   return {
+    group_id: body.groupId,
     label: body.label,
     left_type: body.leftType,
     left_field: body.leftField,

@@ -1,6 +1,8 @@
 import { z } from 'zod/v4';
 
 export const createGraphRelationPayloadSchema = z.object({
+  /** Omit to create a new group; the response carries the group id to reuse for the next relations. */
+  groupId: z.uuid().optional(),
   label: z.string().min(1),
   leftType: z.string().min(1),
   leftField: z.string().min(1),
