@@ -4,7 +4,7 @@ import { linkRelationTypes } from '@app-builder/models';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Input, SelectV2, Typo } from 'ui-design-system';
+import { Button, Collapsible, cn, Input, SelectV2, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DatatypeIcon } from './DatatypeOption';
 
@@ -30,47 +30,54 @@ export function LinkForm({
   const belongsToFieldNames = belongsToLinks.map((link) => link.tableFieldId).filter(Boolean);
 
   return (
-    <section className={cn('flex flex-col gap-md rounded-lg', hasError && 'bg-red-primary/5 p-sm')}>
-      <div className="flex flex-col gap-xs">
+    <Collapsible.Container className={cn('border-none p-0', hasError && 'bg-red-primary/5')} defaultOpen>
+      <Collapsible.Title size="xs" iconPosition="left">
         <Typo variant="subtitle2">{t('data:upload_data.links_title')}</Typo>
-        <p className="text-s text-grey-secondary">
-          {t('data:upload_data.links_description', { tableName: tableLabel })}
-        </p>
-      </div>
-      {belongsToLinks.length > 1 ? (
-        <Callout color="orange" icon="warning" iconColor="orange">
-          <span>
-            {t('data:upload_data.multiple_belongs_to_warning', { tableName: tableLabel })}
-            {belongsToFieldNames.length > 0
-              ? ` ${t('data:upload_data.multiple_belongs_to_warning_fields', {
-                  fields: belongsToFieldNames.join(', '),
-                })}`
-              : null}
-          </span>
-        </Callout>
-      ) : null}
-      <div className="flex flex-col gap-md">
-        {links.map((link) => (
-          <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} hasError={errorLinkIds?.has(link.linkId)} />
-        ))}
-      </div>
-      {isCreateDataModelLinkAvailable && (
-        <div className="flex items-center gap-sm">
-          <Button
-            variant="primary"
-            appearance="stroked"
-            onClick={() => addLink()}
-            disabled={!destinationTableOptions.length}
-          >
-            <Icon icon="plus" className="size-4" />
-            {t('data:upload_data.link_add')}
-          </Button>
-          {!destinationTableOptions.length && (
-            <span className="text-grey-secondary">{t('data:create_table.link_destination_table_required')}</span>
+      </Collapsible.Title>
+      <Collapsible.Content className="border-none" size="xs">
+        <div className="flex flex-col gap-md">
+          <p className="text-s text-grey-secondary font-normal">
+            {t('data:upload_data.links_description', { tableName: tableLabel })}
+          </p>
+          {belongsToLinks.length > 1 ? (
+            <Callout color="orange" icon="warning" iconColor="orange">
+              <span>
+                {t('data:upload_data.multiple_belongs_to_warning', { tableName: tableLabel })}
+                {belongsToFieldNames.length > 0
+                  ? ` ${t('data:upload_data.multiple_belongs_to_warning_fields', {
+                      fields: belongsToFieldNames.join(', '),
+                    })}`
+                  : null}
+              </span>
+            </Callout>
+          ) : null}
+          {links.map((link) => (
+            <LinkRow
+              key={link.linkId}
+              linkId={link.linkId}
+              compact={compact}
+              hasError={errorLinkIds?.has(link.linkId)}
+            />
+          ))}
+          {isCreateDataModelLinkAvailable && (
+            <div className="flex items-center gap-sm">
+              <Button
+                variant="primary"
+                appearance="stroked"
+                onClick={() => addLink()}
+                disabled={!destinationTableOptions.length}
+              >
+                <Icon icon="plus" className="size-4" />
+                {t('data:upload_data.link_add')}
+              </Button>
+              {!destinationTableOptions.length && (
+                <span className="text-grey-secondary">{t('data:create_table.link_destination_table_required')}</span>
+              )}
+            </div>
           )}
         </div>
-      )}
-    </section>
+      </Collapsible.Content>
+    </Collapsible.Container>
   );
 }
 
