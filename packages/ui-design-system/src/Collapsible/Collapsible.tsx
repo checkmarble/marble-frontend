@@ -7,7 +7,6 @@ import {
   Trigger,
 } from '@radix-ui/react-collapsible';
 import { cva, type VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 import { cn } from '../utils';
@@ -20,7 +19,7 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(functi
     <Root
       defaultOpen={true}
       ref={ref}
-      className={clsx('border-grey-border flex w-full flex-col overflow-hidden rounded-lg border', className)}
+      className={cn('border-grey-border flex w-full flex-col overflow-hidden rounded-lg border', className)}
       {...props}
     />
   );
@@ -31,6 +30,7 @@ const collapsibleTitle = cva('group flex cursor-pointer items-center justify-bet
     size: {
       default: 'p-md lg:p-lg',
       small: 'p-md',
+      xs: 'p-xs',
       null: 'p-0',
     },
   },
@@ -80,16 +80,15 @@ const CollapsibleTitle = forwardRef<
 const content =
   'border-grey-border border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
 
-const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(function CollapsibleContent(
-  { children, className, ...props },
-  ref,
-) {
-  return (
-    <Content className={clsx(content, className)} {...props} ref={ref}>
-      <div className="text-s p-md lg:p-lg">{children}</div>
-    </Content>
-  );
-});
+const CollapsibleContent = forwardRef<HTMLDivElement, VariantProps<typeof collapsibleTitle> & CollapsibleContentProps>(
+  function CollapsibleContent({ children, className, size, ...props }, ref) {
+    return (
+      <Content className={cn(content, className)} {...props} ref={ref}>
+        <div className={collapsibleTitle({ size })}>{children}</div>
+      </Content>
+    );
+  },
+);
 
 export const Collapsible = {
   Container: CollapsibleContainer,

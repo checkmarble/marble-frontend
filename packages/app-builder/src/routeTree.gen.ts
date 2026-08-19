@@ -9,129 +9,120 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as HealthcheckRouteImport } from './routes/healthcheck'
-import { Route as AppRouterRouteImport } from './routes/app-router'
-import { Route as AppRouteImport } from './routes/_app'
-import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
-import { Route as RessourcesLocalesRouteImport } from './routes/ressources/locales'
-import { Route as OidcCallbackRouteImport } from './routes/oidc/callback'
-import { Route as OidcAuthRouteImport } from './routes/oidc/auth'
-import { Route as AppBuilderRouteImport } from './routes/_app/_builder'
+import { Route as SplatRouteImport } from './routes/$'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppRouterRouteImport } from './routes/app-router'
+import { Route as HealthcheckRouteImport } from './routes/healthcheck'
 import { Route as AppAuthRouteImport } from './routes/_app/_auth'
-import { Route as RessourcesDataExportOrgRouteImport } from './routes/ressources/data/export-org'
-import { Route as AppBuilderUserScoringRouteImport } from './routes/_app/_builder/user-scoring'
-import { Route as AppBuilderSettingsRouteImport } from './routes/_app/_builder/settings'
-import { Route as AppBuilderScreeningSearchRouteImport } from './routes/_app/_builder/screening-search'
-import { Route as AppBuilderDetectionRouteImport } from './routes/_app/_builder/detection'
-import { Route as AppBuilderDataRouteImport } from './routes/_app/_builder/data'
-import { Route as AppBuilderContinuousScreeningRouteImport } from './routes/_app/_builder/continuous-screening'
-import { Route as AppBuilderCasesRouteImport } from './routes/_app/_builder/cases'
-import { Route as AppBuilderAnalyticsLegacyRouteImport } from './routes/_app/_builder/analytics-legacy'
-import { Route as AppBuilderAccountRouteImport } from './routes/_app/_builder/account'
-import { Route as AppAuthSignInEmailRouteImport } from './routes/_app/_auth/sign-in-email'
-import { Route as AppAuthSignInRouteImport } from './routes/_app/_auth/sign-in'
-import { Route as AppAuthEmailVerificationRouteImport } from './routes/_app/_auth/email-verification'
-import { Route as AppAuthCreatePasswordRouteImport } from './routes/_app/_auth/create-password'
+import { Route as AppBuilderRouteImport } from './routes/_app/_builder'
+import { Route as OidcAuthRouteImport } from './routes/oidc/auth'
+import { Route as OidcCallbackRouteImport } from './routes/oidc/callback'
+import { Route as RessourcesLocalesRouteImport } from './routes/ressources/locales'
+import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
 import { Route as AppAuthAuthRedirectRouteImport } from './routes/_app/_auth/auth-redirect'
-import { Route as AppBuilderUserScoringIndexRouteImport } from './routes/_app/_builder/user-scoring/index'
-import { Route as AppBuilderSettingsIndexRouteImport } from './routes/_app/_builder/settings/index'
-import { Route as AppBuilderScreeningSearchIndexRouteImport } from './routes/_app/_builder/screening-search/index'
-import { Route as AppBuilderDetectionIndexRouteImport } from './routes/_app/_builder/detection/index'
-import { Route as AppBuilderDataIndexRouteImport } from './routes/_app/_builder/data/index'
-import { Route as AppBuilderContinuousScreeningIndexRouteImport } from './routes/_app/_builder/continuous-screening/index'
-import { Route as AppBuilderClientDetailIndexRouteImport } from './routes/_app/_builder/client-detail/index'
+import { Route as AppAuthCreatePasswordRouteImport } from './routes/_app/_auth/create-password'
+import { Route as AppAuthEmailVerificationRouteImport } from './routes/_app/_auth/email-verification'
+import { Route as AppAuthSignInRouteImport } from './routes/_app/_auth/sign-in'
+import { Route as AppAuthSignInEmailRouteImport } from './routes/_app/_auth/sign-in-email'
+import { Route as AppBuilderAccountRouteImport } from './routes/_app/_builder/account'
+import { Route as AppBuilderAnalyticsLegacyRouteImport } from './routes/_app/_builder/analytics-legacy'
+import { Route as AppBuilderCasesRouteImport } from './routes/_app/_builder/cases'
+import { Route as AppBuilderContinuousScreeningRouteImport } from './routes/_app/_builder/continuous-screening'
+import { Route as AppBuilderDataRouteImport } from './routes/_app/_builder/data'
+import { Route as AppBuilderDetectionRouteImport } from './routes/_app/_builder/detection'
+import { Route as AppBuilderScreeningSearchRouteImport } from './routes/_app/_builder/screening-search'
+import { Route as AppBuilderSettingsRouteImport } from './routes/_app/_builder/settings'
+import { Route as AppBuilderUserScoringRouteImport } from './routes/_app/_builder/user-scoring'
+import { Route as RessourcesDataExportOrgRouteImport } from './routes/ressources/data/export-org'
 import { Route as AppBuilderCasesIndexRouteImport } from './routes/_app/_builder/cases/index'
-import { Route as RessourcesListsDownloadCsvFileListIdRouteImport } from './routes/ressources/lists/download-csv-file.$listId'
-import { Route as RessourcesCasesNextUnassignedCaseIdRouteImport } from './routes/ressources/cases/next-unassigned.$caseId'
-import { Route as RessourcesCasesDownloadFileFileIdRouteImport } from './routes/ressources/cases/download-file.$fileId'
-import { Route as RessourcesCasesDownloadDataCaseIdRouteImport } from './routes/ressources/cases/download-data.$caseId'
-import { Route as AppBuilderUserScoringOverviewRouteImport } from './routes/_app/_builder/user-scoring/overview'
-import { Route as AppBuilderUploadObjectTypeRouteImport } from './routes/_app/_builder/upload/$objectType'
-import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
-import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
-import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
-import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
-import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
-import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
-import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
-import { Route as AppBuilderSettingsAuditLogsRouteImport } from './routes/_app/_builder/settings/audit-logs'
-import { Route as AppBuilderSettingsApiKeysRouteImport } from './routes/_app/_builder/settings/api-keys'
-import { Route as AppBuilderSettingsAnalyticsRouteImport } from './routes/_app/_builder/settings/analytics'
-import { Route as AppBuilderDetectionScenariosRouteImport } from './routes/_app/_builder/detection/scenarios'
-import { Route as AppBuilderDetectionListsRouteImport } from './routes/_app/_builder/detection/lists'
-import { Route as AppBuilderDetectionDecisionsRouteImport } from './routes/_app/_builder/detection/decisions'
-import { Route as AppBuilderDetectionAnalyticsRouteImport } from './routes/_app/_builder/detection/analytics'
-import { Route as AppBuilderDataListRouteImport } from './routes/_app/_builder/data/list'
-import { Route as AppBuilderContinuousScreeningObservabilityRouteImport } from './routes/_app/_builder/continuous-screening/observability'
-import { Route as AppBuilderContinuousScreeningConfigurationsRouteImport } from './routes/_app/_builder/continuous-screening/configurations'
-import { Route as AppBuilderCasesOverviewRouteImport } from './routes/_app/_builder/cases/overview'
-import { Route as AppBuilderCasesInboxesRouteImport } from './routes/_app/_builder/cases/inboxes'
-import { Route as AppBuilderCasesAnalyticsRouteImport } from './routes/_app/_builder/cases/analytics'
-import { Route as AppBuilderCasesDetailRouteImport } from './routes/_app/_builder/cases/_detail'
 import { Route as AppBuilderCasesCaseIdRouteImport } from './routes/_app/_builder/cases/$caseId'
-import { Route as AppBuilderSettingsInboxesIndexRouteImport } from './routes/_app/_builder/settings/inboxes/index'
-import { Route as AppBuilderDetectionScenariosIndexRouteImport } from './routes/_app/_builder/detection/scenarios/index'
-import { Route as AppBuilderDetectionListsIndexRouteImport } from './routes/_app/_builder/detection/lists/index'
-import { Route as AppBuilderDetectionDecisionsIndexRouteImport } from './routes/_app/_builder/detection/decisions/index'
-import { Route as AppBuilderDetectionAnalyticsIndexRouteImport } from './routes/_app/_builder/detection/analytics/index'
-import { Route as AppBuilderContinuousScreeningCreateIndexRouteImport } from './routes/_app/_builder/continuous-screening/create/index'
-import { Route as AppBuilderCasesInboxesIndexRouteImport } from './routes/_app/_builder/cases/inboxes/index'
+import { Route as AppBuilderCasesDetailRouteImport } from './routes/_app/_builder/cases/_detail'
+import { Route as AppBuilderCasesAnalyticsRouteImport } from './routes/_app/_builder/cases/analytics'
+import { Route as AppBuilderCasesInboxesRouteImport } from './routes/_app/_builder/cases/inboxes'
+import { Route as AppBuilderCasesOverviewRouteImport } from './routes/_app/_builder/cases/overview'
+import { Route as AppBuilderClientDetailIndexRouteImport } from './routes/_app/_builder/client-detail/index'
+import { Route as AppBuilderContinuousScreeningIndexRouteImport } from './routes/_app/_builder/continuous-screening/index'
+import { Route as AppBuilderContinuousScreeningConfigurationsRouteImport } from './routes/_app/_builder/continuous-screening/configurations'
+import { Route as AppBuilderContinuousScreeningObservabilityRouteImport } from './routes/_app/_builder/continuous-screening/observability'
+import { Route as AppBuilderDataIndexRouteImport } from './routes/_app/_builder/data/index'
+import { Route as AppBuilderDataListRouteImport } from './routes/_app/_builder/data/list'
+import { Route as AppBuilderDetectionIndexRouteImport } from './routes/_app/_builder/detection/index'
+import { Route as AppBuilderDetectionAnalyticsRouteImport } from './routes/_app/_builder/detection/analytics'
+import { Route as AppBuilderDetectionDecisionsRouteImport } from './routes/_app/_builder/detection/decisions'
+import { Route as AppBuilderDetectionListsRouteImport } from './routes/_app/_builder/detection/lists'
+import { Route as AppBuilderDetectionScenariosRouteImport } from './routes/_app/_builder/detection/scenarios'
+import { Route as AppBuilderScreeningSearchIndexRouteImport } from './routes/_app/_builder/screening-search/index'
+import { Route as AppBuilderSettingsIndexRouteImport } from './routes/_app/_builder/settings/index'
+import { Route as AppBuilderSettingsAnalyticsRouteImport } from './routes/_app/_builder/settings/analytics'
+import { Route as AppBuilderSettingsApiKeysRouteImport } from './routes/_app/_builder/settings/api-keys'
+import { Route as AppBuilderSettingsAuditLogsRouteImport } from './routes/_app/_builder/settings/audit-logs'
+import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
+import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
+import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
+import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
+import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
+import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
+import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
+import { Route as AppBuilderUploadObjectTypeRouteImport } from './routes/_app/_builder/upload/$objectType'
+import { Route as AppBuilderUserScoringIndexRouteImport } from './routes/_app/_builder/user-scoring/index'
+import { Route as AppBuilderUserScoringOverviewRouteImport } from './routes/_app/_builder/user-scoring/overview'
+import { Route as RessourcesCasesDownloadDataCaseIdRouteImport } from './routes/ressources/cases/download-data.$caseId'
+import { Route as RessourcesCasesDownloadFileFileIdRouteImport } from './routes/ressources/cases/download-file.$fileId'
+import { Route as RessourcesCasesNextUnassignedCaseIdRouteImport } from './routes/ressources/cases/next-unassigned.$caseId'
+import { Route as RessourcesListsDownloadCsvFileListIdRouteImport } from './routes/ressources/lists/download-csv-file.$listId'
 import { Route as AppBuilderCasesCaseIdIndexRouteImport } from './routes/_app/_builder/cases/$caseId/index'
-import { Route as RessourcesScreeningsDownloadScreeningIdFileIdRouteImport } from './routes/ressources/screenings/download.$screeningId.$fileId'
-import { Route as RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport } from './routes/ressources/annotations/download-file.$annotationId.$fileId'
-import { Route as AppBuilderUserScoringRecordTypeVersionRouteImport } from './routes/_app/_builder/user-scoring/$recordType.$version'
-import { Route as AppBuilderSettingsWebhooksWebhookIdRouteImport } from './routes/_app/_builder/settings/webhooks_.$webhookId'
-import { Route as AppBuilderSettingsInboxesInboxIdRouteImport } from './routes/_app/_builder/settings/inboxes/$inboxId'
-import { Route as AppBuilderSettingsAnalyticsFiltersRouteImport } from './routes/_app/_builder/settings/analytics/filters'
-import { Route as AppBuilderDetectionScenariosScenarioIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId'
-import { Route as AppBuilderDetectionListsListIdRouteImport } from './routes/_app/_builder/detection/lists/$listId'
-import { Route as AppBuilderDetectionDecisionsDecisionIdRouteImport } from './routes/_app/_builder/detection/decisions/$decisionId'
-import { Route as AppBuilderDetectionAnalyticsScenarioIdRouteImport } from './routes/_app/_builder/detection/analytics/$scenarioId'
-import { Route as AppBuilderClientDetailObjectTypeObjectIdRouteImport } from './routes/_app/_builder/client-detail/$objectType.$objectId'
-import { Route as AppBuilderCasesInboxesInboxIdRouteImport } from './routes/_app/_builder/cases/inboxes.$inboxId'
 import { Route as AppBuilderCasesCaseIdDRouteImport } from './routes/_app/_builder/cases/$caseId/d'
-import { Route as AppBuilderDetectionScenariosScenarioIdIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/index'
-import { Route as RessourcesCasesSarDownloadCaseIdReportIdRouteImport } from './routes/ressources/cases/sar/download.$caseId.$reportId'
-import { Route as AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/workflow'
-import { Route as AppBuilderDetectionScenariosScenarioIdTestRunRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run'
-import { Route as AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
-import { Route as AppBuilderDetectionScenariosScenarioIdHomeRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/home'
-import { Route as AppBuilderCasesDetailSCaseIdRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId'
+import { Route as AppBuilderCasesInboxesIndexRouteImport } from './routes/_app/_builder/cases/inboxes/index'
+import { Route as AppBuilderCasesInboxesInboxIdRouteImport } from './routes/_app/_builder/cases/inboxes.$inboxId'
+import { Route as AppBuilderClientDetailObjectTypeObjectIdRouteImport } from './routes/_app/_builder/client-detail/$objectType.$objectId'
+import { Route as AppBuilderContinuousScreeningCreateIndexRouteImport } from './routes/_app/_builder/continuous-screening/create/index'
+import { Route as AppBuilderDetectionAnalyticsIndexRouteImport } from './routes/_app/_builder/detection/analytics/index'
+import { Route as AppBuilderDetectionAnalyticsScenarioIdRouteImport } from './routes/_app/_builder/detection/analytics/$scenarioId'
+import { Route as AppBuilderDetectionDecisionsIndexRouteImport } from './routes/_app/_builder/detection/decisions/index'
+import { Route as AppBuilderDetectionDecisionsDecisionIdRouteImport } from './routes/_app/_builder/detection/decisions/$decisionId'
+import { Route as AppBuilderDetectionListsIndexRouteImport } from './routes/_app/_builder/detection/lists/index'
+import { Route as AppBuilderDetectionListsListIdRouteImport } from './routes/_app/_builder/detection/lists/$listId'
+import { Route as AppBuilderDetectionScenariosIndexRouteImport } from './routes/_app/_builder/detection/scenarios/index'
+import { Route as AppBuilderDetectionScenariosScenarioIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId'
+import { Route as AppBuilderSettingsAnalyticsFiltersRouteImport } from './routes/_app/_builder/settings/analytics/filters'
+import { Route as AppBuilderSettingsInboxesIndexRouteImport } from './routes/_app/_builder/settings/inboxes/index'
+import { Route as AppBuilderSettingsInboxesInboxIdRouteImport } from './routes/_app/_builder/settings/inboxes/$inboxId'
+import { Route as AppBuilderSettingsWebhooksWebhookIdRouteImport } from './routes/_app/_builder/settings/webhooks_.$webhookId'
+import { Route as AppBuilderUserScoringRecordTypeVersionRouteImport } from './routes/_app/_builder/user-scoring/$recordType.$version'
+import { Route as RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport } from './routes/ressources/annotations/download-file.$annotationId.$fileId'
+import { Route as RessourcesScreeningsDownloadScreeningIdFileIdRouteImport } from './routes/ressources/screenings/download.$screeningId.$fileId'
 import { Route as AppBuilderCasesCaseIdDDecisionIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId'
-import { Route as AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/index'
-import { Route as AppBuilderCasesDetailSCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/index'
-import { Route as AppBuilderCasesDetailMCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId/index'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
-import { Route as AppBuilderCasesDetailSCaseIdPrincipalRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/principal'
-import { Route as AppBuilderCasesDetailSCaseIdClientsRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients'
+import { Route as AppBuilderCasesDetailSCaseIdRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId'
+import { Route as AppBuilderDetectionScenariosScenarioIdIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/index'
+import { Route as AppBuilderDetectionScenariosScenarioIdHomeRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/home'
+import { Route as AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
+import { Route as AppBuilderDetectionScenariosScenarioIdTestRunRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run'
+import { Route as AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/workflow'
+import { Route as RessourcesCasesSarDownloadCaseIdReportIdRouteImport } from './routes/ressources/cases/sar/download.$caseId.$reportId'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings'
-import { Route as AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/index'
-import { Route as AppBuilderCasesDetailSCaseIdClientsIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients/index'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view'
-import { Route as AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients/$pivotValue'
+import { Route as AppBuilderCasesDetailMCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId/index'
+import { Route as AppBuilderCasesDetailSCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/index'
+import { Route as AppBuilderCasesDetailSCaseIdClientsRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients'
+import { Route as AppBuilderCasesDetailSCaseIdPrincipalRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/principal'
+import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
+import { Route as AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/index'
+import { Route as AppBuilderCasesDetailSCaseIdClientsIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients/index'
+import { Route as AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients/$pivotValue'
+import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view'
+import { Route as AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/index'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision'
-import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
+import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
+import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/index'
+import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision'
+import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules'
+import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
 
-const HealthcheckRoute = HealthcheckRouteImport.update({
-  id: '/healthcheck',
-  path: '/healthcheck',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRouterRoute = AppRouterRouteImport.update({
-  id: '/app-router',
-  path: '/app-router',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SplatRoute = SplatRouteImport.update({
@@ -139,19 +130,31 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RobotsTxtRoute = RobotsTxtRouteImport.update({
-  id: '/robots/txt',
-  path: '/robots/txt',
+const AppRouterRoute = AppRouterRouteImport.update({
+  id: '/app-router',
+  path: '/app-router',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RessourcesLocalesRoute = RessourcesLocalesRouteImport.update({
-  id: '/ressources/locales',
-  path: '/ressources/locales',
+const HealthcheckRoute = HealthcheckRouteImport.update({
+  id: '/healthcheck',
+  path: '/healthcheck',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppAuthRoute = AppAuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBuilderRoute = AppBuilderRouteImport.update({
+  id: '/_builder',
+  getParentRoute: () => AppRoute,
+} as any)
+const OidcAuthRoute = OidcAuthRouteImport.update({
+  id: '/oidc/auth',
+  path: '/oidc/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OidcCallbackRoute = OidcCallbackRouteImport.update({
@@ -159,80 +162,24 @@ const OidcCallbackRoute = OidcCallbackRouteImport.update({
   path: '/oidc/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OidcAuthRoute = OidcAuthRouteImport.update({
-  id: '/oidc/auth',
-  path: '/oidc/auth',
+const RessourcesLocalesRoute = RessourcesLocalesRouteImport.update({
+  id: '/ressources/locales',
+  path: '/ressources/locales',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppBuilderRoute = AppBuilderRouteImport.update({
-  id: '/_builder',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAuthRoute = AppAuthRouteImport.update({
-  id: '/_auth',
-  getParentRoute: () => AppRoute,
-} as any)
-const RessourcesDataExportOrgRoute = RessourcesDataExportOrgRouteImport.update({
-  id: '/ressources/data/export-org',
-  path: '/ressources/data/export-org',
+const RobotsTxtRoute = RobotsTxtRouteImport.update({
+  id: '/robots/txt',
+  path: '/robots/txt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppBuilderUserScoringRoute = AppBuilderUserScoringRouteImport.update({
-  id: '/user-scoring',
-  path: '/user-scoring',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppBuilderSettingsRoute = AppBuilderSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppBuilderScreeningSearchRoute =
-  AppBuilderScreeningSearchRouteImport.update({
-    id: '/screening-search',
-    path: '/screening-search',
-    getParentRoute: () => AppBuilderRoute,
-  } as any)
-const AppBuilderDetectionRoute = AppBuilderDetectionRouteImport.update({
-  id: '/detection',
-  path: '/detection',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppBuilderDataRoute = AppBuilderDataRouteImport.update({
-  id: '/data',
-  path: '/data',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppBuilderContinuousScreeningRoute =
-  AppBuilderContinuousScreeningRouteImport.update({
-    id: '/continuous-screening',
-    path: '/continuous-screening',
-    getParentRoute: () => AppBuilderRoute,
-  } as any)
-const AppBuilderCasesRoute = AppBuilderCasesRouteImport.update({
-  id: '/cases',
-  path: '/cases',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppBuilderAnalyticsLegacyRoute =
-  AppBuilderAnalyticsLegacyRouteImport.update({
-    id: '/analytics-legacy',
-    path: '/analytics-legacy',
-    getParentRoute: () => AppBuilderRoute,
-  } as any)
-const AppBuilderAccountRoute = AppBuilderAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppAuthSignInEmailRoute = AppAuthSignInEmailRouteImport.update({
-  id: '/sign-in-email',
-  path: '/sign-in-email',
+const AppAuthAuthRedirectRoute = AppAuthAuthRedirectRouteImport.update({
+  id: '/auth-redirect',
+  path: '/auth-redirect',
   getParentRoute: () => AppAuthRoute,
 } as any)
-const AppAuthSignInRoute = AppAuthSignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
+const AppAuthCreatePasswordRoute = AppAuthCreatePasswordRouteImport.update({
+  id: '/create-password',
+  path: '/create-password',
   getParentRoute: () => AppAuthRoute,
 } as any)
 const AppAuthEmailVerificationRoute =
@@ -241,204 +188,81 @@ const AppAuthEmailVerificationRoute =
     path: '/email-verification',
     getParentRoute: () => AppAuthRoute,
   } as any)
-const AppAuthCreatePasswordRoute = AppAuthCreatePasswordRouteImport.update({
-  id: '/create-password',
-  path: '/create-password',
+const AppAuthSignInRoute = AppAuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
   getParentRoute: () => AppAuthRoute,
 } as any)
-const AppAuthAuthRedirectRoute = AppAuthAuthRedirectRouteImport.update({
-  id: '/auth-redirect',
-  path: '/auth-redirect',
+const AppAuthSignInEmailRoute = AppAuthSignInEmailRouteImport.update({
+  id: '/sign-in-email',
+  path: '/sign-in-email',
   getParentRoute: () => AppAuthRoute,
 } as any)
-const AppBuilderUserScoringIndexRoute =
-  AppBuilderUserScoringIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderUserScoringRoute,
-  } as any)
-const AppBuilderSettingsIndexRoute = AppBuilderSettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppBuilderSettingsRoute,
+const AppBuilderAccountRoute = AppBuilderAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AppBuilderRoute,
 } as any)
-const AppBuilderScreeningSearchIndexRoute =
-  AppBuilderScreeningSearchIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderScreeningSearchRoute,
-  } as any)
-const AppBuilderDetectionIndexRoute =
-  AppBuilderDetectionIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderDetectionRoute,
-  } as any)
-const AppBuilderDataIndexRoute = AppBuilderDataIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppBuilderDataRoute,
-} as any)
-const AppBuilderContinuousScreeningIndexRoute =
-  AppBuilderContinuousScreeningIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderContinuousScreeningRoute,
-  } as any)
-const AppBuilderClientDetailIndexRoute =
-  AppBuilderClientDetailIndexRouteImport.update({
-    id: '/client-detail/',
-    path: '/client-detail/',
+const AppBuilderAnalyticsLegacyRoute =
+  AppBuilderAnalyticsLegacyRouteImport.update({
+    id: '/analytics-legacy',
+    path: '/analytics-legacy',
     getParentRoute: () => AppBuilderRoute,
   } as any)
+const AppBuilderCasesRoute = AppBuilderCasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const AppBuilderContinuousScreeningRoute =
+  AppBuilderContinuousScreeningRouteImport.update({
+    id: '/continuous-screening',
+    path: '/continuous-screening',
+    getParentRoute: () => AppBuilderRoute,
+  } as any)
+const AppBuilderDataRoute = AppBuilderDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const AppBuilderDetectionRoute = AppBuilderDetectionRouteImport.update({
+  id: '/detection',
+  path: '/detection',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const AppBuilderScreeningSearchRoute =
+  AppBuilderScreeningSearchRouteImport.update({
+    id: '/screening-search',
+    path: '/screening-search',
+    getParentRoute: () => AppBuilderRoute,
+  } as any)
+const AppBuilderSettingsRoute = AppBuilderSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const AppBuilderUserScoringRoute = AppBuilderUserScoringRouteImport.update({
+  id: '/user-scoring',
+  path: '/user-scoring',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const RessourcesDataExportOrgRoute = RessourcesDataExportOrgRouteImport.update({
+  id: '/ressources/data/export-org',
+  path: '/ressources/data/export-org',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppBuilderCasesIndexRoute = AppBuilderCasesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppBuilderCasesRoute,
 } as any)
-const RessourcesListsDownloadCsvFileListIdRoute =
-  RessourcesListsDownloadCsvFileListIdRouteImport.update({
-    id: '/ressources/lists/download-csv-file/$listId',
-    path: '/ressources/lists/download-csv-file/$listId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const RessourcesCasesNextUnassignedCaseIdRoute =
-  RessourcesCasesNextUnassignedCaseIdRouteImport.update({
-    id: '/ressources/cases/next-unassigned/$caseId',
-    path: '/ressources/cases/next-unassigned/$caseId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const RessourcesCasesDownloadFileFileIdRoute =
-  RessourcesCasesDownloadFileFileIdRouteImport.update({
-    id: '/ressources/cases/download-file/$fileId',
-    path: '/ressources/cases/download-file/$fileId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const RessourcesCasesDownloadDataCaseIdRoute =
-  RessourcesCasesDownloadDataCaseIdRouteImport.update({
-    id: '/ressources/cases/download-data/$caseId',
-    path: '/ressources/cases/download-data/$caseId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AppBuilderUserScoringOverviewRoute =
-  AppBuilderUserScoringOverviewRouteImport.update({
-    id: '/overview',
-    path: '/overview',
-    getParentRoute: () => AppBuilderUserScoringRoute,
-  } as any)
-const AppBuilderUploadObjectTypeRoute =
-  AppBuilderUploadObjectTypeRouteImport.update({
-    id: '/upload/$objectType',
-    path: '/upload/$objectType',
-    getParentRoute: () => AppBuilderRoute,
-  } as any)
-const AppBuilderSettingsWebhooksRoute =
-  AppBuilderSettingsWebhooksRouteImport.update({
-    id: '/webhooks',
-    path: '/webhooks',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsUsersRoute = AppBuilderSettingsUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AppBuilderSettingsRoute,
-} as any)
-const AppBuilderSettingsTagsRoute = AppBuilderSettingsTagsRouteImport.update({
-  id: '/tags',
-  path: '/tags',
-  getParentRoute: () => AppBuilderSettingsRoute,
-} as any)
-const AppBuilderSettingsScreeningProvidersRoute =
-  AppBuilderSettingsScreeningProvidersRouteImport.update({
-    id: '/screening-providers',
-    path: '/screening-providers',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsScenariosRoute =
-  AppBuilderSettingsScenariosRouteImport.update({
-    id: '/scenarios',
-    path: '/scenarios',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsIpWhitelistingRoute =
-  AppBuilderSettingsIpWhitelistingRouteImport.update({
-    id: '/ip-whitelisting',
-    path: '/ip-whitelisting',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsInboxesRoute =
-  AppBuilderSettingsInboxesRouteImport.update({
-    id: '/inboxes',
-    path: '/inboxes',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsAuditLogsRoute =
-  AppBuilderSettingsAuditLogsRouteImport.update({
-    id: '/audit-logs',
-    path: '/audit-logs',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsApiKeysRoute =
-  AppBuilderSettingsApiKeysRouteImport.update({
-    id: '/api-keys',
-    path: '/api-keys',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsAnalyticsRoute =
-  AppBuilderSettingsAnalyticsRouteImport.update({
-    id: '/analytics',
-    path: '/analytics',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderDetectionScenariosRoute =
-  AppBuilderDetectionScenariosRouteImport.update({
-    id: '/scenarios',
-    path: '/scenarios',
-    getParentRoute: () => AppBuilderDetectionRoute,
-  } as any)
-const AppBuilderDetectionListsRoute =
-  AppBuilderDetectionListsRouteImport.update({
-    id: '/lists',
-    path: '/lists',
-    getParentRoute: () => AppBuilderDetectionRoute,
-  } as any)
-const AppBuilderDetectionDecisionsRoute =
-  AppBuilderDetectionDecisionsRouteImport.update({
-    id: '/decisions',
-    path: '/decisions',
-    getParentRoute: () => AppBuilderDetectionRoute,
-  } as any)
-const AppBuilderDetectionAnalyticsRoute =
-  AppBuilderDetectionAnalyticsRouteImport.update({
-    id: '/analytics',
-    path: '/analytics',
-    getParentRoute: () => AppBuilderDetectionRoute,
-  } as any)
-const AppBuilderDataListRoute = AppBuilderDataListRouteImport.update({
-  id: '/list',
-  path: '/list',
-  getParentRoute: () => AppBuilderDataRoute,
-} as any)
-const AppBuilderContinuousScreeningObservabilityRoute =
-  AppBuilderContinuousScreeningObservabilityRouteImport.update({
-    id: '/observability',
-    path: '/observability',
-    getParentRoute: () => AppBuilderContinuousScreeningRoute,
-  } as any)
-const AppBuilderContinuousScreeningConfigurationsRoute =
-  AppBuilderContinuousScreeningConfigurationsRouteImport.update({
-    id: '/configurations',
-    path: '/configurations',
-    getParentRoute: () => AppBuilderContinuousScreeningRoute,
-  } as any)
-const AppBuilderCasesOverviewRoute = AppBuilderCasesOverviewRouteImport.update({
-  id: '/overview',
-  path: '/overview',
+const AppBuilderCasesCaseIdRoute = AppBuilderCasesCaseIdRouteImport.update({
+  id: '/$caseId',
+  path: '/$caseId',
   getParentRoute: () => AppBuilderCasesRoute,
 } as any)
-const AppBuilderCasesInboxesRoute = AppBuilderCasesInboxesRouteImport.update({
-  id: '/inboxes',
-  path: '/inboxes',
+const AppBuilderCasesDetailRoute = AppBuilderCasesDetailRouteImport.update({
+  id: '/_detail',
   getParentRoute: () => AppBuilderCasesRoute,
 } as any)
 const AppBuilderCasesAnalyticsRoute =
@@ -447,56 +271,190 @@ const AppBuilderCasesAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AppBuilderCasesRoute,
   } as any)
-const AppBuilderCasesDetailRoute = AppBuilderCasesDetailRouteImport.update({
-  id: '/_detail',
+const AppBuilderCasesInboxesRoute = AppBuilderCasesInboxesRouteImport.update({
+  id: '/inboxes',
+  path: '/inboxes',
   getParentRoute: () => AppBuilderCasesRoute,
 } as any)
-const AppBuilderCasesCaseIdRoute = AppBuilderCasesCaseIdRouteImport.update({
-  id: '/$caseId',
-  path: '/$caseId',
+const AppBuilderCasesOverviewRoute = AppBuilderCasesOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
   getParentRoute: () => AppBuilderCasesRoute,
 } as any)
-const AppBuilderSettingsInboxesIndexRoute =
-  AppBuilderSettingsInboxesIndexRouteImport.update({
+const AppBuilderClientDetailIndexRoute =
+  AppBuilderClientDetailIndexRouteImport.update({
+    id: '/client-detail/',
+    path: '/client-detail/',
+    getParentRoute: () => AppBuilderRoute,
+  } as any)
+const AppBuilderContinuousScreeningIndexRoute =
+  AppBuilderContinuousScreeningIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppBuilderSettingsInboxesRoute,
-  } as any)
-const AppBuilderDetectionScenariosIndexRoute =
-  AppBuilderDetectionScenariosIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderDetectionScenariosRoute,
-  } as any)
-const AppBuilderDetectionListsIndexRoute =
-  AppBuilderDetectionListsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderDetectionListsRoute,
-  } as any)
-const AppBuilderDetectionDecisionsIndexRoute =
-  AppBuilderDetectionDecisionsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderDetectionDecisionsRoute,
-  } as any)
-const AppBuilderDetectionAnalyticsIndexRoute =
-  AppBuilderDetectionAnalyticsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderDetectionAnalyticsRoute,
-  } as any)
-const AppBuilderContinuousScreeningCreateIndexRoute =
-  AppBuilderContinuousScreeningCreateIndexRouteImport.update({
-    id: '/create/',
-    path: '/create/',
     getParentRoute: () => AppBuilderContinuousScreeningRoute,
   } as any)
-const AppBuilderCasesInboxesIndexRoute =
-  AppBuilderCasesInboxesIndexRouteImport.update({
+const AppBuilderContinuousScreeningConfigurationsRoute =
+  AppBuilderContinuousScreeningConfigurationsRouteImport.update({
+    id: '/configurations',
+    path: '/configurations',
+    getParentRoute: () => AppBuilderContinuousScreeningRoute,
+  } as any)
+const AppBuilderContinuousScreeningObservabilityRoute =
+  AppBuilderContinuousScreeningObservabilityRouteImport.update({
+    id: '/observability',
+    path: '/observability',
+    getParentRoute: () => AppBuilderContinuousScreeningRoute,
+  } as any)
+const AppBuilderDataIndexRoute = AppBuilderDataIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBuilderDataRoute,
+} as any)
+const AppBuilderDataListRoute = AppBuilderDataListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => AppBuilderDataRoute,
+} as any)
+const AppBuilderDetectionIndexRoute =
+  AppBuilderDetectionIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppBuilderCasesInboxesRoute,
+    getParentRoute: () => AppBuilderDetectionRoute,
+  } as any)
+const AppBuilderDetectionAnalyticsRoute =
+  AppBuilderDetectionAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AppBuilderDetectionRoute,
+  } as any)
+const AppBuilderDetectionDecisionsRoute =
+  AppBuilderDetectionDecisionsRouteImport.update({
+    id: '/decisions',
+    path: '/decisions',
+    getParentRoute: () => AppBuilderDetectionRoute,
+  } as any)
+const AppBuilderDetectionListsRoute =
+  AppBuilderDetectionListsRouteImport.update({
+    id: '/lists',
+    path: '/lists',
+    getParentRoute: () => AppBuilderDetectionRoute,
+  } as any)
+const AppBuilderDetectionScenariosRoute =
+  AppBuilderDetectionScenariosRouteImport.update({
+    id: '/scenarios',
+    path: '/scenarios',
+    getParentRoute: () => AppBuilderDetectionRoute,
+  } as any)
+const AppBuilderScreeningSearchIndexRoute =
+  AppBuilderScreeningSearchIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderScreeningSearchRoute,
+  } as any)
+const AppBuilderSettingsIndexRoute = AppBuilderSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBuilderSettingsRoute,
+} as any)
+const AppBuilderSettingsAnalyticsRoute =
+  AppBuilderSettingsAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsApiKeysRoute =
+  AppBuilderSettingsApiKeysRouteImport.update({
+    id: '/api-keys',
+    path: '/api-keys',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsAuditLogsRoute =
+  AppBuilderSettingsAuditLogsRouteImport.update({
+    id: '/audit-logs',
+    path: '/audit-logs',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsInboxesRoute =
+  AppBuilderSettingsInboxesRouteImport.update({
+    id: '/inboxes',
+    path: '/inboxes',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsIpWhitelistingRoute =
+  AppBuilderSettingsIpWhitelistingRouteImport.update({
+    id: '/ip-whitelisting',
+    path: '/ip-whitelisting',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsScenariosRoute =
+  AppBuilderSettingsScenariosRouteImport.update({
+    id: '/scenarios',
+    path: '/scenarios',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsScreeningProvidersRoute =
+  AppBuilderSettingsScreeningProvidersRouteImport.update({
+    id: '/screening-providers',
+    path: '/screening-providers',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsTagsRoute = AppBuilderSettingsTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => AppBuilderSettingsRoute,
+} as any)
+const AppBuilderSettingsUsersRoute = AppBuilderSettingsUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppBuilderSettingsRoute,
+} as any)
+const AppBuilderSettingsWebhooksRoute =
+  AppBuilderSettingsWebhooksRouteImport.update({
+    id: '/webhooks',
+    path: '/webhooks',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderUploadObjectTypeRoute =
+  AppBuilderUploadObjectTypeRouteImport.update({
+    id: '/upload/$objectType',
+    path: '/upload/$objectType',
+    getParentRoute: () => AppBuilderRoute,
+  } as any)
+const AppBuilderUserScoringIndexRoute =
+  AppBuilderUserScoringIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderUserScoringRoute,
+  } as any)
+const AppBuilderUserScoringOverviewRoute =
+  AppBuilderUserScoringOverviewRouteImport.update({
+    id: '/overview',
+    path: '/overview',
+    getParentRoute: () => AppBuilderUserScoringRoute,
+  } as any)
+const RessourcesCasesDownloadDataCaseIdRoute =
+  RessourcesCasesDownloadDataCaseIdRouteImport.update({
+    id: '/ressources/cases/download-data/$caseId',
+    path: '/ressources/cases/download-data/$caseId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RessourcesCasesDownloadFileFileIdRoute =
+  RessourcesCasesDownloadFileFileIdRouteImport.update({
+    id: '/ressources/cases/download-file/$fileId',
+    path: '/ressources/cases/download-file/$fileId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RessourcesCasesNextUnassignedCaseIdRoute =
+  RessourcesCasesNextUnassignedCaseIdRouteImport.update({
+    id: '/ressources/cases/next-unassigned/$caseId',
+    path: '/ressources/cases/next-unassigned/$caseId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RessourcesListsDownloadCsvFileListIdRoute =
+  RessourcesListsDownloadCsvFileListIdRouteImport.update({
+    id: '/ressources/lists/download-csv-file/$listId',
+    path: '/ressources/lists/download-csv-file/$listId',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AppBuilderCasesCaseIdIndexRoute =
   AppBuilderCasesCaseIdIndexRouteImport.update({
@@ -504,71 +462,16 @@ const AppBuilderCasesCaseIdIndexRoute =
     path: '/',
     getParentRoute: () => AppBuilderCasesCaseIdRoute,
   } as any)
-const RessourcesScreeningsDownloadScreeningIdFileIdRoute =
-  RessourcesScreeningsDownloadScreeningIdFileIdRouteImport.update({
-    id: '/ressources/screenings/download/$screeningId/$fileId',
-    path: '/ressources/screenings/download/$screeningId/$fileId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute =
-  RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport.update({
-    id: '/ressources/annotations/download-file/$annotationId/$fileId',
-    path: '/ressources/annotations/download-file/$annotationId/$fileId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AppBuilderUserScoringRecordTypeVersionRoute =
-  AppBuilderUserScoringRecordTypeVersionRouteImport.update({
-    id: '/$recordType/$version',
-    path: '/$recordType/$version',
-    getParentRoute: () => AppBuilderUserScoringRoute,
-  } as any)
-const AppBuilderSettingsWebhooksWebhookIdRoute =
-  AppBuilderSettingsWebhooksWebhookIdRouteImport.update({
-    id: '/webhooks_/$webhookId',
-    path: '/webhooks/$webhookId',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
-const AppBuilderSettingsInboxesInboxIdRoute =
-  AppBuilderSettingsInboxesInboxIdRouteImport.update({
-    id: '/$inboxId',
-    path: '/$inboxId',
-    getParentRoute: () => AppBuilderSettingsInboxesRoute,
-  } as any)
-const AppBuilderSettingsAnalyticsFiltersRoute =
-  AppBuilderSettingsAnalyticsFiltersRouteImport.update({
-    id: '/filters',
-    path: '/filters',
-    getParentRoute: () => AppBuilderSettingsAnalyticsRoute,
-  } as any)
-const AppBuilderDetectionScenariosScenarioIdRoute =
-  AppBuilderDetectionScenariosScenarioIdRouteImport.update({
-    id: '/$scenarioId',
-    path: '/$scenarioId',
-    getParentRoute: () => AppBuilderDetectionScenariosRoute,
-  } as any)
-const AppBuilderDetectionListsListIdRoute =
-  AppBuilderDetectionListsListIdRouteImport.update({
-    id: '/$listId',
-    path: '/$listId',
-    getParentRoute: () => AppBuilderDetectionListsRoute,
-  } as any)
-const AppBuilderDetectionDecisionsDecisionIdRoute =
-  AppBuilderDetectionDecisionsDecisionIdRouteImport.update({
-    id: '/$decisionId',
-    path: '/$decisionId',
-    getParentRoute: () => AppBuilderDetectionDecisionsRoute,
-  } as any)
-const AppBuilderDetectionAnalyticsScenarioIdRoute =
-  AppBuilderDetectionAnalyticsScenarioIdRouteImport.update({
-    id: '/$scenarioId',
-    path: '/$scenarioId',
-    getParentRoute: () => AppBuilderDetectionAnalyticsRoute,
-  } as any)
-const AppBuilderClientDetailObjectTypeObjectIdRoute =
-  AppBuilderClientDetailObjectTypeObjectIdRouteImport.update({
-    id: '/client-detail/$objectType/$objectId',
-    path: '/client-detail/$objectType/$objectId',
-    getParentRoute: () => AppBuilderRoute,
+const AppBuilderCasesCaseIdDRoute = AppBuilderCasesCaseIdDRouteImport.update({
+  id: '/d',
+  path: '/d',
+  getParentRoute: () => AppBuilderCasesCaseIdRoute,
+} as any)
+const AppBuilderCasesInboxesIndexRoute =
+  AppBuilderCasesInboxesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderCasesInboxesRoute,
   } as any)
 const AppBuilderCasesInboxesInboxIdRoute =
   AppBuilderCasesInboxesInboxIdRouteImport.update({
@@ -576,39 +479,124 @@ const AppBuilderCasesInboxesInboxIdRoute =
     path: '/$inboxId',
     getParentRoute: () => AppBuilderCasesInboxesRoute,
   } as any)
-const AppBuilderCasesCaseIdDRoute = AppBuilderCasesCaseIdDRouteImport.update({
-  id: '/d',
-  path: '/d',
-  getParentRoute: () => AppBuilderCasesCaseIdRoute,
-} as any)
+const AppBuilderClientDetailObjectTypeObjectIdRoute =
+  AppBuilderClientDetailObjectTypeObjectIdRouteImport.update({
+    id: '/client-detail/$objectType/$objectId',
+    path: '/client-detail/$objectType/$objectId',
+    getParentRoute: () => AppBuilderRoute,
+  } as any)
+const AppBuilderContinuousScreeningCreateIndexRoute =
+  AppBuilderContinuousScreeningCreateIndexRouteImport.update({
+    id: '/create/',
+    path: '/create/',
+    getParentRoute: () => AppBuilderContinuousScreeningRoute,
+  } as any)
+const AppBuilderDetectionAnalyticsIndexRoute =
+  AppBuilderDetectionAnalyticsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderDetectionAnalyticsRoute,
+  } as any)
+const AppBuilderDetectionAnalyticsScenarioIdRoute =
+  AppBuilderDetectionAnalyticsScenarioIdRouteImport.update({
+    id: '/$scenarioId',
+    path: '/$scenarioId',
+    getParentRoute: () => AppBuilderDetectionAnalyticsRoute,
+  } as any)
+const AppBuilderDetectionDecisionsIndexRoute =
+  AppBuilderDetectionDecisionsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderDetectionDecisionsRoute,
+  } as any)
+const AppBuilderDetectionDecisionsDecisionIdRoute =
+  AppBuilderDetectionDecisionsDecisionIdRouteImport.update({
+    id: '/$decisionId',
+    path: '/$decisionId',
+    getParentRoute: () => AppBuilderDetectionDecisionsRoute,
+  } as any)
+const AppBuilderDetectionListsIndexRoute =
+  AppBuilderDetectionListsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderDetectionListsRoute,
+  } as any)
+const AppBuilderDetectionListsListIdRoute =
+  AppBuilderDetectionListsListIdRouteImport.update({
+    id: '/$listId',
+    path: '/$listId',
+    getParentRoute: () => AppBuilderDetectionListsRoute,
+  } as any)
+const AppBuilderDetectionScenariosIndexRoute =
+  AppBuilderDetectionScenariosIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderDetectionScenariosRoute,
+  } as any)
+const AppBuilderDetectionScenariosScenarioIdRoute =
+  AppBuilderDetectionScenariosScenarioIdRouteImport.update({
+    id: '/$scenarioId',
+    path: '/$scenarioId',
+    getParentRoute: () => AppBuilderDetectionScenariosRoute,
+  } as any)
+const AppBuilderSettingsAnalyticsFiltersRoute =
+  AppBuilderSettingsAnalyticsFiltersRouteImport.update({
+    id: '/filters',
+    path: '/filters',
+    getParentRoute: () => AppBuilderSettingsAnalyticsRoute,
+  } as any)
+const AppBuilderSettingsInboxesIndexRoute =
+  AppBuilderSettingsInboxesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderSettingsInboxesRoute,
+  } as any)
+const AppBuilderSettingsInboxesInboxIdRoute =
+  AppBuilderSettingsInboxesInboxIdRouteImport.update({
+    id: '/$inboxId',
+    path: '/$inboxId',
+    getParentRoute: () => AppBuilderSettingsInboxesRoute,
+  } as any)
+const AppBuilderSettingsWebhooksWebhookIdRoute =
+  AppBuilderSettingsWebhooksWebhookIdRouteImport.update({
+    id: '/webhooks_/$webhookId',
+    path: '/webhooks/$webhookId',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderUserScoringRecordTypeVersionRoute =
+  AppBuilderUserScoringRecordTypeVersionRouteImport.update({
+    id: '/$recordType/$version',
+    path: '/$recordType/$version',
+    getParentRoute: () => AppBuilderUserScoringRoute,
+  } as any)
+const RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute =
+  RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport.update({
+    id: '/ressources/annotations/download-file/$annotationId/$fileId',
+    path: '/ressources/annotations/download-file/$annotationId/$fileId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RessourcesScreeningsDownloadScreeningIdFileIdRoute =
+  RessourcesScreeningsDownloadScreeningIdFileIdRouteImport.update({
+    id: '/ressources/screenings/download/$screeningId/$fileId',
+    path: '/ressources/screenings/download/$screeningId/$fileId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppBuilderCasesCaseIdDDecisionIdRoute =
+  AppBuilderCasesCaseIdDDecisionIdRouteImport.update({
+    id: '/$decisionId',
+    path: '/$decisionId',
+    getParentRoute: () => AppBuilderCasesCaseIdDRoute,
+  } as any)
+const AppBuilderCasesDetailSCaseIdRoute =
+  AppBuilderCasesDetailSCaseIdRouteImport.update({
+    id: '/s/$caseId',
+    path: '/s/$caseId',
+    getParentRoute: () => AppBuilderCasesDetailRoute,
+  } as any)
 const AppBuilderDetectionScenariosScenarioIdIndexRoute =
   AppBuilderDetectionScenariosScenarioIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
-  } as any)
-const RessourcesCasesSarDownloadCaseIdReportIdRoute =
-  RessourcesCasesSarDownloadCaseIdReportIdRouteImport.update({
-    id: '/ressources/cases/sar/download/$caseId/$reportId',
-    path: '/ressources/cases/sar/download/$caseId/$reportId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AppBuilderDetectionScenariosScenarioIdWorkflowRoute =
-  AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport.update({
-    id: '/workflow',
-    path: '/workflow',
-    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
-  } as any)
-const AppBuilderDetectionScenariosScenarioIdTestRunRoute =
-  AppBuilderDetectionScenariosScenarioIdTestRunRouteImport.update({
-    id: '/test-run',
-    path: '/test-run',
-    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
-  } as any)
-const AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute =
-  AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport.update({
-    id: '/scheduled-executions',
-    path: '/scheduled-executions',
     getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
 const AppBuilderDetectionScenariosScenarioIdHomeRoute =
@@ -617,29 +605,35 @@ const AppBuilderDetectionScenariosScenarioIdHomeRoute =
     path: '/home',
     getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
-const AppBuilderCasesDetailSCaseIdRoute =
-  AppBuilderCasesDetailSCaseIdRouteImport.update({
-    id: '/s/$caseId',
-    path: '/s/$caseId',
-    getParentRoute: () => AppBuilderCasesDetailRoute,
+const AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute =
+  AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport.update({
+    id: '/scheduled-executions',
+    path: '/scheduled-executions',
+    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
-const AppBuilderCasesCaseIdDDecisionIdRoute =
-  AppBuilderCasesCaseIdDDecisionIdRouteImport.update({
-    id: '/$decisionId',
-    path: '/$decisionId',
-    getParentRoute: () => AppBuilderCasesCaseIdDRoute,
+const AppBuilderDetectionScenariosScenarioIdTestRunRoute =
+  AppBuilderDetectionScenariosScenarioIdTestRunRouteImport.update({
+    id: '/test-run',
+    path: '/test-run',
+    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
-const AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute =
-  AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdTestRunRoute,
+const AppBuilderDetectionScenariosScenarioIdWorkflowRoute =
+  AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport.update({
+    id: '/workflow',
+    path: '/workflow',
+    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
-const AppBuilderCasesDetailSCaseIdIndexRoute =
-  AppBuilderCasesDetailSCaseIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
+const RessourcesCasesSarDownloadCaseIdReportIdRoute =
+  RessourcesCasesSarDownloadCaseIdReportIdRouteImport.update({
+    id: '/ressources/cases/sar/download/$caseId/$reportId',
+    path: '/ressources/cases/sar/download/$caseId/$reportId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppBuilderCasesCaseIdDDecisionIdScreeningsRoute =
+  AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport.update({
+    id: '/screenings',
+    path: '/screenings',
+    getParentRoute: () => AppBuilderCasesCaseIdDDecisionIdRoute,
   } as any)
 const AppBuilderCasesDetailMCaseIdIndexRoute =
   AppBuilderCasesDetailMCaseIdIndexRouteImport.update({
@@ -647,16 +641,10 @@ const AppBuilderCasesDetailMCaseIdIndexRoute =
     path: '/m/$caseId/',
     getParentRoute: () => AppBuilderCasesDetailRoute,
   } as any)
-const AppBuilderDetectionScenariosScenarioIdIIterationIdRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport.update({
-    id: '/i/$iterationId',
-    path: '/i/$iterationId',
-    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
-  } as any)
-const AppBuilderCasesDetailSCaseIdPrincipalRoute =
-  AppBuilderCasesDetailSCaseIdPrincipalRouteImport.update({
-    id: '/principal',
-    path: '/principal',
+const AppBuilderCasesDetailSCaseIdIndexRoute =
+  AppBuilderCasesDetailSCaseIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
     getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
   } as any)
 const AppBuilderCasesDetailSCaseIdClientsRoute =
@@ -665,11 +653,47 @@ const AppBuilderCasesDetailSCaseIdClientsRoute =
     path: '/clients',
     getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
   } as any)
-const AppBuilderCasesCaseIdDDecisionIdScreeningsRoute =
-  AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport.update({
-    id: '/screenings',
-    path: '/screenings',
-    getParentRoute: () => AppBuilderCasesCaseIdDDecisionIdRoute,
+const AppBuilderCasesDetailSCaseIdPrincipalRoute =
+  AppBuilderCasesDetailSCaseIdPrincipalRouteImport.update({
+    id: '/principal',
+    path: '/principal',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
+  } as any)
+const AppBuilderDetectionScenariosScenarioIdIIterationIdRoute =
+  AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport.update({
+    id: '/i/$iterationId',
+    path: '/i/$iterationId',
+    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
+  } as any)
+const AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute =
+  AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderDetectionScenariosScenarioIdTestRunRoute,
+  } as any)
+const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute =
+  AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport.update({
+    id: '/$screeningId',
+    path: '/$screeningId',
+    getParentRoute: () => AppBuilderCasesCaseIdDDecisionIdScreeningsRoute,
+  } as any)
+const AppBuilderCasesDetailSCaseIdClientsIndexRoute =
+  AppBuilderCasesDetailSCaseIdClientsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdClientsRoute,
+  } as any)
+const AppBuilderCasesDetailSCaseIdClientsPivotValueRoute =
+  AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport.update({
+    id: '/$pivotValue',
+    path: '/$pivotValue',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdClientsRoute,
+  } as any)
+const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute =
+  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport.update({
+    id: '/_edit-view',
+    getParentRoute: () =>
+      AppBuilderDetectionScenariosScenarioIdIIterationIdRoute,
   } as any)
 const AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRoute =
   AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport.update(
@@ -679,39 +703,6 @@ const AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRoute =
       getParentRoute: () => AppBuilderDetectionScenariosScenarioIdTestRunRoute,
     } as any,
   )
-const AppBuilderCasesDetailSCaseIdClientsIndexRoute =
-  AppBuilderCasesDetailSCaseIdClientsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderCasesDetailSCaseIdClientsRoute,
-  } as any)
-const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport.update({
-    id: '/_edit-view',
-    getParentRoute: () =>
-      AppBuilderDetectionScenariosScenarioIdIIterationIdRoute,
-  } as any)
-const AppBuilderCasesDetailSCaseIdClientsPivotValueRoute =
-  AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport.update({
-    id: '/$pivotValue',
-    path: '/$pivotValue',
-    getParentRoute: () => AppBuilderCasesDetailSCaseIdClientsRoute,
-  } as any)
-const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute =
-  AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport.update({
-    id: '/$screeningId',
-    path: '/$screeningId',
-    getParentRoute: () => AppBuilderCasesCaseIdDDecisionIdScreeningsRoute,
-  } as any)
-const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport.update(
-    {
-      id: '/',
-      path: '/',
-      getParentRoute: () =>
-        AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
-    } as any,
-  )
 const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute =
   AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport.update({
     id: '/',
@@ -719,20 +710,25 @@ const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute =
     getParentRoute: () =>
       AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute,
   } as any)
-const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport.update(
+const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRoute =
+  AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRouteImport.update({
+    id: '/files',
+    path: '/files',
+    getParentRoute: () =>
+      AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute,
+  } as any)
+const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRoute =
+  AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRouteImport.update({
+    id: '/hits',
+    path: '/hits',
+    getParentRoute: () =>
+      AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute,
+  } as any)
+const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute =
+  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport.update(
     {
-      id: '/trigger',
-      path: '/trigger',
-      getParentRoute: () =>
-        AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
-    } as any,
-  )
-const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport.update(
-    {
-      id: '/rules',
-      path: '/rules',
+      id: '/',
+      path: '/',
       getParentRoute: () =>
         AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
     } as any,
@@ -746,20 +742,24 @@ const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRoute =
         AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
     } as any,
   )
-const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRoute =
-  AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRouteImport.update({
-    id: '/hits',
-    path: '/hits',
-    getParentRoute: () =>
-      AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute,
-  } as any)
-const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRoute =
-  AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRouteImport.update({
-    id: '/files',
-    path: '/files',
-    getParentRoute: () =>
-      AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute,
-  } as any)
+const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRoute =
+  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport.update(
+    {
+      id: '/rules',
+      path: '/rules',
+      getParentRoute: () =>
+        AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
+    } as any,
+  )
+const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRoute =
+  AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport.update(
+    {
+      id: '/trigger',
+      path: '/trigger',
+      getParentRoute: () =>
+        AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -1399,25 +1399,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/healthcheck': {
-      id: '/healthcheck'
-      path: '/healthcheck'
-      fullPath: '/healthcheck'
-      preLoaderRoute: typeof HealthcheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app-router': {
-      id: '/app-router'
-      path: '/app-router'
-      fullPath: '/app-router'
-      preLoaderRoute: typeof AppRouterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app': {
-      id: '/_app'
-      path: ''
+    '/': {
+      id: '/'
+      path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AppRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$': {
@@ -1427,25 +1413,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/robots/txt': {
-      id: '/robots/txt'
-      path: '/robots/txt'
-      fullPath: '/robots/txt'
-      preLoaderRoute: typeof RobotsTxtRouteImport
+    '/app-router': {
+      id: '/app-router'
+      path: '/app-router'
+      fullPath: '/app-router'
+      preLoaderRoute: typeof AppRouterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ressources/locales': {
-      id: '/ressources/locales'
-      path: '/ressources/locales'
-      fullPath: '/ressources/locales'
-      preLoaderRoute: typeof RessourcesLocalesRouteImport
+    '/healthcheck': {
+      id: '/healthcheck'
+      path: '/healthcheck'
+      fullPath: '/healthcheck'
+      preLoaderRoute: typeof HealthcheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/_auth': {
+      id: '/_app/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppAuthRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/_builder': {
+      id: '/_app/_builder'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppBuilderRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/oidc/auth': {
+      id: '/oidc/auth'
+      path: '/oidc/auth'
+      fullPath: '/oidc/auth'
+      preLoaderRoute: typeof OidcAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/oidc/callback': {
@@ -1455,116 +1462,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OidcCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/oidc/auth': {
-      id: '/oidc/auth'
-      path: '/oidc/auth'
-      fullPath: '/oidc/auth'
-      preLoaderRoute: typeof OidcAuthRouteImport
+    '/ressources/locales': {
+      id: '/ressources/locales'
+      path: '/ressources/locales'
+      fullPath: '/ressources/locales'
+      preLoaderRoute: typeof RessourcesLocalesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/_builder': {
-      id: '/_app/_builder'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppBuilderRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/_auth': {
-      id: '/_app/_auth'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppAuthRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/ressources/data/export-org': {
-      id: '/ressources/data/export-org'
-      path: '/ressources/data/export-org'
-      fullPath: '/ressources/data/export-org'
-      preLoaderRoute: typeof RessourcesDataExportOrgRouteImport
+    '/robots/txt': {
+      id: '/robots/txt'
+      path: '/robots/txt'
+      fullPath: '/robots/txt'
+      preLoaderRoute: typeof RobotsTxtRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/_builder/user-scoring': {
-      id: '/_app/_builder/user-scoring'
-      path: '/user-scoring'
-      fullPath: '/user-scoring'
-      preLoaderRoute: typeof AppBuilderUserScoringRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/settings': {
-      id: '/_app/_builder/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AppBuilderSettingsRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/screening-search': {
-      id: '/_app/_builder/screening-search'
-      path: '/screening-search'
-      fullPath: '/screening-search'
-      preLoaderRoute: typeof AppBuilderScreeningSearchRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/detection': {
-      id: '/_app/_builder/detection'
-      path: '/detection'
-      fullPath: '/detection'
-      preLoaderRoute: typeof AppBuilderDetectionRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/data': {
-      id: '/_app/_builder/data'
-      path: '/data'
-      fullPath: '/data'
-      preLoaderRoute: typeof AppBuilderDataRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/continuous-screening': {
-      id: '/_app/_builder/continuous-screening'
-      path: '/continuous-screening'
-      fullPath: '/continuous-screening'
-      preLoaderRoute: typeof AppBuilderContinuousScreeningRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/cases': {
-      id: '/_app/_builder/cases'
-      path: '/cases'
-      fullPath: '/cases'
-      preLoaderRoute: typeof AppBuilderCasesRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/analytics-legacy': {
-      id: '/_app/_builder/analytics-legacy'
-      path: '/analytics-legacy'
-      fullPath: '/analytics-legacy'
-      preLoaderRoute: typeof AppBuilderAnalyticsLegacyRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/account': {
-      id: '/_app/_builder/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AppBuilderAccountRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_auth/sign-in-email': {
-      id: '/_app/_auth/sign-in-email'
-      path: '/sign-in-email'
-      fullPath: '/sign-in-email'
-      preLoaderRoute: typeof AppAuthSignInEmailRouteImport
-      parentRoute: typeof AppAuthRoute
-    }
-    '/_app/_auth/sign-in': {
-      id: '/_app/_auth/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof AppAuthSignInRouteImport
-      parentRoute: typeof AppAuthRoute
-    }
-    '/_app/_auth/email-verification': {
-      id: '/_app/_auth/email-verification'
-      path: '/email-verification'
-      fullPath: '/email-verification'
-      preLoaderRoute: typeof AppAuthEmailVerificationRouteImport
+    '/_app/_auth/auth-redirect': {
+      id: '/_app/_auth/auth-redirect'
+      path: '/auth-redirect'
+      fullPath: '/auth-redirect'
+      preLoaderRoute: typeof AppAuthAuthRedirectRouteImport
       parentRoute: typeof AppAuthRoute
     }
     '/_app/_auth/create-password': {
@@ -1574,256 +1490,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthCreatePasswordRouteImport
       parentRoute: typeof AppAuthRoute
     }
-    '/_app/_auth/auth-redirect': {
-      id: '/_app/_auth/auth-redirect'
-      path: '/auth-redirect'
-      fullPath: '/auth-redirect'
-      preLoaderRoute: typeof AppAuthAuthRedirectRouteImport
+    '/_app/_auth/email-verification': {
+      id: '/_app/_auth/email-verification'
+      path: '/email-verification'
+      fullPath: '/email-verification'
+      preLoaderRoute: typeof AppAuthEmailVerificationRouteImport
       parentRoute: typeof AppAuthRoute
     }
-    '/_app/_builder/user-scoring/': {
-      id: '/_app/_builder/user-scoring/'
-      path: '/'
-      fullPath: '/user-scoring/'
-      preLoaderRoute: typeof AppBuilderUserScoringIndexRouteImport
-      parentRoute: typeof AppBuilderUserScoringRoute
+    '/_app/_auth/sign-in': {
+      id: '/_app/_auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AppAuthSignInRouteImport
+      parentRoute: typeof AppAuthRoute
     }
-    '/_app/_builder/settings/': {
-      id: '/_app/_builder/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof AppBuilderSettingsIndexRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
+    '/_app/_auth/sign-in-email': {
+      id: '/_app/_auth/sign-in-email'
+      path: '/sign-in-email'
+      fullPath: '/sign-in-email'
+      preLoaderRoute: typeof AppAuthSignInEmailRouteImport
+      parentRoute: typeof AppAuthRoute
     }
-    '/_app/_builder/screening-search/': {
-      id: '/_app/_builder/screening-search/'
-      path: '/'
-      fullPath: '/screening-search/'
-      preLoaderRoute: typeof AppBuilderScreeningSearchIndexRouteImport
-      parentRoute: typeof AppBuilderScreeningSearchRoute
-    }
-    '/_app/_builder/detection/': {
-      id: '/_app/_builder/detection/'
-      path: '/'
-      fullPath: '/detection/'
-      preLoaderRoute: typeof AppBuilderDetectionIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionRoute
-    }
-    '/_app/_builder/data/': {
-      id: '/_app/_builder/data/'
-      path: '/'
-      fullPath: '/data/'
-      preLoaderRoute: typeof AppBuilderDataIndexRouteImport
-      parentRoute: typeof AppBuilderDataRoute
-    }
-    '/_app/_builder/continuous-screening/': {
-      id: '/_app/_builder/continuous-screening/'
-      path: '/'
-      fullPath: '/continuous-screening/'
-      preLoaderRoute: typeof AppBuilderContinuousScreeningIndexRouteImport
-      parentRoute: typeof AppBuilderContinuousScreeningRoute
-    }
-    '/_app/_builder/client-detail/': {
-      id: '/_app/_builder/client-detail/'
-      path: '/client-detail'
-      fullPath: '/client-detail/'
-      preLoaderRoute: typeof AppBuilderClientDetailIndexRouteImport
+    '/_app/_builder/account': {
+      id: '/_app/_builder/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AppBuilderAccountRouteImport
       parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/analytics-legacy': {
+      id: '/_app/_builder/analytics-legacy'
+      path: '/analytics-legacy'
+      fullPath: '/analytics-legacy'
+      preLoaderRoute: typeof AppBuilderAnalyticsLegacyRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/cases': {
+      id: '/_app/_builder/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof AppBuilderCasesRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/continuous-screening': {
+      id: '/_app/_builder/continuous-screening'
+      path: '/continuous-screening'
+      fullPath: '/continuous-screening'
+      preLoaderRoute: typeof AppBuilderContinuousScreeningRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/data': {
+      id: '/_app/_builder/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof AppBuilderDataRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/detection': {
+      id: '/_app/_builder/detection'
+      path: '/detection'
+      fullPath: '/detection'
+      preLoaderRoute: typeof AppBuilderDetectionRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/screening-search': {
+      id: '/_app/_builder/screening-search'
+      path: '/screening-search'
+      fullPath: '/screening-search'
+      preLoaderRoute: typeof AppBuilderScreeningSearchRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/settings': {
+      id: '/_app/_builder/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppBuilderSettingsRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/user-scoring': {
+      id: '/_app/_builder/user-scoring'
+      path: '/user-scoring'
+      fullPath: '/user-scoring'
+      preLoaderRoute: typeof AppBuilderUserScoringRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/ressources/data/export-org': {
+      id: '/ressources/data/export-org'
+      path: '/ressources/data/export-org'
+      fullPath: '/ressources/data/export-org'
+      preLoaderRoute: typeof RessourcesDataExportOrgRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/_builder/cases/': {
       id: '/_app/_builder/cases/'
       path: '/'
       fullPath: '/cases/'
       preLoaderRoute: typeof AppBuilderCasesIndexRouteImport
-      parentRoute: typeof AppBuilderCasesRoute
-    }
-    '/ressources/lists/download-csv-file/$listId': {
-      id: '/ressources/lists/download-csv-file/$listId'
-      path: '/ressources/lists/download-csv-file/$listId'
-      fullPath: '/ressources/lists/download-csv-file/$listId'
-      preLoaderRoute: typeof RessourcesListsDownloadCsvFileListIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ressources/cases/next-unassigned/$caseId': {
-      id: '/ressources/cases/next-unassigned/$caseId'
-      path: '/ressources/cases/next-unassigned/$caseId'
-      fullPath: '/ressources/cases/next-unassigned/$caseId'
-      preLoaderRoute: typeof RessourcesCasesNextUnassignedCaseIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ressources/cases/download-file/$fileId': {
-      id: '/ressources/cases/download-file/$fileId'
-      path: '/ressources/cases/download-file/$fileId'
-      fullPath: '/ressources/cases/download-file/$fileId'
-      preLoaderRoute: typeof RessourcesCasesDownloadFileFileIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ressources/cases/download-data/$caseId': {
-      id: '/ressources/cases/download-data/$caseId'
-      path: '/ressources/cases/download-data/$caseId'
-      fullPath: '/ressources/cases/download-data/$caseId'
-      preLoaderRoute: typeof RessourcesCasesDownloadDataCaseIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app/_builder/user-scoring/overview': {
-      id: '/_app/_builder/user-scoring/overview'
-      path: '/overview'
-      fullPath: '/user-scoring/overview'
-      preLoaderRoute: typeof AppBuilderUserScoringOverviewRouteImport
-      parentRoute: typeof AppBuilderUserScoringRoute
-    }
-    '/_app/_builder/upload/$objectType': {
-      id: '/_app/_builder/upload/$objectType'
-      path: '/upload/$objectType'
-      fullPath: '/upload/$objectType'
-      preLoaderRoute: typeof AppBuilderUploadObjectTypeRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/settings/webhooks': {
-      id: '/_app/_builder/settings/webhooks'
-      path: '/webhooks'
-      fullPath: '/settings/webhooks'
-      preLoaderRoute: typeof AppBuilderSettingsWebhooksRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/users': {
-      id: '/_app/_builder/settings/users'
-      path: '/users'
-      fullPath: '/settings/users'
-      preLoaderRoute: typeof AppBuilderSettingsUsersRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/tags': {
-      id: '/_app/_builder/settings/tags'
-      path: '/tags'
-      fullPath: '/settings/tags'
-      preLoaderRoute: typeof AppBuilderSettingsTagsRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/screening-providers': {
-      id: '/_app/_builder/settings/screening-providers'
-      path: '/screening-providers'
-      fullPath: '/settings/screening-providers'
-      preLoaderRoute: typeof AppBuilderSettingsScreeningProvidersRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/scenarios': {
-      id: '/_app/_builder/settings/scenarios'
-      path: '/scenarios'
-      fullPath: '/settings/scenarios'
-      preLoaderRoute: typeof AppBuilderSettingsScenariosRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/ip-whitelisting': {
-      id: '/_app/_builder/settings/ip-whitelisting'
-      path: '/ip-whitelisting'
-      fullPath: '/settings/ip-whitelisting'
-      preLoaderRoute: typeof AppBuilderSettingsIpWhitelistingRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/inboxes': {
-      id: '/_app/_builder/settings/inboxes'
-      path: '/inboxes'
-      fullPath: '/settings/inboxes'
-      preLoaderRoute: typeof AppBuilderSettingsInboxesRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/audit-logs': {
-      id: '/_app/_builder/settings/audit-logs'
-      path: '/audit-logs'
-      fullPath: '/settings/audit-logs'
-      preLoaderRoute: typeof AppBuilderSettingsAuditLogsRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/api-keys': {
-      id: '/_app/_builder/settings/api-keys'
-      path: '/api-keys'
-      fullPath: '/settings/api-keys'
-      preLoaderRoute: typeof AppBuilderSettingsApiKeysRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/analytics': {
-      id: '/_app/_builder/settings/analytics'
-      path: '/analytics'
-      fullPath: '/settings/analytics'
-      preLoaderRoute: typeof AppBuilderSettingsAnalyticsRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/detection/scenarios': {
-      id: '/_app/_builder/detection/scenarios'
-      path: '/scenarios'
-      fullPath: '/detection/scenarios'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosRouteImport
-      parentRoute: typeof AppBuilderDetectionRoute
-    }
-    '/_app/_builder/detection/lists': {
-      id: '/_app/_builder/detection/lists'
-      path: '/lists'
-      fullPath: '/detection/lists'
-      preLoaderRoute: typeof AppBuilderDetectionListsRouteImport
-      parentRoute: typeof AppBuilderDetectionRoute
-    }
-    '/_app/_builder/detection/decisions': {
-      id: '/_app/_builder/detection/decisions'
-      path: '/decisions'
-      fullPath: '/detection/decisions'
-      preLoaderRoute: typeof AppBuilderDetectionDecisionsRouteImport
-      parentRoute: typeof AppBuilderDetectionRoute
-    }
-    '/_app/_builder/detection/analytics': {
-      id: '/_app/_builder/detection/analytics'
-      path: '/analytics'
-      fullPath: '/detection/analytics'
-      preLoaderRoute: typeof AppBuilderDetectionAnalyticsRouteImport
-      parentRoute: typeof AppBuilderDetectionRoute
-    }
-    '/_app/_builder/data/list': {
-      id: '/_app/_builder/data/list'
-      path: '/list'
-      fullPath: '/data/list'
-      preLoaderRoute: typeof AppBuilderDataListRouteImport
-      parentRoute: typeof AppBuilderDataRoute
-    }
-    '/_app/_builder/continuous-screening/observability': {
-      id: '/_app/_builder/continuous-screening/observability'
-      path: '/observability'
-      fullPath: '/continuous-screening/observability'
-      preLoaderRoute: typeof AppBuilderContinuousScreeningObservabilityRouteImport
-      parentRoute: typeof AppBuilderContinuousScreeningRoute
-    }
-    '/_app/_builder/continuous-screening/configurations': {
-      id: '/_app/_builder/continuous-screening/configurations'
-      path: '/configurations'
-      fullPath: '/continuous-screening/configurations'
-      preLoaderRoute: typeof AppBuilderContinuousScreeningConfigurationsRouteImport
-      parentRoute: typeof AppBuilderContinuousScreeningRoute
-    }
-    '/_app/_builder/cases/overview': {
-      id: '/_app/_builder/cases/overview'
-      path: '/overview'
-      fullPath: '/cases/overview'
-      preLoaderRoute: typeof AppBuilderCasesOverviewRouteImport
-      parentRoute: typeof AppBuilderCasesRoute
-    }
-    '/_app/_builder/cases/inboxes': {
-      id: '/_app/_builder/cases/inboxes'
-      path: '/inboxes'
-      fullPath: '/cases/inboxes'
-      preLoaderRoute: typeof AppBuilderCasesInboxesRouteImport
-      parentRoute: typeof AppBuilderCasesRoute
-    }
-    '/_app/_builder/cases/analytics': {
-      id: '/_app/_builder/cases/analytics'
-      path: '/analytics'
-      fullPath: '/cases/analytics'
-      preLoaderRoute: typeof AppBuilderCasesAnalyticsRouteImport
-      parentRoute: typeof AppBuilderCasesRoute
-    }
-    '/_app/_builder/cases/_detail': {
-      id: '/_app/_builder/cases/_detail'
-      path: ''
-      fullPath: '/cases'
-      preLoaderRoute: typeof AppBuilderCasesDetailRouteImport
       parentRoute: typeof AppBuilderCasesRoute
     }
     '/_app/_builder/cases/$caseId': {
@@ -1833,54 +1595,243 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesCaseIdRouteImport
       parentRoute: typeof AppBuilderCasesRoute
     }
-    '/_app/_builder/settings/inboxes/': {
-      id: '/_app/_builder/settings/inboxes/'
-      path: '/'
-      fullPath: '/settings/inboxes/'
-      preLoaderRoute: typeof AppBuilderSettingsInboxesIndexRouteImport
-      parentRoute: typeof AppBuilderSettingsInboxesRoute
+    '/_app/_builder/cases/_detail': {
+      id: '/_app/_builder/cases/_detail'
+      path: ''
+      fullPath: '/cases'
+      preLoaderRoute: typeof AppBuilderCasesDetailRouteImport
+      parentRoute: typeof AppBuilderCasesRoute
     }
-    '/_app/_builder/detection/scenarios/': {
-      id: '/_app/_builder/detection/scenarios/'
-      path: '/'
-      fullPath: '/detection/scenarios/'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosRoute
+    '/_app/_builder/cases/analytics': {
+      id: '/_app/_builder/cases/analytics'
+      path: '/analytics'
+      fullPath: '/cases/analytics'
+      preLoaderRoute: typeof AppBuilderCasesAnalyticsRouteImport
+      parentRoute: typeof AppBuilderCasesRoute
     }
-    '/_app/_builder/detection/lists/': {
-      id: '/_app/_builder/detection/lists/'
-      path: '/'
-      fullPath: '/detection/lists/'
-      preLoaderRoute: typeof AppBuilderDetectionListsIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionListsRoute
+    '/_app/_builder/cases/inboxes': {
+      id: '/_app/_builder/cases/inboxes'
+      path: '/inboxes'
+      fullPath: '/cases/inboxes'
+      preLoaderRoute: typeof AppBuilderCasesInboxesRouteImport
+      parentRoute: typeof AppBuilderCasesRoute
     }
-    '/_app/_builder/detection/decisions/': {
-      id: '/_app/_builder/detection/decisions/'
-      path: '/'
-      fullPath: '/detection/decisions/'
-      preLoaderRoute: typeof AppBuilderDetectionDecisionsIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionDecisionsRoute
+    '/_app/_builder/cases/overview': {
+      id: '/_app/_builder/cases/overview'
+      path: '/overview'
+      fullPath: '/cases/overview'
+      preLoaderRoute: typeof AppBuilderCasesOverviewRouteImport
+      parentRoute: typeof AppBuilderCasesRoute
     }
-    '/_app/_builder/detection/analytics/': {
-      id: '/_app/_builder/detection/analytics/'
-      path: '/'
-      fullPath: '/detection/analytics/'
-      preLoaderRoute: typeof AppBuilderDetectionAnalyticsIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionAnalyticsRoute
+    '/_app/_builder/client-detail/': {
+      id: '/_app/_builder/client-detail/'
+      path: '/client-detail'
+      fullPath: '/client-detail/'
+      preLoaderRoute: typeof AppBuilderClientDetailIndexRouteImport
+      parentRoute: typeof AppBuilderRoute
     }
-    '/_app/_builder/continuous-screening/create/': {
-      id: '/_app/_builder/continuous-screening/create/'
-      path: '/create'
-      fullPath: '/continuous-screening/create/'
-      preLoaderRoute: typeof AppBuilderContinuousScreeningCreateIndexRouteImport
+    '/_app/_builder/continuous-screening/': {
+      id: '/_app/_builder/continuous-screening/'
+      path: '/'
+      fullPath: '/continuous-screening/'
+      preLoaderRoute: typeof AppBuilderContinuousScreeningIndexRouteImport
       parentRoute: typeof AppBuilderContinuousScreeningRoute
     }
-    '/_app/_builder/cases/inboxes/': {
-      id: '/_app/_builder/cases/inboxes/'
+    '/_app/_builder/continuous-screening/configurations': {
+      id: '/_app/_builder/continuous-screening/configurations'
+      path: '/configurations'
+      fullPath: '/continuous-screening/configurations'
+      preLoaderRoute: typeof AppBuilderContinuousScreeningConfigurationsRouteImport
+      parentRoute: typeof AppBuilderContinuousScreeningRoute
+    }
+    '/_app/_builder/continuous-screening/observability': {
+      id: '/_app/_builder/continuous-screening/observability'
+      path: '/observability'
+      fullPath: '/continuous-screening/observability'
+      preLoaderRoute: typeof AppBuilderContinuousScreeningObservabilityRouteImport
+      parentRoute: typeof AppBuilderContinuousScreeningRoute
+    }
+    '/_app/_builder/data/': {
+      id: '/_app/_builder/data/'
       path: '/'
-      fullPath: '/cases/inboxes/'
-      preLoaderRoute: typeof AppBuilderCasesInboxesIndexRouteImport
-      parentRoute: typeof AppBuilderCasesInboxesRoute
+      fullPath: '/data/'
+      preLoaderRoute: typeof AppBuilderDataIndexRouteImport
+      parentRoute: typeof AppBuilderDataRoute
+    }
+    '/_app/_builder/data/list': {
+      id: '/_app/_builder/data/list'
+      path: '/list'
+      fullPath: '/data/list'
+      preLoaderRoute: typeof AppBuilderDataListRouteImport
+      parentRoute: typeof AppBuilderDataRoute
+    }
+    '/_app/_builder/detection/': {
+      id: '/_app/_builder/detection/'
+      path: '/'
+      fullPath: '/detection/'
+      preLoaderRoute: typeof AppBuilderDetectionIndexRouteImport
+      parentRoute: typeof AppBuilderDetectionRoute
+    }
+    '/_app/_builder/detection/analytics': {
+      id: '/_app/_builder/detection/analytics'
+      path: '/analytics'
+      fullPath: '/detection/analytics'
+      preLoaderRoute: typeof AppBuilderDetectionAnalyticsRouteImport
+      parentRoute: typeof AppBuilderDetectionRoute
+    }
+    '/_app/_builder/detection/decisions': {
+      id: '/_app/_builder/detection/decisions'
+      path: '/decisions'
+      fullPath: '/detection/decisions'
+      preLoaderRoute: typeof AppBuilderDetectionDecisionsRouteImport
+      parentRoute: typeof AppBuilderDetectionRoute
+    }
+    '/_app/_builder/detection/lists': {
+      id: '/_app/_builder/detection/lists'
+      path: '/lists'
+      fullPath: '/detection/lists'
+      preLoaderRoute: typeof AppBuilderDetectionListsRouteImport
+      parentRoute: typeof AppBuilderDetectionRoute
+    }
+    '/_app/_builder/detection/scenarios': {
+      id: '/_app/_builder/detection/scenarios'
+      path: '/scenarios'
+      fullPath: '/detection/scenarios'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosRouteImport
+      parentRoute: typeof AppBuilderDetectionRoute
+    }
+    '/_app/_builder/screening-search/': {
+      id: '/_app/_builder/screening-search/'
+      path: '/'
+      fullPath: '/screening-search/'
+      preLoaderRoute: typeof AppBuilderScreeningSearchIndexRouteImport
+      parentRoute: typeof AppBuilderScreeningSearchRoute
+    }
+    '/_app/_builder/settings/': {
+      id: '/_app/_builder/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AppBuilderSettingsIndexRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/analytics': {
+      id: '/_app/_builder/settings/analytics'
+      path: '/analytics'
+      fullPath: '/settings/analytics'
+      preLoaderRoute: typeof AppBuilderSettingsAnalyticsRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/api-keys': {
+      id: '/_app/_builder/settings/api-keys'
+      path: '/api-keys'
+      fullPath: '/settings/api-keys'
+      preLoaderRoute: typeof AppBuilderSettingsApiKeysRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/audit-logs': {
+      id: '/_app/_builder/settings/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/settings/audit-logs'
+      preLoaderRoute: typeof AppBuilderSettingsAuditLogsRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/inboxes': {
+      id: '/_app/_builder/settings/inboxes'
+      path: '/inboxes'
+      fullPath: '/settings/inboxes'
+      preLoaderRoute: typeof AppBuilderSettingsInboxesRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/ip-whitelisting': {
+      id: '/_app/_builder/settings/ip-whitelisting'
+      path: '/ip-whitelisting'
+      fullPath: '/settings/ip-whitelisting'
+      preLoaderRoute: typeof AppBuilderSettingsIpWhitelistingRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/scenarios': {
+      id: '/_app/_builder/settings/scenarios'
+      path: '/scenarios'
+      fullPath: '/settings/scenarios'
+      preLoaderRoute: typeof AppBuilderSettingsScenariosRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/screening-providers': {
+      id: '/_app/_builder/settings/screening-providers'
+      path: '/screening-providers'
+      fullPath: '/settings/screening-providers'
+      preLoaderRoute: typeof AppBuilderSettingsScreeningProvidersRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/tags': {
+      id: '/_app/_builder/settings/tags'
+      path: '/tags'
+      fullPath: '/settings/tags'
+      preLoaderRoute: typeof AppBuilderSettingsTagsRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/users': {
+      id: '/_app/_builder/settings/users'
+      path: '/users'
+      fullPath: '/settings/users'
+      preLoaderRoute: typeof AppBuilderSettingsUsersRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/webhooks': {
+      id: '/_app/_builder/settings/webhooks'
+      path: '/webhooks'
+      fullPath: '/settings/webhooks'
+      preLoaderRoute: typeof AppBuilderSettingsWebhooksRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/upload/$objectType': {
+      id: '/_app/_builder/upload/$objectType'
+      path: '/upload/$objectType'
+      fullPath: '/upload/$objectType'
+      preLoaderRoute: typeof AppBuilderUploadObjectTypeRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/user-scoring/': {
+      id: '/_app/_builder/user-scoring/'
+      path: '/'
+      fullPath: '/user-scoring/'
+      preLoaderRoute: typeof AppBuilderUserScoringIndexRouteImport
+      parentRoute: typeof AppBuilderUserScoringRoute
+    }
+    '/_app/_builder/user-scoring/overview': {
+      id: '/_app/_builder/user-scoring/overview'
+      path: '/overview'
+      fullPath: '/user-scoring/overview'
+      preLoaderRoute: typeof AppBuilderUserScoringOverviewRouteImport
+      parentRoute: typeof AppBuilderUserScoringRoute
+    }
+    '/ressources/cases/download-data/$caseId': {
+      id: '/ressources/cases/download-data/$caseId'
+      path: '/ressources/cases/download-data/$caseId'
+      fullPath: '/ressources/cases/download-data/$caseId'
+      preLoaderRoute: typeof RessourcesCasesDownloadDataCaseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ressources/cases/download-file/$fileId': {
+      id: '/ressources/cases/download-file/$fileId'
+      path: '/ressources/cases/download-file/$fileId'
+      fullPath: '/ressources/cases/download-file/$fileId'
+      preLoaderRoute: typeof RessourcesCasesDownloadFileFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ressources/cases/next-unassigned/$caseId': {
+      id: '/ressources/cases/next-unassigned/$caseId'
+      path: '/ressources/cases/next-unassigned/$caseId'
+      fullPath: '/ressources/cases/next-unassigned/$caseId'
+      preLoaderRoute: typeof RessourcesCasesNextUnassignedCaseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ressources/lists/download-csv-file/$listId': {
+      id: '/ressources/lists/download-csv-file/$listId'
+      path: '/ressources/lists/download-csv-file/$listId'
+      fullPath: '/ressources/lists/download-csv-file/$listId'
+      preLoaderRoute: typeof RessourcesListsDownloadCsvFileListIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/_builder/cases/$caseId/': {
       id: '/_app/_builder/cases/$caseId/'
@@ -1889,82 +1840,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesCaseIdIndexRouteImport
       parentRoute: typeof AppBuilderCasesCaseIdRoute
     }
-    '/ressources/screenings/download/$screeningId/$fileId': {
-      id: '/ressources/screenings/download/$screeningId/$fileId'
-      path: '/ressources/screenings/download/$screeningId/$fileId'
-      fullPath: '/ressources/screenings/download/$screeningId/$fileId'
-      preLoaderRoute: typeof RessourcesScreeningsDownloadScreeningIdFileIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/_builder/cases/$caseId/d': {
+      id: '/_app/_builder/cases/$caseId/d'
+      path: '/d'
+      fullPath: '/cases/$caseId/d'
+      preLoaderRoute: typeof AppBuilderCasesCaseIdDRouteImport
+      parentRoute: typeof AppBuilderCasesCaseIdRoute
     }
-    '/ressources/annotations/download-file/$annotationId/$fileId': {
-      id: '/ressources/annotations/download-file/$annotationId/$fileId'
-      path: '/ressources/annotations/download-file/$annotationId/$fileId'
-      fullPath: '/ressources/annotations/download-file/$annotationId/$fileId'
-      preLoaderRoute: typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app/_builder/user-scoring/$recordType/$version': {
-      id: '/_app/_builder/user-scoring/$recordType/$version'
-      path: '/$recordType/$version'
-      fullPath: '/user-scoring/$recordType/$version'
-      preLoaderRoute: typeof AppBuilderUserScoringRecordTypeVersionRouteImport
-      parentRoute: typeof AppBuilderUserScoringRoute
-    }
-    '/_app/_builder/settings/webhooks_/$webhookId': {
-      id: '/_app/_builder/settings/webhooks_/$webhookId'
-      path: '/webhooks/$webhookId'
-      fullPath: '/settings/webhooks/$webhookId'
-      preLoaderRoute: typeof AppBuilderSettingsWebhooksWebhookIdRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
-    '/_app/_builder/settings/inboxes/$inboxId': {
-      id: '/_app/_builder/settings/inboxes/$inboxId'
-      path: '/$inboxId'
-      fullPath: '/settings/inboxes/$inboxId'
-      preLoaderRoute: typeof AppBuilderSettingsInboxesInboxIdRouteImport
-      parentRoute: typeof AppBuilderSettingsInboxesRoute
-    }
-    '/_app/_builder/settings/analytics/filters': {
-      id: '/_app/_builder/settings/analytics/filters'
-      path: '/filters'
-      fullPath: '/settings/analytics/filters'
-      preLoaderRoute: typeof AppBuilderSettingsAnalyticsFiltersRouteImport
-      parentRoute: typeof AppBuilderSettingsAnalyticsRoute
-    }
-    '/_app/_builder/detection/scenarios/$scenarioId': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId'
-      path: '/$scenarioId'
-      fullPath: '/detection/scenarios/$scenarioId'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosRoute
-    }
-    '/_app/_builder/detection/lists/$listId': {
-      id: '/_app/_builder/detection/lists/$listId'
-      path: '/$listId'
-      fullPath: '/detection/lists/$listId'
-      preLoaderRoute: typeof AppBuilderDetectionListsListIdRouteImport
-      parentRoute: typeof AppBuilderDetectionListsRoute
-    }
-    '/_app/_builder/detection/decisions/$decisionId': {
-      id: '/_app/_builder/detection/decisions/$decisionId'
-      path: '/$decisionId'
-      fullPath: '/detection/decisions/$decisionId'
-      preLoaderRoute: typeof AppBuilderDetectionDecisionsDecisionIdRouteImport
-      parentRoute: typeof AppBuilderDetectionDecisionsRoute
-    }
-    '/_app/_builder/detection/analytics/$scenarioId': {
-      id: '/_app/_builder/detection/analytics/$scenarioId'
-      path: '/$scenarioId'
-      fullPath: '/detection/analytics/$scenarioId'
-      preLoaderRoute: typeof AppBuilderDetectionAnalyticsScenarioIdRouteImport
-      parentRoute: typeof AppBuilderDetectionAnalyticsRoute
-    }
-    '/_app/_builder/client-detail/$objectType/$objectId': {
-      id: '/_app/_builder/client-detail/$objectType/$objectId'
-      path: '/client-detail/$objectType/$objectId'
-      fullPath: '/client-detail/$objectType/$objectId'
-      preLoaderRoute: typeof AppBuilderClientDetailObjectTypeObjectIdRouteImport
-      parentRoute: typeof AppBuilderRoute
+    '/_app/_builder/cases/inboxes/': {
+      id: '/_app/_builder/cases/inboxes/'
+      path: '/'
+      fullPath: '/cases/inboxes/'
+      preLoaderRoute: typeof AppBuilderCasesInboxesIndexRouteImport
+      parentRoute: typeof AppBuilderCasesInboxesRoute
     }
     '/_app/_builder/cases/inboxes/$inboxId': {
       id: '/_app/_builder/cases/inboxes/$inboxId'
@@ -1973,46 +1861,144 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesInboxesInboxIdRouteImport
       parentRoute: typeof AppBuilderCasesInboxesRoute
     }
-    '/_app/_builder/cases/$caseId/d': {
-      id: '/_app/_builder/cases/$caseId/d'
-      path: '/d'
-      fullPath: '/cases/$caseId/d'
-      preLoaderRoute: typeof AppBuilderCasesCaseIdDRouteImport
-      parentRoute: typeof AppBuilderCasesCaseIdRoute
+    '/_app/_builder/client-detail/$objectType/$objectId': {
+      id: '/_app/_builder/client-detail/$objectType/$objectId'
+      path: '/client-detail/$objectType/$objectId'
+      fullPath: '/client-detail/$objectType/$objectId'
+      preLoaderRoute: typeof AppBuilderClientDetailObjectTypeObjectIdRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/continuous-screening/create/': {
+      id: '/_app/_builder/continuous-screening/create/'
+      path: '/create'
+      fullPath: '/continuous-screening/create/'
+      preLoaderRoute: typeof AppBuilderContinuousScreeningCreateIndexRouteImport
+      parentRoute: typeof AppBuilderContinuousScreeningRoute
+    }
+    '/_app/_builder/detection/analytics/': {
+      id: '/_app/_builder/detection/analytics/'
+      path: '/'
+      fullPath: '/detection/analytics/'
+      preLoaderRoute: typeof AppBuilderDetectionAnalyticsIndexRouteImport
+      parentRoute: typeof AppBuilderDetectionAnalyticsRoute
+    }
+    '/_app/_builder/detection/analytics/$scenarioId': {
+      id: '/_app/_builder/detection/analytics/$scenarioId'
+      path: '/$scenarioId'
+      fullPath: '/detection/analytics/$scenarioId'
+      preLoaderRoute: typeof AppBuilderDetectionAnalyticsScenarioIdRouteImport
+      parentRoute: typeof AppBuilderDetectionAnalyticsRoute
+    }
+    '/_app/_builder/detection/decisions/': {
+      id: '/_app/_builder/detection/decisions/'
+      path: '/'
+      fullPath: '/detection/decisions/'
+      preLoaderRoute: typeof AppBuilderDetectionDecisionsIndexRouteImport
+      parentRoute: typeof AppBuilderDetectionDecisionsRoute
+    }
+    '/_app/_builder/detection/decisions/$decisionId': {
+      id: '/_app/_builder/detection/decisions/$decisionId'
+      path: '/$decisionId'
+      fullPath: '/detection/decisions/$decisionId'
+      preLoaderRoute: typeof AppBuilderDetectionDecisionsDecisionIdRouteImport
+      parentRoute: typeof AppBuilderDetectionDecisionsRoute
+    }
+    '/_app/_builder/detection/lists/': {
+      id: '/_app/_builder/detection/lists/'
+      path: '/'
+      fullPath: '/detection/lists/'
+      preLoaderRoute: typeof AppBuilderDetectionListsIndexRouteImport
+      parentRoute: typeof AppBuilderDetectionListsRoute
+    }
+    '/_app/_builder/detection/lists/$listId': {
+      id: '/_app/_builder/detection/lists/$listId'
+      path: '/$listId'
+      fullPath: '/detection/lists/$listId'
+      preLoaderRoute: typeof AppBuilderDetectionListsListIdRouteImport
+      parentRoute: typeof AppBuilderDetectionListsRoute
+    }
+    '/_app/_builder/detection/scenarios/': {
+      id: '/_app/_builder/detection/scenarios/'
+      path: '/'
+      fullPath: '/detection/scenarios/'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosIndexRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosRoute
+    }
+    '/_app/_builder/detection/scenarios/$scenarioId': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId'
+      path: '/$scenarioId'
+      fullPath: '/detection/scenarios/$scenarioId'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosRoute
+    }
+    '/_app/_builder/settings/analytics/filters': {
+      id: '/_app/_builder/settings/analytics/filters'
+      path: '/filters'
+      fullPath: '/settings/analytics/filters'
+      preLoaderRoute: typeof AppBuilderSettingsAnalyticsFiltersRouteImport
+      parentRoute: typeof AppBuilderSettingsAnalyticsRoute
+    }
+    '/_app/_builder/settings/inboxes/': {
+      id: '/_app/_builder/settings/inboxes/'
+      path: '/'
+      fullPath: '/settings/inboxes/'
+      preLoaderRoute: typeof AppBuilderSettingsInboxesIndexRouteImport
+      parentRoute: typeof AppBuilderSettingsInboxesRoute
+    }
+    '/_app/_builder/settings/inboxes/$inboxId': {
+      id: '/_app/_builder/settings/inboxes/$inboxId'
+      path: '/$inboxId'
+      fullPath: '/settings/inboxes/$inboxId'
+      preLoaderRoute: typeof AppBuilderSettingsInboxesInboxIdRouteImport
+      parentRoute: typeof AppBuilderSettingsInboxesRoute
+    }
+    '/_app/_builder/settings/webhooks_/$webhookId': {
+      id: '/_app/_builder/settings/webhooks_/$webhookId'
+      path: '/webhooks/$webhookId'
+      fullPath: '/settings/webhooks/$webhookId'
+      preLoaderRoute: typeof AppBuilderSettingsWebhooksWebhookIdRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/user-scoring/$recordType/$version': {
+      id: '/_app/_builder/user-scoring/$recordType/$version'
+      path: '/$recordType/$version'
+      fullPath: '/user-scoring/$recordType/$version'
+      preLoaderRoute: typeof AppBuilderUserScoringRecordTypeVersionRouteImport
+      parentRoute: typeof AppBuilderUserScoringRoute
+    }
+    '/ressources/annotations/download-file/$annotationId/$fileId': {
+      id: '/ressources/annotations/download-file/$annotationId/$fileId'
+      path: '/ressources/annotations/download-file/$annotationId/$fileId'
+      fullPath: '/ressources/annotations/download-file/$annotationId/$fileId'
+      preLoaderRoute: typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ressources/screenings/download/$screeningId/$fileId': {
+      id: '/ressources/screenings/download/$screeningId/$fileId'
+      path: '/ressources/screenings/download/$screeningId/$fileId'
+      fullPath: '/ressources/screenings/download/$screeningId/$fileId'
+      preLoaderRoute: typeof RessourcesScreeningsDownloadScreeningIdFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/_builder/cases/$caseId/d/$decisionId': {
+      id: '/_app/_builder/cases/$caseId/d/$decisionId'
+      path: '/$decisionId'
+      fullPath: '/cases/$caseId/d/$decisionId'
+      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdRouteImport
+      parentRoute: typeof AppBuilderCasesCaseIdDRoute
+    }
+    '/_app/_builder/cases/_detail/s/$caseId': {
+      id: '/_app/_builder/cases/_detail/s/$caseId'
+      path: '/s/$caseId'
+      fullPath: '/cases/s/$caseId'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdRouteImport
+      parentRoute: typeof AppBuilderCasesDetailRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/': {
       id: '/_app/_builder/detection/scenarios/$scenarioId/'
       path: '/'
       fullPath: '/detection/scenarios/$scenarioId/'
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
-    }
-    '/ressources/cases/sar/download/$caseId/$reportId': {
-      id: '/ressources/cases/sar/download/$caseId/$reportId'
-      path: '/ressources/cases/sar/download/$caseId/$reportId'
-      fullPath: '/ressources/cases/sar/download/$caseId/$reportId'
-      preLoaderRoute: typeof RessourcesCasesSarDownloadCaseIdReportIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app/_builder/detection/scenarios/$scenarioId/workflow': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/workflow'
-      path: '/workflow'
-      fullPath: '/detection/scenarios/$scenarioId/workflow'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
-    }
-    '/_app/_builder/detection/scenarios/$scenarioId/test-run': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/test-run'
-      path: '/test-run'
-      fullPath: '/detection/scenarios/$scenarioId/test-run'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
-    }
-    '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
-      path: '/scheduled-executions'
-      fullPath: '/detection/scenarios/$scenarioId/scheduled-executions'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/home': {
@@ -2022,33 +2008,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdHomeRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
     }
-    '/_app/_builder/cases/_detail/s/$caseId': {
-      id: '/_app/_builder/cases/_detail/s/$caseId'
-      path: '/s/$caseId'
-      fullPath: '/cases/s/$caseId'
-      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdRouteImport
-      parentRoute: typeof AppBuilderCasesDetailRoute
+    '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
+      path: '/scheduled-executions'
+      fullPath: '/detection/scenarios/$scenarioId/scheduled-executions'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
     }
-    '/_app/_builder/cases/$caseId/d/$decisionId': {
-      id: '/_app/_builder/cases/$caseId/d/$decisionId'
-      path: '/$decisionId'
-      fullPath: '/cases/$caseId/d/$decisionId'
-      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdRouteImport
-      parentRoute: typeof AppBuilderCasesCaseIdDRoute
+    '/_app/_builder/detection/scenarios/$scenarioId/test-run': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/test-run'
+      path: '/test-run'
+      fullPath: '/detection/scenarios/$scenarioId/test-run'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
     }
-    '/_app/_builder/detection/scenarios/$scenarioId/test-run/': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/test-run/'
-      path: '/'
-      fullPath: '/detection/scenarios/$scenarioId/test-run/'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunRoute
+    '/_app/_builder/detection/scenarios/$scenarioId/workflow': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/workflow'
+      path: '/workflow'
+      fullPath: '/detection/scenarios/$scenarioId/workflow'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
     }
-    '/_app/_builder/cases/_detail/s/$caseId/': {
-      id: '/_app/_builder/cases/_detail/s/$caseId/'
-      path: '/'
-      fullPath: '/cases/s/$caseId/'
-      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdIndexRouteImport
-      parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
+    '/ressources/cases/sar/download/$caseId/$reportId': {
+      id: '/ressources/cases/sar/download/$caseId/$reportId'
+      path: '/ressources/cases/sar/download/$caseId/$reportId'
+      fullPath: '/ressources/cases/sar/download/$caseId/$reportId'
+      preLoaderRoute: typeof RessourcesCasesSarDownloadCaseIdReportIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/_builder/cases/$caseId/d/$decisionId/screenings': {
+      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings'
+      path: '/screenings'
+      fullPath: '/cases/$caseId/d/$decisionId/screenings'
+      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport
+      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdRoute
     }
     '/_app/_builder/cases/_detail/m/$caseId/': {
       id: '/_app/_builder/cases/_detail/m/$caseId/'
@@ -2057,18 +2050,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesDetailMCaseIdIndexRouteImport
       parentRoute: typeof AppBuilderCasesDetailRoute
     }
-    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
-      path: '/i/$iterationId'
-      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
-    }
-    '/_app/_builder/cases/_detail/s/$caseId/principal': {
-      id: '/_app/_builder/cases/_detail/s/$caseId/principal'
-      path: '/principal'
-      fullPath: '/cases/s/$caseId/principal'
-      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRouteImport
+    '/_app/_builder/cases/_detail/s/$caseId/': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/'
+      path: '/'
+      fullPath: '/cases/s/$caseId/'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdIndexRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
     }
     '/_app/_builder/cases/_detail/s/$caseId/clients': {
@@ -2078,25 +2064,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdClientsRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
     }
-    '/_app/_builder/cases/$caseId/d/$decisionId/screenings': {
-      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings'
-      path: '/screenings'
-      fullPath: '/cases/$caseId/d/$decisionId/screenings'
-      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport
-      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdRoute
+    '/_app/_builder/cases/_detail/s/$caseId/principal': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/principal'
+      path: '/principal'
+      fullPath: '/cases/s/$caseId/principal'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
     }
-    '/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/'
-      path: '/$testRunId'
-      fullPath: '/detection/scenarios/$scenarioId/test-run/$testRunId/'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport
+    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
+      path: '/i/$iterationId'
+      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
+    }
+    '/_app/_builder/detection/scenarios/$scenarioId/test-run/': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/test-run/'
+      path: '/'
+      fullPath: '/detection/scenarios/$scenarioId/test-run/'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunRoute
+    }
+    '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId': {
+      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
+      path: '/$screeningId'
+      fullPath: '/cases/$caseId/d/$decisionId/screenings/$screeningId'
+      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport
+      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRoute
     }
     '/_app/_builder/cases/_detail/s/$caseId/clients/': {
       id: '/_app/_builder/cases/_detail/s/$caseId/clients/'
       path: '/'
       fullPath: '/cases/s/$caseId/clients/'
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdClientsIndexRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdClientsRoute
+    }
+    '/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue'
+      path: '/$pivotValue'
+      fullPath: '/cases/s/$caseId/clients/$pivotValue'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdClientsRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view': {
@@ -2106,26 +2113,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRoute
     }
-    '/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue': {
-      id: '/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue'
-      path: '/$pivotValue'
-      fullPath: '/cases/s/$caseId/clients/$pivotValue'
-      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport
-      parentRoute: typeof AppBuilderCasesDetailSCaseIdClientsRoute
-    }
-    '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId': {
-      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
-      path: '/$screeningId'
-      fullPath: '/cases/$caseId/d/$decisionId/screenings/$screeningId'
-      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport
-      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRoute
-    }
-    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/'
-      path: '/'
-      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
+    '/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/'
+      path: '/$testRunId'
+      fullPath: '/detection/scenarios/$scenarioId/test-run/$testRunId/'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdTestRunRoute
     }
     '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/': {
       id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/'
@@ -2134,18 +2127,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport
       parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute
     }
-    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
-      path: '/trigger'
-      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/trigger'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
+    '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files': {
+      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
+      path: '/files'
+      fullPath: '/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
+      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRouteImport
+      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute
     }
-    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules'
-      path: '/rules'
-      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/rules'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport
+    '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits': {
+      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
+      path: '/hits'
+      fullPath: '/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
+      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRouteImport
+      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute
+    }
+    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/'
+      path: '/'
+      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision': {
@@ -2155,19 +2155,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
     }
-    '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits': {
-      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
-      path: '/hits'
-      fullPath: '/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
-      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRouteImport
-      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute
+    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules'
+      path: '/rules'
+      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/rules'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
     }
-    '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files': {
-      id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
-      path: '/files'
-      fullPath: '/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
-      preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRouteImport
-      parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute
+    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger': {
+      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
+      path: '/trigger'
+      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/trigger'
+      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport
+      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
     }
   }
 }
