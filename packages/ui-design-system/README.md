@@ -14,7 +14,7 @@ You can start editing / add components in isolation
 
 ### Add a new component
 
-> Try to use Ariakit in favour of Radix to create new components
+> Build new components on Radix primitives (with `cmdk` for command/combobox lists)
 
 1. Create a folder following the convention (look at existing components)
 

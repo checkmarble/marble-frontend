@@ -95,7 +95,6 @@ export function OperatorSelect<Op extends string>({
             return (
               <MenuCommand.Item
                 keywords={op.keywords ?? [op.value]}
-                selected={operator === op.value}
                 key={op.value}
                 onSelect={() => onOperatorChange(op.value)}
               >

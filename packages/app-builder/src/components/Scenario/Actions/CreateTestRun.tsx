@@ -186,7 +186,6 @@ function CreateTestRunToContent({
                             <MenuCommand.Item
                               key={id}
                               value={id}
-                              selected={id === field.state.value}
                               onSelect={() => {
                                 field.handleChange(id);
                                 setTestIterationMenuOpen(false);

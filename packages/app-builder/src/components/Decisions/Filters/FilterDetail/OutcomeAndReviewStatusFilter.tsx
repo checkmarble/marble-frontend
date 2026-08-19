@@ -1,11 +1,10 @@
 import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { matchSorter } from '@app-builder/utils/search';
-import * as Ariakit from '@ariakit/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { flat, map, pipe } from 'remeda';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { decisionsI18n } from '../../decisions-i18n';
@@ -63,28 +62,27 @@ export function OutcomeAndReviewStatusFilter() {
 
   return (
     <div className="flex flex-col gap-sm p-sm">
-      <SelectWithCombobox.Root
-        open
-        onSearchValueChange={setSearchValue}
-        selectedValue={selectedValue}
-        onSelectedValueChange={onSelectedValueChange}
-      >
-        <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList>
-          {matches.map(({ outcomeValue, reviewStatusValue }) => {
-            const value = getValue(outcomeValue, reviewStatusValue);
+      <MenuCommand.Inline>
+        <MenuCommand.Combobox className="m-0" onValueChange={setSearchValue} />
+        <MenuCommand.List>
+          {matches.map(({ outcomeValue, reviewStatusValue, outcomeLabel, reviewStatusLabel }) => {
+            const itemValue = getValue(outcomeValue, reviewStatusValue);
 
             return (
-              <SelectWithCombobox.ComboboxItem key={value} value={value}>
+              <MenuCommand.Item
+                key={itemValue}
+                value={`${outcomeLabel} ${reviewStatusLabel ?? ''} ${itemValue}`}
+                onSelect={() => onSelectedValueChange(itemValue)}
+              >
                 <OutcomeBadge outcome={outcomeValue} reviewStatus={reviewStatusValue} size="md" />
-                <Ariakit.SelectItemCheck className="text-purple-primary shrink-0">
-                  <Icon icon="tick" className="size-5" />
-                </Ariakit.SelectItemCheck>
-              </SelectWithCombobox.ComboboxItem>
+                {selectedValue === itemValue ? (
+                  <Icon icon="tick" className="text-purple-primary size-6 shrink-0" />
+                ) : null}
+              </MenuCommand.Item>
             );
           })}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Root>
+        </MenuCommand.List>
+      </MenuCommand.Inline>
     </div>
   );
 }

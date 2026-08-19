@@ -1,4 +1,3 @@
-import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
@@ -21,7 +20,7 @@ import {
 import reactflowStyles from '@xyflow/react/dist/style.css?url';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as R from 'remeda';
-import { MenuButton } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   adaptLinkToSingleData,
@@ -371,26 +370,32 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
 
 function CustomControls({ onAutoLayout }: { onAutoLayout: () => void }) {
   const { getNodes, fitView } = useDataModelReactFlow();
+  const [focusMenuOpen, setFocusMenuOpen] = useState(false);
 
   return (
     <>
-      <SchemaMenuRoot>
-        <MenuButton render={<button className="react-flow__controls-button" title="Focus table" type="button" />}>
-          <Icon icon="center-focus" />
-        </MenuButton>
-        <SchemaMenuMenuPopover>
-          {getNodes().map((node) => (
-            <SchemaMenuMenuItem
-              key={node.id}
-              onClick={() => {
-                fitView({ nodes: [node], duration: 1000 });
-              }}
-            >
-              {node.data?.tableModel.name ?? node.id}
-            </SchemaMenuMenuItem>
-          ))}
-        </SchemaMenuMenuPopover>
-      </SchemaMenuRoot>
+      <MenuCommand.Menu open={focusMenuOpen} onOpenChange={setFocusMenuOpen} modal>
+        <MenuCommand.Trigger>
+          <button className="react-flow__controls-button" title="Focus table" type="button">
+            <Icon icon="center-focus" />
+          </button>
+        </MenuCommand.Trigger>
+        <MenuCommand.Content align="start" sideOffset={8}>
+          <MenuCommand.List className="flex flex-col gap-sm">
+            {getNodes().map((node) => (
+              <MenuCommand.Item
+                key={node.id}
+                value={node.id}
+                onSelect={() => {
+                  fitView({ nodes: [node], duration: 1000 });
+                }}
+              >
+                {node.data?.tableModel.name ?? node.id}
+              </MenuCommand.Item>
+            ))}
+          </MenuCommand.List>
+        </MenuCommand.Content>
+      </MenuCommand.Menu>
 
       <button className="react-flow__controls-button" title="Automatic layout" type="button" onClick={onAutoLayout}>
         <Icon icon="tree-schema" />

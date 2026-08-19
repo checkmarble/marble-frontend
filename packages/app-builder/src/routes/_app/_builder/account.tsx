@@ -88,14 +88,12 @@ function AccountPage() {
               <div className="flex flex-col gap-sm">
                 <span className="text-s">{t('account:dark_mode')}</span>
                 <Radio.Root value={theme} onValueChange={(value) => setTheme(value as Theme)}>
-                  <label className="flex items-center gap-sm">
-                    <Radio.Item value="light" />
+                  <Radio.Item value="light">
                     <span className="text-s">{t('account:theme.light')}</span>
-                  </label>
-                  <label className="flex items-center gap-sm">
-                    <Radio.Item value="dark" />
+                  </Radio.Item>
+                  <Radio.Item value="dark">
                     <span className="text-s">{t('account:theme.dark')}</span>
-                  </label>
+                  </Radio.Item>
                 </Radio.Root>
               </div>
               <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />

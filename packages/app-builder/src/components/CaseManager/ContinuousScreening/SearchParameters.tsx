@@ -61,7 +61,7 @@ export function SearchParameters({ configStableId }: SearchParametersProps) {
                   <div key={category}>
                     <ExpandableGroupTagLine
                       items={[
-                        <DatasetTag category={category} />,
+                        <DatasetTag key={`${category}-dataset`} category={category} />,
                         ...items.map((item, index) => (
                           <span key={item.id} className="text-small text-grey-primary flex items-center">
                             {index > 0 ? <span className="me-sm size-1.5 bg-grey-border rounded-full" /> : null}

@@ -117,7 +117,7 @@ test('Applying outcome filter renders an Outcome chip', async ({ page }) => {
   await filtersTrigger(page).click();
   await page.locator('[role=menuitem]', { hasText: /^Outcome$/ }).click();
 
-  // OutcomeAndReviewStatusFilter opens a SelectWithCombobox — select "Decline"
+  // OutcomeAndReviewStatusFilter opens a MenuCommand list — select "Decline"
   // The outcome badge text is `outcome.tag.declined.label` = "Decline"
   await page
     .getByRole('option', { name: /Decline/ })

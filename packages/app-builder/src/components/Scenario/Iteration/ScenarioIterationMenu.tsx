@@ -1,11 +1,9 @@
-import { Highlight } from '@app-builder/components/Highlight';
 import { Scenario } from '@app-builder/models/scenario';
 import { Link } from '@tanstack/react-router';
 import { type TFunction } from 'i18next';
-import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn, MenuContent, MenuGroup, MenuGroupLabel, MenuItem, MenuPopover, MenuRoot } from 'ui-design-system';
+import { cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface LabelledScenarioIteration {
@@ -23,8 +21,8 @@ interface LabelledScenarioIteration {
 interface ScenarioIterationMenuProps {
   labelledScenarioIteration: LabelledScenarioIteration[];
   /**
-   * Should be a MenuButton component.
-   * @example <MenuButton>V1</MenuButton>
+   * The menu trigger. Must be a ref-forwarding element.
+   * @example <button type="button">V1</button>
    */
   children: JSX.Element;
   scenario: Scenario;
@@ -60,80 +58,81 @@ export function ScenarioIterationMenu({
   children,
   scenario,
 }: ScenarioIterationMenuProps) {
-  const { i18n } = useTranslation();
-  const [searchValue, setSearchValue] = React.useState('');
-  const deferredSearchValue = React.useDeferredValue(searchValue);
+  // Controlled so that picking a version closes the menu: MenuCommand only closes by
+  // calling back through onOpenChange.
+  const [open, setOpen] = React.useState(false);
 
   return (
-    <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
-      {children}
-      <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col min-w-48 rounded-xl py-xs">
-        <ScenarioIterationContent
-          searchValue={deferredSearchValue}
-          labelledScenarioIteration={scenarioIterations}
-          scenario={scenario}
-        />
-      </MenuPopover>
-    </MenuRoot>
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+      <MenuCommand.Trigger>{children}</MenuCommand.Trigger>
+      <MenuCommand.Content
+        align="start"
+        sideOffset={8}
+        className="max-h-[min(400px,var(--radix-popover-content-available-height))] min-w-48"
+      >
+        <ScenarioIterationContent labelledScenarioIteration={scenarioIterations} scenario={scenario} />
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 }
 
 interface ScenarioIterationContentProps {
   labelledScenarioIteration: LabelledScenarioIteration[];
-  searchValue: string;
   scenario: Scenario;
 }
 
-function ScenarioIterationContent({ labelledScenarioIteration, searchValue, scenario }: ScenarioIterationContentProps) {
+function ScenarioIterationContent({ labelledScenarioIteration, scenario }: ScenarioIterationContentProps) {
   const { t } = useTranslation(['common', 'scenarios']);
 
-  const matches = React.useMemo(
-    () =>
-      matchSorter(labelledScenarioIteration, searchValue, {
-        keys: ['formattedVersion', 'formattedLive', 'formattedUpdatedAt'],
-        baseSort: (a, b) => sortScenarioIteration(a.item, b.item),
-      }),
-    [labelledScenarioIteration, searchValue],
+  const iterations = React.useMemo(
+    () => [...labelledScenarioIteration].sort(sortScenarioIteration),
+    [labelledScenarioIteration],
   );
 
   return (
     <>
-      <MenuContent>
-        <MenuGroup className="flex flex-col gap-sm overflow-y-auto p-sm">
-          {!matches.length ? (
-            <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
-          ) : (
-            <MenuGroupLabel className="px-sm">{t('scenarios:home.versions_label')}</MenuGroupLabel>
-          )}
-
-          {matches.map((iteration) => (
-            <MenuItem
+      <MenuCommand.List>
+        <MenuCommand.Group
+          className="flex flex-col gap-sm"
+          heading={<div className="px-sm">{t('scenarios:home.versions_label')}</div>}
+        >
+          {iterations.map((iteration) => (
+            <MenuCommand.Item
               key={iteration.id}
-              className=" bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-sm flex-row items-center justify-between gap-sm py-xs px-sm outline-hidden"
-              render={<Link to={iteration.linkTo} />}
+              value={iteration.id}
+              keywords={[
+                iteration.formattedVersion,
+                iteration.formattedUpdatedAt,
+                ...(iteration.formattedLive ? [iteration.formattedLive] : []),
+              ]}
+              asChild
+              className="bg-surface-card aria-selected:border-purple-primary h-auto scroll-my-sm py-xs px-sm"
             >
-              <span className="text-s flex flex-row gap-xs">
-                <Highlight
-                  className={cn('capitalize', { 'text-purple-primary': iteration.id === scenario.id })}
-                  query={searchValue}
-                  text={iteration.formattedVersion}
-                />
-                {iteration.formattedLive ? (
-                  <span className="text-purple-primary capitalize">{iteration.formattedLive}</span>
-                ) : null}
-                {iteration.formattedArchived ? (
-                  <span className="text-grey-secondary capitalize">{iteration.formattedArchived}</span>
-                ) : null}
-              </span>
-              {iteration.id === scenario.id ? (
-                <span className="text-purple-primary ms-auto">
-                  <Icon icon="tick" className="size-4" />
+              <Link to={iteration.linkTo}>
+                <span className="text-s flex flex-row gap-xs">
+                  <span className={cn('capitalize', { 'text-purple-primary': iteration.id === scenario.id })}>
+                    {iteration.formattedVersion}
+                  </span>
+                  {iteration.formattedLive ? (
+                    <span className="text-purple-primary capitalize">{iteration.formattedLive}</span>
+                  ) : null}
+                  {iteration.formattedArchived ? (
+                    <span className="text-grey-secondary capitalize">{iteration.formattedArchived}</span>
+                  ) : null}
                 </span>
-              ) : null}
-            </MenuItem>
+                {iteration.id === scenario.id ? (
+                  <span className="text-purple-primary ms-auto">
+                    <Icon icon="tick" className="size-4" />
+                  </span>
+                ) : null}
+              </Link>
+            </MenuCommand.Item>
           ))}
-        </MenuGroup>
-      </MenuContent>
+        </MenuCommand.Group>
+        <MenuCommand.Empty>
+          <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
+        </MenuCommand.Empty>
+      </MenuCommand.List>
     </>
   );
 }

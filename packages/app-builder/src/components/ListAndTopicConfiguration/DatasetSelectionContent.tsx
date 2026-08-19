@@ -1042,13 +1042,7 @@ const FilterGroupMenu = ({
 
   const itemsList = (
     <MenuCommand.List>
-      <MenuCommand.Item
-        key="__all__"
-        value="__all__"
-        selected={allSelected}
-        onSelect={toggleAll}
-        className="border-b border-purple-primary"
-      >
+      <MenuCommand.Item key="__all__" value="__all__" onSelect={toggleAll} className="border-b border-purple-primary">
         <span className="text-purple-primary ">
           {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
         </span>
@@ -1060,7 +1054,6 @@ const FilterGroupMenu = ({
           <MenuCommand.Item
             key={item.name}
             value={item.name}
-            selected={isSelected}
             onSelect={() => handleClickItem(item)}
             disabled={mode === 'view'}
           >

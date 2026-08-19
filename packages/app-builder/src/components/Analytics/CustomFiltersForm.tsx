@@ -368,7 +368,6 @@ function TriggerObjectSelect({
             <MenuCommand.Item
               key={triggerObject}
               value={triggerObject}
-              selected={value === triggerObject}
               onSelect={() => {
                 onChange(triggerObject);
                 setMenuOpen(false);
@@ -452,12 +451,10 @@ function FieldLinkSelect({
             >
               {availableFields.map((field) => {
                 const fieldSelection: CustomFilterSelection = { kind: 'trigger', fieldName: field.name };
-                const isSelected = selection?.kind === 'trigger' && selection.fieldName === field.name;
                 return (
                   <MenuCommand.Item
                     key={`field-${field.id}`}
                     value={field.name}
-                    selected={isSelected}
                     onSelect={() => {
                       onChange(fieldSelection);
                       setMenuOpen(false);
@@ -497,15 +494,10 @@ function FieldLinkSelect({
                             path: [linkConfig.link.name],
                             fieldName: field.name,
                           };
-                          const isSelected =
-                            selection?.kind === 'ingested' &&
-                            selection.fieldName === field.name &&
-                            selection.path[0] === linkConfig.link.name;
                           return (
                             <MenuCommand.Item
                               key={`link-${linkConfig.link.id}-${field.id}`}
                               value={`${linkConfig.link.name}.${field.name}`}
-                              selected={isSelected}
                               onSelect={() => {
                                 onChange(fieldSelection);
                                 setMenuOpen(false);

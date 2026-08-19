@@ -69,7 +69,8 @@ type RootProps = Omit<React.ComponentProps<typeof Popover.Root>, 'className'> & 
   persistOnSelect?: boolean;
 };
 /**
- * A Menu command, it can be used as a select, a menu, can have a search bar and be nested
+ * A Menu command, it can be used as a select, a menu, can have a search bar and be nested.
+ * Use `MenuCommand.Inline` for an always-visible list (e.g. inside an existing popover).
  *
  * @example
  *  <MenuCommand.Menu>
@@ -402,9 +403,12 @@ const KeyboardNav = () => {
   return <Command.Input ref={inputRef} className="fixed left-[-10000px]" />;
 };
 
-type ItemProps = Omit<React.ComponentProps<typeof Command.Item>, 'asChild'> & {
-  selected?: boolean;
-};
+/**
+ * `asChild` is intentionally kept (it used to be omitted): it lets a menu entry render as its
+ * single child element -- e.g. a router `Link` -- so navigation items stay real anchors and keep
+ * cmd-click, middle-click and prefetch. MenuCommand.spec.tsx covers it.
+ */
+type ItemProps = React.ComponentProps<typeof Command.Item>;
 const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function HeadlessItem(
   { onSelect, ...props },
   ref,
@@ -421,7 +425,7 @@ const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, Ite
   return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
 });
 const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function Item(
-  { className, selected = false, ...props },
+  { className, ...props },
   ref,
 ) {
   return (
@@ -432,7 +436,7 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
           'aria-selected:bg-purple-background-light data-[state=open]:bg-purple-background-light aria-disabled:text-grey-disabled outline-hidden',
           'flex h-10 scroll-mb-sm scroll-mt-2xl flex-row items-center justify-between gap-sm rounded-xs p-sm',
         ],
-        { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
+        { 'cursor-pointer': props.onSelect && !props.disabled },
         className,
       )}
       {...props}
@@ -461,6 +465,37 @@ function List({ className, ...props }: ListProps) {
   );
 }
 
+type InlineProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * Always-visible combobox list. Use inside an existing popover/panel instead of `Menu` + `Content`.
+ * Filtering is left to the caller (`shouldFilter={false}`), matching the previous SelectWithCombobox inline mode.
+ */
+function Inline({ children, className }: InlineProps) {
+  const menuSharp = MenuCommandSharpFactory.createSharp();
+  const internalSharp = InternalMenuSharpFactory.createSharp({
+    hover: false,
+    persistOnSelect: true,
+    onSelect: () => {
+      // The host popover owns open/close; selecting an item must not dismiss it.
+    },
+  });
+
+  return (
+    <MenuCommandSharpFactory.Provider value={menuSharp}>
+      <InternalMenuSharpFactory.Provider value={internalSharp}>
+        <Command shouldFilter={false} className={cn('flex min-h-0 flex-col', className)}>
+          {children}
+          <InsertKeyboardNav />
+        </Command>
+      </InternalMenuSharpFactory.Provider>
+    </MenuCommandSharpFactory.Provider>
+  );
+}
+
 export const MenuCommand = {
   Arrow: MenuArrow,
   Anchor: Popover.Anchor,
@@ -468,6 +503,7 @@ export const MenuCommand = {
   Content,
   Group: Command.Group,
   HeadlessItem,
+  Inline,
   Item,
   List,
   Menu,

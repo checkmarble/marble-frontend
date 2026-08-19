@@ -31,6 +31,35 @@ export const AsSelect: StoryFn<typeof MenuCommand.Menu> = () => {
   );
 };
 
+export const Inline: StoryFn = () => {
+  const [selected, setSelected] = useState<string[]>([]);
+  const fruits = ['Apple', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Pear'];
+
+  return (
+    <div className="w-72 rounded-md border border-grey-border">
+      <MenuCommand.Inline>
+        <MenuCommand.Combobox placeholder="Search fruit..." />
+        <MenuCommand.List>
+          {fruits.map((fruit) => (
+            <MenuCommand.Item
+              key={fruit}
+              value={fruit}
+              onSelect={() =>
+                setSelected((current) =>
+                  current.includes(fruit) ? current.filter((item) => item !== fruit) : [...current, fruit],
+                )
+              }
+            >
+              {fruit}
+              {selected.includes(fruit) ? <span>✓</span> : null}
+            </MenuCommand.Item>
+          ))}
+        </MenuCommand.List>
+      </MenuCommand.Inline>
+    </div>
+  );
+};
+
 export const WithCombobox: StoryFn<typeof MenuCommand.Menu> = () => {
   const [selected, setSelected] = useState<string>('Apple');
   const fruits = ['Apple', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Pear'];

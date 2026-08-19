@@ -347,11 +347,7 @@ const LinkedObjectCheckItem = ({
             <MenuCommand.Content sameWidth>
               <MenuCommand.List>
                 {option.timestampFields?.map((field) => (
-                  <MenuCommand.Item
-                    key={field.id}
-                    selected={selectedFieldName === field.name}
-                    onSelect={() => handleFieldChange(field.id, field.name)}
-                  >
+                  <MenuCommand.Item key={field.id} onSelect={() => handleFieldChange(field.id, field.name)}>
                     {field.name}
                   </MenuCommand.Item>
                 ))}

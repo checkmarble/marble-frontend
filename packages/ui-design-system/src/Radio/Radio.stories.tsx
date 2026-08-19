@@ -27,10 +27,9 @@ export const Default: StoryFn<Args> = (args) => {
   return (
     <Radio.Root value={selected} onValueChange={setSelected} size={args.size}>
       {OPTIONS.map((value) => (
-        <label key={value} className="text-s flex items-center gap-sm">
-          <Radio.Item value={value} disabled={args.disabledItems?.includes(value)} />
+        <Radio.Item key={value} value={value} disabled={args.disabledItems?.includes(value)} className="text-s">
           {value}
-        </label>
+        </Radio.Item>
       ))}
     </Radio.Root>
   );

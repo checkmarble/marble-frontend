@@ -151,7 +151,6 @@ export function CreateInboxUserContent({
                       <MenuCommand.Item
                         key={userId}
                         value={`${firstName ?? ''} ${lastName ?? ''}`.trim()}
-                        selected={field.state.value === userId}
                         onSelect={() => {
                           field.handleChange(userId);
                           setUserMenuOpen(false);
@@ -203,7 +202,6 @@ export function CreateInboxUserContent({
                       <MenuCommand.Item
                         key={role}
                         value={role}
-                        selected={field.state.value === role}
                         onSelect={() => {
                           field.handleChange(role);
                           setRoleMenuOpen(false);

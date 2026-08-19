@@ -1,16 +1,14 @@
 import { Callout } from '@app-builder/components';
-import { RadioItem } from '@app-builder/components/Screenings/StatusRadioGroup';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ContinuousScreeningMatch } from '@app-builder/models/continuous-screening';
 import { useReviewContinuousScreeningMatchMutation } from '@app-builder/queries/continuous-screening/review-match';
 import { ReviewScreeningMatchPayload } from '@app-builder/queries/screening/review-screening-match';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { handleSubmit } from '@app-builder/utils/form';
-import { RadioGroup, RadioProvider } from '@ariakit/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal, TextArea } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Radio, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type ReviewScreeningMatchProps = {
@@ -78,27 +76,29 @@ export const ReviewScreeningMatch = ({
 
           <form.Field name="status">
             {(field) => (
-              <RadioProvider>
-                <RadioGroup className="flex flex-col gap-sm">
-                  <RadioItem
+              <>
+                <Radio.Root
+                  value={field.state.value}
+                  onValueChange={(value) => field.handleChange(value as 'confirmed_hit' | 'no_hit')}
+                  className="flex flex-col gap-sm"
+                >
+                  <Radio.Item
                     value="confirmed_hit"
-                    checked={field.state.value === 'confirmed_hit'}
-                    onCheck={() => field.handleChange('confirmed_hit')}
+                    className="text-grey-secondary data-[state=checked]:text-purple-primary rounded-sm transition-colors"
                   >
                     <span className="text-xs">{t('screenings:match.status.confirmed_hit')}</span>
-                  </RadioItem>
-                  <RadioItem
+                  </Radio.Item>
+                  <Radio.Item
                     value="no_hit"
-                    checked={field.state.value === 'no_hit'}
-                    onCheck={() => field.handleChange('no_hit')}
+                    className="text-grey-secondary data-[state=checked]:text-purple-primary rounded-sm transition-colors"
                   >
                     <span className="text-xs">{t('screenings:match.status.no_hit')}</span>
-                  </RadioItem>
-                </RadioGroup>
+                  </Radio.Item>
+                </Radio.Root>
                 {currentStatus === 'confirmed_hit' && automaticallyConfirmScreening ? (
                   <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
                 ) : null}
-              </RadioProvider>
+              </>
             )}
           </form.Field>
 

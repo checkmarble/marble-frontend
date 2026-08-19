@@ -41,7 +41,9 @@ export const ScreeningTermIgnoreList = ({ value, onBlur, onChange, editor }: Scr
             <label htmlFor="remove-terms-from-list" className="text-s">
               {t('scenarios:edit_sanction.remove_terms_from_list')}
             </label>
-            <FieldToolTip>{t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}</FieldToolTip>
+            <FieldToolTip label={t('scenarios:field_tooltip.aria_label')}>
+              {t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}
+            </FieldToolTip>
           </div>
           {value ? (
             <div className="flex flex-col gap-xs">

@@ -19,7 +19,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { isNullish } from 'remeda';
 import invariant from 'tiny-invariant';
-import { MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const iterationLayoutLoader = createServerFn()
@@ -157,7 +156,10 @@ export function VersionSelect({
 
   return (
     <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration} scenario={currentScenario}>
-      <MenuButton className="text-s text-purple-primary border-purple-border focus:border-purple-primary flex items-center rounded-full border py-xs px-sm gap-xs outline-hidden font-normal">
+      <button
+        type="button"
+        className="text-s text-purple-primary border-purple-border focus:border-purple-primary flex items-center rounded-full border py-xs px-sm gap-xs outline-hidden font-normal"
+      >
         <p className="flex gap-xs">
           <span className="capitalize">{currentFormattedVersion}</span>
           {currentFormattedLive ? (
@@ -168,7 +170,7 @@ export function VersionSelect({
           ) : null}
         </p>
         <Icon aria-hidden icon="caret-down" className="size-6 shrink-0" />
-      </MenuButton>
+      </button>
     </ScenarioIterationMenu>
   );
 }

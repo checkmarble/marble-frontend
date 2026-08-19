@@ -1,15 +1,15 @@
+import { Indicator, Item, Root } from '@radix-ui/react-radio-group';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { createContext, forwardRef, type InputHTMLAttributes, useContext, useId } from 'react';
+import { type ComponentPropsWithoutRef, createContext, forwardRef, useContext, useId } from 'react';
 
 import { cn } from '../utils';
 
 type RadioSize = 'regular' | 'small';
 
 type RadioContextValue = {
-  name: string;
   value: string;
   size: RadioSize;
-  onChange: (value: string) => void;
+  disabled: boolean;
 };
 
 const RadioContext = createContext<RadioContextValue | null>(null);
@@ -80,102 +80,94 @@ const radioInnerDot = cva(['rounded-full'], {
 /**
  * Props for Radio.Root component.
  */
-export type RadioRootProps = VariantProps<typeof radioRoot> & {
-  /** The currently selected value */
-  value: string;
-  /** Callback fired when the selected value changes */
-  onValueChange: (value: string) => void;
-  /** Radio items to render */
-  children: React.ReactNode;
-  /** Size shared by all items in this group */
-  size?: RadioSize;
-  /** Additional CSS classes */
-  className?: string;
-  /** HTML name attribute for the radio group (auto-generated if not provided) */
-  name?: string;
-};
+export type RadioRootProps = Omit<ComponentPropsWithoutRef<typeof Root>, 'value' | 'onValueChange' | 'asChild'> &
+  VariantProps<typeof radioRoot> & {
+    /** The currently selected value */
+    value: string;
+    /** Callback fired when the selected value changes */
+    onValueChange: (value: string) => void;
+    /** Size shared by all items in this group */
+    size?: RadioSize;
+  };
 
 export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function RadioRoot(
-  { className, value, onValueChange, children, name, size = 'regular', ...props },
+  { className, value, onValueChange, children, name, size = 'regular', disabled = false, ...props },
   ref,
 ) {
   const generatedName = useId();
-  const radioName = name ?? generatedName;
 
   return (
-    <RadioContext.Provider value={{ name: radioName, value, size, onChange: onValueChange }}>
-      <div {...props} ref={ref} role="radiogroup" className={cn(radioRoot(), className)}>
+    <RadioContext.Provider value={{ value, size, disabled }}>
+      <Root
+        {...props}
+        ref={ref}
+        name={name ?? generatedName}
+        value={value}
+        onValueChange={onValueChange}
+        disabled={disabled}
+        className={cn(radioRoot(), className)}
+      >
         {children}
-      </div>
+      </Root>
     </RadioContext.Provider>
   );
 });
 
 /**
  * Props for Radio.Item component.
+ *
+ * Radix renders the item as a `<button role="radio">`, so the item's label
+ * belongs inside it as children rather than in a wrapping `<label>`.
  */
-export type RadioItemProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  'type' | 'name' | 'checked' | 'onChange' | 'size'
-> & {
-  /** The value of this radio option */
-  value: string;
-  /** Disable this individual radio item */
-  disabled?: boolean;
-  /** Additional CSS classes */
-  className?: string;
-};
+export type RadioItemProps = Omit<ComponentPropsWithoutRef<typeof Item>, 'asChild'>;
 
-export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function RadioItem(
-  { className, value, disabled = false, ...props },
+export const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(function RadioItem(
+  { className, value, disabled = false, children, ...props },
   ref,
 ) {
-  const { name, size, value: selectedValue, onChange } = useRadioContext();
+  const { size, value: selectedValue, disabled: groupDisabled } = useRadioContext();
   const isChecked = selectedValue === value;
+  const isDisabled = disabled || groupDisabled;
 
-  const state = disabled ? (isChecked ? 'selected-disabled' : 'disabled') : isChecked ? 'selected' : 'unselected';
+  const state = isDisabled ? (isChecked ? 'selected-disabled' : 'disabled') : isChecked ? 'selected' : 'unselected';
 
   return (
-    <span className={cn(radioIndicator({ size, state }), className)}>
-      {isChecked ? (
-        <span
-          className={radioInnerDot({
-            size,
-            state: disabled ? 'selected-disabled' : 'selected',
-          })}
-        />
-      ) : null}
-      <input
-        {...props}
-        ref={ref}
-        type="radio"
-        name={name}
-        value={value}
-        checked={isChecked}
-        disabled={disabled}
-        onChange={() => onChange(value)}
-        className={cn('absolute inset-0 opacity-0', disabled ? 'cursor-not-allowed' : 'cursor-pointer')}
-      />
-    </span>
+    <Item
+      {...props}
+      ref={ref}
+      value={value}
+      disabled={isDisabled}
+      className={cn(
+        'flex items-center gap-sm text-left',
+        isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+        className,
+      )}
+    >
+      <span className={radioIndicator({ size, state })}>
+        <Indicator className={radioInnerDot({ size, state: isDisabled ? 'selected-disabled' : 'selected' })} />
+      </span>
+      {children}
+    </Item>
   );
 });
 
 /**
- * A controlled radio group component using the compound component pattern.
+ * A controlled radio group component using the compound component pattern,
+ * built on Radix UI primitives.
+ *
+ * **When to use Radio vs RadioGroup:**
+ * - Use `Radio` for standard form radio buttons with circular indicators
+ * - Use `RadioGroup` for tab-like selection with filled background styling
  *
  * @example
  * ```tsx
  * const [selected, setSelected] = useState('option1');
  *
  * <Radio.Root value={selected} onValueChange={setSelected} size="regular">
- *   <label className="flex items-center gap-sm">
- *     <Radio.Item value="option1" />
- *     Option 1
- *   </label>
- *   <label className="flex items-center gap-sm">
- *     <Radio.Item value="option2" disabled />
+ *   <Radio.Item value="option1">Option 1</Radio.Item>
+ *   <Radio.Item value="option2" disabled>
  *     Option 2 (disabled)
- *   </label>
+ *   </Radio.Item>
  * </Radio.Root>
  * ```
  */
