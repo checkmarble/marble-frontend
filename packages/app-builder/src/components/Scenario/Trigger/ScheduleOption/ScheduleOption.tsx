@@ -6,10 +6,12 @@ export function ScheduleOption({
   schedule,
   setSchedule,
   viewOnly,
+  deduplicationEnabled,
 }: {
   schedule: string;
   setSchedule: (schedule: string) => void;
   viewOnly?: boolean;
+  deduplicationEnabled?: boolean;
 }) {
   if (!viewOnly && isEditableScheduleOption(schedule)) {
     return (
@@ -18,6 +20,7 @@ export function ScheduleOption({
         setScheduleOption={(scheduleOption) => {
           setSchedule(adaptScheduleOptionToCron(scheduleOption));
         }}
+        deduplicationEnabled={deduplicationEnabled}
       />
     );
   }

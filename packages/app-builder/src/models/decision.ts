@@ -55,6 +55,10 @@ export interface ScheduledExecution {
   scenarioTriggerObjectType: string;
   startedAt: string;
   finishedAt: string | null;
+  /** The effective dedup setting for this run (snapshotted from scenario at execution time) */
+  deduplicateObjects: boolean;
+  /** Number of manifest rows consumed (evaluated or skipped by dedup). Only advances for v2 batch executions. */
+  manifestRowsProcessed: number;
 }
 
 export const scheduledExecutionInProgressByStatus = {
@@ -87,6 +91,8 @@ export function adaptScheduledExecution(dto: ScheduledExecutionDto): ScheduledEx
     scenarioTriggerObjectType: dto.scenario_trigger_object_type,
     startedAt: dto.started_at,
     finishedAt: dto.finished_at,
+    deduplicateObjects: dto.deduplicate_objects,
+    manifestRowsProcessed: dto.manifest_rows_processed,
   };
 }
 

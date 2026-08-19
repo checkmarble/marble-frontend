@@ -118,7 +118,12 @@ function Trigger() {
                   <Trans t={t} i18nKey="scenarios:trigger.run_scenario.description.batch_execution" />
                   <ul className="list-outside space-y-xs ps-md">
                     <li>
-                      <ScheduleOption schedule={schedule} setSchedule={setSchedule} viewOnly={editorMode === 'view'} />
+                      <ScheduleOption
+                        schedule={schedule}
+                        setSchedule={setSchedule}
+                        viewOnly={editorMode === 'view'}
+                        deduplicationEnabled={currentScenario.deduplicateBatchObjects}
+                      />
                     </li>
                   </ul>
                 </li>

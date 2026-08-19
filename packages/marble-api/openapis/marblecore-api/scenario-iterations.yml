@@ -203,6 +203,13 @@
         schema:
           type: string
           format: uuid
+    requestBody:
+      description: Optional override for this execution (empty body is valid for backward compatibility)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScheduleExecutionBody'
+      required: false
     responses:
       '201':
         description: Data created
@@ -423,6 +430,14 @@
 
 components:
   schemas:
+    ScheduleExecutionBody:
+      type: object
+      description: Optional parameters for scheduling a scenario execution. Empty body is valid for backward compatibility.
+      properties:
+        deduplicate_objects:
+          type: boolean
+          nullable: true
+          description: Override the scenario's deduplicate setting for this execution only. Null means use the scenario's default.
     ScenarioIterationDto:
       type: object
       required:

@@ -6,6 +6,7 @@ export interface Scenario {
   id: string;
   archived: boolean;
   createdAt: string;
+  deduplicateBatchObjects: boolean;
   description: string;
   liveVersionId?: string;
   name: string;
@@ -18,6 +19,7 @@ export function adaptScenario(dto: ScenarioDto): Scenario {
     id: dto.id,
     archived: dto.archived,
     createdAt: dto.created_at,
+    deduplicateBatchObjects: dto.deduplicate_batch_objects,
     description: dto.description,
     liveVersionId: dto.live_version_id,
     name: dto.name,

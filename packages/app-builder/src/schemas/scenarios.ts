@@ -84,3 +84,9 @@ export const generateRuleInputSchema = z.object({
   instruction: z.string().min(1),
 });
 export type GenerateRuleInput = z.infer<typeof generateRuleInputSchema>;
+
+export const toggleScenarioDeduplicationPayloadSchema = z.object({
+  scenarioId: z.uuid(),
+  enabled: z.boolean(),
+});
+export type ToggleScenarioDeduplicationPayload = z.infer<typeof toggleScenarioDeduplicationPayloadSchema>;

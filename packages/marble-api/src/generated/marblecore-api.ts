@@ -665,10 +665,14 @@ export type Tag = {
     cases_count?: number;
 };
 export type ScheduledExecutionDto = {
+    /** The effective dedup setting for this run (snapshotted from scenario at execution time) */
+    deduplicate_objects: boolean;
     finished_at: string | null;
     id: string;
     /** Whether the execution was manual or not */
     manual: boolean;
+    /** Number of manifest rows consumed (evaluated or skipped by dedup). Only advances for v2 batch executions. */
+    manifest_rows_processed: number;
     /** Number of decisions who were created (matched the trigger condition) */
     number_of_created_decisions: number;
     /** Number of decisions who were executed (even if they did not match the trigger condition) */
@@ -812,6 +816,7 @@ export type ScenarioDto = {
     id: string;
     archived: boolean;
     created_at: string;
+    deduplicate_batch_objects: boolean;
     description: string;
     live_version_id?: string;
     name: string;
@@ -825,6 +830,7 @@ export type ScenarioCreateInputDto = {
 };
 export type ScenarioUpdateInputDto = {
     archived?: boolean;
+    deduplicate_batch_objects?: boolean;
     description?: string;
     name?: string;
 };
@@ -3907,7 +3913,10 @@ export function updateScenarioIteration(scenarioIterationId: string, updateScena
 /**
  * Schedule a scenario execution
  */
-export function scheduleScenarioExecution(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+export function scheduleScenarioExecution(scenarioIterationId: string, body?: {
+    /** Override the scenario's deduplicate setting for this execution only. Null means use the scenario's default. */
+    deduplicate_objects?: boolean | null;
+}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 201;
     } | {
@@ -3919,10 +3928,11 @@ export function scheduleScenarioExecution(scenarioIterationId: string, opts?: Oa
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/schedule-execution`, {
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/schedule-execution`, oazapfts.json({
         ...opts,
-        method: "POST"
-    }));
+        method: "POST",
+        body
+    })));
 }
 /**
  * Validate a scenario iteration by id. A rule or trigger can be override in the body

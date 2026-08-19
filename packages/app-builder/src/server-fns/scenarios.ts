@@ -38,6 +38,7 @@ import {
   duplicateRulePayloadSchema,
   generateRuleInputSchema,
   prepareIterationPayloadSchema,
+  toggleScenarioDeduplicationPayloadSchema,
   unarchiveScenarioPayloadSchema,
   updateScenarioPayloadSchema,
 } from '@app-builder/schemas/scenarios';
@@ -289,6 +290,20 @@ export const updateScenarioFn = createServerFn({ method: 'POST' })
       await context.authInfo.scenario.updateScenario(data);
     } catch {
       throw new Error('Failed to update scenario');
+    }
+  });
+
+export const toggleScenarioDeduplicationFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(toggleScenarioDeduplicationPayloadSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      await context.authInfo.scenario.setScenarioDeduplication({
+        scenarioId: data.scenarioId,
+        enabled: data.enabled,
+      });
+    } catch {
+      throw new Error('Failed to update scenario deduplication');
     }
   });
 

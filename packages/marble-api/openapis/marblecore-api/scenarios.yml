@@ -340,6 +340,8 @@ components:
         created_at:
           type: string
           format: date-time
+        deduplicate_batch_objects:
+          type: boolean
         description:
           type: string
         live_version_id:
@@ -356,6 +358,7 @@ components:
         - id
         - archived
         - created_at
+        - deduplicate_batch_objects
         - description
         - name
         - organization_id
@@ -404,6 +407,8 @@ components:
       type: object
       properties:
         archived:
+          type: boolean
+        deduplicate_batch_objects:
           type: boolean
         description:
           type: string

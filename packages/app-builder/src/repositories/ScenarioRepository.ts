@@ -77,7 +77,7 @@ export interface ScenarioRepository {
   startPublicationPreparation(args: { iterationId: string }): Promise<void>;
   createScenarioPublication(args: CreateScenarioPublicationBody): Promise<void>;
   getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
-  scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
+  scheduleScenarioExecution(args: { iterationId: string; deduplicateObjects?: boolean }): Promise<void>;
   listWorkflowRules(args: { scenarioId: string }): Promise<Rule[]>;
   getWorkflowRule(args: { ruleId: string }): Promise<Rule>;
   createWorkflowRule(args: { scenarioId: string; name: string; fallthrough: boolean }): Promise<Rule>;
@@ -95,6 +95,7 @@ export interface ScenarioRepository {
   deleteWorkflowAction(args: { ruleId: string; actionId: string }): Promise<void>;
   updateWorkflowAction(args: { ruleId: string; actionId: string; action: WorkflowAction }): Promise<WorkflowAction>;
   getLatestRulesReferences(scenarioId: string): Promise<ScenarioRuleLatestVersion[]>;
+  setScenarioDeduplication(args: { scenarioId: string; enabled: boolean }): Promise<Scenario>;
 }
 
 export function makeGetScenarioRepository() {
@@ -235,8 +236,9 @@ export function makeGetScenarioRepository() {
       const { snoozes } = await marbleCoreApiClient.getScenarioIterationActiveSnoozes(scenarioIterationId);
       return adaptSnoozesOfIteration(snoozes);
     },
-    scheduleScenarioExecution: async ({ iterationId }) => {
-      await marbleCoreApiClient.scheduleScenarioExecution(iterationId);
+    scheduleScenarioExecution: async ({ iterationId, deduplicateObjects }) => {
+      const body = deduplicateObjects !== undefined ? { deduplicate_objects: deduplicateObjects } : undefined;
+      await marbleCoreApiClient.scheduleScenarioExecution(iterationId, body);
     },
     listWorkflowRules: async ({ scenarioId }): Promise<Rule[]> => {
       const workflows = await marbleCoreApiClient.listWorkflows(scenarioId);
@@ -307,6 +309,10 @@ export function makeGetScenarioRepository() {
     getLatestRulesReferences: async (scenarioId: string): Promise<ScenarioRuleLatestVersion[]> => {
       const rules = await marbleCoreApiClient.scenarioRuleLatestVersions(scenarioId);
       return rules.map(adaptScenarioRulesLatestVersion);
+    },
+    setScenarioDeduplication: async ({ scenarioId, enabled }) => {
+      const scenario = await marbleCoreApiClient.updateScenario(scenarioId, { deduplicate_batch_objects: enabled });
+      return adaptScenario(scenario);
     },
   });
 }
