@@ -3,6 +3,10 @@ import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/
 import { ScheduledExecutionsList } from '@app-builder/components/Scenario/ScheduledExecutionsList';
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import {
+  getScheduledExecutionsRefetchInterval,
+  useListScheduleExecutions,
+} from '@app-builder/queries/decisions/list-scheduled-executions';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { createFileRoute } from '@tanstack/react-router';
@@ -18,7 +22,7 @@ const scheduledExecutionsLoader = createServerFn()
 
     const scheduledExecutions = await context.authInfo.decision.listScheduledExecutions({ scenarioId });
 
-    return { scheduledExecutions };
+    return { scenarioId, scheduledExecutions };
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions')({
@@ -50,7 +54,13 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
 
 function ScheduledExecutions() {
   const { t } = useTranslation(scenarioI18n);
-  const { scheduledExecutions } = Route.useLoaderData();
+  const { scenarioId, scheduledExecutions } = Route.useLoaderData();
+  const scheduledExecutionsQuery = useListScheduleExecutions({
+    scenarioId,
+    initialData: { scheduledExecutions },
+    refetchInterval: (query) => getScheduledExecutionsRefetchInterval(query.state.data?.scheduledExecutions ?? []),
+  });
+  const currentScheduledExecutions = scheduledExecutionsQuery.data?.scheduledExecutions ?? scheduledExecutions;
 
   return (
     <Page.Main>
@@ -61,10 +71,10 @@ function ScheduledExecutions() {
       <Page.Content width="form">
         <Typo variant="title1" className="text-grey-primary text-m">
           {t('scenarios:home.execution.batch.scheduled_execution', {
-            count: scheduledExecutions.length,
+            count: currentScheduledExecutions.length,
           })}
         </Typo>
-        <ScheduledExecutionsList scheduledExecutions={scheduledExecutions} />
+        <ScheduledExecutionsList scheduledExecutions={currentScheduledExecutions} />
       </Page.Content>
     </Page.Main>
   );

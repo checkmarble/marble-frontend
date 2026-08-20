@@ -12,7 +12,10 @@ export const getDecisionFn = createServerFn({ method: 'GET' })
 
 export const listScheduledExecutionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    const scheduledExecutions = await context.authInfo.decision.listScheduledExecutions();
+  .validator(z.object({ scenarioId: z.string().optional() }).optional())
+  .handler(async ({ context, data }) => {
+    const scheduledExecutions = await context.authInfo.decision.listScheduledExecutions({
+      scenarioId: data?.scenarioId,
+    });
     return { scheduledExecutions };
   });
