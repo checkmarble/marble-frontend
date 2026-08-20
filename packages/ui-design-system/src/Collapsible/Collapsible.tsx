@@ -25,14 +25,25 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(functi
   );
 });
 
+const collapsibleSize = {
+  default: 'p-md lg:p-lg',
+  small: 'p-md',
+  xs: 'p-xs',
+  null: 'p-0',
+};
+
 const collapsibleTitle = cva('group flex cursor-pointer items-center justify-between gap-md font-semibold', {
   variants: {
-    size: {
-      default: 'p-md lg:p-lg',
-      small: 'p-md',
-      xs: 'p-xs',
-      null: 'p-0',
-    },
+    size: collapsibleSize,
+  },
+  defaultVariants: {
+    size: 'default',
+  },
+});
+
+const collapsibleContent = cva('', {
+  variants: {
+    size: collapsibleSize,
   },
   defaultVariants: {
     size: 'default',
@@ -80,15 +91,16 @@ const CollapsibleTitle = forwardRef<
 const content =
   'border-grey-border border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
 
-const CollapsibleContent = forwardRef<HTMLDivElement, VariantProps<typeof collapsibleTitle> & CollapsibleContentProps>(
-  function CollapsibleContent({ children, className, size, ...props }, ref) {
-    return (
-      <Content className={cn(content, className)} {...props} ref={ref}>
-        <div className={collapsibleTitle({ size })}>{children}</div>
-      </Content>
-    );
-  },
-);
+const CollapsibleContent = forwardRef<
+  HTMLDivElement,
+  VariantProps<typeof collapsibleContent> & CollapsibleContentProps
+>(function CollapsibleContent({ children, className, size, ...props }, ref) {
+  return (
+    <Content className={cn(content, className)} {...props} ref={ref}>
+      <div className={collapsibleContent({ size })}>{children}</div>
+    </Content>
+  );
+});
 
 export const Collapsible = {
   Container: CollapsibleContainer,
