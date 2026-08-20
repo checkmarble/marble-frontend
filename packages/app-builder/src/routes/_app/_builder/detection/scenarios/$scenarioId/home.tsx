@@ -32,8 +32,9 @@ import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Checkbox, CtaV2ClassName, cn, HiddenInputs, Separator, Switch, Tooltip, Typo } from 'ui-design-system';
+import { Button, Checkbox, CtaV2ClassName, cn, Separator, Switch, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
 
 const homeLoader = createServerFn()
   .middleware([authMiddleware])
@@ -66,14 +67,19 @@ const homeLoader = createServerFn()
     };
   });
 
+const triggerManualExecutionPayloadSchema = z.object({
+  params: z.object({ iterationId: z.string() }),
+  forceRescore: z.boolean().optional(),
+});
+
 const triggerManualExecutionAction = createServerFn()
   .middleware([authMiddleware])
-  .validator((input: { params?: Record<string, string>; forceRescore?: boolean } | undefined) => input)
+  .validator(triggerManualExecutionPayloadSchema)
   .handler(async function triggerManualExecutionAction({ data, context }) {
     const { scenario } = context.authInfo;
     await scenario.scheduleScenarioExecution({
-      iterationId: data?.params?.['iterationId']!,
-      deduplicateObjects: data?.forceRescore ? false : undefined,
+      iterationId: data.params.iterationId,
+      deduplicateObjects: data.forceRescore ? false : undefined,
     });
     return { status: 'success' as const };
   });
@@ -362,13 +368,19 @@ function BatchSection({
 
   const isExecutionOngoing = hasInProgressScheduledExecution(scheduledExecutions);
 
-  const handleToggleDeduplicate = async (checked: boolean) => {
-    await toggleDeduplicationMutation.mutateAsync({
-      scenarioId: currentScenario.id,
-      enabled: checked,
-    });
-    toast.success(t('common:success.save'));
-    revalidate();
+  const handleToggleDeduplicate = (checked: boolean) => {
+    toggleDeduplicationMutation.mutate(
+      { scenarioId: currentScenario.id, enabled: checked },
+      {
+        onSuccess: () => {
+          toast.success(t('common:success.save'));
+          revalidate();
+        },
+        onError: () => {
+          toast.error(t('common:errors.unknown'));
+        },
+      },
+    );
   };
 
   return (
@@ -486,7 +498,6 @@ function ManualTriggerScenarioExecutionForm({
         form.handleSubmit();
       }}
     >
-      <HiddenInputs iterationId={iterationId} />
       <div className="flex flex-row items-center gap-md">
         <Button
           type="submit"
@@ -500,8 +511,9 @@ function ManualTriggerScenarioExecutionForm({
         {scenario.deduplicateBatchObjects ? (
           <form.Field name="forceRescore">
             {(field) => (
-              <label className="flex flex-row items-center gap-sm cursor-pointer scale-90 origin-left">
+              <label htmlFor="force-rescore" className="flex flex-row items-center gap-sm cursor-pointer">
                 <Checkbox
+                  size="small"
                   checked={field.state.value}
                   onCheckedChange={(checked) => {
                     if (checked === 'indeterminate') return;
