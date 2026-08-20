@@ -66,7 +66,12 @@ export function ScheduleOptionEditor({
             />
             {deduplicationEnabled ? (
               <Tooltip.Default content={t('scenarios:deduplication_badge_tooltip')} arrow={true} delayDuration={0}>
-                <Tag color="purple" size="small" className="cursor-help">
+                <Tag
+                  color="purple"
+                  size="small"
+                  className="cursor-help focus-visible:outline-2 outline-offset-2 focus-visible:outline-purple-primary"
+                  tabIndex={0}
+                >
                   <Icon icon="copy" className="size-3" aria-hidden />
                   {t('scenarios:deduplication_badge')}
                 </Tag>
