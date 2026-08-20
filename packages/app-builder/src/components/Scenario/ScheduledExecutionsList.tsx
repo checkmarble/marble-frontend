@@ -16,6 +16,9 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
 
+  // Only show manifest_rows_processed column if at least one execution has deduplicate_objects enabled
+  const showManifestRowsProcessed = scheduledExecutions.some((e) => e.deduplicateObjects);
+
   const columns = useMemo(
     () => [
       columnHelper.accessor((s) => s.numberOfCreatedDecisions, {
@@ -75,6 +78,25 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
         header: t('scenarios:scheduled_execution.number_of_planned_decisions'),
         size: 100,
       }),
+      ...(showManifestRowsProcessed
+        ? [
+            columnHelper.accessor((s) => s.manifestRowsProcessed, {
+              id: 'manifest-rows-processed',
+              cell: ({ getValue }) => {
+                const manifestRowsProcessed = getValue();
+                return (
+                  <span>
+                    {formatNumber(manifestRowsProcessed, {
+                      language,
+                    })}
+                  </span>
+                );
+              },
+              header: t('scenarios:scheduled_execution.manifest_rows_processed'),
+              size: 100,
+            }),
+          ]
+        : []),
       columnHelper.accessor((s) => s.status, {
         id: 'status',
 
@@ -96,7 +118,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
         },
       }),
     ],
-    [formatDateTime, language, t],
+    [formatDateTime, language, t, showManifestRowsProcessed],
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scheduledExecutions,

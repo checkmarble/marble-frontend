@@ -16,6 +16,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { hasInProgressScheduledExecution, type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
+import { useToggleScenarioDeduplicationMutation } from '@app-builder/queries/scenarios/toggle-deduplication';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { isEditScenarioAvailable, isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
@@ -28,9 +29,10 @@ import { createServerFn } from '@tanstack/react-start';
 import { type ParseKeys } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, cn, HiddenInputs, Tooltip, Typo } from 'ui-design-system';
+import { Button, Checkbox, CtaV2ClassName, cn, Separator, Switch, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -65,16 +67,20 @@ const homeLoader = createServerFn()
     };
   });
 
-const scenarioExecutionSchema = z.object({
-  iterationId: z.string(),
+const triggerManualExecutionPayloadSchema = z.object({
+  params: z.object({ iterationId: z.string() }),
+  forceRescore: z.boolean().optional(),
 });
 
 const triggerManualExecutionAction = createServerFn()
   .middleware([authMiddleware])
-  .validator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator(triggerManualExecutionPayloadSchema)
   .handler(async function triggerManualExecutionAction({ data, context }) {
     const { scenario } = context.authInfo;
-    await scenario.scheduleScenarioExecution({ iterationId: data?.params?.['iterationId']! });
+    await scenario.scheduleScenarioExecution({
+      iterationId: data.params.iterationId,
+      deduplicateObjects: data.forceRescore ? false : undefined,
+    });
     return { status: 'success' as const };
   });
 
@@ -171,6 +177,7 @@ function ScenarioHome() {
           <div className={cn('grid grid-cols-2', pageLayoutGutter.gap)}>
             <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
             <BatchSection
+              currentScenario={currentScenario}
               scenarioId={currentScenario.id}
               isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
               scheduledExecutions={scheduledExecutions}
@@ -323,12 +330,14 @@ function TabHeader({ title, spinner }: { title: string; spinner: boolean }) {
 }
 
 function BatchSection({
+  currentScenario,
   scenarioId,
   scheduledExecutions,
   liveIterationSchedule,
   liveIterationId,
   isManualTriggerScenarioAvailable,
 }: {
+  currentScenario: Scenario;
   scenarioId: string;
   scheduledExecutions: ScheduledExecution[];
   liveIterationSchedule?: string;
@@ -338,7 +347,9 @@ function BatchSection({
   const {
     t,
     i18n: { language },
-  } = useTranslation(['scenarios']);
+  } = useTranslation(['common', 'scenarios']);
+  const revalidate = useLoaderRevalidator();
+  const toggleDeduplicationMutation = useToggleScenarioDeduplicationMutation();
 
   const isLive = !!liveIterationId;
   const schedule = liveIterationSchedule;
@@ -357,6 +368,21 @@ function BatchSection({
 
   const isExecutionOngoing = hasInProgressScheduledExecution(scheduledExecutions);
 
+  const handleToggleDeduplicate = (checked: boolean) => {
+    toggleDeduplicationMutation.mutate(
+      { scenarioId: currentScenario.id, enabled: checked },
+      {
+        onSuccess: () => {
+          toast.success(t('common:success.save'));
+          revalidate();
+        },
+        onError: () => {
+          toast.error(t('common:errors.unknown'));
+        },
+      },
+    );
+  };
+
   return (
     <article className="flex flex-col">
       <TabHeader title={t('scenarios:home.execution.batch')} spinner={isExecutionOngoing} />
@@ -366,6 +392,28 @@ function BatchSection({
           isExecutionOngoing && 'border-purple-primary',
         )}
       >
+        <div className="flex flex-row items-center gap-md">
+          <Tooltip.Default
+            content={t('scenarios:home.execution.batch.deduplicate_batch_objects_tooltip')}
+            arrow={true}
+            delayDuration={0}
+          >
+            <label htmlFor="deduplicate-toggle" className="flex flex-row items-center gap-sm cursor-pointer">
+              <Switch
+                id="deduplicate-toggle"
+                checked={currentScenario.deduplicateBatchObjects}
+                onCheckedChange={handleToggleDeduplicate}
+                disabled={toggleDeduplicationMutation.isPending}
+              />
+              <span className="text-sm font-medium">
+                {t('scenarios:home.execution.batch.deduplicate_batch_objects')}
+              </span>
+            </label>
+          </Tooltip.Default>
+        </div>
+
+        <Separator className="bg-grey-border" />
+
         <p className="flex flex-col gap-md">
           <span>{t('scenarios:home.execution.batch.callout')}</span>
           {formattedSchedule ? (
@@ -384,32 +432,49 @@ function BatchSection({
           ) : null}
         </p>
 
-        <div className="flex flex-row gap-md mt-auto">
+        <div className="flex flex-col gap-md">
           {isManualTriggerScenarioAvailable && isLive && liveIterationId ? (
-            <ManualTriggerScenarioExecutionForm iterationId={liveIterationId} disabled={isExecutionOngoing} />
+            <ManualTriggerScenarioExecutionForm
+              iterationId={liveIterationId}
+              scenario={currentScenario}
+              disabled={isExecutionOngoing}
+            />
           ) : null}
-          <Link
-            className={CtaV2ClassName({ variant: 'secondary' })}
-            to="/detection/scenarios/$scenarioId/scheduled-executions"
-            params={{ scenarioId: fromUUIDtoSUUID(scenarioId) }}
-          >
-            {t('scenarios:home.execution.batch.scheduled_execution', {
-              count: scheduledExecutions.length,
-            })}
-          </Link>
         </div>
+
+        <Separator className="bg-grey-border" />
+
+        <Link
+          className={CtaV2ClassName({ variant: 'secondary' })}
+          to="/detection/scenarios/$scenarioId/scheduled-executions"
+          params={{ scenarioId: fromUUIDtoSUUID(scenarioId) }}
+        >
+          {t('scenarios:home.execution.batch.scheduled_execution', {
+            count: scheduledExecutions.length,
+          })}
+        </Link>
       </div>
     </article>
   );
 }
 
-function ManualTriggerScenarioExecutionForm({ iterationId, disabled }: { iterationId: string; disabled: boolean }) {
+function ManualTriggerScenarioExecutionForm({
+  iterationId,
+  scenario,
+  disabled,
+}: {
+  iterationId: string;
+  scenario: Scenario;
+  disabled: boolean;
+}) {
   const { t } = useTranslation(['scenarios']);
   const revalidate = useLoaderRevalidator();
 
   const mutation = useMutation({
-    mutationFn: async (value: { iterationId: string }) => {
-      return triggerManualExecutionAction({ data: { params: { iterationId: value.iterationId } } });
+    mutationFn: async (value: { iterationId: string; forceRescore?: boolean }) => {
+      return triggerManualExecutionAction({
+        data: { params: { iterationId: value.iterationId }, forceRescore: value.forceRescore },
+      });
     },
     onSuccess: () => {
       revalidate();
@@ -422,10 +487,7 @@ function ManualTriggerScenarioExecutionForm({ iterationId, disabled }: { iterati
         mutation.mutate(value);
       }
     },
-    defaultValues: { iterationId },
-    validators: {
-      onSubmitAsync: scenarioExecutionSchema,
-    },
+    defaultValues: { iterationId, forceRescore: false },
   });
 
   return (
@@ -436,11 +498,36 @@ function ManualTriggerScenarioExecutionForm({ iterationId, disabled }: { iterati
         form.handleSubmit();
       }}
     >
-      <HiddenInputs iterationId={iterationId} />
-      <Button type="submit" disabled={disabled || mutation.isPending} appearance="stroked">
-        <Icon icon="play" className="size-4 shrink-0" aria-hidden />
-        {t('scenarios:home.execution.batch.trigger_manual_execution')}
-      </Button>
+      <div className="flex flex-row items-center gap-md">
+        <Button
+          type="submit"
+          disabled={disabled || mutation.isPending}
+          appearance="stroked"
+          className="shrink-0 whitespace-nowrap"
+        >
+          <Icon icon="play" className="size-4 shrink-0" aria-hidden />
+          {t('scenarios:home.execution.batch.trigger_manual_execution')}
+        </Button>
+        {scenario.deduplicateBatchObjects ? (
+          <form.Field name="forceRescore">
+            {(field) => (
+              <label htmlFor="force-rescore" className="flex flex-row items-center gap-sm cursor-pointer">
+                <Checkbox
+                  size="small"
+                  checked={field.state.value}
+                  onCheckedChange={(checked) => {
+                    if (checked === 'indeterminate') return;
+                    field.handleChange(checked);
+                  }}
+                  onBlur={field.handleBlur}
+                  id="force-rescore"
+                />
+                <span className="text-sm">{t('scenarios:home.execution.batch.force_rescore_all_objects')}</span>
+              </label>
+            )}
+          </form.Field>
+        ) : null}
+      </div>
     </form>
   );
 }

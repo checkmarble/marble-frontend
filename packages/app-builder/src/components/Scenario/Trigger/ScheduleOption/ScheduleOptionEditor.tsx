@@ -1,8 +1,8 @@
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { Label } from '@radix-ui/react-label';
 import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
-import { Checkbox, SelectV2 } from 'ui-design-system';
+import { Checkbox, SelectV2, Tag, Tooltip } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { scenarioI18n } from '../../scenario-i18n';
 import { type ScheduleOption } from './models';
@@ -16,16 +16,18 @@ const textForFrequency = {
 export function ScheduleOptionEditor({
   scheduleOption,
   setScheduleOption,
+  deduplicationEnabled,
 }: {
   scheduleOption: ScheduleOption;
   setScheduleOption: (schedule: ScheduleOption) => void;
+  deduplicationEnabled?: boolean;
 }) {
   const { t } = useTranslation(scenarioI18n);
   const language = useFormatLanguage();
 
   return (
     <>
-      <div className="text-s flex items-center gap-xs">
+      <label htmlFor="scheduleScenario" className="text-s flex items-center gap-xs font-normal cursor-pointer">
         <Checkbox
           id="scheduleScenario"
           name="scheduleScenario"
@@ -37,8 +39,8 @@ export function ScheduleOptionEditor({
             })
           }
         />
-        <Label htmlFor="scheduleScenario">{t('scenarios:trigger.schedule_scenario.option')}</Label>
-      </div>
+        {t('scenarios:trigger.schedule_scenario.option')}
+      </label>
       {scheduleOption.isScenarioScheduled ? (
         <>
           <div className="text-s flex items-center gap-sm">
@@ -62,6 +64,19 @@ export function ScheduleOptionEditor({
               onChange={(value: string) => setScheduleOption({ ...scheduleOption, scheduleDetail: value })}
               value={scheduleOption.scheduleDetail}
             />
+            {deduplicationEnabled ? (
+              <Tooltip.Default content={t('scenarios:deduplication_badge_tooltip')} arrow={true} delayDuration={0}>
+                <Tag
+                  color="purple"
+                  size="small"
+                  className="cursor-help focus-visible:outline-2 outline-offset-2 focus-visible:outline-purple-primary"
+                  tabIndex={0}
+                >
+                  <Icon icon="copy" className="size-3" aria-hidden />
+                  {t('scenarios:deduplication_badge')}
+                </Tag>
+              </Tooltip.Default>
+            ) : null}
           </div>
           {scheduleOption.frequency === 'monthly' && ['29', '30', '31'].includes(scheduleOption.scheduleDetail) ? (
             <p className="text-s text-purple-primary">
