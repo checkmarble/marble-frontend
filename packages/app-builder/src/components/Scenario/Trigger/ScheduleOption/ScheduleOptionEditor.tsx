@@ -1,5 +1,4 @@
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { Label } from '@radix-ui/react-label';
 import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { Checkbox, SelectV2, Tag, Tooltip } from 'ui-design-system';
@@ -28,7 +27,7 @@ export function ScheduleOptionEditor({
 
   return (
     <>
-      <div className="text-s flex items-center gap-xs">
+      <label htmlFor="scheduleScenario" className="text-s flex items-center gap-xs font-normal cursor-pointer">
         <Checkbox
           id="scheduleScenario"
           name="scheduleScenario"
@@ -40,8 +39,8 @@ export function ScheduleOptionEditor({
             })
           }
         />
-        <Label htmlFor="scheduleScenario">{t('scenarios:trigger.schedule_scenario.option')}</Label>
-      </div>
+        {t('scenarios:trigger.schedule_scenario.option')}
+      </label>
       {scheduleOption.isScenarioScheduled ? (
         <>
           <div className="text-s flex items-center gap-sm">
