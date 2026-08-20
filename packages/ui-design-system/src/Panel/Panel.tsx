@@ -1,6 +1,13 @@
 import { Slot } from '@radix-ui/react-slot';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { type ComponentPropsWithoutRef, forwardRef, type ReactNode, useEffect, useRef } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  type MouseEventHandler,
+  type ReactNode,
+  useEffect,
+  useRef,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
@@ -79,8 +86,9 @@ function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
   return <PanelSharpFactory.Provider value={sharp}>{children}</PanelSharpFactory.Provider>;
 }
 
-interface PanelTriggerProps extends ComponentPropsWithoutRef<'button'> {
+interface PanelTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
   asChild?: boolean;
+  onClick?: MouseEventHandler<HTMLElement>;
 }
 
 const PanelTrigger = forwardRef<HTMLButtonElement, PanelTriggerProps>(function PanelTrigger(

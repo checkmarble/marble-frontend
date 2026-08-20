@@ -62,20 +62,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {children}
         <ClientOnly>
           <Toaster />
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+              triggerHidden: true,
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
         </ClientOnly>
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-            triggerHidden: true,
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
         <Scripts />
       </body>
     </html>

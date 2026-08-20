@@ -16,13 +16,16 @@
     "cookie": "^0.7.2",
     "cross-spawn": "^7.0.5",
     "minimatch": "9.0.7",
-    "glob": "10.5.0"
+    "glob": "10.5.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "packageManager": "bun@1.3.10",
   "private": true,
   "scripts": {
     "format:write": "biome format . --write",
     "format:check": "biome format .",
+    "postinstall": "node scripts/link-single-react.mjs",
     "test:all": "bun run -F '*' unit-tests",
     "update-deps": "bun update --latest -r -i; clear; bun pm ls --all > packages-licenses.txt"
   },
@@ -32,6 +35,8 @@
     "packages/*"
   ],
   "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "tailwindcss-grid-areas": "^0.1.1"
   }
 }

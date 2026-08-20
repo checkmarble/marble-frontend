@@ -17,32 +17,54 @@ const externalNativeModules: Plugin = {
 
 const plugins = [
   devtools(),
+  tanstackStart(),
   nitro({
     config: {
       preset: 'node-server',
     },
   }),
   externalNativeModules,
-  // this is the plugin that enables path aliases
-  viteTsConfigPaths(),
   tailwindcss(),
-  tanstackStart(),
-  viteReact({
-    // babel: {
-    //   plugins: ['babel-plugin-react-compiler'],
-    // },
-  }),
+  viteTsConfigPaths(),
+  viteReact(),
 ] as Plugin[];
 
 const config = defineConfig({
   plugins,
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
+      'react/jsx-dev-runtime',
+      '@tanstack/history',
+      '@tanstack/router-core',
+      '@tanstack/router-core/isServer',
+      '@tanstack/router-core/ssr/client',
+      '@tanstack/router-core/ssr/server',
+      'h3-v2',
+      'seroval',
+    ],
+  },
   environments: {
     client: {
+      resolve: {
+        dedupe: ['react', 'react-dom'],
+      },
       build: {
         assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined),
       },
     },
     ssr: {
+      resolve: {
+        dedupe: ['react', 'react-dom'],
+      },
+      optimizeDeps: {
+        include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+      },
       build: {
         assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined),
       },
