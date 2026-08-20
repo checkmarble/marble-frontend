@@ -57,6 +57,22 @@ export interface ScheduledExecution {
   finishedAt: string | null;
 }
 
+export const scheduledExecutionInProgressByStatus = {
+  pending: true,
+  processing: true,
+  success: false,
+  failure: false,
+  partial_failure: false,
+} as const satisfies Record<ScheduledExecution['status'], boolean>;
+
+export function isScheduledExecutionInProgress(status: ScheduledExecution['status']) {
+  return scheduledExecutionInProgressByStatus[status];
+}
+
+export function hasInProgressScheduledExecution(executions: readonly Pick<ScheduledExecution, 'status'>[]) {
+  return executions.some((execution) => isScheduledExecutionInProgress(execution.status));
+}
+
 export function adaptScheduledExecution(dto: ScheduledExecutionDto): ScheduledExecution {
   return {
     id: dto.id,

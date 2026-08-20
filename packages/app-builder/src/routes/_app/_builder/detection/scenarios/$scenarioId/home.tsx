@@ -13,7 +13,7 @@ import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { type ScheduledExecution } from '@app-builder/models/decision';
+import { hasInProgressScheduledExecution, type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
@@ -355,9 +355,7 @@ function BatchSection({
     }
   }, [language, schedule]);
 
-  const isExecutionOngoing = scheduledExecutions.some((execution) =>
-    ['pending', 'processing'].includes(execution.status),
-  );
+  const isExecutionOngoing = hasInProgressScheduledExecution(scheduledExecutions);
 
   return (
     <article className="flex flex-col">
