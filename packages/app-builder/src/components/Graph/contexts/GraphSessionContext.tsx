@@ -26,11 +26,21 @@ export type GraphRecordRef = {
   recordId: string;
 };
 
+export const GRAPH_DEGREE_OPTIONS = [1, 2, 3, 4, 5] as const;
+export type GraphDegree = (typeof GRAPH_DEGREE_OPTIONS)[number];
+export const DEFAULT_GRAPH_DEGREES: GraphDegree = 2;
+
+export function isGraphDegree(value: number): value is GraphDegree {
+  return (GRAPH_DEGREE_OPTIONS as readonly number[]).includes(value);
+}
+
 export type GraphSessionContextValue = {
   recordType: string;
   setRecordType: (value: string) => void;
   recordId: string;
   setRecordId: (value: string) => void;
+  degrees: GraphDegree;
+  setDegrees: (value: GraphDegree) => void;
 
   graphData: GraphData | null;
   /** Incremented on every fetch; keys the graph subtree so it remounts on new data. */
@@ -76,6 +86,8 @@ export function GraphSessionProvider({
 
   const [recordType, setRecordType] = useState(seed?.recordType ?? '');
   const [recordId, setRecordId] = useState(seed?.recordId ?? '');
+  const [degrees, setDegrees] = useState<GraphDegree>(DEFAULT_GRAPH_DEGREES);
+  const [committedDegrees, setCommittedDegrees] = useState<GraphDegree>(DEFAULT_GRAPH_DEGREES);
   const [loadedRecord, setLoadedRecord] = useState<GraphRecordRef | null>(seed);
   const [selectedTableNames, setSelectedTableNames] = useState(initialTableNames);
   /** `null` means "every group", so groups loading in later are included without a sync effect. */
@@ -112,6 +124,7 @@ export function GraphSessionProvider({
     {
       recordType: loadedRecord?.recordType ?? '',
       recordId: loadedRecord?.recordId ?? '',
+      degrees: committedDegrees,
       ...committedFilterParams,
     },
     loadedRecord != null,
@@ -127,15 +140,26 @@ export function GraphSessionProvider({
     if (!recordType || !trimmedRecordId) return;
 
     const sameFilters = graphFilterParamsEqual(draftFilterParams, committedFilterParams);
+    const sameDegrees = degrees === committedDegrees;
     setCommittedFilterParams(draftFilterParams);
+    setCommittedDegrees(degrees);
 
     if (loadedRecord?.recordType === recordType && loadedRecord?.recordId === trimmedRecordId) {
-      if (sameFilters) void refetch();
+      if (sameFilters && sameDegrees) void refetch();
       return;
     }
 
     setLoadedRecord({ recordType, recordId: trimmedRecordId });
-  }, [committedFilterParams, draftFilterParams, loadedRecord, recordId, recordType, refetch]);
+  }, [
+    committedDegrees,
+    committedFilterParams,
+    degrees,
+    draftFilterParams,
+    loadedRecord,
+    recordId,
+    recordType,
+    refetch,
+  ]);
 
   const refreshGraph = useCallback(() => {
     setCommittedFilterParams(draftFilterParams);
@@ -180,6 +204,8 @@ export function GraphSessionProvider({
       setRecordType,
       recordId,
       setRecordId,
+      degrees,
+      setDegrees,
       graphData: data ?? null,
       graphGeneration: dataUpdatedAt,
       isGeneratingGraph: isFetching,
@@ -196,6 +222,7 @@ export function GraphSessionProvider({
     [
       recordType,
       recordId,
+      degrees,
       data,
       dataUpdatedAt,
       isFetching,

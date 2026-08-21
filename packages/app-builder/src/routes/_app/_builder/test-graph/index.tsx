@@ -1,30 +1,52 @@
 import { Page } from '@app-builder/components';
-import { useGraphSession } from '@app-builder/components/Graph/contexts/GraphSessionContext';
+import {
+  GRAPH_DEGREE_OPTIONS,
+  type GraphDegree,
+  isGraphDegree,
+  useGraphSession,
+} from '@app-builder/components/Graph/contexts/GraphSessionContext';
 import { GraphOptionSelect } from '@app-builder/components/Graph/GraphOptionSelect';
 import { SessionGraphCanvas } from '@app-builder/components/Graph/SessionGraphCanvas';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { createFileRoute } from '@tanstack/react-router';
-import { Button, Card, Input } from 'ui-design-system';
+import { Button, Card, Input, ThresholdRange, type ThresholdRangeStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const Route = createFileRoute('/_app/_builder/test-graph/')({
   component: TestGraphRoute,
 });
 
+const GRAPH_DEGREE_COLORS = {
+  1: 'var(--color-green-primary)',
+  2: 'var(--color-green-primary)',
+  3: 'var(--color-yellow-primary)',
+  4: 'var(--color-orange-primary)',
+  5: 'var(--color-red-primary)',
+} as const satisfies Record<GraphDegree, string>;
+
+const GRAPH_DEGREE_STEPS: ThresholdRangeStep[] = GRAPH_DEGREE_OPTIONS.map((value) => ({
+  value,
+  color: GRAPH_DEGREE_COLORS[value],
+}));
+
 function StartRecordPicker({
   tableNames,
   recordType,
   recordId,
+  degrees,
   onRecordTypeChange,
   onRecordIdChange,
+  onDegreesChange,
   onLoad,
   isLoading,
 }: {
   tableNames: string[];
   recordType: string;
   recordId: string;
+  degrees: GraphDegree;
   onRecordTypeChange: (value: string) => void;
   onRecordIdChange: (value: string) => void;
+  onDegreesChange: (value: GraphDegree) => void;
   onLoad: () => void;
   isLoading: boolean;
 }) {
@@ -61,6 +83,18 @@ function StartRecordPicker({
             className="min-w-56"
           />
         </div>
+        <ThresholdRange
+          title="Degrees"
+          value={degrees}
+          onChange={(value) => {
+            if (isGraphDegree(value)) onDegreesChange(value);
+          }}
+          values={GRAPH_DEGREE_STEPS}
+          initialColor={GRAPH_DEGREE_COLORS[1]}
+          min={GRAPH_DEGREE_OPTIONS[0]}
+          max={GRAPH_DEGREE_OPTIONS.at(-1)}
+          className="w-56 pb-md"
+        />
         <Button variant="primary" disabled={!recordType || !recordId.trim() || isLoading} type="submit">
           {isLoading ? (
             <>
@@ -81,7 +115,8 @@ function StartRecordPicker({
 
 function TestGraphRoute() {
   const dataModel = useDataModel();
-  const { recordType, setRecordType, recordId, setRecordId, isGeneratingGraph, loadGraph } = useGraphSession();
+  const { recordType, setRecordType, recordId, setRecordId, degrees, setDegrees, isGeneratingGraph, loadGraph } =
+    useGraphSession();
 
   const tableNames = dataModel.map((table) => table.name).sort((a, b) => a.localeCompare(b));
 
@@ -92,8 +127,10 @@ function TestGraphRoute() {
           tableNames={tableNames}
           recordType={recordType}
           recordId={recordId}
+          degrees={degrees}
           onRecordTypeChange={setRecordType}
           onRecordIdChange={setRecordId}
+          onDegreesChange={setDegrees}
           onLoad={loadGraph}
           isLoading={isGeneratingGraph}
         />
