@@ -5,7 +5,7 @@ type CommentContextValue = {
     objectId: string;
     objectType: string;
   } | null;
-  set: (value: { objectId: string; objectType: string }) => void;
+  set: (value: { objectId: string; objectType: string } | null) => void;
 };
 
 export const CommentContext = createSimpleContext<CommentContextValue>('CommentContext');

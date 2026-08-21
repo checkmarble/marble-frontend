@@ -4,7 +4,7 @@ import { DocumentsList } from '@app-builder/components/ClientDetail/DocumentsLis
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModel, DataModelObject } from '@app-builder/models';
-import { CaseDetail, PivotObject } from '@app-builder/models/cases';
+import { CaseDetail, getPivotObjectKey, PivotObject } from '@app-builder/models/cases';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
@@ -14,14 +14,20 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, Popover, Tag } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, Popover, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
+import { pageLayoutGutter } from '../Page/page-layout';
 import { ClientCommentsListCard } from './ClientComments';
 import { ClientRelatedAlertCasesCard } from './ClientRelatedAlertCasesCard';
+import { isGraphEligiblePivot } from './graph-pivots';
 import { CommentContext } from './hooks/comment-context';
+import { MainLinksGraph, mainLinksGraphMinHeight } from './MainLinksGraph';
 import { NavigationOptions } from './NavigationOptions';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
+
+/** Fills the viewport so the embedded graph gets its height without the page scrolling. */
+const clientColumnMinHeight = 'min-h-[calc(100dvh-12rem)]';
 
 export type CaseManagerClientsPageProps = {
   caseDetail: CaseDetail;
@@ -52,10 +58,11 @@ export function CaseManagerClientsPage({
   const metadata = client360Tables.find((t) => t.name === pivotObject.pivotObjectName);
   const entityName = metadata?.alias || metadata?.name || pivotObject.pivotObjectName;
   const clientName = metadata ? (pivotObject.pivotObjectData.data[metadata.caption_field] as string) : '';
+  const showMainLinks = isGraphEligiblePivot(pivotObject, dataModel);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-      <div className="flex flex-col gap-sm">
+    <div className={cn('grid grid-cols-1 lg:grid-cols-2', pageLayoutGutter.gap)}>
+      <div className={cn('flex flex-col gap-sm', showMainLinks && ingestedInfo && clientColumnMinHeight)}>
         <div className="flex justify-between items-center">
           <span className="font-medium">{clientName}</span>
           <div className="flex items-center gap-sm">
@@ -107,6 +114,27 @@ export function CaseManagerClientsPage({
             ) : null}
           </div>
         </Card>
+        {showMainLinks && ingestedInfo ? (
+          <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
+            <div className="flex shrink-0 justify-between items-center">
+              <Typo variant="title2">{t('cases:manager.clients.main_links_title')}</Typo>
+              <Link
+                from="/cases/s/$caseId/clients/$pivotValue"
+                to="/cases/s/$caseId/links/$pivotValue"
+                params={{ pivotValue: getPivotObjectKey(pivotObject) }}
+                className={CtaV2ClassName({ appearance: 'link', variant: 'primary' })}
+              >
+                <Icon icon="eye" className="size-4" />
+                {t('common:see_all')}
+              </Link>
+            </div>
+            <MainLinksGraph
+              objectType={ingestedInfo.objectType}
+              objectId={ingestedInfo.objectId}
+              dataModel={dataModel}
+            />
+          </div>
+        ) : null}
       </div>
       <div className="flex flex-col gap-lg">
         {ingestedInfo ? (
