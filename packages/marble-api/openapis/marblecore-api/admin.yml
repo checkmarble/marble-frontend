@@ -7,7 +7,7 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: The apikeys corresponding to the current organization (present in the JWT)
         content:
           application/json:
@@ -19,13 +19,13 @@
                 api_keys:
                   type: array
                   items:
-                    $ref: '#/components/schemas/ApiKeyDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                    $ref: "#/components/schemas/ApiKeyDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   post:
     tags:
       - ApiKeys
@@ -34,14 +34,14 @@
     security:
       - bearerAuth: []
     requestBody:
-      description: 'Describe the api key to create'
+      description: "Describe the api key to create"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateApiKeyBody'
+            $ref: "#/components/schemas/CreateApiKeyBody"
       required: true
     responses:
-      '200':
+      "200":
         description: The created api key
         content:
           application/json:
@@ -51,13 +51,13 @@
                 - api_key
               properties:
                 api_key:
-                  $ref: '#/components/schemas/CreatedApiKeyDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/CreatedApiKeyDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /apikeys/{apiKeyId}:
   delete:
     tags:
@@ -75,14 +75,14 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: The api key has been deleted
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /users:
   get:
     tags:
@@ -93,7 +93,7 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: The list of users present in the database
         content:
           application/json:
@@ -105,13 +105,13 @@
                 users:
                   type: array
                   items:
-                    $ref: '#/components/schemas/UserDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                    $ref: "#/components/schemas/UserDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   post:
     tags:
       - Admin
@@ -125,10 +125,10 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateUser'
+            $ref: "#/components/schemas/CreateUser"
       required: true
     responses:
-      '200':
+      "200":
         description: The created user
         content:
           application/json:
@@ -138,13 +138,13 @@
                 - user
               properties:
                 user:
-                  $ref: '#/components/schemas/UserDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/UserDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /users/{userId}:
   get:
     tags:
@@ -163,7 +163,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The user corresponding to the provided `userId`
         content:
           application/json:
@@ -173,13 +173,13 @@
                 - user
               properties:
                 user:
-                  $ref: '#/components/schemas/UserDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/UserDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   delete:
     tags:
       - Admin
@@ -197,14 +197,14 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: The user has been deleted
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   patch:
     tags:
       - Admin
@@ -226,10 +226,10 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateUser'
+            $ref: "#/components/schemas/UpdateUser"
       required: true
     responses:
-      '200':
+      "200":
         description: The updated user
         content:
           application/json:
@@ -239,11 +239,11 @@
                 - user
               properties:
                 user:
-                  $ref: '#/components/schemas/UserDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                  $ref: "#/components/schemas/UserDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /organizations:
   get:
     tags:
@@ -254,7 +254,7 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: The list of organizations present in the database
         content:
           application/json:
@@ -266,13 +266,13 @@
                 organizations:
                   type: array
                   items:
-                    $ref: '#/components/schemas/OrganizationDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                    $ref: "#/components/schemas/OrganizationDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   post:
     tags:
       - Admin
@@ -286,10 +286,10 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateOrganizationBodyDto'
+            $ref: "#/components/schemas/CreateOrganizationBodyDto"
       required: true
     responses:
-      '200':
+      "200":
         description: The created organization
         content:
           application/json:
@@ -299,11 +299,11 @@
                 - organization
               properties:
                 organization:
-                  $ref: '#/components/schemas/OrganizationDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                  $ref: "#/components/schemas/OrganizationDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /organizations/{organizationId}:
   get:
     tags:
@@ -322,7 +322,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The organization corresponding to the provided `organizationId`
         content:
           application/json:
@@ -332,13 +332,13 @@
                 - organization
               properties:
                 organization:
-                  $ref: '#/components/schemas/OrganizationDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/OrganizationDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   patch:
     tags:
       - Admin
@@ -360,10 +360,10 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateOrganizationBodyDto'
+            $ref: "#/components/schemas/UpdateOrganizationBodyDto"
       required: true
     responses:
-      '200':
+      "200":
         description: The updated organization
         content:
           application/json:
@@ -373,13 +373,13 @@
                 - organization
               properties:
                 organization:
-                  $ref: '#/components/schemas/OrganizationDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/OrganizationDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   delete:
     tags:
       - Admin
@@ -397,14 +397,14 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: The organization has been deleted
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /organizations/{organizationId}/subnets:
   put:
     tags:
@@ -427,10 +427,10 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/OrganizationSubnetsDto'
+            $ref: "#/components/schemas/OrganizationSubnetsDto"
       required: true
     responses:
-      '200':
+      "200":
         description: The list of users of the organization
         content:
           application/json:
@@ -438,10 +438,10 @@
               type: array
               items:
                 type: string
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '422':
-        $ref: 'components.yml#/responses/422'
+      "400":
+        $ref: "components.yml#/responses/400"
+      "422":
+        $ref: "components.yml#/responses/422"
 /organizations/{organizationId}/users:
   get:
     tags:
@@ -466,7 +466,7 @@
         schema:
           type: boolean
     responses:
-      '200':
+      "200":
         description: The list of users of the organization
         content:
           application/json:
@@ -478,13 +478,13 @@
                 users:
                   type: array
                   items:
-                    $ref: '#/components/schemas/UserDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                    $ref: "#/components/schemas/UserDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 
 /admin/audit-events:
   get:
@@ -545,7 +545,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: List of audit events matching the filters
         content:
           application/json:
@@ -558,11 +558,11 @@
                 events:
                   type: array
                   items:
-                    $ref: '#/components/schemas/AuditEventDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                    $ref: "#/components/schemas/AuditEventDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 
 components:
   schemas:
@@ -697,6 +697,17 @@ components:
           type: string
         last_name:
           type: string
+    CreateNewOrgAdmin:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
     UpdateUser:
       type: object
       required:
@@ -750,7 +761,7 @@ components:
           type: string
     CreatedApiKeyDto:
       allOf:
-        - $ref: '#/components/schemas/ApiKeyDto'
+        - $ref: "#/components/schemas/ApiKeyDto"
         - type: object
           required:
             - key

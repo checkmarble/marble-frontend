@@ -1,9 +1,9 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
-import { Panel } from '@app-builder/components/Panel';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Panel } from 'ui-design-system';
 import { JsonDiff } from './JsonDiff';
 import { OperationBadge } from './OperationBadge';
 

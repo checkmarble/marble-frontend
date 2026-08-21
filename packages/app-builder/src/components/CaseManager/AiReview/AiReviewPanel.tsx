@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { type AiCaseReviewListItem, type AiCaseReviewStatus } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
@@ -8,7 +7,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Markdown, Tag, Typo } from 'ui-design-system';
+import { Button, Markdown, Panel, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewStatusMessage } from './AiReviewStatusMessage';
 

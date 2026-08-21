@@ -20,8 +20,8 @@ const twMerge = extendTailwindMerge({
     },
   },
   extend: {
-    classGroups: {
-      p: ['p-3xl', 'p-2xl', 'p-xl', 'p-lg', 'p-md', 'p-sm', 'p-xs', 'p-2xs'],
+    theme: {
+      spacing: ['3xl', '2xl', 'xl', 'lg', 'md', 'sm', 'xs', '2xs'],
     },
   },
 });

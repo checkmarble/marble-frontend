@@ -5,7 +5,6 @@ import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataF
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
-import { Panel } from '@app-builder/components/Panel';
 import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
@@ -22,7 +21,7 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, cn, Tag, TagList } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, Panel, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewCard } from './AiReview/AiReviewCard';
 import { CaseEvents } from './CaseEvents';

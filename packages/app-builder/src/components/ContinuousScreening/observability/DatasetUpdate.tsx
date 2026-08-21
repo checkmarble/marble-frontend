@@ -1,6 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
 import GridTable from '@app-builder/components/GridTable';
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import type {
   ContinuousScreeningDatasetUpdateCompletion,
@@ -10,7 +9,7 @@ import { useContinuousScreeningDatasetUpdatesInfiniteQuery } from '@app-builder/
 import { formatNumber } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Card, DefaultTooltip, Typo, useFormatLanguage } from 'ui-design-system';
+import { Card, DefaultTooltip, Panel, Typo, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { LIMIT_FOR_PANELS, TagStatus, useDateAtFormat } from './utils';
 

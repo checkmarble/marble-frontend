@@ -14,7 +14,6 @@
 node_modules
 
 # Build outputs
-packages/app-builder/build
 **/.output
 **/.nitro
 **/build

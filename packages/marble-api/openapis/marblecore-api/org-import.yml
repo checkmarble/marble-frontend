@@ -205,4 +205,4 @@ components:
               type: array
               minItems: 1
               items:
-                $ref: "admin.yml#/components/schemas/CreateUser"
+                $ref: "admin.yml#/components/schemas/CreateNewOrgAdmin"

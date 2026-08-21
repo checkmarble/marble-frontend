@@ -1,7 +1,6 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { Panel } from '@app-builder/components/Panel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   CreateCasePayload,
@@ -14,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { SelectV2 } from 'ui-design-system';
+import { Panel, SelectV2 } from 'ui-design-system';
 
 export function CreateCase({ inboxId }: { inboxId: string | null }) {
   const { t } = useTranslation(['cases', 'common']);

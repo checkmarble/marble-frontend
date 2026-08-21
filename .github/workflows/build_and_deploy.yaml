@@ -3,6 +3,11 @@ name: Reusable build and deploy job
 on:
   workflow_call:
     inputs:
+      app:
+        type: string
+        description: "Application to build and deploy (app-builder or backoffice)"
+        required: true
+        default: "app-builder"
       environment:
         type: string
         description: "Github environment to use"
@@ -33,7 +38,7 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       VERSION: ${{ inputs.version }}
-      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/marble-frontend:${{ inputs.version }}
+      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/${{ inputs.app }}:${{ inputs.version }}
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
@@ -71,9 +76,9 @@ jobs:
         with:
           context: .
           push: true
-          target: app-builder
+          target: ${{ inputs.app }}
           tags: ${{ env.IMAGE }}
-          file: ./Dockerfile
+          file: ${{ inputs.dockerfile }}
           build-args: |
             SENTRY_PROJECT=marble-frontend
             SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
@@ -89,7 +94,7 @@ jobs:
 
       - name: Deploy server
         run: |
-          gcloud run deploy marble-frontend \
+          gcloud run deploy ${{ inputs.app }} \
             --quiet \
             --region="europe-west1" \
             --image="$IMAGE"

@@ -1,4 +1,3 @@
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { InboxWithCasesCount } from '@app-builder/models/inbox';
@@ -9,7 +8,7 @@ import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Input, Switch } from 'ui-design-system';
+import { Input, Panel, PanelSharpFactory, Switch } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 const SLA_FORM_ID = 'sla-config-panel-form';

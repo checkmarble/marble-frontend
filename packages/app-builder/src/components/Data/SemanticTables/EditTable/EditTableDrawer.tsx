@@ -1,12 +1,11 @@
 import { Callout } from '@app-builder/components/Callout';
-import { Panel } from '@app-builder/components/Panel';
 import { type DataModelField } from '@app-builder/models';
 import { type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn } from 'ui-design-system';
+import { Button, cn, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
 import {

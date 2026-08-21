@@ -1,5 +1,4 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
-import { Panel } from '@app-builder/components/Panel';
 import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
 import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
@@ -21,7 +20,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Checkbox, Typo } from 'ui-design-system';
+import { Button, Checkbox, Panel, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../../Spinner';
 import { MatchCard } from '../MatchCard';

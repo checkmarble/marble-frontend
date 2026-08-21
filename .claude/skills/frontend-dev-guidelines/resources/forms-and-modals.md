@@ -93,13 +93,13 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 
 ### Form Components
 
-| Component | Props | Purpose |
-|-----------|-------|---------|
-| `FormInput` | `type`, `name`, `defaultValue`, `onChange`, `onBlur`, `valid` | Text/number input with error border |
-| `FormLabel` | `name`, `valid` | Label linked to input via `htmlFor` |
-| `FormErrorOrDescription` | `errors?`, `description?` | Shows errors or help text |
-| `FormTextArea` | Same as FormInput | Multi-line input |
-| `FormError` | `field`, `asString?`, `translations?` | Translates Zod error codes to i18n |
+| Component                | Props                                                         | Purpose                             |
+| ------------------------ | ------------------------------------------------------------- | ----------------------------------- |
+| `FormInput`              | `type`, `name`, `defaultValue`, `onChange`, `onBlur`, `valid` | Text/number input with error border |
+| `FormLabel`              | `name`, `valid`                                               | Label linked to input via `htmlFor` |
+| `FormErrorOrDescription` | `errors?`, `description?`                                     | Shows errors or help text           |
+| `FormTextArea`           | Same as FormInput                                             | Multi-line input                    |
+| `FormError`              | `field`, `asString?`, `translations?`                         | Translates Zod error codes to i18n  |
 
 ### Number Fields
 
@@ -161,14 +161,14 @@ export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
 
 ### Modal Components
 
-| Component | Purpose |
-|-----------|---------|
-| `Modal.Root` | Root state manager. Props: `open`, `onOpenChange` |
-| `Modal.Trigger` | Opens the modal. Use `asChild` to wrap custom trigger |
-| `Modal.Content` | Dialog container. Props: `size` (`small`/`medium`/`large`/`xlarge`) |
-| `Modal.Title` | Dialog title (required for accessibility) |
-| `Modal.Close` | Closes on click. Use `asChild` to wrap custom button |
-| `Modal.Footer` | Standard buttons in the footer, asClosed for the buttons that close the modal, with optional icon and isLoading state |
+| Component       | Purpose                                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `Modal.Root`    | Root state manager. Props: `open`, `onOpenChange`                                                                     |
+| `Modal.Trigger` | Opens the modal. Use `asChild` to wrap custom trigger                                                                 |
+| `Modal.Content` | Dialog container. Props: `size` (`small`/`medium`/`large`/`xlarge`)                                                   |
+| `Modal.Title`   | Dialog title (required for accessibility)                                                                             |
+| `Modal.Close`   | Closes on click. Use `asChild` to wrap custom button                                                                  |
+| `Modal.Footer`  | Standard buttons in the footer, asClosed for the buttons that close the modal, with optional icon and isLoading state |
 
 ### Modal with Form
 
@@ -196,7 +196,7 @@ Wrap `<form>` around `Modal.Title`, content, and `Modal.Footer`:
 Right-side sliding panel for detail views. Import from app-builder components.
 
 ```typescript
-import { Panel } from '@app-builder/components/Panel';
+import { Panel } from 'ui-design-system';
 import { useTranslation } from 'react-i18next';
 
 export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
@@ -225,11 +225,10 @@ export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChang
 
 ### Panel Sizes
 
-| Size | Max Width |
-|------|-----------|
-|  small | 'max-w-[calc(100vw_/_3)]' |
-|  medium | 'max-w-[50vw]' |
-|  large | 'max-w-[calc(100vw_*_(2_/_3))]' |
-
+| Size   | Max Width                       |
+| ------ | ------------------------------- |
+| small  | 'max-w-[calc(100vw_/_3)]'       |
+| medium | 'max-w-[50vw]'                  |
+| large  | 'max-w-[calc(100vw_*_(2_/_3))]' |
 
 Features: slide animation, focus trapping, Escape to close, portal rendering.

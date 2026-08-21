@@ -1,7 +1,6 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { AddRuleSnooze } from '@app-builder/components/Cases/AddRuleSnooze';
 import { Nudge } from '@app-builder/components/Nudge';
-import { Panel } from '@app-builder/components/Panel';
 import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { DataModel } from '@app-builder/models';
@@ -15,7 +14,7 @@ import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tabs, tabClassName } from 'ui-design-system';
+import { Button, cn, Panel, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PivotObjectDetails } from './PivotObjectDetails';
 

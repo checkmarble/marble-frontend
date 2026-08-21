@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { User } from '@app-builder/models/user';
 import { useGetCaseNameQuery } from '@app-builder/queries/cases/get-name';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
@@ -13,7 +12,7 @@ import { FileEntityAnnotationDto } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, useFormatLanguage } from 'ui-design-system';
+import { Button, CtaV2ClassName, Panel, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 

@@ -1,11 +1,22 @@
 import { Slot } from '@radix-ui/react-slot';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { type ComponentPropsWithoutRef, forwardRef, type ReactNode, useEffect, useRef } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  type MouseEventHandler,
+  type ReactNode,
+  useEffect,
+  useRef,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
-import { Button, ButtonAppearance, ButtonVariant, cn, StickyComponent, Typo, UnstyledInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { Button, type ButtonAppearance, type ButtonVariant } from '../Button/Button';
+import { UnstyledInput } from '../Input/Input';
+import { StickyComponent } from '../StickyComponent/StickyComponent';
+import { Typo } from '../Typography/Typo';
+import { cn } from '../utils';
 import { PanelOverlay } from './PanelOverlay';
 
 export type PanelSize = 'small' | 'medium' | 'large';
@@ -79,8 +90,9 @@ function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
   return <PanelSharpFactory.Provider value={sharp}>{children}</PanelSharpFactory.Provider>;
 }
 
-interface PanelTriggerProps extends ComponentPropsWithoutRef<'button'> {
+interface PanelTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
   asChild?: boolean;
+  onClick?: MouseEventHandler<HTMLElement>;
 }
 
 const PanelTrigger = forwardRef<HTMLButtonElement, PanelTriggerProps>(function PanelTrigger(
@@ -90,19 +102,14 @@ const PanelTrigger = forwardRef<HTMLButtonElement, PanelTriggerProps>(function P
   const sharp = PanelSharpFactory.useSharp();
   const Comp = asChild ? Slot : 'button';
 
-  return (
-    <Comp
-      ref={ref}
-      type={asChild ? undefined : 'button'}
-      {...props}
-      onClick={(event) => {
-        onClick?.(event);
-        if (!event.defaultPrevented) {
-          sharp.actions.open();
-        }
-      }}
-    />
-  );
+  const handleClick: MouseEventHandler<HTMLElement> = (event) => {
+    onClick?.(event);
+    if (!event.defaultPrevented) {
+      sharp.actions.open();
+    }
+  };
+
+  return <Comp ref={ref} type={asChild ? undefined : 'button'} {...props} onClick={handleClick} />;
 });
 PanelTrigger.displayName = 'PanelTrigger';
 

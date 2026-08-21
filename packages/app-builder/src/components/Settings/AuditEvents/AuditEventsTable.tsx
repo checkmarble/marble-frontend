@@ -1,5 +1,4 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
-import { Panel } from '@app-builder/components/Panel';
 import { ApiKey } from '@app-builder/models/api-keys';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -7,7 +6,7 @@ import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/ut
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useTable } from 'ui-design-system';
+import { Panel, Table, useTable } from 'ui-design-system';
 import { AuditEventDetailPanel } from './AuditEventDetailPanel';
 import { OperationBadge } from './OperationBadge';
 
