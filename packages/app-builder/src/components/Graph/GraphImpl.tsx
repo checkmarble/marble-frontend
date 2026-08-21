@@ -56,7 +56,7 @@ function personRefFromNodeId(nodes: GraphRfNode[], key: string): GraphObjectRef 
 export function GraphImpl({ data, dataModel }: GraphImplProps) {
   const { t } = useTranslation(graphI18n);
   const theme = useTheme();
-  const { showEdgeLabels, setShowEdgeLabels, hideHypernodes } = useGraphViewSettings();
+  const { showEdgeLabels, setShowEdgeLabels, showHypernodes } = useGraphViewSettings();
   const selectedObject = useSelectedObject();
   const setSelectedObject = useSetSelectedObject();
   const { hiddenNodeIds } = useGraphStructure();
@@ -75,7 +75,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
   // this component and never see the node arrays.
   const graphStats = useMemo(() => {
     const countWith = (hidden: Set<string>) =>
-      applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, hidden, flatGraph.startKey, hideHypernodes).nodes.length;
+      applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, hidden, flatGraph.startKey, showHypernodes).nodes.length;
 
     const unhiddenCount = hiddenNodeIds.size === 0 ? visibleGraph.nodes.length : countWith(new Set());
     const hiddenCount = unhiddenCount - visibleGraph.nodes.length;
@@ -84,7 +84,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
     const withChecked = countWith(new Set([...hiddenNodeIds, ...checkedNodeIds]));
     const removed = visibleGraph.nodes.length - withChecked;
     return { hiddenCount, hidePreviewOrphans: Math.max(0, removed - checkedNodeIds.size) };
-  }, [flatGraph, hiddenNodeIds, checkedNodeIds, visibleGraph, hideHypernodes]);
+  }, [flatGraph, hiddenNodeIds, checkedNodeIds, visibleGraph, showHypernodes]);
 
   useEffect(() => {
     setGraphStats(graphStats);
@@ -116,7 +116,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
   }, [connectedPersonsForNode, nodes, selectedObject, setSelectedObject]);
 
   useEffect(() => {
-    if (!hideHypernodes || selectedObject?.nodeType !== 'hypernode') return;
+    if (showHypernodes || selectedObject?.nodeType !== 'hypernode') return;
 
     const startNode = flatGraph.nodes.find(
       (n): n is Extract<GraphRfNode, { type: 'person' }> => n.id === flatGraph.startKey && n.type === 'person',
@@ -128,7 +128,7 @@ export function GraphImpl({ data, dataModel }: GraphImplProps) {
       ...personRefFromRfNode(startNode),
       persons: connectedPersonsForNode(startNode.id),
     });
-  }, [hideHypernodes, selectedObject, flatGraph, connectedPersonsForNode, setSelectedObject]);
+  }, [showHypernodes, selectedObject, flatGraph, connectedPersonsForNode, setSelectedObject]);
 
   const onNodeClick = useCallback<NodeMouseHandler<GraphRfNode>>(
     (_event, node) => {

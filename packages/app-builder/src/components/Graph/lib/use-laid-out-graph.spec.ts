@@ -56,25 +56,26 @@ describe('applyVisibilityFilters', () => {
     expect(visible.edges).toEqual([]);
   });
 
-  it('drops hypernodes and their edges when hideHypernodes is set', () => {
+  it('drops hypernodes and their edges when showHypernodes is unset', () => {
     const visible = applyVisibilityFilters(
       [person('start', true), hypernode('h1'), person('a')],
       [edge('start', 'h1'), edge('start', 'a')],
       new Set(),
       'start',
-      true,
+      false,
     );
 
     expect(visible.nodes.map((node) => node.id)).toEqual(['start', 'a']);
     expect(visible.edges.map((item) => item.id)).toEqual(['start->a']);
   });
 
-  it('keeps hypernodes when hideHypernodes is unset', () => {
+  it('keeps hypernodes when showHypernodes is set', () => {
     const visible = applyVisibilityFilters(
       [person('start', true), hypernode('h1')],
       [edge('start', 'h1')],
       new Set(),
       'start',
+      true,
     );
 
     expect(visible.nodes.map((node) => node.id)).toEqual(['start', 'h1']);

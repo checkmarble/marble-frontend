@@ -97,7 +97,7 @@ export function GraphSessionProvider({
   );
   const [showRiskScore, setShowRiskScore] = useState(true);
   const [showTags, setShowTags] = useState(false);
-  const [hideHypernodes, setHideHypernodes] = useState(false);
+  const [showHypernodes, setShowHypernodes] = useState(true);
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
   const [clusterThreshold, setClusterThreshold] = useState<ClusterThreshold>(DEFAULT_CLUSTER_THRESHOLD);
   const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('polarPetal');
@@ -186,8 +186,8 @@ export function GraphSessionProvider({
       onShowRiskScoreChange: setShowRiskScore,
       showTags,
       onShowTagsChange: setShowTags,
-      hideHypernodes,
-      onHideHypernodesChange: setHideHypernodes,
+      showHypernodes,
+      onShowHypernodesChange: setShowHypernodes,
       showEdgeLabels,
       onShowEdgeLabelsChange: setShowEdgeLabels,
       clusterThreshold,
@@ -195,7 +195,7 @@ export function GraphSessionProvider({
       layoutMode,
       onLayoutModeChange: setLayoutMode,
     }),
-    [showRiskScore, showTags, hideHypernodes, showEdgeLabels, clusterThreshold, layoutMode],
+    [showRiskScore, showTags, showHypernodes, showEdgeLabels, clusterThreshold, layoutMode],
   );
 
   const value = useMemo(

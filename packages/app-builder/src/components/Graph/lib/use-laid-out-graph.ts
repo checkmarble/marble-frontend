@@ -30,9 +30,9 @@ function resolveStartKey(nodes: GraphRfNode[], fallback: string): string {
   return start?.id ?? fallback;
 }
 
-function isNodeVisible(node: GraphRfNode, hiddenNodeIds: Set<string>, hideHypernodes: boolean) {
+function isNodeVisible(node: GraphRfNode, hiddenNodeIds: Set<string>, showHypernodes: boolean) {
   if (node.type === 'person' && node.data.isStart) return true;
-  if (hideHypernodes && node.type === 'hypernode') return false;
+  if (!showHypernodes && node.type === 'hypernode') return false;
   return !hiddenNodeIds.has(node.id);
 }
 
@@ -41,9 +41,9 @@ export function applyVisibilityFilters(
   edges: GraphRfEdge[],
   hiddenNodeIds: Set<string>,
   startKey: string,
-  hideHypernodes = false,
+  showHypernodes = true,
 ) {
-  const typeVisibleNodes = nodes.filter((node) => isNodeVisible(node, hiddenNodeIds, hideHypernodes));
+  const typeVisibleNodes = nodes.filter((node) => isNodeVisible(node, hiddenNodeIds, showHypernodes));
   const typeVisibleIds = new Set(typeVisibleNodes.map((node) => node.id));
   const typeVisibleEdges = edges.filter((edge) => typeVisibleIds.has(edge.source) && typeVisibleIds.has(edge.target));
 
@@ -62,15 +62,15 @@ export function applyVisibilityFilters(
 
 export function useLaidOutGraph({ data, dataModel }: { data: GraphData; dataModel: DataModel }) {
   const { hiddenNodeIds, expandedRootIds } = useGraphStructure();
-  const { clusterThreshold, layoutMode, hideHypernodes } = useGraphViewSettings();
+  const { clusterThreshold, layoutMode, showHypernodes } = useGraphViewSettings();
 
   const typeHelpers = useMemo(() => createGraphTypeHelpers(dataModel), [dataModel]);
 
   const flatGraph = useMemo(() => toFlatFlowElements(data, typeHelpers), [data, typeHelpers]);
 
   const visibleGraph = useMemo(
-    () => applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, hiddenNodeIds, flatGraph.startKey, hideHypernodes),
-    [flatGraph, hiddenNodeIds, hideHypernodes],
+    () => applyVisibilityFilters(flatGraph.nodes, flatGraph.edges, hiddenNodeIds, flatGraph.startKey, showHypernodes),
+    [flatGraph, hiddenNodeIds, showHypernodes],
   );
 
   const filteredLayout = useMemo(() => {

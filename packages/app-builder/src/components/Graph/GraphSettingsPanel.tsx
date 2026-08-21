@@ -325,7 +325,7 @@ export function GraphSettingsPanel() {
     refreshGraph,
     isGeneratingGraph,
   } = useGraphSession();
-  const { showRiskScore, setShowRiskScore, showTags, setShowTags, hideHypernodes, setHideHypernodes } =
+  const { showRiskScore, setShowRiskScore, showTags, setShowTags, showHypernodes, setShowHypernodes } =
     useGraphViewSettings();
   const selectedObject = useSelectedObject();
   const { restoreHiddenNodes } = useGraphStructureActions();
@@ -498,9 +498,9 @@ export function GraphSettingsPanel() {
         </div>
         <div className="flex items-center justify-between gap-sm">
           <label htmlFor="hide-hyper-connected-nodes" className="text-grey-primary cursor-pointer text-sm">
-            {t('graph:panel.hide_hyper_connected_nodes')}
+            {t('graph:panel.show_hyper_connected_nodes')}
           </label>
-          <Switch id="hide-hyper-connected-nodes" checked={hideHypernodes} onCheckedChange={setHideHypernodes} />
+          <Switch id="hide-hyper-connected-nodes" checked={showHypernodes} onCheckedChange={setShowHypernodes} />
         </div>
         <ClusterThresholdControl />
       </div>

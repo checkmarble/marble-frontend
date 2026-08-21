@@ -19,8 +19,8 @@ export type ControlledGraphSettings = {
   onShowRiskScoreChange: (value: boolean) => void;
   showTags: boolean;
   onShowTagsChange: (value: boolean) => void;
-  hideHypernodes: boolean;
-  onHideHypernodesChange: (value: boolean) => void;
+  showHypernodes: boolean;
+  onShowHypernodesChange: (value: boolean) => void;
   showEdgeLabels: boolean;
   onShowEdgeLabelsChange: (value: boolean) => void;
   clusterThreshold: ClusterThreshold;
@@ -42,8 +42,8 @@ export type GraphViewSettings = {
   maxRiskLevel: MaxRiskLevel | undefined;
   showTags: boolean;
   setShowTags: (value: boolean) => void;
-  hideHypernodes: boolean;
-  setHideHypernodes: (value: boolean) => void;
+  showHypernodes: boolean;
+  setShowHypernodes: (value: boolean) => void;
   showEdgeLabels: boolean;
   setShowEdgeLabels: (value: boolean) => void;
   layoutMode: GraphLayoutMode;
@@ -63,8 +63,8 @@ export function GraphViewSettingsProvider({
   onShowRiskScoreChange,
   showTags: controlledShowTags,
   onShowTagsChange,
-  hideHypernodes: controlledHideHypernodes,
-  onHideHypernodesChange,
+  showHypernodes: controlledShowHypernodes,
+  onShowHypernodesChange,
   showEdgeLabels: controlledShowEdgeLabels,
   onShowEdgeLabelsChange,
   clusterThreshold: controlledClusterThreshold,
@@ -78,10 +78,10 @@ export function GraphViewSettingsProvider({
   const rawMaxRiskLevel = scoringSettings?.maxRiskLevel;
   const maxRiskLevel = rawMaxRiskLevel != null && isMaxRiskLevelInRange(rawMaxRiskLevel) ? rawMaxRiskLevel : undefined;
   const [showTags, setShowTags] = useControllableState(false, controlledShowTags, onShowTagsChange);
-  const [hideHypernodes, setHideHypernodes] = useControllableState(
-    false,
-    controlledHideHypernodes,
-    onHideHypernodesChange,
+  const [showHypernodes, setShowHypernodes] = useControllableState(
+    true,
+    controlledShowHypernodes,
+    onShowHypernodesChange,
   );
   const [showEdgeLabels, setShowEdgeLabels] = useControllableState(
     false,
@@ -107,8 +107,8 @@ export function GraphViewSettingsProvider({
       maxRiskLevel,
       showTags,
       setShowTags,
-      hideHypernodes,
-      setHideHypernodes,
+      showHypernodes,
+      setShowHypernodes,
       showEdgeLabels,
       setShowEdgeLabels,
       layoutMode,
@@ -123,8 +123,8 @@ export function GraphViewSettingsProvider({
       maxRiskLevel,
       showTags,
       setShowTags,
-      hideHypernodes,
-      setHideHypernodes,
+      showHypernodes,
+      setShowHypernodes,
       showEdgeLabels,
       setShowEdgeLabels,
       layoutMode,
