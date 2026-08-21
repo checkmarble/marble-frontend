@@ -8,7 +8,7 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { type ReactNode } from 'react';
 import { Card } from 'ui-design-system';
 
-export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) {
+export function SessionGraphCanvas({ placeholder, withCard = true }: { placeholder: ReactNode; withCard?: boolean }) {
   const dataModel = useDataModel();
   const { graphData, graphGeneration, graphSettings } = useGraphSession();
 
@@ -17,6 +17,8 @@ export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) 
   const startNode = graphData.nodes.find(
     (node) => node.type === graphData.start.type && node.id === graphData.start.id,
   );
+
+  const Component = withCard ? Card : 'div';
 
   return (
     <CustomerGraphProvider
@@ -31,15 +33,15 @@ export function SessionGraphCanvas({ placeholder }: { placeholder: ReactNode }) 
         persons: [],
       }}
     >
-      <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-sm lg:flex-row">
+      <Component className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto p-sm lg:flex-row">
         <GraphSettingsPanel />
         <ReactFlowProvider>
-          <div className="relative min-h-0 flex-1">
+          <div className="relative min-h-100 flex-1">
             <GraphSelectionToolbar />
             <GraphImpl data={graphData} dataModel={dataModel} />
           </div>
         </ReactFlowProvider>
-      </Card>
+      </Component>
     </CustomerGraphProvider>
   );
 }

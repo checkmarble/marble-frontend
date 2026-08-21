@@ -12,7 +12,7 @@ import { LAYOUT_NAMES } from 'ego-graph';
 import { type ReactNode, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Button, Checkbox, cn, MenuCommand, Panel, Switch, Tag, ThresholdRange } from 'ui-design-system';
+import { Button, Card, Checkbox, cn, MenuCommand, Panel, Switch, Tag, ThresholdRange } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { useGraphAnnotationsActions } from './contexts/GraphAnnotationsContext';
 import { useSelectedObject, useSetSelectedObject } from './contexts/GraphFocusContext';
@@ -335,7 +335,7 @@ export function GraphSettingsPanel() {
   const objectType = selectedObject?.objectType ?? '';
   const objectId = selectedObject?.objectId ?? '';
   const hasSelection = !!selectedObject;
-  const asideRef = useRef<HTMLElement>(null);
+  const asideRef = useRef<HTMLDivElement>(null);
   const tableOptions = useMemo(() => tableFilterOptions(dataModel), [dataModel]);
 
   const detailsQuery = useObjectDetailsQuery(
@@ -352,10 +352,7 @@ export function GraphSettingsPanel() {
   );
 
   return (
-    <aside
-      ref={asideRef}
-      className="border-grey-border bg-surface-card flex min-h-0 flex-col gap-md overflow-y-auto rounded-lg border p-md h-fit min-w-md"
-    >
+    <Card ref={asideRef} className="flex min-h-0 flex-col gap-md overflow-y-auto p-md h-fit min-w-md">
       <div className="flex flex-col gap-sm">
         <GraphMultiFilterSelect
           options={tableOptions}
@@ -504,6 +501,6 @@ export function GraphSettingsPanel() {
         </div>
         <ClusterThresholdControl />
       </div>
-    </aside>
+    </Card>
   );
 }
