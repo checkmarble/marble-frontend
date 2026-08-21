@@ -20,7 +20,7 @@
     "@segment/analytics-next": "^1.84.1",
     "@sentry/vite-plugin": "^5.2.1",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/devtools-vite": "^0.6.0",
+    "@tanstack/devtools-vite": "^0.8.3",
     "@tanstack/react-devtools": "^0.10.9",
     "@tanstack/react-form-devtools": "^0.2.29",
     "@tanstack/react-query-devtools": "5.101.4",
