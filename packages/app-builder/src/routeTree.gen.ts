@@ -33,6 +33,7 @@ import { Route as AppBuilderDataRouteImport } from './routes/_app/_builder/data'
 import { Route as AppBuilderDetectionRouteImport } from './routes/_app/_builder/detection'
 import { Route as AppBuilderScreeningSearchRouteImport } from './routes/_app/_builder/screening-search'
 import { Route as AppBuilderSettingsRouteImport } from './routes/_app/_builder/settings'
+import { Route as AppBuilderTestGraphRouteImport } from './routes/_app/_builder/test-graph'
 import { Route as AppBuilderUserScoringRouteImport } from './routes/_app/_builder/user-scoring'
 import { Route as RessourcesDataExportOrgRouteImport } from './routes/ressources/data/export-org'
 import { Route as AppBuilderCasesIndexRouteImport } from './routes/_app/_builder/cases/index'
@@ -57,6 +58,7 @@ import { Route as AppBuilderSettingsIndexRouteImport } from './routes/_app/_buil
 import { Route as AppBuilderSettingsAnalyticsRouteImport } from './routes/_app/_builder/settings/analytics'
 import { Route as AppBuilderSettingsApiKeysRouteImport } from './routes/_app/_builder/settings/api-keys'
 import { Route as AppBuilderSettingsAuditLogsRouteImport } from './routes/_app/_builder/settings/audit-logs'
+import { Route as AppBuilderSettingsGraphRelationsRouteImport } from './routes/_app/_builder/settings/graph-relations'
 import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
 import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
@@ -64,6 +66,7 @@ import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './rout
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
+import { Route as AppBuilderTestGraphIndexRouteImport } from './routes/_app/_builder/test-graph/index'
 import { Route as AppBuilderUploadObjectTypeRouteImport } from './routes/_app/_builder/upload/$objectType'
 import { Route as AppBuilderUserScoringIndexRouteImport } from './routes/_app/_builder/user-scoring/index'
 import { Route as AppBuilderUserScoringOverviewRouteImport } from './routes/_app/_builder/user-scoring/overview'
@@ -104,12 +107,15 @@ import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport } from '
 import { Route as AppBuilderCasesDetailMCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId/index'
 import { Route as AppBuilderCasesDetailSCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/index'
 import { Route as AppBuilderCasesDetailSCaseIdClientsRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients'
+import { Route as AppBuilderCasesDetailSCaseIdLinksRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/links'
 import { Route as AppBuilderCasesDetailSCaseIdPrincipalRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/principal'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
 import { Route as AppBuilderCasesDetailSCaseIdClientsIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients/index'
 import { Route as AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients/$pivotValue'
+import { Route as AppBuilderCasesDetailSCaseIdLinksIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/links/index'
+import { Route as AppBuilderCasesDetailSCaseIdLinksPivotValueRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/links/$pivotValue'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view'
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/index'
@@ -239,6 +245,11 @@ const AppBuilderScreeningSearchRoute =
 const AppBuilderSettingsRoute = AppBuilderSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const AppBuilderTestGraphRoute = AppBuilderTestGraphRouteImport.update({
+  id: '/test-graph',
+  path: '/test-graph',
   getParentRoute: () => AppBuilderRoute,
 } as any)
 const AppBuilderUserScoringRoute = AppBuilderUserScoringRouteImport.update({
@@ -374,6 +385,12 @@ const AppBuilderSettingsAuditLogsRoute =
     path: '/audit-logs',
     getParentRoute: () => AppBuilderSettingsRoute,
   } as any)
+const AppBuilderSettingsGraphRelationsRoute =
+  AppBuilderSettingsGraphRelationsRouteImport.update({
+    id: '/graph-relations',
+    path: '/graph-relations',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
 const AppBuilderSettingsInboxesRoute =
   AppBuilderSettingsInboxesRouteImport.update({
     id: '/inboxes',
@@ -413,6 +430,12 @@ const AppBuilderSettingsWebhooksRoute =
     id: '/webhooks',
     path: '/webhooks',
     getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderTestGraphIndexRoute =
+  AppBuilderTestGraphIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderTestGraphRoute,
   } as any)
 const AppBuilderUploadObjectTypeRoute =
   AppBuilderUploadObjectTypeRouteImport.update({
@@ -653,6 +676,12 @@ const AppBuilderCasesDetailSCaseIdClientsRoute =
     path: '/clients',
     getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
   } as any)
+const AppBuilderCasesDetailSCaseIdLinksRoute =
+  AppBuilderCasesDetailSCaseIdLinksRouteImport.update({
+    id: '/links',
+    path: '/links',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
+  } as any)
 const AppBuilderCasesDetailSCaseIdPrincipalRoute =
   AppBuilderCasesDetailSCaseIdPrincipalRouteImport.update({
     id: '/principal',
@@ -688,6 +717,18 @@ const AppBuilderCasesDetailSCaseIdClientsPivotValueRoute =
     id: '/$pivotValue',
     path: '/$pivotValue',
     getParentRoute: () => AppBuilderCasesDetailSCaseIdClientsRoute,
+  } as any)
+const AppBuilderCasesDetailSCaseIdLinksIndexRoute =
+  AppBuilderCasesDetailSCaseIdLinksIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdLinksRoute,
+  } as any)
+const AppBuilderCasesDetailSCaseIdLinksPivotValueRoute =
+  AppBuilderCasesDetailSCaseIdLinksPivotValueRouteImport.update({
+    id: '/$pivotValue',
+    path: '/$pivotValue',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdLinksRoute,
   } as any)
 const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute =
   AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteImport.update({
@@ -783,6 +824,7 @@ export interface FileRoutesByFullPath {
   '/detection': typeof AppBuilderDetectionRouteWithChildren
   '/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/settings': typeof AppBuilderSettingsRouteWithChildren
+  '/test-graph': typeof AppBuilderTestGraphRouteWithChildren
   '/user-scoring': typeof AppBuilderUserScoringRouteWithChildren
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
   '/cases/$caseId': typeof AppBuilderCasesCaseIdRouteWithChildren
@@ -799,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/settings/graph-relations': typeof AppBuilderSettingsGraphRelationsRoute
   '/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
@@ -819,6 +862,7 @@ export interface FileRoutesByFullPath {
   '/detection/': typeof AppBuilderDetectionIndexRoute
   '/screening-search/': typeof AppBuilderScreeningSearchIndexRoute
   '/settings/': typeof AppBuilderSettingsIndexRoute
+  '/test-graph/': typeof AppBuilderTestGraphIndexRoute
   '/user-scoring/': typeof AppBuilderUserScoringIndexRoute
   '/cases/$caseId/d': typeof AppBuilderCasesCaseIdDRouteWithChildren
   '/cases/inboxes/$inboxId': typeof AppBuilderCasesInboxesInboxIdRoute
@@ -851,6 +895,7 @@ export interface FileRoutesByFullPath {
   '/detection/scenarios/$scenarioId/': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
+  '/cases/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
   '/cases/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
@@ -858,7 +903,9 @@ export interface FileRoutesByFullPath {
   '/detection/scenarios/$scenarioId/test-run/': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteWithChildren
   '/cases/s/$caseId/clients/$pivotValue': typeof AppBuilderCasesDetailSCaseIdClientsPivotValueRoute
+  '/cases/s/$caseId/links/$pivotValue': typeof AppBuilderCasesDetailSCaseIdLinksPivotValueRoute
   '/cases/s/$caseId/clients/': typeof AppBuilderCasesDetailSCaseIdClientsIndexRoute
+  '/cases/s/$caseId/links/': typeof AppBuilderCasesDetailSCaseIdLinksIndexRoute
   '/detection/scenarios/$scenarioId/test-run/$testRunId/': typeof AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId/files': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId/hits': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRoute
@@ -894,6 +941,7 @@ export interface FileRoutesByTo {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/settings/graph-relations': typeof AppBuilderSettingsGraphRelationsRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
@@ -912,6 +960,7 @@ export interface FileRoutesByTo {
   '/detection': typeof AppBuilderDetectionIndexRoute
   '/screening-search': typeof AppBuilderScreeningSearchIndexRoute
   '/settings': typeof AppBuilderSettingsIndexRoute
+  '/test-graph': typeof AppBuilderTestGraphIndexRoute
   '/user-scoring': typeof AppBuilderUserScoringIndexRoute
   '/cases/$caseId/d': typeof AppBuilderCasesCaseIdDRouteWithChildren
   '/cases/inboxes/$inboxId': typeof AppBuilderCasesInboxesInboxIdRoute
@@ -946,7 +995,9 @@ export interface FileRoutesByTo {
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdIndexRoute
   '/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/cases/s/$caseId/clients/$pivotValue': typeof AppBuilderCasesDetailSCaseIdClientsPivotValueRoute
+  '/cases/s/$caseId/links/$pivotValue': typeof AppBuilderCasesDetailSCaseIdLinksPivotValueRoute
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsIndexRoute
+  '/cases/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksIndexRoute
   '/detection/scenarios/$scenarioId/test-run/$testRunId': typeof AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId/files': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId/hits': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRoute
@@ -981,6 +1032,7 @@ export interface FileRoutesById {
   '/_app/_builder/detection': typeof AppBuilderDetectionRouteWithChildren
   '/_app/_builder/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/_app/_builder/settings': typeof AppBuilderSettingsRouteWithChildren
+  '/_app/_builder/test-graph': typeof AppBuilderTestGraphRouteWithChildren
   '/_app/_builder/user-scoring': typeof AppBuilderUserScoringRouteWithChildren
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
   '/_app/_builder/cases/$caseId': typeof AppBuilderCasesCaseIdRouteWithChildren
@@ -998,6 +1050,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/_app/_builder/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/_app/_builder/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/_app/_builder/settings/graph-relations': typeof AppBuilderSettingsGraphRelationsRoute
   '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
@@ -1018,6 +1071,7 @@ export interface FileRoutesById {
   '/_app/_builder/detection/': typeof AppBuilderDetectionIndexRoute
   '/_app/_builder/screening-search/': typeof AppBuilderScreeningSearchIndexRoute
   '/_app/_builder/settings/': typeof AppBuilderSettingsIndexRoute
+  '/_app/_builder/test-graph/': typeof AppBuilderTestGraphIndexRoute
   '/_app/_builder/user-scoring/': typeof AppBuilderUserScoringIndexRoute
   '/_app/_builder/cases/$caseId/d': typeof AppBuilderCasesCaseIdDRouteWithChildren
   '/_app/_builder/cases/inboxes/$inboxId': typeof AppBuilderCasesInboxesInboxIdRoute
@@ -1050,6 +1104,7 @@ export interface FileRoutesById {
   '/_app/_builder/detection/scenarios/$scenarioId/': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
+  '/_app/_builder/cases/_detail/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
   '/_app/_builder/cases/_detail/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
@@ -1057,8 +1112,10 @@ export interface FileRoutesById {
   '/_app/_builder/detection/scenarios/$scenarioId/test-run/': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue': typeof AppBuilderCasesDetailSCaseIdClientsPivotValueRoute
+  '/_app/_builder/cases/_detail/s/$caseId/links/$pivotValue': typeof AppBuilderCasesDetailSCaseIdLinksPivotValueRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/clients/': typeof AppBuilderCasesDetailSCaseIdClientsIndexRoute
+  '/_app/_builder/cases/_detail/s/$caseId/links/': typeof AppBuilderCasesDetailSCaseIdLinksIndexRoute
   '/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/': typeof AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdFilesRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdHitsRoute
@@ -1092,6 +1149,7 @@ export interface FileRouteTypes {
     | '/detection'
     | '/screening-search'
     | '/settings'
+    | '/test-graph'
     | '/user-scoring'
     | '/ressources/data/export-org'
     | '/cases/$caseId'
@@ -1108,6 +1166,7 @@ export interface FileRouteTypes {
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
+    | '/settings/graph-relations'
     | '/settings/inboxes'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
@@ -1128,6 +1187,7 @@ export interface FileRouteTypes {
     | '/detection/'
     | '/screening-search/'
     | '/settings/'
+    | '/test-graph/'
     | '/user-scoring/'
     | '/cases/$caseId/d'
     | '/cases/inboxes/$inboxId'
@@ -1160,6 +1220,7 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/'
     | '/cases/$caseId/d/$decisionId/screenings'
     | '/cases/s/$caseId/clients'
+    | '/cases/s/$caseId/links'
     | '/cases/s/$caseId/principal'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
     | '/cases/m/$caseId/'
@@ -1167,7 +1228,9 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/test-run/'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId'
     | '/cases/s/$caseId/clients/$pivotValue'
+    | '/cases/s/$caseId/links/$pivotValue'
     | '/cases/s/$caseId/clients/'
+    | '/cases/s/$caseId/links/'
     | '/detection/scenarios/$scenarioId/test-run/$testRunId/'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
@@ -1203,6 +1266,7 @@ export interface FileRouteTypes {
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
+    | '/settings/graph-relations'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
     | '/settings/screening-providers'
@@ -1221,6 +1285,7 @@ export interface FileRouteTypes {
     | '/detection'
     | '/screening-search'
     | '/settings'
+    | '/test-graph'
     | '/user-scoring'
     | '/cases/$caseId/d'
     | '/cases/inboxes/$inboxId'
@@ -1255,7 +1320,9 @@ export interface FileRouteTypes {
     | '/cases/s/$caseId'
     | '/detection/scenarios/$scenarioId/test-run'
     | '/cases/s/$caseId/clients/$pivotValue'
+    | '/cases/s/$caseId/links/$pivotValue'
     | '/cases/s/$caseId/clients'
+    | '/cases/s/$caseId/links'
     | '/detection/scenarios/$scenarioId/test-run/$testRunId'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
@@ -1289,6 +1356,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection'
     | '/_app/_builder/screening-search'
     | '/_app/_builder/settings'
+    | '/_app/_builder/test-graph'
     | '/_app/_builder/user-scoring'
     | '/ressources/data/export-org'
     | '/_app/_builder/cases/$caseId'
@@ -1306,6 +1374,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/analytics'
     | '/_app/_builder/settings/api-keys'
     | '/_app/_builder/settings/audit-logs'
+    | '/_app/_builder/settings/graph-relations'
     | '/_app/_builder/settings/inboxes'
     | '/_app/_builder/settings/ip-whitelisting'
     | '/_app/_builder/settings/scenarios'
@@ -1326,6 +1395,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/'
     | '/_app/_builder/screening-search/'
     | '/_app/_builder/settings/'
+    | '/_app/_builder/test-graph/'
     | '/_app/_builder/user-scoring/'
     | '/_app/_builder/cases/$caseId/d'
     | '/_app/_builder/cases/inboxes/$inboxId'
@@ -1358,6 +1428,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/scenarios/$scenarioId/'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings'
     | '/_app/_builder/cases/_detail/s/$caseId/clients'
+    | '/_app/_builder/cases/_detail/s/$caseId/links'
     | '/_app/_builder/cases/_detail/s/$caseId/principal'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
     | '/_app/_builder/cases/_detail/m/$caseId/'
@@ -1365,8 +1436,10 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/scenarios/$scenarioId/test-run/'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
     | '/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue'
+    | '/_app/_builder/cases/_detail/s/$caseId/links/$pivotValue'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view'
     | '/_app/_builder/cases/_detail/s/$caseId/clients/'
+    | '/_app/_builder/cases/_detail/s/$caseId/links/'
     | '/_app/_builder/detection/scenarios/$scenarioId/test-run/$testRunId/'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/files'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/hits'
@@ -1567,6 +1640,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderSettingsRouteImport
       parentRoute: typeof AppBuilderRoute
     }
+    '/_app/_builder/test-graph': {
+      id: '/_app/_builder/test-graph'
+      path: '/test-graph'
+      fullPath: '/test-graph'
+      preLoaderRoute: typeof AppBuilderTestGraphRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
     '/_app/_builder/user-scoring': {
       id: '/_app/_builder/user-scoring'
       path: '/user-scoring'
@@ -1735,6 +1815,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderSettingsAuditLogsRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
+    '/_app/_builder/settings/graph-relations': {
+      id: '/_app/_builder/settings/graph-relations'
+      path: '/graph-relations'
+      fullPath: '/settings/graph-relations'
+      preLoaderRoute: typeof AppBuilderSettingsGraphRelationsRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
     '/_app/_builder/settings/inboxes': {
       id: '/_app/_builder/settings/inboxes'
       path: '/inboxes'
@@ -1783,6 +1870,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/webhooks'
       preLoaderRoute: typeof AppBuilderSettingsWebhooksRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/test-graph/': {
+      id: '/_app/_builder/test-graph/'
+      path: '/'
+      fullPath: '/test-graph/'
+      preLoaderRoute: typeof AppBuilderTestGraphIndexRouteImport
+      parentRoute: typeof AppBuilderTestGraphRoute
     }
     '/_app/_builder/upload/$objectType': {
       id: '/_app/_builder/upload/$objectType'
@@ -2064,6 +2158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdClientsRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
     }
+    '/_app/_builder/cases/_detail/s/$caseId/links': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/links'
+      path: '/links'
+      fullPath: '/cases/s/$caseId/links'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdLinksRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
+    }
     '/_app/_builder/cases/_detail/s/$caseId/principal': {
       id: '/_app/_builder/cases/_detail/s/$caseId/principal'
       path: '/principal'
@@ -2105,6 +2206,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/cases/s/$caseId/clients/$pivotValue'
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdClientsPivotValueRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdClientsRoute
+    }
+    '/_app/_builder/cases/_detail/s/$caseId/links/': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/links/'
+      path: '/'
+      fullPath: '/cases/s/$caseId/links/'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdLinksIndexRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdLinksRoute
+    }
+    '/_app/_builder/cases/_detail/s/$caseId/links/$pivotValue': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/links/$pivotValue'
+      path: '/$pivotValue'
+      fullPath: '/cases/s/$caseId/links/$pivotValue'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdLinksPivotValueRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdLinksRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view': {
       id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view'
@@ -2290,8 +2405,27 @@ const AppBuilderCasesDetailSCaseIdClientsRouteWithChildren =
     AppBuilderCasesDetailSCaseIdClientsRouteChildren,
   )
 
+interface AppBuilderCasesDetailSCaseIdLinksRouteChildren {
+  AppBuilderCasesDetailSCaseIdLinksPivotValueRoute: typeof AppBuilderCasesDetailSCaseIdLinksPivotValueRoute
+  AppBuilderCasesDetailSCaseIdLinksIndexRoute: typeof AppBuilderCasesDetailSCaseIdLinksIndexRoute
+}
+
+const AppBuilderCasesDetailSCaseIdLinksRouteChildren: AppBuilderCasesDetailSCaseIdLinksRouteChildren =
+  {
+    AppBuilderCasesDetailSCaseIdLinksPivotValueRoute:
+      AppBuilderCasesDetailSCaseIdLinksPivotValueRoute,
+    AppBuilderCasesDetailSCaseIdLinksIndexRoute:
+      AppBuilderCasesDetailSCaseIdLinksIndexRoute,
+  }
+
+const AppBuilderCasesDetailSCaseIdLinksRouteWithChildren =
+  AppBuilderCasesDetailSCaseIdLinksRoute._addFileChildren(
+    AppBuilderCasesDetailSCaseIdLinksRouteChildren,
+  )
+
 interface AppBuilderCasesDetailSCaseIdRouteChildren {
   AppBuilderCasesDetailSCaseIdClientsRoute: typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
+  AppBuilderCasesDetailSCaseIdLinksRoute: typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   AppBuilderCasesDetailSCaseIdPrincipalRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
   AppBuilderCasesDetailSCaseIdIndexRoute: typeof AppBuilderCasesDetailSCaseIdIndexRoute
 }
@@ -2300,6 +2434,8 @@ const AppBuilderCasesDetailSCaseIdRouteChildren: AppBuilderCasesDetailSCaseIdRou
   {
     AppBuilderCasesDetailSCaseIdClientsRoute:
       AppBuilderCasesDetailSCaseIdClientsRouteWithChildren,
+    AppBuilderCasesDetailSCaseIdLinksRoute:
+      AppBuilderCasesDetailSCaseIdLinksRouteWithChildren,
     AppBuilderCasesDetailSCaseIdPrincipalRoute:
       AppBuilderCasesDetailSCaseIdPrincipalRoute,
     AppBuilderCasesDetailSCaseIdIndexRoute:
@@ -2633,6 +2769,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsAnalyticsRoute: typeof AppBuilderSettingsAnalyticsRouteWithChildren
   AppBuilderSettingsApiKeysRoute: typeof AppBuilderSettingsApiKeysRoute
   AppBuilderSettingsAuditLogsRoute: typeof AppBuilderSettingsAuditLogsRoute
+  AppBuilderSettingsGraphRelationsRoute: typeof AppBuilderSettingsGraphRelationsRoute
   AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRouteWithChildren
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
@@ -2649,6 +2786,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
     AppBuilderSettingsAnalyticsRouteWithChildren,
   AppBuilderSettingsApiKeysRoute: AppBuilderSettingsApiKeysRoute,
   AppBuilderSettingsAuditLogsRoute: AppBuilderSettingsAuditLogsRoute,
+  AppBuilderSettingsGraphRelationsRoute: AppBuilderSettingsGraphRelationsRoute,
   AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRouteWithChildren,
   AppBuilderSettingsIpWhitelistingRoute: AppBuilderSettingsIpWhitelistingRoute,
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,
@@ -2664,6 +2802,17 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
 
 const AppBuilderSettingsRouteWithChildren =
   AppBuilderSettingsRoute._addFileChildren(AppBuilderSettingsRouteChildren)
+
+interface AppBuilderTestGraphRouteChildren {
+  AppBuilderTestGraphIndexRoute: typeof AppBuilderTestGraphIndexRoute
+}
+
+const AppBuilderTestGraphRouteChildren: AppBuilderTestGraphRouteChildren = {
+  AppBuilderTestGraphIndexRoute: AppBuilderTestGraphIndexRoute,
+}
+
+const AppBuilderTestGraphRouteWithChildren =
+  AppBuilderTestGraphRoute._addFileChildren(AppBuilderTestGraphRouteChildren)
 
 interface AppBuilderUserScoringRouteChildren {
   AppBuilderUserScoringOverviewRoute: typeof AppBuilderUserScoringOverviewRoute
@@ -2692,6 +2841,7 @@ interface AppBuilderRouteChildren {
   AppBuilderDetectionRoute: typeof AppBuilderDetectionRouteWithChildren
   AppBuilderScreeningSearchRoute: typeof AppBuilderScreeningSearchRouteWithChildren
   AppBuilderSettingsRoute: typeof AppBuilderSettingsRouteWithChildren
+  AppBuilderTestGraphRoute: typeof AppBuilderTestGraphRouteWithChildren
   AppBuilderUserScoringRoute: typeof AppBuilderUserScoringRouteWithChildren
   AppBuilderUploadObjectTypeRoute: typeof AppBuilderUploadObjectTypeRoute
   AppBuilderClientDetailIndexRoute: typeof AppBuilderClientDetailIndexRoute
@@ -2708,6 +2858,7 @@ const AppBuilderRouteChildren: AppBuilderRouteChildren = {
   AppBuilderDetectionRoute: AppBuilderDetectionRouteWithChildren,
   AppBuilderScreeningSearchRoute: AppBuilderScreeningSearchRouteWithChildren,
   AppBuilderSettingsRoute: AppBuilderSettingsRouteWithChildren,
+  AppBuilderTestGraphRoute: AppBuilderTestGraphRouteWithChildren,
   AppBuilderUserScoringRoute: AppBuilderUserScoringRouteWithChildren,
   AppBuilderUploadObjectTypeRoute: AppBuilderUploadObjectTypeRoute,
   AppBuilderClientDetailIndexRoute: AppBuilderClientDetailIndexRoute,

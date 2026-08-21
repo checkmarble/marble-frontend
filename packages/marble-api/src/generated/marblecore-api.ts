@@ -2160,6 +2160,54 @@ export type ScoringScore = {
     ruleset_id?: string;
     evaluations?: NodeEvaluationDto[];
 };
+export type GraphRelation = {
+    id: string;
+    group_id: string;
+    label: string;
+    left_type: string;
+    left_field: string;
+    right_type: string;
+    right_field: string;
+    created_at: string;
+};
+export type CreateGraphRelation = {
+    group_id?: string;
+    label: string;
+    left_type: string;
+    left_field: string;
+    right_type: string;
+    right_field: string;
+};
+export type GraphNodeRef = {
+    "type": string;
+    id: string;
+};
+export type GraphNode = GraphNodeRef & {
+    "type"?: string;
+    id?: string;
+    connector?: boolean;
+    connector_kind?: "match" | "link";
+    hypernode_count?: number;
+    metadata?: {
+        label?: string;
+        risk_level?: number;
+        tags?: string[];
+    };
+};
+export type GraphEdge = {
+    kind: string;
+    label: string;
+    "from": GraphNodeRef;
+    to: GraphNodeRef;
+    through?: string[];
+    field?: string;
+    value?: string;
+};
+export type Graph = {
+    start: GraphNodeRef;
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+};
 /**
  * Get searchable tables
  */
@@ -7270,6 +7318,86 @@ export function getScoreDistribution(recordType: string, opts?: Oazapfts.Request
         status: 404;
         data: string;
     }>(`/scoring/distribution/${encodeURIComponent(recordType)}`, {
+        ...opts
+    }));
+}
+/**
+ * List same-field relations configurations
+ */
+export function listGraphRelations(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: GraphRelation[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/graph/relations", {
+        ...opts
+    }));
+}
+/**
+ * Create a same-field relation configuration
+ */
+export function createGraphRelation(createGraphRelation: CreateGraphRelation, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: GraphRelation;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/graph/relations", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createGraphRelation
+    })));
+}
+/**
+ * Delete a same-field relation configuration
+ */
+export function deleteGraphRelation(relationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/graph/relations/${encodeURIComponent(relationId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Generate the relationship graph from a starting record
+ */
+export function generateRelationshipGraph(recordType: string, recordId: string, { types, degrees, skipSameFieldRelations, sameFieldRelations }: {
+    types?: string;
+    degrees?: number;
+    skipSameFieldRelations?: boolean;
+    sameFieldRelations?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Graph;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/graph/${encodeURIComponent(recordType)}/${encodeURIComponent(recordId)}${QS.query(QS.explode({
+        types,
+        degrees,
+        skip_same_field_relations: skipSameFieldRelations,
+        same_field_relations: sameFieldRelations
+    }))}`, {
         ...opts
     }));
 }

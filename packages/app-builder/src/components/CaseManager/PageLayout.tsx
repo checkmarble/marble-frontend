@@ -4,6 +4,7 @@ import { useFormDropzone } from '@app-builder/hooks/useFormDropzone';
 import { DataModel } from '@app-builder/models';
 import {
   CaseDetail,
+  getPivotObjectKey,
   PivotObject,
   SuspiciousActivityReport,
   SuspiciousActivityReportStatus,
@@ -21,7 +22,7 @@ import type { dataModelFeatureAccessLoader } from '@app-builder/services/data/da
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { Link, useRouter } from '@tanstack/react-router';
+import { Link, useMatches, useParams, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -44,6 +45,7 @@ import { CloseCase } from '../Cases/CloseCase';
 import { OpenCase } from '../Cases/OpenCase';
 import { SnoozeCase } from '../Cases/SnoozeCase';
 import { ClientCommentForm } from './ClientComments';
+import { getGraphEligiblePivots } from './graph-pivots';
 import { CommentContext } from './hooks/comment-context';
 import { KycEnrichmentPanel } from './KycEnrichment/KycEnrichmentPanel';
 
@@ -67,6 +69,26 @@ export function CaseManagerPageLayout({
   const [kycEnrichmentPanelOpen, setKycEnrichmentPanelOpen] = useState(false);
   const { info } = CommentContext.useValue();
   const sarReportsQuery = useSarReportsQuery(caseDetail.id);
+  const params = useParams({ strict: false });
+  const currentPivotValue = typeof params.pivotValue === 'string' ? params.pivotValue : undefined;
+  const eligiblePivots = getGraphEligiblePivots(pivotObjects, dataModel);
+  const clientsPivotValue =
+    currentPivotValue && pivotObjects.some((p) => getPivotObjectKey(p) === currentPivotValue)
+      ? currentPivotValue
+      : undefined;
+  const linksPivotValue =
+    currentPivotValue && eligiblePivots.some((p) => getPivotObjectKey(p) === currentPivotValue)
+      ? currentPivotValue
+      : undefined;
+  const defaultClientsPivotValue =
+    clientsPivotValue ?? (pivotObjects[0] ? getPivotObjectKey(pivotObjects[0]) : undefined);
+  const defaultLinksPivotValue =
+    linksPivotValue ?? (eligiblePivots[0] ? getPivotObjectKey(eligiblePivots[0]) : undefined);
+  // The links tab is the only one that owns the viewport height, so the layout has to
+  // stop scrolling and let it flex. Compared by route id, so a rename breaks the build.
+  const isLinksTab = useMatches({
+    select: (matches) => matches.some((m) => m.routeId === '/_app/_builder/cases/_detail/s/$caseId/links'),
+  });
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
   const router = useRouter();
   const nextUnassignedCaseHref = router.buildLocation({
@@ -90,7 +112,7 @@ export function CaseManagerPageLayout({
     .exhaustive();
 
   return (
-    <Page.Main>
+    <Page.Main className={isLinksTab ? 'min-h-0 overflow-hidden' : undefined}>
       <Page.Header color="page" className="justify-between">
         <BreadCrumbs />
         <div className="flex gap-sm">
@@ -118,22 +140,43 @@ export function CaseManagerPageLayout({
           </a>
         </div>
       </Page.Header>
-      <Page.Container>
-        <Page.Content className="relative">
-          <div className="flex justify-between mb-lg">
+      <Page.Container className={isLinksTab ? 'min-h-0' : undefined}>
+        <Page.Content className={cn('relative', isLinksTab && 'min-h-0 overflow-hidden')}>
+          <div className="flex justify-between mb-lg shrink-0">
             <Tabs>
               <Link className={tabClassName} from="/cases/s/$caseId" to="./principal" preload="render">
                 {t('cases:case_detail.tab.principal')}
               </Link>
-              <Link
-                disabled={!pivotObjects.length}
-                className={tabClassName}
-                from="/cases/s/$caseId"
-                to="./clients"
-                preload={pivotObjects.length ? 'render' : false}
-              >
-                {t('cases:manager.tab.clients_concerned')}
-              </Link>
+              {defaultClientsPivotValue ? (
+                <Link
+                  className={tabClassName}
+                  from="/cases/s/$caseId"
+                  to="./clients/$pivotValue"
+                  params={{ pivotValue: defaultClientsPivotValue }}
+                  preload="render"
+                >
+                  {t('cases:manager.tab.clients_concerned')}
+                </Link>
+              ) : (
+                <Link disabled className={tabClassName} from="/cases/s/$caseId" to="./clients" preload={false}>
+                  {t('cases:manager.tab.clients_concerned')}
+                </Link>
+              )}
+              {defaultLinksPivotValue ? (
+                <Link
+                  className={tabClassName}
+                  from="/cases/s/$caseId"
+                  to="./links/$pivotValue"
+                  params={{ pivotValue: defaultLinksPivotValue }}
+                  preload="render"
+                >
+                  {t('cases:manager.tab.links_to_other')}
+                </Link>
+              ) : (
+                <Link disabled className={tabClassName} from="/cases/s/$caseId" to="./links" preload={false}>
+                  {t('cases:manager.tab.links_to_other')}
+                </Link>
+              )}
             </Tabs>
             <ActionBar>
               <ActionButton disabled={isSarCompleted} icon="plus" text={sarActionText} onClick={handleSarAction} />
@@ -146,7 +189,7 @@ export function CaseManagerPageLayout({
             </ActionBar>
           </div>
           <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-            {children}
+            <div className={cn(isLinksTab && 'flex min-h-0 flex-1 flex-col')}>{children}</div>
           </DataModelContextProvider>
           <SarReportModal
             open={sarReportModalOpen}

@@ -2,7 +2,6 @@ import { DataModel, type TableModel } from '@app-builder/models';
 import { useHierarchyQuery } from '@app-builder/queries/data/get-hierarchy';
 import { type HierarchyLeaf, type HierarchyNode, type HierarchyTreeBase } from '@app-builder/server-fns/data';
 import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
-import { UseQueryResult } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useState } from 'react';
@@ -20,7 +19,7 @@ type ObjectHierarchyProps = {
   objectId: string;
   metadata: Client360Table;
   allMetadata: Client360Table[];
-  dataModelQuery: UseQueryResult<{ dataModel: DataModel }>;
+  dataModel: DataModel;
   handleExplore: (parent: HierarchyNode, child: HierarchyLeaf) => void;
 };
 
@@ -31,7 +30,7 @@ export const ObjectHierarchy = ({
   metadata,
   allMetadata,
   handleExplore: handleExploreProps,
-  dataModelQuery,
+  dataModel,
 }: ObjectHierarchyProps) => {
   const { t } = useTranslation(['common', 'client360']);
   const hierarchyQuery = useHierarchyQuery(objectType, objectId, showAll);
@@ -39,10 +38,7 @@ export const ObjectHierarchy = ({
   const dataModelExplorerContext = DataModelExplorerContext.useValue();
 
   const handleExplore = (parent: HierarchyNode, child: HierarchyLeaf) => {
-    if (!dataModelQuery.isSuccess) return;
-    const navigationOptions = dataModelQuery.data.dataModel.find(
-      (table) => table.name === parent.objectType,
-    )?.navigationOptions;
+    const navigationOptions = dataModel.find((table) => table.name === parent.objectType)?.navigationOptions;
     // Prefer the exact option that produced this leaf (several options can target the
     // same table); fall back to the first option matching the target table name.
     const navigationOption =
@@ -82,7 +78,6 @@ export const ObjectHierarchy = ({
         return null;
       }
 
-      const dataModel = dataModelQuery.isSuccess ? dataModelQuery.data.dataModel : [];
       const currentParent = selectedParent ?? hierarchy.parents[0];
       const currentParentMetadata = currentParent
         ? (allMetadata.find((m) => m.name === currentParent.objectType) ?? null)

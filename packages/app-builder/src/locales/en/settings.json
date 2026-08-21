@@ -46,6 +46,7 @@
   "filters.delete_filter.title": "Delete filter",
   "global_settings.auto_assign_queue_limit": "Auto assign queue limit",
   "global_settings.title": "Global settings",
+  "graph_relations": "Graph relations",
   "inboxes": "Inboxes",
   "inboxes.auto_assign_queue_limit.nudge": "The auto assignment allows to automatically distribute cases between reviewers agents.",
   "inboxes.cases": "Cases",

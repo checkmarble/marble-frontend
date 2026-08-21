@@ -14,6 +14,8 @@ type ClientObjectTagListProps = {
   objectId: string;
   annotations?: GroupedAnnotations['tags'];
   placeholder?: string;
+  /** Fires with the next tag id list on edit (optimistic) and again on failure revert. */
+  onTagIdsChange?: (tagIds: string[]) => void;
 };
 
 export function ClientObjectTagList({
@@ -22,6 +24,7 @@ export function ClientObjectTagList({
   objectId,
   annotations,
   placeholder,
+  onTagIdsChange,
 }: ClientObjectTagListProps) {
   const { t } = useTranslation(['common']);
   const queryClient = useQueryClient();
@@ -43,6 +46,7 @@ export function ClientObjectTagList({
     if (addedTags.length === 0 && removedAnnotations.length === 0) return;
 
     setPendingTagIds(next);
+    onTagIdsChange?.(next);
 
     createAnnotationMutation
       .mutateAsync({
@@ -56,6 +60,7 @@ export function ClientObjectTagList({
         if (!result.success) {
           toast.error(t('common:errors.unknown'));
           setPendingTagIds(null);
+          onTagIdsChange?.(previous);
           return;
         }
         await queryClient.invalidateQueries({ queryKey: ['annotations', tableName, objectId] });
@@ -64,6 +69,7 @@ export function ClientObjectTagList({
       .catch(() => {
         toast.error(t('common:errors.unknown'));
         setPendingTagIds(null);
+        onTagIdsChange?.(previous);
       });
   };
 

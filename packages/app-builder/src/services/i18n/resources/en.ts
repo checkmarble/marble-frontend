@@ -9,6 +9,7 @@ import continuousScreening from '@app-builder/locales/en/continuous-screening.js
 import data from '@app-builder/locales/en/data.json';
 import decisions from '@app-builder/locales/en/decisions.json';
 import filters from '@app-builder/locales/en/filters.json';
+import graph from '@app-builder/locales/en/graph.json';
 import lists from '@app-builder/locales/en/lists.json';
 import navigation from '@app-builder/locales/en/navigation.json';
 import scenarios from '@app-builder/locales/en/scenarios.json';
@@ -30,6 +31,7 @@ export const en = {
   data,
   decisions,
   filters,
+  graph,
   navigation,
   lists,
   auth,

@@ -13,6 +13,7 @@ import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
 
 import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
+import { makeGetGraphRepository } from './GraphRepository';
 import { makeGetInboxRepository } from './InboxRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPersonalSettingsRepository } from './PersonalSettingsRepository';
@@ -62,6 +63,7 @@ export function makeServerRepositories({
     getApiKeyRepository: makeGetApiKeyRepository(),
     getAnalyticsRepository: makeGetAnalyticsRepository(),
     getWebhookRepository: makeGetWebhookRepository(),
+    getGraphRepository: makeGetGraphRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
     getAppConfigRepository: makeGetAppConfigRepository(),

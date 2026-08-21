@@ -15439,21 +15439,6 @@
       "description": "TypeScript-first schema declaration and validation library with static type inference"
     },
     {
-      "name": "zustand",
-      "versions": [
-        "4.5.6",
-        "5.0.3"
-      ],
-      "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/zustand@4.5.6_@types+react@18.3.11_react@18.3.1/node_modules/zustand",
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/zustand@5.0.3_@types+react@18.3.11_react@18.3.1_use-sync-external-store@1.4.0_react@18.3.1_/node_modules/zustand"
-      ],
-      "license": "MIT",
-      "author": "Paul Henschel",
-      "homepage": "https://github.com/pmndrs/zustand",
-      "description": "🐻 Bear necessities for state management in React"
-    },
-    {
       "name": "zwitch",
       "versions": [
         "2.0.4"

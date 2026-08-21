@@ -10,9 +10,9 @@ import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings 
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useActiveConfigsForObjectQuery } from '@app-builder/queries/continuous-screening/active-configs-for-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
-import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,8 +22,12 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Panel, Popover, Tag } from 'ui-design-system';
+import { Button, Card, cn, Panel, Popover, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { MainLinksGraph, mainLinksGraphMinHeight } from '../CaseManager/MainLinksGraph';
+import { GraphSessionProvider, useGraphSession } from '../Graph/contexts/GraphSessionContext';
+import { SessionGraphCanvas } from '../Graph/SessionGraphCanvas';
+import { pageLayoutGutter } from '../Page/page-layout';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';
 import { ConfigureMonitoringForObjectId } from './ConfigureMonitoringForObjectId';
@@ -59,7 +63,7 @@ export const ClientDetailPage = ({
   const { t } = useTranslation(['common', 'client360', 'user-scoring']);
   const { currentUser } = useOrganizationDetails();
   const canConfigureUserScoring = isAccessible(userScoringAccess) && !isAnalyst(currentUser);
-  const dataModelQuery = useDataModelQuery();
+  const dataModel = useDataModel();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const [showExplorer, setShowExplorer] = useState(false);
   const [isEditingDocuments, setIsEditingDocuments] = useState(false);
@@ -150,48 +154,30 @@ export const ClientDetailPage = ({
                   </a>
                 </div>
               )}
-              {/* Client fields card */}
-              <Card className="grow">
-                <div className="min-h-[140px]">
-                  {match(dataModelQuery)
-                    .with({ isPending: true }, () => {
-                      return (
-                        <div className="flex justify-center items-center min-h-[140px]">
-                          <Spinner className="size-10" />
-                        </div>
-                      );
-                    })
-                    .with({ isError: true }, () => {
-                      return <div>{t('common:generic_fetch_data_error')}</div>;
-                    })
-                    .with({ isSuccess: true }, (dmQuery) => {
-                      return (
-                        <DataFields
-                          table={objectType}
-                          object={objectDetails}
-                          options={{
-                            layout: '2-columns',
-                          }}
-                        />
-                      );
-                    })
-                    .exhaustive()}
+              <div className={cn('grid grid-cols-1 lg:grid-cols-2 grow', pageLayoutGutter.gap)}>
+                {/* Client fields card */}
+                <Card>
+                  <div className="min-h-[140px]">
+                    <DataFields
+                      table={objectType}
+                      object={objectDetails}
+                      options={{ displayExpandButton: true, maxVisibleFields: 12 }}
+                    />
+                  </div>
+                </Card>
+                <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
+                  <div className="flex shrink-0 justify-between items-center">
+                    <Typo variant="title2">{t('cases:manager.clients.main_links_title')}</Typo>
+                    <PanelGraphLinks objectType={objectType} objectId={objectId} />
+                  </div>
+                  <MainLinksGraph objectType={objectType} objectId={objectId} dataModel={dataModel} />
                 </div>
-                {/* <div></div>
-              <div className="w-px self-stretch bg-grey-border max-lg:hidden" />
-              <div></div> */}
-              </Card>
+              </div>
             </div>
 
-            {/* Client timeline */}
-            {/* <Card className="flex flex-col gap-sm">
-              <div className="font-medium">User's history</div>
-              <ClientTimeline />
-            </Card> */}
-
             {/* Client relationships */}
-            <div className="grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-md">
-              <div className="flex flex-col gap-md">
+            <div className={cn('grid grid-cols-1 lg:grid-cols-[7fr_5fr]', pageLayoutGutter.gap)}>
+              <div className={cn('flex flex-col', pageLayoutGutter.gap)}>
                 <Card className="flex flex-col gap-sm">
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{t('client360:client_detail.monitoring_hits.title')}</div>
@@ -288,7 +274,7 @@ export const ClientDetailPage = ({
                   objectId={objectId}
                   metadata={metadata}
                   allMetadata={allMetadata}
-                  dataModelQuery={dataModelQuery}
+                  dataModel={dataModel}
                   handleExplore={() => setShowExplorer(true)}
                 />
               </Card>
@@ -369,17 +355,13 @@ export const ClientDetailPage = ({
               objectId={objectId}
               metadata={metadata}
               allMetadata={allMetadata}
-              dataModelQuery={dataModelQuery}
+              dataModel={dataModel}
               handleExplore={() => setShowExplorer(true)}
             />
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
-      <DataExplorerPanel
-        open={showExplorer}
-        onOpenChange={setShowExplorer}
-        dataModel={dataModelQuery.data?.dataModel ?? []}
-      />
+      <DataExplorerPanel open={showExplorer} onOpenChange={setShowExplorer} dataModel={dataModel} />
       {scoringSettings && scoreForPanel && isAccessible(userScoringAccess) ? (
         <ScoreDetailPanel
           open={showScorePanel}
@@ -393,6 +375,44 @@ export const ClientDetailPage = ({
   );
 };
 
-const Card = ({ children, className }: { children?: React.ReactNode; className?: string }) => {
-  return <div className={cn('p-lg border border-grey-border rounded-md bg-surface-card', className)}>{children}</div>;
+const PanelGraphLinks = ({ objectType, objectId }: { objectType: string; objectId: string }) => {
+  const [open, setOpen] = useState(false);
+  const { t } = useTranslation(['common']);
+  return (
+    <Panel.Root open={open} onOpenChange={setOpen}>
+      <Panel.Trigger asChild>
+        <Button variant="secondary">
+          <Icon icon="eye" className="size-4" />
+          {t('common:see_all')}
+        </Button>
+      </Panel.Trigger>
+      <Panel.Container size="full">
+        <Panel.Content>
+          <Panel.Header>Graph Links</Panel.Header>
+          <GraphSessionProvider
+            key={`${objectType}:${objectId}`}
+            initialRecord={{ recordType: objectType, recordId: objectId }}
+          >
+            <LinksGraphBody />
+          </GraphSessionProvider>
+          <Panel.Footer>
+            <Panel.FooterButton label={t('common:close')} isCloseButton onClick={() => setOpen(false)} />
+          </Panel.Footer>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
+  );
 };
+
+function LinksGraphBody() {
+  const { isGeneratingGraph } = useGraphSession();
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <SessionGraphCanvas
+        placeholder={<Card className={cn('min-h-0 flex-1', isGeneratingGraph && 'animate-pulse bg-grey-background')} />}
+        withCard={false}
+      />
+    </div>
+  );
+}

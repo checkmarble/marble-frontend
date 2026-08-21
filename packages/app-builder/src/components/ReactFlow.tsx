@@ -2,6 +2,7 @@ import {
   type Connection,
   ControlButton,
   type Edge,
+  type FitViewOptions,
   getIncomers,
   getOutgoers,
   type Node,
@@ -11,6 +12,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useRef } from 'react';
 import { Icon } from 'ui-icons';
+import { graphFitViewOptions } from './Graph/lib/use-laid-out-graph';
 
 type LayoutElements<NodeType extends Node, EdgeType extends Edge> = (
   nodes: NodeType[],
@@ -22,12 +24,16 @@ type LayoutElements<NodeType extends Node, EdgeType extends Edge> = (
 
 export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>({
   layoutElements,
+  fitViewOptions = graphFitViewOptions,
 }: {
   layoutElements: LayoutElements<NodeType, EdgeType>;
+  fitViewOptions?: FitViewOptions<NodeType>;
 }) {
   const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow<NodeType, EdgeType>();
   const layoutElementsRef = useRef(layoutElements);
   layoutElementsRef.current = layoutElements;
+  const fitViewOptionsRef = useRef(fitViewOptions);
+  fitViewOptionsRef.current = fitViewOptions;
   return useCallback(
     (options: { fitView?: boolean }) => {
       const { nodes, edges } = layoutElementsRef.current(getNodes(), getEdges());
@@ -35,7 +41,7 @@ export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>(
       setEdges(edges);
       if (options.fitView) {
         window.requestAnimationFrame(() => {
-          fitView();
+          fitView(fitViewOptionsRef.current);
         });
       }
     },
@@ -46,12 +52,14 @@ export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>(
 export function useLayoutInitializedNodes<NodeType extends Node, EdgeType extends Edge>({
   mode,
   layoutElements,
+  fitViewOptions,
 }: {
   mode: 'onMount' | 'onNodesInitialized';
   layoutElements: LayoutElements<NodeType, EdgeType>;
+  fitViewOptions?: FitViewOptions<NodeType>;
 }) {
   const nodesInitialized = useNodesInitialized();
-  const layoutElem = useLayoutElements({ layoutElements });
+  const layoutElem = useLayoutElements({ layoutElements, fitViewOptions });
 
   const firstLayout = useRef(false);
   useEffect(() => {

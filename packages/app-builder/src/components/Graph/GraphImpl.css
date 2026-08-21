@@ -1,0 +1,5 @@
+/* EdgeLabelRenderer portals before NodeRenderer. Nodes set their own z-index
+ * (up to 1000 when selected), so the label layer must sit strictly above that. */
+.react-flow .react-flow__edgelabel-renderer {
+  z-index: 1001;
+}
