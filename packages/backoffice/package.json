@@ -58,7 +58,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^5.0.4",
     "babel-plugin-react-compiler": "^1.0.0",
-    "jsdom": "29.1.1",
+    "jsdom": "30.0.1",
     "vite": "^7.3.6",
     "vitest": "4.1.8",
     "web-vitals": "^5.1.0"
