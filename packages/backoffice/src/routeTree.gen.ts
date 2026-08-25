@@ -9,51 +9,51 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppPublicRouteImport } from './routes/_app/_public'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppPrivateRouteImport } from './routes/_app/_private'
-import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
-import { Route as AppPublicSignInRouteImport } from './routes/_app/_public/sign-in'
+import { Route as AppPublicRouteImport } from './routes/_app/_public'
 import { Route as AppPrivateDashboardRouteImport } from './routes/_app/_private/dashboard'
+import { Route as AppPublicSignInRouteImport } from './routes/_app/_public/sign-in'
+import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 import { Route as AppPrivateLicensesIndexRouteImport } from './routes/_app/_private/licenses/index'
 import { Route as AppPrivateOrganizationsOrgIdRouteImport } from './routes/_app/_private/organizations/$orgId'
 import { Route as AppPrivateOrganizationsOrgIdIndexRouteImport } from './routes/_app/_private/organizations/$orgId.index'
-import { Route as AppPrivateOrganizationsOrgIdUsersRouteImport } from './routes/_app/_private/organizations/$orgId.users'
-import { Route as AppPrivateOrganizationsOrgIdSettingsRouteImport } from './routes/_app/_private/organizations/$orgId.settings'
 import { Route as AppPrivateOrganizationsOrgIdOverviewRouteImport } from './routes/_app/_private/organizations/$orgId.overview'
+import { Route as AppPrivateOrganizationsOrgIdSettingsRouteImport } from './routes/_app/_private/organizations/$orgId.settings'
+import { Route as AppPrivateOrganizationsOrgIdUsersRouteImport } from './routes/_app/_private/organizations/$orgId.users'
 
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppPublicRoute = AppPublicRouteImport.update({
-  id: '/_public',
-  getParentRoute: () => AppRoute,
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppPrivateRoute = AppPrivateRouteImport.update({
   id: '/_private',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
-  id: '/api/trpc/$',
-  path: '/api/trpc/$',
-  getParentRoute: () => rootRouteImport,
+const AppPublicRoute = AppPublicRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPrivateDashboardRoute = AppPrivateDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppPrivateRoute,
 } as any)
 const AppPublicSignInRoute = AppPublicSignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
   getParentRoute: () => AppPublicRoute,
 } as any)
-const AppPrivateDashboardRoute = AppPrivateDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppPrivateRoute,
+const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
+  id: '/api/trpc/$',
+  path: '/api/trpc/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppPrivateLicensesIndexRoute = AppPrivateLicensesIndexRouteImport.update({
   id: '/licenses/',
@@ -72,10 +72,10 @@ const AppPrivateOrganizationsOrgIdIndexRoute =
     path: '/',
     getParentRoute: () => AppPrivateOrganizationsOrgIdRoute,
   } as any)
-const AppPrivateOrganizationsOrgIdUsersRoute =
-  AppPrivateOrganizationsOrgIdUsersRouteImport.update({
-    id: '/users',
-    path: '/users',
+const AppPrivateOrganizationsOrgIdOverviewRoute =
+  AppPrivateOrganizationsOrgIdOverviewRouteImport.update({
+    id: '/overview',
+    path: '/overview',
     getParentRoute: () => AppPrivateOrganizationsOrgIdRoute,
   } as any)
 const AppPrivateOrganizationsOrgIdSettingsRoute =
@@ -84,10 +84,10 @@ const AppPrivateOrganizationsOrgIdSettingsRoute =
     path: '/settings',
     getParentRoute: () => AppPrivateOrganizationsOrgIdRoute,
   } as any)
-const AppPrivateOrganizationsOrgIdOverviewRoute =
-  AppPrivateOrganizationsOrgIdOverviewRouteImport.update({
-    id: '/overview',
-    path: '/overview',
+const AppPrivateOrganizationsOrgIdUsersRoute =
+  AppPrivateOrganizationsOrgIdUsersRouteImport.update({
+    id: '/users',
+    path: '/users',
     getParentRoute: () => AppPrivateOrganizationsOrgIdRoute,
   } as any)
 
@@ -179,13 +179,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -193,12 +186,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/_public': {
-      id: '/_app/_public'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AppPublicRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/_private': {
       id: '/_app/_private'
@@ -207,12 +200,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPrivateRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/trpc/$': {
-      id: '/api/trpc/$'
-      path: '/api/trpc/$'
-      fullPath: '/api/trpc/$'
-      preLoaderRoute: typeof ApiTrpcSplatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/_public': {
+      id: '/_app/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppPublicRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/_private/dashboard': {
+      id: '/_app/_private/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppPrivateDashboardRouteImport
+      parentRoute: typeof AppPrivateRoute
     }
     '/_app/_public/sign-in': {
       id: '/_app/_public/sign-in'
@@ -221,12 +221,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPublicSignInRouteImport
       parentRoute: typeof AppPublicRoute
     }
-    '/_app/_private/dashboard': {
-      id: '/_app/_private/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AppPrivateDashboardRouteImport
-      parentRoute: typeof AppPrivateRoute
+    '/api/trpc/$': {
+      id: '/api/trpc/$'
+      path: '/api/trpc/$'
+      fullPath: '/api/trpc/$'
+      preLoaderRoute: typeof ApiTrpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/_private/licenses/': {
       id: '/_app/_private/licenses/'
@@ -249,11 +249,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPrivateOrganizationsOrgIdIndexRouteImport
       parentRoute: typeof AppPrivateOrganizationsOrgIdRoute
     }
-    '/_app/_private/organizations/$orgId/users': {
-      id: '/_app/_private/organizations/$orgId/users'
-      path: '/users'
-      fullPath: '/organizations/$orgId/users'
-      preLoaderRoute: typeof AppPrivateOrganizationsOrgIdUsersRouteImport
+    '/_app/_private/organizations/$orgId/overview': {
+      id: '/_app/_private/organizations/$orgId/overview'
+      path: '/overview'
+      fullPath: '/organizations/$orgId/overview'
+      preLoaderRoute: typeof AppPrivateOrganizationsOrgIdOverviewRouteImport
       parentRoute: typeof AppPrivateOrganizationsOrgIdRoute
     }
     '/_app/_private/organizations/$orgId/settings': {
@@ -263,11 +263,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPrivateOrganizationsOrgIdSettingsRouteImport
       parentRoute: typeof AppPrivateOrganizationsOrgIdRoute
     }
-    '/_app/_private/organizations/$orgId/overview': {
-      id: '/_app/_private/organizations/$orgId/overview'
-      path: '/overview'
-      fullPath: '/organizations/$orgId/overview'
-      preLoaderRoute: typeof AppPrivateOrganizationsOrgIdOverviewRouteImport
+    '/_app/_private/organizations/$orgId/users': {
+      id: '/_app/_private/organizations/$orgId/users'
+      path: '/users'
+      fullPath: '/organizations/$orgId/users'
+      preLoaderRoute: typeof AppPrivateOrganizationsOrgIdUsersRouteImport
       parentRoute: typeof AppPrivateOrganizationsOrgIdRoute
     }
   }
