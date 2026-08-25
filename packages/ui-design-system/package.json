@@ -35,7 +35,7 @@
     "storybook": "^10.5.5",
     "tailwindcss": "4.3.3",
     "vite": "^8.2.1",
-    "vite-tsconfig-paths": "6.1.1",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "4.1.10"
   },
   "dependencies": {
@@ -71,7 +71,7 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss-radix": "^4.0.2",
     "temporal-polyfill": "^1.0.2",
-    "ts-pattern": "^5.8.0",
+    "ts-pattern": "^5.9.0",
     "ui-icons": "workspace:*"
   },
   "peerDependencies": {
