@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "overrides": {
-    "vite": "^8.2.1",
+    "vite": "^7.3.6",
     "cookie": "^0.7.2",
     "cross-spawn": "^7.0.5",
     "minimatch": "9.0.7",
