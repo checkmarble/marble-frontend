@@ -9,7 +9,7 @@ import { toggle } from 'radash';
 import { type MouseEvent, type SyntheticEvent, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Card, cn, MenuCommand, Panel, Switch, Tag, TagProps, Typo } from 'ui-design-system';
+import { Button, Card, cn, MenuCommand, Panel, Switch, Tag, TagProps, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   DownloadCsvTemplate,
@@ -66,12 +66,16 @@ export function PanelAddCsv({
     <div onClick={stopRowInteraction} onPointerDown={stopRowInteraction}>
       {objectTypes.length > 1 ? (
         <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
-          <MenuCommand.Trigger>
-            <Button variant="primary" appearance="stroked" onClick={(e) => e.stopPropagation()}>
-              <Icon icon="plus" className="size-4" />
-              <span className="truncate">{t('continuousScreening:configurations.csv.button.addCsv')}</span>
-            </Button>
-          </MenuCommand.Trigger>
+          <Tooltip.Default content={t('continuousScreening:configurations.csv.button.addCsv')}>
+            <span className="inline-flex">
+              <MenuCommand.Trigger>
+                <Button variant="primary" appearance="stroked" onClick={(e) => e.stopPropagation()}>
+                  <Icon icon="plus" className="size-4" />
+                  <span>csv</span>
+                </Button>
+              </MenuCommand.Trigger>
+            </span>
+          </Tooltip.Default>
           <MenuCommand.Content align="end" sideOffset={4}>
             <MenuCommand.List>
               <MenuCommand.Group heading={t('upload:select_one_table')}>
@@ -92,10 +96,12 @@ export function PanelAddCsv({
           </MenuCommand.Content>
         </MenuCommand.Menu>
       ) : (
-        <Button variant="primary" appearance="stroked" onClick={handleAddClick}>
-          <Icon icon="plus" className="size-4" />
-          {t('continuousScreening:configurations.csv.button.addCsv')}
-        </Button>
+        <Tooltip.Default content={t('continuousScreening:configurations.csv.button.addCsv')}>
+          <Button variant="primary" appearance="stroked" onClick={handleAddClick}>
+            <Icon icon="plus" className="size-4" />
+            <span>csv</span>
+          </Button>
+        </Tooltip.Default>
       )}
 
       <Panel.Root open={panelOpen} onOpenChange={handlePanelOpenChange}>
