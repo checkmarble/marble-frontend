@@ -369,6 +369,7 @@
   "monitoring_list_check.display_name_any": "A des alertes sur {{objectTableName}}",
   "monitoring_list_check.filter_question": "Pour quels statuts ou instances souhaitez-vous filtrer les alertes ?",
   "monitoring_list_check.hit_type.adverse_media": "Média défavorable",
+  "monitoring_list_check.hit_type.custom": "Liste personnalisée",
   "monitoring_list_check.hit_type.peps": "PPE",
   "monitoring_list_check.hit_type.sanctions": "Sanctions",
   "monitoring_list_check.hit_type.third_parties": "Tiers",
