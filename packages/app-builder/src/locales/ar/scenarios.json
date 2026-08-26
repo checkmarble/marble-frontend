@@ -369,7 +369,7 @@
   "monitoring_list_check.display_name_any": "يحتوي على تطابقات في {{objectTableName}}",
   "monitoring_list_check.filter_question": "لأي حالة أو مثيلات تريد تصفية تطابقات القوائم التنظيمية؟",
   "monitoring_list_check.hit_type.adverse_media": "الوسائط السلبية",
-  "monitoring_list_check.hit_type.custom": "قائمة شخصية",
+  "monitoring_list_check.hit_type.custom": "قائمة مخصصة",
   "monitoring_list_check.hit_type.peps": "الأشخاص المعرضون سياسياً",
   "monitoring_list_check.hit_type.sanctions": "العقوبات",
   "monitoring_list_check.hit_type.third_parties": "أطراف ثالثة",
