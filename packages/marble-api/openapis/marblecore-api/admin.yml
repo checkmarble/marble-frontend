@@ -1,3 +1,20 @@
+/admin/onboard:
+  post:
+    tags:
+      - Admin
+    operationId: createInitialOrg
+    summary: Create the initial organization and user
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateInitialOrgBody"
+    responses:
+      "201":
+        description: The organization and user were created
+      "409":
+        $ref: "components.yml#/responses/409"
+
 /apikeys:
   get:
     tags:
@@ -566,6 +583,31 @@
 
 components:
   schemas:
+    CreateInitialOrgBody:
+      type: object
+      required:
+        - organization
+        - email
+        - firstname
+        - lastname
+      properties:
+        organization:
+          type: string
+        email:
+          type: string
+          format: email
+        firstname:
+          type: string
+        lastname:
+          type: string
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: >
+            Required unless the instance authenticates through OpenID Connect,
+            in which case credentials are owned by the identity provider.
+
     OrganizationDto:
       type: object
       required:

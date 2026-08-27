@@ -35,6 +35,11 @@ const signInEmailLoader = createServerFn()
     }
     const appConfig = context.appConfig;
 
+    // A migrated but empty instance has nothing to sign into yet: onboard first.
+    if (appConfig?.status.migrations && !appConfig.status.hasOrg) {
+      throw redirect({ to: '/onboarding' });
+    }
+
     if (appConfig?.auth.provider === 'oidc') {
       throw redirect({ to: '/sign-in' });
     }

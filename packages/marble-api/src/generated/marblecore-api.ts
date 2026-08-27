@@ -1701,6 +1701,15 @@ export type ArchetypeApplyDto = {
     org_name: string;
     admins: CreateNewOrgAdmin[];
 };
+export type CreateInitialOrgBody = {
+    organization: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+    /** Required unless the instance authenticates through OpenID Connect, in which case credentials are owned by the identity provider.
+     */
+    password?: string;
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
@@ -5444,6 +5453,21 @@ export function applyArchetype(archetypeApplyDto: ArchetypeApplyDto, { seed }: {
         ...opts,
         method: "POST",
         body: archetypeApplyDto
+    })));
+}
+/**
+ * Create the initial organization and user
+ */
+export function createInitialOrg(createInitialOrgBody?: CreateInitialOrgBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+    } | {
+        status: 409;
+        data: string;
+    }>("/admin/onboard", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createInitialOrgBody
     })));
 }
 /**
