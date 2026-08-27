@@ -10,6 +10,7 @@ import { makeI18nextServerService } from './i18n/i18next.server';
 function makeServerServices(repositories: ServerRepositories) {
   return {
     appConfigRepository: repositories.getAppConfigRepository(repositories.marbleCoreApiClient),
+    onboardingRepository: repositories.getOnboardingRepository(repositories.marbleCoreApiClient),
     featureAccessService: repositories.getFeatureAccessRepository(repositories.getFeatureAccessApiClientWithoutAuth()),
     authService: makeAuthenticationServerService({
       ...repositories,

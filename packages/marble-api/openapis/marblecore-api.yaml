@@ -344,6 +344,8 @@ paths:
 
   # ADMINISTRATION
 
+  /admin/onboard:
+    $ref: ./marblecore-api/admin.yml#/~1admin~1onboard
   /apikeys:
     $ref: ./marblecore-api/admin.yml#/~1apikeys
   /apikeys/{apiKeyId}:

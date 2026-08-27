@@ -13,7 +13,7 @@ let discoveryCache: OidcDiscovery | undefined;
 
 async function getOidcDiscovery(issuer: string): Promise<OidcDiscovery> {
   if (discoveryCache) return discoveryCache;
-  const res = await fetch(`${issuer}/.well-known/openid-configuration`);
+  const res = await fetch(`${issuer}/.well-known/openid-configuration`.replaceAll('//', '/'));
   discoveryCache = (await res.json()) as OidcDiscovery;
   return discoveryCache;
 }

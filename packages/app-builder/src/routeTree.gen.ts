@@ -16,6 +16,7 @@ import { Route as AppRouterRouteImport } from './routes/app-router'
 import { Route as HealthcheckRouteImport } from './routes/healthcheck'
 import { Route as AppAuthRouteImport } from './routes/_app/_auth'
 import { Route as AppBuilderRouteImport } from './routes/_app/_builder'
+import { Route as AppOnboardingRouteImport } from './routes/_app/onboarding'
 import { Route as OidcAuthRouteImport } from './routes/oidc/auth'
 import { Route as OidcCallbackRouteImport } from './routes/oidc/callback'
 import { Route as RessourcesLocalesRouteImport } from './routes/ressources/locales'
@@ -150,6 +151,11 @@ const AppAuthRoute = AppAuthRouteImport.update({
 } as any)
 const AppBuilderRoute = AppBuilderRouteImport.update({
   id: '/_builder',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AppRoute,
 } as any)
 const OidcAuthRoute = OidcAuthRouteImport.update({
@@ -766,6 +772,7 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/app-router': typeof AppRouterRoute
   '/healthcheck': typeof HealthcheckRoute
+  '/onboarding': typeof AppOnboardingRoute
   '/oidc/auth': typeof OidcAuthRoute
   '/oidc/callback': typeof OidcCallbackRoute
   '/ressources/locales': typeof RessourcesLocalesRoute
@@ -873,6 +880,7 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/app-router': typeof AppRouterRoute
   '/healthcheck': typeof HealthcheckRoute
+  '/onboarding': typeof AppOnboardingRoute
   '/oidc/auth': typeof OidcAuthRoute
   '/oidc/callback': typeof OidcCallbackRoute
   '/ressources/locales': typeof RessourcesLocalesRoute
@@ -964,6 +972,7 @@ export interface FileRoutesById {
   '/healthcheck': typeof HealthcheckRoute
   '/_app/_auth': typeof AppAuthRouteWithChildren
   '/_app/_builder': typeof AppBuilderRouteWithChildren
+  '/_app/onboarding': typeof AppOnboardingRoute
   '/oidc/auth': typeof OidcAuthRoute
   '/oidc/callback': typeof OidcCallbackRoute
   '/ressources/locales': typeof RessourcesLocalesRoute
@@ -1075,6 +1084,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/app-router'
     | '/healthcheck'
+    | '/onboarding'
     | '/oidc/auth'
     | '/oidc/callback'
     | '/ressources/locales'
@@ -1182,6 +1192,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/app-router'
     | '/healthcheck'
+    | '/onboarding'
     | '/oidc/auth'
     | '/oidc/callback'
     | '/ressources/locales'
@@ -1272,6 +1283,7 @@ export interface FileRouteTypes {
     | '/healthcheck'
     | '/_app/_auth'
     | '/_app/_builder'
+    | '/_app/onboarding'
     | '/oidc/auth'
     | '/oidc/callback'
     | '/ressources/locales'
@@ -1446,6 +1458,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppBuilderRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/onboarding': {
+      id: '/_app/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
       parentRoute: typeof AppRoute
     }
     '/oidc/auth': {
@@ -2722,11 +2741,13 @@ const AppBuilderRouteWithChildren = AppBuilderRoute._addFileChildren(
 interface AppRouteChildren {
   AppAuthRoute: typeof AppAuthRouteWithChildren
   AppBuilderRoute: typeof AppBuilderRouteWithChildren
+  AppOnboardingRoute: typeof AppOnboardingRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAuthRoute: AppAuthRouteWithChildren,
   AppBuilderRoute: AppBuilderRouteWithChildren,
+  AppOnboardingRoute: AppOnboardingRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

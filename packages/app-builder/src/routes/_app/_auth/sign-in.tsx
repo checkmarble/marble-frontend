@@ -37,6 +37,11 @@ const signInLoader = createServerFn()
     const appConfig = context.appConfig;
     const url = new URL(request.url);
 
+    // A migrated but empty instance has nothing to sign into yet: onboard first.
+    if (appConfig?.status.migrations && !appConfig.status.hasOrg) {
+      throw redirect({ to: '/onboarding' });
+    }
+
     const authProvider = (appConfig && appConfig.auth.provider) ?? 'firebase';
     const isSsoEnabled = appConfig && appConfig.features.sso;
     // Handle email parameter manually to preserve literal '+' characters

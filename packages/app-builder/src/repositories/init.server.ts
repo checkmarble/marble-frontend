@@ -14,6 +14,7 @@ import { makeGetDecisionRepository } from './DecisionRepository';
 
 import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
 import { makeGetInboxRepository } from './InboxRepository';
+import { makeGetOnboardingRepository } from './OnboardingRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPersonalSettingsRepository } from './PersonalSettingsRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
@@ -65,6 +66,7 @@ export function makeServerRepositories({
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
     getAppConfigRepository: makeGetAppConfigRepository(),
+    getOnboardingRepository: makeGetOnboardingRepository(),
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
     getPersonalSettingsRepository: makeGetPersonalSettingsRepository(),
     getAiAssistSettingsRepository: makeGetAiAssistSettingsRepository(),

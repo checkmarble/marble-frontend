@@ -412,6 +412,8 @@ AppConfigDto:
 
 # ADMINISTRATION
 
+CreateInitialOrgBody:
+  $ref: admin.yml#/components/schemas/CreateInitialOrgBody
 OrganizationDto:
   $ref: admin.yml#/components/schemas/OrganizationDto
 CreateOrganizationBodyDto:
