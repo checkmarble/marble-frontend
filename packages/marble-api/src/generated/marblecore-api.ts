@@ -263,6 +263,12 @@ export type ContinuousScreeningMatchBaseDto = {
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     payload: ContinuousScreeningMatchPayloadDto;
     reviewed_by?: string;
+    comments: {
+        id: string;
+        author_id: string;
+        comment: string;
+        created_at: string;
+    }[];
     created_at: string;
     updated_at: string;
 };

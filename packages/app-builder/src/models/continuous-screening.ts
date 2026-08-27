@@ -23,11 +23,13 @@ import {
 } from 'marble-api';
 import * as R from 'remeda';
 import {
+  adaptScreeningMatchComments,
   adaptScreeningMatchPayload,
   isKnownEntitySchema,
   matchEntitySchemas,
-  OpenSanctionEntitySchema,
-  ScreeningMatchPayload,
+  type OpenSanctionEntitySchema,
+  type ScreeningMatchComment,
+  type ScreeningMatchPayload,
 } from './screening';
 import { createScreeningFilters, getDatasetFromFilters } from './screening-config';
 
@@ -358,6 +360,7 @@ export type ContinuousScreeningMatchBase = {
   continuousScreeningId: string;
   status: ContinuousScreeningMatchBaseDto['status'];
   payload: ContinuousScreeningMatchPayload;
+  comments: ScreeningMatchComment[];
 };
 
 export type ContinuousScreeningMatchScreeningEntity = ContinuousScreeningMatchBase & {
@@ -417,20 +420,27 @@ export function adaptContinuousScreeningRequest(dto: ContinuousScreeningRequestD
   };
 }
 
-export function adaptContinuousScreeningMatchMarble(
-  dto: ContinuousScreeningMatchMarbleDto,
-): ContinuousScreeningMatchMarble {
+function adaptContinuousScreeningMatchBase(dto: ContinuousScreeningMatchBaseDto): ContinuousScreeningMatchBase {
   return {
     id: dto.id,
     continuousScreeningId: dto.continuous_screening_id,
     status: dto.status,
-    objectType: dto.object_type,
-    objectId: dto.object_id,
     payload: {
       ...adaptScreeningMatchPayload(dto.payload),
       target: dto.payload.target,
       datasets: dto.payload.datasets,
     },
+    comments: adaptScreeningMatchComments(dto.comments),
+  };
+}
+
+export function adaptContinuousScreeningMatchMarble(
+  dto: ContinuousScreeningMatchMarbleDto,
+): ContinuousScreeningMatchMarble {
+  return {
+    ...adaptContinuousScreeningMatchBase(dto),
+    objectType: dto.object_type,
+    objectId: dto.object_id,
   };
 }
 
@@ -438,15 +448,8 @@ export function adaptContinuousScreeningMatchScreeningEntity(
   dto: ContinuousScreeningMatchScreeningEntityDto,
 ): ContinuousScreeningMatchScreeningEntity {
   return {
-    id: dto.id,
-    continuousScreeningId: dto.continuous_screening_id,
-    status: dto.status,
+    ...adaptContinuousScreeningMatchBase(dto),
     opensanctionEntityId: dto.opensanction_entity_id,
-    payload: {
-      ...adaptScreeningMatchPayload(dto.payload),
-      target: dto.payload.target,
-      datasets: dto.payload.datasets,
-    },
   };
 }
 

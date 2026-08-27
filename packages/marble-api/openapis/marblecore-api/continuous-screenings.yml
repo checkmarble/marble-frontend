@@ -892,6 +892,7 @@ components:
         - continuous_screening_id
         - status
         - payload
+        - comments
         - created_at
         - updated_at
       properties:
@@ -913,6 +914,27 @@ components:
         reviewed_by:
           type: string
           format: uuid
+        comments:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - author_id
+              - comment
+              - created_at
+            properties:
+              id:
+                type: string
+                format: uuid
+              author_id:
+                type: string
+                format: uuid
+              comment:
+                type: string
+              created_at:
+                type: string
+                format: date-time
         created_at:
           type: string
           format: date-time

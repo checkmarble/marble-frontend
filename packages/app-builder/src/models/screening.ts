@@ -196,6 +196,13 @@ export function adaptScreeningMatchPayload(dto: ScreeningMatchPayloadDto): Scree
   };
 }
 
+export type ScreeningMatchComment = {
+  id: string;
+  authorId: string;
+  comment: string;
+  createdAt: string;
+};
+
 export type ScreeningMatch = {
   id: string;
   entityId: string;
@@ -204,13 +211,17 @@ export type ScreeningMatch = {
   enriched: boolean;
   // datasets: unknown[];
   payload: ScreeningMatchPayload;
-  comments: {
-    id: string;
-    authorId: string;
-    comment: string;
-    createdAt: string;
-  }[];
+  comments: ScreeningMatchComment[];
 };
+
+export function adaptScreeningMatchComments(comments: ScreeningMatchDto['comments']): ScreeningMatchComment[] {
+  return R.map(comments, (comment) => ({
+    id: comment.id,
+    authorId: comment.author_id,
+    comment: comment.comment,
+    createdAt: comment.created_at,
+  }));
+}
 
 export function adaptScreeningMatch(dto: ScreeningMatchDto): ScreeningMatch {
   return {
@@ -220,12 +231,7 @@ export function adaptScreeningMatch(dto: ScreeningMatchDto): ScreeningMatch {
     status: dto.status,
     enriched: dto.enriched,
     payload: adaptScreeningMatchPayload(dto.payload),
-    comments: R.map(dto.comments, (comment) => ({
-      id: comment.id,
-      authorId: comment.author_id,
-      comment: comment.comment,
-      createdAt: comment.created_at,
-    })),
+    comments: adaptScreeningMatchComments(dto.comments),
   };
 }
 
