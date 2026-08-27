@@ -369,6 +369,7 @@
   "monitoring_list_check.display_name_any": "Has hits on {{objectTableName}}",
   "monitoring_list_check.filter_question": "For which status or instances do you want to filter on regulatory list hits?",
   "monitoring_list_check.hit_type.adverse_media": "Adverse media",
+  "monitoring_list_check.hit_type.custom": "Custom list",
   "monitoring_list_check.hit_type.peps": "PEPs",
   "monitoring_list_check.hit_type.sanctions": "Sanctions",
   "monitoring_list_check.hit_type.third_parties": "Third parties",
