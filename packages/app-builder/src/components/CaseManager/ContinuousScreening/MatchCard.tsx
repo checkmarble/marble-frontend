@@ -1,3 +1,4 @@
+import { CommentLine } from '@app-builder/components/Screenings/MatchCard/CommentLine';
 import { MatchDetails } from '@app-builder/components/Screenings/MatchDetails';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { Case } from '@app-builder/models/cases';
@@ -54,6 +55,9 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
                     return <TopicTag key={topic} topic={topic} className="text-small" />;
                   })}
                 </div>
+                {screeningMatch.comments.map((comment) => {
+                  return <CommentLine key={comment.id} comment={comment} />;
+                })}
               </div>
             </div>
           </Collapsible.Trigger>
