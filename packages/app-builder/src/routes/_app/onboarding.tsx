@@ -1,4 +1,5 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
+import { type AutoSignInFailure, OnboardingAutoSignIn } from '@app-builder/components/Auth/OnboardingAutoSignIn';
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
@@ -13,12 +14,12 @@ import {
 } from '@app-builder/schemas/onboarding';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { type AnyFieldApi, useForm } from '@tanstack/react-form';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Input, Typo } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Input, Typo } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
 import type z from 'zod/v4';
 
@@ -67,7 +68,13 @@ function Onboarding() {
 
   // OIDC instances have no local credentials to set: the identity provider owns them.
   const requiresPassword = authProvider !== 'oidc';
+  // Distinct from `requiresPassword`: this one guards the Firebase client SDK, which cannot
+  // be constructed without an API key. See OnboardingAutoSignIn.
+  const canAutoSignIn = authProvider === 'firebase';
   const formSchema = useMemo(() => getOnboardingFormSchema(requiresPassword), [requiresPassword]);
+
+  const [autoSignIn, setAutoSignIn] = useState<{ email: string; password: string } | null>(null);
+  const [autoSignInError, setAutoSignInError] = useState<{ email: string } | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -80,7 +87,13 @@ function Onboarding() {
     } as OnboardingFormValues,
     validators: { onSubmit: formSchema },
     onSubmit: async ({ value: { passwordConfirmation: _, password, ...rest } }) => {
-      const result = await createInitialOrgMutation.mutateAsync(requiresPassword ? { ...rest, password } : rest);
+      let result: Awaited<ReturnType<typeof createInitialOrgMutation.mutateAsync>>;
+      try {
+        result = await createInitialOrgMutation.mutateAsync(requiresPassword ? { ...rest, password } : rest);
+      } catch {
+        toast.error(t('common:errors.unknown'));
+        return;
+      }
 
       if (result.error === 'already_initialized') {
         toast.error(t('auth:onboarding.errors.already_initialized'));
@@ -88,15 +101,34 @@ function Onboarding() {
         return;
       }
 
+      // We hold credentials that the backend just provisioned, so skip the sign-in page.
+      if (canAutoSignIn) {
+        setAutoSignIn({ email: rest.email, password });
+        return;
+      }
+
       // A full page load lets the root loader pick up the refreshed app config.
-      // The password is set, so the new user can sign in straight away.
-      window.location.href = requiresPassword ? `/sign-in-email?email=${encodeURIComponent(rest.email)}` : '/sign-in';
+      window.location.href = '/sign-in';
     },
   });
 
+  const handleAutoSignInFailure = (reason: AutoSignInFailure) => {
+    const email = autoSignIn?.email ?? '';
+    setAutoSignIn(null);
+
+    // Firebase has already signed this user in client-side, so that page can offer a resend.
+    if (reason === 'unverified') {
+      window.location.href = '/email-verification';
+      return;
+    }
+
+    // Drop the password: it has served its purpose and need not sit in live state.
+    setAutoSignInError({ email });
+  };
+
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-[#080525] p-xl">
-      <div className="bg-surface-card flex w-full max-w-[520px] flex-col gap-2xl rounded-2xl p-2xl shadow-md">
+      <div className="bg-surface-card flex w-full max-w-[min(520px,90vw)] flex-col gap-2xl rounded-2xl p-2xl shadow-md">
         <Logo
           logo="logo-standard"
           className="text-grey-primary h-8 w-full"
@@ -109,86 +141,113 @@ function Onboarding() {
           </Typo>
           <p className="text-s text-grey-secondary text-center">{t('auth:onboarding.description')}</p>
         </div>
-        <form className="flex flex-col gap-lg" onSubmit={handleSubmit(form)}>
-          <form.Field
-            name="organization"
-            validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.organization)}
-          >
-            {(field) => <OnboardingField field={field} label={t('auth:onboarding.organization')} type="text" />}
-          </form.Field>
-          <div className="flex gap-lg">
-            <form.Field name="firstName" validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.firstName)}>
-              {(field) => (
-                <OnboardingField field={field} label={t('auth:onboarding.first_name')} type="text" className="flex-1" />
-              )}
-            </form.Field>
-            <form.Field name="lastName" validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.lastName)}>
-              {(field) => (
-                <OnboardingField field={field} label={t('auth:onboarding.last_name')} type="text" className="flex-1" />
-              )}
-            </form.Field>
+        {autoSignInError ? (
+          <div className="flex flex-col gap-lg">
+            <p className="text-m bg-red-background text-red-primary w-full rounded-xs p-sm font-normal">
+              {t('auth:onboarding.errors.auto_sign_in_failed')}
+            </p>
+            <Link
+              className={CtaV2ClassName({ size: 'large', className: 'w-full justify-center' })}
+              to="/sign-in-email"
+              search={{ email: autoSignInError.email }}
+            >
+              {t('auth:sign_in')}
+            </Link>
           </div>
-          <form.Field name="email" validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.email)}>
-            {(field) => <OnboardingField field={field} label={t('auth:onboarding.email')} type="email" />}
-          </form.Field>
-          {/* Both password criteria are reported by the indicators below, so the
-              inputs themselves stay free of redundant field-level errors. */}
-          {!requiresPassword ? <CalloutV2>{t('auth:onboarding.external_account_notice')}</CalloutV2> : null}
-          {requiresPassword ? (
-            <div className="flex flex-col gap-md">
-              <div className="flex gap-lg">
-                <form.Field name="password">
-                  {(field) => (
-                    <OnboardingField
-                      field={field}
-                      label={t('auth:onboarding.password')}
-                      type="password"
-                      className="flex-1"
-                    />
-                  )}
-                </form.Field>
-                <form.Field name="passwordConfirmation">
-                  {(field) => (
-                    <OnboardingField
-                      field={field}
-                      label={t('auth:onboarding.password_confirmation')}
-                      type="password"
-                      className="flex-1"
-                    />
-                  )}
-                </form.Field>
-              </div>
-              <form.Subscribe selector={(state) => state.values}>
-                {(values) => (
-                  <div className="flex flex-col gap-2xs">
-                    <PasswordCriterion
-                      fulfilled={isLongEnough(values.password)}
-                      label={t('auth:onboarding.password_criteria.length', { min: MIN_PASSWORD_LENGTH })}
-                    />
-                    <PasswordCriterion
-                      fulfilled={doPasswordsMatch(values)}
-                      label={t('auth:onboarding.password_criteria.match')}
-                    />
-                  </div>
+        ) : autoSignIn ? (
+          <OnboardingAutoSignIn {...autoSignIn} onFailure={handleAutoSignInFailure} />
+        ) : (
+          <form className="flex flex-col gap-lg" onSubmit={handleSubmit(form)}>
+            <form.Field
+              name="organization"
+              validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.organization)}
+            >
+              {(field) => <OnboardingField field={field} label={t('auth:onboarding.organization')} type="text" />}
+            </form.Field>
+            <div className="flex gap-lg">
+              <form.Field name="firstName" validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.firstName)}>
+                {(field) => (
+                  <OnboardingField
+                    field={field}
+                    label={t('auth:onboarding.first_name')}
+                    type="text"
+                    className="flex-1"
+                  />
                 )}
-              </form.Subscribe>
+              </form.Field>
+              <form.Field name="lastName" validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.lastName)}>
+                {(field) => (
+                  <OnboardingField
+                    field={field}
+                    label={t('auth:onboarding.last_name')}
+                    type="text"
+                    className="flex-1"
+                  />
+                )}
+              </form.Field>
             </div>
-          ) : null}
-          <form.Subscribe selector={(state) => [state.values, state.isSubmitting] as const}>
-            {([values, isSubmitting]) => (
-              <Button
-                type="submit"
-                size="large"
-                className="w-full justify-center"
-                disabled={
-                  isSubmitting || (requiresPassword && (!isLongEnough(values.password) || !doPasswordsMatch(values)))
-                }
-              >
-                {t('auth:onboarding.submit')}
-              </Button>
-            )}
-          </form.Subscribe>
-        </form>
+            <form.Field name="email" validators={onBlurWhenFilled(createInitialOrgPayloadSchema.shape.email)}>
+              {(field) => <OnboardingField field={field} label={t('auth:onboarding.email')} type="email" />}
+            </form.Field>
+            {/* Both password criteria are reported by the indicators below, so the
+              inputs themselves stay free of redundant field-level errors. */}
+            {!requiresPassword ? <CalloutV2>{t('auth:onboarding.external_account_notice')}</CalloutV2> : null}
+            {requiresPassword ? (
+              <div className="flex flex-col gap-md">
+                <div className="flex gap-lg">
+                  <form.Field name="password">
+                    {(field) => (
+                      <OnboardingField
+                        field={field}
+                        label={t('auth:onboarding.password')}
+                        type="password"
+                        className="flex-1"
+                      />
+                    )}
+                  </form.Field>
+                  <form.Field name="passwordConfirmation">
+                    {(field) => (
+                      <OnboardingField
+                        field={field}
+                        label={t('auth:onboarding.password_confirmation')}
+                        type="password"
+                        className="flex-1"
+                      />
+                    )}
+                  </form.Field>
+                </div>
+                <form.Subscribe selector={(state) => state.values}>
+                  {(values) => (
+                    <div className="flex flex-col gap-2xs">
+                      <PasswordCriterion
+                        fulfilled={isLongEnough(values.password)}
+                        label={t('auth:onboarding.password_criteria.length', { min: MIN_PASSWORD_LENGTH })}
+                      />
+                      <PasswordCriterion
+                        fulfilled={doPasswordsMatch(values)}
+                        label={t('auth:onboarding.password_criteria.match')}
+                      />
+                    </div>
+                  )}
+                </form.Subscribe>
+              </div>
+            ) : null}
+            <form.Subscribe selector={(state) => [state.values, state.isSubmitting] as const}>
+              {([values, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  size="large"
+                  className="w-full justify-center"
+                  disabled={
+                    isSubmitting || (requiresPassword && (!isLongEnough(values.password) || !doPasswordsMatch(values)))
+                  }
+                >
+                  {t('auth:onboarding.submit')}
+                </Button>
+              )}
+            </form.Subscribe>
+          </form>
+        )}
       </div>
       <div className="absolute bottom-6 right-6">
         <LanguagePicker />
@@ -211,23 +270,24 @@ function OnboardingField({
   const valid = field.state.meta.errors.length === 0;
 
   return (
-    <div className={cn('flex flex-col items-start gap-sm', className)}>
-      <FormLabel name={field.name} valid={valid}>
+    <div className={cn('flex flex-col items-stretch gap-sm', className)}>
+      <label htmlFor={field.name}>
         {label}
-      </FormLabel>
-      <Input
-        type={type}
-        id={field.name}
-        name={field.name}
-        className="w-full"
-        borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
-        // Controlled, so a browser restoring values on reload cannot desync the
-        // visible input from the form state backing the submit button.
-        value={field.state.value}
-        onChange={(e) => field.handleChange(e.currentTarget.value)}
-        onBlur={field.handleBlur}
-        enablePasswordManagers
-      />
+        <Input
+          type={type}
+          id={field.name}
+          name={field.name}
+          className="w-full"
+          borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
+          // Controlled, so a browser restoring values on reload cannot desync the
+          // visible input from the form state backing the submit button.
+          value={field.state.value}
+          onChange={(e) => field.handleChange(e.currentTarget.value)}
+          onBlur={field.handleBlur}
+          enablePasswordManagers
+        />
+      </label>
+
       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
     </div>
   );

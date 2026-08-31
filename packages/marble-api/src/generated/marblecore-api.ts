@@ -5458,7 +5458,7 @@ export function applyArchetype(archetypeApplyDto: ArchetypeApplyDto, { seed }: {
 /**
  * Create the initial organization and user
  */
-export function createInitialOrg(createInitialOrgBody?: CreateInitialOrgBody, opts?: Oazapfts.RequestOpts) {
+export function createInitialOrg(createInitialOrgBody: CreateInitialOrgBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 201;
     } | {

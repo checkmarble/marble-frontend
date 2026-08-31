@@ -5,6 +5,7 @@
     operationId: createInitialOrg
     summary: Create the initial organization and user
     requestBody:
+      required: true
       content:
         application/json:
           schema:
