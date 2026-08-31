@@ -39,6 +39,10 @@ ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
+# Install dependencies first
+RUN bun install
+
+# Then run the backoffice build
 RUN bun run -F backoffice build
 
 # Collect build artifacts and dependencies for runtime
