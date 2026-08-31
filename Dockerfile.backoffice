@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 
 # Copy only workspace manifests to maximize install cache hits
 COPY package.json bun.lock ./
+COPY scripts/ ./scripts/
 COPY packages/app-builder/package.json ./packages/app-builder/
 COPY packages/backoffice/package.json ./packages/backoffice/
 COPY packages/shared/package.json ./packages/shared/
@@ -50,6 +51,7 @@ WORKDIR /usr/src/app
 
 # Copy only workspace manifests to maximize install cache hits
 COPY package.json bun.lock ./
+COPY scripts/ ./scripts/
 COPY packages/app-builder/package.json ./packages/app-builder/
 COPY packages/backoffice/package.json ./packages/backoffice/
 COPY packages/shared/package.json ./packages/shared/
