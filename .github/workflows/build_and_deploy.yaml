@@ -20,6 +20,10 @@ on:
         type: string
         required: true
         description: "Sentry release name"
+      dockerfile:
+        type: string
+        description: "Dockerfile to use"
+        required: true
     secrets:
       SENTRY_AUTH_TOKEN:
         required: true
