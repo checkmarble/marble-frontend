@@ -47,7 +47,7 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
                   </span>
                   <div className="bg-grey-border rounded-full size-1.5" />
                   <Tag color="grey" className="shrink-0">
-                    {t('screenings:match.score', { score: screeningMatch.payload.score * 100 })}
+                    {t('screenings:match.score', { score: Math.round(screeningMatch.payload.score * 100) })}
                   </Tag>
                 </div>
                 <div className="flex flex-row flex-wrap gap-xs">
