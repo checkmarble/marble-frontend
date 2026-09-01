@@ -487,6 +487,8 @@ paths:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}~1prepare
   /scoring/rulesets/{recordType}/commit:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}~1commit
+  /scoring/rulesets/{recordType}/dry-run:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}~1dry-run
   /scoring/risk-levels/{recordType}/{recordId}:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1risk-levels~1{recordType}~1{recordId}
   /scoring/risk-levels/{recordType}/{recordId}/history:
