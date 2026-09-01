@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 COPY package.json bun.lock ./
 COPY scripts/ ./scripts/
 COPY packages/app-builder/package.json ./packages/app-builder/
+COPY packages/backoffice/package.json ./packages/backoffice/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/marble-api/package.json ./packages/marble-api/
 COPY packages/typescript-utils/package.json ./packages/typescript-utils/
@@ -25,6 +26,7 @@ RUN --mount=type=cache,target=/root/.bun \
 # COPY steps in the build stage always have a source.
 RUN mkdir -p \
     packages/app-builder/node_modules \
+    packages/backoffice/node_modules \
     packages/marble-api/node_modules \
     packages/shared/node_modules \
     packages/tailwind-preset/node_modules \
@@ -48,6 +50,7 @@ COPY . .
 # Reuse cached node_modules from deps stage
 COPY --from=deps-dev /usr/src/app/node_modules ./node_modules
 COPY --from=deps-dev /usr/src/app/packages/app-builder/node_modules ./packages/app-builder/node_modules
+COPY --from=deps-dev /usr/src/app/packages/backoffice/node_modules ./packages/backoffice/node_modules
 COPY --from=deps-dev /usr/src/app/packages/marble-api/node_modules ./packages/marble-api/node_modules
 COPY --from=deps-dev /usr/src/app/packages/shared/node_modules ./packages/shared/node_modules
 COPY --from=deps-dev /usr/src/app/packages/tailwind-preset/node_modules ./packages/tailwind-preset/node_modules
@@ -71,7 +74,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     
 # Collect build artifacts and dependencies for runtime
 RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/.output /prod/app-builder/.output && 
+    cp -R packages/app-builder/.output /prod/app-builder/.output
 
 # ---- Production Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-prod
@@ -81,6 +84,7 @@ WORKDIR /usr/src/app
 COPY package.json bun.lock ./
 COPY scripts/ ./scripts/
 COPY packages/app-builder/package.json ./packages/app-builder/
+COPY packages/backoffice/package.json ./packages/backoffice/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/marble-api/package.json ./packages/marble-api/
 COPY packages/typescript-utils/package.json ./packages/typescript-utils/
