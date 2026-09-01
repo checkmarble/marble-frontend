@@ -6,7 +6,7 @@
       "name": "marble-front",
       "dependencies": {
         "react": "18.3.1",
-        "react-dom": "18.3.1",
+        "react-dom": "19.2.8",
         "tailwindcss-grid-areas": "^0.1.1",
       },
       "devDependencies": {
@@ -96,7 +96,7 @@
         "radash": "^12.1.0",
         "react": "^18.3.1",
         "react-day-picker": "^9.6.2",
-        "react-dom": "^18.3.1",
+        "react-dom": "^19.2.8",
         "react-dropzone-esm": "^15.2.0",
         "react-hot-toast": "^2.5.2",
         "react-i18next": "^17.0.11",
@@ -129,7 +129,7 @@
         "@types/js-cookie": "^3.0.6",
         "@types/qs": "^6.15.1",
         "@types/react": "18.3.24",
-        "@types/react-dom": "^18.3.5",
+        "@types/react-dom": "^19.2.4",
         "@vitejs/plugin-react": "^5.0.4",
         "jsdom": "30.0.1",
         "tailwindcss": "4.3.3",
@@ -163,7 +163,7 @@
         "marble-api": "workspace:*",
         "nitro": "^3.0.0",
         "react": "^18.3.1",
-        "react-dom": "^18.3.1",
+        "react-dom": "^19.2.8",
         "react-dropzone-esm": "^15.2.0",
         "react-error-boundary": "^6.0.0",
         "react-hot-toast": "^2.5.2",
@@ -183,7 +183,7 @@
         "@testing-library/react": "16.3.2",
         "@types/node": "25.6.2",
         "@types/react": "18.3.24",
-        "@types/react-dom": "^18.3.5",
+        "@types/react-dom": "^19.2.4",
         "@vitejs/plugin-react": "^5.0.4",
         "babel-plugin-react-compiler": "^1.0.0",
         "jsdom": "30.0.1",
@@ -222,7 +222,7 @@
         "@testing-library/react": "16.3.2",
         "@testing-library/user-event": "^14.6.1",
         "@types/react": "18.3.24",
-        "@types/react-dom": "^18.3.5",
+        "@types/react-dom": "^19.2.4",
         "jsdom": "30.0.1",
         "jsdom-testing-mocks": "^1.13.1",
         "vite": "^7.3.6",
@@ -315,7 +315,7 @@
         "@testing-library/react": "16.3.2",
         "@testing-library/user-event": "^14.6.1",
         "@types/react": "18.3.24",
-        "@types/react-dom": "^18.3.5",
+        "@types/react-dom": "^19.2.4",
         "i18next": "^26.3.0",
         "jsdom": "30.0.1",
         "jsdom-testing-mocks": "^1.13.1",
@@ -1381,7 +1381,7 @@
 
     "@types/react": ["@types/react@18.3.24", "", { "dependencies": { "@types/prop-types": "*", "csstype": "^3.0.2" } }, "sha512-0dLEBsA1kI3OezMBF8nSsb7Nk19ZnsyE1LLhB8r27KbgU5H4pvuqZLdtE+aUkJVoXgTVuA+iLIwmZ0TuK4tx6A=="],
 
-    "@types/react-dom": ["@types/react-dom@18.3.7", "", { "peerDependencies": { "@types/react": "^18.0.0" } }, "sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ=="],
+    "@types/react-dom": ["@types/react-dom@19.2.4", "", { "peerDependencies": { "@types/react": "^19.2.0" } }, "sha512-Bsc+QHgp+P/F02XDzNCY9jnZNCUuLki36KT7VKrTXXLdHf+vHMNZnW1rVu5DNW/rCK+fya3DATySbLM4yhtKUw=="],
 
     "@types/resolve": ["@types/resolve@1.20.6", "", {}, "sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ=="],
 
