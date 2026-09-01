@@ -74,7 +74,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     
 # Collect build artifacts and dependencies for runtime
 RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/.output /prod/app-builder/.output && 
+    cp -R packages/app-builder/.output /prod/app-builder/.output
 
 # ---- Production Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-prod
