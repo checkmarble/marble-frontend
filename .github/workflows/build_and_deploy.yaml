@@ -3,11 +3,10 @@ name: Reusable build and deploy job
 on:
   workflow_call:
     inputs:
-      app:
+      gcloud-service:
         type: string
-        description: "Application to build and deploy (app-builder or backoffice)"
+        description: "Google cloud service to deploy to"
         required: true
-        default: "app-builder"
       environment:
         type: string
         description: "Github environment to use"
@@ -23,6 +22,10 @@ on:
       dockerfile:
         type: string
         description: "Dockerfile to use"
+        required: true
+      dockerfile-target-stage:
+        type: string
+        description: Dockerfile target stage to build
         required: true
     secrets:
       SENTRY_AUTH_TOKEN:
@@ -42,7 +45,7 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       VERSION: ${{ inputs.version }}
-      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/${{ inputs.app }}:${{ inputs.version }}
+      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/${{ inputs.gcloud-service }}:${{ inputs.version }}
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
@@ -80,7 +83,7 @@ jobs:
         with:
           context: .
           push: true
-          target: ${{ inputs.app }}
+          target: ${{ inputs.dockerfile-target-stage }}
           tags: ${{ env.IMAGE }}
           file: ${{ inputs.dockerfile }}
           build-args: |
@@ -98,8 +101,9 @@ jobs:
 
       - name: Deploy server
         run: |
-          gcloud run deploy ${{ inputs.app }} \
+          gcloud run deploy ${{ inputs.gcloud-service }} \
             --quiet \
             --region="europe-west1" \
             --image="$IMAGE" \
-            --service-account="${{ env.SERVICE_ACCOUNT }}"
+            --service-account="${{ env.SERVICE_ACCOUNT }}" \
+            --no-traffic

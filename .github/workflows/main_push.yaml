@@ -21,12 +21,13 @@ jobs:
     permissions:
       contents: read
       actions: read
-      id-token: "write" # needed for using open id token to authenticate with GCP
+      id-token: write # needed for using open id token to authenticate with GCP
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
-      app: "app-builder"
+      gcloud-service: marble-frontend
       dockerfile: ./Dockerfile
-      environment: "staging"
+      dockerfile-target-stage: app-builder
+      environment: staging
       version: latest
       SENTRY_RELEASE: ${{ github.sha }}
     secrets:
@@ -38,12 +39,13 @@ jobs:
     permissions:
       contents: read
       actions: read
-      id-token: "write" # needed for using open id token to authenticate with GCP
+      id-token: write # needed for using open id token to authenticate with GCP
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
-      app: "backoffice"
+      gcloud-service: marble-backoffice
       dockerfile: ./Dockerfile.backoffice
-      environment: "staging"
+      dockerfile-target-stage: backoffice
+      environment: staging
       version: latest
       SENTRY_RELEASE: ${{ github.sha }}
     secrets:
