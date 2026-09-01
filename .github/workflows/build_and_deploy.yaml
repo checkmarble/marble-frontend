@@ -101,4 +101,6 @@ jobs:
           gcloud run deploy ${{ inputs.app }} \
             --quiet \
             --region="europe-west1" \
-            --image="$IMAGE"
+            --image="$IMAGE" \
+            --service-account="${{ env.SERVICE_ACCOUNT }}" \
+            --no-traffic
