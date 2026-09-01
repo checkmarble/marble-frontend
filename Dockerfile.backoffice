@@ -30,6 +30,13 @@ COPY . .
 # Reuse cached node_modules from deps stage (root + workspace-local)
 COPY --from=deps-dev /usr/src/app/node_modules ./node_modules
 COPY --from=deps-dev /usr/src/app/packages/backoffice/node_modules ./packages/backoffice/node_modules
+COPY --from=deps-dev /usr/src/app/packages/app-builder/node_modules ./packages/app-builder/node_modules
+COPY --from=deps-dev /usr/src/app/packages/marble-api/node_modules ./packages/marble-api/node_modules
+COPY --from=deps-dev /usr/src/app/packages/shared/node_modules ./packages/shared/node_modules
+COPY --from=deps-dev /usr/src/app/packages/tailwind-preset/node_modules ./packages/tailwind-preset/node_modules
+COPY --from=deps-dev /usr/src/app/packages/typescript-utils/node_modules ./packages/typescript-utils/node_modules
+COPY --from=deps-dev /usr/src/app/packages/ui-design-system/node_modules ./packages/ui-design-system/node_modules
+COPY --from=deps-dev /usr/src/app/packages/ui-icons/node_modules ./packages/ui-icons/node_modules
 
 # Build-time configuration
 ARG SENTRY_ORG
