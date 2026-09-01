@@ -102,5 +102,4 @@ jobs:
             --quiet \
             --region="europe-west1" \
             --image="$IMAGE" \
-            --service-account="${{ env.SERVICE_ACCOUNT }}" \
-            --no-traffic
+            --service-account="${{ env.SERVICE_ACCOUNT }}"
