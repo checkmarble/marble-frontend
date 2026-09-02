@@ -33,6 +33,7 @@
   "ruleset.batch_test_description2": "The test will automatically run in the background, and you will see the first statistics appear here as soon as they are ready to be displayed.",
   "ruleset.batch_test_run": "Launch the tests",
   "ruleset.batch_test_title": "Launch a batch test",
+  "ruleset.batch_test.progress": "Count / % - total {{total}} / {{progress}} entity tested",
   "ruleset.cancel": "Cancel",
   "ruleset.commit": "Commit",
   "ruleset.cooldown": "Cooldown:",
@@ -117,6 +118,5 @@
   "thresholds.and": "and",
   "thresholds.between": "between",
   "thresholds.risk_levels": "Risk levels:",
-  "thresholds.title": "Score settings",
-  "ruleset.batch_test.progress": "Count / % - total {{total}} / {{progress}} entity tested"
+  "thresholds.title": "Score settings"
 }
