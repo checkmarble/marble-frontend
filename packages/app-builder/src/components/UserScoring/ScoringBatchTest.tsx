@@ -26,8 +26,8 @@ export function ScoringBatchTest({ ruleset, settings, lastDryRun }: ScoringBatch
   const formatDateTime = useFormatDateTime();
 
   return (
-    <Card className="grid gap-sm">
-      <Typo variant="title2" className="flex items-center gap-sm p-md">
+    <Card className="grid min-w-0 flex-1 gap-sm lg:max-w-md">
+      <Typo variant="title2" className="flex min-w-0 items-center gap-sm p-md">
         {t('user-scoring:batch_test.title', { name: ruleset.name })}
         {match(lastDryRun)
           .with({ status: 'pending' }, () => <Tag color="orange">{t('user-scoring:batch_test.pending')}</Tag>)
@@ -38,8 +38,8 @@ export function ScoringBatchTest({ ruleset, settings, lastDryRun }: ScoringBatch
             <Spinner />
           ))}
       </Typo>
-      <div className="flex gap-sm justify-between">
-        <p className="text-grey-placeholder">
+      <div className="flex min-w-0 gap-sm justify-between">
+        <p className="min-w-0 text-grey-placeholder">
           {t('user-scoring:ruleset.batch_test.progress', {
             total: lastDryRun?.recordCount ?? 0,
             progress: formatNumber(lastDryRun?.progress ?? 0, { language, style: 'percent' }),
@@ -79,8 +79,8 @@ function PieDistribution({
       color: colors[item.riskLevel] ?? '#ccc',
     }));
   return (
-    <div className="flex gap-sm">
-      <div className="flex flex-col gap-sm min-h-80">
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-sm">
+      <div className="flex flex-col gap-sm">
         {pieData.map((item) => (
           <div key={item.id} className="flex items-center gap-xs">
             <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
@@ -88,42 +88,46 @@ function PieDistribution({
           </div>
         ))}
       </div>
-      <ResponsivePie
-        data={pieData}
-        innerRadius={0.7}
-        padAngle={1}
-        colors={{ datum: 'data.color' }}
-        enableArcLabels={false}
-        tooltip={({ datum }) => (
-          <div className="flex items-center gap-xs bg-surface-card p-xs rounded-lg border border-grey-border shadow-sm text-s text-grey-primary whitespace-nowrap">
-            <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: datum.color }} />
-            {datum.label}: {datum.value} ({Math.round((datum.value / total) * 100)}%)
-          </div>
-        )}
-        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-        arcLinkLabel={(datum) =>
-          formatNumber(datum.value / total, { language, style: 'percent', maximumFractionDigits: 1 })
-        }
-        activeOuterRadiusOffset={10}
-        arcLinkLabelsStraightLength={0}
-        arcLinkLabelsThickness={0}
-        arcLinkLabelsSkipAngle={8}
-      />
+      <div className="relative h-80 min-w-0 overflow-hidden">
+        <ResponsivePie
+          data={pieData}
+          innerRadius={0.7}
+          padAngle={1}
+          colors={{ datum: 'data.color' }}
+          enableArcLabels={false}
+          tooltip={({ datum }) => (
+            <div className="flex items-center gap-xs bg-surface-card p-xs rounded-lg border border-grey-border shadow-sm text-s text-grey-primary whitespace-nowrap">
+              <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: datum.color }} />
+              {datum.label}: {datum.value} ({Math.round((datum.value / total) * 100)}%)
+            </div>
+          )}
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          arcLinkLabel={(datum) =>
+            formatNumber(datum.value / total, { language, style: 'percent', maximumFractionDigits: 1 })
+          }
+          activeOuterRadiusOffset={10}
+          arcLinkLabelsStraightLength={0}
+          arcLinkLabelsThickness={0}
+          arcLinkLabelsSkipAngle={8}
+        />
+      </div>
     </div>
   );
 }
 
 function PieSkeletton() {
   return (
-    <div className="flex gap-sm animate-pulse">
-      <div className="flex flex-col gap-sm min-h-80">
+    <div className="grid min-w-0 animate-pulse grid-cols-[auto_minmax(0,1fr)] gap-sm">
+      <div className="flex flex-col gap-sm">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="w-8 h-4 bg-grey-placeholder rounded-xs "></div>
+          <div key={index} className="h-4 w-8 rounded-xs bg-grey-placeholder"></div>
         ))}
       </div>
-      <svg className="size-80 text-grey-placeholder mx-auto" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="14" fill="none" />
-      </svg>
+      <div className="flex h-80 min-w-0 items-center justify-center overflow-hidden">
+        <svg className="size-full max-h-80 max-w-80 text-grey-placeholder" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="14" fill="none" />
+        </svg>
+      </div>
     </div>
   );
 }

@@ -54,6 +54,7 @@ function UserScoringRulesetRoute() {
 
   return (
     <ScoringRulesetPage
+      key={ruleset.recordType}
       ruleset={ruleset}
       settings={settings}
       customLists={customLists}
