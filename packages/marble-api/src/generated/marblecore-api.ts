@@ -2167,7 +2167,7 @@ export type UpdateScoringRuleset = {
 export type ScoringDryRun = {
     id: string;
     ruleset_id: string;
-    status: "pending" | "completed";
+    status: "pending" | "completed" | "running" | "cancelled";
     record_count: number;
     progress: number;
     distribution: {

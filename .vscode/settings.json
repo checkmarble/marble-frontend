@@ -5,9 +5,17 @@
   "i18n-ally-next.namespace": true,
   "i18n-ally-next.pathMatcher": "{locale}/{namespaces}.json",
   "editor.codeActionsOnSave": {
+    "source.organizeImports": "never",
     "source.fixAll.biome": "explicit",
     "source.organizeImports.biome": "explicit",
     "source.removeUnusedImports": "explicit"
+  },
+  "js/ts.preferences.organizeImports": {
+    "caseSensitivity": "caseSensitive",
+    "caseFirst": "upper",
+    "unicodeCollation": "unicode",
+    "numericCollation": true,
+    "typeOrder": "inline"
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "biomejs.biome",

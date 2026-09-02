@@ -114,7 +114,8 @@ export function ReviewMatchPopover({
                 return (
                   <div className="flex flex-col gap-sm">
                     <span className="flex items-center gap-sm">
-                      <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
+                      <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />
+                      &nbsp;
                       {t('screenings:review_modal.whitelist_label')}
                     </span>
                     <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-sm border p-sm">

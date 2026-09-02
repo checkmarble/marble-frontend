@@ -4,6 +4,7 @@ import {
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABEL_KEYS,
+  ScoringDryRun,
   type ScoringRulesetWithRules,
   type ScoringSettings,
   SECONDS_PER_UNIT,
@@ -11,8 +12,10 @@ import {
   secondsToDisplay,
 } from '@app-builder/models/scoring';
 import { useCommitScoringRulesetMutation } from '@app-builder/queries/scoring/commit-ruleset';
+import { useGetScoringDryRunQuery } from '@app-builder/queries/scoring/get-dry-run';
 import { useListScoringRulesetVersionsQuery } from '@app-builder/queries/scoring/list-ruleset-versions';
 import { usePrepareScoringRulesetMutation } from '@app-builder/queries/scoring/prepare-ruleset';
+import { useStartScoringDryRunMutation } from '@app-builder/queries/scoring/start-dry-run';
 import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
 import { type UpdateScoringRulesetPayload, updateScoringRulesetPayloadSchema } from '@app-builder/schemas/user-scoring';
 import { handleSubmit } from '@app-builder/utils/form';
@@ -22,14 +25,28 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Fragment, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, Panel, PanelSharpFactory, type SelectOption, SelectV2, Tooltip } from 'ui-design-system';
+import {
+  Button,
+  Card,
+  cn,
+  Modal,
+  NumberInput,
+  Panel,
+  PanelSharpFactory,
+  type SelectOption,
+  SelectV2,
+  Tooltip,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { pageLayoutGutter } from '../Page/page-layout';
+import { ScoringBatchTest } from './ScoringBatchTest';
 import { ScoringLevelThresholds } from './ScoringLevelThresholds';
 
 interface GeneralInfoCardProps {
   ruleset: ScoringRulesetWithRules;
   settings: ScoringSettings;
   preparationStatus: ScenarioPublicationStatus | null;
+  lastDryRun: ScoringDryRun | null;
 }
 
 function formatDuration(seconds: number, t: (key: string) => string): string | null {
@@ -38,8 +55,9 @@ function formatDuration(seconds: number, t: (key: string) => string): string | n
   return `${value} ${t(`common:duration_unit.${unit}`)}`;
 }
 
-export function GeneralInfoCard({ ruleset, settings, preparationStatus }: GeneralInfoCardProps) {
+export function GeneralInfoCard({ ruleset, settings, preparationStatus, lastDryRun }: GeneralInfoCardProps) {
   const { t } = useTranslation(['user-scoring', 'common']);
+  const [viewBatchTest, setViewBatchTest] = useState(false);
   const navigate = useAgnosticNavigation();
   const formatDateTime = useFormatDateTime();
   const prepareMutation = usePrepareScoringRulesetMutation();
@@ -52,91 +70,115 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
     label: v.status === 'committed' ? `V${v.version}` : 'draft',
   }));
   const [editPanelOpen, setEditPanelOpen] = useState(false);
+  const startDryRun = useStartScoringDryRunMutation();
+  const { data: newDryRun } = useGetScoringDryRunQuery(ruleset.recordType, {
+    enabled: viewBatchTest || lastDryRun != null,
+  });
 
   const handleVersionChange = (version: string) => {
     navigate(`/user-scoring/${ruleset.recordType}/${version}`);
   };
 
+  const onLaunchTests = () => {
+    setViewBatchTest(true);
+    startDryRun.mutate(ruleset.recordType, {
+      onError: () => {
+        toast.error(t('common:errors.unknown'));
+        if (lastDryRun == null) setViewBatchTest(false);
+      },
+    });
+  };
+
   return (
-    <div className="bg-surface-card border border-grey-border rounded-md p-md flex flex-col gap-md">
-      <div className="flex items-center justify-between gap-sm">
-        <div>
-          <span className="text-h3 font-semibold text-grey-primary">{t('user-scoring:ruleset.title')}</span>
+    <div className={cn('flex flex-col lg:flex-row w-full', pageLayoutGutter.gap)}>
+      <Card className="p-md flex flex-col gap-md flex-1">
+        <div className="flex items-center justify-between gap-sm">
+          <div>
+            <span className="text-h3 font-semibold text-grey-primary">{t('user-scoring:ruleset.title')}</span>
+          </div>
+          <div className="flex items-center gap-sm">
+            <SelectV2
+              options={versionOptions}
+              placeholder={t('user-scoring:ruleset.version_placeholder')}
+              value={ruleset.status === 'draft' ? 'draft' : ruleset.version.toString()}
+              onChange={handleVersionChange}
+              variant="tag"
+              menuClassName="min-w-30"
+            />
+            {ruleset.status === 'draft' && (
+              <BatchTest onLaunchTest={onLaunchTests} isLaunching={startDryRun.isPending} />
+            )}
+            {preparationStatus ? (
+              preparationStatus.status === 'required' ? (
+                <Button
+                  disabled={
+                    preparationStatus.serviceStatus === 'occupied' ||
+                    prepareMutation.isPending ||
+                    ruleset.rules.length === 0
+                  }
+                  onClick={() =>
+                    prepareMutation.mutate(ruleset.recordType, {
+                      onError: () => toast.error(t('common:errors.unknown')),
+                    })
+                  }
+                >
+                  {t('user-scoring:ruleset.prepare')}
+                </Button>
+              ) : (
+                <Button
+                  disabled={commitMutation.isPending || ruleset.rules.length === 0}
+                  onClick={() =>
+                    commitMutation.mutate(ruleset.recordType, {
+                      onError: () => toast.error(t('common:errors.unknown')),
+                    })
+                  }
+                >
+                  <Icon icon="commit" className="size-4" />
+                  {t('user-scoring:ruleset.commit')}
+                </Button>
+              )
+            ) : null}
+            <Button variant="secondary" mode="icon" onClick={() => setEditPanelOpen(true)}>
+              <Icon icon="edit" className="size-4" />
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-sm">
-          <SelectV2
-            options={versionOptions}
-            placeholder={t('user-scoring:ruleset.version_placeholder')}
-            value={ruleset.status === 'draft' ? 'draft' : ruleset.version.toString()}
-            onChange={handleVersionChange}
-            variant="tag"
-            menuClassName="min-w-30"
-          />
-          {preparationStatus ? (
-            preparationStatus.status === 'required' ? (
-              <Button
-                disabled={
-                  preparationStatus.serviceStatus === 'occupied' ||
-                  prepareMutation.isPending ||
-                  ruleset.rules.length === 0
-                }
-                onClick={() =>
-                  prepareMutation.mutate(ruleset.recordType, {
-                    onError: () => toast.error(t('common:errors.unknown')),
-                  })
-                }
-              >
-                {t('user-scoring:ruleset.prepare')}
-              </Button>
-            ) : (
-              <Button
-                disabled={commitMutation.isPending || ruleset.rules.length === 0}
-                onClick={() =>
-                  commitMutation.mutate(ruleset.recordType, {
-                    onError: () => toast.error(t('common:errors.unknown')),
-                  })
-                }
-              >
-                {t('user-scoring:ruleset.commit')}
-              </Button>
-            )
-          ) : null}
-          <Button variant="secondary" mode="icon" onClick={() => setEditPanelOpen(true)}>
-            <Icon icon="edit" className="size-4" />
-          </Button>
-        </div>
-      </div>
 
-      <div className="flex items-center gap-md text-s text-grey-secondary">
-        <span>
-          {t('user-scoring:ruleset.last_update')}{' '}
-          <span className="text-grey-primary">
-            {formatDateTime(ruleset.createdAt, { dateStyle: 'medium', timeStyle: 'short' })}
+        <div className="flex items-center gap-md text-s text-grey-secondary">
+          <span>
+            {t('user-scoring:ruleset.last_update')}&nbsp;
+            <span className="text-grey-primary">
+              {formatDateTime(ruleset.createdAt, { dateStyle: 'medium', timeStyle: 'short' })}
+            </span>
           </span>
-        </span>
-        {cooldownLabel ? (
-          <>
-            <span className="text-grey-border">|</span>
-            <span>
-              {t('user-scoring:ruleset.cooldown')} <span className="text-grey-primary">{cooldownLabel}</span>
-            </span>
-          </>
-        ) : null}
-        {scoringIntervalLabel ? (
-          <>
-            <span className="text-grey-border">|</span>
-            <span>
-              {t('user-scoring:ruleset.score_renew')} <span className="text-grey-primary">{scoringIntervalLabel}</span>
-            </span>
-          </>
-        ) : null}
-      </div>
+          {cooldownLabel ? (
+            <>
+              <span className="text-grey-border">|</span>
+              <span>
+                {t('user-scoring:ruleset.cooldown')} <span className="text-grey-primary">{cooldownLabel}</span>
+              </span>
+            </>
+          ) : null}
+          {scoringIntervalLabel ? (
+            <>
+              <span className="text-grey-border">|</span>
+              <span>
+                {t('user-scoring:ruleset.score_renew')}&nbsp;
+                <span className="text-grey-primary">{scoringIntervalLabel}</span>
+              </span>
+            </>
+          ) : null}
+        </div>
 
-      <RiskLevelBadges maxRiskLevel={settings.maxRiskLevel} thresholds={ruleset.thresholds} />
+        <RiskLevelBadges maxRiskLevel={settings.maxRiskLevel} thresholds={ruleset.thresholds} />
 
-      <Panel.Root open={editPanelOpen} onOpenChange={setEditPanelOpen}>
-        <EditGeneralSettingsPanel ruleset={ruleset} maxRiskLevel={settings.maxRiskLevel} />
-      </Panel.Root>
+        <Panel.Root open={editPanelOpen} onOpenChange={setEditPanelOpen}>
+          <EditGeneralSettingsPanel ruleset={ruleset} maxRiskLevel={settings.maxRiskLevel} />
+        </Panel.Root>
+      </Card>
+      {viewBatchTest || lastDryRun != null ? (
+        <ScoringBatchTest ruleset={ruleset} settings={settings} lastDryRun={newDryRun?.dryRun ?? lastDryRun} />
+      ) : null}
     </div>
   );
 }
@@ -307,5 +349,35 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
         })}
       </div>
     </div>
+  );
+}
+
+function BatchTest({ onLaunchTest, isLaunching }: { onLaunchTest: () => void; isLaunching: boolean }) {
+  const { t } = useTranslation(['user-scoring', 'common']);
+  return (
+    <Modal.Root>
+      <Modal.Trigger asChild>
+        <Button variant="primary" appearance="stroked">
+          {t('user-scoring:ruleset.batch_test_button')}
+        </Button>
+      </Modal.Trigger>
+      <Modal.Content>
+        <Modal.Title>{t('user-scoring:ruleset.batch_test_title')}</Modal.Title>
+        <div className="flex flex-col gap-sm p-md">
+          <p>{t('user-scoring:ruleset.batch_test_description1')}</p>
+          <p>{t('user-scoring:ruleset.batch_test_description2')}</p>
+        </div>
+        <Modal.Footer>
+          <Modal.FooterButton variant="secondary" isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            variant="primary"
+            onClick={onLaunchTest}
+            isCloseButton
+            isLoading={isLaunching}
+            label={t('user-scoring:ruleset.batch_test_run')}
+          />
+        </Modal.Footer>
+      </Modal.Content>
+    </Modal.Root>
   );
 }

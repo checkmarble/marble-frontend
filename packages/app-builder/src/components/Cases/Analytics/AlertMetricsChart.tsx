@@ -134,7 +134,8 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                       </span>
                     </div>
                     <span className="text-xs text-grey-secondary">
-                      {formatChartNumber(data.fpCount, language)} / {formatChartNumber(data.closedCount, language)}{' '}
+                      {formatChartNumber(data.fpCount, language)}&nbsp;/&nbsp;
+                      {formatChartNumber(data.closedCount, language)}&nbsp;
                       {t('cases:analytics.alerts.closed')}
                     </span>
                   </div>

@@ -84,7 +84,7 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
                   <div className="flex flex-1 flex-col">
                     <span className="font-medium">{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
                     <span className="text-grey-placeholder text-xs">
-                      {t('screenings:refine_modal.search_by')}{' '}
+                      {t('screenings:refine_modal.search_by')}&nbsp;
                       {fieldForSchema.map((f) => t(`screenings:entity.property.${f}`)).join(', ')}
                     </span>
                   </div>

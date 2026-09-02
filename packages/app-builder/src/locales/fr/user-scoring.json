@@ -1,11 +1,14 @@
 {
+  "batch_test.cancelled": "Annulé",
+  "batch_test.completed": "Terminé",
+  "batch_test.pending": "En attente",
+  "batch_test.running": "En cours",
+  "batch_test.title": "[Test] Répartition des risques pour : {{name}}",
   "level.high": "Élevé",
-
   "level.low": "Faible",
   "level.medium": "Moyen",
   "level.very_high": "Très élevé",
   "overview.configure_score": "Configurer un score",
-
   "overview.no_ruleset": "Vous n'avez pas encore de jeu de règles configuré. Choisissez une entité sur laquelle créer un jeu de règles pour commencer.",
   "overview.ruleset_card.no_distribution": "Aucune distribution pour l'instant",
   "overview.ruleset_card.title": "Répartition des risques pour : {{name}}",
@@ -14,7 +17,6 @@
   "risk_type.geo_risks": "Risques géographiques",
   "risk_type.service_provided": "Service fourni",
   "risk_type.transaction_execution": "Exécution des transactions",
-
   "rule_edit.cancel": "Annuler",
   "rule_edit.model_type.aggregate": "Agrégat",
   "rule_edit.model_type.entity_tags": "Tags d'entité",
@@ -26,11 +28,16 @@
   "rule_edit.risk_type_placeholder": "Type de risque *",
   "rule_edit.save": "Valider les modifications",
   "ruleset.add_rule": "Ajouter une règle",
+  "ruleset.batch_test_button": "Lancer un test par lot",
+  "ruleset.batch_test_description1": "Vous pouvez tester la pertinence du score en le testant sur un panel d’utilisateurs sélectionnés aléatoirement.",
+  "ruleset.batch_test_description2": "Le test tournera automatiquement en arrière plan, et vous verrez apparaître ici les premières statistiques lorsqu’elles seront prêtes à être affichées.",
+  "ruleset.batch_test_run": "Lancer les tests",
+  "ruleset.batch_test_title": "Lancer un test par lot",
+  "ruleset.batch_test.progress": "Nombre / % - total {{total}} / {{progress}} entité testée",
   "ruleset.cancel": "Annuler",
   "ruleset.commit": "Valider",
   "ruleset.cooldown": "Cooldown :",
   "ruleset.create_rule": "Créer une règle",
-
   "ruleset.edit_settings_title": "Modifier les paramètres généraux",
   "ruleset.error": "Une erreur est survenue.",
   "ruleset.last_update": "Dernière mise à jour :",
@@ -61,7 +68,6 @@
   "section.create_panel.validate": "Valider",
   "section.tab_overview": "Vue d'ensemble",
   "section.tab_scores": "Scores {{name}}",
-
   "section.title": "Scoring client",
   "settings.define_scale": "Définissez une échelle de risque, puis choisissez l'entité sur laquelle créer le jeu de règles.",
   "settings.levels": "{{count}} niveaux de risque",
@@ -73,10 +79,8 @@
   "switch.and": "et",
   "switch.apply_conditions": "appliquer les conditions suivantes :",
   "switch.bool.if_false": "sinon",
-
   "switch.bool.if_true": "si oui",
   "switch.bool.then": "alors",
-
   "switch.configure_aggregation": "Configurer l'agrégation",
   "switch.depending_on": "En fonction de la valeur de",
   "switch.description.else": "Sinon",
@@ -84,7 +88,6 @@
   "switch.description.if_true": "Si vrai",
   "switch.description.if_value": "Si valeur {{op}}",
   "switch.description.if_value_between": "Si valeur entre {{from}} et {{to}}",
-
   "switch.description.if_value_lte": "Si valeur ≤ {{value}}",
   "switch.else": "Sinon",
   "switch.entity_tags.depending_on": "Selon les tags d'entité",
@@ -92,7 +95,6 @@
   "switch.no_condition": "Aucune condition définie",
   "switch.number.and": "et",
   "switch.number.default": "si non, ≥ à",
-
   "switch.number.first": "si la valeur est ≤ à",
   "switch.number.middle": "si la valeur est entre",
   "switch.number.then": "alors",
@@ -111,7 +113,6 @@
   "switch.string.op.not_in_list": "n'est pas dans la liste",
   "switch.string.op.starts_with": "commence par",
   "switch.string.search_placeholder": "Rechercher ou saisir une valeur...",
-
   "switch.string.then": "alors",
   "switch.then": "alors",
   "thresholds.and": "et",

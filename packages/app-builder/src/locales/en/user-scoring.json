@@ -1,11 +1,14 @@
 {
+  "batch_test.cancelled": "Cancelled",
+  "batch_test.completed": "Completed",
+  "batch_test.pending": "Pending",
+  "batch_test.running": "Running",
+  "batch_test.title": "[Test] Risk repartition for: {{name}}",
   "level.high": "High",
-
   "level.low": "Low",
   "level.medium": "Medium",
   "level.very_high": "Very high",
   "overview.configure_score": "Configure a score",
-
   "overview.no_ruleset": "You don't have any ruleset configured yet. Choose an entity on which to create a ruleset to start.",
   "overview.ruleset_card.no_distribution": "No distribution yet",
   "overview.ruleset_card.title": "Risk repartition for: {{name}}",
@@ -14,7 +17,6 @@
   "risk_type.geo_risks": "Geo risks",
   "risk_type.service_provided": "Service provided",
   "risk_type.transaction_execution": "Transaction execution",
-
   "rule_edit.cancel": "Cancel",
   "rule_edit.model_type.aggregate": "Aggregate",
   "rule_edit.model_type.entity_tags": "Entity tags",
@@ -26,11 +28,15 @@
   "rule_edit.risk_type_placeholder": "Risk type *",
   "rule_edit.save": "Save changes",
   "ruleset.add_rule": "Add rule",
+  "ruleset.batch_test_button": "Launch a batch test",
+  "ruleset.batch_test_description1": "You can test the relevance of the score by running it on a randomly selected panel of users.",
+  "ruleset.batch_test_description2": "The test will automatically run in the background, and you will see the first statistics appear here as soon as they are ready to be displayed.",
+  "ruleset.batch_test_run": "Launch the tests",
+  "ruleset.batch_test_title": "Launch a batch test",
   "ruleset.cancel": "Cancel",
   "ruleset.commit": "Commit",
   "ruleset.cooldown": "Cooldown:",
   "ruleset.create_rule": "Create rule",
-
   "ruleset.edit_settings_title": "Edit general settings",
   "ruleset.error": "An error occurred.",
   "ruleset.last_update": "Last update:",
@@ -61,7 +67,6 @@
   "section.create_panel.validate": "Validate",
   "section.tab_overview": "Overview",
   "section.tab_scores": "Scores {{name}}",
-
   "section.title": "Customer Scoring",
   "settings.define_scale": "Define a risk scale, then choose the entity on which you want to create the ruleset.",
   "settings.levels": "{{count}} levels of risk",
@@ -73,10 +78,8 @@
   "switch.and": "and",
   "switch.apply_conditions": "apply the following conditions:",
   "switch.bool.if_false": "otherwise",
-
   "switch.bool.if_true": "if true",
   "switch.bool.then": "then",
-
   "switch.configure_aggregation": "Configure aggregation",
   "switch.depending_on": "Depending on the value of",
   "switch.description.else": "Else",
@@ -84,7 +87,6 @@
   "switch.description.if_true": "If true",
   "switch.description.if_value": "If value {{op}}",
   "switch.description.if_value_between": "If value is between {{from}} and {{to}}",
-
   "switch.description.if_value_lte": "If value ≤ {{value}}",
   "switch.else": "Else",
   "switch.entity_tags.depending_on": "Depending on entity tags",
@@ -92,7 +94,6 @@
   "switch.no_condition": "No condition defined",
   "switch.number.and": "and",
   "switch.number.default": "otherwise, ≥ to",
-
   "switch.number.first": "if value ≤ to",
   "switch.number.middle": "if value is between",
   "switch.number.then": "then",
@@ -111,11 +112,11 @@
   "switch.string.op.not_in_list": "is not in list",
   "switch.string.op.starts_with": "starts with",
   "switch.string.search_placeholder": "Search or enter a value...",
-
   "switch.string.then": "then",
   "switch.then": "then",
   "thresholds.and": "and",
   "thresholds.between": "between",
   "thresholds.risk_levels": "Risk levels:",
-  "thresholds.title": "Score settings"
+  "thresholds.title": "Score settings",
+  "ruleset.batch_test.progress": "Count / % - total {{total}} / {{progress}} entity tested"
 }
