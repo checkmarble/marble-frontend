@@ -1,0 +1,9 @@
+---
+description: Read before merging class names or importing a UI component — which helper to use and where design-system components come from
+globs:
+  - "**/*.tsx"
+  - "**/*.css"
+alwaysApply: false
+---
+
+Apply the rules in @.claude/rules/styling.md

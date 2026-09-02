@@ -6,25 +6,25 @@ paths:
 
 # Server Endpoint Conventions
 
-Two patterns coexist for server endpoints called from the client:
+Two patterns coexist. Pick by what the endpoint returns.
 
-## Server Functions (preferred for new React Query endpoints)
+## Server functions — anything called from React Query
 
 - Export from `server-fns/{domain}.ts` using `createServerFn({ method: 'POST' })` from `@tanstack/react-start`
 - Chain: `.middleware([authMiddleware]).validator(zodSchema).handler(async ({ context, data }) => { ... })`
-- Call from React Query: `mutationFn: (payload) => myServerFn({ data: payload })`
-- Access auth via `context.authInfo` (repositories, user); services via `context.services`
-- Set response headers via `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` — no `data()` helper exists
-- Redirects: `throw redirect({ href, statusCode })` from `@tanstack/react-router`; `authMiddleware` already handles auth-redirect cases
+- Call it as `mutationFn: (payload) => myServerFn({ data: payload })`
+- Read auth from `context.authInfo` (repositories, user) and services from `context.services`
+- Add repository methods for new API calls; `apiClient` on `context.authInfo` is deprecated
+- Set headers with `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` — there is no `data()` helper
+- Redirect with `throw redirect({ href, statusCode })` from `@tanstack/react-router`; `authMiddleware` already covers auth redirects
 - Reference: `server-fns/cases.ts`, `server-fns/auth.ts`
 
-## Resource File Routes (downloads, streams, file-typed responses)
+## Resource file routes — downloads, streams, file-typed responses
 
 - File at `routes/ressources/{domain}/...ts` using `createFileRoute('/ressources/...')({ server: { handlers: { GET: async ({ request, params }) => new Response(...) } } })`
-- Return raw `Response` objects (e.g., for CSV downloads, file streaming)
+- Return a raw `Response` (CSV downloads, file streaming)
 - Reference: `routes/ressources/lists/download-csv-file.$listId.ts`
 
-## General
-
-- `apiClient` on `context.authInfo` is deprecated — add repository methods instead
-- Do NOT use `initServerServices` / `ActionFunctionArgs` / `LoaderFunctionArgs` / Remix `handle` / Remix `json()` for new code — a few legacy download routes still use `initServerServices` but new code should not
+Legacy names you will meet in older download routes — `initServerServices`,
+`ActionFunctionArgs`, `LoaderFunctionArgs`, Remix `handle`, Remix `json()` — stay where
+they are; new code uses the two patterns above.

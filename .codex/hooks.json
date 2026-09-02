@@ -1,0 +1,39 @@
+{
+  "description": "Project guardrails: block edits on main, block destructive git, type-check on stop.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$(git rev-parse --show-toplevel)/.claude/hooks/block-main-edits.sh\"",
+            "statusMessage": "Checking branch before file edits"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$(git rev-parse --show-toplevel)/.claude/hooks/block-dangerous-commands.sh\"",
+            "statusMessage": "Checking shell command"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$(git rev-parse --show-toplevel)/.claude/hooks/stop-check.sh\"",
+            "timeout": 120,
+            "statusMessage": "Formatting and type-checking"
+          }
+        ]
+      }
+    ]
+  }
+}

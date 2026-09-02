@@ -1,11 +1,12 @@
 # Claude Code — Developer Guide
 
-## The 5 Components
+## The 6 Components
 
 | Component      | Triggered by                | Purpose                          | Location                   |
 |----------------|-----------------------------|---------------------------------|----------------------------|
 | **CLAUDE.md**  | Always loaded               | What Claude always knows         | `CLAUDE.md`                |
-| **Skills**     | Auto (context match)        | Knowledge loaded when relevant   | `.claude/skills/*/SKILL.md`|
+| **Rules**      | Matching file paths         | File-specific conventions        | `.claude/rules/*.md`       |
+| **Skills**     | Context match or invocation | Knowledge loaded when relevant   | `.claude/skills/**/SKILL.md`|
 | **Commands**   | You type `/name`            | On-demand workflows              | `.claude/commands/*.md`    |
 | **Agents**     | Claude delegates or you ask | Isolated workers with own context| `.claude/agents/*.md`      |
 | **Hooks**      | Lifecycle events            | Deterministic shell scripts      | `.claude/settings.json`    |
@@ -71,9 +72,9 @@ Always loaded at session start. Put things Claude should **always** know.
 
 ---
 
-## Skills — Auto-Activated Knowledge
+## Skills — On-Demand Knowledge
 
-Claude reads the skill's `description` and loads it **only when your prompt matches**.
+Claude reads the skill's `description` and loads the body when the prompt matches or the user invokes it. Add `disable-model-invocation: true` for manual-only workflows.
 
 ```yaml
 # .claude/skills/api-conventions/SKILL.md
@@ -87,7 +88,7 @@ Your REST API patterns, naming, error handling rules here...
 **You say:** "Create a new endpoint for user preferences"
 **Claude does:** sees "endpoint" → loads `api-conventions` skill → follows your patterns.
 
-You never trigger skills manually. They activate silently.
+You can also request a skill explicitly. Manual workflow skills may appear as slash commands in clients that support them.
 
 ---
 
@@ -255,15 +256,50 @@ Must this happen AUTOMATICALLY every time?
 
 ---
 
+## Cursor and Codex parity
+
+Cursor loads the root `CLAUDE.md` and discovers project skills and agents under `.claude/`.
+
+Codex reads the same project memory through the `AGENTS.md` symlink and discovers skills through `.agents/skills` (a symlink to `.claude/skills`). Codex does not load Claude subagent files, slash-command wrappers, or glob-scoped rules.
+
+File-specific conventions remain canonical in `.claude/rules/`. Thin `.cursor/rules/*.mdc` wrappers provide Cursor's `globs` metadata and reference those files instead of copying their bodies.
+
+Shared manual workflows live in `.claude/skills/`. Claude command files are thin compatibility wrappers around those skills.
+
+Hooks share the scripts in `.claude/hooks/` where the contract matches. Registration is platform-specific:
+
+- Claude Code: `.claude/settings.json` and `.claude/hooks/`
+- Cursor: `.cursor/hooks.json` and `.cursor/hooks/`
+- Codex: `.codex/hooks.json` (invokes `.claude/hooks/` via the git root)
+
+Keep the policies aligned. Cursor uses its own JSON contract; Claude and Codex both block PreToolUse with exit `2` and Stop with `{"decision":"block","reason":"..."}`.
+
+Project Codex hooks are skipped until the project is trusted and the hooks are reviewed in `/hooks`.
+
+---
+
 ## Quick Reference
 
-```
+```text
 .claude/
   settings.json           # Hooks + permissions
-  hooks/                  # Shell scripts for hooks
+  hooks/                  # Shared shell scripts for hooks
+  rules/                  # Path-scoped conventions
   agents/                 # Sub-agents (isolated workers)
-  skills/                 # Auto-activated knowledge
-  commands/               # Slash commands (/name)
+  skills/                 # Shared on-demand knowledge and workflows
+  commands/               # Claude slash-command compatibility wrappers
+
+.cursor/
+  rules/                  # Cursor activation wrappers for Claude rules
+  hooks.json              # Cursor hook registration
+  hooks/                  # Cursor hook adapters
+
+.agents/
+  skills/                 # Symlink to .claude/skills (Codex discovery)
+
+.codex/
+  hooks.json              # Codex hook registration
 
 CLAUDE.md                 # Always-loaded project memory
+AGENTS.md                 # Symlink to CLAUDE.md (Codex discovery)
 ```

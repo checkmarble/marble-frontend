@@ -1,0 +1,9 @@
+---
+description: Read before adding a server endpoint — choosing between createServerFn and a resource route, auth context, headers, and redirects
+globs:
+  - "**/routes/ressources/**"
+  - "**/server-fns/**"
+alwaysApply: false
+---
+
+Apply the rules in @.claude/rules/resource-routes.md
