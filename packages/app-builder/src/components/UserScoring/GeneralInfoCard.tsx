@@ -90,8 +90,8 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus, lastDryR
   };
 
   return (
-    <div className={cn('flex flex-col lg:flex-row w-full', pageLayoutGutter.gap)}>
-      <Card className="p-md flex flex-col gap-md flex-1">
+    <div className={cn('flex min-w-0 w-full flex-col lg:flex-row', pageLayoutGutter.gap)}>
+      <Card className="flex min-w-0 flex-1 flex-col gap-md p-md">
         <div className="flex items-center justify-between gap-sm">
           <div>
             <span className="text-h3 font-semibold text-grey-primary">{t('user-scoring:ruleset.title')}</span>
