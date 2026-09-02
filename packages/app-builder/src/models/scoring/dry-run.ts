@@ -1,4 +1,4 @@
-import { ScoringDryRun as ScoringDryRunDto } from 'marble-api';
+import type { ScoringDryRun as ScoringDryRunDto } from 'marble-api';
 
 export type ScoringDryRunStatus = ScoringDryRunDto['status'];
 

@@ -1,6 +1,6 @@
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
-import { ScoringDryRun, type ScoringRulesetWithRules, type ScoringSettings } from '@app-builder/models/scoring';
+import type { ScoringDryRun, ScoringRulesetWithRules, ScoringSettings } from '@app-builder/models/scoring';
 import { cn } from 'ui-design-system';
 import { pageLayoutGutter } from '../Page/page-layout';
 import { GeneralInfoCard } from './GeneralInfoCard';

@@ -4,7 +4,7 @@ import {
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABEL_KEYS,
-  ScoringDryRun,
+  type ScoringDryRun,
   type ScoringRulesetWithRules,
   type ScoringSettings,
   SECONDS_PER_UNIT,
