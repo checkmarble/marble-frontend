@@ -1,18 +1,21 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptNodeDto, isNotFoundHttpError } from '@app-builder/models';
-import { adaptScenarioPublicationStatus, ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
+import {
+  adaptScenarioPublicationStatus,
+  type ScenarioPublicationStatus,
+} from '@app-builder/models/scenario/publication';
 import {
   adaptScoringDryRun,
   adaptScoringRuleset,
   adaptScoringRulesetWithRules,
   adaptScoringSettings,
-  ScoringDryRun,
-  ScoringRuleset,
-  ScoringRulesetWithRules,
-  ScoringSettings,
-  UpdateScoringRuleset,
+  type ScoringDryRun,
+  type ScoringRuleset,
+  type ScoringRulesetWithRules,
+  type ScoringSettings,
+  type UpdateScoringRuleset,
 } from '@app-builder/models/scoring';
-import { ScoringScore } from 'marble-api';
+import type { ScoringScore } from 'marble-api';
 
 export type ScoreDistributionItem = { risk_level: number; count: number };
 

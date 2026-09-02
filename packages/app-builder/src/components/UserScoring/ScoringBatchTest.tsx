@@ -1,10 +1,11 @@
 import {
+  isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABEL_KEYS,
-  ScoringDryRun,
-  ScoringDryRunDistributionItem,
-  ScoringRulesetWithRules,
-  ScoringSettings,
+  type ScoringDryRun,
+  type ScoringDryRunDistributionItem,
+  type ScoringRulesetWithRules,
+  type ScoringSettings,
 } from '@app-builder/models/scoring';
 import { formatNumber, useFormatDateTime } from '@app-builder/utils/format';
 import { ResponsivePie } from '@nivo/pie';
@@ -62,7 +63,9 @@ function PieDistribution({
   const language = useFormatLanguage();
 
   if (!distribution.length) return <PieSkeletton />;
-  const maxRiskLevel = settings.maxRiskLevel as 3 | 4 | 5 | 6;
+  const maxRiskLevel = settings.maxRiskLevel;
+  if (!isMaxRiskLevelInRange(maxRiskLevel)) return null;
+
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
   const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
@@ -104,6 +107,7 @@ function PieDistribution({
         activeOuterRadiusOffset={10}
         arcLinkLabelsStraightLength={0}
         arcLinkLabelsThickness={0}
+        arcLinkLabelsSkipAngle={8}
       />
     </div>
   );
