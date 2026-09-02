@@ -2155,6 +2155,18 @@ export type UpdateScoringRuleset = {
         ast: NodeDto;
     }[];
 };
+export type ScoringDryRun = {
+    id: string;
+    ruleset_id: string;
+    status: "pending" | "completed";
+    record_count: number;
+    progress: number;
+    distribution: {
+        risk_level: number;
+        count: number;
+    }[];
+    created_at: string;
+};
 export type ScoringScore = {
     id: string;
     risk_level: number;
@@ -7203,6 +7215,45 @@ export function commitScoringRuleset(recordType: string, opts?: Oazapfts.Request
     }>(`/scoring/rulesets/${encodeURIComponent(recordType)}/commit`, {
         ...opts,
         method: "POST"
+    }));
+}
+/**
+ * Start a backtest of a ruleset draft
+ */
+export function startScoringDryRun(recordType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 202;
+        data: ScoringDryRun;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+    }>(`/scoring/rulesets/${encodeURIComponent(recordType)}/dry-run`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * Start a backtest of a ruleset draft
+ */
+export function getScoringDryRun(recordType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringDryRun;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+    }>(`/scoring/rulesets/${encodeURIComponent(recordType)}/dry-run`, {
+        ...opts
     }));
 }
 /**

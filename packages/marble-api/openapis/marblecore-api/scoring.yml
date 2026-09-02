@@ -209,6 +209,57 @@
       '401':
         $ref: 'components.yml#/responses/401'
 
+/scoring/rulesets/{recordType}/dry-run:
+  post:
+    tags: [Scoring]
+    summary: Start a backtest of a ruleset draft
+    operationId: startScoringDryRun
+    parameters:
+      - name: recordType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '202':
+        description: Dry run was successfully started in the background
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringDryRun'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        description: Ruleset cannot be committed. Usually, it means it it not prepared.
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+  get:
+    tags: [Scoring]
+    summary: Start a backtest of a ruleset draft
+    operationId: getScoringDryRun
+    parameters:
+      - name: recordType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Current state of the latest dry-run
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringDryRun'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        description: Ruleset cannot be committed. Usually, it means it it not prepared.
+      '401':
+        $ref: 'components.yml#/responses/401'
+
 /scoring/risk-levels/{recordType}/{recordId}:
   get:
     tags: [Scoring]
@@ -539,3 +590,41 @@ components:
         stale_at:
            type: string
            format: date-time
+    ScoringDryRun:
+      type: object
+      required:
+        - id
+        - ruleset_id
+        - status
+        - record_count
+        - progress
+        - distribution
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        ruleset_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, completed]
+        record_count:
+          type: integer
+        progress:
+          type: number
+          format: double
+        distribution:
+          type: array
+          items:
+            type: object
+            required: [risk_level, count]
+            properties:
+              risk_level:
+                type: integer
+              count:
+                type: integer
+        created_at:
+          type: string
+          format: date-time
