@@ -139,3 +139,19 @@ export const getScoreLatestFn = createServerFn({ method: 'GET' })
       throw error;
     }
   });
+
+export const startScoringDryRunFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(z.object({ recordType: z.string() }))
+  .handler(async ({ context, data }) => {
+    const dryRun = await context.authInfo.userScoring.startScoringDryRun(data.recordType);
+    return { dryRun };
+  });
+
+export const getScoringDryRunFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(z.object({ recordType: z.string() }))
+  .handler(async ({ context, data }) => {
+    const dryRun = await context.authInfo.userScoring.getScoringDryRun(data.recordType);
+    return { dryRun };
+  });

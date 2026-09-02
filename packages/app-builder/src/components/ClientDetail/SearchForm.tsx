@@ -56,7 +56,8 @@ export const SearchForm = ({ table }: SearchFormProps) => {
         </span>
         {!table.ready ? (
           <span className="text-grey-text text-small flex items-center gap-xs">
-            <Icon icon="warning" className="size-4 text-yellow-primary" />{' '}
+            <Icon icon="warning" className="size-4 text-yellow-primary" />
+            &nbsp;
             {t('client360:client_detail.search_form.table_not_ready')}
           </span>
         ) : null}

@@ -2,9 +2,11 @@ import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptNodeDto, isNotFoundHttpError } from '@app-builder/models';
 import { adaptScenarioPublicationStatus, ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
+  adaptScoringDryRun,
   adaptScoringRuleset,
   adaptScoringRulesetWithRules,
   adaptScoringSettings,
+  ScoringDryRun,
   ScoringRuleset,
   ScoringRulesetWithRules,
   ScoringSettings,
@@ -27,6 +29,8 @@ export interface UserScoringRepository {
   getScoreLatest(recordType: string, recordId: string): Promise<ScoringScore | null>;
   getScoreLatestWithEvaluation(recordType: string, recordId: string): Promise<ScoringScore | null>;
   getScoreDistribution(recordType: string): Promise<ScoreDistributionItem[]>;
+  startScoringDryRun(recordType: string): Promise<ScoringDryRun>;
+  getScoringDryRun(recordType: string): Promise<ScoringDryRun | null>;
 }
 
 export function makeGetUserScoringRepository() {
@@ -104,6 +108,19 @@ export function makeGetUserScoringRepository() {
     },
     async getScoreDistribution(recordType) {
       return marbleCoreApiClient.getScoreDistribution(recordType);
+    },
+    async startScoringDryRun(recordType) {
+      return adaptScoringDryRun(await marbleCoreApiClient.startScoringDryRun(recordType));
+    },
+    async getScoringDryRun(recordType) {
+      try {
+        return adaptScoringDryRun(await marbleCoreApiClient.getScoringDryRun(recordType));
+      } catch (err) {
+        if (isNotFoundHttpError(err)) {
+          return null;
+        }
+        throw err;
+      }
     },
   });
 }

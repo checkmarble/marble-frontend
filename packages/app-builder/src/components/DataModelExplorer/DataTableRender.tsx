@@ -532,7 +532,7 @@ function DataTableActionsButton({
                     <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
                       <div className="flex flex-col">
                         <div className="flex items-center gap-sm">
-                          {t('cases:annotations.popover.annotate.title')}{' '}
+                          {t('cases:annotations.popover.annotate.title')}&nbsp;
                           <span className="text-grey-disabled text-xs">{annotationsCount}</span>
                         </div>
                         <span className="text-grey-secondary">{t('cases:annotations.popover.annotate.subtitle')}</span>

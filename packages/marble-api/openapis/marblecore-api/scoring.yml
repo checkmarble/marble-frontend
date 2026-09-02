@@ -609,7 +609,7 @@ components:
           format: uuid
         status:
           type: string
-          enum: [pending, completed]
+          enum: [pending, completed, running, cancelled]
         record_count:
           type: integer
         progress:

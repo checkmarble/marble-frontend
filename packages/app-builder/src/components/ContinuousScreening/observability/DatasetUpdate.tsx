@@ -154,7 +154,7 @@ function DatasetUpdateCompletionDetails({
       ))}
       {status === 'processing' ? (
         <span>
-          {formatNumber(completion.itemsProcessed, { language: locale })} /{' '}
+          {formatNumber(completion.itemsProcessed, { language: locale })}&nbsp;/&nbsp;
           {formatNumber(completion.itemsTotal, { language: locale })}
         </span>
       ) : null}
