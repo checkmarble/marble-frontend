@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/block-main-edits.sh",
+        "matcher": "Write|Delete",
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/block-dangerous-shell.sh",
+        "failClosed": true
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/run-checks.sh",
+        "matcher": "Stop",
+        "timeout": 120,
+        "loop_limit": 3
+      }
+    ]
+  }
+}

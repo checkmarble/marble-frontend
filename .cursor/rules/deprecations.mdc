@@ -1,0 +1,9 @@
+---
+description: Read before using any component, hook, or export — which ones are deprecated, what replaces them, and why a V2 suffix proves nothing
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+Apply the rules in @.claude/rules/deprecations.md

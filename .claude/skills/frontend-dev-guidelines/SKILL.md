@@ -1,6 +1,6 @@
 ---
 name: frontend-dev-guidelines
-description: Use when writing, editing, or creating components, pages, routes, forms, tables, modals, queries, hooks, loaders, or server functions in packages/app-builder or packages/ui-design-system. Covers TanStack Start + TanStack Router (createFileRoute, staticData, file-based routing), createServerFn, React patterns, TanStack Query/Form, Radix UI, virtual tables, MenuCommand, Tailwind color tokens, file organization, and TypeScript standards. Basic conventions (imports, styling, i18n, route middleware) are in .claude/rules/ — this skill provides the deep reference patterns and code examples.
+description: Use when writing or changing components, pages, routes, forms, tables, modals, queries, hooks, loaders, or server functions in packages/app-builder or packages/ui-design-system.
 ---
 
 # Frontend Development Guidelines

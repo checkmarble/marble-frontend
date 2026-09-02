@@ -1,6 +1,6 @@
 ---
 name: ast-builder-developer
-description: AST Builder component patterns for Marble's rule/condition builder. Use when working with AstBuilder components, editing AST nodes, node state management with sharpstate, validation flows, or any rule builder UI. Covers Provider/Root patterns, edition vs viewing modes, node types (And, Or, Main, Operand), EditModal system, and path-based navigation.
+description: Use when working with AstBuilder components, editing AST nodes, managing node state with sharpstate, changing validation flows, or modifying any rule-builder UI.
 ---
 
 # AST Builder Developer Guide

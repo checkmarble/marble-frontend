@@ -1,0 +1,9 @@
+---
+description: Read before creating or editing a page route — createFileRoute setup, loaders, auth context, breadcrumbs, and file-name to URL mapping
+globs:
+  - "**/routes/_app/_builder/**"
+  - "**/routes/_app/_auth/**"
+alwaysApply: false
+---
+
+Apply the rules in @.claude/rules/page-routes.md
