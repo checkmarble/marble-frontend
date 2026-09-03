@@ -295,7 +295,7 @@ function RuleEditForm({
               <Card className="flex w-full flex-col gap-xs">
                 <textarea
                   name={field.name}
-                  defaultValue={field.state.value}
+                  value={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
                   onBlur={field.handleBlur}
                   className="form-textarea text-grey-primary text-s w-full resize-none border-none bg-transparent font-medium outline-hidden"
@@ -309,6 +309,24 @@ function RuleEditForm({
             <div className="flex flex-col gap-xl">
               <div className="flex flex-col gap-sm">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
+
+                {isAiRuleDescriptionEnabled ? (
+                  <AiGenerateRule
+                    scenarioId={scenario.id}
+                    ruleId={rule.id}
+                    estimatedGenerationDurationMs={RULE_GENERATION_ESTIMATED_DURATION_MS}
+                    onFormulaGenerated={(ruleAst, catalogInfo) => {
+                      form.setFieldValue('formula', ruleAst);
+                      if (catalogInfo) {
+                        form.setFieldValue('name', catalogInfo.name);
+                        form.setFieldValue('description', catalogInfo.description);
+                      }
+                      handleFormulaChange(ruleAst);
+                      setFormulaKey((k) => k + 1);
+                    }}
+                  />
+                ) : null}
+
                 <Card
                   className={cn({
                     'border-red-primary': serverValidationMessages.length > 0,
@@ -338,18 +356,6 @@ function RuleEditForm({
                     )}
                   </form.Field>
                 </Card>
-
-                {isAiRuleDescriptionEnabled ? (
-                  <AiGenerateRule
-                    scenarioId={scenario.id}
-                    ruleId={rule.id}
-                    onFormulaGenerated={(ruleAst) => {
-                      form.setFieldValue('formula', ruleAst);
-                      handleFormulaChange(ruleAst);
-                      setFormulaKey((k) => k + 1);
-                    }}
-                  />
-                ) : null}
 
                 <Card>
                   <div className="flex items-center gap-sm">
@@ -417,3 +423,4 @@ function RuleEditForm({
     </form>
   );
 }
+const RULE_GENERATION_ESTIMATED_DURATION_MS = 30_000;

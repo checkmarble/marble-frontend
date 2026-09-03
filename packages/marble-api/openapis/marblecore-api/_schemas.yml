@@ -233,6 +233,12 @@ ScenarioRuleLatestVersionDto:
   $ref: scenarios.yml#/components/schemas/ScenarioRuleLatestVersionDto
 ScenarioASTAiDescriptionDto:
   $ref: scenarios.yml#/components/schemas/ScenarioASTAiDescriptionDto
+RuleCatalogDto:
+  $ref: scenarios.yml#/components/schemas/RuleCatalogDto
+RuleCatalogRuleDto:
+  $ref: scenarios.yml#/components/schemas/RuleCatalogRuleDto
+RuleCatalogLocalizedTextDto:
+  $ref: scenarios.yml#/components/schemas/RuleCatalogLocalizedTextDto
 
 # AST EVALUATION
 

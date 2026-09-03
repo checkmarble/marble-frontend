@@ -10,8 +10,10 @@ import {
   type ScenarioIterationRuleMetadata,
   type UpdateScenarioIterationRuleInput,
 } from '@app-builder/models/scenario/iteration-rule';
+import { type RuleCatalogDto } from 'marble-api';
 
 export interface ScenarioIterationRuleRepository {
+  getRuleCatalog(): Promise<RuleCatalogDto>;
   listRules(args: { scenarioIterationId: string }): Promise<ScenarioIterationRule[]>;
   listRulesMetadata(args: { scenarioIterationId?: string }): Promise<ScenarioIterationRuleMetadata[]>;
   getRule(args: { ruleId: string }): Promise<ScenarioIterationRule>;
@@ -31,6 +33,7 @@ export interface ScenarioIterationRuleRepository {
 
 export function makeGetScenarioIterationRuleRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScenarioIterationRuleRepository => ({
+    getRuleCatalog: () => marbleCoreApiClient.getRuleCatalog(),
     listRules: async (args) => {
       const rules = await marbleCoreApiClient.listScenarioIterationRules(args.scenarioIterationId);
       return rules.map(adaptScenarioIterationRule);

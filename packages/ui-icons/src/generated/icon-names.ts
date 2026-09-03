@@ -6,6 +6,7 @@ export const iconNames = [
   'add-alert',
   'add-circle',
   'ai-review',
+  'ai-stars',
   'alt-route',
   'analytics',
   'arrow-2-down',

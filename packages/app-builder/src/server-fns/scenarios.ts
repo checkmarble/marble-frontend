@@ -405,6 +405,14 @@ export const generateAstFn = createServerFn({ method: 'POST' })
     }
   });
 
+// ---- Rule catalog ----
+
+export const getRuleCatalogFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return context.authInfo.scenarioIterationRuleRepository.getRuleCatalog();
+  });
+
 // ---- Scenario iteration: activate, commit, create-draft, deactivate, prepare ----
 
 const saveTriggerPayloadSchema = z.object({

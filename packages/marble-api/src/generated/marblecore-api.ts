@@ -834,6 +834,19 @@ export type ScenarioCreateInputDto = {
     name: string;
     trigger_object_type: string;
 };
+export type RuleCatalogLocalizedTextDto = {
+    ar: string;
+    en: string;
+    fr: string;
+};
+export type RuleCatalogRuleDto = {
+    prompt: string;
+    name: RuleCatalogLocalizedTextDto;
+    description: RuleCatalogLocalizedTextDto;
+};
+export type RuleCatalogDto = {
+    rules: RuleCatalogRuleDto[];
+};
 export type ScenarioUpdateInputDto = {
     archived?: boolean;
     deduplicate_batch_objects?: boolean;
@@ -3699,6 +3712,23 @@ export function createScenario(scenarioCreateInputDto: ScenarioCreateInputDto, o
         method: "POST",
         body: scenarioCreateInputDto
     })));
+}
+/**
+ * Get the rule catalog
+ */
+export function getRuleCatalog(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: RuleCatalogDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/scenarios/catalog", {
+        ...opts
+    }));
 }
 /**
  * Get a scenario by id

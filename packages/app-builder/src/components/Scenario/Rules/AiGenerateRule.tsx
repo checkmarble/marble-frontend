@@ -1,69 +1,96 @@
 import { type AstNode } from '@app-builder/models';
 import { useGenerateRuleMutation } from '@app-builder/queries/scenarios/generate-rule';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Typo } from 'ui-design-system';
+import { Card, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { type AiRuleCatalogInfo, AiRuleCatalogSelect } from './AiRuleCatalogSelect';
 
 interface AiGenerateRuleProps {
   scenarioId: string;
   ruleId: string;
-  onFormulaGenerated: (ruleAst: AstNode) => void;
+  estimatedGenerationDurationMs: number;
+  onFormulaGenerated: (ruleAst: AstNode, catalogInfo?: AiRuleCatalogInfo) => void;
 }
 
-export function AiGenerateRule({ scenarioId, ruleId, onFormulaGenerated }: AiGenerateRuleProps) {
+export function AiGenerateRule({
+  scenarioId,
+  ruleId,
+  estimatedGenerationDurationMs,
+  onFormulaGenerated,
+}: AiGenerateRuleProps) {
   const { t } = useTranslation(['scenarios', 'common']);
-  const [instruction, setInstruction] = useState('');
   const mutation = useGenerateRuleMutation(scenarioId);
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (instruction: string, catalogInfo?: AiRuleCatalogInfo) => {
     const result = await mutation.mutateAsync({ ruleId, instruction }).catch(() => null);
     if (result === null || !result.success) {
       toast.error(t('scenarios:rules.ai_generate.error_generating'));
       return;
     }
     if (result.ruleAst) {
-      setInstruction('');
-      onFormulaGenerated(result.ruleAst);
+      onFormulaGenerated(result.ruleAst, catalogInfo);
     }
   };
 
   return (
     <Card>
-      <Typo variant="subtitle1" className="text-s font-medium mb-md">
+      <Typo variant="subtitle1" className="text-s font-medium mb-md flex gap-xs items-center">
+        <Icon icon="ai-stars" className="size-6 text-purple-primary" />
         {t('scenarios:rules.ai_generate.title')}
       </Typo>
 
       <div className="flex flex-col gap-md">
-        <textarea
-          value={instruction}
-          onChange={(e) => setInstruction(e.currentTarget.value)}
-          placeholder={t('scenarios:rules.ai_generate.placeholder')}
+        <AiRuleCatalogSelect
           disabled={mutation.isPending}
-          className="form-textarea text-grey-primary text-s w-full resize-none border-none bg-transparent font-medium outline-hidden"
-          rows={3}
+          isGenerating={mutation.isPending}
+          onSelect={handleGenerate}
         />
-
-        <Button
-          onClick={handleGenerate}
-          disabled={!instruction.trim() || mutation.isPending}
-          variant="primary"
-          size="small"
-        >
-          {mutation.isPending ? (
-            <>
-              <Icon icon="spinner" className="size-4 animate-spin" aria-hidden />
-              {t('scenarios:rules.ai_generate.generating')}
-            </>
-          ) : (
-            <>
-              <Icon icon="wand" className="size-4" aria-hidden />
-              {t('scenarios:rules.ai_generate.generate_button')}
-            </>
-          )}
-        </Button>
+        {mutation.isPending ? <GenerationProgress estimatedDurationMs={estimatedGenerationDurationMs} /> : null}
       </div>
     </Card>
+  );
+}
+
+function GenerationProgress({ estimatedDurationMs }: { estimatedDurationMs: number }) {
+  const { t } = useTranslation(['scenarios']);
+  const [progress, setProgress] = useState(0);
+  const seconds = Math.ceil(estimatedDurationMs / 1000);
+
+  useEffect(() => {
+    const startedAt = performance.now();
+    const updateProgress = () => {
+      const elapsed = performance.now() - startedAt;
+      const normalizedElapsed = elapsed / Math.max(estimatedDurationMs, 1);
+      const logarithmicProgress = Math.log1p(7 * normalizedElapsed);
+      setProgress(Math.min(95, 95 * (logarithmicProgress / Math.log1p(7))));
+    };
+
+    updateProgress();
+    const interval = window.setInterval(updateProgress, 250);
+    return () => window.clearInterval(interval);
+  }, [estimatedDurationMs]);
+
+  const label = t('scenarios:rules.ai_generate.estimated_duration', { seconds });
+
+  return (
+    <div className="flex flex-wrap items-center gap-sm">
+      <span className="text-small text-purple-primary font-medium">{label}</span>
+      <div
+        role="progressbar"
+        aria-label={label}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress)}
+        className="h-2 w-28 max-w-full overflow-hidden rounded-full relative"
+      >
+        <div className="bg-purple-background-light border-purple-border-light h-full w-full border rounded-full" />
+        <div
+          className="absolute inset-s-0 top-0 bg-purple-primary h-full rounded-full transition-[width] duration-200 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
   );
 }

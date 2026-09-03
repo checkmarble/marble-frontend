@@ -46,6 +46,25 @@
         $ref: "components.yml#/responses/403"
       "422":
         $ref: "components.yml#/responses/422"
+/scenarios/catalog:
+  get:
+    tags:
+      - Scenarios
+    summary: Get the rule catalog
+    operationId: getRuleCatalog
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Rule catalog prompts and localized metadata
+        content:
+          application/json:
+            schema:
+              $ref: "components.yml#/schemas/RuleCatalogDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /scenarios/{scenarioId}:
   get:
     tags:
@@ -461,3 +480,38 @@ components:
       required:
         - description
         - is_rule_valid
+    RuleCatalogDto:
+      type: object
+      required:
+        - rules
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleCatalogRuleDto"
+    RuleCatalogRuleDto:
+      type: object
+      required:
+        - prompt
+        - name
+        - description
+      properties:
+        prompt:
+          type: string
+        name:
+          $ref: "#/components/schemas/RuleCatalogLocalizedTextDto"
+        description:
+          $ref: "#/components/schemas/RuleCatalogLocalizedTextDto"
+    RuleCatalogLocalizedTextDto:
+      type: object
+      required:
+        - ar
+        - en
+        - fr
+      properties:
+        ar:
+          type: string
+        en:
+          type: string
+        fr:
+          type: string
