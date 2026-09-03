@@ -16,6 +16,8 @@ interface DataModelFeatureAccess {
   isDeleteDataModelLinkAvailable: boolean;
   isDeleteDataModelPivotAvailable: boolean;
   isIpGpsAvailable: boolean;
+  isGraphExplorationEnabled: boolean;
+  isGraphExplorationAvailable: boolean;
 }
 
 const DataModelFeatureAccessContext = createSimpleContext<DataModelFeatureAccess>('DataModelFeatureAccessContext');

@@ -56,3 +56,6 @@ ui-debug.log
 .claude/settings.local.json
 .claude/hooks/node_modules/
 .claude/hooks/state/
+
+# Local agent glossary (not committed)
+CONTEXT.md

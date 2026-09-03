@@ -33,6 +33,8 @@ export type FeatureAccessDto = {
     user_scoring: FeatureAccessLevelDto;
     /** Entitlement for the LexisNexis screening provider. OpenSanctions is always available. */
     lexisnexis: FeatureAccessLevelDto;
+    /** Entitlement for graph exploration in case manager, client 360, and data-model relation configuration. */
+    graph_exploration: FeatureAccessLevelDto;
 };
 /**
  * Get the entitlements of an organization

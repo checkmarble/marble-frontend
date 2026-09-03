@@ -8,6 +8,7 @@ export const OVERRIDABLE_FEATURES = [
   'continuous_screening',
   'ai_rule_building',
   'lexisnexis',
+  'graph_exploration',
 ] as const;
 
 export const featureValueSchema = z.enum(['allowed', 'restricted', 'test']);

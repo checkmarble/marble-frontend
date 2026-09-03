@@ -8,9 +8,10 @@ const isLongUUID = (value: string) => z.uuid().safeParse(value).success;
 // `/client-detail` objectId is a raw ingested id, not short-uuid encoded; the rest are fetch/RPC endpoints.
 const SKIP_PREFIXES = ['/client-detail/', '/ressources/', '/oidc/'];
 
-// The `/cases/s/$caseId/clients/$pivotValue` page ends in a raw pivot value that can itself be a
-// UUID. The caseId earlier in the path is still canonicalised; only the trailing value is left as-is.
-const protectsLastSegment = (pathname: string) => pathname.startsWith('/cases/s/') && pathname.includes('/clients/');
+// `/cases/s/$caseId/{clients,links}/$pivotValue` ends in a raw pivot key that can itself be a UUID.
+// The caseId earlier in the path is still canonicalised; only the trailing value is left as-is.
+const protectsLastSegment = (pathname: string) =>
+  pathname.startsWith('/cases/s/') && (pathname.includes('/clients/') || pathname.includes('/links/'));
 
 // Redirect long-form UUIDs in the URL path to their canonical short form.
 export const shortUUIDRedirectMiddleware = createMiddleware().server(async ({ next }) => {

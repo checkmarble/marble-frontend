@@ -51,7 +51,7 @@ export const needAuth = createMiddleware()
       result.error.status >= 300 &&
       result.error.status < 400
     ) {
-      console.log('result.error', result.error);
+      console.error('result.error', result.error);
       throw result.error;
     }
 

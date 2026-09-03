@@ -246,6 +246,8 @@ components:
           type: boolean
         lexisnexis:
           type: boolean
+        graph_exploration:
+          type: boolean
       required:
         - sso
         - workflows
@@ -261,6 +263,7 @@ components:
         - continuous_screening
         - user_scoring
         - lexisnexis
+        - graph_exploration
     LicenseDto:
       type: object
       properties:
