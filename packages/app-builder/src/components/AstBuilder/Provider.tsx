@@ -23,7 +23,7 @@ export const AstBuilderDataSharpFactory = createSharpFactory({
 type AstBuilderDataProviderProps = {
   scenarioId: string;
   children: ReactNode;
-  nodeRef?: RefObject<InferSharpApi<typeof AstBuilderDataSharpFactory>>;
+  nodeRef?: RefObject<InferSharpApi<typeof AstBuilderDataSharpFactory> | null>;
   renderError?: (error: Error) => ReactNode;
   renderLoading?: () => ReactNode;
   initialData?: BuilderOptionsResource;

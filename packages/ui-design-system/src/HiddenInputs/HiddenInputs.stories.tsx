@@ -19,10 +19,7 @@ const Template: StoryFn<typeof HiddenInputs> = (args) => (
   <form
     onSubmit={(e) => {
       e.preventDefault();
-      alert(
-        //@ts-expect-error wrong cast of FormData
-        JSON.stringify(Object.fromEntries(new FormData(e.target)), null, 2),
-      );
+      alert(JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)), null, 2));
     }}
   >
     <h1>Input should not be visible, data will be sent in form payload</h1>

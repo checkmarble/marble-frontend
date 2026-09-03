@@ -7,7 +7,6 @@ import {
   Trigger,
 } from '@radix-ui/react-collapsible';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 import { cn } from '../utils';
 
@@ -27,10 +26,11 @@ export const HeadlessCollapsible = {
   Content: HeadlessCollapsibleContent,
 };
 
-const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(function CollapsibleContainer(
-  { className, ...props },
+const CollapsibleContainer = function CollapsibleContainer({
   ref,
-) {
+  className,
+  ...props
+}: CollapsibleProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <HeadlessCollapsibleRoot
       defaultOpen={true}
@@ -39,7 +39,7 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(functi
       {...props}
     />
   );
-});
+};
 
 const collapsibleSize = {
   default: 'p-md lg:p-lg',
@@ -68,10 +68,17 @@ const collapsibleContent = cva('', {
 
 export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> & RadixCollapsibleProps;
 
-const CollapsibleTitle = forwardRef<
-  HTMLButtonElement,
-  CollapsibleTriggerProps & { iconPosition?: 'hidden' | 'left' | 'right' }
->(function CollapsibleTitle({ className, children, size, iconPosition = 'right', ...props }, ref) {
+const CollapsibleTitle = function CollapsibleTitle({
+  ref,
+  className,
+  children,
+  size,
+  iconPosition = 'right',
+  ...props
+}: CollapsibleTriggerProps & {
+  iconPosition?: 'hidden' | 'left' | 'right';
+  ref?: React.Ref<HTMLButtonElement>;
+}) {
   return (
     <HeadlessCollapsibleTrigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
       <div
@@ -102,21 +109,24 @@ const CollapsibleTitle = forwardRef<
       </div>
     </HeadlessCollapsibleTrigger>
   );
-});
+};
 
 const content =
   'border-grey-border border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
 
-const CollapsibleContent = forwardRef<
-  HTMLDivElement,
-  VariantProps<typeof collapsibleContent> & CollapsibleContentProps
->(function CollapsibleContent({ children, className, size, ...props }, ref) {
+const CollapsibleContent = function CollapsibleContent({
+  ref,
+  children,
+  className,
+  size,
+  ...props
+}: VariantProps<typeof collapsibleContent> & CollapsibleContentProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <Content className={cn(content, className)} {...props} ref={ref}>
       <div className={collapsibleContent({ size })}>{children}</div>
     </Content>
   );
-});
+};
 
 export const Collapsible = {
   Container: CollapsibleContainer,

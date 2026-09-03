@@ -8,7 +8,7 @@ import * as React from 'react';
  */
 
 export function useCallbackRef<T extends (...args: any[]) => any>(callback: T | undefined): T {
-  const callbackRef = React.useRef<T | undefined>();
+  const callbackRef = React.useRef<T | undefined>(undefined);
 
   callbackRef.current = callback;
 

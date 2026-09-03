@@ -23,7 +23,7 @@ import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { forwardRef, useMemo, useReducer, useState } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -199,20 +199,22 @@ function DownloadAsCSV({ listId }: { listId: string }) {
   );
 }
 
-const UploadAsCsvDropzone = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<'div'>>(
-  function UploadAsCsvDropzone({ className, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        className={clsx(
-          'text-s flex h-40 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
-          className,
-        )}
-        {...props}
-      />
-    );
-  },
-);
+const UploadAsCsvDropzone = function UploadAsCsvDropzone({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'> & { ref?: React.Ref<HTMLDivElement> }) {
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        'text-s flex h-40 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
+        className,
+      )}
+      {...props}
+    />
+  );
+};
 
 type State =
   | {

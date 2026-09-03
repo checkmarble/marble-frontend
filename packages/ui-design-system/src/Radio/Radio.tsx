@@ -1,6 +1,6 @@
 import { Indicator, Item, Root } from '@radix-ui/react-radio-group';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentPropsWithoutRef, createContext, forwardRef, useContext, useId } from 'react';
+import { type ComponentPropsWithoutRef, createContext, useContext, useId } from 'react';
 
 import { cn } from '../utils';
 
@@ -90,10 +90,17 @@ export type RadioRootProps = Omit<ComponentPropsWithoutRef<typeof Root>, 'value'
     size?: RadioSize;
   };
 
-export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function RadioRoot(
-  { className, value, onValueChange, children, name, size = 'regular', disabled = false, ...props },
+export const RadioRoot = function RadioRoot({
   ref,
-) {
+  className,
+  value,
+  onValueChange,
+  children,
+  name,
+  size = 'regular',
+  disabled = false,
+  ...props
+}: RadioRootProps & { ref?: React.Ref<HTMLDivElement> }) {
   const generatedName = useId();
 
   return (
@@ -111,7 +118,7 @@ export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function Rad
       </Root>
     </RadioContext.Provider>
   );
-});
+};
 
 /**
  * Props for Radio.Item component.
@@ -121,10 +128,14 @@ export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function Rad
  */
 export type RadioItemProps = Omit<ComponentPropsWithoutRef<typeof Item>, 'asChild'>;
 
-export const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(function RadioItem(
-  { className, value, disabled = false, children, ...props },
+export const RadioItem = function RadioItem({
   ref,
-) {
+  className,
+  value,
+  disabled = false,
+  children,
+  ...props
+}: RadioItemProps & { ref?: React.Ref<HTMLButtonElement> }) {
   const { size, value: selectedValue, disabled: groupDisabled } = useRadioContext();
   const isChecked = selectedValue === value;
   const isDisabled = disabled || groupDisabled;
@@ -149,7 +160,7 @@ export const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(function 
       {children}
     </Item>
   );
-});
+};
 
 /**
  * A controlled radio group component using the compound component pattern,

@@ -7,17 +7,21 @@ interface FormLabelProps extends Omit<React.ComponentPropsWithoutRef<typeof Labe
   valid?: boolean;
 }
 
-export const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, FormLabelProps>(
-  function FormLabel({ className, valid, name, ...props }, ref) {
-    return (
-      <LabelPrimitive.Root
-        ref={ref}
-        htmlFor={name}
-        className={cn(className, {
-          'text-red-primary': valid !== undefined && !valid,
-        })}
-        {...props}
-      />
-    );
-  },
-);
+export const FormLabel = function FormLabel({
+  ref,
+  className,
+  valid,
+  name,
+  ...props
+}: FormLabelProps & { ref?: React.Ref<React.ElementRef<typeof LabelPrimitive.Root>> }) {
+  return (
+    <LabelPrimitive.Root
+      ref={ref}
+      htmlFor={name}
+      className={cn(className, {
+        'text-red-primary': valid !== undefined && !valid,
+      })}
+      {...props}
+    />
+  );
+};

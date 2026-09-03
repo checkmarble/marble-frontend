@@ -1,5 +1,5 @@
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { type ElementRef, forwardRef, useState } from 'react';
+import { type ElementRef, useState } from 'react';
 import { Button, Calendar, cn, type Input, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -11,10 +11,12 @@ interface DateSelectorProps {
   defaultValue?: Date;
 }
 
-export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorProps>(function DateSelector(
-  { name, description, ...props },
+export const DateSelector = function DateSelector({
   ref,
-) {
+  name,
+  description,
+  ...props
+}: DateSelectorProps & { ref?: React.Ref<ElementRef<typeof Input>> }) {
   const [selectedDate, selectDate] = useState<Date | undefined>(props.defaultValue);
   const [open, setOpen] = useState(false);
   const formatDateTime = useFormatDateTime();
@@ -55,4 +57,4 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
       </Popover.Root>
     </div>
   );
-});
+};

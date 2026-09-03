@@ -1,6 +1,6 @@
 import { FiltersDropdownMenu } from '@app-builder/components/Filters';
 import * as React from 'react';
-import { forwardRef, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
@@ -60,12 +60,14 @@ export function DecisionFiltersMenu({
   );
 }
 
-const FiltersMenuItem = forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
-    filterName: DecisionFilterName;
-  }
->(({ filterName, ...props }, ref) => {
+const FiltersMenuItem = ({
+  ref,
+  filterName,
+  ...props
+}: React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
+  filterName: DecisionFilterName;
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
   const { t } = useTranslation(decisionsI18n);
   const icon = getFilterIcon(filterName);
   const tKey = getFilterTKey(filterName);
@@ -76,8 +78,7 @@ const FiltersMenuItem = forwardRef<
       <span className="text-s text-grey-primary font-normal first-letter:capitalize">{t(tKey)}</span>
     </FiltersDropdownMenu.Item>
   );
-});
-FiltersMenuItem.displayName = 'FiltersMenuItem';
+};
 
 function FilterContent({
   filterNames,

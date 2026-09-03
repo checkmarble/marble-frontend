@@ -3,7 +3,7 @@ import * as React from 'react';
 import { type ButtonV2Props } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonV2Props>(({ className, ...props }, ref) => {
+export const RemoveButton = ({ ref, className, ...props }: ButtonV2Props & { ref?: React.Ref<HTMLButtonElement> }) => {
   return (
     <button
       type="button"
@@ -21,5 +21,4 @@ export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonV2Props>((
       <Icon icon="delete" className="size-3" />
     </button>
   );
-});
-RemoveButton.displayName = 'RemoveButton';
+};

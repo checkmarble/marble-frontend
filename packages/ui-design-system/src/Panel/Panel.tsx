@@ -1,13 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import {
-  type ComponentPropsWithoutRef,
-  forwardRef,
-  type MouseEventHandler,
-  type ReactNode,
-  useEffect,
-  useRef,
-} from 'react';
+import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
@@ -95,10 +88,12 @@ interface PanelTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'on
   onClick?: MouseEventHandler<HTMLElement>;
 }
 
-const PanelTrigger = forwardRef<HTMLButtonElement, PanelTriggerProps>(function PanelTrigger(
-  { asChild, onClick, ...props },
+const PanelTrigger = function PanelTrigger({
   ref,
-) {
+  asChild,
+  onClick,
+  ...props
+}: PanelTriggerProps & { ref?: React.Ref<HTMLButtonElement> }) {
   const sharp = PanelSharpFactory.useSharp();
   const Comp = asChild ? Slot : 'button';
 
@@ -110,8 +105,7 @@ const PanelTrigger = forwardRef<HTMLButtonElement, PanelTriggerProps>(function P
   };
 
   return <Comp ref={ref} type={asChild ? undefined : 'button'} {...props} onClick={handleClick} />;
-});
-PanelTrigger.displayName = 'PanelTrigger';
+};
 
 interface PanelContainerProps {
   children: ReactNode;
@@ -235,10 +229,11 @@ function PanelHeader({ children, className }: PanelHeaderProps) {
 
 type PanelHeaderInputProps = React.ComponentPropsWithoutRef<'input'>;
 
-const PanelHeaderInput = forwardRef<HTMLInputElement, PanelHeaderInputProps>(function PanelHeaderInput(
-  { className, ...props },
+const PanelHeaderInput = function PanelHeaderInput({
   ref,
-) {
+  className,
+  ...props
+}: PanelHeaderInputProps & { ref?: React.Ref<HTMLInputElement> }) {
   return (
     <UnstyledInput
       ref={ref}
@@ -247,7 +242,7 @@ const PanelHeaderInput = forwardRef<HTMLInputElement, PanelHeaderInputProps>(fun
       {...props}
     />
   );
-});
+};
 
 interface PanelContentProps {
   children: ReactNode;
@@ -290,22 +285,20 @@ type PanelFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>
   children?: ReactNode;
 };
 
-const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(function PanelFooterButton(
-  {
-    variant,
-    isCloseButton,
-    isLoading,
-    leadingIcon,
-    trailingIcon,
-    disabled,
-    label,
-    children,
-    className,
-    onClick,
-    ...props
-  },
+const PanelFooterButton = function PanelFooterButton({
   ref,
-) {
+  variant,
+  isCloseButton,
+  isLoading,
+  leadingIcon,
+  trailingIcon,
+  disabled,
+  label,
+  children,
+  className,
+  onClick,
+  ...props
+}: PanelFooterButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
   const sharp = PanelSharpFactory.useSharp();
 
   const { variant: buttonVariant, appearance } = match(variant)
@@ -363,8 +356,7 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
       {isLoading && !leadingIcon && !trailingIcon ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
     </Button>
   );
-});
-PanelFooterButton.displayName = 'PanelFooterButton';
+};
 
 export const Panel = {
   Root: PanelRoot,

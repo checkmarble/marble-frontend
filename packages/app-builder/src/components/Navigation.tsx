@@ -6,6 +6,8 @@ import { type IconProps } from 'packages/ui-icons/src/Icon';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { JSX } from 'react';
+
 //TODO(split apps): refactor this to be translation agnostic: directly pass the translated string (it will help separate the navigation.json file per "app")
 export const navigationI18n = ['navigation'] satisfies Namespace;
 
@@ -53,10 +55,13 @@ export interface SidebarButtonProps extends Omit<React.ComponentPropsWithoutRef<
   labelTKey: ParseKeys<['navigation']>;
 }
 
-export const SidebarButton = React.forwardRef<HTMLButtonElement, SidebarButtonProps>(function SidebarButton(
-  { Icon, labelTKey, className, ...props },
+export const SidebarButton = function SidebarButton({
   ref,
-) {
+  Icon,
+  labelTKey,
+  className,
+  ...props
+}: SidebarButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
   const { t } = useTranslation(navigationI18n);
 
   return (
@@ -67,7 +72,7 @@ export const SidebarButton = React.forwardRef<HTMLButtonElement, SidebarButtonPr
       </span>
     </button>
   );
-});
+};
 
 export interface TabLinkProps {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;

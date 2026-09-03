@@ -3,7 +3,7 @@ import type { RefObject } from 'react';
 import type { LinkValue, SemanticTableFormValues, TableField } from './semanticData-types';
 
 export const DrawerContext = createSimpleContext<{
-  container: RefObject<HTMLDivElement>;
+  container: RefObject<HTMLDivElement | null>;
   data: unknown;
   close: () => void;
   tablesState: Record<string, SemanticTableFormValues>;

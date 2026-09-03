@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
-import { useState } from 'react';
+import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { SelectV2 } from './Select';
@@ -45,5 +45,21 @@ describe('Select', () => {
 
     expect(screen.getByRole('combobox', { name: 'apple' })).toBeInTheDocument();
     expect(mockedOnValueChanged).toHaveBeenCalledWith('apple');
+  });
+
+  it('passes its ref to the trigger button', () => {
+    const ref = createRef<HTMLButtonElement>();
+
+    render(
+      <SelectV2
+        ref={ref}
+        placeholder="Select a value..."
+        value=""
+        onChange={vi.fn()}
+        options={fruits.map((fruit) => ({ label: fruit, value: fruit }))}
+      />,
+    );
+
+    expect(ref.current).toBe(screen.getByRole('combobox', { name: 'Select a value...' }));
   });
 });

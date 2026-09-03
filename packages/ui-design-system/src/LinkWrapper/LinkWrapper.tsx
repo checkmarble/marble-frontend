@@ -1,6 +1,6 @@
 import {
-  type ComponentPropsWithoutRef,
   cloneElement,
+  type ComponentPropsWithoutRef,
   type KeyboardEventHandler,
   type MouseEventHandler,
   type ReactElement,

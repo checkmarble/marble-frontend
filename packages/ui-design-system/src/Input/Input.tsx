@@ -1,5 +1,5 @@
 import { cva, VariantProps } from 'class-variance-authority';
-import { forwardRef, KeyboardEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, useEffect, useState } from 'react';
 import { Icon, type IconName } from 'ui-icons';
 import { cn } from '../utils';
 
@@ -138,10 +138,11 @@ export type BaseInputProps = React.ComponentPropsWithoutRef<'input'> & {
   enablePasswordManagers?: boolean;
 };
 
-export const UnstyledInput = forwardRef<HTMLInputElement, BaseInputProps>(function UnstyledInput(
-  { enablePasswordManagers, ...props },
+export const UnstyledInput = function UnstyledInput({
   ref,
-) {
+  enablePasswordManagers,
+  ...props
+}: BaseInputProps & { ref?: React.Ref<HTMLInputElement> }) {
   return (
     <input
       ref={ref}
@@ -154,7 +155,7 @@ export const UnstyledInput = forwardRef<HTMLInputElement, BaseInputProps>(functi
       })}
     />
   );
-});
+};
 
 export type InputProps = Omit<BaseInputProps, 'size'> &
   VariantProps<typeof inputClassName> & {
@@ -165,20 +166,18 @@ export type InputProps = Omit<BaseInputProps, 'size'> &
     onEndAdornmentClick?: () => void;
   };
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  {
-    className,
-    startAdornment,
-    endAdornment,
-    size = 'large',
-    borderColor = 'greyfigma-90',
-    onEnterKeyDown,
-    onStartAdornmentClick,
-    onEndAdornmentClick,
-    ...props
-  },
+export const Input = function Input({
   ref,
-) {
+  className,
+  startAdornment,
+  endAdornment,
+  size = 'large',
+  borderColor = 'greyfigma-90',
+  onEnterKeyDown,
+  onStartAdornmentClick,
+  onEndAdornmentClick,
+  ...props
+}: InputProps & { ref?: React.Ref<HTMLInputElement> }) {
   const startIconClassName = cn(inputIconClassName({ inputSize: size, placement: 'start' }));
   const endIconClassName = cn(inputIconClassName({ inputSize: size, placement: 'end' }));
 
@@ -237,7 +236,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       ) : null}
     </div>
   );
-});
+};
 
 type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterKeyDown'> & {
   value: number;
@@ -245,10 +244,13 @@ type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterKeyDown'
   onEnterKeyDown?: (value: number) => void;
 };
 
-export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
-  { onChange, value, onEnterKeyDown, ...props },
+export const NumberInput = function NumberInput({
   ref,
-) {
+  onChange,
+  value,
+  onEnterKeyDown,
+  ...props
+}: NumberInputProps & { ref?: React.Ref<HTMLInputElement> }) {
   const [internalValue, setInternalValue] = useState(value.toString(10));
 
   useEffect(() => {
@@ -284,7 +286,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
       }
     />
   );
-});
+};
 
 type SearchInputProps = Omit<
   InputProps,
@@ -301,10 +303,14 @@ type SearchInputProps = Omit<
   onEnterKeyDown?: (value: string) => void;
 };
 
-export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
-  { onChange, onSubmit, value, onEnterKeyDown, ...props },
+export const SearchInput = function SearchInput({
   ref,
-) {
+  onChange,
+  onSubmit,
+  value,
+  onEnterKeyDown,
+  ...props
+}: SearchInputProps & { ref?: React.Ref<HTMLInputElement> }) {
   const isInert = props.disabled || props.readOnly;
 
   return (
@@ -334,4 +340,4 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
       }
     />
   );
-});
+};

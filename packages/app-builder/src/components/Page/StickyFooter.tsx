@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import { cn } from 'ui-design-system';
 import { pageLayoutGutter } from './page-layout';
 
@@ -6,10 +5,12 @@ type PageStickyFooterProps = React.ComponentProps<'div'> & {
   surface?: 'page' | 'card';
 };
 
-export const PageStickyFooter = forwardRef<HTMLDivElement, PageStickyFooterProps>(function PageStickyFooter(
-  { className, surface = 'page', ...props },
+export const PageStickyFooter = function PageStickyFooter({
   ref,
-) {
+  className,
+  surface = 'page',
+  ...props
+}: PageStickyFooterProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <div
       ref={ref}
@@ -25,5 +26,4 @@ export const PageStickyFooter = forwardRef<HTMLDivElement, PageStickyFooterProps
       {...props}
     />
   );
-});
-PageStickyFooter.displayName = 'PageStickyFooter';
+};

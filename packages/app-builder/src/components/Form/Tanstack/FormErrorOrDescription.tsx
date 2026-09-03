@@ -10,41 +10,44 @@ interface FormErrorOrDescriptionProps
   description?: string | React.ReactNode;
 }
 
-export const FormErrorOrDescription = React.forwardRef<HTMLParagraphElement, FormErrorOrDescriptionProps>(
-  function FormErrorOrDescription({ errorClassName, descriptionClassName, ...props }, ref) {
-    if (props.errors?.length) {
-      return (
-        <p
-          ref={ref}
-          className={cn(
-            'bg-red-background text-s text-red-primary flex flex-col gap-xs rounded-sm border border-transparent px-xs py-2xs font-medium transition-opacity duration-200 ease-in-out',
-            'dark:bg-transparent dark:border-red-primary',
-            errorClassName,
-          )}
-          {...props}
-        >
-          <span>{props.errors[0]}</span>
-        </p>
-      );
-    }
+export const FormErrorOrDescription = function FormErrorOrDescription({
+  ref,
+  errorClassName,
+  descriptionClassName,
+  ...props
+}: FormErrorOrDescriptionProps & { ref?: React.Ref<HTMLParagraphElement> }) {
+  if (props.errors?.length) {
+    return (
+      <p
+        ref={ref}
+        className={cn(
+          'bg-red-background text-s text-red-primary flex flex-col gap-xs rounded-sm border border-transparent px-xs py-2xs font-medium transition-opacity duration-200 ease-in-out',
+          'dark:bg-transparent dark:border-red-primary',
+          errorClassName,
+        )}
+        {...props}
+      >
+        <span>{props.errors[0]}</span>
+      </p>
+    );
+  }
 
-    if (props.description) {
-      return typeof props.description === 'string' ? (
-        <p
-          ref={ref}
-          className={clsx(
-            'text-s text-grey-secondary font-medium transition-opacity duration-200 ease-in-out',
-            descriptionClassName,
-          )}
-          {...props}
-        >
-          {props.description}
-        </p>
-      ) : (
-        props.description
-      );
-    }
+  if (props.description) {
+    return typeof props.description === 'string' ? (
+      <p
+        ref={ref}
+        className={clsx(
+          'text-s text-grey-secondary font-medium transition-opacity duration-200 ease-in-out',
+          descriptionClassName,
+        )}
+        {...props}
+      >
+        {props.description}
+      </p>
+    ) : (
+      props.description
+    );
+  }
 
-    return null;
-  },
-);
+  return null;
+};

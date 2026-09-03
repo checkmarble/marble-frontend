@@ -3,7 +3,7 @@ import { RefObject, useEffect, useRef } from 'react';
 import { createSharpFactory } from 'sharpstate';
 
 type StickyRootsStoreValue = {
-  stickyRoots: Record<string, RefObject<HTMLElement>>;
+  stickyRoots: Record<string, RefObject<HTMLElement | null>>;
 };
 
 export const StickyRootsSharp = createSharpFactory({
@@ -12,7 +12,7 @@ export const StickyRootsSharp = createSharpFactory({
     stickyRoots: {},
   }),
 }).withActions({
-  addStickyRoot(api, name: string, ref: RefObject<HTMLElement>) {
+  addStickyRoot(api, name: string, ref: RefObject<HTMLElement | null>) {
     api.value.stickyRoots[name] = ref;
   },
   removeStickyRoot(api, name: string) {
@@ -26,7 +26,7 @@ export const StickyRootsProvider = ({ children }: { children: React.ReactNode })
   return <StickyRootsSharp.Provider value={stickyRootsSharp}>{children}</StickyRootsSharp.Provider>;
 };
 
-export const useStickyRoot = (name: string, ref: RefObject<HTMLElement>) => {
+export const useStickyRoot = (name: string, ref: RefObject<HTMLElement | null>) => {
   const stickyRootsSharp = StickyRootsSharp.useSharp();
 
   useEffect(() => {
@@ -41,7 +41,10 @@ type StickyIntersectionOptions = Omit<IntersectionObserverInit, 'root'> & {
   root?: string;
 };
 
-export const useStickyIntersection = (sentinelRef: RefObject<HTMLElement>, options: StickyIntersectionOptions) => {
+export const useStickyIntersection = (
+  sentinelRef: RefObject<HTMLElement | null>,
+  options: StickyIntersectionOptions,
+) => {
   const stickyRootsSharp = StickyRootsSharp.useSharp();
 
   const intersection = useIntersection(sentinelRef, {

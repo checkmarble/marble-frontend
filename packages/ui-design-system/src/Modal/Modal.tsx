@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { forwardRef, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 import { Button, CtaV2ClassName } from '../Button/Button';
@@ -37,10 +37,14 @@ const modalContentClassnames = cva(
 
 interface ModalContentProps extends Dialog.DialogContentProps, VariantProps<typeof modalContentClassnames> {}
 
-const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function ModalContent(
-  { className, size, fixedHeight, children, ...props },
+const ModalContent = function ModalContent({
   ref,
-) {
+  className,
+  size,
+  fixedHeight,
+  children,
+  ...props
+}: ModalContentProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-md backdrop-blur-xs" />
@@ -57,13 +61,13 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
       </Dialog.Content>
     </Dialog.Portal>
   );
-});
-ModalContent.displayName = 'ModalContent';
+};
 
-const ModalTitle = forwardRef<HTMLHeadingElement, Dialog.DialogTitleProps>(function ModalTitle(
-  { className, ...props },
+const ModalTitle = function ModalTitle({
   ref,
-) {
+  className,
+  ...props
+}: Dialog.DialogTitleProps & { ref?: React.Ref<HTMLHeadingElement> }) {
   return (
     <StickyComponent inFlow="before">
       <Dialog.Title
@@ -79,8 +83,7 @@ const ModalTitle = forwardRef<HTMLHeadingElement, Dialog.DialogTitleProps>(funct
       />
     </StickyComponent>
   );
-});
-ModalTitle.displayName = 'ModalTitle';
+};
 
 type ModalButtonVariant = Extract<
   VariantProps<typeof CtaV2ClassName>['variant'],
@@ -93,7 +96,11 @@ interface ModalFooterProps {
   className?: string;
 }
 
-const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(function ModalFooter({ children, className }, ref) {
+const ModalFooter = function ModalFooter({
+  ref,
+  children,
+  className,
+}: ModalFooterProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <StickyComponent inFlow="after">
       <div
@@ -107,8 +114,7 @@ const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(function ModalF
       </div>
     </StickyComponent>
   );
-});
-ModalFooter.displayName = 'ModalFooter';
+};
 
 type ModalFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>, 'variant' | 'appearance' | 'size'> & {
   label: string;
@@ -120,10 +126,19 @@ type ModalFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>
   children?: ReactNode;
 };
 
-const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(function ModalFooterButton(
-  { variant, isCloseButton, isLoading, leadingIcon, trailingIcon, disabled, label, children, className, ...props },
+const ModalFooterButton = function ModalFooterButton({
   ref,
-) {
+  variant,
+  isCloseButton,
+  isLoading,
+  leadingIcon,
+  trailingIcon,
+  disabled,
+  label,
+  children,
+  className,
+  ...props
+}: ModalFooterButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
   const { variant: buttonVariant, appearance } = match(variant)
     .with('secondary', () => ({
       variant: 'secondary' as ModalButtonVariant,
@@ -174,9 +189,7 @@ const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(
   }
 
   return button;
-});
-
-ModalFooterButton.displayName = 'ModalFooterButton';
+};
 
 export const Modal = {
   Root: ModalRoot,

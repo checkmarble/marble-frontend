@@ -1,6 +1,6 @@
 import { FiltersDropdownMenu } from '@app-builder/components/Filters';
 import { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
-import { forwardRef, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 import { FilterDetail } from './FilterDetail';
@@ -37,12 +37,14 @@ export function TestRunsFiltersMenu({
   );
 }
 
-const FiltersMenuItem = forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
-    filterName: TestRunFilterName;
-  }
->(({ filterName, ...props }, ref) => {
+const FiltersMenuItem = ({
+  ref,
+  filterName,
+  ...props
+}: React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
+  filterName: TestRunFilterName;
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
   const { t } = useTranslation(['scenarios', 'common']);
   const icon = getFilterIcon(filterName);
   const tKey = getFilterTKey(filterName);
@@ -53,8 +55,7 @@ const FiltersMenuItem = forwardRef<
       <span className="text-s text-grey-primary font-normal first-letter:capitalize">{t(tKey)}</span>
     </FiltersDropdownMenu.Item>
   );
-});
-FiltersMenuItem.displayName = 'FiltersMenuItem';
+};
 
 function FilterContent({
   filterNames,

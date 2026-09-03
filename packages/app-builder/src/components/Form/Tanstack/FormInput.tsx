@@ -25,9 +25,10 @@ interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
 /**
  * @deprecated use design system Inputs directly
  */
-export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormInputProps>(function FormInput(
-  { valid, ...props },
+export const FormInput = function FormInput({
   ref,
-) {
+  valid,
+  ...props
+}: FormInputProps & { ref?: React.Ref<React.ElementRef<typeof Input>> }) {
   return <Input ref={ref} id={props.name} borderColor={valid ? 'greyfigma-90' : 'redfigma-47'} {...props} />;
-});
+};

@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentPropsWithoutRef, type ElementType, forwardRef } from 'react';
+import { type ComponentPropsWithoutRef, type ElementType } from 'react';
 import { cn } from '../utils';
 
 export const typoClassName = cva('text-grey-primary leading-[140%]', {
@@ -40,10 +40,14 @@ type TypoComponent = <E extends ElementType = 'p'>(
   props: TypoProps<E> & { ref?: React.Ref<React.ComponentRef<E>> },
 ) => React.ReactElement | null;
 
-export const Typo = forwardRef<HTMLElement, TypoProps<ElementType>>(function Typo(
-  { as, variant = 'text', className, children, ...props },
+export const Typo = function Typo({
   ref,
-) {
+  as,
+  variant = 'text',
+  className,
+  children,
+  ...props
+}: TypoProps<ElementType> & { ref?: React.Ref<HTMLElement> }) {
   const resolvedType: TypoType = variant ?? 'text';
   const Component = (as ?? defaultElementByType[resolvedType]) as ElementType;
 
@@ -52,6 +56,6 @@ export const Typo = forwardRef<HTMLElement, TypoProps<ElementType>>(function Typ
       {children}
     </Component>
   );
-}) as unknown as TypoComponent;
+} as unknown as TypoComponent;
 
 export default Typo;

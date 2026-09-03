@@ -114,26 +114,23 @@ EditionAstBuilderNode.displayName = 'EditionAstBuilderNode';
 
 ---
 
-## forwardRef (ui-design-system)
+## Refs (React 19)
 
-Components wrapping HTML elements use `forwardRef`:
+Repo-owned components accept `ref` as an optional prop and pass it to the underlying element. Use `Ref<T>` so both object and callback refs work:
 
 ```typescript
-import { forwardRef } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button({ variant = 'primary', className, ...props }, ref) {
-    return (
-      <button
-        ref={ref}
-        type="button"
-        className={cn(CtaV2ClassName({ variant }), className)}
-        {...props}
-      />
-    );
-  },
-);
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  ref?: Ref<HTMLButtonElement>;
+}
+
+export function Button({ ref, className, ...props }: ButtonProps) {
+  return <button ref={ref} className={cn('rounded-sm', className)} {...props} />;
+}
 ```
+
+Third-party components may still use `forwardRef` internally; pass refs to them normally.
 
 ---
 
@@ -166,4 +163,5 @@ export const CtaV2ClassName = cva(
 4. **Individual imports** from ui-design-system
 5. **Compound components** for related UI groups
 6. **`memo()`** for expensive components with `displayName`
-7. **CVA** for variant-based styling in ui-design-system
+7. **Refs as props** for repo-owned React 19 components
+8. **CVA** for variant-based styling in ui-design-system

@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { forwardRef } from 'react';
 import { Collapsible } from 'ui-design-system';
 
 function PaperContainer({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -28,29 +27,33 @@ export const Paper = {
   Title: PaperTitle,
 };
 
-const CollapsiblePaperContainer = forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof Collapsible.Container>
->(function CollapsiblePaperContainer({ className, ...props }, ref) {
+const CollapsiblePaperContainer = function CollapsiblePaperContainer({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Collapsible.Container> & { ref?: React.Ref<HTMLDivElement> }) {
   return <Collapsible.Container ref={ref} className={clsx('bg-surface-card', className)} {...props} />;
-});
+};
 
-const CollapsiblePaperTitle = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Collapsible.Title>>(
-  function CollapsiblePaperContainer({ className, children, ...props }, ref) {
-    return (
-      <Collapsible.Title ref={ref} className="bg-surface-card" {...props}>
-        <div
-          className={clsx(
-            'flex min-w-0 max-w-full flex-1 flex-row items-center gap-sm overflow-hidden text-start font-bold',
-            className,
-          )}
-        >
-          {children}
-        </div>
-      </Collapsible.Title>
-    );
-  },
-);
+const CollapsiblePaperTitle = function CollapsiblePaperContainer({
+  ref,
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Collapsible.Title> & { ref?: React.Ref<HTMLButtonElement> }) {
+  return (
+    <Collapsible.Title ref={ref} className="bg-surface-card" {...props}>
+      <div
+        className={clsx(
+          'flex min-w-0 max-w-full flex-1 flex-row items-center gap-sm overflow-hidden text-start font-bold',
+          className,
+        )}
+      >
+        {children}
+      </div>
+    </Collapsible.Title>
+  );
+};
 
 export const CollapsiblePaper = {
   Container: CollapsiblePaperContainer,

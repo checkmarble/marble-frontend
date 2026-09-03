@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import type { JSX } from 'react';
+
 interface LabelledScenarioIteration {
   id: string;
   type: 'draft' | 'live version' | 'version';

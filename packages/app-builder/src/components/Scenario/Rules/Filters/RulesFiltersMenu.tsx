@@ -1,5 +1,5 @@
 import { FiltersDropdownMenu } from '@app-builder/components/Filters';
-import { forwardRef, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Icon } from 'ui-icons';
 
 import { FilterDetail } from './FilterDetail/FilterDetail';
@@ -34,12 +34,14 @@ export function RulesFiltersMenu({
   );
 }
 
-const FiltersMenuItem = forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
-    filterName: RulesFilterName;
-  }
->(({ filterName, ...props }, ref) => {
+const FiltersMenuItem = ({
+  ref,
+  filterName,
+  ...props
+}: React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
+  filterName: RulesFilterName;
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
   const icon = getFilterIcon(filterName);
   const label = useFilterLabel(filterName);
 
@@ -49,8 +51,7 @@ const FiltersMenuItem = forwardRef<
       <span className="text-s text-grey-primary font-normal first-letter:capitalize">{label}</span>
     </FiltersDropdownMenu.Item>
   );
-});
-FiltersMenuItem.displayName = 'FiltersMenuItem';
+};
 
 function FilterContent({ filterNames }: { filterNames: readonly RulesFilterName[] }) {
   const [selectedFilter, setSelectedFilter] = useState<RulesFilterName>();

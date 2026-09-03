@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { useImperativeHandle, useRef, useState } from 'react';
 
 export const textarea = cva(
   'text-s text-grey-primary placeholder:text-grey-disabled disabled:bg-grey-background read-only:bg-grey-background-light read-only:border-transparent rounded-sm p-sm font-medium outline-hidden border focus:not-read-only:border-purple-primary row-start-1 row-end-2 col-start-1 col-end-2',
@@ -36,10 +36,13 @@ export interface TextAreaProps extends React.ComponentPropsWithoutRef<'textarea'
  * Discussion to allow this in native HTML/CSS is here: https://github.com/w3c/csswg-drafts/issues/7542
  * Adapted from this nice article: https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
  */
-export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(
-  { className, borderColor, resize, ...props },
+export const TextArea = function TextArea({
   ref,
-) {
+  className,
+  borderColor,
+  resize,
+  ...props
+}: TextAreaProps & { ref?: React.Ref<HTMLTextAreaElement> }) {
   // Used to trigger a rerender
   const [_, setValue] = useState(props?.value?.toString() || '');
 
@@ -62,4 +65,4 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
       />
     </div>
   );
-});
+};

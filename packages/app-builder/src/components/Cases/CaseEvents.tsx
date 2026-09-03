@@ -15,7 +15,7 @@ import { Icon } from 'ui-icons';
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
 const EVENT_DELAY = 100;
 
-export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObject<HTMLDivElement> }) {
+export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObject<HTMLDivElement | null> }) {
   const { t } = useTranslation(['common', 'cases']);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);

@@ -203,7 +203,7 @@ function SubMenu({
 
 /**
  * The trigger to open/close the menu
- * MenuCommand.Trigger child must be forwardRef
+ * MenuCommand.Trigger child must accept and forward a ref.
  *
  */
 function Trigger({ children }: React.PropsWithChildren) {
@@ -236,12 +236,18 @@ type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButton
   readOnly?: boolean;
   size?: 'small' | 'medium' | 'large';
 };
-const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function SelectButton(
-  { children, className, hasError = false, noArrow, readOnly, size = 'large', ...props },
+const SelectButton = function SelectButton({
   ref,
-) {
+  children,
+  className,
+  hasError = false,
+  noArrow,
+  readOnly,
+  size = 'large',
+  ...props
+}: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
   return (
-    <div {...(readOnly ? { inert: readOnly ? 'true' : 'false' } : {})} className="relative">
+    <div {...(readOnly ? { inert: true } : {})} className="relative">
       <button
         ref={ref}
         type="button"
@@ -265,7 +271,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
       ) : null}
     </div>
   );
-});
+};
 
 function MenuArrow() {
   return (
@@ -409,10 +415,11 @@ const KeyboardNav = () => {
  * cmd-click, middle-click and prefetch. MenuCommand.spec.tsx covers it.
  */
 type ItemProps = React.ComponentProps<typeof Command.Item>;
-const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function HeadlessItem(
-  { onSelect, ...props },
+const HeadlessItem = function HeadlessItem({
   ref,
-) {
+  onSelect,
+  ...props
+}: ItemProps & { ref?: React.Ref<React.ElementRef<typeof Command.Item>> }) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const menuOnSelect = React.useCallback(
     (value: string) => {
@@ -423,11 +430,12 @@ const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, Ite
   );
 
   return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
-});
-const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function Item(
-  { className, ...props },
+};
+const Item = function Item({
   ref,
-) {
+  className,
+  ...props
+}: ItemProps & { ref?: React.Ref<React.ElementRef<typeof Command.Item>> }) {
   return (
     <HeadlessItem
       ref={ref}
@@ -442,15 +450,15 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       {...props}
     />
   );
-});
+};
 
-const Separator = React.forwardRef<
-  React.ElementRef<typeof Command.Separator>,
-  React.ComponentPropsWithoutRef<typeof Command.Separator>
->(({ className, ...props }, ref) => (
-  <Command.Separator ref={ref} className={cn('bg-grey-border -mx-sm my-sm h-px', className)} {...props} />
-));
-Separator.displayName = Command.Separator.displayName;
+const Separator = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Command.Separator> & {
+  ref?: React.Ref<React.ElementRef<typeof Command.Separator>>;
+}) => <Command.Separator ref={ref} className={cn('bg-grey-border -mx-sm my-sm h-px', className)} {...props} />;
 
 type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
 function List({ className, ...props }: ListProps) {

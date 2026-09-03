@@ -1,5 +1,4 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { forwardRef } from 'react';
 
 import { cn } from '../utils';
 
@@ -193,19 +192,17 @@ export type ButtonAppearance = NonNullable<VariantProps<typeof CtaV2ClassName>['
 export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
-export const Button = forwardRef<HTMLButtonElement, ButtonV2Props>(function Button(
-  {
-    variant = 'primary',
-    mode = 'normal',
-    size = 'small',
-    appearance,
-    color = 'primary',
-    className,
-    type = 'button',
-    ...props
-  },
+export const Button = function Button({
   ref,
-) {
+  variant = 'primary',
+  mode = 'normal',
+  size = 'small',
+  appearance,
+  color = 'primary',
+  className,
+  type = 'button',
+  ...props
+}: ButtonV2Props & { ref?: React.Ref<HTMLButtonElement> }) {
   return (
     <button
       ref={ref}
@@ -214,4 +211,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonV2Props>(function Butt
       {...props}
     />
   );
-});
+};
