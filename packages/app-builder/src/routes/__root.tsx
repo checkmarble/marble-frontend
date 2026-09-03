@@ -5,6 +5,7 @@ import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { ThemeProvider } from '@app-builder/contexts/ThemeContext';
 import { getRootLoaderDataFn } from '@app-builder/server-fns/root';
+import { ProboCookieBanner } from '@app-builder/services/consent/ProboCookieBanner';
 import { getSSRInstance } from '@app-builder/services/i18n/i18n-instance-store';
 import { makeI18nInstance } from '@app-builder/services/i18n/make-i18n-instance';
 import { SegmentScript } from '@app-builder/services/segment/SegmentScript';
@@ -137,6 +138,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <ClientOnly>
           <TimezoneDetector />
           <MarbleToaster toastMessage={toastMessage} />
+          <ProboCookieBanner locale={locale} dir={i18n.dir()} />
           <TanStackDevtools
             plugins={[
               { name: 'TanStack Router', render: <TanStackRouterDevtoolsPanel /> },

@@ -34,6 +34,7 @@
         "@nivo/pie": "^0.99.0",
         "@oazapfts/runtime": "^1.0.4",
         "@preact/signals-react": "^3.10.1",
+        "@probo/cookie-banner": "0.17.0",
         "@radix-ui/react-avatar": "^1.2.6",
         "@radix-ui/react-checkbox": "^1.3.11",
         "@radix-ui/react-collapsible": "^1.1.20",
@@ -860,6 +861,8 @@
     "@preact/signals-core": ["@preact/signals-core@1.14.4", "", {}, "sha512-HNB6HYeYKhQbJ1aKl+YRjrS4+QWHLKX6qKoUsfS/m0vqzsVaEBiZiaKbG/e+NKk2ch5ALQr/ihWaMHxiCuuWHA=="],
 
     "@preact/signals-react": ["@preact/signals-react@3.12.0", "", { "dependencies": { "@preact/signals-core": "^1.14.4", "use-sync-external-store": "^1.2.0" }, "peerDependencies": { "react": "^16.14.0 || 17.x || 18.x || 19.x" } }, "sha512-o3zBSekC/RPcsHOYTLagjw6JX0ih5eMMFZE0AICEeuk7p3MrYOyEXxM7bmT1Uqi0jPy2pbuDQZTFXYe55IAFVg=="],
+
+    "@probo/cookie-banner": ["@probo/cookie-banner@0.17.0", "", {}, "sha512-FNdDzSXI8gweT5NuRAlb/0WVux4/zUvjVbBS8L8sFVg8ueSSj8QcO7q+PkU3jyfy3E0WyQclTUtswzkeEFjFdg=="],
 
     "@protobufjs/aspromise": ["@protobufjs/aspromise@1.1.2", "", {}, "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ=="],
 

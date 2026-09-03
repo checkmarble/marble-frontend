@@ -33,8 +33,30 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     const ENV = getClientEnvVars();
 
     const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
-    const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
-    const segmentScript = !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined;
+    // getServerEnv returns the raw string ("false" is truthy), so compare explicitly
+    const disableSegment = String(getServerEnv('DISABLE_SEGMENT')) === 'true';
+
+    // Probo cookie consent banner: one parse decides the Segment defer flag, the CSP
+    // entry and the client exposure together, so the three can never disagree.
+    const proboBannerId = getServerEnv('PROBO_BANNER_ID');
+    const proboBannerBaseUrl = getServerEnv('PROBO_BANNER_BASE_URL');
+    let proboOrigin: string | undefined;
+    if (proboBannerId && proboBannerBaseUrl) {
+      try {
+        proboOrigin = new URL(proboBannerBaseUrl).origin;
+      } catch {
+        // Invalid URL — treat the banner as unconfigured, Segment falls back to eager load
+      }
+    }
+    if (!proboOrigin) {
+      ENV.PROBO_BANNER_ID = undefined;
+      ENV.PROBO_BANNER_BASE_URL = undefined;
+    }
+
+    const segmentScript =
+      !disableSegment && segmentApiKey
+        ? getSegmentScript(segmentApiKey, { deferLoad: proboOrigin !== undefined })
+        : undefined;
 
     // Use the per-request nonce opened by `securityHeadersMiddleware`, so this CSP, the
     // hydration scripts (`router.ssr.nonce`), and the inline scripts below all match.
@@ -72,7 +94,12 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
       objectSrc: ["'none'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: [`'nonce-${nonce}'`, "'unsafe-eval'", "'strict-dynamic'"],
-      connectSrc: ["'self'", ...firebaseUrl, ...externalDomains.map((d) => `https://${d}`)],
+      connectSrc: [
+        "'self'",
+        ...firebaseUrl,
+        ...externalDomains.map((d) => `https://${d}`),
+        ...(proboOrigin ? [proboOrigin] : []),
+      ],
       imgSrc,
       frameSrc: frames.length > 0 ? frames : ["'none'"],
     });

@@ -40,6 +40,12 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
 
+  // Probo cookie consent banner. When both are set, the banner is rendered and
+  // Segment only loads after the visitor grants the "analytics" category.
+  PROBO_BANNER_ID: z.string().optional(),
+  // Empty means unset; anything else must be a valid URL so a typo fails at boot
+  PROBO_BANNER_BASE_URL: z.preprocess((val) => (val === '' ? undefined : val), z.url().optional()),
+
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
 });
@@ -94,6 +100,8 @@ interface ServerEnvVars {
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
+  PROBO_BANNER_ID?: string;
+  PROBO_BANNER_BASE_URL?: string;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
 }
@@ -114,6 +122,8 @@ interface ClientEnvVars {
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
+  PROBO_BANNER_ID?: string;
+  PROBO_BANNER_BASE_URL?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -122,6 +132,8 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
+    PROBO_BANNER_ID: getServerEnv('PROBO_BANNER_ID'),
+    PROBO_BANNER_BASE_URL: getServerEnv('PROBO_BANNER_BASE_URL'),
   };
 }
 
