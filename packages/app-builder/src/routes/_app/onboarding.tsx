@@ -2,7 +2,6 @@ import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { type AutoSignInFailure, OnboardingAutoSignIn } from '@app-builder/components/Auth/OnboardingAutoSignIn';
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { useCreateInitialOrgMutation } from '@app-builder/queries/onboarding/create-initial-org';

@@ -1,12 +1,11 @@
 import { Scenario } from '@app-builder/models/scenario';
 import { Link } from '@tanstack/react-router';
 import { type TFunction } from 'i18next';
+import type { JSX } from 'react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import type { JSX } from 'react';
 
 interface LabelledScenarioIteration {
   id: string;

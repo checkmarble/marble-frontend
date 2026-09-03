@@ -1,6 +1,6 @@
 import { AnyFormApi, StandardSchemaV1Issue } from '@tanstack/react-form';
 import { select } from 'radash';
-import type { FormEvent, Ref, MutableRefObject, RefCallback } from 'react';
+import type { FormEvent, MutableRefObject, Ref, RefCallback } from 'react';
 
 export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
   if (event.currentTarget.value !== event.currentTarget.defaultValue) {
