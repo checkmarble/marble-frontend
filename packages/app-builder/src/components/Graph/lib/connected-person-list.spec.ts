@@ -123,6 +123,30 @@ describe('samePersonListItems', () => {
     expect(samePersonListItems([personItem], [clusterItem])).toBe(false);
     expect(samePersonListItems([personItem], [personItem])).toBe(true);
   });
+
+  it('treats clusters with the same counts but different members as different', () => {
+    const member = {
+      type: 'person' as const,
+      id: 'c0',
+      ref: { objectType: 'users', objectId: 'c0', label: 'Child' },
+    };
+    const otherMember = {
+      type: 'person' as const,
+      id: 'c1',
+      ref: { objectType: 'users', objectId: 'c1', label: 'Other' },
+    };
+    const cluster = {
+      type: 'cluster' as const,
+      id: clusterNodeId('root'),
+      ref: { objectType: 'users', objectId: 'root', label: 'Acme Corp' },
+      nodeCount: 2,
+      internalEdgeCount: 1,
+      members: [member],
+    };
+
+    expect(samePersonListItems([cluster], [{ ...cluster, members: [member] }])).toBe(true);
+    expect(samePersonListItems([cluster], [{ ...cluster, members: [otherMember] }])).toBe(false);
+  });
 });
 
 describe('personListItemsFromMemberIds', () => {

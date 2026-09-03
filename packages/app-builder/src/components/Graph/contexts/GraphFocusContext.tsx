@@ -1,7 +1,7 @@
+import type { PersonListItem } from '@app-builder/components/Graph/lib/connected-person-list';
+import type { GraphObjectRef } from '@app-builder/components/Graph/lib/graph-keys';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Dispatch, type ReactNode, type SetStateAction, useState } from 'react';
-import type { PersonListItem } from '../lib/connected-person-list';
-import type { GraphObjectRef } from '../lib/graph-keys';
 
 /**
  * The node backing the settings panel's detail card. `persons` are the selection's

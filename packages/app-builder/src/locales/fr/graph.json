@@ -52,7 +52,7 @@
   "settings.create_label.related-fields": "Champs liés",
   "settings.create_relation": "Créer la relation",
   "settings.delete_relation": "Supprimer la relation",
-  "settings.delete.description_one": "Supprimer le paramètre « {{label}} » et sa {{count}} relation ? Cette action est irréversible.",
+  "settings.delete.description_one": "Supprimer le paramètre « {{label}} » et sa relation ? Cette action est irréversible.",
   "settings.delete.description_other": "Supprimer le paramètre « {{label}} » et ses {{count}} relations ? Cette action est irréversible.",
   "settings.delete.title": "Supprimer le paramètre",
   "settings.duplicate": "Cette relation existe déjà pour ce libellé.",
