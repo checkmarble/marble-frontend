@@ -1,11 +1,11 @@
+import { useGraphStructure } from '@app-builder/components/Graph/contexts/GraphStructureContext';
+import { useGraphViewSettings } from '@app-builder/components/Graph/contexts/GraphViewSettingsContext';
 import { useLayoutInitializedNodes } from '@app-builder/components/ReactFlow';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type GraphData } from '@app-builder/models/graph';
 import { applyEdgeChanges, applyNodeChanges, type EdgeChange, type NodeChange } from '@xyflow/react';
 import { reachableNodeIds } from 'ego-graph';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useGraphStructure } from '../contexts/GraphStructureContext';
-import { useGraphViewSettings } from '../contexts/GraphViewSettingsContext';
 import { createGraphTypeHelpers } from './data-model-map';
 import { graphFitViewOptions } from './graph-fit-view';
 import { buildGraphIndex } from './graph-index';

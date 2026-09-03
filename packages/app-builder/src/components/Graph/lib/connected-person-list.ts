@@ -99,13 +99,17 @@ export function connectedPersonListItems(
   return items;
 }
 
-export function samePersonListItems(a: PersonListItem[], b: PersonListItem[]) {
+export function samePersonListItems(a: PersonListItem[], b: PersonListItem[]): boolean {
   if (a.length !== b.length) return false;
   return a.every((item, i) => {
     const other = b[i];
     if (other == null || item.type !== other.type || item.id !== other.id) return false;
     if (item.type === 'cluster' && other.type === 'cluster') {
-      return item.nodeCount === other.nodeCount && item.internalEdgeCount === other.internalEdgeCount;
+      return (
+        item.nodeCount === other.nodeCount &&
+        item.internalEdgeCount === other.internalEdgeCount &&
+        samePersonListItems(item.members, other.members)
+      );
     }
     return true;
   });

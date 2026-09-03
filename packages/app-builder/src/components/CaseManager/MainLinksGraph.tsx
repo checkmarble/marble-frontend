@@ -9,6 +9,7 @@ import { useGetGenerateGraphQuery } from '@app-builder/queries/graph/generate-gr
 import { ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Card, cn, Typo } from 'ui-design-system';
 
 const MAIN_LINKS_DEGREES = 1;
@@ -31,37 +32,29 @@ export function MainLinksGraph({ objectType, objectId, dataModel }: MainLinksGra
     skip_same_field_relations: true,
   });
 
-  if (query.isPending) {
-    return <Card className={cn(graphFrameClassName, 'animate-pulse bg-grey-background')} />;
-  }
-
-  if (query.isError) {
-    return (
+  return match(query)
+    .with({ isPending: true }, () => <Card className={cn(graphFrameClassName, 'animate-pulse bg-grey-background')} />)
+    .with({ isError: true }, () => (
       <Card className={graphFrameClassName}>
         <Typo className="text-grey-secondary">{t('common:generic_fetch_data_error')}</Typo>
       </Card>
-    );
-  }
-
-  if (!query.data) {
-    return (
+    ))
+    .with({ data: undefined }, () => (
       <Card className={cn(graphFrameClassName, 'items-center justify-center')}>
         <Typo className="text-grey-primary">{t('cases:manager.clients.main_links_empty')}</Typo>
       </Card>
-    );
-  }
-
-  return (
-    <Card className={cn(graphFrameClassName, 'p-0')}>
-      <CustomerGraphProvider clusterThreshold={5}>
-        <ReactFlowProvider>
-          <div className="relative min-h-0 flex-1">
-            <MainLinksGraphCanvas data={query.data} dataModel={dataModel} />
-          </div>
-        </ReactFlowProvider>
-      </CustomerGraphProvider>
-    </Card>
-  );
+    ))
+    .otherwise(({ data }) => (
+      <Card className={cn(graphFrameClassName, 'p-0')}>
+        <CustomerGraphProvider clusterThreshold={5}>
+          <ReactFlowProvider>
+            <div className="relative min-h-0 flex-1">
+              <MainLinksGraphCanvas data={data} dataModel={dataModel} />
+            </div>
+          </ReactFlowProvider>
+        </CustomerGraphProvider>
+      </Card>
+    ));
 }
 
 function MainLinksGraphCanvas({ data, dataModel }: { data: GraphData; dataModel: DataModel }) {

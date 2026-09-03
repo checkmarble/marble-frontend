@@ -9,23 +9,6 @@ import { getGraphExplorationDisplay } from '@app-builder/services/feature-access
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-const testGraphLayoutLoader = createServerFn()
-  .middleware([authMiddleware])
-  .handler(async function testGraphLayoutLoader({ context }) {
-    const { user, dataModelRepository, entitlements } = context.authInfo;
-    const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
-
-    if (!dataModelFeatureAccess.isGraphExplorationEnabled) {
-      throw redirect({ to: '/' });
-    }
-
-    const dataModel = await dataModelRepository.getDataModel();
-    return {
-      dataModel,
-      dataModelFeatureAccess,
-    };
-  });
-
 export const Route = createFileRoute('/_app/_builder/test-graph')({
   staticData: {
     BreadCrumbs: [
@@ -36,7 +19,23 @@ export const Route = createFileRoute('/_app/_builder/test-graph')({
       ),
     ],
   },
-  loader: () => testGraphLayoutLoader(),
+  loader: () =>
+    createServerFn()
+      .middleware([authMiddleware])
+      .handler(async function testGraphLayoutLoader({ context }) {
+        const { user, dataModelRepository, entitlements } = context.authInfo;
+        const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
+
+        if (!dataModelFeatureAccess.isGraphExplorationEnabled) {
+          throw redirect({ to: '/' });
+        }
+
+        const dataModel = await dataModelRepository.getDataModel();
+        return {
+          dataModel,
+          dataModelFeatureAccess,
+        };
+      })(),
   component: TestGraphLayout,
 });
 

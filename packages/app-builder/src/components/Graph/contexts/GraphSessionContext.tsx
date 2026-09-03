@@ -1,3 +1,15 @@
+import {
+  type ClusterThreshold,
+  type ControlledGraphSettings,
+  DEFAULT_CLUSTER_THRESHOLD,
+} from '@app-builder/components/Graph/contexts/GraphViewSettingsContext';
+import {
+  type GraphFilterOption,
+  graphFilterParamsEqual,
+  personTableNames,
+  relationGroupsFromRelations,
+  toGenerateGraphFilterParams,
+} from '@app-builder/components/Graph/lib/graph-query-filters';
 import { type GraphData } from '@app-builder/models/graph';
 import { useGetGenerateGraphQuery } from '@app-builder/queries/graph/generate-graph';
 import { useListGraphRelationsQuery } from '@app-builder/queries/graph/list-relations';
@@ -7,18 +19,6 @@ import { toggle } from 'radash';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import {
-  type GraphFilterOption,
-  graphFilterParamsEqual,
-  personTableNames,
-  relationGroupsFromRelations,
-  toGenerateGraphFilterParams,
-} from '../lib/graph-query-filters';
-import {
-  type ClusterThreshold,
-  type ControlledGraphSettings,
-  DEFAULT_CLUSTER_THRESHOLD,
-} from './GraphViewSettingsContext';
 
 export type GraphRecordRef = {
   recordType: string;
