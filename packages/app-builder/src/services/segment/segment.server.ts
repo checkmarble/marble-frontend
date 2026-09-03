@@ -1,13 +1,12 @@
 import { min } from '@segment/snippet';
 
-export function getSegmentScript(apiKey: string) {
+export function getSegmentScript(apiKey: string, options: { deferLoad: boolean }) {
   return min({
     apiKey,
-
-    // TODO(GDPR): uncomment to lazy load segment after GDPR consent
-    // Ressource to implement in house cookie consent banner: https://github.com/remix-run/examples/tree/main/gdpe-cookie-consent
-    // load: false,
-
+    // When a cookie consent banner is configured, only the buffering stub is rendered:
+    // Segment is loaded once the visitor grants the "analytics" category
+    // (see services/consent/segment-consent-loader.ts)
+    load: !options.deferLoad,
     // page tracking is done manually
     page: false,
   });

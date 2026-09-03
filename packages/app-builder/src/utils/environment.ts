@@ -45,6 +45,12 @@ const PublicEnvVarsSchema = z.object({
   ENABLE_CUSTOMER_AGGREGATES: z.string().optional(),
   AI_RULE_CATALOG_ENABLED: z.string().optional(),
 
+  // Probo cookie consent banner. When both are set, the banner is rendered and
+  // Segment only loads after the visitor grants the "analytics" category.
+  PROBO_BANNER_ID: z.string().optional(),
+  // Empty means unset; anything else must be a valid URL so a typo fails at boot
+  PROBO_BANNER_BASE_URL: z.preprocess((val) => (val === '' ? undefined : val), z.url().optional()),
+
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
 });
@@ -103,6 +109,8 @@ interface ServerEnvVars {
   ENABLE_GRAPH_EXPLORATION?: string;
   ENABLE_CUSTOMER_AGGREGATES?: string;
   AI_RULE_CATALOG_ENABLED?: string;
+  PROBO_BANNER_ID?: string;
+  PROBO_BANNER_BASE_URL?: string;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
 }
@@ -126,6 +134,8 @@ interface ClientEnvVars {
   ENABLE_GRAPH_EXPLORATION?: string;
   ENABLE_CUSTOMER_AGGREGATES?: string;
   AI_RULE_CATALOG_ENABLED?: string;
+  PROBO_BANNER_ID?: string;
+  PROBO_BANNER_BASE_URL?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -137,6 +147,8 @@ export function getClientEnvVars(): ClientEnvVars {
     ENABLE_GRAPH_EXPLORATION: getServerEnv('ENABLE_GRAPH_EXPLORATION'),
     ENABLE_CUSTOMER_AGGREGATES: getServerEnv('ENABLE_CUSTOMER_AGGREGATES'),
     AI_RULE_CATALOG_ENABLED: getServerEnv('AI_RULE_CATALOG_ENABLED'),
+    PROBO_BANNER_ID: getServerEnv('PROBO_BANNER_ID'),
+    PROBO_BANNER_BASE_URL: getServerEnv('PROBO_BANNER_BASE_URL'),
   };
 }
 
