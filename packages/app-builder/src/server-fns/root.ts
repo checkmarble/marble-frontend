@@ -40,12 +40,18 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     // entry and the client exposure together, so the three can never disagree.
     const proboBannerId = getServerEnv('PROBO_BANNER_ID');
     const proboBannerBaseUrl = getServerEnv('PROBO_BANNER_BASE_URL');
+    const hasProboConfiguration = proboBannerId !== undefined || proboBannerBaseUrl !== undefined;
     let proboOrigin: string | undefined;
     if (proboBannerId && proboBannerBaseUrl) {
       try {
-        proboOrigin = new URL(proboBannerBaseUrl).origin;
+        const proboUrl = new URL(proboBannerBaseUrl);
+        // The SDK rewrites these legacy hosted endpoints before making requests.
+        if (proboUrl.hostname === 'eu.console.getprobo.com') proboUrl.hostname = 'eu.probo.com';
+        if (proboUrl.hostname === 'us.console.getprobo.com') proboUrl.hostname = 'us.probo.com';
+        proboOrigin = proboUrl.protocol === 'https:' ? proboUrl.origin : undefined;
       } catch {
-        // Invalid URL — treat the banner as unconfigured, Segment falls back to eager load
+        // checkEnv() rejects malformed URLs during normal startup. Keep analytics fail-closed
+        // if this loader is ever invoked without server initialization.
       }
     }
     if (!proboOrigin) {
@@ -55,7 +61,7 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
 
     const segmentScript =
       !disableSegment && segmentApiKey
-        ? getSegmentScript(segmentApiKey, { deferLoad: proboOrigin !== undefined })
+        ? getSegmentScript(segmentApiKey, { deferLoad: hasProboConfiguration })
         : undefined;
 
     // Use the per-request nonce opened by `securityHeadersMiddleware`, so this CSP, the
