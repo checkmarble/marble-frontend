@@ -4,8 +4,30 @@ import { isNotFoundHttpError } from '@app-builder/models';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import { type ScoringRulesetWithRules } from '@app-builder/models/scoring';
 import { hasAnyEntitlement } from '@app-builder/services/feature-access';
+import { normalizeTimestampForInstant } from '@app-builder/utils/datetime';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import { createFileRoute, redirect, useLoaderData } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
+import { Temporal } from 'temporal-polyfill';
+
+const DRY_RUN_STALE_LIMIT_IN_DAYS = 7;
+
+function isValidDryRun(createdAt: string | undefined): boolean {
+  if (!createdAt) return false;
+
+  const isValid = tryCatch(() => {
+    const createdAtInstant = Temporal.Instant.from(normalizeTimestampForInstant(createdAt));
+    const now = Temporal.Now.zonedDateTimeISO();
+    const windowStart = now.subtract({ days: DRY_RUN_STALE_LIMIT_IN_DAYS }).toInstant();
+    const windowEnd = now.toInstant();
+
+    return (
+      Temporal.Instant.compare(createdAtInstant, windowStart) >= 0 &&
+      Temporal.Instant.compare(createdAtInstant, windowEnd) <= 0
+    );
+  });
+  return isValid.ok && isValid.value;
+}
 
 const scoringRulesetLoader = createServerFn()
   .middleware([authMiddleware])
@@ -34,7 +56,13 @@ const scoringRulesetLoader = createServerFn()
       preparationStatus = await userScoring.getRulesetPreparationStatus(recordType);
     }
 
-    return { ruleset, customLists, preparationStatus, lastDryRun, hasValidLicense: hasAnyEntitlement(entitlements) };
+    return {
+      ruleset,
+      customLists,
+      preparationStatus,
+      lastDryRun: isValidDryRun(lastDryRun?.createdAt) ? lastDryRun : null,
+      hasValidLicense: hasAnyEntitlement(entitlements),
+    };
   });
 
 export const Route = createFileRoute('/_app/_builder/user-scoring/$recordType/$version')({
