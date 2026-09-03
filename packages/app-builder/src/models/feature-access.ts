@@ -16,6 +16,7 @@ export interface FeatureAccesses {
   aiRuleBuilding: FeatureAccessLevelDto;
   userScoring: FeatureAccessLevelDto;
   lexisnexis: FeatureAccessLevelDto;
+  graphExploration: FeatureAccessLevelDto;
 }
 
 export function emptyFeatureAccesses(): FeatureAccesses {
@@ -35,6 +36,7 @@ export function emptyFeatureAccesses(): FeatureAccesses {
     aiRuleBuilding: 'restricted',
     userScoring: 'restricted',
     lexisnexis: 'restricted',
+    graphExploration: 'restricted',
   };
 }
 
@@ -55,5 +57,6 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     aiRuleBuilding: dto.ai_rule_building,
     userScoring: dto.user_scoring,
     lexisnexis: dto.lexisnexis,
+    graphExploration: dto.graph_exploration,
   };
 }

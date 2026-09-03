@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { type ScoringScore } from 'marble-api';
 
-export const useScoreLatestQuery = (objectType: string, objectId: string) => {
+export const useScoreLatestQuery = (objectType: string, objectId: string, enabled: boolean = true) => {
   const getScoreLatest = useServerFn(getScoreLatestFn);
 
   return useQuery({
     queryKey: ['scoring', 'score-latest', objectType, objectId],
     queryFn: () => getScoreLatest({ data: { objectType, objectId } }) as Promise<{ score: ScoringScore | null }>,
-    enabled: !!objectType && !!objectId,
+    enabled: enabled && !!objectType && !!objectId,
   });
 };

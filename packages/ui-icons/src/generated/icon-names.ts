@@ -22,6 +22,7 @@ export const iconNames = [
   'backtest',
   'block_and_review',
   'boolean',
+  'building',
   'calendar-month',
   'caret-down',
   'case-manager',

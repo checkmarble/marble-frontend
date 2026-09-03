@@ -140,3 +140,20 @@ export const isLexisNexisAvailable = (entitlements: FeatureAccesses) => isAccess
 export const isAiRuleBuildingAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.aiRuleBuilding);
 
 export const isUserScoringAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.userScoring);
+
+export const isGraphExplorationAvailable = (entitlements: FeatureAccesses) =>
+  isAccessible(entitlements.graphExploration);
+
+export type GraphExplorationAccess = {
+  isGraphExplorationEnabled: boolean;
+  isGraphExplorationAvailable: boolean;
+};
+
+export function getGraphExplorationDisplay({
+  isGraphExplorationEnabled,
+  isGraphExplorationAvailable,
+}: GraphExplorationAccess) {
+  if (!isGraphExplorationEnabled) return 'hidden' as const;
+  if (!isGraphExplorationAvailable) return 'placeholder' as const;
+  return 'graph' as const;
+}

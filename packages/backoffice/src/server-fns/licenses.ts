@@ -30,6 +30,7 @@ const licenseEntitlementsSchema = z.object({
   continuous_screening: z.boolean(),
   user_scoring: z.boolean(),
   lexisnexis: z.boolean(),
+  graph_exploration: z.boolean(),
 });
 
 export const licensePayloadSchema = z.object({

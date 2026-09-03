@@ -16,6 +16,7 @@ import { type DataModelRepository } from '@app-builder/repositories/DataModelRep
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 
 import { type makeGetFeatureAccessRepository } from '@app-builder/repositories/FeatureAccessRepository';
+import { type GraphRepository } from '@app-builder/repositories/GraphRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
@@ -63,6 +64,7 @@ interface AuthenticatedInfo {
   analytics: AnalyticsRepository;
   testRun: TestRunRepository;
   webhookRepository: WebhookRepository;
+  graph: GraphRepository;
   ruleSnoozeRepository: RuleSnoozeRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
@@ -145,6 +147,7 @@ interface MakeAuthenticationServerServiceArgs {
   getAnalyticsRepository: (marbleCoreApiClient: MarbleCoreApi) => AnalyticsRepository;
   getTestRunRepository: (marbleCoreApiClient: MarbleCoreApi) => TestRunRepository;
   getWebhookRepository: (marbleCoreApiClient: MarbleCoreApi) => WebhookRepository;
+  getGraphRepository: (marbleCoreApiClient: MarbleCoreApi) => GraphRepository;
   getRuleSnoozeRepository: (marbleCoreApiClient: MarbleCoreApi) => RuleSnoozeRepository;
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
   getPersonalSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => PersonalSettingsRepository;
@@ -179,6 +182,7 @@ export function makeAuthenticationServerService({
   getAnalyticsRepository,
   getTestRunRepository,
   getWebhookRepository,
+  getGraphRepository,
   getRuleSnoozeRepository,
   getFeatureAccessRepository,
   getPersonalSettingsRepository,
@@ -498,6 +502,7 @@ export function makeAuthenticationServerService({
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       testRun: getTestRunRepository(marbleCoreApiClient),
       webhookRepository: getWebhookRepository(marbleCoreApiClient),
+      graph: getGraphRepository(marbleCoreApiClient),
       ruleSnoozeRepository: getRuleSnoozeRepository(marbleCoreApiClient),
       user,
       entitlements,

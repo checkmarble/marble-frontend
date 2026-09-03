@@ -58,6 +58,7 @@ const FEATURE_LABELS: Record<(typeof OVERRIDABLE_FEATURES)[number], string> = {
   continuous_screening: 'Continuous screening',
   ai_rule_building: 'AI Rule building',
   lexisnexis: 'Lexis Nexis',
+  graph_exploration: 'Graph exploration',
 };
 
 const ACCESS_LEVELS: { value: FeatureValue; label: string; dot: string }[] = [

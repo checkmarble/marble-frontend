@@ -12,8 +12,10 @@ import {
   isDeleteDataModelTableAvailable,
   isEditDataModelFieldAvailable,
   isEditDataModelInfoAvailable,
+  isGraphExplorationAvailable,
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
+import { getServerEnv } from '@app-builder/utils/environment';
 
 export function dataModelFeatureAccessLoader(user: CurrentUser, entitlements: FeatureAccesses) {
   return {
@@ -29,5 +31,7 @@ export function dataModelFeatureAccessLoader(user: CurrentUser, entitlements: Fe
     isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
     isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
     isIpGpsAvailable: hasAnyEntitlement(entitlements),
+    isGraphExplorationEnabled: Boolean(getServerEnv('ENABLE_GRAPH_EXPLORATION')) ?? false,
+    isGraphExplorationAvailable: isGraphExplorationAvailable(entitlements),
   };
 }

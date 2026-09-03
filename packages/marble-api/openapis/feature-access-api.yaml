@@ -70,6 +70,9 @@ components:
         lexisnexis:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
           description: "Entitlement for the LexisNexis screening provider. OpenSanctions is always available."
+        graph_exploration:
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
+          description: "Entitlement for graph exploration in case manager, client 360, and data-model relation configuration."
       required:
         - workflows
         - analytics
@@ -86,6 +89,7 @@ components:
         - ai_rule_building
         - user_scoring
         - lexisnexis
+        - graph_exploration
   responses:
     "401":
       description: Unauthorized
