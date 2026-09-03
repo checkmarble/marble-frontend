@@ -40,7 +40,6 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     // entry and the client exposure together, so the three can never disagree.
     const proboBannerId = getServerEnv('PROBO_BANNER_ID');
     const proboBannerBaseUrl = getServerEnv('PROBO_BANNER_BASE_URL');
-    const hasProboConfiguration = proboBannerId !== undefined || proboBannerBaseUrl !== undefined;
     let proboOrigin: string | undefined;
     if (proboBannerId && proboBannerBaseUrl) {
       try {
@@ -54,15 +53,16 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
         // if this loader is ever invoked without server initialization.
       }
     }
-    if (!proboOrigin) {
+    // Without Segment there are no optional cookies, so do not expose or load the
+    // otherwise unrelated consent UI.
+    const isProboEnabled = !disableSegment && proboOrigin !== undefined;
+    if (!isProboEnabled) {
       ENV.PROBO_BANNER_ID = undefined;
       ENV.PROBO_BANNER_BASE_URL = undefined;
     }
 
     const segmentScript =
-      !disableSegment && segmentApiKey
-        ? getSegmentScript(segmentApiKey, { deferLoad: hasProboConfiguration })
-        : undefined;
+      !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey, { deferLoad: isProboEnabled }) : undefined;
 
     // Use the per-request nonce opened by `securityHeadersMiddleware`, so this CSP, the
     // hydration scripts (`router.ssr.nonce`), and the inline scripts below all match.
@@ -106,7 +106,7 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
         "'self'",
         ...firebaseUrl,
         ...externalDomains.map((d) => `https://${d}`),
-        ...(proboOrigin ? [proboOrigin] : []),
+        ...(isProboEnabled && proboOrigin ? [proboOrigin] : []),
       ],
       imgSrc,
       frameSrc: frames.length > 0 ? frames : ["'none'"],
