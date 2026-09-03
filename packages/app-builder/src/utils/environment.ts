@@ -42,9 +42,15 @@ const PublicEnvVarsSchema = z.object({
 
   // Probo cookie consent banner. When both are set, the banner is rendered and
   // Segment only loads after the visitor grants the "analytics" category.
-  PROBO_BANNER_ID: z.string().optional(),
-  // Empty means unset; anything else must be a valid URL so a typo fails at boot
-  PROBO_BANNER_BASE_URL: z.preprocess((val) => (val === '' ? undefined : val), z.url().optional()),
+  PROBO_BANNER_ID: z.string().trim().min(1).optional(),
+  // Empty means unset; the banner fetches in the browser, so only HTTPS endpoints are valid.
+  PROBO_BANNER_BASE_URL: z.preprocess(
+    (val) => (val === '' ? undefined : val),
+    z
+      .url()
+      .refine((value) => new URL(value).protocol === 'https:', 'Must use HTTPS')
+      .optional(),
+  ),
 
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
@@ -59,7 +65,17 @@ const SecretEnvVarsSchema = z.object({
 });
 type SecretEnvVars = z.infer<typeof SecretEnvVarsSchema>;
 
-const EnvVarsSchema = PublicEnvVarsSchema.merge(SecretEnvVarsSchema);
+const EnvVarsSchema = PublicEnvVarsSchema.merge(SecretEnvVarsSchema).superRefine((env, context) => {
+  const hasBannerId = env.PROBO_BANNER_ID !== undefined;
+  const hasBaseUrl = env.PROBO_BANNER_BASE_URL !== undefined;
+  if (hasBannerId !== hasBaseUrl) {
+    context.addIssue({
+      code: 'custom',
+      message: 'PROBO_BANNER_ID and PROBO_BANNER_BASE_URL must be configured together',
+      path: [hasBannerId ? 'PROBO_BANNER_BASE_URL' : 'PROBO_BANNER_ID'],
+    });
+  }
+});
 type EnvVars = PublicEnvVars & SecretEnvVars;
 
 function getEnv<K extends keyof EnvVars>(envVarName: K) {

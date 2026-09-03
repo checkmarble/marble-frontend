@@ -131,7 +131,8 @@ function RootShell({ children }: { children: ReactNode }) {
           suppressHydrationWarning
           nonce={nonce}
           dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(env)}`,
+            // Escape `<` for an HTML script context, not just a JavaScript string context.
+            __html: `window.ENV = ${JSON.stringify(env).replace(/</g, '\\u003c')}`,
           }}
         />
         <Scripts />

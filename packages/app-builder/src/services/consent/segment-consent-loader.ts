@@ -1,8 +1,6 @@
 import { getConsent } from '@probo/cookie-banner/consent';
-import * as Sentry from '@sentry/react';
 
 const ANALYTICS_CATEGORY = 'analytics';
-const CONSENT_RESOLUTION_TIMEOUT_MS = 8_000;
 
 let started = false;
 
@@ -12,8 +10,8 @@ let started = false;
  *
  * - denied before load: the stub is parked off `window.analytics`, so the app's
  *   optional-chained calls are true no-ops — nothing buffers while consent is denied
- * - granted: the stub is restored, the pre-decision buffer compacted, and Segment
- *   loaded with the write key the snippet already embeds
+ * - granted: the stub is restored with its pre-decision buffer discarded, then Segment
+ *   receives fresh page and identity calls for the visitor's current state
  * - revoked after load: Segment storage is cleared and the page reloaded, since
  *   analytics.js has no unload API
  */
@@ -34,9 +32,10 @@ export function startConsentGatedSegment() {
       if (!writeKey) return;
       window.analytics = analytics;
       parked = undefined;
-      compactStubBuffer(analytics);
+      discardStubBuffer(analytics);
       analytics.load(writeKey);
       loadedThisPage = true;
+      window.dispatchEvent(new Event('segment-consent-granted'));
     } else if (loadedThisPage || analytics.initialized) {
       // A reset() queued on a not-yet-initialized stub would be discarded by the
       // reload, so Segment storage is cleared explicitly first.
@@ -44,41 +43,21 @@ export function startConsentGatedSegment() {
       void analytics.reset();
       window.location.reload();
     } else {
+      // This covers identifiers set before consent gating was introduced too.
+      clearSegmentStorage();
       parked = analytics;
       window.analytics = undefined;
     }
   });
-
-  // Fail-closed is correct for undecided visitors, but if the banner config never
-  // resolves, previously-consenting visitors silently lose analytics — surface it.
-  window.setTimeout(() => {
-    if (!getConsent().ready) {
-      Sentry.captureMessage('Probo cookie banner: consent state not resolved', 'warning');
-    }
-  }, CONSENT_RESOLUTION_TIMEOUT_MS);
 }
 
 /**
- * Pre-load, the snippet stub is a real Array of buffered `[method, ...args, context]`
- * calls, where `context` carries the URL captured at call time. Everything buffered
- * before the visitor answered the banner is pre-consent history and must not be
- * flushed — keep only the identification and the page view for the page the visitor
- * is still on.
+ * Every queued call happened before consent. The current route and identity are sent
+ * after load via the `segment-consent-granted` event, so none of this history is sent.
  */
-function compactStubBuffer(analytics: NonNullable<typeof window.analytics>) {
+function discardStubBuffer(analytics: NonNullable<typeof window.analytics>) {
   if (!Array.isArray(analytics)) return;
-  const stub = analytics as unknown[][];
-  const identify = stub.find((call) => call[0] === 'identify');
-  const currentPage = stub.findLast((call) => call[0] === 'page' && call.some(isCurrentPageContext));
-  stub.length = 0;
-  if (identify) stub.push(identify);
-  if (currentPage) stub.push(currentPage);
-}
-
-function isCurrentPageContext(arg: unknown): boolean {
-  if (typeof arg !== 'object' || arg === null) return false;
-  const context = arg as { __t?: unknown; u?: unknown };
-  return context.__t === 'bpc' && context.u === window.location.href;
+  analytics.length = 0;
 }
 
 /** ajs_* cookies may live on the current host or a parent domain — expire all variants. */
