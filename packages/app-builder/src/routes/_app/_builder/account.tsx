@@ -8,7 +8,7 @@ import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
 import { useBuilderLayoutData } from '@app-builder/hooks/routes-layout-data';
 import { tKeyForUserRole } from '@app-builder/models/user';
 import { logoutFn } from '@app-builder/server-fns/auth';
-import { isProboBannerConfigured } from '@app-builder/services/consent/ProboCookieBanner';
+import { toggleProboPreferences, useProboBannerReady } from '@app-builder/services/consent/ProboCookieBanner';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
@@ -46,6 +46,7 @@ function AccountPage() {
   const isFirebaseAuth = appConfig.auth.provider === 'firebase';
   const layoutData = useBuilderLayoutData();
   const isAutoAssignmentAvailable = layoutData?.featuresAccess.isAutoAssignmentAvailable ?? false;
+  const isProboBannerReady = useProboBannerReady();
 
   const { firstName, lastName, email } = currentUser.actorIdentity;
   const fullName = getFullName({ firstName, lastName });
@@ -97,13 +98,16 @@ function AccountPage() {
                   </Radio.Item>
                 </Radio.Root>
               </div>
-              {isProboBannerConfigured() ? (
-                <div className="flex flex-col gap-sm">
-                  <span className="text-s">{t('account:cookie_settings')}</span>
-                  {/* Childless on purpose: the SDK fills in a localized label and
-                      mutates the light DOM (CCPA swap) — React children would clash */}
-                  <probo-settings-link className="text-s text-purple-primary w-fit cursor-pointer font-medium underline" />
-                </div>
+              {isProboBannerReady ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="fixed bottom-md end-md z-30 shadow-md sm:bottom-lg sm:end-lg"
+                  onClick={toggleProboPreferences}
+                >
+                  <Icon icon="settings" className="size-4" />
+                  {t('account:cookie_settings')}
+                </Button>
               ) : null}
               <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
             </div>

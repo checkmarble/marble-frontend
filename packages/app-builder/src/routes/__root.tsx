@@ -121,6 +121,9 @@ function RootShell({ children }: { children: ReactNode }) {
                     ) : (
                       children
                     )}
+                    <ClientOnly>
+                      <ProboCookieBanner />
+                    </ClientOnly>
                   </ThemeProvider>
                 </CsrfContext.Provider>
               </FormatContext.Provider>
@@ -139,7 +142,6 @@ function RootShell({ children }: { children: ReactNode }) {
         <ClientOnly>
           <TimezoneDetector />
           <MarbleToaster toastMessage={toastMessage} />
-          <ProboCookieBanner locale={locale} dir={i18n.dir()} />
           <TanStackDevtools
             plugins={[
               { name: 'TanStack Router', render: <TanStackRouterDevtoolsPanel /> },
