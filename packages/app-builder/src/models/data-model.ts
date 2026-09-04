@@ -273,6 +273,13 @@ export interface TableModel {
   mainTimestampFieldName?: string;
   belongsToTableId?: string;
   fieldOrder: string[];
+  lifecycle: TableLifecycle;
+}
+
+export interface TableLifecycle {
+  enabled: boolean;
+  deleteStaleRowsAfter?: string;
+  deleteActiveRowsAfter?: string;
 }
 
 /**
@@ -300,6 +307,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     semantic_type?: string;
     caption_field?: string;
     metadata?: Record<string, unknown> | null;
+    lifecycle?: TableDto['lifecycle'] & { delete_active_rows_aftger?: string };
   };
   const meta =
     raw.metadata && typeof raw.metadata === 'object' && !Array.isArray(raw.metadata)
@@ -359,6 +367,12 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     navigationOptions: raw.navigation_options?.map(adaptNavigationOptions),
     ftmEntity: raw.ftm_entity,
     fieldOrder: fieldOrderNames,
+    lifecycle: {
+      enabled: raw.lifecycle?.enabled ?? false,
+      deleteStaleRowsAfter: raw.lifecycle?.delete_stale_rows_after ?? undefined,
+      deleteActiveRowsAfter:
+        raw.lifecycle?.delete_active_rows_after ?? raw.lifecycle?.delete_active_rows_aftger ?? undefined,
+    },
   };
 }
 
@@ -988,5 +1002,6 @@ export function createTableValueToCreateTableBody(value: CreateTableValue): Crea
       child_field_name: l.child_field_name,
       parent_table_id: l.parent_table_id,
     })),
+    lifecycle: value.lifecycle,
   };
 }
