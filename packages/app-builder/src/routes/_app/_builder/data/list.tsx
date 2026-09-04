@@ -2,6 +2,7 @@ import { CalloutV2, Page } from '@app-builder/components';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
 import { SelectArchetype } from '@app-builder/components/Data/SelectArchetype';
+import { CreateRelationsPanel } from '@app-builder/components/Data/SemanticTables/CreateTable/CreateRelationsPanel';
 import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/CreateTable/CreateTableDrawer';
 import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
 import { dataModelFlowStyles, TableFlow } from '@app-builder/components/Data/SemanticTables/Flow/TableFlow';
@@ -9,7 +10,7 @@ import { DataPageHeader } from '@app-builder/components/Data/SemanticTables/Shar
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
-import { useDataModel } from '@app-builder/services/data/data-model';
+import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { ClientOnly, createFileRoute } from '@tanstack/react-router';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
@@ -34,13 +35,15 @@ export const handle = {
 function DataList() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
+  const { isGraphExplorationEnabled, isGraphExplorationAvailable } = useDataModelFeatureAccess();
   const revalidate = useLoaderRevalidator();
   const createTableMutation = useCreateTableMutation();
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
-
+  const [isCreateRelationsOpen, setIsCreateRelationsOpen] = useState(false);
   const isEmpty = dataModel.length === 0;
 
   const handleOpenCreateDrawer = () => setIsCreateDrawerOpen(true);
+  const handleCreateRelations = () => setIsCreateRelationsOpen(true);
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
@@ -48,7 +51,10 @@ function DataList() {
         {isEmpty ? (
           <EmptyHeader onCreateTable={handleOpenCreateDrawer} />
         ) : (
-          <DataPageHeader handleOpenCreateDrawer={handleOpenCreateDrawer} />
+          <DataPageHeader
+            handleOpenCreateDrawer={handleOpenCreateDrawer}
+            handleCreateRelations={handleCreateRelations}
+          />
         )}
         <CalloutV2>{t('data:callout')}</CalloutV2>
 
@@ -83,6 +89,9 @@ function DataList() {
           }
         }}
       />
+      {isGraphExplorationEnabled && isGraphExplorationAvailable ? (
+        <CreateRelationsPanel open={isCreateRelationsOpen} onClose={() => setIsCreateRelationsOpen(false)} />
+      ) : null}
     </div>
   );
 }

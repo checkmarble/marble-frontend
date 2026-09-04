@@ -24,7 +24,7 @@ const PopoverContent = function PopoverContent({
         {...props}
         className={cn(
           className,
-          'bg-surface-card border-grey-border z-50 flex max-h-[min(var(--radix-popover-content-available-height),500px)] flex-col overflow-x-hidden overflow-y-auto rounded-sm border text-xs shadow-lg',
+          'bg-surface-card border-grey-border z-50 flex max-h-[min(var(--radix-popover-content-available-height),800px)] flex-col overflow-x-hidden overflow-y-auto rounded-sm border text-xs shadow-lg',
         )}
       >
         {children}

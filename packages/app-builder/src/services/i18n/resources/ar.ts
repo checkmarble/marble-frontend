@@ -9,6 +9,7 @@ import continuousScreening from '@app-builder/locales/ar/continuous-screening.js
 import data from '@app-builder/locales/ar/data.json';
 import decisions from '@app-builder/locales/ar/decisions.json';
 import filters from '@app-builder/locales/ar/filters.json';
+import graph from '@app-builder/locales/ar/graph.json';
 import lists from '@app-builder/locales/ar/lists.json';
 import navigation from '@app-builder/locales/ar/navigation.json';
 import scenarios from '@app-builder/locales/ar/scenarios.json';
@@ -30,6 +31,7 @@ export const ar = {
   data,
   decisions,
   filters,
+  graph,
   navigation,
   lists,
   auth,

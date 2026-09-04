@@ -4,9 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function DataPageHeader({ handleOpenCreateDrawer }: { handleOpenCreateDrawer: () => void }) {
+export function DataPageHeader({
+  handleOpenCreateDrawer,
+  handleCreateRelations,
+}: {
+  handleOpenCreateDrawer: () => void;
+  handleCreateRelations: () => void;
+}) {
   const { t } = useTranslation(['navigation']);
-  const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
+  const { isCreateDataModelTableAvailable, isGraphExplorationEnabled, isGraphExplorationAvailable } =
+    useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();
 
   return (
@@ -26,6 +33,12 @@ export function DataPageHeader({ handleOpenCreateDrawer }: { handleOpenCreateDra
           )}
           {t('data:export_org.button')}
         </Button>
+        {isCreateDataModelTableAvailable && isGraphExplorationEnabled && isGraphExplorationAvailable ? (
+          <Button variant="primary" appearance="stroked" onClick={handleCreateRelations}>
+            <Icon icon="filters" className="size-5" />
+            {t('data:create_relations.title')}
+          </Button>
+        ) : null}
         {isCreateDataModelTableAvailable ? (
           <Button variant="primary" onClick={handleOpenCreateDrawer}>
             <Icon icon="plus" className="size-5" />

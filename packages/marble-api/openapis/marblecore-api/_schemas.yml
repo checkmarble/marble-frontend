@@ -653,3 +653,18 @@ ScoringScore:
   $ref: scoring.yml#/components/schemas/ScoringScore
 ScoringDryRun:
   $ref: scoring.yml#/components/schemas/ScoringDryRun
+
+# GRAPH EXPLORATION
+
+GraphRelation:
+  $ref: graph.yml#/components/schemas/GraphRelation
+CreateGraphRelation:
+  $ref: graph.yml#/components/schemas/CreateGraphRelation
+Graph:
+  $ref: graph.yml#/components/schemas/Graph
+GraphNodeRef:
+  $ref: graph.yml#/components/schemas/GraphNodeRef
+GraphNode:
+  $ref: graph.yml#/components/schemas/GraphNode
+GraphEdge:
+  $ref: graph.yml#/components/schemas/GraphEdge

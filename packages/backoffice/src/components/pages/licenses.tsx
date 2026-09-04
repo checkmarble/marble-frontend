@@ -45,6 +45,7 @@ const ENTITLEMENT_GROUPS: { title: string; items: { key: EntitlementKey; label: 
     items: [
       { key: 'auto_assignment', label: 'Auto-assignment' },
       { key: 'case_ai_assist', label: 'Case AI assist' },
+      { key: 'graph_exploration', label: 'Graph exploration' },
     ],
   },
 ];
