@@ -15,6 +15,7 @@ import {
   SemanticTypeField,
   type TableModel,
 } from '@app-builder/models';
+import { isInvalidLifecycleDuration, serializeLifecycleDuration } from '@app-builder/models/duration';
 import { CreateTableValue } from '@app-builder/schemas/data';
 import { TFunction } from 'i18next';
 import { FieldSemanticType } from 'marble-api';
@@ -25,7 +26,7 @@ export type { SemanticTableFormValues };
 
 export type TablePropertyError = {
   kind: 'table';
-  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId' | 'mainTimestampFieldName';
+  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId' | 'mainTimestampFieldName' | 'lifecycle';
   message: string;
 };
 export type FieldValidationError = { kind: 'field'; fieldId: string; message: string };
@@ -83,6 +84,11 @@ export const defaultCreateTableFormValues: SemanticTableFormValues = {
   metaData: {},
   isCanceled: false,
   isVisited: false,
+  lifecycle: {
+    enabled: false,
+    deleteStaleRowsAfter: { unit: 'months' },
+    deleteActiveRowsAfter: { unit: 'months' },
+  },
 };
 
 const entityTypesRequiringLink = ['transaction', 'event', 'account'] as const;
@@ -223,6 +229,11 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
       belongsToTableId: values.belongsToTableId || undefined,
       fieldOrder: values.fields.map((f) => f.name).join(','),
     },
+    lifecycle: {
+      enabled: values.lifecycle.enabled,
+      delete_stale_rows_after: serializeLifecycleDuration(values.lifecycle.deleteStaleRowsAfter),
+      delete_active_rows_after: serializeLifecycleDuration(values.lifecycle.deleteActiveRowsAfter),
+    },
   };
 }
 
@@ -292,7 +303,22 @@ const tableConstraints = [
   { type: 'name', dataType: 'person' },
 ] as const satisfies SemanticTableConstraints;
 
-const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId'] as const;
+const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId', 'lifecycle'] as const;
+
+function getLifecycleErrors(values: SemanticTableFormValues, t: TFunction<['data']>): TablePropertyError[] {
+  const durations = [values.lifecycle.deleteStaleRowsAfter, values.lifecycle.deleteActiveRowsAfter];
+  const hasInvalidDuration = durations.some(isInvalidLifecycleDuration);
+
+  return hasInvalidDuration
+    ? [
+        {
+          kind: 'table',
+          field: 'lifecycle',
+          message: t('data:lifecycle.validation_positive_integer'),
+        },
+      ]
+    : [];
+}
 
 function getTablePropertyErrors(values: SemanticTableFormValues, creationMode: boolean = false): TablePropertyError[] {
   const parsing = creationMode
@@ -494,6 +520,7 @@ export function validateValues(
     if (!values.mainTimestampFieldName && hasUpdatedAt) values.mainTimestampFieldName = 'updated_at';
 
     errors.push(...getTablePropertyErrors(values, creationMode));
+    errors.push(...getLifecycleErrors(values, t));
     if (!creationMode) {
       errors.push(...getEntityTypeChangeErrors(values, t, tables));
     }
