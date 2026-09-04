@@ -32,6 +32,11 @@ import {
   type TimeAddAstNode,
   type TimestampExtractAstNode,
 } from '@app-builder/models/astNode/time';
+import {
+  isValueSwitchAstNode,
+  parseValueSwitchAstNode,
+  type ValueSwitchAstNode,
+} from '@app-builder/models/astNode/value-switch';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { isAggregatorOperator } from '@app-builder/models/modale-operators';
@@ -110,6 +115,10 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
     return context.t('scenarios:record_risk_level_check.menu_label');
   }
 
+  if (isValueSwitchAstNode(astNode)) {
+    return getValueSwitchDisplayName(astNode, context);
+  }
+
   if (isUndefinedAstNode(astNode)) {
     return '';
   }
@@ -150,6 +159,25 @@ export function getDataAccessorDisplayName(astNode: IdLessAstNode<DataAccessorAs
   }
 
   throw invariant('never encountered');
+}
+
+function getValueSwitchDisplayName(
+  astNode: IdLessAstNode<ValueSwitchAstNode>,
+  context: AstNodeStringifierContext,
+): string {
+  // Display name only needs children/namedChildren; ids are irrelevant.
+  const model = parseValueSwitchAstNode(astNode as ValueSwitchAstNode);
+  const dimension = model?.dimensions[0] ?? null;
+  if (!dimension) {
+    return context.t('scenarios:value_switch.menu_label');
+  }
+
+  const variable =
+    dimension.type === 'risk-level'
+      ? context.t('scenarios:value_switch.customer_risk_level')
+      : getDataAccessorDisplayName(dimension.field);
+
+  return context.t('scenarios:value_switch.display_name_with_variable', { variable });
 }
 
 function getTimeAddDisplayName(astNode: IdLessAstNode<TimeAddAstNode>, context: AstNodeStringifierContext): string {

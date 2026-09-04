@@ -134,6 +134,20 @@ export const inputIconClassName = cva('absolute shrink-0 text-grey-secondary pee
   },
 });
 
+const numberInputColorClassName = cva('', {
+  variants: {
+    color: {
+      primary: 'text-grey-primary dark:text-grey-primary',
+      purple: 'text-purple-primary dark:text-purple-primary',
+      blue: 'text-blue-58 dark:text-blue-58',
+      green: 'text-green-primary dark:text-green-primary',
+      yellow: 'text-yellow-primary dark:text-yellow-primary',
+      orange: 'text-orange-primary dark:text-orange-primary',
+      red: 'text-red-primary dark:text-red-primary',
+    },
+  },
+});
+
 export type BaseInputProps = React.ComponentPropsWithoutRef<'input'> & {
   enablePasswordManagers?: boolean;
 };
@@ -159,6 +173,7 @@ export const UnstyledInput = function UnstyledInput({
 
 export type InputProps = Omit<BaseInputProps, 'size'> &
   VariantProps<typeof inputClassName> & {
+    inputClassName?: string;
     startAdornment?: IconName;
     endAdornment?: IconName;
     onEnterKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
@@ -169,6 +184,7 @@ export type InputProps = Omit<BaseInputProps, 'size'> &
 export const Input = function Input({
   ref,
   className,
+  inputClassName: actualInputClassName,
   startAdornment,
   endAdornment,
   size = 'large',
@@ -188,6 +204,7 @@ export const Input = function Input({
         className={cn(
           inputClassName({ borderColor, size }),
           inputPaddingsClassName({ hasStartIcon: !!startAdornment, hasEndIcon: !!endAdornment, size }),
+          actualInputClassName,
         )}
         // className="order-2 h-4 grow outline-none placeholder:text-grey-disabled"
         {...props}
@@ -238,38 +255,95 @@ export const Input = function Input({
   );
 };
 
-type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterKeyDown'> & {
+export type NumberInputColor = NonNullable<VariantProps<typeof numberInputColorClassName>['color']>;
+
+export type NumberInputColorThreshold = {
+  threshold: number;
+  comparison: '>' | '>=' | '<' | '<=';
+  color: NumberInputColor;
+};
+
+export type NumberInputColorByValue = {
+  thresholds: readonly NumberInputColorThreshold[];
+  defaultColor: NumberInputColor;
+};
+
+export type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterKeyDown'> & {
   value: number;
   onChange: (value: number) => void;
   onEnterKeyDown?: (value: number) => void;
+  /** Prefix non-negative values with `+`. Negative values keep their `-` prefix. */
+  forceSign?: boolean;
+  /** Apply the color from the first matching threshold, or `defaultColor` when none match. */
+  colorByValue?: NumberInputColorByValue;
 };
+
+function formatNumberInputValue(value: number, forceSign: boolean) {
+  const formattedValue = value.toString(10);
+  return forceSign && value >= 0 ? `+${formattedValue}` : formattedValue;
+}
+
+function matchesNumberInputThreshold(value: number, { comparison, threshold }: NumberInputColorThreshold) {
+  switch (comparison) {
+    case '>':
+      return value > threshold;
+    case '>=':
+      return value >= threshold;
+    case '<':
+      return value < threshold;
+    case '<=':
+      return value <= threshold;
+  }
+}
+
+function getNumberInputColor(value: number, colorByValue: NumberInputColorByValue | undefined) {
+  if (!colorByValue) return undefined;
+
+  return (
+    colorByValue.thresholds.find((colorThreshold) => matchesNumberInputThreshold(value, colorThreshold))?.color ??
+    colorByValue.defaultColor
+  );
+}
 
 export const NumberInput = function NumberInput({
   ref,
+  colorByValue,
+  forceSign = false,
+  inputClassName,
   onChange,
   value,
   onEnterKeyDown,
   ...props
 }: NumberInputProps & { ref?: React.Ref<HTMLInputElement> }) {
-  const [internalValue, setInternalValue] = useState(value.toString(10));
+  const [internalValue, setInternalValue] = useState(() => formatNumberInputValue(value, forceSign));
 
   useEffect(() => {
-    let newInternalValue = value.toString(10);
-    if (newInternalValue !== internalValue) {
-      setInternalValue(newInternalValue);
-    }
-  }, [value]);
+    const newInternalValue = formatNumberInputValue(value, forceSign);
+    setInternalValue((currentValue) => (currentValue === newInternalValue ? currentValue : newInternalValue));
+  }, [forceSign, value]);
 
   return (
     <Input
       ref={ref}
       {...props}
+      inputClassName={cn(
+        inputClassName,
+        numberInputColorClassName({ color: getNumberInputColor(value, colorByValue) }),
+      )}
       value={internalValue}
       onChange={(e) => {
         const inputValue = e.target.value;
-        setInternalValue(inputValue);
+        const signedInputValue =
+          forceSign &&
+          inputValue !== '' &&
+          inputValue !== '-' &&
+          !inputValue.startsWith('+') &&
+          !inputValue.startsWith('-')
+            ? `+${inputValue}`
+            : inputValue;
+        setInternalValue(signedInputValue);
 
-        const inputNumberValue = parseInt(inputValue, 10);
+        const inputNumberValue = parseInt(signedInputValue, 10);
         if (!isNaN(inputNumberValue)) {
           onChange(inputNumberValue);
         }

@@ -6,6 +6,7 @@ import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of'
 import { NewRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
 import { NewTimeAddAstNode, NewTimeNowAstNode, NewTimestampExtractAstNode } from '@app-builder/models/astNode/time';
+import { NewValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
@@ -28,6 +29,7 @@ const FUNCTIONS_OPTIONS: OperandMenuOption[] = [
   NewTimeNowAstNode(),
   NewIsMultipleOfAstNode(),
   NewIpHasFlagAstNode(),
+  NewValueSwitchAstNode(),
 ].map((n) => ({ astNode: n }));
 
 export const MODELING_OPTIONS = ({
