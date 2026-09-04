@@ -1,4 +1,4 @@
-import { Callout, casesI18n } from '@app-builder/components';
+import { Callout } from '@app-builder/components';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useFormDropzone } from '@app-builder/hooks/useFormDropzone';
 import { type SuspiciousActivityReport } from '@app-builder/models/cases';
@@ -7,15 +7,14 @@ import {
   editSuspicionPayloadSchema,
   useEditSuspicionMutation,
 } from '@app-builder/queries/cases/edit-suspicion';
-import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { useForm, useStore } from '@tanstack/react-form';
-import { ClientOnly } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { SarReportDownload } from './SarReportDownload';
 
 type EditCaseSuspicionProps = {
   id: string;
@@ -143,9 +142,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     <span className="text-xs font-medium">{t('cases:sar.status.completed')}</span>
                   </span>
                   {reports[0]?.hasFile ? (
-                    <ClientOnly>
-                      <ReportFile name={t('cases:sar.action.download')} caseId={id} reportId={reports[0]!.id} />
-                    </ClientOnly>
+                    <SarReportDownload caseId={id} reportId={reports[0]!.id} />
                   ) : (
                     <Button variant="secondary" size="small" onClick={() => setOpenReportModal(true)}>
                       <Icon icon="attachment" className="size-3.5" />
@@ -221,45 +218,5 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
         </div>
       )}
     </form.Field>
-  );
-};
-
-type ReportFileProps = {
-  name: string;
-  caseId: string;
-  reportId: string;
-};
-
-const ReportFile = ({ name, caseId, reportId }: ReportFileProps) => {
-  const { t } = useTranslation(casesI18n);
-  const downloadEndpoint = `/ressources/cases/sar/download/${caseId}/${reportId}`;
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint, {
-    onError: (e) => {
-      if (e instanceof AlreadyDownloadingError) {
-        // Already downloading, do nothing
-        return;
-      } else if (e instanceof AuthRequestError) {
-        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
-      } else {
-        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
-      }
-    },
-  });
-
-  return (
-    <Button
-      variant="secondary"
-      size="small"
-      onClick={() => {
-        void downloadCaseFile();
-      }}
-      disabled={downloadingCaseFile}
-    >
-      <Icon
-        icon={downloadingCaseFile ? 'spinner' : 'download'}
-        className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
-      />
-      {name}
-    </Button>
   );
 };

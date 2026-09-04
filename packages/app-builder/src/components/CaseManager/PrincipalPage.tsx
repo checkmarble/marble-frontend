@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, Panel, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewCard } from './AiReview/AiReviewCard';
+import { CaseDocuments } from './CaseDocuments/CaseDocuments';
 import { CaseEvents } from './CaseEvents';
 import { CaseInfo } from './CaseInfo';
 import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
@@ -156,6 +157,7 @@ export function CaseManagerPrincipalPage({
               ) : null}
             </Card>
           )}
+          <CaseDocuments files={caseDetail.files} />
           <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
         </div>
       </div>
