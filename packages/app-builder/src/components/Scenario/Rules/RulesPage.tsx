@@ -155,7 +155,7 @@ export function RulesPage({
       {editorMode === 'edit' ? (
         <>
           <Panel.Root open={currentEditing?.type === 'rule'} onOpenChange={onPanelOpenChange}>
-            <Panel.Container size={isAiRuleDescriptionEnabled ? 'large' : 'medium'}>
+            <Panel.Container size={isAiRuleDescriptionEnabled ? 'xlarge' : 'large'}>
               {currentEditing?.type === 'rule' ? (
                 <RuleEditPanel
                   scenario={scenario}

@@ -12,12 +12,13 @@ import { Typo } from '../Typography/Typo';
 import { cn } from '../utils';
 import { PanelOverlay } from './PanelOverlay';
 
-export type PanelSize = 'small' | 'medium' | 'large' | 'full';
+export type PanelSize = 'small' | 'medium' | 'large' | 'xlarge' | 'full' | 'full';
 
 const sizeClasses: Record<PanelSize, string> = {
   small: 'max-w-[calc(100vw_/_3)]',
   medium: 'max-w-[50vw]',
   large: 'max-w-[calc(100vw_*_(2_/_3))]',
+  xlarge: 'max-w-[calc(100vw_*_(5_/_6))]',
   full: 'max-w-[calc(100vw_-_3rem)]',
 };
 

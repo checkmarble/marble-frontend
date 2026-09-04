@@ -23,7 +23,7 @@ import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDat
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { DragDropContext, Draggable, type DraggableProvided, Droppable, type DropResult } from '@hello-pangea/dnd';
-import { useId, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, Input, MenuCommand, NumberInput, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -32,6 +32,10 @@ import { getEvaluationForNode } from '../../../helpers';
 import { useRoot } from '../../../hooks/useRoot';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
+import {
+  getTwoDimensionGridNavigationTarget,
+  type TwoDimensionGridNavigationKey,
+} from './two-dimension-grid-navigation';
 
 type DimensionOption = {
   key: string;
@@ -470,12 +474,35 @@ function TwoDimensionEditor({
   onValuesChange,
   onThresholdChange,
 }: TwoDimensionEditorProps) {
-  const { t } = useTranslation(['scenarios']);
+  const { t, i18n } = useTranslation(['scenarios']);
   const [rowDimension, columnDimension] = model.dimensions;
+  const cellRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const columnCount = columnDimension?.values.length ?? 0;
+  const hasCompactCells = columnCount > 4;
+
+  function handleCellKeyDown(event: KeyboardEvent<HTMLInputElement>, rowIndex: number, columnIndex: number) {
+    if (!['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter'].includes(event.key)) return;
+
+    event.preventDefault();
+    const target = getTwoDimensionGridNavigationTarget({
+      key: event.key as TwoDimensionGridNavigationKey,
+      shiftKey: event.shiftKey,
+      direction: i18n.dir(),
+      rowIndex,
+      columnIndex,
+      rowCount: rowDimension?.values.length ?? 0,
+      columnCount,
+    });
+    if (!target) return;
+
+    const targetInput = cellRefs.current[target.rowIndex * columnCount + target.columnIndex];
+    targetInput?.focus();
+    targetInput?.select();
+  }
 
   return (
     <div className="flex flex-col gap-md">
-      <div className="grid grid-cols-2 gap-md">
+      <div className="grid grid-cols-1 gap-md md:grid-cols-2">
         {[0, 1].map((index) => {
           const dimension = model.dimensions[index];
           const currentOption = dimension
@@ -484,18 +511,20 @@ function TwoDimensionEditor({
           return (
             <div
               key={index}
-              className="border-grey-border bg-grey-background-light flex flex-col gap-md rounded-md border p-md"
+              className="border-grey-border bg-grey-background-light flex min-w-0 flex-col gap-md rounded-md border p-md"
             >
-              <div className="flex items-center gap-md">
+              <div className="flex min-w-0 items-center gap-md">
                 <span className="text-default text-grey-secondary shrink-0 font-medium">
                   {t(index === 0 ? 'scenarios:value_switch.rows_based_on' : 'scenarios:value_switch.columns_based_on')}
                 </span>
-                <DimensionSelect
-                  options={options}
-                  selectedKey={selectedKeys[index] ?? null}
-                  excludedKey={selectedKeys[index === 0 ? 1 : 0] ?? null}
-                  onChange={(option) => onDimensionChange(index, option)}
-                />
+                <div className="min-w-0 flex-1">
+                  <DimensionSelect
+                    options={options}
+                    selectedKey={selectedKeys[index] ?? null}
+                    excludedKey={selectedKeys[index === 0 ? 1 : 0] ?? null}
+                    onChange={(option) => onDimensionChange(index, option)}
+                  />
+                </div>
               </div>
               {dimension ? (
                 <DimensionValuesSelect
@@ -511,29 +540,38 @@ function TwoDimensionEditor({
 
       {rowDimension && columnDimension && rowDimension.values.length > 0 && columnDimension.values.length > 0 ? (
         <div className="border-grey-border overflow-x-auto rounded-md border">
-          <table className="w-full min-w-[720px] table-fixed border-collapse">
+          <table
+            className="w-full table-fixed border-collapse"
+            style={{ minWidth: `${12 + columnCount * (hasCompactCells ? 6.5 : 7)}rem` }}
+          >
             <thead>
               <tr>
                 <th className="border-grey-border w-48 border-b p-sm" />
                 {columnDimension.values.map((value) => (
-                  <th key={`${typeof value}:${String(value)}`} className="border-grey-border border-b p-sm text-start">
+                  <th
+                    key={`${typeof value}:${String(value)}`}
+                    className={cn('border-grey-border border-b text-start', hasCompactCells ? 'p-xs' : 'p-sm')}
+                  >
                     <ValueTag dimension={columnDimension} value={value} />
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {rowDimension.values.map((rowValue) => (
+              {rowDimension.values.map((rowValue, rowIndex) => (
                 <tr key={`${typeof rowValue}:${String(rowValue)}`}>
-                  <th className="border-grey-border border-t p-sm text-start first:border-t-0">
+                  <th className={cn('text-start', hasCompactCells ? 'p-xs' : 'p-sm')}>
                     <ValueTag dimension={rowDimension} value={rowValue} />
                   </th>
-                  {columnDimension.values.map((columnValue) => (
+                  {columnDimension.values.map((columnValue, columnIndex) => (
                     <td
                       key={getValueSwitchCellKey([rowValue, columnValue])}
-                      className="border-grey-border border-t p-sm first:border-t-0"
+                      className={hasCompactCells ? 'p-xs' : 'p-sm'}
                     >
                       <NumberInput
+                        ref={(element) => {
+                          cellRefs.current[rowIndex * columnCount + columnIndex] = element;
+                        }}
                         size="medium"
                         className="min-w-24"
                         aria-label={t('scenarios:value_switch.cell_value', {
@@ -542,6 +580,7 @@ function TwoDimensionEditor({
                         })}
                         value={model.thresholds[getValueSwitchCellKey([rowValue, columnValue])] ?? model.fallback}
                         onChange={(threshold) => onThresholdChange([rowValue, columnValue], threshold)}
+                        onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
                       />
                     </td>
                   ))}
@@ -571,8 +610,8 @@ function DimensionSelect({
   return (
     <MenuCommand.Menu>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="w-full min-w-56">
-          {selected?.label ?? t('scenarios:value_switch.select_variable')}
+        <MenuCommand.SelectButton className="min-w-0 w-full">
+          <span className="truncate">{selected?.label ?? t('scenarios:value_switch.select_variable')}</span>
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4} sameWidth>
