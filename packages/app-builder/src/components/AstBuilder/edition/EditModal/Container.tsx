@@ -10,7 +10,7 @@ import { type OperandEditModalProps } from './EditModal';
 export type OperandEditModalContainerProps = Omit<OperandEditModalProps, 'node'> & {
   title: ReactElement | string;
   children: ReactNode;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
   className?: string;
   saveDisabled?: boolean;
 };

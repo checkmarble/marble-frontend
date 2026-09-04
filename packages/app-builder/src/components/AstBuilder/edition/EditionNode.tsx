@@ -115,6 +115,9 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
     nodeSharp.actions.setNodeAtPath(props.path, newNode);
     nodeSharp.actions.validate();
   };
+  const replaceNode = (newNode: AstNode) => {
+    nodeSharp.actions.setNodeAtPath(props.path, newNode);
+  };
   const setOperator = (operator: string) => {
     if (node.value) {
       node.value.name = operator;
@@ -176,7 +179,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
 
       return props.root ? (
-        <div className="inline-flex flex-row flex-wrap items-center gap-sm">{wrappedChildren}</div>
+        <div className="flex w-full flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -216,7 +219,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
 
       return props.root ? (
-        <div className="inline-flex flex-row flex-wrap items-center gap-sm">{wrappedChildren}</div>
+        <div className="flex w-full flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -227,6 +230,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
         <EditionAstBuilderOperand
           node={node}
           onChange={setNode}
+          onReplaceNode={replaceNode}
           enumValues={enumValues.value}
           validationStatus={hasDirectError ? 'error' : 'valid'}
           {...operandProps}

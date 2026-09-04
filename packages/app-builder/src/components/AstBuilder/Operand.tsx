@@ -14,6 +14,8 @@ export type AstBuilderOperandProps = AstBuilderBaseProps<KnownOperandAstNode> & 
   showErrors?: boolean;
   placeholder?: string;
   onChange?: (node: AstNode) => void;
+  /** Replace the node without triggering validation (used for live draft previews). */
+  onReplaceNode?: (node: AstNode) => void;
   optionsDataType?: DataType[] | ((o: EnrichedMenuOption) => boolean);
   excludeFields?: string[];
   coerceDataType?: DataType[];

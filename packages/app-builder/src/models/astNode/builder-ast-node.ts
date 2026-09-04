@@ -24,6 +24,7 @@ import {
   type StringTemplateAstNode,
 } from './strings';
 import { isTimeAdd, isTimeNow, isTimestampExtract, type TimeAddAstNode, type TimeNowAstNode } from './time';
+import { isValueSwitchAstNode, type ValueSwitchAstNode } from './value-switch';
 
 export type EditableAstNode =
   | AggregationAstNode
@@ -34,7 +35,8 @@ export type EditableAstNode =
   | FuzzyMatchFilterOptionsAstNode
   | MonitoringListCheckAstNode
   | IpHasFlagAstNode
-  | RecordRiskLevelCheckAstNode;
+  | RecordRiskLevelCheckAstNode
+  | ValueSwitchAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -51,7 +53,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isStringTemplateAstNode(node) ||
     isMonitoringListCheckAstNode(node) ||
     isIpHasFlag(node) ||
-    isRecordRiskLevelCheckAstNode(node)
+    isRecordRiskLevelCheckAstNode(node) ||
+    isValueSwitchAstNode(node)
   );
 }
 

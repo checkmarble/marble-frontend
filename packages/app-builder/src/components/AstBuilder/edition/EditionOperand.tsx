@@ -7,6 +7,7 @@ import {
   NewUndefinedAstNode,
 } from '@app-builder/models';
 import { type EditableAstNode, isEditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { isValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type AstBuilderOperandProps } from '@ast-builder/Operand';
@@ -21,6 +22,7 @@ import { match } from 'ts-pattern';
 import { MenuCommand } from 'ui-design-system';
 
 import { OperandEditModal } from './EditModal/EditModal';
+import { EditValueSwitchCard } from './EditModal/modals/ValueSwitch/ValueSwitch';
 import { EditionEvaluationErrors } from './EvaluationErrors';
 import { type EnrichedMenuOption, getFieldName, getOperandMenuOptions } from './helpers';
 import { AstBuilderNodeSharpFactory } from './node-store';
@@ -101,6 +103,7 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const nodeSharp = AstBuilderNodeSharpFactory.useOptionalSharp();
   const [editedNode, setEditedNode] = useState<EditableAstNode | null>(null);
+  const [restoreNodeOnCancel, setRestoreNodeOnCancel] = useState<AstNode | null>(null);
   const data = dataSharp.select((s) => s.$data);
   const triggerObjectTable = dataSharp.computed.triggerObjectTable;
   const validationStatus = props.validationStatus;
@@ -121,16 +124,32 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
     excludeFields: props.excludeFields,
   });
   const onSelect = useCallbackRef(onChange);
-  const onCreateSelect = useCallbackRef((node: AstNode) => {
-    if (isEditableAstNode(node)) {
-      setEditedNode(node);
-    } else {
-      onSelect(node);
-    }
-  });
-  const onEditSave = useCallbackRef((node: AstNode) => {
-    onSelect(node);
+  const closeEditor = useCallbackRef(() => {
     setEditedNode(null);
+    setRestoreNodeOnCancel(null);
+  });
+  const onCreateSelect = useCallbackRef((selectedNode: AstNode) => {
+    if (isValueSwitchAstNode(selectedNode)) {
+      setRestoreNodeOnCancel(node);
+      onSelect(selectedNode);
+      setEditedNode(selectedNode);
+      return;
+    }
+    if (isEditableAstNode(selectedNode)) {
+      setEditedNode(selectedNode);
+      return;
+    }
+    onSelect(selectedNode);
+  });
+  const onEditSave = useCallbackRef((savedNode: AstNode) => {
+    onSelect(savedNode);
+    closeEditor();
+  });
+  const onEditCancel = useCallbackRef(() => {
+    if (restoreNodeOnCancel) {
+      onSelect(restoreNodeOnCancel);
+    }
+    closeEditor();
   });
 
   useEffect(() => {
@@ -156,7 +175,10 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
             id: 'clean',
             label: t('scenarios:edit_operand.clear_operand'),
             icon: 'restart-alt',
-            onSelect: () => onSelect(NewUndefinedAstNode()),
+            onSelect: () => {
+              closeEditor();
+              onSelect(NewUndefinedAstNode());
+            },
           },
         ] as const)
       : []),
@@ -167,6 +189,7 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
             label: t('common:edit'),
             icon: 'edit-square',
             onSelect: () => {
+              setRestoreNodeOnCancel(null);
               setEditedNode(R.clone(node));
             },
           },
@@ -200,34 +223,48 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
       : []),
   ];
 
+  const isEditingValueSwitch = editedNode !== null && isValueSwitchAstNode(editedNode);
+
   return (
     <EditionOperandSharpFactory.Provider value={operandSharp}>
-      <div className="inline-flex flex-col gap-sm self-start">
-        <AstBuilderOperandMenu onSelect={onCreateSelect} bottomActions={bottomActions}>
-          <MenuCommand.Trigger>
-            <button type="button" className={editionOperandLabelClassnames({ validationStatus })}>
-              {match(node)
-                .when(isUndefinedAstNode, () => (
-                  <span
-                    className={operandDisplayNameClassnames({
-                      type: 'placeholder',
-                    })}
-                  >
-                    {props.placeholder ?? t('scenarios:edit_operand.placeholder')}
-                  </span>
-                ))
-                .otherwise(() => (
-                  <OperandDisplayName interactionMode="editor" {...props} />
-                ))}
-              <MenuCommand.Arrow />
-            </button>
-          </MenuCommand.Trigger>
-        </AstBuilderOperandMenu>
-        {editedNode ? (
-          <OperandEditModal node={editedNode} onSave={onEditSave} onCancel={() => setEditedNode(null)} />
+      <>
+        <div className="inline-flex flex-col gap-sm self-start">
+          <AstBuilderOperandMenu onSelect={onCreateSelect} bottomActions={bottomActions}>
+            <MenuCommand.Trigger>
+              <button type="button" className={editionOperandLabelClassnames({ validationStatus })}>
+                {match(node)
+                  .when(isUndefinedAstNode, () => (
+                    <span
+                      className={operandDisplayNameClassnames({
+                        type: 'placeholder',
+                      })}
+                    >
+                      {props.placeholder ?? t('scenarios:edit_operand.placeholder')}
+                    </span>
+                  ))
+                  .otherwise(() => (
+                    <OperandDisplayName interactionMode="editor" {...props} />
+                  ))}
+                <MenuCommand.Arrow />
+              </button>
+            </MenuCommand.Trigger>
+          </AstBuilderOperandMenu>
+          {editedNode && !isValueSwitchAstNode(editedNode) ? (
+            <OperandEditModal node={editedNode} onSave={onEditSave} onCancel={onEditCancel} />
+          ) : null}
+          {props.showErrors ? <EditionEvaluationErrors id={node.id} /> : null}
+        </div>
+        {isEditingValueSwitch ? (
+          <div className="w-full min-w-0 basis-full">
+            <EditValueSwitchCard
+              node={editedNode}
+              onSave={onEditSave}
+              onCancel={onEditCancel}
+              onDraftChange={props.onReplaceNode}
+            />
+          </div>
         ) : null}
-        {props.showErrors ? <EditionEvaluationErrors id={node.id} /> : null}
-      </div>
+      </>
     </EditionOperandSharpFactory.Provider>
   );
 }
