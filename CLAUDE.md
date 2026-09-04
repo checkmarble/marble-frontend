@@ -1,6 +1,6 @@
 # Marble Frontend
 
-Bun monorepo (`packages/*`) on TanStack Start — SSR React 18 via Vite + Nitro — with TanStack Router, Query and Form, Radix UI, Tailwind 4, Zod, and Biome.
+Bun monorepo (`packages/*`) on TanStack Start — SSR React 19 via Vite + Nitro, with the React Compiler intentionally disabled — using TanStack Router, Query and Form, Radix UI, Tailwind 4, Zod, and Biome.
 
 ## Commands
 

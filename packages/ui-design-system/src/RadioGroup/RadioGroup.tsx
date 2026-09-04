@@ -7,7 +7,7 @@ import {
   Root,
 } from '@radix-ui/react-radio-group';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentProps, forwardRef } from 'react';
+import { type ComponentProps } from 'react';
 
 export const radioGroup = cva(['flex flex-row w-fit', 'p-xs', 'rounded-lg', 'bg-purple-background-light']);
 
@@ -29,12 +29,13 @@ export type RadioGroupProps = VariantProps<typeof radioGroup> & RadixRadioGroups
  * </RadioGroup>
  * ```
  */
-export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(function RadioGroup(
-  { className, ...props },
+export const RadioGroup = function RadioGroup({
   ref,
-) {
+  className,
+  ...props
+}: RadioGroupProps & { ref?: React.Ref<HTMLDivElement> }) {
   return <Root {...props} ref={ref} className={radioGroup({ className })} />;
-});
+};
 
 export const radioGroupItem = cva([
   'flex',
@@ -52,19 +53,22 @@ export const radioGroupItem = cva([
 
 export type RadioGroupItem = VariantProps<typeof radioGroupItem> & RadixRadioGroupItemProps;
 
-export const RadioGroupItem = forwardRef<HTMLButtonElement, RadioGroupItem & ComponentProps<'button'>>(
-  function RadioGroupItem({ className, ...props }, ref) {
-    return <Item {...props} className={radioGroupItem({ className })} ref={ref} />;
-  },
-);
+export const RadioGroupItem = function RadioGroupItem({
+  ref,
+  className,
+  ...props
+}: RadioGroupItem & ComponentProps<'button'> & { ref?: React.Ref<HTMLButtonElement> }) {
+  return <Item {...props} className={radioGroupItem({ className })} ref={ref} />;
+};
 
 export const radioGroupIndicator = cva(['']);
 
 export type RadioGroupIndicator = VariantProps<typeof radioGroupIndicator> & RadixRadioGroupIndicatorProps;
 
-export const RadioGroupIndicator = forwardRef<HTMLDivElement, RadioGroupIndicator>(function RadioGroupIndicator(
-  { className, ...props },
+export const RadioGroupIndicator = function RadioGroupIndicator({
   ref,
-) {
+  className,
+  ...props
+}: RadioGroupIndicator & { ref?: React.Ref<HTMLDivElement> }) {
   return <Indicator {...props} className={radioGroupIndicator({ className })} ref={ref} />;
-});
+};

@@ -1,14 +1,22 @@
 import { adaptHighlightedParts } from '@app-builder/utils/search';
-import { Fragment, forwardRef } from 'react';
+import { Fragment } from 'react';
 
 /**
  * Highlight a part of a text that matches a query.
  * It returns a `span` element so it can be truncated with `text-ellipsis`.
  */
-export const Highlight = forwardRef<
-  HTMLDivElement,
-  { text: string; query: string; markClassName?: string } & React.ComponentPropsWithoutRef<'span'>
->(function Highlight({ text, query, markClassName, ...spanProps }, ref) {
+export const Highlight = function Highlight({
+  ref,
+  text,
+  query,
+  markClassName,
+  ...spanProps
+}: {
+  text: string;
+  query: string;
+  markClassName?: string;
+  ref?: React.Ref<HTMLSpanElement>;
+} & React.ComponentPropsWithoutRef<'span'>) {
   const parts = adaptHighlightedParts(text, query);
 
   return (
@@ -24,4 +32,4 @@ export const Highlight = forwardRef<
       )}
     </span>
   );
-});
+};

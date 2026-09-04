@@ -27,7 +27,7 @@ export interface UseResizeObserverOptions {
 export const useResizeObserver = <T extends HTMLElement = HTMLDivElement>(
   options: UseResizeObserverOptions = {},
 ): {
-  ref: React.RefObject<T>;
+  ref: React.RefObject<T | null>;
   dimensions: Dimensions;
 } => {
   const {
@@ -38,7 +38,7 @@ export const useResizeObserver = <T extends HTMLElement = HTMLDivElement>(
 
   const elementRef = useRef<T>(null);
   const [dimensions, setDimensions] = useState<Dimensions>(initialDimensions);
-  const animationFrameIdRef = useRef<number>();
+  const animationFrameIdRef = useRef<number>(undefined);
   const lastUpdateTimeRef = useRef<number>(0);
 
   // Throttled dimensions update to avoid excessive re-renders

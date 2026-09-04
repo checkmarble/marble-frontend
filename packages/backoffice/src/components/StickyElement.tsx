@@ -4,7 +4,7 @@ import { cn } from 'ui-design-system';
 
 type StickyContainerProps = {
   children: React.ReactNode;
-  rootRef?: React.RefObject<HTMLDivElement>;
+  rootRef?: React.RefObject<HTMLDivElement | null>;
 };
 
 export const StickyContainer = ({ children, rootRef }: StickyContainerProps) => {

@@ -1,6 +1,5 @@
 import { type CheckboxProps, Indicator, Root } from '@radix-ui/react-checkbox';
 import { cva } from 'class-variance-authority';
-import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
 export type { CheckedState } from '@radix-ui/react-checkbox';
@@ -48,10 +47,15 @@ export type CheckboxOwnProps = Omit<CheckboxProps, 'asChild'> & {
   stopPropagation?: boolean;
 };
 
-export const Checkbox = forwardRef<HTMLButtonElement, CheckboxOwnProps>(function Checkbox(
-  { className, checked, size = 'regular', stopPropagation = false, onClick, ...props },
+export const Checkbox = function Checkbox({
   ref,
-) {
+  className,
+  checked,
+  size = 'regular',
+  stopPropagation = false,
+  onClick,
+  ...props
+}: CheckboxOwnProps & { ref?: React.Ref<HTMLButtonElement> }) {
   return (
     <Root
       ref={ref}
@@ -76,4 +80,4 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxOwnProps>(function
       </Indicator>
     </Root>
   );
-});
+};

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import { createRef } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { Input } from './Input';
@@ -20,5 +21,13 @@ describe('Input', () => {
 
     await userEvent.type(input, 'input text');
     expect(input).toHaveValue('input text');
+  });
+
+  it('passes its ref to the input element', () => {
+    const ref = createRef<HTMLInputElement>();
+
+    render(<Input ref={ref} aria-label="input" />);
+
+    expect(ref.current).toBe(screen.getByLabelText('input'));
   });
 });

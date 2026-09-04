@@ -11,49 +11,43 @@ import {
   Viewport,
 } from '@radix-ui/react-scroll-area';
 import clsx from 'clsx';
-import { forwardRef, type RefAttributes } from 'react';
+import { type RefAttributes } from 'react';
 
-const ScrollAreaRoot = forwardRef<HTMLDivElement, ScrollAreaProps & RefAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <Root ref={ref} className={clsx('overflow-hidden', className)} {...props} />,
+const ScrollAreaRoot = ({ ref, className, ...props }: ScrollAreaProps & RefAttributes<HTMLDivElement>) => (
+  <Root ref={ref} className={clsx('overflow-hidden', className)} {...props} />
 );
-ScrollAreaRoot.displayName = Root?.displayName;
 
-const ScrollAreaScrollbar = forwardRef<HTMLDivElement, ScrollAreaScrollbarProps & RefAttributes<HTMLDivElement>>(
-  ({ className, orientation = 'vertical', ...props }, ref) => (
-    <Scrollbar
-      ref={ref}
-      className={clsx(
-        'bg-grey-background-light radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-background radix-orientation-horizontal:flex-col flex touch-none select-none p-2xs transition',
-        className,
-      )}
-      orientation={orientation}
-      {...props}
-    />
-  ),
+const ScrollAreaScrollbar = ({
+  ref,
+  className,
+  orientation = 'vertical',
+  ...props
+}: ScrollAreaScrollbarProps & RefAttributes<HTMLDivElement>) => (
+  <Scrollbar
+    ref={ref}
+    className={clsx(
+      'bg-grey-background-light radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-background radix-orientation-horizontal:flex-col flex touch-none select-none p-2xs transition',
+      className,
+    )}
+    orientation={orientation}
+    {...props}
+  />
 );
-ScrollAreaScrollbar.displayName = Scrollbar?.displayName;
 
-const ScrollAreaThumb = forwardRef<HTMLDivElement, ScrollAreaThumbProps & RefAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <Thumb ref={ref} className={clsx('bg-grey-disabled relative flex-1 rounded-lg', className)} {...props} />
-  ),
+const ScrollAreaThumb = ({ ref, className, ...props }: ScrollAreaThumbProps & RefAttributes<HTMLDivElement>) => (
+  <Thumb ref={ref} className={clsx('bg-grey-disabled relative flex-1 rounded-lg', className)} {...props} />
 );
-ScrollAreaThumb.displayName = Thumb?.displayName;
 
-const ScrollAreaCorner = forwardRef<HTMLDivElement, ScrollAreaCornerProps & RefAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <Corner ref={ref} className={clsx('bg-grey-background', className)} {...props} />,
+const ScrollAreaCorner = ({ ref, className, ...props }: ScrollAreaCornerProps & RefAttributes<HTMLDivElement>) => (
+  <Corner ref={ref} className={clsx('bg-grey-background', className)} {...props} />
 );
-ScrollAreaCorner.displayName = Corner?.displayName;
 
 /**
  * Override hardcoded style to bypass https://github.com/radix-ui/primitives/issues/926
  */
-const ScrollAreaViewport = forwardRef<HTMLDivElement, ScrollAreaViewportProps & RefAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <Viewport ref={ref} className={clsx('overscroll-x-contain [&>:first-of-type]:block!', className)} {...props} />
-  ),
+const ScrollAreaViewport = ({ ref, className, ...props }: ScrollAreaViewportProps & RefAttributes<HTMLDivElement>) => (
+  <Viewport ref={ref} className={clsx('overscroll-x-contain [&>:first-of-type]:block!', className)} {...props} />
 );
-ScrollAreaViewport.displayName = Viewport?.displayName;
 
 export const ScrollArea = {
   Root: ScrollAreaRoot,
@@ -74,10 +68,15 @@ interface ScrollAreaV2Props
   orientation?: 'vertical' | 'horizontal' | 'both';
 }
 
-export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(function ScrollAreaV2(
-  { className, type, scrollHideDelay, dir, orientation = 'vertical', ...viewportProps },
-  forwardedRef,
-) {
+export const ScrollAreaV2 = function ScrollAreaV2({
+  ref: forwardedRef,
+  className,
+  type,
+  scrollHideDelay,
+  dir,
+  orientation = 'vertical',
+  ...viewportProps
+}: ScrollAreaV2Props & { ref?: React.Ref<ScrollAreaElement> }) {
   return (
     <Root
       type={type}
@@ -113,4 +112,4 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(fun
       {orientation === 'both' ? <Corner className="rounded-full" /> : null}
     </Root>
   );
-});
+};

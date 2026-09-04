@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Fragment, forwardRef } from 'react';
+import { Fragment } from 'react';
 
 import { cn } from '../utils';
 
@@ -46,10 +46,14 @@ export type StepperProps = VariantProps<typeof stepperRoot> & {
   className?: string;
 };
 
-export const Stepper = forwardRef<HTMLDivElement, StepperProps>(function Stepper(
-  { steps, currentStep, onStepClick, className, ...props },
+export const Stepper = function Stepper({
   ref,
-) {
+  steps,
+  currentStep,
+  onStepClick,
+  className,
+  ...props
+}: StepperProps & { ref?: React.Ref<HTMLDivElement> }) {
   const isClickable = !!onStepClick;
 
   return (
@@ -73,4 +77,4 @@ export const Stepper = forwardRef<HTMLDivElement, StepperProps>(function Stepper
       })}
     </div>
   );
-});
+};

@@ -93,7 +93,7 @@ export const InboxPage = ({
   const [currentPage, setCurrentPage] = useState(0);
 
   // region: To avoid flickering the results only reset the current page when data arrives (only on filters or inbox change)
-  const lastFirstPageResultRef = useRef<PaginatedResponse<Case> | undefined>();
+  const lastFirstPageResultRef = useRef<PaginatedResponse<Case> | undefined>(undefined);
   const hasChangedFiltersOrInboxRef = useRef(false);
 
   useEffect(() => {

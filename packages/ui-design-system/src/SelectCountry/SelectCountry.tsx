@@ -1,6 +1,6 @@
 import * as allCountryFlags from 'country-flag-emojis/flags';
 import type { CountryFlag } from 'country-flag-emojis/types';
-import { type ComponentProps, forwardRef, useMemo, useState } from 'react';
+import { type ComponentProps, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { useI18n } from '../contexts/I18nContext';
 import { InternalMenuSharpFactory, MenuCommand } from '../MenuCommand/MenuCommand';
@@ -76,28 +76,26 @@ function FreeTextItem({ onSelect }: { onSelect: (name: string) => void }) {
  * query, an option to use the typed text as a free-form country name is offered in place of the
  * empty state. The selected free-form name is displayed in the trigger without a flag.
  */
-export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(function SelectCountry(
-  {
-    value,
-    onValueChange,
-    searchPlaceholder = 'Search country…',
-    rootClassName,
-    menuContentClassName,
-    placeholder = 'Select country',
-    border = 'square',
-    borderColor = 'greyfigma-90',
-    className,
-    name,
-    disabled,
-    onBlur,
-    id: selectId,
-    open: openProp,
-    onOpenChange: onOpenChangeProp,
-    defaultOpen,
-    ...restMenuRootProps
-  },
+export const SelectCountry = function SelectCountry({
   ref,
-) {
+  value,
+  onValueChange,
+  searchPlaceholder = 'Search country…',
+  rootClassName,
+  menuContentClassName,
+  placeholder = 'Select country',
+  border = 'square',
+  borderColor = 'greyfigma-90',
+  className,
+  name,
+  disabled,
+  onBlur,
+  id: selectId,
+  open: openProp,
+  onOpenChange: onOpenChangeProp,
+  defaultOpen,
+  ...restMenuRootProps
+}: SelectCountryProps & { ref?: React.Ref<HTMLButtonElement> }) {
   const { locale } = useI18n();
   const { countries, byIso3 } = useMemo(() => buildCountryList(locale), [locale]);
   const [internalOpen, setInternalOpen] = useState(false);
@@ -228,7 +226,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
       </MenuCommand.Menu>
     </div>
   );
-});
+};
 
 export function CountryFlagItem({ country, selected }: { country: CountryFlag; selected: boolean }) {
   const { locale } = useI18n();

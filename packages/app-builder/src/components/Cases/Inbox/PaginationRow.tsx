@@ -1,6 +1,6 @@
 import { Page } from '@app-builder/components';
 import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
-import { forwardRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, cn } from 'ui-design-system';
@@ -18,105 +18,110 @@ type PaginationRowProps = {
   className?: string;
 };
 
-export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
-  ({ casesQuery, currentPage, currentLimit, setCurrentPage, setLimit, className }, ref) => {
-    const { t } = useTranslation(['cases']);
-    const pagesRanges = useMemo(() => {
-      if (!casesQuery.data?.pages) return [];
+export const PaginationRow = ({
+  ref,
+  casesQuery,
+  currentPage,
+  currentLimit,
+  setCurrentPage,
+  setLimit,
+  className,
+}: PaginationRowProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  const { t } = useTranslation(['cases']);
+  const pagesRanges = useMemo(() => {
+    if (!casesQuery.data?.pages) return [];
 
-      const pagesStartIndexes = R.pipe(
-        casesQuery.data.pages,
-        R.map((_, index) =>
-          R.pipe(
-            casesQuery.data.pages.slice(0, index),
-            R.sumBy((page) => page?.items.length ?? 0),
-          ),
+    const pagesStartIndexes = R.pipe(
+      casesQuery.data.pages,
+      R.map((_, index) =>
+        R.pipe(
+          casesQuery.data.pages.slice(0, index),
+          R.sumBy((page) => page?.items.length ?? 0),
         ),
-      );
-
-      return casesQuery.data.pages.map((page, index) => {
-        if (!page || page.items.length === 0) {
-          return {
-            startIndex: 0,
-            endIndex: 0,
-          };
-        }
-        const startIndex = pagesStartIndexes[index] !== undefined ? pagesStartIndexes[index] + 1 : 0;
-        const pageLength = page?.items.length !== undefined ? page?.items.length - 1 : 0;
-
-        return {
-          startIndex: startIndex,
-          endIndex: startIndex + pageLength,
-        };
-      });
-    }, [casesQuery.data?.pages]);
-
-    return (
-      <Page.StickyFooter ref={ref} surface="page" className={className}>
-        <div className="flex items-center gap-xs">
-          <span>{t('cases:list.results_per_page')}</span>
-          {[25, 50, 100].map((limit) => {
-            const isActive = limit === currentLimit;
-
-            return (
-              <Button
-                variant="secondary"
-                appearance="stroked"
-                size="medium"
-                key={`pagination-limit-${limit}`}
-                className={cn(isActive && 'border-purple-primary text-purple-primary')}
-                onClick={() => {
-                  if (!isActive) {
-                    setLimit(limit);
-                  }
-                }}
-              >
-                {limit}
-              </Button>
-            );
-          })}
-        </div>
-        <div className="flex items-center gap-xs">
-          {casesQuery.isFetchingNextPage ? (
-            <span>Loading...</span>
-          ) : pagesRanges[currentPage] ? (
-            <span>
-              From {pagesRanges[currentPage].startIndex} to {pagesRanges[currentPage].endIndex}
-            </span>
-          ) : null}
-          <Button
-            mode="icon"
-            size="medium"
-            variant="secondary"
-            appearance="stroked"
-            disabled={currentPage === 0}
-            onClick={() => {
-              setCurrentPage(currentPage - 1);
-            }}
-          >
-            <Icon icon="arrow-left" className="size-5" />
-          </Button>
-          <Button
-            mode="icon"
-            size="medium"
-            variant="secondary"
-            appearance="stroked"
-            disabled={
-              (currentPage === casesQuery.data.pages.length - 1 && !casesQuery.hasNextPage) ||
-              casesQuery.isFetchingNextPage
-            }
-            onClick={() => {
-              if (currentPage === casesQuery.data.pages.length - 1) {
-                casesQuery.fetchNextPage();
-              }
-              setCurrentPage(currentPage + 1);
-            }}
-          >
-            <Icon icon="arrow-right" className="size-5" />
-          </Button>
-        </div>
-      </Page.StickyFooter>
+      ),
     );
-  },
-);
-PaginationRow.displayName = 'PaginationRow';
+
+    return casesQuery.data.pages.map((page, index) => {
+      if (!page || page.items.length === 0) {
+        return {
+          startIndex: 0,
+          endIndex: 0,
+        };
+      }
+      const startIndex = pagesStartIndexes[index] !== undefined ? pagesStartIndexes[index] + 1 : 0;
+      const pageLength = page?.items.length !== undefined ? page?.items.length - 1 : 0;
+
+      return {
+        startIndex: startIndex,
+        endIndex: startIndex + pageLength,
+      };
+    });
+  }, [casesQuery.data?.pages]);
+
+  return (
+    <Page.StickyFooter ref={ref} surface="page" className={className}>
+      <div className="flex items-center gap-xs">
+        <span>{t('cases:list.results_per_page')}</span>
+        {[25, 50, 100].map((limit) => {
+          const isActive = limit === currentLimit;
+
+          return (
+            <Button
+              variant="secondary"
+              appearance="stroked"
+              size="medium"
+              key={`pagination-limit-${limit}`}
+              className={cn(isActive && 'border-purple-primary text-purple-primary')}
+              onClick={() => {
+                if (!isActive) {
+                  setLimit(limit);
+                }
+              }}
+            >
+              {limit}
+            </Button>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-xs">
+        {casesQuery.isFetchingNextPage ? (
+          <span>Loading...</span>
+        ) : pagesRanges[currentPage] ? (
+          <span>
+            From {pagesRanges[currentPage].startIndex} to {pagesRanges[currentPage].endIndex}
+          </span>
+        ) : null}
+        <Button
+          mode="icon"
+          size="medium"
+          variant="secondary"
+          appearance="stroked"
+          disabled={currentPage === 0}
+          onClick={() => {
+            setCurrentPage(currentPage - 1);
+          }}
+        >
+          <Icon icon="arrow-left" className="size-5" />
+        </Button>
+        <Button
+          mode="icon"
+          size="medium"
+          variant="secondary"
+          appearance="stroked"
+          disabled={
+            (currentPage === casesQuery.data.pages.length - 1 && !casesQuery.hasNextPage) ||
+            casesQuery.isFetchingNextPage
+          }
+          onClick={() => {
+            if (currentPage === casesQuery.data.pages.length - 1) {
+              casesQuery.fetchNextPage();
+            }
+            setCurrentPage(currentPage + 1);
+          }}
+        >
+          <Icon icon="arrow-right" className="size-5" />
+        </Button>
+      </div>
+    </Page.StickyFooter>
+  );
+};

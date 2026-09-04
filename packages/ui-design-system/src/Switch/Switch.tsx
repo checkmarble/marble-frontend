@@ -1,6 +1,5 @@
 import { Root, type SwitchProps, Thumb } from '@radix-ui/react-switch';
 import { cva } from 'class-variance-authority';
-import { forwardRef } from 'react';
 
 import { cn } from '../utils';
 
@@ -38,13 +37,14 @@ const switchThumb = cva([
   'dark:group-disabled/switch:bg-grey-secondary!',
 ]);
 
-export const Switch = forwardRef<HTMLButtonElement, SwitchProps & { className?: string }>(function Switch(
-  { className, ...props },
+export const Switch = function Switch({
   ref,
-) {
+  className,
+  ...props
+}: SwitchProps & { className?: string; ref?: React.Ref<HTMLButtonElement> }) {
   return (
     <Root ref={ref} className={cn(switchRoot(), className)} {...props}>
       <Thumb className={switchThumb()} />
     </Root>
   );
-});
+};

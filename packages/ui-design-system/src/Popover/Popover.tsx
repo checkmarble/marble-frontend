@@ -6,15 +6,17 @@ import {
   Popover as PopoverPrimitive,
   PopoverTrigger,
 } from '@radix-ui/react-popover';
-import { forwardRef, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { StickyComponent } from '../StickyComponent/StickyComponent';
 import { cn } from '../utils';
 
-const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(function PopoverContent(
-  { className, children, ...props },
+const PopoverContent = function PopoverContent({
   ref,
-) {
+  className,
+  children,
+  ...props
+}: PopoverContentProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <PopoverPortal>
       <PopoverContentPrimitive
@@ -29,8 +31,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(function 
       </PopoverContentPrimitive>
     </PopoverPortal>
   );
-});
-PopoverContent.displayName = 'PopoverContent';
+};
 
 interface PopoverFooterProps {
   children: ReactNode;

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 type CaseInvestigationProps = {
   caseId: string;
   events: CaseEvent[];
-  root: RefObject<HTMLDivElement>;
+  root: RefObject<HTMLDivElement | null>;
 };
 
 export const CaseInvestigation = ({ caseId, events, root }: CaseInvestigationProps) => {

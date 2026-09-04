@@ -1,6 +1,7 @@
 import {
   cloneElement,
   type FunctionComponent,
+  type MouseEventHandler,
   type ReactElement,
   type ReactNode,
   useCallback,
@@ -18,7 +19,7 @@ interface PrintViewProps {
   /**
    * Button or element that triggers the print view
    */
-  trigger: ReactElement;
+  trigger: ReactElement<{ onClick?: MouseEventHandler }>;
   /**
    * Page title shown in the print window
    */

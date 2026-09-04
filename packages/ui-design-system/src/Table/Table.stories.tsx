@@ -9,7 +9,7 @@ type StoryProps = {
   count: number;
 };
 
-const Template: StoryFn<StoryProps> = ({ count }: StoryProps) => {
+function Template({ count }: StoryProps) {
   const data = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
@@ -57,7 +57,7 @@ const Template: StoryFn<StoryProps> = ({ count }: StoryProps) => {
   });
 
   return <Table.Default {...virtualTable} />;
-};
+}
 
 const Story: Meta<StoryProps> = {
   component: Template,
@@ -72,5 +72,5 @@ const Story: Meta<StoryProps> = {
 };
 export default Story;
 
-export const Primary = Template.bind({});
+export const Primary: StoryFn<StoryProps> = Template;
 Primary.args = {};

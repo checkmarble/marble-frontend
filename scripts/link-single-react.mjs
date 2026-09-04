@@ -10,8 +10,8 @@ if (!existsSync(bunDir)) {
 }
 
 const entries = readdirSync(bunDir);
-const reactStore = entries.find((name) => name.startsWith('react@18.'));
-const reactDomStore = entries.find((name) => name.startsWith('react-dom@18.'));
+const reactStore = entries.find((name) => name.startsWith('react@19.'));
+const reactDomStore = entries.find((name) => name.startsWith('react-dom@19.'));
 
 if (!reactStore || !reactDomStore) {
   process.exit(0);

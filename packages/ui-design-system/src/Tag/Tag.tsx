@@ -1,5 +1,5 @@
 import { cva, VariantProps } from 'class-variance-authority';
-import { ComponentProps, forwardRef } from 'react';
+import { ComponentProps } from 'react';
 import { cn } from '../utils';
 
 export const tagClassName = cva('inline-flex items-center justify-center border text-nowrap gap-xs', {
@@ -33,11 +33,15 @@ export const tagClassName = cva('inline-flex items-center justify-center border 
 
 export type TagProps = ComponentProps<'span'> & VariantProps<typeof tagClassName>;
 
-export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
-  { size, color, appearance, className, ...props },
+export const Tag = function Tag({
   ref,
-) {
+  size,
+  color,
+  appearance,
+  className,
+  ...props
+}: TagProps & { ref?: React.Ref<HTMLSpanElement> }) {
   return <span ref={ref} className={cn(tagClassName({ size, color, appearance }), className)} {...props} />;
-});
+};
 
 export default Tag;

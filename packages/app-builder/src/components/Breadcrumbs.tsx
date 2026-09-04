@@ -22,22 +22,25 @@ interface BreadCrumbLinkInnerProps extends React.ComponentPropsWithRef<'a'> {
   isLast: boolean;
 }
 
-const BreadCrumbLinkInner = React.forwardRef<HTMLAnchorElement, BreadCrumbLinkInnerProps>(
-  ({ isLast, className, children, ...props }, ref) => (
-    <a
-      ref={ref}
-      {...props}
-      className={cn(
-        'text-h2 flex items-center font-semibold transition-colors shrink-0',
-        { 'text-grey-placeholder hover:text-grey-primary': !isLast },
-        className,
-      )}
-    >
-      {children}
-    </a>
-  ),
+const BreadCrumbLinkInner = ({
+  ref,
+  isLast,
+  className,
+  children,
+  ...props
+}: BreadCrumbLinkInnerProps & { ref?: React.Ref<HTMLAnchorElement> }) => (
+  <a
+    ref={ref}
+    {...props}
+    className={cn(
+      'text-h2 flex items-center font-semibold transition-colors shrink-0',
+      { 'text-grey-placeholder hover:text-grey-primary': !isLast },
+      className,
+    )}
+  >
+    {children}
+  </a>
 );
-BreadCrumbLinkInner.displayName = 'BreadCrumbLinkInner';
 
 const CreatedBreadCrumbLink = createLink(BreadCrumbLinkInner);
 

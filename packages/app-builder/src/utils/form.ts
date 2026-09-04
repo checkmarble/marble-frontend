@@ -1,6 +1,6 @@
 import { AnyFormApi, StandardSchemaV1Issue } from '@tanstack/react-form';
 import { select } from 'radash';
-import type { FormEvent, LegacyRef, MutableRefObject, RefCallback } from 'react';
+import type { FormEvent, MutableRefObject, Ref, RefCallback } from 'react';
 
 export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
   if (event.currentTarget.value !== event.currentTarget.defaultValue) {
@@ -40,15 +40,37 @@ export const getFieldErrors = (errors: ({ message: string } | undefined)[]) =>
     (e) => e !== undefined,
   );
 
-export const mergeRefs = <T>(refs: Array<MutableRefObject<T> | LegacyRef<T> | undefined | null>): RefCallback<T> => {
+type PossibleRef<T> = MutableRefObject<T> | Ref<T> | undefined | null;
+
+function assignRef<T>(ref: PossibleRef<T>, value: T | null) {
+  if (typeof ref === 'function') {
+    return ref(value);
+  }
+  if (ref != null) {
+    (ref as MutableRefObject<T | null>).current = value;
+  }
+}
+
+export const mergeRefs = <T>(refs: Array<PossibleRef<T>>): RefCallback<T> => {
   return (value) => {
-    refs.forEach((ref) => {
-      if (typeof ref === 'function') {
-        ref(value);
-      } else if (ref != null) {
-        (ref as MutableRefObject<T | null>).current = value;
-      }
-    });
+    const cleanups: Array<(() => void) | void> = [];
+
+    for (const ref of refs) {
+      const cleanup = assignRef(ref, value);
+      cleanups.push(typeof cleanup === 'function' ? cleanup : undefined);
+    }
+
+    if (cleanups.some((cleanup) => typeof cleanup === 'function')) {
+      return () => {
+        for (const [index, cleanup] of cleanups.entries()) {
+          if (typeof cleanup === 'function') {
+            cleanup();
+          } else {
+            assignRef(refs[index], null);
+          }
+        }
+      };
+    }
   };
 };
 

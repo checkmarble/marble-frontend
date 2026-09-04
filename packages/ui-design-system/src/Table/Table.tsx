@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
-import { cloneElement, createContext, useContext, useMemo, useRef } from 'react';
+import { cloneElement, createContext, type JSX, useContext, useMemo, useRef } from 'react';
 import { Icon } from 'ui-icons';
 
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
@@ -22,7 +22,7 @@ function TableContainer({
   withRowLink,
   ...props
 }: React.ComponentProps<'table'> & {
-  scrollElementRef: React.RefObject<HTMLDivElement>;
+  scrollElementRef: React.RefObject<HTMLDivElement | null>;
   withRowLink: boolean;
 }) {
   return (

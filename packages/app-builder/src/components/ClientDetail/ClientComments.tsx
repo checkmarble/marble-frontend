@@ -18,7 +18,7 @@ type ClientCommentsProps = {
   objectType: string;
   objectId: string;
   annotationsQuery: UseQueryResult<{ annotations: GroupedAnnotations }, Error>;
-  root: RefObject<HTMLElement>;
+  root: RefObject<HTMLElement | null>;
 };
 
 export const ClientComments = ({ objectType, objectId, annotationsQuery, root }: ClientCommentsProps) => {
@@ -58,7 +58,7 @@ export const ClientComments = ({ objectType, objectId, annotationsQuery, root }:
 
 type CommentsProps = {
   comments: GroupedAnnotations['comments'];
-  root: RefObject<HTMLElement>;
+  root: RefObject<HTMLElement | null>;
 };
 
 const Comments = ({ comments: _comments, root }: CommentsProps) => {

@@ -19,7 +19,7 @@ import {
 } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef, isValidElement, type ReactElement, ReactNode, useRef, useState } from 'react';
+import { isValidElement, ReactNode, useRef, useState } from 'react';
 import { isNullish } from 'remeda';
 import { Icon, IconName } from 'ui-icons';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
@@ -77,10 +77,15 @@ export const selectTrigger = cva(
 
 export interface SelectTriggerProps extends PrimitiveSelectTriggerProps, VariantProps<typeof selectTrigger> {}
 
-const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function SelectTrigger(
-  { children, className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props },
+const SelectTrigger = function SelectTrigger({
   ref,
-) {
+  children,
+  className,
+  border = 'square',
+  borderColor = 'greyfigma-90',
+  disabled,
+  ...props
+}: SelectTriggerProps & { ref?: React.Ref<HTMLButtonElement> }) {
   return (
     <Trigger
       ref={ref}
@@ -101,12 +106,14 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function
       {children}
     </Trigger>
   );
-});
+};
 
-const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectItem(
-  { children, className, ...props },
+const SelectItem = function SelectItem({
   ref,
-) {
+  children,
+  className,
+  ...props
+}: SelectItemProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <Item
       ref={ref}
@@ -120,12 +127,14 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
       {children}
     </Item>
   );
-});
+};
 
-const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'center' | 'start' }>(function SelectValue(
-  { className, align = 'center', ...props },
+const SelectValue = function SelectValue({
   ref,
-) {
+  className,
+  align = 'center',
+  ...props
+}: SelectValueProps & { align?: 'center' | 'start'; ref?: React.Ref<HTMLDivElement> }) {
   return (
     <span
       className={clsx(
@@ -137,7 +146,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'cen
       <Value ref={ref} {...props} />
     </span>
   );
-});
+};
 
 const SelectArrow = () => (
   <SelectIcon className="group-radix-state-open:rotate-180 text-grey-primary size-6 shrink-0" asChild>
@@ -149,10 +158,15 @@ export type SelectProps = RawSelectProps &
   Pick<SelectValueProps, 'placeholder'> &
   Pick<SelectTriggerProps, 'border' | 'borderColor' | 'className'>;
 
-const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function SelectDefault(
-  { children, placeholder, border, borderColor, className, ...props },
-  triggerRef,
-) {
+const SelectDefault = function SelectDefault({
+  ref: triggerRef,
+  children,
+  placeholder,
+  border,
+  borderColor,
+  className,
+  ...props
+}: SelectProps & { ref?: React.Ref<HTMLButtonElement> }) {
   return (
     <Root {...props}>
       <Select.Trigger ref={triggerRef} border={border} borderColor={borderColor} className={className}>
@@ -167,18 +181,20 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function Select
       </Select.Content>
     </Root>
   );
-});
+};
 
-const SelectDefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectDefaultItem(
-  { children, className, ...props },
+const SelectDefaultItem = function SelectDefaultItem({
   ref,
-) {
+  children,
+  className,
+  ...props
+}: SelectItemProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <SelectItem ref={ref} className={clsx('min-h-10', className)} {...props}>
       <Select.ItemText>{children}</Select.ItemText>
     </SelectItem>
   );
-});
+};
 /**
  * @deprecated This Select component is deprecated and will be removed in a future release.
  * Please migrate to the new MenuCommand component as soon as possible.
@@ -247,11 +263,11 @@ function getNodeText(node: ReactNode): string | null {
   return null;
 }
 
-function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
-  props: SelectV2Props<T, O>,
-  ref: React.ForwardedRef<HTMLButtonElement>,
+export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(
+  props: SelectV2Props<T, O> & { ref?: React.Ref<HTMLButtonElement> },
 ) {
   const {
+    ref,
     size,
     options,
     placeholder,
@@ -407,7 +423,3 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
     </MenuCommand.Menu>
   );
 }
-
-export const SelectV2 = forwardRef(SelectV2Inner) as <T, O extends SelectOption<T> = SelectOption<T>>(
-  props: SelectV2Props<T, O> & { ref?: React.Ref<HTMLButtonElement> },
-) => ReactElement;

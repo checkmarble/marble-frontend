@@ -1,7 +1,6 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { Link } from '@tanstack/react-router';
 import { cva, VariantProps } from 'class-variance-authority';
-import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, cn, StickyComponent, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -28,16 +27,18 @@ function PageHeader({ className, children, color, ...props }: React.ComponentPro
   );
 }
 
-const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(function PageContainer(
-  { className, children, ...props },
+const PageContainer = function PageContainer({
   ref,
-) {
+  className,
+  children,
+  ...props
+}: React.ComponentProps<'div'> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <div ref={ref} className={cn('flex min-w-0 flex-1 flex-col', className)} {...props}>
       {children}
     </div>
   );
-});
+};
 
 const pageDescriptionClassName = cva(
   'bg-grey-white text-s text-grey-secondary flex flex-row gap-sm p-md font-normal border-grey-border dark:bg-grey-background',

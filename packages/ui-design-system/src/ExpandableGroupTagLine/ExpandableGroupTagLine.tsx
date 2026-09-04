@@ -1,5 +1,5 @@
 import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
-import { forwardRef, type MouseEvent, type ReactNode, useRef, useState } from 'react';
+import { type MouseEvent, type ReactNode, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Popover } from '../Popover/Popover';
 import { Tag } from '../Tag/Tag';
@@ -24,15 +24,17 @@ export interface ExpandableGroupTagLineProps {
   overflowBehavior?: 'expand' | 'popover';
 }
 
-const DefaultMoreButton = forwardRef<HTMLSpanElement, { overflow: number; onExpand: (event: MouseEvent) => void }>(
-  function DefaultMoreButton({ overflow, onExpand }, ref) {
-    return (
-      <Tag ref={ref} color="purple" size="small" className={overflowButtonClassName} onClick={onExpand}>
-        +{overflow}
-      </Tag>
-    );
-  },
-);
+const DefaultMoreButton = function DefaultMoreButton({
+  ref,
+  overflow,
+  onExpand,
+}: { overflow: number; onExpand: (event: MouseEvent) => void } & { ref?: React.Ref<HTMLSpanElement> }) {
+  return (
+    <Tag ref={ref} color="purple" size="small" className={overflowButtonClassName} onClick={onExpand}>
+      +{overflow}
+    </Tag>
+  );
+};
 
 function DefaultLessButton({ onCollapse }: { onCollapse: (event: MouseEvent) => void }) {
   return (
