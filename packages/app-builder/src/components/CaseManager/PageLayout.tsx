@@ -42,6 +42,7 @@ import {
 import { Icon } from 'ui-icons';
 import { CloseCase } from '../Cases/CloseCase';
 import { OpenCase } from '../Cases/OpenCase';
+import { SarReportDownload } from '../Cases/SarReportDownload';
 import { SnoozeCase } from '../Cases/SnoozeCase';
 import { ClientCommentForm } from './ClientComments';
 import { CommentContext } from './hooks/comment-context';
@@ -81,8 +82,10 @@ export function CaseManagerPageLayout({
     setKycEnrichmentPanelOpen(true);
   };
 
-  const sarStatus = sarReportsQuery.data?.[0]?.status;
+  const sarReport = sarReportsQuery.data?.[0];
+  const sarStatus = sarReport?.status;
   const isSarCompleted = sarStatus === 'completed';
+  const hasSarFile = sarReport?.hasFile === true;
   const sarActionText = match(sarStatus)
     .with(undefined, () => t('cases:manager.actions.create_sar'))
     .with('pending', () => t('cases:manager.actions.complete_sar'))
@@ -136,7 +139,11 @@ export function CaseManagerPageLayout({
               </Link>
             </Tabs>
             <ActionBar>
-              <ActionButton disabled={isSarCompleted} icon="plus" text={sarActionText} onClick={handleSarAction} />
+              {isSarCompleted && hasSarFile && sarReport ? (
+                <SarReportDownload variant="action" caseId={caseDetail.id} reportId={sarReport.id} />
+              ) : (
+                <ActionButton icon="plus" text={sarActionText} onClick={handleSarAction} />
+              )}
               <ActionButton
                 disabled={pivotObjects.length === 0}
                 icon="plus"
@@ -152,7 +159,7 @@ export function CaseManagerPageLayout({
             open={sarReportModalOpen}
             onOpenChange={setSarReportModalOpen}
             caseId={caseDetail.id}
-            report={sarReportsQuery.data?.[0]}
+            report={sarReport}
           />
           <KycEnrichmentPanel
             caseId={caseDetail.id}
@@ -262,7 +269,13 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
             </form.Field>
           ) : null}
 
-          {newStatus === 'completed' ? (
+          {report?.hasFile ? (
+            <div className="flex justify-start">
+              <SarReportDownload caseId={caseId} reportId={report.id} />
+            </div>
+          ) : null}
+
+          {newStatus === 'completed' && !report?.hasFile ? (
             <div
               {...getRootProps()}
               className={cn(
