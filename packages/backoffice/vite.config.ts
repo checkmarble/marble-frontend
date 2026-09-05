@@ -26,7 +26,7 @@ const plugins = [
   externalNativeModules,
   tailwindcss(),
   viteTsConfigPaths(),
-  viteReact(),
+  viteReact({ compiler: true }),
 ] as Plugin[];
 
 const config = defineConfig({

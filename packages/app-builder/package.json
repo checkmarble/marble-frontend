@@ -30,11 +30,11 @@
     "@types/qs": "^6.15.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "^19.2.4",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react": "^6.1.0",
     "jsdom": "30.0.1",
     "tailwindcss": "4.3.3",
     "tsx": "^4.22.4",
-    "vite": "^7.3.6",
+    "vite": "^8.2.2",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "4.1.10"
   },
