@@ -125,7 +125,8 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
                 <span className="truncate">
                   {step.kind === 'event'
                     ? t(`cases:case_detail.history.event_type.${step.eventType}`)
-                    : t('cases:manager.timeline.due')}{' '}
+                    : t('cases:manager.timeline.due')}
+                  &nbsp;
                   {relativeLabel}
                 </span>
               </div>

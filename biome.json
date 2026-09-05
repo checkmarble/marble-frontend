@@ -120,7 +120,17 @@
   },
   "assist": {
     "enabled": true,
-    "actions": { "source": { "organizeImports": "on", "useSortedKeys": "off" } }
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "identifierOrder": "natural"
+          }
+        },
+        "useSortedKeys": "off"
+      }
+    }
   },
   "overrides": [
     {

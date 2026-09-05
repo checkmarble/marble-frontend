@@ -293,7 +293,7 @@ function ScenarioRuleRow({ rule, scenario, editorMode, language, org, onEditRequ
                 ) : null}
                 {rule.counterPartyId && isDataAccessorAstNode(rule.counterPartyId) ? (
                   <li className="list-item">
-                    {t('scenarios:rules.screening_view.counterparty_id')}{' '}
+                    {t('scenarios:rules.screening_view.counterparty_id')}&nbsp;
                     <Tag color="grey">{getDataAccessorDisplayName(rule.counterPartyId)}</Tag>
                   </li>
                 ) : null}
@@ -459,8 +459,9 @@ const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningR
                 <NameQueryFieldTag label={k} preprocessing={preprocessing} />
               ) : (
                 <Tag color="grey">{k}</Tag>
-              )}{' '}
-              {t('scenarios:rules.screening_view.matching')}{' '}
+              )}
+              &nbsp;
+              {t('scenarios:rules.screening_view.matching')}&nbsp;
               <span className="inline-flex gap-xs">
                 {q.children.map((node) => (
                   <DataAccessorAstNodeTag key={node.id} node={node} />

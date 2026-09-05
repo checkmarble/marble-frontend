@@ -30,6 +30,14 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "editor.codeActionsOnSave": {
+    "source.organizeImports": "never",
     "source.organizeImports.biome": "explicit"
+  },
+  "js/ts.preferences.organizeImports": {
+    "caseSensitivity": "caseSensitive",
+    "caseFirst": "upper",
+    "unicodeCollation": "unicode",
+    "numericCollation": true,
+    "typeOrder": "inline"
   }
 }
