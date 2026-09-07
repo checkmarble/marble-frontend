@@ -44,8 +44,8 @@ const keyed: DataModelField = {
   ...field,
   semanticSubType: 'key_color_value',
   enumValues: [
-    { key: 'approved', color: 'green', value: 'Approved' },
-    { key: 'other', color: 'gray', value: 'Other' },
+    { key: 'approved', color: 'green' },
+    { key: 'other', color: 'gray' },
   ],
 };
 
@@ -85,25 +85,32 @@ function Editor({
 }
 
 describe('shared enum tags', () => {
+  it('displays the exact key with its configured color', () => {
+    render(<EnumTag field={{ ...keyed, enumValues: [{ key: 'COMPLETED', color: 'green' }] }} value="COMPLETED" />);
+    expect(screen.getByTitle('COMPLETED').textContent).toBe('COMPLETED');
+    expect(screen.getByTitle('COMPLETED').style.color).toBe('green');
+    expect(screen.getByTitle('COMPLETED').style.borderColor).toBe('green');
+  });
+
   it('renders ordinary enums explicitly purple', () => {
     const { container } = render(<EnumTag field={field} value="known" />);
     expect(container.querySelector('span')?.className).toContain('text-purple-primary');
   });
-  it('renders configured outlines and presentation-only fallback labels', () => {
+  it('renders configured outlines and presentation-only fallback keys', () => {
     render(<EnumTag field={keyed} value="stale" />);
-    expect(screen.getByText('Other').style.color).toBe('gray');
-    expect(screen.getByText('Other').style.borderColor).toBe('gray');
-    expect(screen.getByText('Other').title).toBe('stale');
+    expect(screen.getByTitle('stale').style.color).toBe('gray');
+    expect(screen.getByTitle('stale').style.borderColor).toBe('gray');
+    expect(screen.getByTitle('stale').textContent).toBe('other');
   });
   it('renders unknown countries neutrally', () => {
     render(<EnumTag field={{ ...field, semanticSubType: 'country' }} value="ZZZ" />);
-    expect(screen.getByText('ZZZ').className).toContain('text-grey-placeholder');
+    expect(screen.getByTitle('ZZZ').className).toContain('text-grey-placeholder');
   });
   it.each([{ ...field, isEnum: true, semanticType: undefined }, field, { ...field, dataType: 'Int' as const }])(
     'DataField recognizes enums and preserves numeric display',
     (definition) => {
       render(<DataField field={definition} value={10000} />);
-      expect(screen.getByText('10000').className).toContain('text-purple-primary');
+      expect(screen.getByTitle('10000').className).toContain('text-purple-primary');
     },
   );
 });
@@ -116,11 +123,11 @@ describe.each([false, true])('ValueSwitch enum selector (multiple=%s)', (multipl
     await userEvent.click(screen.getByRole('option', { name: 'scenarios:value_switch.use_custom_value custom' }));
     expect(screen.getByTestId('values').textContent).toBe(JSON.stringify(multiple ? ['known', 'custom'] : ['custom']));
   });
-  it('searches labels while storing configured keys', async () => {
+  it('searches and displays configured keys', async () => {
     render(<Editor multiple={multiple} definition={keyed} initial={[]} />);
     await userEvent.click(screen.getByRole('button'));
     await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), 'Approved');
-    await userEvent.click(screen.getByRole('option', { name: 'Approved' }));
+    await userEvent.click(screen.getByRole('option', { name: 'approved' }));
     expect(screen.getByTestId('values').textContent).toBe('["approved"]');
   });
   it.each([keyed, { ...field, semanticSubType: 'country' as const }])(
@@ -171,24 +178,21 @@ describe('enum metadata controls', () => {
     expect(screen.getAllByText('data:upload_data.field_enum_value_unique_error')).toHaveLength(2);
     expect(input.getAttribute('aria-invalid')).toBe('true');
   });
-  it('keeps user-entered keys independent of labels and promotes the previous fallback on deletion', async () => {
+  it('accepts keys without labels and promotes the previous fallback on deletion', async () => {
     render(<MetadataEditor />);
     await userEvent.click(screen.getByRole('button', { name: 'data:upload_data.field_enum_add_value' }));
     const original = screen.getByTestId('metadata').textContent ?? '[]';
-    const originalEntries = z.array(z.object({ key: z.string(), value: z.string() })).parse(JSON.parse(original));
+    const originalEntries = z.array(z.object({ key: z.string(), color: z.string() })).parse(JSON.parse(original));
     expect(originalEntries.at(-1)!.key).toBe('');
     const keyInput = screen.getAllByPlaceholderText('data:upload_data.field_enum_key_placeholder').at(-1)!;
     await userEvent.type(keyInput, 'COMPLETED');
     expect(document.activeElement).toBe(keyInput);
-    const input = screen.getAllByPlaceholderText('data:upload_data.field_enum_value_placeholder').at(-1)!;
-    await userEvent.type(input, 'New label');
-    await userEvent.clear(input);
-    await userEvent.type(input, 'Renamed label');
+    expect(screen.queryByPlaceholderText('data:upload_data.field_enum_value_placeholder')).toBeNull();
     const editedEntries = z
-      .array(z.object({ key: z.string(), value: z.string() }))
+      .array(z.object({ key: z.string(), color: z.string() }))
       .parse(JSON.parse(screen.getByTestId('metadata').textContent ?? '[]'));
     expect(editedEntries.at(-1)!.key).toBe('COMPLETED');
-    expect(editedEntries.at(-1)!.value).toBe('Renamed label');
+    expect(editedEntries.at(-1)!.color).toBe('gray');
     expect(screen.getAllByText('data:upload_data.enum_fallback')).toHaveLength(1);
     await userEvent.click(screen.getAllByRole('button', { name: 'data:upload_data.field_enum_remove_value' }).at(-1)!);
     expect(JSON.parse(screen.getByTestId('metadata').textContent ?? '[]')).toEqual(keyed.enumValues);

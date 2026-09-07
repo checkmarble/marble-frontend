@@ -673,13 +673,6 @@ export function EnumValuesSettings({
                     disabled={disabled}
                   />
                 </div>
-                <Input
-                  className="flex-1"
-                  value={enumValue.value}
-                  placeholder={t('data:upload_data.field_enum_value_placeholder')}
-                  onChange={(e) => updateValue(index, { value: e.currentTarget.value })}
-                  disabled={disabled}
-                />
                 <button
                   type="button"
                   onClick={() => removeValue(index)}

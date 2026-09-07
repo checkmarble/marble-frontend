@@ -17,7 +17,6 @@ export type EnumColors = (typeof enumColors)[number];
 export const enumEntrySchema = z.object({
   key: z.string().refine((value) => value.trim().length > 0),
   color: z.enum(enumColors),
-  value: z.string().refine((value) => value.trim().length > 0),
 });
 export type EnumEntry = z.infer<typeof enumEntrySchema>;
 export const enumEntriesSchema = z
@@ -28,5 +27,5 @@ export const countryCodeFormatSchema = z.enum(['alpha2', 'alpha3']);
 export type CountryCodeFormat = z.infer<typeof countryCodeFormatSchema>;
 
 export function createEnumEntry(): EnumEntry {
-  return { key: '', color: 'gray', value: '' };
+  return { key: '', color: 'gray' };
 }

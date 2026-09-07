@@ -56,7 +56,7 @@ export function resolveEnumDisplay(field: EnumField, value: EnumValue, language:
   if (field.dataType === 'Int' || field.dataType === 'Float') return { label: raw };
   if (field.semanticSubType === 'key_color_value') {
     const entry = field.enumValues?.find((entry) => entry.key === value) ?? field.enumValues?.at(-1);
-    return entry ? { label: entry.value, color: entry.color } : { label: raw };
+    return entry ? { label: entry.key, color: entry.color } : { label: raw };
   }
   if (field.semanticSubType === 'country' || field.semanticType === 'country') {
     const country = resolveCountry(raw);
