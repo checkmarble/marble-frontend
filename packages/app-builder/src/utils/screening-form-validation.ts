@@ -1,4 +1,5 @@
 import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
+import { isListAstNode } from '@app-builder/models/astNode/list';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { type TFunction } from 'i18next';
 import { match } from 'ts-pattern';
@@ -98,7 +99,7 @@ export function isQueryFieldFilled(node: unknown): boolean {
   if (isUndefinedAstNode(node)) {
     return false;
   }
-  if (isStringConcatAstNode(node)) {
+  if (isStringConcatAstNode(node) || isListAstNode(node)) {
     const children = node.children ?? [];
     if (children.length === 0) {
       return false;
