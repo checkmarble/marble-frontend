@@ -1,8 +1,7 @@
 import { type AstNode, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { type ListAstNode, NewListAstNode } from '@app-builder/models/astNode/list';
 import { NewStringConcatAstNode, type StringConcatAstNode } from '@app-builder/models/astNode/strings';
-import { reorder } from '@app-builder/utils/list';
-import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
 import { replace } from 'radash';
 import { useEffect, useRef, useState } from 'react';
 import { splice } from 'remeda';
@@ -11,13 +10,17 @@ import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
 
-function concatFromNodes(nodes: KnownOperandAstNode[]): AstNode | null {
+type MultiReferenceAstNode = ListAstNode | StringConcatAstNode;
+
+function nodeFromNodes(nodes: KnownOperandAstNode[], output: 'List' | 'StringConcat'): AstNode | null {
   const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
-  return finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
+  if (finalNodes.length === 0) return null;
+  return output === 'List' ? NewListAstNode(finalNodes) : NewStringConcatAstNode(finalNodes, { withSeparator: true });
 }
 
-export function FieldNodeConcat({
+function FieldNodeReferences({
   value,
+  output,
   limit,
   onBlur,
   onChange,
@@ -25,7 +28,8 @@ export function FieldNodeConcat({
   placeholder,
   withDate,
 }: {
-  value?: StringConcatAstNode;
+  value?: MultiReferenceAstNode;
+  output: 'List' | 'StringConcat';
   limit?: number;
   placeholder?: string;
   onChange?: (node: AstNode | null) => void;
@@ -41,7 +45,7 @@ export function FieldNodeConcat({
   onChangeRef.current = onChange;
 
   const emitFromNodes = (nextNodes: KnownOperandAstNode[]) => {
-    onChangeRef.current?.(concatFromNodes(nextNodes));
+    onChangeRef.current?.(nodeFromNodes(nextNodes, output));
   };
 
   const applyNodes = (nextNodes: KnownOperandAstNode[]) => {
@@ -69,88 +73,60 @@ export function FieldNodeConcat({
     });
   }, [value]);
 
-  const onDragEnd: OnDragEndResponder<string> = (result): void => {
-    if (!result.destination || result.destination.index === result.source.index) {
-      return;
-    }
-
-    applyNodes(reorder(nodes, result.source.index, result.destination.index));
-  };
-
   return (
-    <DragDropContext onDragEnd={onDragEnd} autoScrollerOptions={{ disabled: true }}>
-      <div onBlur={onBlur} className="flex flex-col gap-sm">
-        <Droppable isDropDisabled={viewOnly} droppableId="NODES" direction="vertical">
-          {(dropProvided) => (
-            <div className="flex flex-col gap-sm" ref={dropProvided.innerRef}>
-              {nodes.map((node, index) => (
-                <Draggable isDragDisabled={viewOnly} key={node.id} draggableId={node.id} index={index}>
-                  {(dragProvided) => (
-                    <div
-                      key={node.id}
-                      ref={dragProvided.innerRef}
-                      {...dragProvided.draggableProps}
-                      className="flex items-center gap-2xs"
-                    >
-                      {!viewOnly ? (
-                        <div className="flex flex-row">
-                          <div
-                            key={node.id}
-                            className="hover:bg-grey-background flex size-6 items-center justify-center rounded-sm"
-                            {...dragProvided.dragHandleProps}
-                          >
-                            <Icon icon="drag" className="text-grey-disabled size-3" />
-                          </div>
-                          {nodes.length > 1 ? (
-                            <Button
-                              mode="icon"
-                              variant="secondary"
-                              appearance="link"
-                              onClick={() => applyNodes(splice(nodes, index, 1, []))}
-                            >
-                              <Icon icon="cross" className="size-4" />
-                            </Button>
-                          ) : null}
-                          {!limit || nodes.length < limit ? (
-                            <Button
-                              mode="icon"
-                              variant="secondary"
-                              appearance="link"
-                              disabled={nodes.length === limit}
-                              onClick={() =>
-                                applyNodes(
-                                  splice(nodes, index, 1, [
-                                    { ...nodes[index]!, id: nodes[index]!.id },
-                                    NewUndefinedAstNode(),
-                                  ]),
-                                )
-                              }
-                            >
-                              <Icon icon="plus" className="size-4" />
-                            </Button>
-                          ) : null}
-                        </div>
-                      ) : null}
-                      <MatchOperand
-                        node={node}
-                        key={`node-${index}`}
-                        placeholder={placeholder}
-                        onSave={(savedNode) => {
-                          if (isKnownOperandAstNode(savedNode)) {
-                            applyNodes(replace(nodes, { ...savedNode, id: node.id }, (_, i) => i === index));
-                          }
-                        }}
-                        withDate={withDate}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {dropProvided.placeholder}
+    <div onBlur={onBlur} className="flex flex-col gap-sm">
+      {nodes.map((node, index) => (
+        <div key={node.id} className="flex items-center gap-2xs">
+          {!viewOnly ? (
+            <div className="flex flex-row">
+              <Button
+                mode="icon"
+                variant="secondary"
+                appearance="link"
+                onClick={() => applyNodes(nodes.length === 1 ? [NewUndefinedAstNode()] : splice(nodes, index, 1, []))}
+              >
+                <Icon icon="cross" className="size-4" />
+              </Button>
+              {!limit || nodes.length < limit ? (
+                <Button
+                  mode="icon"
+                  variant="secondary"
+                  appearance="link"
+                  disabled={nodes.length === limit}
+                  onClick={() =>
+                    applyNodes(
+                      splice(nodes, index, 1, [{ ...nodes[index]!, id: nodes[index]!.id }, NewUndefinedAstNode()]),
+                    )
+                  }
+                >
+                  <Icon icon="plus" className="size-4" />
+                </Button>
+              ) : null}
             </div>
-          )}
-        </Droppable>
-      </div>
-    </DragDropContext>
+          ) : null}
+          <MatchOperand
+            node={node}
+            key={`node-${index}`}
+            placeholder={placeholder}
+            onSave={(savedNode) => {
+              if (isKnownOperandAstNode(savedNode)) {
+                applyNodes(replace(nodes, { ...savedNode, id: node.id }, (_, i) => i === index));
+              }
+            }}
+            withDate={withDate}
+          />
+        </div>
+      ))}
+    </div>
   );
+}
+
+type FieldNodeReferencesProps = Omit<Parameters<typeof FieldNodeReferences>[0], 'output' | 'value'>;
+
+export function FieldNodeConcat(props: FieldNodeReferencesProps & { value?: StringConcatAstNode }) {
+  return <FieldNodeReferences {...props} value={props.value} output="StringConcat" />;
+}
+
+export function FieldNodeList(props: FieldNodeReferencesProps & { value?: ListAstNode }) {
+  return <FieldNodeReferences {...props} value={props.value} output="List" />;
 }

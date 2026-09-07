@@ -6,6 +6,7 @@ import { CreateScreeningButton } from '@app-builder/components/Screenings/Create
 import { useDatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { AstNode, isUndefinedAstNode, ScenarioValidation } from '@app-builder/models';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isListAstNode, ListAstNode } from '@app-builder/models/astNode/list';
 import { isStringConcatAstNode, StringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { Scenario } from '@app-builder/models/scenario';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
@@ -428,8 +429,10 @@ type ScreeningRuleQueryViewProps = {
   preprocessing?: ScreeningConfig['preprocessing'];
 };
 
-const filterNodes = (value: [string, AstNode | undefined]): value is [string, StringConcatAstNode] => {
-  return !!value[1] && isStringConcatAstNode(value[1]);
+type ScreeningQueryListNode = ListAstNode<AstNode> | StringConcatAstNode;
+
+const filterNodes = (value: [string, AstNode | undefined]): value is [string, ScreeningQueryListNode] => {
+  return !!value[1] && (isStringConcatAstNode(value[1]) || isListAstNode(value[1]));
 };
 
 const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningRuleQueryViewProps) => {
@@ -460,12 +463,7 @@ const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningR
               ) : (
                 <Tag color="grey">{k}</Tag>
               )}{' '}
-              {t('scenarios:rules.screening_view.matching')}{' '}
-              <span className="inline-flex gap-xs">
-                {q.children.map((node) => (
-                  <DataAccessorAstNodeTag key={node.id} node={node} />
-                ))}
-              </span>
+              {t('scenarios:rules.screening_view.matching')} <ScreeningQueryNodeTags node={q} />
             </li>
           ))}
         </ul>
@@ -473,6 +471,40 @@ const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningR
     </li>
   );
 };
+
+const ScreeningQueryNodeTags = ({ node }: { node: ScreeningQueryListNode }) => {
+  if (isStringConcatAstNode(node)) {
+    return <StringConcatNodeTags node={node} />;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-xs">
+      {node.children.map((child, index) => (
+        <span className="inline-flex items-center gap-xs" key={child.id}>
+          {index > 0 ? <span>,</span> : null}
+          {isStringConcatAstNode(child) ? (
+            <span className="border-grey-border inline-flex items-center gap-xs rounded-sm border px-xs py-2xs">
+              <StringConcatNodeTags node={child} />
+            </span>
+          ) : (
+            <DataAccessorAstNodeTag node={child} />
+          )}
+        </span>
+      ))}
+    </span>
+  );
+};
+
+const StringConcatNodeTags = ({ node }: { node: StringConcatAstNode }) => (
+  <span className="inline-flex flex-wrap items-center gap-xs">
+    {node.children.map((child, index) => (
+      <span className="inline-flex items-center gap-xs" key={child.id}>
+        {index > 0 ? <span>+</span> : null}
+        <DataAccessorAstNodeTag node={child} />
+      </span>
+    ))}
+  </span>
+);
 
 const hasMatchSettings = (preprocessing: ScreeningConfig['preprocessing']): boolean =>
   !!preprocessing &&
