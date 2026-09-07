@@ -31,7 +31,17 @@ import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getD
 import { DragDropContext, Draggable, type DraggableProvided, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { type KeyboardEvent, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, cn, ExpandableGroupTagLine, Input, MenuCommand, NumberInput, Tag } from 'ui-design-system';
+import {
+  Button,
+  Card,
+  CtaV2ClassName,
+  cn,
+  ExpandableGroupTagLine,
+  Input,
+  MenuCommand,
+  NumberInput,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OperandEditModalProps } from '../../EditModal';
 import { getValueSwitchFieldOption } from './field-option';
@@ -841,7 +851,11 @@ function ValueTag({
     const labelKey = SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel][value];
     const label = labelKey ? t(labelKey) : String(value);
     return (
-      <Tag className={cn('flex min-w-0 overflow-hidden', className)} style={{ borderColor: color, color }} title={label}>
+      <Tag
+        className={cn('flex min-w-0 overflow-hidden', className)}
+        style={{ borderColor: color, color }}
+        title={label}
+      >
         <span className="min-w-0 truncate">{label}</span>
       </Tag>
     );

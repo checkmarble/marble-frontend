@@ -305,7 +305,11 @@ function RuleEditForm({
               </Card>
             )}
           </form.Field>
-          <div className={cn('grid min-w-0 grid-cols-1', { 'grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-md': isAiRuleDescriptionEnabled })}>
+          <div
+            className={cn('grid min-w-0 grid-cols-1', {
+              'grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-md': isAiRuleDescriptionEnabled,
+            })}
+          >
             <div className="flex min-w-0 flex-col gap-xl">
               <div className="flex min-w-0 flex-col gap-sm">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
