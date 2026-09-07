@@ -41,7 +41,7 @@ export function EditionAstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWith
 
   return (
     <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
-      <div className="grid grid-cols-[40px_1fr_max-content] gap-sm">
+      <div className="grid min-w-0 grid-cols-[40px_minmax(0,1fr)_max-content] gap-sm">
         {nodeStore.value.node.children.map((child, i) => {
           return (
             <EditionRootOrGroup
@@ -137,7 +137,7 @@ function EditionRootOrWithAndLine({ isFirst, path, nodeId, removeNode }: Edition
     <>
       <LogicalOperatorLabel operator={isFirst ? 'if' : 'and'} type="contained" />
 
-      <div className="flex flex-col gap-sm">
+      <div className="flex min-w-0 flex-col gap-sm">
         <EditionAstBuilderNode path={path} root />
         <EditionEvaluationErrors id={nodeId} />
       </div>

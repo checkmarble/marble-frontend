@@ -75,7 +75,7 @@ export const FieldAstFormula = ({
   };
 
   return (
-    <div onBlur={onBlur} className="flex flex-col gap-md">
+    <div onBlur={onBlur} className="flex min-w-0 flex-col gap-md">
       {isAstNull ? (
         <div className="border-blue-58 bg-blue-96 text-blue-58 text-s flex items-center rounded-sm border p-sm dark:bg-transparent">
           <span>

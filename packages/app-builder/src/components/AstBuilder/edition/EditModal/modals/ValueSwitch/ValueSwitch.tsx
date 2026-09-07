@@ -31,7 +31,7 @@ import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getD
 import { DragDropContext, Draggable, type DraggableProvided, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { type KeyboardEvent, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, cn, Input, MenuCommand, NumberInput, Tag } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, ExpandableGroupTagLine, Input, MenuCommand, NumberInput, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OperandEditModalProps } from '../../EditModal';
 import { getValueSwitchFieldOption } from './field-option';
@@ -236,7 +236,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
   );
 
   return (
-    <Card className="flex w-full flex-col gap-lg shadow-sm">
+    <Card className="flex w-full min-w-0 max-w-full flex-col gap-lg overflow-hidden shadow-sm">
       {content}
       <div className="flex justify-end gap-sm">
         <Button appearance="stroked" variant="secondary" onClick={props.onCancel}>
@@ -384,8 +384,8 @@ function OneDimensionEditor({
           forceSign
           colorByValue={{
             thresholds: [
-              { threshold: 0, comparison: '>', color: 'green' },
-              { threshold: 0, comparison: '<', color: 'red' },
+              { threshold: 0, comparison: '<', color: 'green' },
+              { threshold: 0, comparison: '>', color: 'red' },
             ],
             defaultColor: 'primary',
           }}
@@ -515,8 +515,8 @@ function TwoDimensionEditor({
   }
 
   return (
-    <div className="flex flex-col gap-md">
-      <div className="grid grid-cols-1 gap-md md:grid-cols-2">
+    <div className="flex min-w-0 flex-col gap-md isolate">
+      <div className="grid min-w-0 grid-cols-1 gap-md md:grid-cols-2">
         {[0, 1].map((index) => {
           const dimension = model.dimensions[index];
           const currentOption = dimension
@@ -552,18 +552,21 @@ function TwoDimensionEditor({
       </div>
 
       {rowDimension && columnDimension && rowDimension.values.length > 0 && columnDimension.values.length > 0 ? (
-        <div className="border-grey-border overflow-x-auto rounded-md border">
+        <div className="border-grey-border max-h-[50vh] w-full min-w-0 overflow-auto rounded-md border">
           <table
-            className="w-full table-fixed border-collapse"
-            style={{ minWidth: `${12 + columnCount * (hasCompactCells ? 6.5 : 7)}rem` }}
+            className="table-fixed border-collapse"
+            style={{ width: `${12 + columnCount * (hasCompactCells ? 6.5 : 7)}rem` }}
           >
             <thead>
               <tr>
-                <th className="border-grey-border w-48 border-b p-sm" />
+                <th className="border-grey-border bg-surface-card sticky top-0 left-0 z-20 w-48 border-r border-b p-sm" />
                 {columnDimension.values.map((value) => (
                   <th
                     key={`${typeof value}:${String(value)}`}
-                    className={cn('border-grey-border border-b text-start', hasCompactCells ? 'p-xs' : 'p-sm')}
+                    className={cn(
+                      'border-grey-border bg-surface-card sticky top-0 z-10 max-w-0 overflow-hidden border-b text-start font-normal',
+                      hasCompactCells ? 'p-xs' : 'p-sm',
+                    )}
                   >
                     <ValueTag
                       dimension={columnDimension}
@@ -571,6 +574,7 @@ function TwoDimensionEditor({
                       field={
                         options.find((option) => option.key === getValueSwitchDimensionKey(columnDimension))?.field
                       }
+                      className="max-w-full"
                     />
                   </th>
                 ))}
@@ -579,11 +583,17 @@ function TwoDimensionEditor({
             <tbody>
               {rowDimension.values.map((rowValue, rowIndex) => (
                 <tr key={`${typeof rowValue}:${String(rowValue)}`}>
-                  <th className={cn('text-start', hasCompactCells ? 'p-xs' : 'p-sm')}>
+                  <th
+                    className={cn(
+                      'border-grey-border bg-surface-card sticky left-0 z-10 w-48 overflow-hidden border-r text-start font-normal',
+                      hasCompactCells ? 'p-xs' : 'p-sm',
+                    )}
+                  >
                     <ValueTag
                       dimension={rowDimension}
                       value={rowValue}
                       field={options.find((option) => option.key === getValueSwitchDimensionKey(rowDimension))?.field}
+                      className="max-w-full"
                     />
                   </th>
                   {columnDimension.values.map((columnValue, columnIndex) => (
@@ -754,14 +764,23 @@ export function DimensionValuesSelect({
     <div className="flex flex-col gap-sm">
       <MenuCommand.Menu persistOnSelect>
         <MenuCommand.Trigger>
-          <MenuCommand.SelectButton className="h-auto min-h-10 w-full py-sm">
-            <span className="flex flex-wrap gap-xs pe-lg">
-              {dimension.values.length > 0
-                ? dimension.values.map((value) => (
-                    <ValueTag key={`${typeof value}:${String(value)}`} dimension={dimension} value={value} />
-                  ))
-                : t('scenarios:value_switch.select_values')}
-            </span>
+          <MenuCommand.SelectButton className="h-auto min-h-10 w-full min-w-0 overflow-hidden py-sm">
+            {dimension.values.length > 0 ? (
+              <ExpandableGroupTagLine
+                classname="gap-xs pe-lg"
+                overflowBehavior="popover"
+                items={dimension.values.map((value) => (
+                  <ValueTag
+                    key={`${typeof value}:${String(value)}`}
+                    dimension={dimension}
+                    value={value}
+                    className="max-w-full"
+                  />
+                ))}
+              />
+            ) : (
+              <span className="pe-lg">{t('scenarios:value_switch.select_values')}</span>
+            )}
           </MenuCommand.SelectButton>
         </MenuCommand.Trigger>
         <MenuCommand.Content align="start" sideOffset={4} sameWidth>
@@ -798,15 +817,19 @@ function ValueTag({
   dimension,
   value,
   field,
+  className,
 }: {
   dimension: ValueSwitchDimension;
   value: string | number;
   field?: DataModelField;
+  className?: string;
 }) {
   const { t } = useTranslation(['user-scoring']);
   const data = AstBuilderDataSharpFactory.select((state) => state.data);
   const scoringSettings = data.scoringSettings;
-  if (field && isEnumField(field)) return <EnumTag field={field} value={value} />;
+  if (field && isEnumField(field)) {
+    return <EnumTag field={field} value={value} className={className} />;
+  }
 
   if (
     dimension.type === 'risk-level' &&
@@ -816,8 +839,18 @@ function ValueTag({
   ) {
     const color = SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel][value];
     const labelKey = SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel][value];
-    return <Tag style={{ borderColor: color, color }}>{labelKey ? t(labelKey) : value}</Tag>;
+    const label = labelKey ? t(labelKey) : String(value);
+    return (
+      <Tag className={cn('flex min-w-0 overflow-hidden', className)} style={{ borderColor: color, color }} title={label}>
+        <span className="min-w-0 truncate">{label}</span>
+      </Tag>
+    );
   }
 
-  return <Tag>{String(value) || '—'}</Tag>;
+  const label = String(value) || '—';
+  return (
+    <Tag className={cn('flex min-w-0 overflow-hidden', className)} title={label}>
+      <span className="min-w-0 truncate">{label}</span>
+    </Tag>
+  );
 }

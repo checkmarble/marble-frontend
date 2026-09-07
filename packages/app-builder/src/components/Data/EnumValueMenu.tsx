@@ -2,7 +2,7 @@ import { type EnumField, resolveEnumDisplay, resolveEnumValues } from '@app-buil
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuCommand } from 'ui-design-system';
+import { ExpandableGroupTagLine, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { EnumTag } from './EnumTag';
 
@@ -44,12 +44,18 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
   return (
     <MenuCommand.Menu persistOnSelect={props.multiple} onOpenChange={() => setSearch('')}>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="h-auto min-h-10 w-full py-sm">
-          <span className="flex flex-wrap gap-xs pe-lg">
-            {selectedValues.length
-              ? selectedValues.map((value) => <EnumTag key={value} field={field} value={value} />)
-              : t('scenarios:value_switch.select_values')}
-          </span>
+        <MenuCommand.SelectButton className="h-auto min-h-10 w-full min-w-0 overflow-hidden py-sm">
+          {selectedValues.length > 0 ? (
+            <ExpandableGroupTagLine
+              classname="gap-xs pe-lg"
+              overflowBehavior="popover"
+              items={selectedValues.map((value) => (
+                <EnumTag key={value} field={field} value={value} className="max-w-full" />
+              ))}
+            />
+          ) : (
+            <span className="pe-lg">{t('scenarios:value_switch.select_values')}</span>
+          )}
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4} sameWidth>

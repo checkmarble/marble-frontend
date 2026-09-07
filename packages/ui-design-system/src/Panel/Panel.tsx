@@ -252,7 +252,7 @@ interface PanelContentProps {
 }
 
 export function PanelContent({ children, className }: PanelContentProps) {
-  return <div className={cn('relative min-h-screen p-lg flex flex-col grow', className)}>{children}</div>;
+  return <div className={cn('relative flex min-h-screen min-w-0 grow flex-col p-lg', className)}>{children}</div>;
 }
 
 interface PanelFooterProps {

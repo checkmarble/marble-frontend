@@ -179,7 +179,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
 
       return props.root ? (
-        <div className="flex w-full flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -219,7 +219,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
 
       return props.root ? (
-        <div className="flex w-full flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );

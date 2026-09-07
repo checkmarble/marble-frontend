@@ -274,7 +274,7 @@ function RuleEditForm({
             </DeleteRule>
           </div>
         </Panel.Header>
-        <div className="flex flex-col gap-md">
+        <div className="flex min-w-0 flex-col gap-md">
           {serverValidationMessages.length > 0 ? (
             <Callout color="red" icon="lightbulb" iconColor="red" className="max-w-3xl">
               <ul className="flex flex-col gap-xs ps-md">
@@ -305,9 +305,9 @@ function RuleEditForm({
               </Card>
             )}
           </form.Field>
-          <div className={cn('grid grid-cols-1', { 'grid-cols-[2fr_1fr] gap-md': isAiRuleDescriptionEnabled })}>
-            <div className="flex flex-col gap-xl">
-              <div className="flex flex-col gap-sm">
+          <div className={cn('grid min-w-0 grid-cols-1', { 'grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-md': isAiRuleDescriptionEnabled })}>
+            <div className="flex min-w-0 flex-col gap-xl">
+              <div className="flex min-w-0 flex-col gap-sm">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
 
                 {isAiRuleDescriptionEnabled ? (
@@ -328,7 +328,7 @@ function RuleEditForm({
                 ) : null}
 
                 <Card
-                  className={cn({
+                  className={cn('min-w-0 overflow-hidden', {
                     'border-red-primary': serverValidationMessages.length > 0,
                   })}
                 >
