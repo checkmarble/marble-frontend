@@ -76,6 +76,7 @@ export const iconNames = [
   'left-panel-open',
   'light_mode',
   'lightbulb',
+  'link',
   'linked-services',
   'list',
   'lists',
