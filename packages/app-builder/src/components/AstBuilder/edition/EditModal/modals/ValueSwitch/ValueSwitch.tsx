@@ -348,6 +348,9 @@ function OneDimensionEditor({
     moveValue(result.source.index, result.destination.index);
   }
 
+  const parentGridClassName = 'grid grid-cols-[auto_minmax(10rem,1fr)_7rem_auto] gap-x-md gap-y-sm';
+  const rowSubgridClassName = 'col-span-full grid grid-cols-subgrid items-center';
+
   function renderValueRow(value: string | number, index: number, dragProvided: DraggableProvided, isDragging: boolean) {
     if (!dimension) return null;
 
@@ -355,10 +358,7 @@ function OneDimensionEditor({
       <div
         ref={dragProvided.innerRef}
         {...dragProvided.draggableProps}
-        className={cn(
-          'grid grid-cols-[auto_auto_10rem_auto_7rem_auto] items-center justify-start gap-md',
-          isDragging && 'opacity-80',
-        )}
+        className={cn(rowSubgridClassName, isDragging && 'grid-cols-[auto_minmax(10rem,1fr)_7rem_auto] opacity-80')}
       >
         <div
           {...dragProvided.dragHandleProps}
@@ -366,9 +366,6 @@ function OneDimensionEditor({
         >
           <Icon icon="unfold_more" className="text-grey-secondary size-4 cursor-grab active:cursor-grabbing" />
         </div>
-        <span className="text-default text-grey-secondary font-medium">
-          {t('scenarios:value_switch.if_value_is', { variable: currentOption?.label ?? '' })}
-        </span>
         <DimensionValueInput
           dimension={dimension}
           value={value}
@@ -376,9 +373,8 @@ function OneDimensionEditor({
           unavailableValues={dimension.values.filter((_, currentIndex) => currentIndex !== index)}
           onChange={(next) => replaceValue(index, next)}
         />
-        <span className="text-default text-grey-placeholder font-medium">{t('scenarios:value_switch.then_score')}</span>
         <NumberInput
-          className="w-28"
+          className="w-full"
           value={model.thresholds[getValueSwitchCellKey([value])] ?? model.fallback}
           onChange={(threshold) => onThresholdChange([value], threshold)}
           forceSign
@@ -420,27 +416,41 @@ function OneDimensionEditor({
 
       {dimension ? (
         <div className="border-grey-border bg-grey-background-light flex flex-col gap-md rounded-md border p-md">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable
-              droppableId={`${rowIdPrefix}-values`}
-              renderClone={(dragProvided, snapshot, rubric) => {
-                const index = rubric.source.index;
-                const value = dimension.values[index];
-                return value === undefined ? null : renderValueRow(value, index, dragProvided, snapshot.isDragging);
-              }}
-            >
-              {(dropProvided) => (
-                <div ref={dropProvided.innerRef} {...dropProvided.droppableProps} className="flex flex-col gap-sm">
-                  {dimension.values.map((value, index) => (
-                    <Draggable key={rowIds.current[index]} draggableId={rowIds.current[index]!} index={index}>
-                      {(dragProvided, snapshot) => renderValueRow(value, index, dragProvided, snapshot.isDragging)}
-                    </Draggable>
-                  ))}
-                  {dropProvided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          <div className={parentGridClassName}>
+            <div className={cn(rowSubgridClassName, 'text-default text-grey-secondary font-medium')}>
+              <span aria-hidden />
+              <span className="whitespace-nowrap">
+                {t('scenarios:value_switch.if_value_is', { variable: currentOption?.label ?? '' })}
+              </span>
+              <span className="whitespace-nowrap">{t('scenarios:value_switch.then_score')}</span>
+              <span aria-hidden />
+            </div>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable
+                droppableId={`${rowIdPrefix}-values`}
+                renderClone={(dragProvided, snapshot, rubric) => {
+                  const index = rubric.source.index;
+                  const value = dimension.values[index];
+                  return value === undefined ? null : renderValueRow(value, index, dragProvided, snapshot.isDragging);
+                }}
+              >
+                {(dropProvided) => (
+                  <div
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                    className={cn(rowSubgridClassName, 'gap-y-sm')}
+                  >
+                    {dimension.values.map((value, index) => (
+                      <Draggable key={rowIds.current[index]} draggableId={rowIds.current[index]!} index={index}>
+                        {(dragProvided, snapshot) => renderValueRow(value, index, dragProvided, snapshot.isDragging)}
+                      </Draggable>
+                    ))}
+                    {dropProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
           <Button
             appearance="stroked"
             variant="secondary"
@@ -513,18 +523,16 @@ function TwoDimensionEditor({
               key={index}
               className="border-grey-border bg-grey-background-light flex min-w-0 flex-col gap-md rounded-md border p-md"
             >
-              <div className="flex min-w-0 items-center gap-md">
-                <span className="text-default text-grey-secondary shrink-0 font-medium">
+              <div className="flex min-w-0 flex-col gap-sm">
+                <span className="text-default text-grey-secondary font-medium">
                   {t(index === 0 ? 'scenarios:value_switch.rows_based_on' : 'scenarios:value_switch.columns_based_on')}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <DimensionSelect
-                    options={options}
-                    selectedKey={selectedKeys[index] ?? null}
-                    excludedKey={selectedKeys[index === 0 ? 1 : 0] ?? null}
-                    onChange={(option) => onDimensionChange(index, option)}
-                  />
-                </div>
+                <DimensionSelect
+                  options={options}
+                  selectedKey={selectedKeys[index] ?? null}
+                  excludedKey={selectedKeys[index === 0 ? 1 : 0] ?? null}
+                  onChange={(option) => onDimensionChange(index, option)}
+                />
               </div>
               {dimension ? (
                 <DimensionValuesSelect
@@ -648,13 +656,13 @@ function DimensionValueInput({
   onChange: (value: string | number) => void;
 }) {
   if (dimension.type === 'field' && knownValues.length === 0) {
-    return <Input className="w-40" value={String(value)} onChange={(event) => onChange(event.target.value)} />;
+    return <Input className="w-full" value={String(value)} onChange={(event) => onChange(event.target.value)} />;
   }
   const availableValues = [...new Set([...knownValues, value])];
   return (
     <MenuCommand.Menu>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="w-40">
+        <MenuCommand.SelectButton className="w-full">
           <ValueTag dimension={dimension} value={value} />
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>

@@ -17,7 +17,7 @@
     "numericCollation": true,
     "typeOrder": "inline"
   },
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.defaultFormatter": "biomejs.biome",
   "files.associations": {
     "*.css": "tailwindcss"
