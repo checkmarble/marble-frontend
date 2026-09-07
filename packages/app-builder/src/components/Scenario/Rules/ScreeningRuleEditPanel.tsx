@@ -6,10 +6,10 @@ import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { NewUndefinedAstNode, ScenarioValidation } from '@app-builder/models';
-import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
+import { isKnownOperandListAstNode } from '@app-builder/models/astNode/list';
 import { knownOutcomes, ScreeningOutcome } from '@app-builder/models/outcome';
 import { Scenario } from '@app-builder/models/scenario';
-import { ScreeningConfig } from '@app-builder/models/screening-config';
+import { normalizeScreeningQueryLists, ScreeningConfig } from '@app-builder/models/screening-config';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import {
   collectScreeningValidationIssues,
@@ -46,7 +46,8 @@ import { FieldAstFormula } from '../Screening/FieldAstFormula';
 import { FieldDataset } from '../Screening/FieldDataset';
 import { FieldEntityType } from '../Screening/FieldEntityType';
 import { FieldNode } from '../Screening/FieldNode';
-import { FieldNodeConcat } from '../Screening/FieldNodeConcat';
+import { FieldNodeList } from '../Screening/FieldNodeConcat';
+import { FieldNodeConcatList, isStringConcatListAstNode } from '../Screening/FieldNodeConcatList';
 import { FieldOutcomes } from '../Screening/FieldOutcomes';
 import { FieldRuleGroup } from '../Screening/FieldRuleGroup';
 import { FieldSkipIfUnder } from '../Screening/FieldSkipIfUnder';
@@ -185,6 +186,7 @@ export function ScreeningRuleEditPanel({
   });
 
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const initialQuery = useMemo(() => normalizeScreeningQueryLists(rule?.query), [rule?.query]);
 
   const form = useForm({
     onSubmitMeta: { closeOnSuccess: false },
@@ -251,7 +253,7 @@ export function ScreeningRuleEditPanel({
       forcedOutcome: (rule?.forcedOutcome as ScreeningOutcome) ?? 'block_and_review',
       triggerRule: rule?.triggerRule,
       entityType: rule?.entityType,
-      query: rule?.query ?? {},
+      query: initialQuery,
       counterPartyId: rule?.counterPartyId,
       preprocessing: rule?.preprocessing,
     } as EditScreeningForm,
@@ -543,12 +545,13 @@ export function ScreeningRuleEditPanel({
                                     {t('scenarios:screening.filter.name.tooltip')}
                                   </FieldToolTip>
                                 </span>
-                                <FieldNodeConcat
-                                  value={value && isStringConcatAstNode(value) ? value : undefined}
+                                <FieldNodeConcatList
+                                  value={value && isStringConcatListAstNode(value) ? value : undefined}
                                   onChange={field.handleChange}
                                   onBlur={field.handleBlur}
                                   placeholder={t('scenarios:screening.filter.name_placeholder')}
-                                  limit={5}
+                                  limit={1}
+                                  concatLimit={5}
                                 />
                                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                               </div>
@@ -650,8 +653,8 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.birthdate')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeList
+                                      value={value && isKnownOperandListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.birthdate_placeholder')}
@@ -675,8 +678,8 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.nationality')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeList
+                                      value={value && isKnownOperandListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.nationality_placeholder')}
@@ -699,8 +702,8 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.passport_number')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeList
+                                      value={value && isKnownOperandListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.passport_number_placeholder')}
@@ -721,12 +724,13 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.address')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeConcatList
+                                      value={value && isStringConcatListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.address_placeholder')}
                                       limit={5}
+                                      concatLimit={5}
                                     />
                                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                   </div>
@@ -747,8 +751,8 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.country')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeList
+                                      value={value && isKnownOperandListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.country_placeholder')}
@@ -774,8 +778,8 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.registrationnumber')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeList
+                                      value={value && isKnownOperandListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.registrationnumber_placeholder')}
@@ -796,12 +800,13 @@ export function ScreeningRuleEditPanel({
                                     <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.address')}
                                     </span>
-                                    <FieldNodeConcat
-                                      value={value && isStringConcatAstNode(value) ? value : undefined}
+                                    <FieldNodeConcatList
+                                      value={value && isStringConcatListAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
                                       placeholder={t('scenarios:edit_sanction.address_placeholder')}
                                       limit={5}
+                                      concatLimit={5}
                                     />
                                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                   </div>
@@ -826,8 +831,8 @@ export function ScreeningRuleEditPanel({
                                   <span className="text-s inline-flex items-center gap-xs">
                                     {t('scenarios:edit_sanction.registrationnumber')}
                                   </span>
-                                  <FieldNodeConcat
-                                    value={value && isStringConcatAstNode(value) ? value : undefined}
+                                  <FieldNodeList
+                                    value={value && isKnownOperandListAstNode(value) ? value : undefined}
                                     onChange={field.handleChange}
                                     onBlur={field.handleBlur}
                                     placeholder={t('scenarios:edit_sanction.registrationnumber_placeholder')}

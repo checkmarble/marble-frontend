@@ -1,7 +1,9 @@
+import { type AstNode, adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
+import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { isListAstNode, NewListAstNode } from '@app-builder/models/astNode/list';
+import { isStringConcatAstNode, NewStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { ScreeningConfigBodyFiltersDto, type ScreeningConfigDto } from 'marble-api';
 import { mapValues } from 'radash';
-
-import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 import { type Outcome } from './outcome';
 import { ScreeningCategory } from './screening';
 
@@ -28,6 +30,48 @@ export type ScreeningConfig = Partial<{
     blacklistListId?: string;
   };
 }>;
+
+export function normalizeScreeningQueryLists(
+  query: ScreeningConfig['query'] = {},
+): NonNullable<ScreeningConfig['query']> {
+  return mapValues(query, (node, key) => {
+    if (!node) return node;
+
+    if (key === 'name' || key === 'address') {
+      if (isStringConcatAstNode(node)) {
+        return NewListAstNode([node]);
+      }
+      if (isListAstNode(node)) {
+        const children = node.children.map((child) =>
+          isStringConcatAstNode(child) || !isKnownOperandAstNode(child)
+            ? child
+            : NewStringConcatAstNode([child], { withSeparator: true }),
+        );
+        if (key === 'name') {
+          if (children.length <= 1 && node.children.every(isStringConcatAstNode)) return node;
+          return { ...node, children: children.slice(0, 1) };
+        }
+        if (node.children.every(isStringConcatAstNode)) return node;
+        return {
+          ...node,
+          children,
+        };
+      }
+      return node;
+    }
+
+    if (isStringConcatAstNode(node)) {
+      return {
+        id: node.id,
+        name: 'List',
+        constant: undefined,
+        children: node.children,
+        namedChildren: {},
+      };
+    }
+    return node;
+  });
+}
 
 export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
   return {

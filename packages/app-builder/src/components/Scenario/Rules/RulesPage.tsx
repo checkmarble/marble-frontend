@@ -5,7 +5,9 @@ import { findDatasetByName, useDatasetTitle } from '@app-builder/components/List
 import { CreateScreeningButton } from '@app-builder/components/Screenings/CreateScreeningButton';
 import { useDatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { AstNode, isUndefinedAstNode, ScenarioValidation } from '@app-builder/models';
+import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isListAstNode, ListAstNode } from '@app-builder/models/astNode/list';
 import { isStringConcatAstNode, StringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { Scenario } from '@app-builder/models/scenario';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
@@ -14,7 +16,10 @@ import { ScreeningConfig } from '@app-builder/models/screening-config';
 import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
 import { useScenarioIterationRule } from '@app-builder/queries/scenarios/scenario-iteration-rule';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
+import {
+  getAstNodeDisplayName,
+  getDataAccessorDisplayName,
+} from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import type { EditorMode } from '@app-builder/services/editor/editor-mode';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
@@ -428,8 +433,10 @@ type ScreeningRuleQueryViewProps = {
   preprocessing?: ScreeningConfig['preprocessing'];
 };
 
-const filterNodes = (value: [string, AstNode | undefined]): value is [string, StringConcatAstNode] => {
-  return !!value[1] && isStringConcatAstNode(value[1]);
+type ScreeningQueryListNode = ListAstNode<AstNode> | StringConcatAstNode;
+
+const filterNodes = (value: [string, AstNode | undefined]): value is [string, ScreeningQueryListNode] => {
+  return !!value[1] && (isStringConcatAstNode(value[1]) || isListAstNode(value[1]));
 };
 
 const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningRuleQueryViewProps) => {
@@ -460,17 +467,58 @@ const ScreeningRuleQueryView = ({ entityType, query, preprocessing }: ScreeningR
               ) : (
                 <Tag color="grey">{k}</Tag>
               )}{' '}
-              {t('scenarios:rules.screening_view.matching')}{' '}
-              <span className="inline-flex gap-xs">
-                {q.children.map((node) => (
-                  <DataAccessorAstNodeTag key={node.id} node={node} />
-                ))}
-              </span>
+              {t('scenarios:rules.screening_view.matching')} <ScreeningQueryNodeTags node={q} />
             </li>
           ))}
         </ul>
       </div>
     </li>
+  );
+};
+
+const ScreeningQueryNodeTags = ({ node }: { node: ScreeningQueryListNode }) => {
+  if (isStringConcatAstNode(node)) {
+    return <StringConcatNodeTags node={node} />;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-xs">
+      {node.children.map((child, index) => (
+        <span className="inline-flex items-center gap-xs" key={child.id}>
+          {index > 0 ? <span>,</span> : null}
+          {isStringConcatAstNode(child) ? (
+            <span className="border-grey-border inline-flex items-center gap-xs rounded-sm border px-xs py-2xs">
+              <StringConcatNodeTags node={child} />
+            </span>
+          ) : (
+            <ScreeningOperandAstNodeTag node={child} />
+          )}
+        </span>
+      ))}
+    </span>
+  );
+};
+
+const StringConcatNodeTags = ({ node }: { node: StringConcatAstNode }) => (
+  <span className="inline-flex flex-wrap items-center gap-xs">
+    {node.children.map((child, index) => (
+      <span className="inline-flex items-center gap-xs" key={child.id}>
+        {index > 0 ? <span>+</span> : null}
+        <ScreeningOperandAstNodeTag node={child} />
+      </span>
+    ))}
+  </span>
+);
+
+const ScreeningOperandAstNodeTag = ({ node }: { node: AstNode }) => {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const language = useFormatLanguage();
+  const customListsQuery = useGetCustomListsQuery();
+
+  if (!isKnownOperandAstNode(node)) return null;
+
+  return (
+    <Tag color="grey">{getAstNodeDisplayName(node, { t, language, customLists: customListsQuery.data ?? [] })}</Tag>
   );
 };
 
@@ -539,12 +587,6 @@ const MatchSettingsTooltip = ({ preprocessing }: { preprocessing: NonNullable<Sc
       ) : null}
     </ul>
   );
-};
-
-const DataAccessorAstNodeTag = ({ node }: { node: AstNode }) => {
-  if (!isDataAccessorAstNode(node)) return null;
-
-  return <Tag color="grey">{getDataAccessorDisplayName(node)}</Tag>;
 };
 
 const ScreeningDatasetsView = ({ datasets }: { datasets: string[] }) => {
