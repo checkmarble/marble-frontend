@@ -1,4 +1,10 @@
+import { getEvaluationForNode } from '@app-builder/components/AstBuilder/edition/helpers';
+import { useRoot } from '@app-builder/components/AstBuilder/edition/hooks/useRoot';
+import { AstBuilderNodeSharpFactory } from '@app-builder/components/AstBuilder/edition/node-store';
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
+import { EnumTag } from '@app-builder/components/Data/EnumTag';
+import { EnumValueMenu } from '@app-builder/components/Data/EnumValueMenu';
+import type { DataModelField } from '@app-builder/models';
 import { type DataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import {
   createEmptyValueSwitchModel,
@@ -13,13 +19,13 @@ import {
   type ValueSwitchModel,
   valueSwitchModelToAst,
 } from '@app-builder/models/astNode/value-switch';
+import { isEnumField } from '@app-builder/models/enum-values';
 import {
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABEL_KEYS,
   scoringLevelEntries,
 } from '@app-builder/models/scoring';
-import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { DragDropContext, Draggable, type DraggableProvided, Droppable, type DropResult } from '@hello-pangea/dnd';
@@ -27,11 +33,8 @@ import { type KeyboardEvent, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, Input, MenuCommand, NumberInput, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { getEvaluationForNode } from '../../../helpers';
-import { useRoot } from '../../../hooks/useRoot';
-import { AstBuilderNodeSharpFactory } from '../../../node-store';
-import { type OperandEditModalProps } from '../../EditModal';
+import { OperandEditModalProps } from '../../EditModal';
+import { getValueSwitchFieldOption } from './field-option';
 import {
   getTwoDimensionGridNavigationTarget,
   type TwoDimensionGridNavigationKey,
@@ -42,6 +45,8 @@ type DimensionOption = {
   label: string;
   dimension: ValueSwitchDimensionDefinition;
   knownValues: Array<string | number>;
+  field?: DataModelField;
+  closed?: boolean;
 };
 
 type EditValueSwitchProps = Omit<OperandEditModalProps, 'node'> & {
@@ -64,16 +69,14 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
     const accessors = [...data.payloadAccessors, ...data.databaseAccessors];
     const fieldOptions = accessors.flatMap((rawField): DimensionOption[] => {
       const field = rawField as DataAccessorAstNode;
-      if (getAstNodeDataType(field, { dataModel: data.dataModel, triggerObjectTable }) !== 'String') return [];
       const definition = getDataAccessorAstNodeField(field, { dataModel: data.dataModel, triggerObjectTable });
-      return [
-        {
-          key: getValueSwitchDimensionKey({ type: 'field', field }),
-          label: getDataAccessorDisplayName(field),
-          dimension: { type: 'field', field },
-          knownValues: (definition.values ?? []).filter((value): value is string => typeof value === 'string'),
-        },
-      ];
+      const existingValues =
+        model.dimensions.find(
+          (dimension) =>
+            dimension && getValueSwitchDimensionKey(dimension) === getValueSwitchDimensionKey({ type: 'field', field }),
+        )?.values ?? [];
+      const option = getValueSwitchFieldOption(field, definition, existingValues);
+      return option ? [option] : [];
     });
 
     const scoringSettings = data.scoringSettings;
@@ -129,7 +132,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
       const values =
         option.knownValues.length > 0
           ? [option.knownValues[0]!]
-          : option.dimension.type === 'field' && current.dimensionCount === 1
+          : option.dimension.type === 'field' && !option.closed && current.dimensionCount === 1
             ? ['']
             : [];
       const dimensions = [...current.dimensions];
@@ -309,14 +312,14 @@ function OneDimensionEditor({
   const canAddValue =
     !!dimension &&
     (availableValues.some((value) => !dimension.values.includes(value as never)) ||
-      (dimension.type === 'field' && availableValues.length === 0 && !dimension.values.includes('')));
+      (dimension.type === 'field' && !currentOption?.closed && !dimension.values.includes('')));
 
   function addValue() {
     if (!dimension) return;
     const unusedValue = availableValues.find((value) => !dimension.values.includes(value as never));
     const nextValue =
       unusedValue ??
-      (dimension.type === 'field' && availableValues.length === 0 && !dimension.values.includes('') ? '' : undefined);
+      (dimension.type === 'field' && !currentOption?.closed && !dimension.values.includes('') ? '' : undefined);
     if (nextValue === undefined) return;
     rowIds.current.push(`${rowIdPrefix}-${nextRowId.current++}`);
     onValuesChange([...dimension.values, nextValue] as Array<string | number>);
@@ -369,6 +372,7 @@ function OneDimensionEditor({
         <DimensionValueInput
           dimension={dimension}
           value={value}
+          field={currentOption?.field}
           knownValues={availableValues}
           unavailableValues={dimension.values.filter((_, currentIndex) => currentIndex !== index)}
           onChange={(next) => replaceValue(index, next)}
@@ -537,6 +541,7 @@ function TwoDimensionEditor({
               {dimension ? (
                 <DimensionValuesSelect
                   dimension={dimension}
+                  field={currentOption?.field}
                   knownValues={currentOption?.knownValues ?? []}
                   onChange={(values) => onValuesChange(index, values)}
                 />
@@ -560,7 +565,13 @@ function TwoDimensionEditor({
                     key={`${typeof value}:${String(value)}`}
                     className={cn('border-grey-border border-b text-start', hasCompactCells ? 'p-xs' : 'p-sm')}
                   >
-                    <ValueTag dimension={columnDimension} value={value} />
+                    <ValueTag
+                      dimension={columnDimension}
+                      value={value}
+                      field={
+                        options.find((option) => option.key === getValueSwitchDimensionKey(columnDimension))?.field
+                      }
+                    />
                   </th>
                 ))}
               </tr>
@@ -569,7 +580,11 @@ function TwoDimensionEditor({
               {rowDimension.values.map((rowValue, rowIndex) => (
                 <tr key={`${typeof rowValue}:${String(rowValue)}`}>
                   <th className={cn('text-start', hasCompactCells ? 'p-xs' : 'p-sm')}>
-                    <ValueTag dimension={rowDimension} value={rowValue} />
+                    <ValueTag
+                      dimension={rowDimension}
+                      value={rowValue}
+                      field={options.find((option) => option.key === getValueSwitchDimensionKey(rowDimension))?.field}
+                    />
                   </th>
                   {columnDimension.values.map((columnValue, columnIndex) => (
                     <td
@@ -642,19 +657,31 @@ function DimensionSelect({
   );
 }
 
-function DimensionValueInput({
+export function DimensionValueInput({
   dimension,
+  field,
   value,
   knownValues,
   unavailableValues,
   onChange,
 }: {
   dimension: ValueSwitchDimension;
+  field?: DataModelField;
   value: string | number;
   knownValues: Array<string | number>;
   unavailableValues: Array<string | number>;
   onChange: (value: string | number) => void;
 }) {
+  if (field && isEnumField(field))
+    return (
+      <EnumValueMenu
+        field={field}
+        selectedValues={[String(value)]}
+        currentValues={dimension.values.filter((value): value is string => typeof value === 'string')}
+        unavailableValues={unavailableValues}
+        onChange={onChange}
+      />
+    );
   if (dimension.type === 'field' && knownValues.length === 0) {
     return <Input className="w-full" value={String(value)} onChange={(event) => onChange(event.target.value)} />;
   }
@@ -683,12 +710,14 @@ function DimensionValueInput({
   );
 }
 
-function DimensionValuesSelect({
+export function DimensionValuesSelect({
   dimension,
+  field,
   knownValues,
   onChange,
 }: {
   dimension: ValueSwitchDimension;
+  field?: DataModelField;
   knownValues: Array<string | number>;
   onChange: (values: Array<string | number>) => void;
 }) {
@@ -710,6 +739,16 @@ function DimensionValuesSelect({
     onChange([...dimension.values, value]);
     setManualValue('');
   }
+
+  if (field && isEnumField(field))
+    return (
+      <EnumValueMenu
+        multiple
+        field={field}
+        selectedValues={dimension.values.filter((value): value is string => typeof value === 'string')}
+        onChange={onChange}
+      />
+    );
 
   return (
     <div className="flex flex-col gap-sm">
@@ -755,10 +794,19 @@ function DimensionValuesSelect({
   );
 }
 
-function ValueTag({ dimension, value }: { dimension: ValueSwitchDimension; value: string | number }) {
+function ValueTag({
+  dimension,
+  value,
+  field,
+}: {
+  dimension: ValueSwitchDimension;
+  value: string | number;
+  field?: DataModelField;
+}) {
   const { t } = useTranslation(['user-scoring']);
   const data = AstBuilderDataSharpFactory.select((state) => state.data);
   const scoringSettings = data.scoringSettings;
+  if (field && isEnumField(field)) return <EnumTag field={field} value={value} />;
 
   if (
     dimension.type === 'risk-level' &&

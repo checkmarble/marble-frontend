@@ -642,11 +642,13 @@
   "value_switch.one_variable": "1 variable",
   "value_switch.remove_value": "Supprimer la valeur",
   "value_switch.rows_based_on": "L'axe des lignes est basé sur",
+  "value_switch.search_values": "Rechercher des valeurs",
   "value_switch.search_variables": "Rechercher des variables...",
   "value_switch.select_values": "Sélectionner des valeurs",
   "value_switch.select_variable": "Sélectionner une variable",
   "value_switch.then_score": "alors score",
   "value_switch.title": "Seuil variable",
   "value_switch.two_variables": "2 variables",
+  "value_switch.use_custom_value": "Utiliser « {{value}} »",
   "value_switch.variable_is": "La variable est"
 }

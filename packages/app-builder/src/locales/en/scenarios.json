@@ -642,11 +642,13 @@
   "value_switch.one_variable": "1 variable",
   "value_switch.remove_value": "Remove value",
   "value_switch.rows_based_on": "Row axis is based on",
+  "value_switch.search_values": "Search values",
   "value_switch.search_variables": "Search variables...",
   "value_switch.select_values": "Select values",
   "value_switch.select_variable": "Select a variable",
   "value_switch.then_score": "then score",
   "value_switch.title": "Variable threshold",
   "value_switch.two_variables": "2 variables",
+  "value_switch.use_custom_value": "Use “{{value}}”",
   "value_switch.variable_is": "Variable is"
 }

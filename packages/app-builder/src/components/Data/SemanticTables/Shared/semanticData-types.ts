@@ -10,6 +10,7 @@ import {
   semanticTypesByDataType,
   type TableModel,
 } from '@app-builder/models';
+import type { CountryCodeFormat, EnumEntry } from '@app-builder/models/enum';
 import { FtmEntity } from 'marble-api';
 import { match, P } from 'ts-pattern';
 
@@ -49,20 +50,7 @@ export type RawField = {
   ftm_property?: string;
 };
 
-export const enumColors = [
-  'green',
-  'orange',
-  'red',
-  'blue',
-  'yellow',
-  'purple',
-  'pink',
-  'brown',
-  'gray',
-  'black',
-  'white',
-] as const;
-export type EnumColors = (typeof enumColors)[number];
+export { type EnumColors, enumColors } from '@app-builder/models/enum';
 
 export const semanticTypeTable = ['person', 'company', 'account', 'transaction', 'event', 'partner', 'other'] as const;
 export type SemanticTypeTable = (typeof semanticTypeTable)[number];
@@ -88,7 +76,8 @@ export type TableField = {
   isInteger?: boolean;
   foreignkeyTable?: string;
   isDefaultBelongsTo?: boolean;
-  enumValues?: { key: string; color: EnumColors; value: string }[];
+  enumValues?: EnumEntry[];
+  countryCodeFormat?: CountryCodeFormat;
   isNew: boolean;
   locked?: boolean;
 };
@@ -129,12 +118,16 @@ export type ChangeRecord =
   | { type: 'link'; operation: 'MOD'; objectId: string; relationshipType: LinkRelationType }
   | { type: 'link'; operation: 'ADD'; objectName: string };
 
-export function getMockValue(
-  dataType: PrimitiveTypes,
-  semanticType?: SemanticTypeField,
-  semanticSubType?: SemanticSubTypeField | undefined,
-) {
+export function getMockValue({
+  dataType,
+  semanticType,
+  semanticSubType,
+  isEnum,
+  enumValues,
+  countryCodeFormat,
+}: Pick<TableField, 'dataType' | 'semanticType' | 'semanticSubType' | 'isEnum' | 'enumValues' | 'countryCodeFormat'>) {
   try {
+    if ((dataType === 'Int' || dataType === 'Float') && (isEnum || semanticType === 'enum')) return 123;
     if (dataType === 'Coords') return '48.8566, 2.3522';
     if (dataType === 'IpAddress') return '127.0.0.1';
     if (dataType === 'Bool') return true;
@@ -161,8 +154,8 @@ export function getMockValue(
         semanticSubType
           ? match(semanticSubType as SemanticSubTypeFieldMap['enum'])
               .with('currency', () => 'EUR')
-              .with('country', () => 'FR')
-              .with('key_color_value', () => 'value from enum')
+              .with('country', () => (countryCodeFormat === 'alpha3' ? 'FRA' : 'FR'))
+              .with('key_color_value', () => enumValues?.at(-1)?.key ?? '')
               .with('mcc_code', () => '5219')
               .with('autocomplete', () => 'Autocompleted value')
               .otherwise(() => 'unexpected value')
@@ -170,7 +163,7 @@ export function getMockValue(
       )
       .with('currency_code', () => 'EUR')
       .with('foreign_key', () => 'ForeignKey')
-      .with('country', () => 'FR')
+      .with('country', () => (countryCodeFormat === 'alpha3' ? 'FRA' : 'FR'))
       .with('address', () => '123 Main St, Anytown, USA')
       .with('unique_id', () =>
         semanticSubType

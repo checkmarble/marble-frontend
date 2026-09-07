@@ -7,6 +7,7 @@ import {
   type SemanticSubTypeFieldMap,
   type SemanticTypeField,
 } from '@app-builder/models';
+import { isEnumField } from '@app-builder/models/enum-values';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { formatAge, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
@@ -20,6 +21,7 @@ import { match, P } from 'ts-pattern';
 import { cn, formatCountryName, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
+import { EnumTag } from '../EnumTag';
 import { DataFields } from './DataFields';
 import type { MetadataType, VALID_DATA_TYPE } from './data-type';
 import { hasMetadataContent, inferDataTypeFromName, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
@@ -134,7 +136,9 @@ export function DataField({ field, value, linkedTo, metaData, currency }: DataFi
 }
 
 function FieldRenderer() {
-  const { fieldType } = useDataField();
+  const { fieldType, field, value } = useDataField();
+  if (field && isEnumField(field) && (typeof value === 'string' || typeof value === 'number'))
+    return <EnumTag field={field} value={value} />;
   const Comp = FIELD_TYPE_COMPONENTS[fieldType];
   return <Comp />;
 }
