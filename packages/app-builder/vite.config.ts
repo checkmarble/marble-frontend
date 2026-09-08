@@ -60,7 +60,7 @@ const plugins = [
   externalNativeModules,
   tailwindcss(),
   viteTsConfigPaths(),
-  viteReact(),
+  viteReact({ compiler: true }),
 ] as Plugin[];
 
 export default defineConfig({
