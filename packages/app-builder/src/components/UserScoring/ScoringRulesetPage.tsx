@@ -1,6 +1,8 @@
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
-import { type ScoringRulesetWithRules, type ScoringSettings } from '@app-builder/models/scoring';
+import type { ScoringDryRun, ScoringRulesetWithRules, ScoringSettings } from '@app-builder/models/scoring';
+import { cn } from 'ui-design-system';
+import { pageLayoutGutter } from '../Page/page-layout';
 import { GeneralInfoCard } from './GeneralInfoCard';
 import { RulesTable } from './RulesTable';
 
@@ -10,6 +12,7 @@ interface ScoringRulesetPageProps {
   customLists: CustomList[];
   preparationStatus: ScenarioPublicationStatus | null;
   hasValidLicense?: boolean;
+  lastDryRun: ScoringDryRun | null;
 }
 
 export function ScoringRulesetPage({
@@ -18,10 +21,16 @@ export function ScoringRulesetPage({
   customLists,
   preparationStatus,
   hasValidLicense,
+  lastDryRun,
 }: ScoringRulesetPageProps) {
   return (
-    <div className="flex flex-col gap-md">
-      <GeneralInfoCard ruleset={ruleset} settings={settings} preparationStatus={preparationStatus} />
+    <div className={cn('flex flex-col', pageLayoutGutter.gap)}>
+      <GeneralInfoCard
+        ruleset={ruleset}
+        settings={settings}
+        preparationStatus={preparationStatus}
+        lastDryRun={lastDryRun}
+      />
       <RulesTable
         ruleset={ruleset}
         maxRiskLevel={settings.maxRiskLevel}

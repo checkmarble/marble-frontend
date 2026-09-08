@@ -33,10 +33,10 @@ if [ -z "$ALL_MODIFIED" ]; then
   exit 0
 fi
 
-# Run Biome format on all modified files (silently fix formatting)
+# Format and apply assist (including named-import sort) so the result matches `biome check`.
 for file in $ALL_MODIFIED; do
   if [ -f "$file" ]; then
-    "$PROJECT_DIR"/node_modules/.bin/biome format --write "$file" 2>/dev/null || true
+    "$PROJECT_DIR"/node_modules/.bin/biome check --write --linter-enabled=false "$file" 2>/dev/null || true
   fi
 done
 

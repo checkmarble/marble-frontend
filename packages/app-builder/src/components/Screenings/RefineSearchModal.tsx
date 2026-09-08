@@ -244,7 +244,7 @@ export function EntitySelect({ name, value, onChange }: EntitySelectProps) {
                   <div className="flex flex-col">
                     <span>{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
                     <span className="text-grey-secondary text-xs">
-                      {t('screenings:refine_modal.search_by')}{' '}
+                      {t('screenings:refine_modal.search_by')}&nbsp;
                       {fieldForSchema.map((f) => t(`screenings:entity.property.${f}`)).join(', ')}
                     </span>
                   </div>

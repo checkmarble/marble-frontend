@@ -32,7 +32,7 @@ export function DataPageHeader({ handleOpenCreateDrawer }: { handleOpenCreateDra
             {t('data:create_table.title')}
           </Button>
         ) : null}
-      </div>{' '}
+      </div>
     </div>
   );
 }
