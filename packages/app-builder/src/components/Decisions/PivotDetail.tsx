@@ -4,9 +4,10 @@ import { type DataModelObject } from '@app-builder/models/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { Link } from '@tanstack/react-router';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { PivotType } from '../Data/PivotType';
@@ -85,7 +86,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   const { t } = useTranslation(decisionsI18n);
 
   const columnHelper = useMemo(
-    () => createColumnHelper<{ pivot: Pivot; value: string; object: DataModelObject | null }>(),
+    () => createColumnHelper<MarbleTableFeatures, { pivot: Pivot; value: string; object: DataModelObject | null }>(),
     [],
   );
 
@@ -136,7 +137,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
     data: pivotValues,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

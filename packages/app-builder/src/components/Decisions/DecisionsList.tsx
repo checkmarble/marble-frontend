@@ -7,10 +7,11 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { getTableSelectColumn } from '@app-builder/utils/table-selection';
 import { Link } from '@tanstack/react-router';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, Tooltip, useTable } from 'ui-design-system';
 import { Score } from './Score';
 
@@ -62,7 +63,7 @@ export function useSelectedDecisionIds() {
   };
 }
 
-const columnHelper = createColumnHelper<DecisionViewModel>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, DecisionViewModel>();
 
 export function DecisionsList({
   className,
@@ -181,7 +182,7 @@ export function DecisionsList({
       rowSelection: selectionProps?.rowSelection,
     },
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableRowSelection: selectable,
     enableSorting: false,
     ...tableProps,

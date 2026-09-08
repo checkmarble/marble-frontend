@@ -1,10 +1,11 @@
 import { type Row, type RowData } from '@tanstack/react-table';
+import type { MarbleTableFeatures } from 'ui-design-system';
 
 import { getDateRangeFilter } from './datetime';
 import { type DateRangeFilter } from './schema/filterSchema';
 
 export function dateRangeFilterFn<TData extends RowData>(
-  row: Row<TData>,
+  row: Row<MarbleTableFeatures, TData>,
   columnId: string,
   filterValue?: DateRangeFilter,
 ) {
@@ -14,7 +15,11 @@ export function dateRangeFilterFn<TData extends RowData>(
   return dateRangeFilter(date);
 }
 
-export function arrIncludesExactSome<TData extends RowData>(row: Row<TData>, columnId: string, filterValue: string[]) {
+export function arrIncludesExactSome<TData extends RowData>(
+  row: Row<MarbleTableFeatures, TData>,
+  columnId: string,
+  filterValue: string[],
+) {
   if (!filterValue) return true;
   const value = row.getValue<string>(columnId);
   return filterValue.some((filter) => filter === value);

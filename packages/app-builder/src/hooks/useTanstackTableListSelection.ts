@@ -1,7 +1,7 @@
 import { useCallbackRef } from '@marble/shared';
 import { Dispatch, SetStateAction, useState } from 'react';
 
-type SetRowSelection = Dispatch<SetStateAction<Record<string, boolean>>>;
+type SetRowSelection = Dispatch<SetStateAction<RowSelectionState>>;
 
 type TableProps<Model> = {
   getRowId: (item: Model) => string;
@@ -10,11 +10,11 @@ type TableProps<Model> = {
 
 export type ListSelectionReturnType<Model> = {
   hasSelectedRows: boolean;
-  rowSelection: Record<string, boolean>;
+  rowSelection: RowSelectionState;
   tableProps: TableProps<Model>;
   setRowSelection: SetRowSelection;
   selectionProps: {
-    rowSelection: Record<string, boolean>;
+    rowSelection: RowSelectionState;
   };
   getSelectedRows: () => Model[];
 };
@@ -37,7 +37,7 @@ export function useTanstackTableListSelection<Model>(
   data: Model[],
   getRowId: (item: Model) => string,
 ): ListSelectionReturnType<Model> {
-  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const _getRowId = useCallbackRef((item: Model) => getRowId(item));
   const getSelectedRows = useCallbackRef((): Model[] => {
     return data.filter((item) => rowSelection[_getRowId(item)]);
@@ -57,3 +57,5 @@ export function useTanstackTableListSelection<Model>(
     getSelectedRows,
   };
 }
+
+import type { RowSelectionState } from '@tanstack/react-table';

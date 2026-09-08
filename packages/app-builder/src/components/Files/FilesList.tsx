@@ -1,15 +1,16 @@
 import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Table, useVirtualTable } from 'ui-design-system';
 import { AddYourFirstFile } from './AddYourFirstFile';
 import { UploadFileContentProps } from './UploadFile';
 
-const columnHelper = createColumnHelper<FilesListFile>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, FilesListFile>();
 
 export type FilesListFile = {
   id: string;
@@ -89,7 +90,7 @@ export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps,
     data: files,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

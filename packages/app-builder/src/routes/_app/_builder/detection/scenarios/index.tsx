@@ -15,11 +15,12 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { createFileRoute, Link, useHydrated } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Table, Tag, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -47,7 +48,7 @@ const scenariosLoader = createServerFn()
     };
   });
 
-const columnHelper = createColumnHelper<Scenario>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, Scenario>();
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/')({
   loader: () => scenariosLoader(),
@@ -99,7 +100,7 @@ function DetectionScenariosPage() {
         id: 'name',
         header: t('scenarios:list.column.name'),
         size: 250,
-        sortingFn: 'text',
+        sortFn: 'text',
         enableSorting: true,
       }),
       columnHelper.accessor('description', {
@@ -188,8 +189,8 @@ function DetectionScenariosPage() {
       },
     },
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualSorting: false,
     rowLink: ({ id }) => <Link to="/detection/scenarios/$scenarioId" params={{ scenarioId: fromUUIDtoSUUID(id) }} />,
   });
   const isEmpty = rows.length === 0;

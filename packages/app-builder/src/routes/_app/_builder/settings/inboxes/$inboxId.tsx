@@ -29,9 +29,10 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { cn, Switch, Table, Tooltip, useTable } from 'ui-design-system';
 
 type LoaderData = {
@@ -91,7 +92,7 @@ export const Route = createFileRoute('/_app/_builder/settings/inboxes/$inboxId')
   component: Inbox,
 });
 
-const columnHelper = createColumnHelper<InboxUser>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, InboxUser>();
 
 function Inbox() {
   const {
@@ -192,8 +193,8 @@ function Inbox() {
     data: inbox.users ?? [],
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualSorting: false,
   });
 
   const nonInboxUsers = orgUsers.filter((user) => !inbox.users?.some((u) => u.userId === user.userId));

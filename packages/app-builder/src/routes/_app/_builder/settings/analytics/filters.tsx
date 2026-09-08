@@ -10,10 +10,11 @@ import {
 } from '@app-builder/queries/settings/scenarios/delete-filter';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Modal, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -160,7 +161,7 @@ export const Route = createFileRoute('/_app/_builder/settings/analytics/filters'
   component: Filters,
 });
 
-const columnHelper = createColumnHelper<FilterRow>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, FilterRow>();
 
 function Filters() {
   const revalidate = useLoaderRevalidator();
@@ -220,7 +221,7 @@ function Filters() {
     data: filters,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

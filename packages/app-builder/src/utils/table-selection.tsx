@@ -1,7 +1,8 @@
 import { ColumnHelper } from '@tanstack/react-table';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Checkbox } from 'ui-design-system';
 
-export const getTableSelectColumn = (columnHelper: ColumnHelper<any>, selectable?: boolean) => {
+export const getTableSelectColumn = (columnHelper: ColumnHelper<MarbleTableFeatures, any>, selectable?: boolean) => {
   return selectable
     ? [
         columnHelper.display({

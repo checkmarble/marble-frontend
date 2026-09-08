@@ -17,10 +17,11 @@ import {
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, Tag, useTable } from 'ui-design-system';
 
 const usersLoader = createServerFn()
@@ -61,7 +62,7 @@ export const Route = createFileRoute('/_app/_builder/settings/users')({
   component: Users,
 });
 
-const columnHelper = createColumnHelper<User>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, User>();
 
 function Users() {
   const { t } = useTranslation(['settings', 'cases']);
@@ -174,7 +175,7 @@ function Users() {
     data: orgUsers,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

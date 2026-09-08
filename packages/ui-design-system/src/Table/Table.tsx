@@ -1,18 +1,20 @@
 import {
+  type ColumnHelper,
   flexRender,
   type Header,
   type HeaderGroup,
   type Row,
   type RowData,
   type TableOptions,
-  useReactTable,
+  useTable as useTanStackTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
 import { cloneElement, createContext, type JSX, useContext, useMemo, useRef } from 'react';
 import { Icon } from 'ui-icons';
-
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
+import type { MarbleTableFeatures } from './features';
+import { marbleTableFeatures } from './features';
 
 const WithRowLinkContext = createContext(false);
 
@@ -44,7 +46,7 @@ function TableTH<TData extends RowData, TValue>({
   children,
   className,
   ...props
-}: React.ComponentProps<'th'> & { header: Header<TData, TValue> }) {
+}: React.ComponentProps<'th'> & { header: Header<MarbleTableFeatures, TData, TValue> }) {
   return (
     <th
       colSpan={header.colSpan}
@@ -67,7 +69,7 @@ function TableTH<TData extends RowData, TValue>({
 const internalRowLink = '__internal-row-link';
 
 // biome-ignore lint/suspicious/noRedeclare: <TBD>
-function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderGroup<TData>[] }) {
+function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderGroup<MarbleTableFeatures, TData>[] }) {
   return (
     <thead className="sticky top-0 z-10">
       {headerGroups.map((headerGroup) => (
@@ -121,7 +123,9 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
   );
 }
 
-interface TableProps<TData extends RowData> extends TableOptions<TData> {
+interface TableProps<TData extends RowData>
+  extends Omit<TableOptions<MarbleTableFeatures, TData>, 'features' | 'columns'> {
+  columns: ReturnType<ColumnHelper<MarbleTableFeatures, TData>['columns']>;
   /**
    * Transform the row into a link :
    * - the link will be placed in a dedicated first column with width = 0.
@@ -132,21 +136,29 @@ interface TableProps<TData extends RowData> extends TableOptions<TData> {
 }
 
 function useCoreTable<TData extends RowData>({ columns, rowLink, ...options }: TableProps<TData>) {
-  const _columns = useMemo(() => {
+  const _columns = useMemo<TableProps<TData>['columns']>(() => {
     if (!rowLink) return columns;
 
-    columns.unshift({
-      id: internalRowLink,
-      header: '',
-      cell: ({ row }) =>
-        cloneElement(rowLink(row.original), {
-          'data-column-id': internalRowLink,
-        }),
-    });
-    return columns;
+    return [
+      {
+        id: internalRowLink,
+        header: '',
+        cell: ({ row }) =>
+          cloneElement(rowLink(row.original), {
+            'data-column-id': internalRowLink,
+          }),
+      },
+      ...columns,
+    ];
   }, [columns, rowLink]);
 
-  return useReactTable({ columns: _columns, ...options });
+  return useTanStackTable({
+    features: marbleTableFeatures,
+    manualSorting: true,
+    manualFiltering: true,
+    columns: _columns,
+    ...options,
+  });
 }
 
 export function useVirtualTable<TData extends RowData>(options: TableProps<TData>) {
@@ -181,7 +193,7 @@ export function useVirtualTable<TData extends RowData>(options: TableProps<TData
     rows: virtualRows.map(
       (virtualRow) =>
         // Safe to cast as virtualRows is built from rows
-        rows[virtualRow.index] as Row<TData>,
+        rows[virtualRow.index] as Row<MarbleTableFeatures, TData>,
     ),
     scrollToTop: () => {
       rowVirtualizer.scrollToIndex(0);
@@ -240,7 +252,7 @@ function Row<TData extends RowData>({
   className,
   onClick,
   ...props
-}: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<TData> }) {
+}: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<MarbleTableFeatures, TData> }) {
   const withRowLink = useContext(WithRowLinkContext);
 
   return (

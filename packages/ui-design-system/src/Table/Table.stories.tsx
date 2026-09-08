@@ -1,7 +1,8 @@
 import { fakerEN } from '@faker-js/faker';
 import { type Meta, type StoryFn } from '@storybook/react';
-import { type ColumnDef, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
+import type { MarbleTableFeatures } from './features';
 
 import { Table, useVirtualTable } from './Table';
 
@@ -21,11 +22,14 @@ function Template({ count }: StoryProps) {
   );
 
   const columns = useMemo<
-    ColumnDef<{
-      firstName: string;
-      lastName: string;
-      description: string;
-    }>[]
+    ColumnDef<
+      MarbleTableFeatures,
+      {
+        firstName: string;
+        lastName: string;
+        description: string;
+      }
+    >[]
   >(
     () => [
       {
@@ -52,8 +56,8 @@ function Template({ count }: StoryProps) {
     columns,
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualSorting: false,
   });
 
   return <Table.Default {...virtualTable} />;

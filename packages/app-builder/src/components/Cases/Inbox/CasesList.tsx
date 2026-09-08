@@ -8,10 +8,11 @@ import { isUnsetTimestamp } from '@app-builder/utils/datetime';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
-import { createColumnHelper, getCoreRowModel, OnChangeFn, SortingState } from '@tanstack/react-table';
+import { createColumnHelper, OnChangeFn, SortingState } from '@tanstack/react-table';
 import { MouseEvent, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Checkbox, cn, StickyComponent, Table, Tag, TagProps, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseStatusBadgeV2 } from '../CaseStatus';
@@ -29,7 +30,7 @@ export type CasesListProps = {
   setCurrentPage: (page: number) => void;
 } & SelectionProps<Case>;
 
-const columnHelper = createColumnHelper<Case>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, Case>();
 
 export function CasesList({
   sorting,
@@ -321,7 +322,7 @@ export function CasesList({
       rowSelection: selectionProps?.rowSelection,
     },
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableRowSelection: selectable,
     enableSorting: true,
     enableSortingRemoval: false,

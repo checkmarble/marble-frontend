@@ -1,15 +1,16 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { type RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { cva } from 'class-variance-authority';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AnalyticsTooltip } from './Tooltip';
 
-const columnHelper = createColumnHelper<RuleHitTableResponse>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, RuleHitTableResponse>();
 
 export type RulesHitProps = {
   isComparingRanges: boolean;
@@ -149,7 +150,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
     data: visibleData,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
   return (

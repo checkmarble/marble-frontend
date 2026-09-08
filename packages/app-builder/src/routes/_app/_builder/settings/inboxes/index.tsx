@@ -21,11 +21,12 @@ import {
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { type Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, useTable } from 'ui-design-system';
 
 const inboxesLoader = createServerFn()
@@ -76,8 +77,11 @@ export const Route = createFileRoute('/_app/_builder/settings/inboxes/')({
   component: CaseManagerSettings,
 });
 
-const inboxColumnHelper = createColumnHelper<InboxWithCasesCount>();
-const tagColumnHelper = createColumnHelper<(Tag & { target: 'case' }) | (Tag & { target: 'object' })>();
+const inboxColumnHelper = createColumnHelper<MarbleTableFeatures, InboxWithCasesCount>();
+const tagColumnHelper = createColumnHelper<
+  MarbleTableFeatures,
+  (Tag & { target: 'case' }) | (Tag & { target: 'object' })
+>();
 
 function CaseManagerSettings() {
   const { t } = useTranslation(['common', 'settings']);
@@ -132,7 +136,7 @@ function CaseManagerSettings() {
     data: inboxes,
     columns: inboxColumns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
     rowLink: ({ id }) => <Link to="/settings/inboxes/$inboxId" params={{ inboxId: fromUUIDtoSUUID(id) }} />,
   });
@@ -242,7 +246,7 @@ function TagsSection({
     data: tags,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

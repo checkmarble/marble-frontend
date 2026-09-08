@@ -12,7 +12,7 @@ import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { useQueryClient } from '@tanstack/react-query';
 import { ClientOnly, createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
@@ -21,6 +21,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -254,7 +255,7 @@ const ResultModal = ({
   );
 };
 
-const columnHelper = createColumnHelper<UploadLog>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, UploadLog>();
 
 const PastUploads = ({
   uploadLogs,
@@ -325,7 +326,7 @@ const PastUploads = ({
     data: uploadLogs,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 
