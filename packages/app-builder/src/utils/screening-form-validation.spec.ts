@@ -1,3 +1,6 @@
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import { NewListAstNode } from '@app-builder/models/astNode/list';
+import { NewStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
@@ -39,6 +42,62 @@ describe('collectFormValidationIssues', () => {
     expect(issues).toContainEqual({
       message: 'Name is required',
       source: { type: 'field', field: 'name' },
+    });
+  });
+
+  it('treats a populated List as a filled query field', () => {
+    const issues = collectFormValidationIssues(
+      {
+        name: 'Screening',
+        entityType: 'Person',
+        query: { passportNumber: NewListAstNode([NewConstantAstNode({ constant: 'P123' })]) },
+      },
+      schema,
+      t,
+    );
+
+    expect(issues).toEqual([]);
+  });
+
+  it('treats an empty List as an empty query field', () => {
+    const issues = collectFormValidationIssues(
+      { name: 'Screening', entityType: 'Person', query: { passportNumber: NewListAstNode() } },
+      schema,
+      t,
+    );
+
+    expect(issues).toContainEqual({
+      message: 'Matching settings: Please fill at least one field',
+      source: { type: 'section', section: 'matchSettings' },
+    });
+  });
+
+  it('recursively validates a List of StringConcat values', () => {
+    const populatedIssues = collectFormValidationIssues(
+      {
+        name: 'Screening',
+        entityType: 'Person',
+        query: {
+          name: NewListAstNode([NewStringConcatAstNode([NewConstantAstNode({ constant: 'Jane' })])]),
+        },
+      },
+      schema,
+      t,
+    );
+    const emptyIssues = collectFormValidationIssues(
+      {
+        name: 'Screening',
+        entityType: 'Person',
+        query: { name: NewListAstNode([NewStringConcatAstNode([])]) },
+      },
+      schema,
+      t,
+    );
+
+    expect(populatedIssues).toEqual([]);
+    expect(emptyIssues).toContainEqual({
+      message: 'Matching settings: Please fill at least one field',
+      source: { type: 'section', section: 'matchSettings' },
     });
   });
 });
