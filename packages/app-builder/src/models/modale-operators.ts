@@ -1,5 +1,6 @@
 import { type ValidIpFlags, validIpFlags } from './astNode/ip';
 import { type ValidTimestampExtractParts, validTimestampExtractParts } from './astNode/time';
+import { PrimitiveTypes } from './data-model';
 
 export const aggregatorOperators = [
   'AVG',
@@ -50,3 +51,15 @@ export function isTimestampPart(value: string): value is ValidTimestampExtractPa
 export function isIpFlag(value: string): value is ValidIpFlags {
   return validIpFlags.includes(value as ValidIpFlags);
 }
+
+export const supportedAggregatorsOperatorsTypes: Record<(typeof aggregatorOperators)[number], PrimitiveTypes[]> = {
+  AVG: ['Int', 'Float'],
+  MAX: ['Int', 'Float'],
+  MIN: ['Int', 'Float'],
+  SUM: ['Int', 'Float'],
+  COUNT: ['Int', 'String', 'Float'],
+  COUNT_DISTINCT: ['Int', 'String', 'Float'],
+  STDDEV: ['Int', 'Float'],
+  PCTILE: ['Int', 'Float'],
+  MEDIAN: ['Int', 'Float'],
+};

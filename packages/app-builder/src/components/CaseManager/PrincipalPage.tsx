@@ -28,6 +28,7 @@ import { CaseDocuments } from './CaseDocuments/CaseDocuments';
 import { CaseEvents } from './CaseEvents';
 import { CaseInfo } from './CaseInfo';
 import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
+import { CaseKpis } from './CaseKpis';
 import { EscalateCaseButton } from './EscalateCaseButton';
 import { NavigationOptions } from './NavigationOptions';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
@@ -157,6 +158,9 @@ export function CaseManagerPrincipalPage({
               ) : null}
             </Card>
           )}
+          {mainPivotObject?.pivotObjectId ? (
+            <CaseKpis objectId={mainPivotObject.pivotObjectId} objectType={mainPivotObject.pivotObjectName} />
+          ) : null}
           <CaseDocuments files={caseDetail.files} />
           <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
         </div>

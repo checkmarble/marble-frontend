@@ -11,6 +11,7 @@ import { type AuditEventsRepository } from '@app-builder/repositories/AuditEvent
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { Client360Repository } from '@app-builder/repositories/Client360Repository';
 import { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
+import { CustomerAggregateRepository } from '@app-builder/repositories/CustomerAggregateRepository';
 import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
@@ -57,6 +58,7 @@ interface AuthenticatedInfo {
   decision: DecisionRepository;
   cases: CaseRepository;
   continuousScreening: ContinuousScreeningRepository;
+  customerAggregates: CustomerAggregateRepository;
   screening: ScreeningRepository;
   customListsRepository: CustomListsRepository;
   dataModelRepository: DataModelRepository;
@@ -136,6 +138,7 @@ interface MakeAuthenticationServerServiceArgs {
   getDecisionRepository: (marbleCoreApiClient: MarbleCoreApi) => DecisionRepository;
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
   getContinuousScreeningRepository: (marbleCoreApiClient: MarbleCoreApi) => ContinuousScreeningRepository;
+  getCustomerAggregateRepository: (marbleCoreApiClient: MarbleCoreApi) => CustomerAggregateRepository;
   getScreeningRepository: (marbleCoreApiClient: MarbleCoreApi) => ScreeningRepository;
   getCustomListRepository: (marbleCoreApiClient: MarbleCoreApi) => CustomListsRepository;
   getOrganizationRepository: (marbleCoreApiClient: MarbleCoreApi, organizationId: string) => OrganizationRepository;
@@ -171,6 +174,7 @@ export function makeAuthenticationServerService({
   getDecisionRepository,
   getCaseRepository,
   getContinuousScreeningRepository,
+  getCustomerAggregateRepository,
   getScreeningRepository,
   getCustomListRepository,
   getOrganizationRepository,
@@ -491,6 +495,7 @@ export function makeAuthenticationServerService({
       decision: getDecisionRepository(marbleCoreApiClient),
       cases: getCaseRepository(marbleCoreApiClient),
       continuousScreening: getContinuousScreeningRepository(marbleCoreApiClient),
+      customerAggregates: getCustomerAggregateRepository(marbleCoreApiClient),
       screening: getScreeningRepository(marbleCoreApiClient),
       customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),

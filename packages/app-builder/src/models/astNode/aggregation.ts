@@ -1,5 +1,5 @@
 import { v7 as uuidv7 } from 'uuid';
-
+import { PrimitiveTypes } from '../data-model';
 import { AggregationFuzzyMatchConfig } from '../fuzzy-match/aggregationFuzzyMatchConfig';
 import { type BaseFuzzyMatchConfig, type FuzzyMatchAlgorithm } from '../fuzzy-match/baseFuzzyMatchConfig';
 import { type AggregatorOperator } from '../modale-operators';
@@ -34,6 +34,22 @@ export const aggregationFilterOperators = [
   ...complexAggregationFilterOperators,
 ] as const;
 export type AggregationFilterOperator = (typeof aggregationFilterOperators)[number];
+
+export const aggregationFiltersWithTypes: Record<AggregationFilterOperator, PrimitiveTypes[]> = {
+  '!=': ['Int', 'Float', 'String', 'Bool', 'Coords', 'IpAddress', 'Timestamp'],
+  '=': ['Int', 'Float', 'String', 'Bool', 'Coords', 'IpAddress', 'Timestamp'],
+  IsEmpty: ['Int', 'Float', 'String', 'Bool', 'Coords', 'IpAddress', 'Timestamp'],
+  IsNotEmpty: ['Int', 'Float', 'String', 'Bool', 'Coords', 'IpAddress', 'Timestamp'],
+  '<': ['Int', 'Float', 'Timestamp'],
+  '<=': ['Int', 'Float', 'Timestamp'],
+  '>': ['Int', 'Float', 'Timestamp'],
+  '>=': ['Int', 'Float', 'Timestamp'],
+  FuzzyMatch: ['String'],
+  IsInList: ['String'],
+  IsNotInList: ['String'],
+  StringEndsWith: ['String'],
+  StringStartsWith: ['String'],
+};
 
 export const aggregationFilterAstNodeName = 'Filter';
 export type UnaryAggregationFilterAstNode = {
