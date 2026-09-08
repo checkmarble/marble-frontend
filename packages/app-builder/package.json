@@ -95,7 +95,7 @@
     "firebase": "^12.13.0",
     "i18next": "^26.3.0",
     "i18next-browser-languagedetector": "^8.0.4",
-    "i18next-fetch-backend": "^7.0.0",
+    "i18next-fetch-backend": "^8.0.0",
     "i18next-resources-to-backend": "^1.2.3",
     "js-cookie": "^3.0.8",
     "libphonenumber-js": "^1.13.10",
