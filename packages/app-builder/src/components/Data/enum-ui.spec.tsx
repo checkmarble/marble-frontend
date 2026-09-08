@@ -1,6 +1,6 @@
 import {
-    DimensionValueInput,
-    DimensionValuesSelect,
+  DimensionValueInput,
+  DimensionValuesSelect,
 } from '@app-builder/components/AstBuilder/edition/ValueSwitch/ValueSwitch';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import type { DataModelField } from '@app-builder/models/data-model';

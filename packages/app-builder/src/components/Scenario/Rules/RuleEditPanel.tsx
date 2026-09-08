@@ -414,11 +414,7 @@ function RuleEditForm({
           <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
             {([canSubmit, isSubmitting]) => (
               <>
-                <Panel.FooterButton
-                  disabled={!canSubmit || isSubmitting}
-                  isCloseButton
-                  label={t('common:cancel')}
-                />
+                <Panel.FooterButton disabled={!canSubmit || isSubmitting} isCloseButton label={t('common:cancel')} />
                 <Panel.FooterButton
                   type="submit"
                   disabled={!canSubmit || isSubmitting}
