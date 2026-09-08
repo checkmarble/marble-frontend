@@ -33,6 +33,7 @@ export * from './StepProgressBar/StepProgressBar';
 export * from './Stepper/Stepper';
 export * from './StickyComponent/StickyComponent';
 export * from './Switch/Switch';
+export * from './Table/features';
 export * from './Table/Table';
 export * from './Tabs/Tabs';
 export * from './Tag/Tag';

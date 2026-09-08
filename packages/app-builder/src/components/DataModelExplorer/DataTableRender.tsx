@@ -13,13 +13,13 @@ import {
   type ColumnPinningState,
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  useTable as useTanStackTable,
 } from '@tanstack/react-table';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Button, cn, MenuCommand, Popover } from 'ui-design-system';
+import type { MarbleTableFeatures } from 'ui-design-system';
+import { Button, cn, MenuCommand, marbleTableFeatures, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
@@ -159,8 +159,8 @@ type DataTableProps = {
 
 const ROW_NUMBER_COL_WIDTH = 50;
 const DEFAULT_PINNED_COL_WIDTH = 150;
-const INITIAL_COLUMN_PINNING: ColumnPinningState = { left: [], right: [] };
-const columnHelper = createColumnHelper<Record<string, unknown>>();
+const INITIAL_COLUMN_PINNING: ColumnPinningState = { start: [], end: [] };
+const columnHelper = createColumnHelper<MarbleTableFeatures, Record<string, unknown>>();
 
 function DataTable({ caseId, pivotObject, table, list, metadata, pagination, navigateTo }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
@@ -204,7 +204,10 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
     });
   }, [columnList, table]);
 
-  const reactTable = useReactTable({
+  const reactTable = useTanStackTable({
+    features: marbleTableFeatures,
+    manualSorting: true,
+    manualFiltering: true,
     state: {
       columnOrder: table.fieldOrder,
       columnPinning,
@@ -212,10 +215,9 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
     onColumnPinningChange: setColumnPinning,
     data: tableData,
     columns,
-    getCoreRowModel: getCoreRowModel(),
   });
 
-  const pinnedLeft = columnPinning.left ?? [];
+  const pinnedLeft = columnPinning.start ?? [];
 
   const getPinnedColumnOffset = (columnId: string): number => {
     const idx = pinnedLeft.indexOf(columnId);
@@ -242,7 +244,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
         // Also unpin the column when hiding it to prevent phantom offsets
         setColumnPinning((prev) => ({
           ...prev,
-          left: (prev.left ?? []).filter((c) => c !== colName),
+          start: (prev.start ?? []).filter((c) => c !== colName),
         }));
         const idx = cl.indexOf(colName);
         return [...cl.slice(0, idx), ...cl.slice(idx + 1)];
@@ -254,11 +256,11 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
 
   const handleTogglePin = (colName: string) => {
     setColumnPinning((prev) => {
-      const left = prev.left ?? [];
+      const left = prev.start ?? [];
       if (left.includes(colName)) {
-        return { ...prev, left: left.filter((c) => c !== colName) };
+        return { ...prev, start: left.filter((c) => c !== colName) };
       }
-      return { ...prev, left: [...left, colName] };
+      return { ...prev, start: [...left, colName] };
     });
   };
 

@@ -14,9 +14,10 @@ import {
 import * as Sentry from '@sentry/react';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Table, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -44,7 +45,7 @@ export const Route = createFileRoute('/_app/_builder/settings/webhooks')({
   errorComponent: WebhooksError,
 });
 
-const columnHelper = createColumnHelper<Webhook>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, Webhook>();
 
 function Webhooks() {
   const { t } = useTranslation(['settings']);
@@ -76,7 +77,7 @@ function Webhooks() {
     data: webhooks,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
     rowLink: (webhook) => <Link to="/settings/webhooks/$webhookId" params={{ webhookId: webhook.id }} />,
   });
@@ -153,7 +154,7 @@ function WebhooksError({ error }: { error: unknown }) {
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: [],
     columns,
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
     enableColumnResizing: false,
   });

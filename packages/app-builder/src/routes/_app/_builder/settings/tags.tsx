@@ -13,10 +13,11 @@ import {
 } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { type Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, useTable } from 'ui-design-system';
 
 const tagsLoader = createServerFn()
@@ -48,7 +49,10 @@ export const Route = createFileRoute('/_app/_builder/settings/tags')({
   component: Tags,
 });
 
-const columnHelper = createColumnHelper<(Tag & { target: 'case' }) | (Tag & { target: 'object' })>();
+const columnHelper = createColumnHelper<
+  MarbleTableFeatures,
+  (Tag & { target: 'case' }) | (Tag & { target: 'object' })
+>();
 
 function Tags() {
   const { t } = useTranslation(['settings']);
@@ -111,7 +115,7 @@ function Tags() {
     data: tags,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

@@ -3,14 +3,15 @@ import { ApiKey } from '@app-builder/models/api-keys';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { type FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Panel, Table, useTable } from 'ui-design-system';
 import { AuditEventDetailPanel } from './AuditEventDetailPanel';
 import { OperationBadge } from './OperationBadge';
 
-const columnHelper = createColumnHelper<AuditEvent>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, AuditEvent>();
 
 interface AuditEventsTableProps {
   auditEvents: AuditEvent[];
@@ -118,7 +119,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
     data: auditEvents,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

@@ -8,9 +8,10 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, Tag, useVirtualTable } from 'ui-design-system';
 
 const listsLoader = createServerFn()
@@ -27,7 +28,7 @@ const listsLoader = createServerFn()
     };
   });
 
-const columnHelper = createColumnHelper<CustomList>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, CustomList>();
 
 export const Route = createFileRoute('/_app/_builder/detection/lists/')({
   loader: () => listsLoader(),
@@ -48,7 +49,7 @@ function DetectionListsPage() {
         id: 'name',
         header: t('lists:name'),
         size: 200,
-        sortingFn: 'text',
+        sortFn: 'text',
         enableSorting: true,
       }),
       columnHelper.accessor('description', {
@@ -87,8 +88,8 @@ function DetectionListsPage() {
     data: customLists,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualSorting: false,
     rowLink: ({ id }) => <Link to="/detection/lists/$listId" params={{ listId: fromUUIDtoSUUID(id) }} />,
   });
 

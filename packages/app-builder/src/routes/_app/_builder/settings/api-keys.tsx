@@ -22,11 +22,12 @@ import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/a
 import { downloadFile } from '@app-builder/utils/download-file';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Table, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -78,8 +79,8 @@ export const Route = createFileRoute('/_app/_builder/settings/api-keys')({
   component: ApiKeys,
 });
 
-const apiKeyColumnHelper = createColumnHelper<ApiKey>();
-const webhookColumnHelper = createColumnHelper<Webhook>();
+const apiKeyColumnHelper = createColumnHelper<MarbleTableFeatures, ApiKey>();
+const webhookColumnHelper = createColumnHelper<MarbleTableFeatures, Webhook>();
 
 function ApiKeys() {
   const { t } = useTranslation(['common', 'settings', 'api']);
@@ -139,7 +140,6 @@ function ApiKeys() {
     data: apiKeys,
     columns: apiKeyColumns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
   });
 
   return (
@@ -246,7 +246,7 @@ function WebhooksSection({
     data: webhooks,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
     rowLink: (webhook) => <Link to="/settings/webhooks/$webhookId" params={{ webhookId: webhook.id }} />,
   });

@@ -76,8 +76,10 @@ export default defineConfig({
     include: ['qrcode.react'],
   },
   ssr: {
-    // country-flag-emojis ships CJS; force Vite to bundle it for SSR
-    noExternal: ['country-flag-emojis'],
+    // country-flag-emojis ships CJS; force Vite to bundle it for SSR.
+    // maplibre-gl is ESM-only in v6 — keep it bundled so SSR does not
+    // try to resolve a missing CommonJS entry (TanStack Start / Vite).
+    noExternal: ['country-flag-emojis', 'maplibre-gl'],
   },
   build: {
     sourcemap: isSentryConfigured,

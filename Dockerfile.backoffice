@@ -59,8 +59,8 @@ ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
-# Install dependencies first
-RUN bun install
+# Verify the copied manifests still match the lockfile before building.
+RUN bun install --frozen-lockfile
 
 # Then run the backoffice build
 RUN bun run -F backoffice build

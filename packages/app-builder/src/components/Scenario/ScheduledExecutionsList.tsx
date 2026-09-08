@@ -1,15 +1,16 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Link } from '@tanstack/react-router';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { type ParseKeys } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { scenarioI18n } from './scenario-i18n';
 
-const columnHelper = createColumnHelper<ScheduledExecution>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, ScheduledExecution>();
 
 export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExecutions: ScheduledExecution[] }) {
   const { t } = useTranslation(scenarioI18n);
@@ -124,7 +125,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
     data: scheduledExecutions,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

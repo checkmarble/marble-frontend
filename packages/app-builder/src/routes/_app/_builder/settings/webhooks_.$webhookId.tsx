@@ -17,10 +17,11 @@ import {
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -151,7 +152,7 @@ const WebhookValue = ({ children }: { children: React.ReactNode }) => {
   return <span className="text-s text-grey-primary">{children}</span>;
 };
 
-const columnHelper = createColumnHelper<WebhookSecret>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, WebhookSecret>();
 
 function WebhookSecrets({
   secrets,
@@ -235,8 +236,8 @@ function WebhookSecrets({
     data: secrets,
     columns,
     enableColumnResizing: false,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualSorting: false,
   });
 
   return (

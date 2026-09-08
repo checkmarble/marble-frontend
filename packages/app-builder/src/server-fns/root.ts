@@ -53,7 +53,7 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     if (metabaseUrl) frames.push(metabaseUrl);
     if (fbAuthDomain) frames.push(fbAuthDomain);
 
-    const imgSrc: string[] = ["'self'", 'data:'];
+    const imgSrc: string[] = ["'self'", 'data:', 'blob:', 'https://*.cartocdn.com'];
     if (ENV.CUSTOM_LOGO_URL) {
       try {
         imgSrc.push(new URL(ENV.CUSTOM_LOGO_URL).origin);
@@ -72,6 +72,8 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
       objectSrc: ["'none'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: [`'nonce-${nonce}'`, "'unsafe-eval'", "'strict-dynamic'"],
+      // MapLibre v6 loads a same-origin ESM worker; don't fall back to nonce-only script-src.
+      workerSrc: ["'self'"],
       connectSrc: ["'self'", ...firebaseUrl, ...externalDomains.map((d) => `https://${d}`)],
       imgSrc,
       frameSrc: frames.length > 0 ? frames : ["'none'"],

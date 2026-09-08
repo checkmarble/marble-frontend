@@ -4,17 +4,18 @@ import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreO
 import { ScenarioIterationWithoutRules } from '@app-builder/models/scenario/iteration';
 import { type ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { type ScreeningConfig } from '@app-builder/models/screening-config';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Collapsible, Table, Tag, useTable } from 'ui-design-system';
 
 export const archivedIterationI18n = [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace;
 
 type RuleOrScreening = (ScenarioIterationRuleMetadata & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' });
 
-const columnHelper = createColumnHelper<RuleOrScreening>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, RuleOrScreening>();
 
 type ArchivedIterationViewProps = {
   rulesMetadata: ScenarioIterationRuleMetadata[];
@@ -80,8 +81,8 @@ export function ArchivedIterationView({ rulesMetadata, scenarioIteration }: Arch
     initialState: {
       sorting: [{ id: 'name', desc: false }],
     },
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualSorting: false,
   });
 
   const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;

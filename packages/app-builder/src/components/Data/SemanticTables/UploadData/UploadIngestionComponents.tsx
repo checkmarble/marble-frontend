@@ -2,7 +2,7 @@ import { type TableModel } from '@app-builder/models';
 import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-data';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
@@ -10,6 +10,7 @@ import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, CtaV2ClassName, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -347,7 +348,7 @@ export const UploadFormLoading = ({ className }: { className?: string }) => {
   );
 };
 
-const columnHelper = createColumnHelper<UploadLog>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, UploadLog>();
 
 export const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   const { t } = useTranslation(['upload']);
@@ -410,7 +411,7 @@ export const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
     data: uploadLogs,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
 

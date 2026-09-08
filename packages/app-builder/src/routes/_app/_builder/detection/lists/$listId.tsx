@@ -21,12 +21,13 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useMemo, useReducer, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, CtaV2ClassName, Modal, SearchInput, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
@@ -59,7 +60,7 @@ type CustomListValue = {
   value: string;
 };
 
-const columnHelper = createColumnHelper<CustomListValue>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, CustomListValue>();
 
 export const Route = createFileRoute('/_app/_builder/detection/lists/$listId')({
   loader: ({ params }) => listLoader({ data: { params } }),
@@ -99,7 +100,7 @@ function Lists() {
         id: 'value',
         header: t('lists:detail.values-list.header'),
         size: 500,
-        sortingFn: 'text',
+        sortFn: 'text',
         enableSorting: true,
         cell: ({ getValue, row }) => {
           const value = getValue();
@@ -131,9 +132,9 @@ function Lists() {
     data: listValues,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+
+    manualFiltering: false,
+    manualSorting: false,
   });
   return (
     <Page.Main>

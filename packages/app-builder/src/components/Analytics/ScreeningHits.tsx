@@ -1,13 +1,14 @@
 import { type ScreeningHitTableResponse } from '@app-builder/models/analytics';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, Typo, useTable } from 'ui-design-system';
 import { Spinner } from '../Spinner';
 import { AnalyticsTooltip } from './Tooltip';
 
-const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
+const columnHelper = createColumnHelper<MarbleTableFeatures, ScreeningHitTableResponse>();
 
 export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResponse[]; isLoading: boolean }) {
   const { t } = useTranslation(['analytics']);
@@ -79,7 +80,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
     data: visibleData,
     columns,
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
+
     enableSorting: false,
   });
   return (
