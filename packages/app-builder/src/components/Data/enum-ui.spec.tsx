@@ -1,7 +1,7 @@
 import {
-  DimensionValueInput,
-  DimensionValuesSelect,
-} from '@app-builder/components/AstBuilder/edition/EditModal/modals/ValueSwitch/ValueSwitch';
+    DimensionValueInput,
+    DimensionValuesSelect,
+} from '@app-builder/components/AstBuilder/edition/ValueSwitch/ValueSwitch';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import type { DataModelField } from '@app-builder/models/data-model';
 import { cleanup, render, screen } from '@testing-library/react';

@@ -43,7 +43,7 @@ import {
   Tag,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { OperandEditModalProps } from '../../EditModal';
+import { OperandEditModalProps } from '../EditModal/EditModal';
 import { getValueSwitchFieldOption } from './field-option';
 import {
   getTwoDimensionGridNavigationTarget,
@@ -769,7 +769,8 @@ export function DimensionValuesSelect({
     );
   }
 
-  function addManualValue() {
+  function addManualValue(e: KeyboardEvent<HTMLInputElement>) {
+    e.preventDefault();
     const value = manualValue.trim();
     if (dimension.type !== 'field' || !value || dimension.values.includes(value)) return;
     onChange([...dimension.values, value]);
@@ -817,10 +818,7 @@ export function DimensionValuesSelect({
                 {dimension.values.includes(value as never) ? <Icon icon="tick" className="size-4" /> : null}
               </MenuCommand.Item>
             ))}
-          </MenuCommand.List>
-        </MenuCommand.Content>
-      </MenuCommand.Menu>
-      {dimension.type === 'field' ? (
+             {dimension.type === 'field' ? (
         <div className="flex gap-sm">
           <Input
             size="medium"
@@ -828,13 +826,14 @@ export function DimensionValuesSelect({
             value={manualValue}
             placeholder={t('scenarios:value_switch.manual_value')}
             onChange={(event) => setManualValue(event.target.value)}
-            onEnterKeyDown={addManualValue}
+            onKeyDown={(event) => event.key === 'Enter' && addManualValue(event)}
           />
-          <Button variant="secondary" appearance="stroked" onClick={addManualValue} disabled={!manualValue.trim()}>
-            {t('scenarios:value_switch.add')}
-          </Button>
         </div>
       ) : null}
+          </MenuCommand.List>
+        </MenuCommand.Content>
+      </MenuCommand.Menu>
+     
     </div>
   );
 }

@@ -415,6 +415,11 @@ function RuleEditForm({
             {([canSubmit, isSubmitting]) => (
               <>
                 <Panel.FooterButton
+                  disabled={!canSubmit || isSubmitting}
+                  isCloseButton
+                  label={t('common:cancel')}
+                />
+                <Panel.FooterButton
                   type="submit"
                   disabled={!canSubmit || isSubmitting}
                   isLoading={isSubmitting}

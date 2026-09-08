@@ -22,11 +22,11 @@ import { match } from 'ts-pattern';
 import { MenuCommand } from 'ui-design-system';
 
 import { OperandEditModal } from './EditModal/EditModal';
-import { EditValueSwitchCard } from './EditModal/modals/ValueSwitch/ValueSwitch';
 import { EditionEvaluationErrors } from './EvaluationErrors';
 import { type EnrichedMenuOption, getFieldName, getOperandMenuOptions } from './helpers';
 import { AstBuilderNodeSharpFactory } from './node-store';
 import { AstBuilderOperandMenu, type BottomAction } from './OperandMenu';
+import { EditValueSwitchCard } from './ValueSwitch/ValueSwitch';
 
 export const editionOperandLabelClassnames = cva(
   [
