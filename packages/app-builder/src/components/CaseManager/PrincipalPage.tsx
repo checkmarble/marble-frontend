@@ -1,6 +1,7 @@
 import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientObjectTagList';
 import { CaseStatusBadgeV2 } from '@app-builder/components/Cases';
 import { CaseAlerts } from '@app-builder/components/Cases/CaseAlerts';
+import { CustomerKpis } from '@app-builder/components/CustomerKpis/CustomerKpis';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
@@ -157,6 +158,9 @@ export function CaseManagerPrincipalPage({
               ) : null}
             </Card>
           )}
+          {mainPivotObject?.pivotObjectId ? (
+            <CustomerKpis objectId={mainPivotObject.pivotObjectId} objectType={mainPivotObject.pivotObjectName} />
+          ) : null}
           <CaseDocuments files={caseDetail.files} />
           <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
         </div>

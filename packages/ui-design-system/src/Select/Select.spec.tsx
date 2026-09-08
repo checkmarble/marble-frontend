@@ -62,4 +62,27 @@ describe('Select', () => {
 
     expect(ref.current).toBe(screen.getByRole('combobox', { name: 'Select a value...' }));
   });
+
+  it('does not select disabled options', async () => {
+    const onChange = vi.fn();
+
+    render(
+      <SelectV2
+        placeholder="Select a value..."
+        value=""
+        onChange={onChange}
+        options={[
+          { label: 'Available', value: 'available' },
+          { label: 'Unavailable', value: 'unavailable', disabled: true },
+        ]}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole('combobox', { name: 'Select a value...' }));
+
+    expect(screen.getByRole('option', { name: 'Unavailable' })).toHaveAttribute('data-disabled');
+    await userEvent.click(screen.getByRole('option', { name: 'Unavailable' }));
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });
