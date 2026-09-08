@@ -1,4 +1,5 @@
 import { useTheme } from '@app-builder/contexts/ThemeContext';
+import '@app-builder/utils/maplibre-worker';
 import { Map as MapLibre, type MapRef, Marker } from '@vis.gl/react-maplibre';
 import { useEffect, useRef } from 'react';
 import { Icon } from 'ui-icons';

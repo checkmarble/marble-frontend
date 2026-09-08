@@ -1,6 +1,7 @@
 import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataType } from '@app-builder/models';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import '@app-builder/utils/maplibre-worker';
 import { Map as MapLibre, Marker } from '@vis.gl/react-maplibre';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
