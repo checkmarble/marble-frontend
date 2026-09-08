@@ -1,0 +1,10 @@
+/* EdgeLabelRenderer portals before NodeRenderer. Nodes use inline z-index
+ * (1000 when selected) and .react-flow__nodes does not create a stacking
+ * context, so those values compete with labels at the viewport. Trap them. */
+.react-flow .react-flow__nodes {
+  z-index: 0;
+}
+
+.react-flow .react-flow__edgelabel-renderer {
+  z-index: 1;
+}

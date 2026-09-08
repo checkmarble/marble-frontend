@@ -41,7 +41,6 @@ function RouteComponent() {
   const router = useRouter();
 
   const handleToggleTheme = async () => {
-    console.log('test');
     await callUpdateUserPreferences({ data: { theme: theme === 'light' ? 'dark' : 'light' } });
     router.invalidate();
   };

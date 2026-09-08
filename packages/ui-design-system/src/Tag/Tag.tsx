@@ -5,6 +5,7 @@ import { cn } from '../utils';
 export const tagClassName = cva('inline-flex items-center justify-center border text-nowrap gap-xs', {
   variants: {
     size: {
+      xs: 'h-4 px-xs rounded-full text-2xs',
       small: 'h-6 px-sm rounded-full text-small',
       medium: 'h-8 px-sm rounded-sm text-default font-medium',
       big: 'h-10 px-sm rounded-sm text-default font-medium',

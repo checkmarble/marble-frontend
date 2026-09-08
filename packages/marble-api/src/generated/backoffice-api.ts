@@ -33,6 +33,8 @@ export type FeatureAccessDto = {
     user_scoring: Roles;
     /** Entitlement for the LexisNexis screening provider. OpenSanctions is always available. */
     lexisnexis: Roles;
+    /** Entitlement for graph exploration in case manager, client 360, and data-model relation configuration. */
+    graph_exploration: Roles;
 };
 export type LicenseEntitlementsDto = {
     sso: boolean;
@@ -49,6 +51,7 @@ export type LicenseEntitlementsDto = {
     continuous_screening: boolean;
     user_scoring: boolean;
     lexisnexis: boolean;
+    graph_exploration: boolean;
 };
 export type LicenseDto = {
     id: string;

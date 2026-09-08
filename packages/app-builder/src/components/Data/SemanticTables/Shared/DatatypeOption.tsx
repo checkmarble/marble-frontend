@@ -1,6 +1,7 @@
 import { DataType, getDataTypeIcon, PrimitiveTypes } from '@app-builder/models/data-model';
 import { useMemo } from 'react';
 import { match } from 'ts-pattern';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
@@ -12,21 +13,37 @@ const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
   { value: 'IpAddress', labelKey: 'IP Address' },
 ] as const;
 
-function DatatypeOption({ dataType }: { dataType: PrimitiveTypes }) {
-  const labelKey = dataTypeOptions.find((opt) => opt.value === dataType)?.labelKey ?? dataType;
+export function DatatypeOption({
+  dataType,
+  label,
+  size = 'medium',
+}: {
+  dataType: PrimitiveTypes;
+  label?: string;
+  size?: DataTypeIconSize;
+}) {
+  const labelKey = label ?? dataTypeOptions.find((opt) => opt.value === dataType)?.labelKey ?? dataType;
   return (
     <div className="flex items-center gap-sm">
-      <DatatypeIcon dataType={dataType} />
+      <DatatypeIcon dataType={dataType} size={size} />
       <span>{labelKey}</span>
     </div>
   );
 }
 
-export function DatatypeIcon({ dataType }: { dataType: PrimitiveTypes }) {
+type DataTypeIconSize = 'small' | 'medium';
+
+export function DatatypeIcon({ dataType, size = 'medium' }: { dataType: PrimitiveTypes; size?: DataTypeIconSize }) {
   const labelKey = dataTypeOptions.find((opt) => opt.value === dataType)?.labelKey;
   return (
-    <span className=" text-grey-secondary bg-grey-background rounded p-sm grid place-items-center" title={labelKey}>
-      <Icon icon={getDataTypeIcon(dataType) ?? 'string'} className="size-4" />
+    <span
+      className={cn(
+        'text-grey-secondary bg-grey-background grid shrink-0 place-items-center rounded',
+        size === 'small' ? 'p-xs' : 'p-sm',
+      )}
+      title={labelKey}
+    >
+      <Icon icon={getDataTypeIcon(dataType) ?? 'string'} className={size === 'small' ? 'size-3' : 'size-4'} />
     </span>
   );
 }

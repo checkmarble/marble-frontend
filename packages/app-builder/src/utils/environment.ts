@@ -40,6 +40,11 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
 
+  ENABLE_GRAPH_EXPLORATION: z
+    .string()
+    .transform((val) => val === 'true')
+    .optional(),
+
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
 });
@@ -94,6 +99,7 @@ interface ServerEnvVars {
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
+  ENABLE_GRAPH_EXPLORATION?: boolean;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
 }
@@ -114,6 +120,7 @@ interface ClientEnvVars {
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
+  ENABLE_GRAPH_EXPLORATION?: boolean;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -122,6 +129,7 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
+    ENABLE_GRAPH_EXPLORATION: getServerEnv('ENABLE_GRAPH_EXPLORATION'),
   };
 }
 
