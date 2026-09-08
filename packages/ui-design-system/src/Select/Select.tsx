@@ -216,6 +216,7 @@ export type SelectOption<T> = {
   label: ReactNode | (() => ReactNode);
   value: T;
   rowValue?: string;
+  disabled?: boolean;
 };
 
 type SelectV2BaseProps<T, O extends SelectOption<T>> = {
@@ -226,7 +227,7 @@ type SelectV2BaseProps<T, O extends SelectOption<T>> = {
   disabled?: boolean;
   readOnly?: boolean;
   className?: string;
-  displayedValue?: (option: O) => string;
+  displayedValue?: (option: O) => ReactNode;
   selectedIcon?: IconName;
   variant?: 'tag' | 'default';
   menuClassName?: string;
@@ -248,7 +249,10 @@ export type SelectV2Props<T, O extends SelectOption<T> = SelectOption<T>> =
   | SelectV2SingleProps<T, O>
   | SelectV2MultipleProps<T, O>;
 
-function renderOptionLabel<T, O extends SelectOption<T>>(option: O, displayedValue?: (option: O) => string): ReactNode {
+function renderOptionLabel<T, O extends SelectOption<T>>(
+  option: O,
+  displayedValue?: (option: O) => ReactNode,
+): ReactNode {
   if (displayedValue) return displayedValue(option);
   return typeof option.label === 'function' ? option.label() : option.label;
 }
@@ -407,6 +411,7 @@ export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(
               <MenuCommand.Item
                 role="option"
                 key={idx}
+                disabled={option.disabled}
                 onSelect={() => handleSelect(option.value)}
                 className="group-[[data-size='small']]/menu-command-content:h-6"
                 value={itemValue}

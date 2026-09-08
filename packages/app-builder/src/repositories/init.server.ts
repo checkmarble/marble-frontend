@@ -8,6 +8,7 @@ import { makeGetAuditEventsRepository } from './AuditEventsRepository';
 import { makeGetCaseRepository } from './CaseRepository';
 import { makeGetClient360TablesRepository } from './Client360Repository';
 import { makeGetContinuousScreeningRepository } from './ContinuousScreeningRepository';
+import { makeGetCustomerAggregateRepository } from './CustomerAggregateRepository';
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
@@ -54,6 +55,7 @@ export function makeServerRepositories({
     getDecisionRepository: makeGetDecisionRepository(),
     getCaseRepository: makeGetCaseRepository(),
     getContinuousScreeningRepository: makeGetContinuousScreeningRepository(),
+    getCustomerAggregateRepository: makeGetCustomerAggregateRepository(),
     getScreeningRepository: makeGetScreeningRepository(),
     getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),
