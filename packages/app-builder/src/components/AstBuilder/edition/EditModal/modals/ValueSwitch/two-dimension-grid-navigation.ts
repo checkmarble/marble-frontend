@@ -13,6 +13,13 @@ type GetNavigationTargetArgs = GridPosition & {
   columnCount: number;
 };
 
+type ScrollGridCellIntoViewArgs = GridPosition & {
+  cell: HTMLElement;
+  container: HTMLElement;
+  rowCount: number;
+  columnCount: number;
+};
+
 export function getTwoDimensionGridNavigationTarget({
   key,
   shiftKey,
@@ -41,4 +48,80 @@ export function getTwoDimensionGridNavigationTarget({
     rowIndex: Math.floor(nextIndex / columnCount),
     columnIndex: nextIndex % columnCount,
   };
+}
+
+export function scrollTwoDimensionGridCellIntoView({
+  cell,
+  container,
+  rowIndex,
+  columnIndex,
+  rowCount,
+  columnCount,
+}: ScrollGridCellIntoViewArgs) {
+  const cellElement = cell.closest('td') ?? cell;
+  const cellRect = cellElement.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const stickyInsets = getStickyInsets(container);
+  const maxScrollLeft = Math.max(0, container.scrollWidth - container.clientWidth);
+  const maxScrollTop = Math.max(0, container.scrollHeight - container.clientHeight);
+
+  container.scrollLeft = getSnappedOrAlignedScroll({
+    currentScroll: container.scrollLeft,
+    maxScroll: maxScrollLeft,
+    index: columnIndex,
+    count: columnCount,
+    cellStart: cellRect.left,
+    cellEnd: cellRect.right,
+    viewportStart: containerRect.left + stickyInsets.left,
+    viewportEnd: containerRect.right,
+  });
+  container.scrollTop = getSnappedOrAlignedScroll({
+    currentScroll: container.scrollTop,
+    maxScroll: maxScrollTop,
+    index: rowIndex,
+    count: rowCount,
+    cellStart: cellRect.top,
+    cellEnd: cellRect.bottom,
+    viewportStart: containerRect.top + stickyInsets.top,
+    viewportEnd: containerRect.bottom,
+  });
+}
+
+function getStickyInsets(container: HTMLElement) {
+  return {
+    top: container.querySelector('thead')?.getBoundingClientRect().height ?? 0,
+    left: container.querySelector('tbody th')?.getBoundingClientRect().width ?? 0,
+  };
+}
+
+function getSnappedOrAlignedScroll({
+  currentScroll,
+  maxScroll,
+  index,
+  count,
+  cellStart,
+  cellEnd,
+  viewportStart,
+  viewportEnd,
+}: {
+  currentScroll: number;
+  maxScroll: number;
+  index: number;
+  count: number;
+  cellStart: number;
+  cellEnd: number;
+  viewportStart: number;
+  viewportEnd: number;
+}) {
+  if (index <= 0) return 0;
+  if (index >= count - 1) return maxScroll;
+
+  let nextScroll = currentScroll;
+  if (cellStart < viewportStart) {
+    nextScroll -= viewportStart - cellStart;
+  } else if (cellEnd > viewportEnd) {
+    nextScroll += cellEnd - viewportEnd;
+  }
+
+  return Math.min(maxScroll, Math.max(0, nextScroll));
 }

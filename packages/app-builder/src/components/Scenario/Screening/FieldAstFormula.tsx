@@ -46,12 +46,14 @@ export const FieldAstFormula = ({
   options,
   onChange,
   onBlur,
+  onValueSwitchOpenChange,
   defaultValue,
 }: {
   type: 'rule' | 'screening';
   astNode?: AstNode;
   onChange?: (node?: AstNode) => void;
   onBlur?: () => void;
+  onValueSwitchOpenChange?: (open: boolean) => void;
   scenarioId: string;
   triggerObjectType: string;
   options?: BuilderOptionsResource;
@@ -87,7 +89,12 @@ export const FieldAstFormula = ({
           </span>
         </div>
       ) : (
-        <AstBuilder.Provider scenarioId={scenarioId} initialData={options} mode={editor}>
+        <AstBuilder.Provider
+          scenarioId={scenarioId}
+          initialData={options}
+          mode={editor}
+          onValueSwitchOpenChange={onValueSwitchOpenChange}
+        >
           <AstBuilder.Root
             node={formula}
             onStoreChange={(nodeStore) => {

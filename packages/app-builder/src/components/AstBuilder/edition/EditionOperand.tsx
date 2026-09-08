@@ -225,6 +225,13 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
 
   const isEditingValueSwitch = editedNode !== null && isValueSwitchAstNode(editedNode);
 
+  useEffect(() => {
+    if (!isEditingValueSwitch) return;
+
+    dataSharp.value.onValueSwitchOpenChange?.(true);
+    return () => dataSharp.value.onValueSwitchOpenChange?.(false);
+  }, [dataSharp, isEditingValueSwitch]);
+
   return (
     <EditionOperandSharpFactory.Provider value={operandSharp}>
       <>

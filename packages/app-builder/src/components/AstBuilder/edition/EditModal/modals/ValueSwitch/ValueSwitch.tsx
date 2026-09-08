@@ -47,6 +47,7 @@ import { OperandEditModalProps } from '../../EditModal';
 import { getValueSwitchFieldOption } from './field-option';
 import {
   getTwoDimensionGridNavigationTarget,
+  scrollTwoDimensionGridCellIntoView,
   type TwoDimensionGridNavigationKey,
 } from './two-dimension-grid-navigation';
 
@@ -501,6 +502,7 @@ function TwoDimensionEditor({
   const { t, i18n } = useTranslation(['scenarios']);
   const [rowDimension, columnDimension] = model.dimensions;
   const cellRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const tableScrollRef = useRef<HTMLDivElement>(null);
   const columnCount = columnDimension?.values.length ?? 0;
   const hasCompactCells = columnCount > 4;
 
@@ -508,20 +510,31 @@ function TwoDimensionEditor({
     if (!['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter'].includes(event.key)) return;
 
     event.preventDefault();
+    const rowCount = rowDimension?.values.length ?? 0;
     const target = getTwoDimensionGridNavigationTarget({
       key: event.key as TwoDimensionGridNavigationKey,
       shiftKey: event.shiftKey,
       direction: i18n.dir(),
       rowIndex,
       columnIndex,
-      rowCount: rowDimension?.values.length ?? 0,
+      rowCount,
       columnCount,
     });
     if (!target) return;
 
     const targetInput = cellRefs.current[target.rowIndex * columnCount + target.columnIndex];
-    targetInput?.focus();
-    targetInput?.select();
+    if (!targetInput) return;
+
+    targetInput.focus({ preventScroll: true });
+    targetInput.select();
+    if (!tableScrollRef.current) return;
+    scrollTwoDimensionGridCellIntoView({
+      cell: targetInput,
+      container: tableScrollRef.current,
+      ...target,
+      rowCount,
+      columnCount,
+    });
   }
 
   return (
@@ -562,7 +575,10 @@ function TwoDimensionEditor({
       </div>
 
       {rowDimension && columnDimension && rowDimension.values.length > 0 && columnDimension.values.length > 0 ? (
-        <div className="border-grey-border max-h-[50vh] w-full min-w-0 overflow-auto rounded-md border">
+        <div
+          ref={tableScrollRef}
+          className="border-grey-border max-h-[30vh] w-full min-w-0 overflow-auto rounded-md border"
+        >
           <table
             className="table-fixed border-collapse"
             style={{ width: `${12 + columnCount * (hasCompactCells ? 6.5 : 7)}rem` }}

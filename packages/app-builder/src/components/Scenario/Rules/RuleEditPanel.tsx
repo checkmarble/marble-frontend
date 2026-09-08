@@ -156,6 +156,7 @@ function RuleEditForm({
   const formFormula = useStore(form.store, (state) => state.values.formula);
   const [formulaKey, setFormulaKey] = useState(0);
   const [isDebouncing, setIsDebouncing] = useState(false);
+  const [isValueSwitchOpen, setIsValueSwitchOpen] = useState(false);
 
   const serverValidationMessages = useMemo(() => {
     if (!hasRuleErrors(ruleValidation, { formFormula })) {
@@ -306,8 +307,9 @@ function RuleEditForm({
             )}
           </form.Field>
           <div
-            className={cn('grid min-w-0 grid-cols-1', {
-              'grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-md': isAiRuleDescriptionEnabled,
+            className={cn('grid min-w-0 grid-cols-1 transition-[grid-template-columns,gap] duration-300 ease-in-out', {
+              'grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-md': isAiRuleDescriptionEnabled && !isValueSwitchOpen,
+              'grid-cols-[minmax(0,1fr)_minmax(0,0fr)] gap-0': isAiRuleDescriptionEnabled && isValueSwitchOpen,
             })}
           >
             <div className="flex min-w-0 flex-col gap-xl">
@@ -350,6 +352,7 @@ function RuleEditForm({
                         scenarioId={scenario.id}
                         triggerObjectType={scenario.triggerObjectType}
                         onBlur={field.handleBlur}
+                        onValueSwitchOpenChange={setIsValueSwitchOpen}
                         onChange={(node) => {
                           field.handleChange(node);
                           handleFormulaChange(node);
@@ -391,11 +394,19 @@ function RuleEditForm({
               </div>
             </div>
             {isAiRuleDescriptionEnabled ? (
-              <AiDescription
-                isPending={isDebouncing || ruleDescriptionMutation.isPending}
-                description={ruleDescription}
-                className="self-start max-w-2xl"
-              />
+              <div
+                className={cn('min-w-0 overflow-hidden transition-[opacity,transform] duration-300 ease-in-out', {
+                  'translate-x-0 opacity-100': !isValueSwitchOpen,
+                  'pointer-events-none translate-x-md opacity-0': isValueSwitchOpen,
+                })}
+                aria-hidden={isValueSwitchOpen}
+              >
+                <AiDescription
+                  isPending={isDebouncing || ruleDescriptionMutation.isPending}
+                  description={ruleDescription}
+                  className="self-start max-w-2xl"
+                />
+              </div>
             ) : null}
           </div>
         </div>
