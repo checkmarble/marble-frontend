@@ -79,7 +79,7 @@
         "firebase": "^12.13.0",
         "i18next": "^26.3.0",
         "i18next-browser-languagedetector": "^8.0.4",
-        "i18next-fetch-backend": "^7.0.0",
+        "i18next-fetch-backend": "^8.0.0",
         "i18next-resources-to-backend": "^1.2.3",
         "js-cookie": "^3.0.8",
         "libphonenumber-js": "^1.13.10",
@@ -1917,7 +1917,7 @@
 
     "i18next-browser-languagedetector": ["i18next-browser-languagedetector@8.2.1", "", { "dependencies": { "@babel/runtime": "^7.23.2" } }, "sha512-bZg8+4bdmaOiApD7N7BPT9W8MLZG+nPTOFlLiJiT8uzKXFjhxw4v2ierCXOwB5sFDMtuA5G4kgYZ0AznZxQ/cw=="],
 
-    "i18next-fetch-backend": ["i18next-fetch-backend@7.0.0", "", {}, "sha512-BUS/xzHDXNwGKKBQTaNWxY3xvgC40jcYw+4nSpTlaxcGenAubgIgBFuq4CIeeYcs3UkAQs8mf5y6iLnHhd01vw=="],
+    "i18next-fetch-backend": ["i18next-fetch-backend@8.0.0", "", {}, "sha512-M+FOEvd8pPwGoR++gn/4n2kOi6aEIGY5IK+WaFxxkpc/O3zZIpNzlhzJqBRuNg6YI3GGMNx9Mx/vgxtpP5XI+Q=="],
 
     "i18next-resources-to-backend": ["i18next-resources-to-backend@1.2.3", "", { "dependencies": { "@babel/runtime": "^7.23.2" } }, "sha512-8Y/LLAm5fqZc2ckQxtTWbu75ndjNLzF7mcYl6rhc4g+WBopIsG3YhdYqF5qhJy64tlYhlU2KSSnEgW3gGHLqwg=="],
 
