@@ -167,15 +167,21 @@ function getValueSwitchDisplayName(
 ): string {
   // Display name only needs children/namedChildren; ids are irrelevant.
   const model = parseValueSwitchAstNode(astNode as ValueSwitchAstNode);
-  const dimension = model?.dimensions[0] ?? null;
-  if (!dimension) {
+  if (!model?.dimensions[0]) {
     return context.t('scenarios:value_switch.menu_label');
   }
 
-  const variable =
-    dimension.type === 'risk-level'
-      ? context.t('scenarios:value_switch.customer_risk_level')
-      : getDataAccessorDisplayName(dimension.field);
+  const variable = model.dimensions
+    .flatMap((dimension) =>
+      dimension
+        ? [
+            dimension.type === 'risk-level'
+              ? context.t('scenarios:value_switch.customer_risk_level')
+              : getDataAccessorDisplayName(dimension.field),
+          ]
+        : [],
+    )
+    .join('; ');
 
   return context.t('scenarios:value_switch.display_name_with_variable', { variable });
 }

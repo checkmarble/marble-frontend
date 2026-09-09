@@ -640,6 +640,8 @@
   "value_switch.manual_value": "Ou ajouter une valeur manuellement",
   "value_switch.menu_label": "Seuil variable",
   "value_switch.one_variable": "1 variable",
+  "value_switch.preview_omitted_columns": "Colonnes supplémentaires : {{count}}",
+  "value_switch.preview_omitted_rows": "Lignes supplémentaires : {{count}}",
   "value_switch.remove_value": "Supprimer la valeur",
   "value_switch.rows_based_on": "L'axe des lignes est basé sur",
   "value_switch.search_values": "Rechercher des valeurs",

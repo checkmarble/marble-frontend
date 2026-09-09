@@ -23,8 +23,8 @@ const field: TableField = {
   semanticSubType: 'key_color_value',
   isNew: false,
   enumValues: [
-    { key: 'ok', color: 'green' },
-    { key: 'other', color: 'gray' },
+    { key: 'ok', color: '#46BB7F' },
+    { key: 'other', color: '#838292' },
   ],
   countryCodeFormat: 'alpha3',
 };
@@ -49,26 +49,26 @@ describe('enum metadata persistence', () => {
       const metadata = {
         semanticTypeForFront: 'enum',
         semanticSubType: 'key_color_value',
-        enumValues: [{ key: 'COMPLETED', color: 'green', value }],
+        enumValues: [{ key: 'COMPLETED', color: '#46BB7F', value }],
       };
       const adapted = adaptDataModelField(dto(metadata));
-      expect(adapted.enumValues).toEqual([{ key: 'COMPLETED', color: 'green' }]);
+      expect(adapted.enumValues).toEqual([{ key: 'COMPLETED', color: '#46BB7F' }]);
       const saved = createFieldValuesSchema.parse(adaptTableField(adaptFieldToTableField(adapted)));
-      expect(saved.metadata?.['enumValues']).toEqual([{ key: 'COMPLETED', color: 'green' }]);
+      expect(saved.metadata?.['enumValues']).toEqual([{ key: 'COMPLETED', color: '#46BB7F' }]);
     },
   );
 
   it('survives creation schema, API adaptation, and editor restoration', () => {
     const created = createFieldValuesSchema.parse(adaptTableField(field));
     expect(created.is_enum).toBe(true);
-    const adapted = adaptDataModelField(dto(created.metadata));
+    const adapted = adaptDataModelField({ ...dto(created.metadata), is_enum: created.is_enum ?? false });
     expect(adapted).toMatchObject({ isEnum: true, enumValues: field.enumValues, countryCodeFormat: 'alpha3' });
     expect(adaptFieldToTableField(adapted)).toMatchObject({
       enumValues: field.enumValues,
       countryCodeFormat: 'alpha3',
     });
   });
-  it.each([{ countryCodeFormat: 'alpha2' as const }, { enumValues: [{ key: 'ok', color: 'red' as const }] }])(
+  it.each([{ countryCodeFormat: 'alpha2' as const }, { enumValues: [{ key: 'ok', color: '#DB5F4A' as const }] }])(
     'detects and persists metadata-only updates %j',
     (patch) => {
       const current = { ...field, ...patch };
@@ -114,8 +114,8 @@ describe('enum metadata persistence', () => {
   it.each([
     undefined,
     [],
-    [{ key: '', color: 'gray' as const }],
-    [{ key: ' ', color: 'gray' as const }],
+    [{ key: '', color: '#838292' as const }],
+    [{ key: ' ', color: '#838292' as const }],
     [field.enumValues![0]!, field.enumValues![0]!],
   ])('validates missing, incomplete and duplicate entries %j', (enumValues) => {
     const result = validateValues(

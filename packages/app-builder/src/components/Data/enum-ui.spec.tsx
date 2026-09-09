@@ -44,8 +44,8 @@ const keyed: DataModelField = {
   ...field,
   semanticSubType: 'key_color_value',
   enumValues: [
-    { key: 'approved', color: 'green' },
-    { key: 'other', color: 'gray' },
+    { key: 'approved', color: '#46BB7F' },
+    { key: 'other', color: '#838292' },
   ],
 };
 
@@ -86,10 +86,10 @@ function Editor({
 
 describe('shared enum tags', () => {
   it('displays the exact key with its configured color', () => {
-    render(<EnumTag field={{ ...keyed, enumValues: [{ key: 'COMPLETED', color: 'green' }] }} value="COMPLETED" />);
+    render(<EnumTag field={{ ...keyed, enumValues: [{ key: 'COMPLETED', color: '#46BB7F' }] }} value="COMPLETED" />);
     expect(screen.getByTitle('COMPLETED').textContent).toBe('COMPLETED');
-    expect(screen.getByTitle('COMPLETED').style.color).toBe('green');
-    expect(screen.getByTitle('COMPLETED').style.borderColor).toBe('green');
+    expect(screen.getByTitle('COMPLETED').style.color).toBe('rgb(70, 187, 127)');
+    expect(screen.getByTitle('COMPLETED').style.borderColor).toBe('rgb(70, 187, 127)');
   });
 
   it('renders ordinary enums explicitly purple', () => {
@@ -98,8 +98,8 @@ describe('shared enum tags', () => {
   });
   it('renders configured outlines and presentation-only fallback keys', () => {
     render(<EnumTag field={keyed} value="stale" />);
-    expect(screen.getByTitle('stale').style.color).toBe('gray');
-    expect(screen.getByTitle('stale').style.borderColor).toBe('gray');
+    expect(screen.getByTitle('stale').style.color).toBe('rgb(131, 130, 146)');
+    expect(screen.getByTitle('stale').style.borderColor).toBe('rgb(131, 130, 146)');
     expect(screen.getByTitle('stale').textContent).toBe('other');
   });
   it('renders countries without a purple tag', () => {
@@ -166,6 +166,7 @@ function MetadataEditor() {
   return (
     <>
       <output data-testid="metadata">{JSON.stringify(value.enumValues)}</output>
+      <EnumTag field={{ ...keyed, enumValues: value.enumValues }} value="unmatched" />
       <EnumValuesSettings
         field={value}
         disabled={false}
@@ -198,10 +199,10 @@ describe('enum metadata controls', () => {
       .array(z.object({ key: z.string(), color: z.string() }))
       .parse(JSON.parse(screen.getByTestId('metadata').textContent ?? '[]'));
     expect(editedEntries.at(-1)!.key).toBe('COMPLETED');
-    expect(editedEntries.at(-1)!.color).toBe('gray');
-    expect(screen.getAllByText('data:upload_data.enum_fallback')).toHaveLength(1);
+    expect(editedEntries.at(-1)!.color).toBe('#88DCDE');
+    expect(screen.getByTitle('unmatched').textContent).toBe('COMPLETED');
     await userEvent.click(screen.getAllByRole('button', { name: 'data:upload_data.field_enum_remove_value' }).at(-1)!);
     expect(JSON.parse(screen.getByTestId('metadata').textContent ?? '[]')).toEqual(keyed.enumValues);
-    expect(screen.getAllByText('data:upload_data.enum_fallback')).toHaveLength(1);
+    expect(screen.getByTitle('unmatched').textContent).toBe('other');
   });
 });

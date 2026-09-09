@@ -640,6 +640,8 @@
   "value_switch.manual_value": "Or manually add a value",
   "value_switch.menu_label": "Variable threshold",
   "value_switch.one_variable": "1 variable",
+  "value_switch.preview_omitted_columns": "Additional columns: {{count}}",
+  "value_switch.preview_omitted_rows": "Additional rows: {{count}}",
   "value_switch.remove_value": "Remove value",
   "value_switch.rows_based_on": "Row axis is based on",
   "value_switch.search_values": "Search values",

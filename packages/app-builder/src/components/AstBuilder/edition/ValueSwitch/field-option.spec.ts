@@ -20,8 +20,8 @@ const field: DataModelField = {
   unicityConstraint: 'no_unicity_constraint',
   semanticSubType: 'key_color_value',
   enumValues: [
-    { key: 'ok', color: 'green' },
-    { key: 'other', color: 'gray' },
+    { key: 'ok', color: '#46BB7F' },
+    { key: 'other', color: '#838292' },
   ],
 };
 const accessor = NewPayloadAstNode('status');

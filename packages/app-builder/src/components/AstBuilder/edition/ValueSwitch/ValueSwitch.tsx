@@ -2,7 +2,7 @@ import { getEvaluationForNode } from '@app-builder/components/AstBuilder/edition
 import { useRoot } from '@app-builder/components/AstBuilder/edition/hooks/useRoot';
 import { AstBuilderNodeSharpFactory } from '@app-builder/components/AstBuilder/edition/node-store';
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
-import { EnumTag } from '@app-builder/components/Data/EnumTag';
+import { ValueSwitchValueTag } from '@app-builder/components/AstBuilder/ValueSwitchValueTag';
 import { EnumValueMenu } from '@app-builder/components/Data/EnumValueMenu';
 import type { DataModelField } from '@app-builder/models';
 import { type DataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
@@ -20,12 +20,7 @@ import {
   valueSwitchModelToAst,
 } from '@app-builder/models/astNode/value-switch';
 import { isEnumField } from '@app-builder/models/enum-values';
-import {
-  isMaxRiskLevelInRange,
-  SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
-  scoringLevelEntries,
-} from '@app-builder/models/scoring';
+import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, scoringLevelEntries } from '@app-builder/models/scoring';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { DragDropContext, Draggable, type DraggableProvided, Droppable, type DropResult } from '@hello-pangea/dnd';
@@ -40,7 +35,6 @@ import {
   Input,
   MenuCommand,
   NumberInput,
-  Tag,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OperandEditModalProps } from '../EditModal/EditModal';
@@ -594,7 +588,7 @@ function TwoDimensionEditor({
                       hasCompactCells ? 'p-xs' : 'p-sm',
                     )}
                   >
-                    <ValueTag
+                    <ValueSwitchValueTag
                       dimension={columnDimension}
                       value={value}
                       field={
@@ -615,7 +609,7 @@ function TwoDimensionEditor({
                       hasCompactCells ? 'p-xs' : 'p-sm',
                     )}
                   >
-                    <ValueTag
+                    <ValueSwitchValueTag
                       dimension={rowDimension}
                       value={rowValue}
                       field={options.find((option) => option.key === getValueSwitchDimensionKey(rowDimension))?.field}
@@ -726,7 +720,7 @@ export function DimensionValueInput({
     <MenuCommand.Menu>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton className="w-full">
-          <ValueTag dimension={dimension} value={value} />
+          <ValueSwitchValueTag dimension={dimension} value={value} />
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4} sameWidth>
@@ -737,7 +731,7 @@ export function DimensionValueInput({
               disabled={unavailableValues.includes(option)}
               onSelect={() => onChange(option)}
             >
-              <ValueTag dimension={dimension} value={option} />
+              <ValueSwitchValueTag dimension={dimension} value={option} />
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>
@@ -797,7 +791,7 @@ export function DimensionValuesSelect({
                 classname="gap-xs pe-lg"
                 overflowBehavior="popover"
                 items={dimension.values.map((value) => (
-                  <ValueTag
+                  <ValueSwitchValueTag
                     key={`${typeof value}:${String(value)}`}
                     dimension={dimension}
                     value={value}
@@ -814,7 +808,7 @@ export function DimensionValuesSelect({
           <MenuCommand.List>
             {availableValues.map((value) => (
               <MenuCommand.Item key={`${typeof value}:${String(value)}`} onSelect={() => toggle(value)}>
-                <ValueTag dimension={dimension} value={value} />
+                <ValueSwitchValueTag dimension={dimension} value={value} />
                 {dimension.values.includes(value as never) ? <Icon icon="tick" className="size-4" /> : null}
               </MenuCommand.Item>
             ))}
@@ -834,51 +828,5 @@ export function DimensionValuesSelect({
         </MenuCommand.Content>
       </MenuCommand.Menu>
     </div>
-  );
-}
-
-function ValueTag({
-  dimension,
-  value,
-  field,
-  className,
-}: {
-  dimension: ValueSwitchDimension;
-  value: string | number;
-  field?: DataModelField;
-  className?: string;
-}) {
-  const { t } = useTranslation(['user-scoring']);
-  const data = AstBuilderDataSharpFactory.select((state) => state.data);
-  const scoringSettings = data.scoringSettings;
-  if (field && isEnumField(field)) {
-    return <EnumTag field={field} value={value} className={className} />;
-  }
-
-  if (
-    dimension.type === 'risk-level' &&
-    typeof value === 'number' &&
-    scoringSettings &&
-    isMaxRiskLevelInRange(scoringSettings.maxRiskLevel)
-  ) {
-    const color = SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel][value];
-    const labelKey = SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel][value];
-    const label = labelKey ? t(labelKey) : String(value);
-    return (
-      <Tag
-        className={cn('flex min-w-0 overflow-hidden', className)}
-        style={{ borderColor: color, color }}
-        title={label}
-      >
-        <span className="min-w-0 truncate">{label}</span>
-      </Tag>
-    );
-  }
-
-  const label = String(value) || '—';
-  return (
-    <Tag className={cn('flex min-w-0 overflow-hidden', className)} title={label}>
-      <span className="min-w-0 truncate">{label}</span>
-    </Tag>
   );
 }

@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
+  Card,
   Input,
   MenuCommand,
   Modal,
@@ -177,13 +178,13 @@ export function FieldDetailPanel({
 
   return (
     <>
-      <div className="flex w-1/2 shrink-0 flex-col border-l border-grey-border overflow-y-auto">
-        <div className="flex items-center justify-between p-md border-b border-grey-border">
+      <Card className="flex w-1/2 shrink-0 flex-col overflow-y-auto shadow-xl">
+        <div className="flex items-center justify-between p-md">
           <div className="flex items-center gap-sm">
             <button type="button" onClick={onClose} className="rounded-lg p-xs hover:bg-grey-border">
               <Icon icon="x" className="size-4" />
             </button>
-            <Typo variant="subtitle2">{title ?? t('data:upload_data.field_detail_title')}</Typo>
+            <Typo variant="title2">{title ?? t('data:upload_data.field_detail_title')}</Typo>
           </div>
           {canDeleteField ? (
             <Button variant="destructive" onClick={handleDeleteClick}>
@@ -454,7 +455,7 @@ export function FieldDetailPanel({
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       <Modal.Root open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
         <Modal.Content>

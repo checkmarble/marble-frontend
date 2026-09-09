@@ -640,6 +640,8 @@
   "value_switch.manual_value": "أو أضف قيمة يدويًا",
   "value_switch.menu_label": "عتبة متغيرة",
   "value_switch.one_variable": "متغير واحد",
+  "value_switch.preview_omitted_columns": "أعمدة إضافية: {{count}}",
+  "value_switch.preview_omitted_rows": "صفوف إضافية: {{count}}",
   "value_switch.remove_value": "إزالة القيمة",
   "value_switch.rows_based_on": "محور الصفوف يعتمد على",
   "value_switch.search_values": "البحث عن قيم",
