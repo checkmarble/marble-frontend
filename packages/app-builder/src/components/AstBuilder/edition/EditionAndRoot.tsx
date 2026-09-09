@@ -21,6 +21,7 @@ function NewAndChild() {
 export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>) {
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const nodeStore = useRoot(props);
+  const isValueSwitchOpen = dataSharp.select((s) => s.isValueSwitchOpen);
 
   const appendChild = () => {
     nodeStore.value.node.children.push(NewAndChild());
@@ -37,7 +38,7 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
     <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
       <div className="flex min-w-0 flex-col gap-sm lg:gap-md">
         <div className="text-s grid min-w-0 grid-cols-[8px_16px_max-content_minmax(0,1fr)_max-content]">
-          <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-xs rounded-sm p-sm font-semibold">
+          <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-10 flex-wrap items-center justify-center gap-xs rounded-sm p-sm font-semibold">
             {dataSharp.value.data.$triggerObjectType}
           </div>
           {nodeStore.value.node.children.map((child, i, children) => {
@@ -56,7 +57,7 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
           })}
         </div>
         <div className="flex flex-row flex-wrap gap-sm">
-          <AddLogicalOperatorButton onClick={appendChild} operator="and" />
+          <AddLogicalOperatorButton onClick={appendChild} operator="and" disabled={isValueSwitchOpen} />
           <EditionEvaluationErrors direct id={nodeStore.value.node.id} filterOut={['ARGUMENT_MUST_BE_BOOLEAN']} />
         </div>
       </div>
@@ -72,6 +73,7 @@ type EditionRootAndLineProps = {
   removeNode: () => void;
 };
 function EditionRootAndLine({ isFirst, isLast, path, nodeId, removeNode }: EditionRootAndLineProps) {
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
   return (
     <>
       {/* Row 1 */}
@@ -88,7 +90,7 @@ function EditionRootAndLine({ isFirst, isLast, path, nodeId, removeNode }: Editi
         <EditionEvaluationErrors id={nodeId} />
       </div>
       <div className="col-start-5 flex h-10 flex-col items-center justify-center">
-        <RemoveButton onClick={removeNode} />
+        <RemoveButton onClick={removeNode} disabled={isValueSwitchOpen} />
       </div>
     </>
   );

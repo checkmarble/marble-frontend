@@ -14,7 +14,7 @@ import { type AstBuilderOperandProps } from '@ast-builder/Operand';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { OperandDisplayName, operandDisplayNameClassnames } from '@ast-builder/styles/OperandDisplayName';
 import { cva } from 'class-variance-authority';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { createSharpFactory } from 'sharpstate';
@@ -34,6 +34,8 @@ export const editionOperandLabelClassnames = cva(
     'size-fit min-h-10 min-w-10 rounded-sm outline-hidden',
     'flex flex-row items-center justify-between gap-sm px-xs',
     'bg-surface-card aria-expanded:bg-purple-background-light aria-expanded:border-purple-primary',
+    'disabled:bg-grey-background-light disabled:border-grey-border disabled:text-grey-disabled',
+    'disabled:**:text-grey-disabled',
   ],
   {
     variants: {
@@ -224,21 +226,34 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
   ];
 
   const isEditingValueSwitch = editedNode !== null && isValueSwitchAstNode(editedNode);
+  const isValueSwitchOpen = dataSharp.select((s) => s.isValueSwitchOpen);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isEditingValueSwitch) return;
 
+    dataSharp.value.isValueSwitchOpen = true;
     dataSharp.value.onValueSwitchOpenChange?.(true);
-    return () => dataSharp.value.onValueSwitchOpenChange?.(false);
+    return () => {
+      dataSharp.value.isValueSwitchOpen = false;
+      dataSharp.value.onValueSwitchOpenChange?.(false);
+    };
   }, [dataSharp, isEditingValueSwitch]);
 
   return (
     <EditionOperandSharpFactory.Provider value={operandSharp}>
       <>
         <div className="inline-flex flex-col gap-sm self-start">
-          <AstBuilderOperandMenu onSelect={onCreateSelect} bottomActions={bottomActions}>
+          <AstBuilderOperandMenu
+            disabled={isValueSwitchOpen || isEditingValueSwitch}
+            onSelect={onCreateSelect}
+            bottomActions={bottomActions}
+          >
             <MenuCommand.Trigger>
-              <button type="button" className={editionOperandLabelClassnames({ validationStatus })}>
+              <button
+                type="button"
+                disabled={isValueSwitchOpen || isEditingValueSwitch}
+                className={editionOperandLabelClassnames({ validationStatus })}
+              >
                 {match(node)
                   .when(isUndefinedAstNode, () => (
                     <span

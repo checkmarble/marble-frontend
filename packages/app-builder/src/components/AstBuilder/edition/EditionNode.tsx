@@ -262,11 +262,21 @@ function Brackets({ children, ...props }: BracketProps) {
 const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps) => {
   const { t } = useTranslation(['scenarios']);
   const [open, setOpen] = useState(false);
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
 
   return (
-    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+    <MenuCommand.Menu
+      open={isValueSwitchOpen ? false : open}
+      onOpenChange={(nextOpen) => {
+        if (!isValueSwitchOpen) setOpen(nextOpen);
+      }}
+    >
       <MenuCommand.Trigger>
-        <button className="text-grey-primary border-grey-border [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-background [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-placeholder flex h-10 items-center justify-center rounded-sm border px-xs">
+        <button
+          type="button"
+          disabled={isValueSwitchOpen}
+          className="text-grey-primary border-grey-border [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-background [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-placeholder disabled:text-grey-disabled disabled:bg-grey-background-light disabled:border-grey-border flex h-10 items-center justify-center rounded-sm border px-xs"
+        >
           {children}
         </button>
       </MenuCommand.Trigger>

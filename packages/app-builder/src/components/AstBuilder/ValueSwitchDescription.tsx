@@ -109,12 +109,12 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
                 {columnDimension ? (
                   columns.map((columnValue) => (
                     <td key={columnValue} className="p-sm text-center">
-                      <ValueSwitchScore value={model.thresholds[getValueSwitchCellKey([rowValue, columnValue])]!} />
+                      <span>{model.thresholds[getValueSwitchCellKey([rowValue, columnValue])]!}</span>
                     </td>
                   ))
                 ) : (
                   <td className="p-sm">
-                    <ValueSwitchScore value={model.thresholds[getValueSwitchCellKey([rowValue])]!} />
+                    <span>{model.thresholds[getValueSwitchCellKey([rowValue])]!}</span>
                   </td>
                 )}
               </tr>
@@ -128,21 +128,8 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
       ) : null}
       <div className="flex items-center gap-sm">
         <span>{t('scenarios:value_switch.else')}</span>
-        <ValueSwitchScore value={model.fallback} />
+        <span>{model.fallback}</span>
       </div>
     </div>
-  );
-}
-
-function ValueSwitchScore({ value }: { value: number }) {
-  return (
-    <span
-      className={cn(
-        'font-medium tabular-nums break-all',
-        value > 0 ? 'text-red-primary' : value < 0 ? 'text-green-primary' : 'text-grey-primary',
-      )}
-    >
-      {value > 0 ? `+${value}` : String(value)}
-    </span>
   );
 }

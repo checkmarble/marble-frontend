@@ -19,16 +19,23 @@ export function AstBuilderOperandMenu({
   defaultOpen = false,
   onSelect,
   bottomActions,
+  disabled = false,
 }: {
   children: ReactNode;
   defaultOpen?: boolean;
   onSelect: (node: AstNode) => void;
   bottomActions: BottomAction[];
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+    <MenuCommand.Menu
+      open={disabled ? false : open}
+      onOpenChange={(nextOpen) => {
+        if (!disabled) setOpen(nextOpen);
+      }}
+    >
       {children}
       <MenuCommand.Content sameWidth sideOffset={4} align="start" className="w-96">
         <MenuCommand.Combobox placeholder="Select or create an operand" />

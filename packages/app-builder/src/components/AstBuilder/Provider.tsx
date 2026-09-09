@@ -15,7 +15,7 @@ export const AstBuilderDataSharpFactory = createSharpFactory({
     showValues: boolean;
     onValueSwitchOpenChange?: (open: boolean) => void;
   }) {
-    return { ...init };
+    return { ...init, isValueSwitchOpen: false };
   },
 }).withComputed({
   triggerObjectTable(state) {

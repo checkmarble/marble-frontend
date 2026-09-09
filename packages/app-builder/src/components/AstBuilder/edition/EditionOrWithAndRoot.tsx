@@ -1,6 +1,7 @@
 import { NewUndefinedAstNode } from '@app-builder/models';
 import { type AndAstNode, NewAndAstNode, type OrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { getAtPath, parsePath } from '@app-builder/utils/tree';
+import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { AddLogicalOperatorButton } from '@ast-builder/styles/AddLogicalOperatorButton';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { RemoveButton } from '@ast-builder/styles/RemoveButton';
@@ -27,6 +28,7 @@ function NewChildForOr(): AndAstNode {
 
 export function EditionAstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWithAndAstNode>) {
   const nodeStore = useRoot(props);
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
 
   const appendChild = () => {
     nodeStore.value.node.children.push(NewChildForOr());
@@ -56,7 +58,7 @@ export function EditionAstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWith
           );
         })}
         <div className="col-span-3 flex flex-row flex-wrap gap-sm">
-          <AddLogicalOperatorButton onClick={appendChild} operator="or" />
+          <AddLogicalOperatorButton onClick={appendChild} operator="or" disabled={isValueSwitchOpen} />
           <EditionEvaluationErrors direct id={nodeStore.value.node.id} />
         </div>
       </div>
@@ -72,6 +74,7 @@ type EditionRootOrGroupProps = {
 };
 function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupProps) {
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
 
   const node = computed(() => getAtPath(nodeSharp.value.node, parsePath(path)));
   invariant(node.value, `Couldn't find node at path: ${path}`);
@@ -119,7 +122,7 @@ function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupPro
         );
       })}
       <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-sm">
-        <AddLogicalOperatorButton onClick={appendChild} operator="and" />
+        <AddLogicalOperatorButton onClick={appendChild} operator="and" disabled={isValueSwitchOpen} />
         <EditionEvaluationErrors direct id={node.value.id} filterOut={['ARGUMENT_MUST_BE_BOOLEAN']} />
       </div>
     </>
@@ -133,6 +136,7 @@ type EditionRootAndLineProps = {
   removeNode: () => void;
 };
 function EditionRootOrWithAndLine({ isFirst, path, nodeId, removeNode }: EditionRootAndLineProps) {
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
   return (
     <>
       <LogicalOperatorLabel operator={isFirst ? 'if' : 'and'} type="contained" />
@@ -142,7 +146,7 @@ function EditionRootOrWithAndLine({ isFirst, path, nodeId, removeNode }: Edition
         <EditionEvaluationErrors id={nodeId} />
       </div>
       <div className="flex h-10 flex-col items-center justify-center">
-        <RemoveButton onClick={removeNode} />
+        <RemoveButton onClick={removeNode} disabled={isValueSwitchOpen} />
       </div>
     </>
   );

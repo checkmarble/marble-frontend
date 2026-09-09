@@ -22,9 +22,11 @@ export const AddLogicalOperatorButton = function AddLogicalOperatorButton({
         'bg-transparent border-purple-primary text-purple-primary',
         'hover:bg-purple-background hover:border-purple-hover hover:text-purple-hover',
         'disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled',
+        'disabled:hover:bg-grey-background disabled:hover:border-grey-border disabled:hover:text-grey-disabled',
         'dark:border-purple-hover dark:text-purple-hover',
         'dark:hover:bg-transparent dark:hover:border-purple-hover dark:hover:text-purple-hover',
         'dark:disabled:bg-transparent dark:disabled:border-purple-disabled dark:disabled:text-purple-disabled',
+        'dark:disabled:hover:bg-transparent dark:disabled:hover:border-purple-disabled dark:disabled:hover:text-purple-disabled',
         className,
       )}
       {...props}

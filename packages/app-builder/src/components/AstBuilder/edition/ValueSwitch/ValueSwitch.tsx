@@ -23,19 +23,10 @@ import { isEnumField } from '@app-builder/models/enum-values';
 import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, scoringLevelEntries } from '@app-builder/models/scoring';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
-import { DragDropContext, Draggable, type DraggableProvided, Droppable, type DropResult } from '@hello-pangea/dnd';
-import { type KeyboardEvent, useId, useMemo, useRef, useState } from 'react';
+import { useCallbackRef } from '@app-builder/utils/hooks';
+import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Card,
-  CtaV2ClassName,
-  cn,
-  ExpandableGroupTagLine,
-  Input,
-  MenuCommand,
-  NumberInput,
-} from 'ui-design-system';
+import { Button, Card, cn, ExpandableGroupTagLine, Input, MenuCommand, NumberInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OperandEditModalProps } from '../EditModal/EditModal';
 import { getValueSwitchFieldOption } from './field-option';
@@ -64,11 +55,23 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
   const node = nodeSharp.select((state) => state.node as ValueSwitchAstNode);
   const data = AstBuilderDataSharpFactory.select((state) => state.data);
   const triggerObjectTable = AstBuilderDataSharpFactory.useSharp().computed.triggerObjectTable.value;
+  const onCancel = useCallbackRef(props.onCancel);
   const initialModel = useMemo(
     () => parseValueSwitchAstNode(node) ?? createEmptyValueSwitchModel(node.namedChildren.fallback.constant),
     [node],
   );
   const [model, setModel] = useState(initialModel);
+
+  useEffect(() => {
+    function onKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      event.preventDefault();
+      onCancel();
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onCancel]);
 
   const dimensionOptions = useMemo<DimensionOption[]>(() => {
     const accessors = [...data.payloadAccessors, ...data.databaseAccessors];
@@ -244,7 +247,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
     <Card className="flex w-full min-w-0 max-w-full flex-col gap-lg overflow-hidden shadow-sm">
       {content}
       <div className="flex justify-end gap-sm">
-        <Button appearance="stroked" variant="secondary" onClick={props.onCancel}>
+        <Button appearance="stroked" variant="secondary" onClick={onCancel}>
           {t('common:cancel')}
         </Button>
         <Button
@@ -310,9 +313,6 @@ function OneDimensionEditor({
   const currentOption = dimension
     ? options.find((option) => option.key === getValueSwitchDimensionKey(dimension))
     : null;
-  const rowIdPrefix = useId();
-  const rowIds = useRef(dimension?.values.map((_, index) => `${rowIdPrefix}-${index}`) ?? []);
-  const nextRowId = useRef(rowIds.current.length);
   const availableValues = currentOption?.knownValues ?? [];
   const canAddValue =
     !!dimension &&
@@ -326,7 +326,6 @@ function OneDimensionEditor({
       unusedValue ??
       (dimension.type === 'field' && !currentOption?.closed && !dimension.values.includes('') ? '' : undefined);
     if (nextValue === undefined) return;
-    rowIds.current.push(`${rowIdPrefix}-${nextRowId.current++}`);
     onValuesChange([...dimension.values, nextValue] as Array<string | number>);
   }
 
@@ -335,79 +334,13 @@ function OneDimensionEditor({
     onValueChange(index, value);
   }
 
-  function moveValue(from: number, to: number) {
-    if (!dimension || from === to || to < 0 || to >= dimension.values.length) return;
-    const values = [...dimension.values];
-    const [value] = values.splice(from, 1);
-    values.splice(to, 0, value!);
-    const [rowId] = rowIds.current.splice(from, 1);
-    rowIds.current.splice(to, 0, rowId!);
-    onValuesChange(values);
-  }
-
   function removeValue(index: number) {
     if (!dimension) return;
-    rowIds.current.splice(index, 1);
     onValuesChange(dimension.values.filter((_, currentIndex) => currentIndex !== index));
   }
 
-  function handleDragEnd(result: DropResult) {
-    if (!result.destination) return;
-    moveValue(result.source.index, result.destination.index);
-  }
-
-  const parentGridClassName = 'grid grid-cols-[auto_minmax(10rem,1fr)_7rem_auto] gap-x-md gap-y-sm';
+  const parentGridClassName = 'grid grid-cols-[minmax(10rem,1fr)_7rem_auto] gap-x-md gap-y-sm';
   const rowSubgridClassName = 'col-span-full grid grid-cols-subgrid items-center';
-
-  function renderValueRow(value: string | number, index: number, dragProvided: DraggableProvided, isDragging: boolean) {
-    if (!dimension) return null;
-
-    return (
-      <div
-        ref={dragProvided.innerRef}
-        {...dragProvided.draggableProps}
-        className={cn(rowSubgridClassName, isDragging && 'grid-cols-[auto_minmax(10rem,1fr)_7rem_auto] opacity-80')}
-      >
-        <div
-          {...dragProvided.dragHandleProps}
-          className={cn('flex shrink-0 items-center', CtaV2ClassName({ variant: 'secondary', mode: 'icon' }))}
-        >
-          <Icon icon="unfold_more" className="text-grey-secondary size-4 cursor-grab active:cursor-grabbing" />
-        </div>
-        <DimensionValueInput
-          dimension={dimension}
-          value={value}
-          field={currentOption?.field}
-          knownValues={availableValues}
-          unavailableValues={dimension.values.filter((_, currentIndex) => currentIndex !== index)}
-          onChange={(next) => replaceValue(index, next)}
-        />
-        <NumberInput
-          className="w-full"
-          value={model.thresholds[getValueSwitchCellKey([value])] ?? model.fallback}
-          onChange={(threshold) => onThresholdChange([value], threshold)}
-          forceSign
-          colorByValue={{
-            thresholds: [
-              { threshold: 0, comparison: '<', color: 'green' },
-              { threshold: 0, comparison: '>', color: 'red' },
-            ],
-            defaultColor: 'primary',
-          }}
-        />
-        <Button
-          mode="icon"
-          variant="secondary"
-          appearance="stroked"
-          className="shrink-0"
-          aria-label={t('scenarios:value_switch.remove_value')}
-          onClick={() => removeValue(index)}
-        >
-          <Icon icon="delete" className="size-4" />
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-md">
@@ -427,38 +360,47 @@ function OneDimensionEditor({
         <div className="border-grey-border bg-grey-background-light flex flex-col gap-md rounded-md border p-md">
           <div className={parentGridClassName}>
             <div className={cn(rowSubgridClassName, 'text-default text-grey-secondary font-medium')}>
-              <span aria-hidden />
               <span className="whitespace-nowrap">
                 {t('scenarios:value_switch.if_value_is', { variable: currentOption?.label ?? '' })}
               </span>
               <span className="whitespace-nowrap">{t('scenarios:value_switch.then_score')}</span>
               <span aria-hidden />
             </div>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable
-                droppableId={`${rowIdPrefix}-values`}
-                renderClone={(dragProvided, snapshot, rubric) => {
-                  const index = rubric.source.index;
-                  const value = dimension.values[index];
-                  return value === undefined ? null : renderValueRow(value, index, dragProvided, snapshot.isDragging);
-                }}
-              >
-                {(dropProvided) => (
-                  <div
-                    ref={dropProvided.innerRef}
-                    {...dropProvided.droppableProps}
-                    className={cn(rowSubgridClassName, 'gap-y-sm')}
-                  >
-                    {dimension.values.map((value, index) => (
-                      <Draggable key={rowIds.current[index]} draggableId={rowIds.current[index]!} index={index}>
-                        {(dragProvided, snapshot) => renderValueRow(value, index, dragProvided, snapshot.isDragging)}
-                      </Draggable>
-                    ))}
-                    {dropProvided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            {dimension.values.map((value, index) => (
+              <div key={`${typeof value}:${String(value)}`} className={rowSubgridClassName}>
+                <DimensionValueInput
+                  dimension={dimension}
+                  value={value}
+                  field={currentOption?.field}
+                  knownValues={availableValues}
+                  unavailableValues={dimension.values.filter((_, currentIndex) => currentIndex !== index)}
+                  onChange={(next) => replaceValue(index, next)}
+                />
+                <NumberInput
+                  className="w-full"
+                  value={model.thresholds[getValueSwitchCellKey([value])] ?? model.fallback}
+                  onChange={(threshold) => onThresholdChange([value], threshold)}
+                  forceSign
+                  colorByValue={{
+                    thresholds: [
+                      { threshold: 0, comparison: '<', color: 'green' },
+                      { threshold: 0, comparison: '>', color: 'red' },
+                    ],
+                    defaultColor: 'primary',
+                  }}
+                />
+                <Button
+                  mode="icon"
+                  variant="secondary"
+                  appearance="stroked"
+                  className="shrink-0"
+                  aria-label={t('scenarios:value_switch.remove_value')}
+                  onClick={() => removeValue(index)}
+                >
+                  <Icon icon="delete" className="size-4" />
+                </Button>
+              </div>
+            ))}
           </div>
           <Button
             appearance="stroked"
