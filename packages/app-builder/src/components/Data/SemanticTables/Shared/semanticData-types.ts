@@ -10,6 +10,7 @@ import {
   semanticTypesByDataType,
   type TableModel,
 } from '@app-builder/models';
+import type { LifecycleDurationFormValue } from '@app-builder/models/duration';
 import { FtmEntity } from 'marble-api';
 import { match, P } from 'ts-pattern';
 
@@ -117,6 +118,11 @@ export type SemanticTableFormValues = {
   isCanceled: boolean;
   isVisited: boolean;
   ftmEntity?: FtmEntity;
+  lifecycle: {
+    enabled: boolean;
+    deleteStaleRowsAfter: LifecycleDurationFormValue;
+    deleteActiveRowsAfter: LifecycleDurationFormValue;
+  };
 };
 
 export type SemanticTableChangedProperty = Exclude<keyof SemanticTableFormValues, 'fields' | 'links' | 'isVisited'>;
