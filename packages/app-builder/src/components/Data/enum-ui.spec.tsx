@@ -5,7 +5,7 @@ import {
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import type { DataModelField } from '@app-builder/models/data-model';
 import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { useState } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
