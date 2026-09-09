@@ -112,6 +112,10 @@ describe('shared enum tags', () => {
     const { container } = render(<EnumTag field={{ ...field, semanticSubType: 'country' }} value="ZZZ" />);
     expect(container.textContent).toBe('ZZZ');
   });
+  it('renders MCC codes with their catalog description', () => {
+    render(<EnumTag field={{ ...field, semanticSubType: 'mcc_code', values: [] }} value="5411" />);
+    expect(screen.getByTitle('5411').textContent).toBe('5411 – Grocery Stores, Supermarkets');
+  });
   it.each([{ ...field, isEnum: true, semanticType: undefined }, field, { ...field, dataType: 'Int' as const }])(
     'DataField recognizes enums and preserves numeric display',
     (definition) => {
@@ -135,6 +139,15 @@ describe.each([false, true])('ValueSwitch enum selector (multiple=%s)', (multipl
     await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), 'Approved');
     await userEvent.click(screen.getByRole('option', { name: 'approved' }));
     expect(screen.getByTestId('values').textContent).toBe('["approved"]');
+  });
+  it('searches MCC descriptions in the value menu', async () => {
+    render(
+      <Editor multiple={multiple} definition={{ ...field, semanticSubType: 'mcc_code', values: [] }} initial={[]} />,
+    );
+    await userEvent.click(screen.getByRole('button'));
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), 'Grocery');
+    await userEvent.click(screen.getByRole('option', { name: /5411/ }));
+    expect(screen.getByTestId('values').textContent).toBe('["5411"]');
   });
   it.each([keyed, { ...field, semanticSubType: 'country' as const }])(
     'does not create custom values for closed enums',

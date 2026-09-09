@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { createEnumEntry, enumEntriesSchema } from './enum';
 import {
   type EnumField,
+  getResolvedEnumValues,
   isEnumField,
   resolveCountry,
   resolveCountryCodeFormat,
   resolveEnumDisplay,
   resolveEnumValues,
+  resolveMcc,
 } from './enum-values';
 
 const base: EnumField = { dataType: 'String', isEnum: false, semanticType: 'enum', values: ['legacy'] };
@@ -22,7 +24,7 @@ describe('enum values', () => {
     expect(isEnumField({ isEnum: true })).toBe(true);
     expect(isEnumField({ isEnum: false, semanticType: 'text' })).toBe(false);
   });
-  it.each([undefined, 'autocomplete', 'mcc_code'] as const)(
+  it.each([undefined, 'autocomplete'] as const)(
     'uses API values and permits custom values for %s',
     (semanticSubType) => {
       expect(resolveEnumValues({ ...base, semanticSubType }, ['custom'])).toEqual({
@@ -32,6 +34,52 @@ describe('enum values', () => {
       expect(resolveEnumDisplay({ ...base, semanticSubType }, '5219', 'en').label).toBe('5219');
     },
   );
+  it('uses the MCC catalog with custom values and padded lookup', () => {
+    const field: EnumField = { ...base, semanticSubType: 'mcc_code', values: [] };
+    expect(resolveEnumValues(field).closed).toBe(false);
+    expect(resolveEnumValues(field).values).toEqual(expect.arrayContaining(['5411', '0742']));
+    expect(resolveEnumValues(field, ['742']).values).toContain('0742');
+    expect(resolveEnumValues(field, ['742']).values).not.toContain('742');
+    expect(resolveEnumValues(field, ['9999']).values).toEqual(expect.arrayContaining(['5411', '9999']));
+    expect(resolveEnumDisplay(field, '5411', 'en').label).toBe('5411 – Grocery Stores, Supermarkets');
+    expect(resolveEnumDisplay(field, '742', 'en').label).toBe('0742 – Veterinary Services');
+    expect(resolveEnumDisplay(field, '0742', 'en').label).toBe('0742 – Veterinary Services');
+    expect(resolveEnumDisplay(field, '9999', 'en').label).toBe('9999');
+    expect(resolveMcc('742')).toEqual({ code: '0742', description: 'Veterinary Services' });
+  });
+  it('resolves catalog values from a semantic enum field without isEnum', () => {
+    const field = {
+      id: 'mcc',
+      tableId: 'tx',
+      name: 'mcc',
+      description: '',
+      nullable: false,
+      isEnum: false,
+      semanticType: 'enum' as const,
+      semanticSubType: 'mcc_code' as const,
+      dataType: 'String' as const,
+      unicityConstraint: 'no_unicity_constraint' as const,
+    };
+    expect(
+      getResolvedEnumValues(
+        [
+          {
+            id: 'tx',
+            name: 'transactions',
+            description: '',
+            semanticType: null,
+            alias: '',
+            captionField: '',
+            fields: [field],
+            linksToSingle: [],
+            fieldOrder: ['mcc'],
+          },
+        ],
+        'transactions',
+        'mcc',
+      ),
+    ).toEqual(expect.arrayContaining(['5411', '0742']));
+  });
   it('uses the currency catalog with rule-local values', () => {
     const field = { ...base, semanticSubType: 'currency' as const };
     expect(resolveEnumValues(field, ['CUSTOM']).values).toEqual(expect.arrayContaining(['EUR', 'USD', 'CUSTOM']));

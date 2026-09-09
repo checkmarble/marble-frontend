@@ -11,6 +11,7 @@ import {
   isUnaryMainAstOperatorFunction,
 } from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isEnumField, resolveEnumValues } from '@app-builder/models/enum-values';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
@@ -102,8 +103,8 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
           dataModel: data.dataModel,
           triggerObjectTable: triggerTable,
         });
-        if (field.isEnum) {
-          enums.push(...(field.values ?? []));
+        if (isEnumField(field)) {
+          enums.push(...resolveEnumValues(field).values);
         }
       }
     }

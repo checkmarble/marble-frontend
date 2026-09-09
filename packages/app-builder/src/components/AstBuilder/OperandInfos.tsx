@@ -19,10 +19,12 @@ import { type FuzzyMatchComparatorAstNode, isFuzzyMatchComparator } from '@app-b
 import { isTimeAdd } from '@app-builder/models/astNode/time';
 import { isValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { type CustomList } from '@app-builder/models/custom-list';
+import { isEnumField, resolveEnumDisplay, resolveEnumValues } from '@app-builder/models/enum-values';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -269,24 +271,23 @@ type DataAccessorDescriptionProps = {
 };
 function DataAccessorDescription({ node, dataModel, triggerObjectTable }: DataAccessorDescriptionProps) {
   const { t } = useTranslation(['scenarios']);
+  const language = useFormatLanguage();
   const field = getDataAccessorAstNodeField(node, { triggerObjectTable, dataModel });
+  const values = isEnumField(field) ? resolveEnumValues(field).values : [];
 
   return (
     <>
       <Description description={field.description} />
-      {field.isEnum && field.values && field.values.length > 0 ? (
+      {values.length > 0 ? (
         <div className="text-grey-secondary flex max-w-[300px] flex-col gap-xs">
           <p className="text-s">{t('scenarios:enum_options')}</p>
           <ul className="flex flex-col">
-            {field.values
-              .slice(0, MAX_ENUM_VALUES)
-              .sort()
-              .map((value) => (
-                <li key={value} className="truncate text-xs font-normal">
-                  {value}
-                </li>
-              ))}
-            {field.values.length > MAX_ENUM_VALUES ? <li className="text-xs font-normal">...</li> : null}
+            {values.slice(0, MAX_ENUM_VALUES).map((value) => (
+              <li key={String(value)} className="truncate text-xs font-normal">
+                {resolveEnumDisplay(field, value, language).label}
+              </li>
+            ))}
+            {values.length > MAX_ENUM_VALUES ? <li className="text-xs font-normal">...</li> : null}
           </ul>
         </div>
       ) : null}

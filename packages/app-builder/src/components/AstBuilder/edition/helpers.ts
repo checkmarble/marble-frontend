@@ -2,6 +2,7 @@ import { type AstNode, type DataModel, type EnumValue, type IdLessAstNode, type 
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
 import { isDataAccessorAstNode, isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
+import { isEnumField, resolveEnumValues } from '@app-builder/models/enum-values';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import {
   type BuilderOptionsResource,
@@ -181,8 +182,8 @@ export function getEnumValuesFromNeighbour(
   for (const neighbourNode of neighbourNodes) {
     if (isDataAccessorAstNode(neighbourNode)) {
       const field = getDataAccessorAstNodeField(neighbourNode, context);
-      if (field.isEnum) {
-        enumValues.push(...(field.values ?? []));
+      if (isEnumField(field)) {
+        enumValues.push(...resolveEnumValues(field).values);
       }
     }
   }

@@ -161,7 +161,7 @@ export function getMockValue({
               .with('currency', () => (currencyCodeFormat === 'Number' ? '978' : 'EUR'))
               .with('country', () => (countryCodeFormat === 'alpha3' ? 'FRA' : 'FR'))
               .with('key_color_value', () => enumValues?.at(-1)?.key ?? '')
-              .with('mcc_code', () => '5219')
+              .with('mcc_code', () => '5411')
               .with('autocomplete', () => 'Autocompleted value')
               .otherwise(() => 'unexpected value')
           : 'Enum value',

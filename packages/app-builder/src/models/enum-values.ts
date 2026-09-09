@@ -1,7 +1,14 @@
 import * as countryCatalog from 'country-flag-emojis/flags';
 import cc from 'currency-codes';
-import type { DataModelField, EnumValue } from './data-model';
+import {
+  type DataModel,
+  type DataModelField,
+  type EnumValue,
+  findDataModelField,
+  findDataModelTableByName,
+} from './data-model';
 import type { CountryCodeFormat, CurrencyCodeFormat, EnumColors } from './enum';
+import mccCatalog from './mcc-codes.json';
 
 export type EnumField = Pick<
   DataModelField,
@@ -17,6 +24,8 @@ export type EnumField = Pick<
 const countries = Object.values(countryCatalog).filter(
   (country) => /^[A-Z]{2}$/.test(country.isoAlpha2) && /^[A-Z]{3}$/.test(country.isoAlpha3),
 );
+const mccByCode = mccCatalog as Record<string, string>;
+const mccCodes = Object.keys(mccByCode).sort();
 
 export function isEnumField(field: Pick<EnumField, 'isEnum' | 'semanticType'>) {
   return field.isEnum || field.semanticType === 'enum';
@@ -25,6 +34,16 @@ export function isEnumField(field: Pick<EnumField, 'isEnum' | 'semanticType'>) {
 export function resolveCountry(value: string) {
   const code = value.toUpperCase();
   return countries.find((country) => (code.length === 3 ? country.isoAlpha3 : country.isoAlpha2) === code);
+}
+
+function normalizeMcc(value: string) {
+  return /^\d{1,4}$/.test(value) ? value.padStart(4, '0') : value;
+}
+
+export function resolveMcc(value: string) {
+  const code = normalizeMcc(value);
+  const description = mccByCode[code];
+  return description ? { code, description } : undefined;
 }
 
 export function resolveCountryCodeFormat(field: EnumField, currentValues: EnumValue[] = []): CountryCodeFormat {
@@ -68,10 +87,27 @@ export function resolveEnumValues(field: EnumField, currentValues: EnumValue[] =
       format === 'ISO 4217'
         ? [...cc.codes(), ...(field.values ?? []), ...currentValues]
         : [...cc.numbers(), ...(field.values ?? []), ...currentValues];
+  } else if (subtype === 'mcc_code') {
+    const seen = new Set(mccCodes);
+    values = [...mccCodes];
+    for (const extra of [...(field.values ?? []), ...currentValues]) {
+      const key = normalizeMcc(String(extra));
+      if (seen.has(key)) continue;
+      seen.add(key);
+      values.push(extra);
+    }
   } else {
     values = [...(field.values ?? []), ...currentValues];
   }
   return { closed, values: [...new Set(values)] };
+}
+
+export function getResolvedEnumValues(dataModel: DataModel, tableName: string, fieldName: string) {
+  const field = findDataModelField({
+    table: findDataModelTableByName({ dataModel, tableName }),
+    fieldName,
+  });
+  return isEnumField(field) ? resolveEnumValues(field).values : [];
 }
 
 export type EnumDisplay = { label: string; color?: EnumColors; flag?: string; neutral?: boolean };
@@ -97,6 +133,10 @@ export function resolveEnumDisplay(field: EnumField, value: EnumValue, language:
     const format = field.currencyCodeFormat ?? (/^\d+$/.test(raw) ? 'Number' : 'ISO 4217');
     const code = format === 'Number' ? currency.number : currency.code;
     return { label: `${code} – ${currency.currency}` };
+  }
+  if (field.semanticSubType === 'mcc_code') {
+    const mcc = resolveMcc(raw);
+    return mcc ? { label: `${mcc.code} – ${mcc.description}` } : { label: raw };
   }
   return { label: raw };
 }
