@@ -818,22 +818,21 @@ export function DimensionValuesSelect({
                 {dimension.values.includes(value as never) ? <Icon icon="tick" className="size-4" /> : null}
               </MenuCommand.Item>
             ))}
-             {dimension.type === 'field' ? (
-        <div className="flex gap-sm">
-          <Input
-            size="medium"
-            className="flex-1"
-            value={manualValue}
-            placeholder={t('scenarios:value_switch.manual_value')}
-            onChange={(event) => setManualValue(event.target.value)}
-            onKeyDown={(event) => event.key === 'Enter' && addManualValue(event)}
-          />
-        </div>
-      ) : null}
+            {dimension.type === 'field' ? (
+              <div className="flex gap-sm">
+                <Input
+                  size="medium"
+                  className="flex-1"
+                  value={manualValue}
+                  placeholder={t('scenarios:value_switch.manual_value')}
+                  onChange={(event) => setManualValue(event.target.value)}
+                  onKeyDown={(event) => event.key === 'Enter' && addManualValue(event)}
+                />
+              </div>
+            ) : null}
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
-     
     </div>
   );
 }

@@ -228,6 +228,7 @@ const metadataKeys = [
   'isInteger',
   'enumValues',
   'countryCodeFormat',
+  'currencyCodeFormat',
 ] as const satisfies (keyof TableField)[];
 
 function adaptTableFieldUpdate(current: TableField, original: TableField, rawModelField?: DataModelField) {
@@ -267,6 +268,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField, rawMod
           isInteger: current.isInteger,
           enumValues: current.enumValues,
           countryCodeFormat: current.countryCodeFormat,
+          currencyCodeFormat: current.currencyCodeFormat,
         }
       : undefined,
   });

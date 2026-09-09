@@ -249,6 +249,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       isInteger: field.isInteger,
       enumValues: field.enumValues,
       countryCodeFormat: field.countryCodeFormat,
+      currencyCodeFormat: field.currencyCodeFormat,
     },
   };
 }

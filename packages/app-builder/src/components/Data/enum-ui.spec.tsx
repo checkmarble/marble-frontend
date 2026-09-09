@@ -102,9 +102,15 @@ describe('shared enum tags', () => {
     expect(screen.getByTitle('stale').style.borderColor).toBe('gray');
     expect(screen.getByTitle('stale').textContent).toBe('other');
   });
-  it('renders unknown countries neutrally', () => {
-    render(<EnumTag field={{ ...field, semanticSubType: 'country' }} value="ZZZ" />);
-    expect(screen.getByTitle('ZZZ').className).toContain('text-grey-placeholder');
+  it('renders countries without a purple tag', () => {
+    const { container } = render(<EnumTag field={{ ...field, semanticSubType: 'country' }} value="FR" />);
+    expect(container.textContent).toContain('France');
+    expect(container.querySelector('span')?.className).not.toContain('text-purple-primary');
+    expect(container.querySelector('span')?.className).not.toContain('border-purple-primary');
+  });
+  it('renders unknown countries as the raw value', () => {
+    const { container } = render(<EnumTag field={{ ...field, semanticSubType: 'country' }} value="ZZZ" />);
+    expect(container.textContent).toBe('ZZZ');
   });
   it.each([{ ...field, isEnum: true, semanticType: undefined }, field, { ...field, dataType: 'Int' as const }])(
     'DataField recognizes enums and preserves numeric display',

@@ -1,18 +1,20 @@
 import { z } from 'zod/v4';
 
 export const enumColors = [
-  'green',
-  'orange',
-  'red',
-  'blue',
-  'yellow',
-  'purple',
-  'pink',
-  'brown',
-  'gray',
-  'black',
-  'white',
+  '#88DCDE',
+  '#46BB7F',
+  '#8FA251',
+  '#EEA200',
+  '#FF8533',
+  '#DB5F4A',
+  '#CD719C',
+  '#D06FF4',
+  '#7F76F7',
+  '#4D73E5',
+  '#589FFF',
+  '#838292',
 ] as const;
+
 export type EnumColors = (typeof enumColors)[number];
 export const enumEntrySchema = z.object({
   key: z.string().refine((value) => value.trim().length > 0),
@@ -25,7 +27,8 @@ export const enumEntriesSchema = z
   .refine((entries) => new Set(entries.map((entry) => entry.key)).size === entries.length);
 export const countryCodeFormatSchema = z.enum(['alpha2', 'alpha3']);
 export type CountryCodeFormat = z.infer<typeof countryCodeFormatSchema>;
-
+export const currencyCodeFormatSchema = z.enum(['ISO 4217', 'Number']);
+export type CurrencyCodeFormat = z.infer<typeof currencyCodeFormatSchema>;
 export function createEnumEntry(): EnumEntry {
-  return { key: '', color: 'gray' };
+  return { key: '', color: enumColors[0] };
 }

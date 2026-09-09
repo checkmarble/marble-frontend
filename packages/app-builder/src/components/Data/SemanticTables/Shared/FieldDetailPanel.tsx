@@ -5,7 +5,12 @@ import {
   SemanticTypeField,
   semanticTypesByDataType,
 } from '@app-builder/models';
-import { countryCodeFormatSchema, createEnumEntry, type EnumEntry } from '@app-builder/models/enum';
+import {
+  countryCodeFormatSchema,
+  createEnumEntry,
+  currencyCodeFormatSchema,
+  type EnumEntry,
+} from '@app-builder/models/enum';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -305,7 +310,16 @@ export function FieldDetailPanel({
                 placeholder=""
                 onChange={(value) => {
                   setHasBeenChangedManually(true);
-                  update({ semanticSubType: value as SemanticSubTypeField });
+                  const semanticSubType = value as SemanticSubTypeField;
+                  update({
+                    semanticSubType,
+                    ...(semanticSubType === 'currency' && !field.currencyCodeFormat
+                      ? { currencyCodeFormat: 'ISO 4217' as const }
+                      : {}),
+                    ...(semanticSubType === 'country' && !field.countryCodeFormat
+                      ? { countryCodeFormat: 'alpha2' as const }
+                      : {}),
+                  });
                 }}
                 options={semanticSubOptions}
                 disabled={isLocked}
@@ -364,6 +378,29 @@ export function FieldDetailPanel({
                 </MenuCommand.Content>
               </MenuCommand.Menu>
               <p className="text-xs text-grey-secondary">{t('data:upload_data.country_code_format_help')}</p>
+            </div>
+          ) : null}
+          {field.semanticType === 'currency_code' ||
+          (field.semanticType === 'enum' && field.semanticSubType === 'currency') ? (
+            <div className="flex flex-col gap-xs">
+              <span className="text-s text-grey-secondary">{t('data:upload_data.currency_code_format')}</span>
+              <MenuCommand.Menu>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton disabled={isLocked}>
+                    {field.currencyCodeFormat === 'Number' ? 'Number (978)' : 'ISO 4217 (EUR)'}
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content>
+                  <MenuCommand.List>
+                    {currencyCodeFormatSchema.options.map((format) => (
+                      <MenuCommand.Item key={format} onSelect={() => update({ currencyCodeFormat: format })}>
+                        {format === 'ISO 4217' ? 'ISO 4217 (EUR)' : 'Number (978)'}
+                      </MenuCommand.Item>
+                    ))}
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
+              <p className="text-xs text-grey-secondary">{t('data:upload_data.currency_code_format_help')}</p>
             </div>
           ) : null}
 
@@ -648,22 +685,7 @@ export function EnumValuesSettings({
             enumValue.key.trim().length > 0 && enumValues.some((v, i) => i !== index && v.key === enumValue.key);
           return (
             <div key={index} className="flex flex-col gap-xs">
-              {index === enumValues.length - 1 ? (
-                <>
-                  <span className="text-s font-medium">{t('data:upload_data.enum_fallback')}</span>
-                  <p className="text-xs text-grey-secondary">{t('data:upload_data.enum_fallback_help')}</p>
-                </>
-              ) : null}
               <div className="flex items-center gap-sm">
-                <Input
-                  className="min-w-0 flex-1 font-mono"
-                  value={enumValue.key}
-                  aria-label={t('data:upload_data.field_enum_key_placeholder')}
-                  placeholder={t('data:upload_data.field_enum_key_placeholder')}
-                  onChange={(e) => updateValue(index, { key: e.currentTarget.value })}
-                  disabled={disabled}
-                  aria-invalid={isDuplicate || !enumValue.key.trim()}
-                />
                 <div className="w-max shrink-0">
                   <SelectV2
                     value={enumValue.color}
@@ -673,6 +695,15 @@ export function EnumValuesSettings({
                     disabled={disabled}
                   />
                 </div>
+                <Input
+                  className="min-w-0 flex-1 font-mono"
+                  value={enumValue.key}
+                  aria-label={t('data:upload_data.field_enum_key_placeholder')}
+                  placeholder={t('data:upload_data.field_enum_key_placeholder')}
+                  onChange={(e) => updateValue(index, { key: e.currentTarget.value })}
+                  disabled={disabled}
+                  aria-invalid={isDuplicate || !enumValue.key.trim()}
+                />
                 <button
                   type="button"
                   onClick={() => removeValue(index)}

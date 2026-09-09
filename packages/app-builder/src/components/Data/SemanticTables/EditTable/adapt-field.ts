@@ -34,6 +34,7 @@ export function adaptFieldToTableField(field: DataModelField): TableField {
     isInteger: field.isInteger,
     enumValues: field.enumValues,
     countryCodeFormat: field.countryCodeFormat,
+    currencyCodeFormat: field.currencyCodeFormat,
     foreignkeyTable: field.foreignkeyTable,
     isNew: false,
     locked: isSystemField,

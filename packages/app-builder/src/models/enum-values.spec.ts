@@ -36,7 +36,13 @@ describe('enum values', () => {
     const field = { ...base, semanticSubType: 'currency' as const };
     expect(resolveEnumValues(field, ['CUSTOM']).values).toEqual(expect.arrayContaining(['EUR', 'USD', 'CUSTOM']));
     expect(resolveEnumValues(field).closed).toBe(false);
-    expect(resolveEnumDisplay(field, 'EUR', 'en').label).toContain('Euro');
+    expect(resolveEnumDisplay(field, 'EUR', 'en').label).toBe('EUR – Euro');
+    expect(resolveEnumDisplay(field, '978', 'en').label).toBe('978 – Euro');
+    const numeric = { ...field, currencyCodeFormat: 'Number' as const };
+    expect(resolveEnumValues(numeric, ['999']).values).toEqual(expect.arrayContaining(['978', '840', '999']));
+    expect(resolveEnumValues(numeric).values).not.toContain('EUR');
+    expect(resolveEnumDisplay(numeric, '978', 'en').label).toBe('978 – Euro');
+    expect(resolveEnumDisplay(numeric, 'EUR', 'en').label).toBe('978 – Euro');
   });
   it('keeps key/color closed and resolves only presentation through the final entry', () => {
     expect(resolveEnumValues(keyed, ['stale'])).toEqual({ closed: true, values: ['approved', 'other'] });

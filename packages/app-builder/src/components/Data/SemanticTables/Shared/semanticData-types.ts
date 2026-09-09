@@ -10,7 +10,7 @@ import {
   semanticTypesByDataType,
   type TableModel,
 } from '@app-builder/models';
-import type { CountryCodeFormat, EnumEntry } from '@app-builder/models/enum';
+import type { CountryCodeFormat, CurrencyCodeFormat, EnumEntry } from '@app-builder/models/enum';
 import { FtmEntity } from 'marble-api';
 import { match, P } from 'ts-pattern';
 
@@ -78,6 +78,7 @@ export type TableField = {
   isDefaultBelongsTo?: boolean;
   enumValues?: EnumEntry[];
   countryCodeFormat?: CountryCodeFormat;
+  currencyCodeFormat?: CurrencyCodeFormat;
   isNew: boolean;
   locked?: boolean;
 };
@@ -125,7 +126,11 @@ export function getMockValue({
   isEnum,
   enumValues,
   countryCodeFormat,
-}: Pick<TableField, 'dataType' | 'semanticType' | 'semanticSubType' | 'isEnum' | 'enumValues' | 'countryCodeFormat'>) {
+  currencyCodeFormat,
+}: Pick<
+  TableField,
+  'dataType' | 'semanticType' | 'semanticSubType' | 'isEnum' | 'enumValues' | 'countryCodeFormat' | 'currencyCodeFormat'
+>) {
   try {
     if ((dataType === 'Int' || dataType === 'Float') && (isEnum || semanticType === 'enum')) return 123;
     if (dataType === 'Coords') return '48.8566, 2.3522';
@@ -153,7 +158,7 @@ export function getMockValue({
       .with('enum', () =>
         semanticSubType
           ? match(semanticSubType as SemanticSubTypeFieldMap['enum'])
-              .with('currency', () => 'EUR')
+              .with('currency', () => (currencyCodeFormat === 'Number' ? '978' : 'EUR'))
               .with('country', () => (countryCodeFormat === 'alpha3' ? 'FRA' : 'FR'))
               .with('key_color_value', () => enumValues?.at(-1)?.key ?? '')
               .with('mcc_code', () => '5219')
@@ -161,7 +166,7 @@ export function getMockValue({
               .otherwise(() => 'unexpected value')
           : 'Enum value',
       )
-      .with('currency_code', () => 'EUR')
+      .with('currency_code', () => (currencyCodeFormat === 'Number' ? '978' : 'EUR'))
       .with('foreign_key', () => 'ForeignKey')
       .with('country', () => (countryCodeFormat === 'alpha3' ? 'FRA' : 'FR'))
       .with('address', () => '123 Main St, Anytown, USA')
