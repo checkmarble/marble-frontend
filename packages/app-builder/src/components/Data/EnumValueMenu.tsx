@@ -1,6 +1,7 @@
 import { type EnumField, resolveEnumDisplay, resolveEnumValues } from '@app-builder/models/enum-values';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { useState } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExpandableGroupTagLine, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -16,6 +17,9 @@ type EnumValueMenuProps = {
   | { multiple?: false; onChange: (value: string) => void }
 );
 
+const VIRTUALIZE_AFTER = 50;
+const ENUM_ITEM_HEIGHT = 40;
+
 /** Existing closed-list values stay removable, but never become options after removal. */
 export function EnumValueMenu(props: EnumValueMenuProps) {
   const { field, selectedValues, currentValues = selectedValues, unavailableValues = [] } = props;
@@ -30,6 +34,14 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
       ? searchValue
       : undefined;
   const staleValues = selectedValues.filter((value) => value !== '' && !values.includes(value));
+  const virtualize = values.length > VIRTUALIZE_AFTER;
+  const catalogValues = useMemo(
+    () => (virtualize ? values.filter((value) => matchesEnumSearch(field, value, language, searchValue)) : values),
+    [field, language, searchValue, values, virtualize],
+  );
+  const visibleStaleValues = virtualize
+    ? staleValues.filter((value) => matchesEnumSearch(field, value, language, searchValue))
+    : staleValues;
 
   function select(value: string) {
     if (props.multiple)
@@ -58,30 +70,41 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
           )}
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
-      <MenuCommand.Content align="start" sideOffset={4} sameWidth>
+      <MenuCommand.Content align="start" sideOffset={4} sameWidth shouldFilter={!virtualize}>
         <MenuCommand.Combobox placeholder={t('scenarios:value_switch.search_values')} onValueChange={setSearch} />
         <MenuCommand.List>
-          {values.map((value) => (
-            <MenuCommand.Item
+          {virtualize ? (
+            <VirtualizedEnumItems
+              field={field}
+              values={catalogValues}
+              selectedValues={selectedValues}
+              unavailableValues={unavailableValues}
+              language={language}
+              onSelect={select}
+            />
+          ) : (
+            catalogValues.map((value) => (
+              <EnumValueItem
+                key={value}
+                field={field}
+                value={value}
+                language={language}
+                disabled={unavailableValues.includes(value)}
+                onSelect={select}
+                actionIcon={selectedValues.includes(value) ? 'tick' : undefined}
+              />
+            ))
+          )}
+          {visibleStaleValues.map((value) => (
+            <EnumValueItem
               key={value}
-              value={`${value} ${resolveEnumDisplay(field, value, language).label}`}
-              disabled={unavailableValues.includes(value)}
-              onSelect={() => select(value)}
-            >
-              <EnumTag field={field} value={value} />
-              {selectedValues.includes(value) ? <Icon icon="tick" className="size-4" /> : null}
-            </MenuCommand.Item>
-          ))}
-          {staleValues.map((value) => (
-            <MenuCommand.Item
-              key={value}
-              value={`${value} ${resolveEnumDisplay(field, value, language).label}`}
+              field={field}
+              value={value}
+              language={language}
               disabled={!props.multiple}
-              onSelect={() => select(value)}
-            >
-              <EnumTag field={field} value={value} />
-              {props.multiple ? <Icon icon="delete" className="size-4" /> : null}
-            </MenuCommand.Item>
+              onSelect={select}
+              actionIcon={props.multiple ? 'delete' : undefined}
+            />
           ))}
           {customValue ? (
             <MenuCommand.Item value={customValue} onSelect={() => select(customValue)}>
@@ -91,5 +114,91 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
         </MenuCommand.List>
       </MenuCommand.Content>
     </MenuCommand.Menu>
+  );
+}
+
+function matchesEnumSearch(field: EnumField, value: string, language: string, search: string) {
+  if (!search) return true;
+  const query = search.toLowerCase();
+  return `${value} ${resolveEnumDisplay(field, value, language).label}`.toLowerCase().includes(query);
+}
+
+function EnumValueItem({
+  field,
+  value,
+  language,
+  disabled,
+  onSelect,
+  actionIcon,
+}: {
+  field: EnumField;
+  value: string;
+  language: string;
+  disabled: boolean;
+  onSelect: (value: string) => void;
+  actionIcon?: 'tick' | 'delete';
+}) {
+  return (
+    <MenuCommand.Item
+      value={`${value} ${resolveEnumDisplay(field, value, language).label}`}
+      disabled={disabled}
+      onSelect={() => onSelect(value)}
+    >
+      <EnumTag field={field} value={value} />
+      {actionIcon ? <Icon icon={actionIcon} className="size-4" /> : null}
+    </MenuCommand.Item>
+  );
+}
+
+function VirtualizedEnumItems({
+  field,
+  values,
+  selectedValues,
+  unavailableValues,
+  language,
+  onSelect,
+}: {
+  field: EnumField;
+  values: string[];
+  selectedValues: string[];
+  unavailableValues: Array<string | number>;
+  language: string;
+  onSelect: (value: string) => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const viewportHeight = Math.min(320, Math.max(values.length, 1) * ENUM_ITEM_HEIGHT);
+  const fitsInViewport = values.length * ENUM_ITEM_HEIGHT <= 320;
+  const virtualizer = useVirtualizer({
+    count: values.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => ENUM_ITEM_HEIGHT,
+    overscan: 8,
+    observeElementRect: (_instance, cb) => {
+      const element = scrollRef.current;
+      cb({ width: element?.clientWidth || 400, height: element?.clientHeight || viewportHeight });
+    },
+  });
+  const virtualRows = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
+  const paddingTop = !fitsInViewport ? (virtualRows[0]?.start ?? 0) : 0;
+  const paddingBottom = !fitsInViewport && virtualRows.length > 0 ? totalSize - (virtualRows.at(-1)?.end ?? 0) : 0;
+  const visibleValues = fitsInViewport ? values : virtualRows.flatMap((row) => values[row.index] ?? []);
+
+  return (
+    <div ref={scrollRef} className="overflow-y-auto" style={{ height: viewportHeight }}>
+      {paddingTop > 0 ? <div aria-hidden className="shrink-0" style={{ height: paddingTop }} /> : null}
+      {visibleValues.map((value) => (
+        <EnumValueItem
+          key={value}
+          field={field}
+          value={value}
+          language={language}
+          disabled={unavailableValues.includes(value)}
+          onSelect={onSelect}
+          actionIcon={selectedValues.includes(value) ? 'tick' : undefined}
+        />
+      ))}
+      {paddingBottom > 0 ? <div aria-hidden className="shrink-0" style={{ height: paddingBottom }} /> : null}
+    </div>
   );
 }

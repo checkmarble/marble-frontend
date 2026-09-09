@@ -17,6 +17,19 @@ import { EnumValuesSettings } from './SemanticTables/Shared/FieldDetailPanel';
 import type { TableField } from './SemanticTables/Shared/semanticData-types';
 
 vi.mock('@app-builder/utils/format', () => ({ useFormatLanguage: () => 'en' }));
+vi.mock('@app-builder/models/enum-values', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@app-builder/models/enum-values')>();
+  return {
+    ...actual,
+    resolveEnumValues(
+      field: Parameters<typeof actual.resolveEnumValues>[0],
+      currentValues?: Parameters<typeof actual.resolveEnumValues>[1],
+    ) {
+      if (field.semanticSubType === 'mcc_code') return { closed: false, values: ['5411'] };
+      return actual.resolveEnumValues(field, currentValues);
+    },
+  };
+});
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: { value?: string }) => (options?.value ? `${key} ${options.value}` : key),
@@ -148,6 +161,15 @@ describe.each([false, true])('ValueSwitch enum selector (multiple=%s)', (multipl
     await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), 'Grocery');
     await userEvent.click(screen.getByRole('option', { name: /5411/ }));
     expect(screen.getByTestId('values').textContent).toBe('["5411"]');
+  });
+  it('searches a virtualized catalog without mounting every option', async () => {
+    const many = Array.from({ length: 80 }, (_, i) => `code-${String(i).padStart(2, '0')}`);
+    render(<Editor multiple={multiple} definition={{ ...field, values: many }} initial={[]} />);
+    await userEvent.click(screen.getByRole('button'));
+    expect(screen.queryByRole('option', { name: 'code-79' })).toBeNull();
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), 'code-79');
+    await userEvent.click(screen.getByRole('option', { name: 'code-79' }));
+    expect(screen.getByTestId('values').textContent).toBe('["code-79"]');
   });
   it.each([keyed, { ...field, semanticSubType: 'country' as const }])(
     'does not create custom values for closed enums',
