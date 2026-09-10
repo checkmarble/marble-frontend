@@ -38,7 +38,7 @@ export type ValueSwitchDimensionDefinition =
     };
 
 export type ValueSwitchDimension =
-  | (Extract<ValueSwitchDimensionDefinition, { type: 'field' }> & { values: string[] })
+  | (Extract<ValueSwitchDimensionDefinition, { type: 'field' }> & { values: Array<string | number> })
   | (Extract<ValueSwitchDimensionDefinition, { type: 'risk-level' }> & { values: number[] });
 
 export type ValueSwitchModel = {
@@ -146,11 +146,18 @@ export function isValueSwitchModelComplete(model: ValueSwitchModel): boolean {
   if (model.dimensions.some((dimension) => !dimension || dimension.values.length === 0)) return false;
   const dimensions = model.dimensions.filter((dimension): dimension is ValueSwitchDimension => dimension !== null);
   if (
-    dimensions.some(
-      (dimension) =>
-        dimension.values.some((value) => typeof value === 'string' && value.trim() === '') ||
-        new Set(dimension.values.map(getDimensionValueKey)).size !== dimension.values.length,
-    )
+    dimensions.some((dimension, index) => {
+      if (new Set(dimension.values.map(getDimensionValueKey)).size !== dimension.values.length) return true;
+      if (dimension.type === 'risk-level') return false;
+
+      const hasStrings = dimension.values.some((value) => typeof value === 'string');
+      const hasNumbers = dimension.values.some((value) => typeof value === 'number');
+      if (hasStrings && hasNumbers) return true;
+      if (hasStrings) return dimension.values.some((value) => typeof value === 'string' && value.trim() === '');
+      const numericValues = dimension.values.filter((value): value is number => typeof value === 'number');
+      if (index !== 0 || numericValues.some((value) => !Number.isFinite(value))) return true;
+      return numericValues.some((value, valueIndex) => valueIndex > 0 && value <= numericValues[valueIndex - 1]!);
+    })
   ) {
     return false;
   }
@@ -172,8 +179,8 @@ function buildAtomicPredicate(dimension: ValueSwitchDimension, value: string | n
   }
   return {
     id: uuidv7(),
-    name: '=',
-    children: [cloneWithNewIds(dimension.field), NewConstantAstNode({ constant: value as string })],
+    name: typeof value === 'number' ? '<=' : '=',
+    children: [cloneWithNewIds(dimension.field), NewConstantAstNode({ constant: value })],
     namedChildren: {},
   };
 }
@@ -209,14 +216,19 @@ function parseAtomicPredicate(node: AstNode): AtomicPredicate | null {
     return value === undefined ? null : { dimension: { type: 'risk-level' }, value };
   }
 
-  if (node.name !== '=' || node.children.length !== 2) return null;
+  if ((node.name !== '=' && node.name !== '<=') || node.children.length !== 2) return null;
   const left = node.children[0];
   const right = node.children[1];
   if (!left || !right) return null;
-  if (isDataAccessorAstNode(left) && isConstant(right) && typeof right.constant === 'string') {
+  if (
+    isDataAccessorAstNode(left) &&
+    isConstant(right) &&
+    ((node.name === '=' && typeof right.constant === 'string') ||
+      (node.name === '<=' && typeof right.constant === 'number'))
+  ) {
     return { dimension: { type: 'field', field: left }, value: right.constant };
   }
-  if (isDataAccessorAstNode(right) && isConstant(left) && typeof left.constant === 'string') {
+  if (node.name === '=' && isDataAccessorAstNode(right) && isConstant(left) && typeof left.constant === 'string') {
     return { dimension: { type: 'field', field: right }, value: left.constant };
   }
   return null;

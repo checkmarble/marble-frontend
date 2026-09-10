@@ -26,12 +26,21 @@ const field: DataModelField = {
 };
 const accessor = NewPayloadAstNode('status');
 
-it.each(['Int', 'Float', 'Bool', 'Timestamp'] as const)(
-  'excludes %s fields from ValueSwitch dimensions',
-  (dataType) => {
-    expect(getValueSwitchFieldOption(accessor, { ...field, dataType })).toBeUndefined();
-  },
-);
+it.each(['Bool', 'Timestamp'] as const)('excludes %s fields from ValueSwitch dimensions', (dataType) => {
+  expect(getValueSwitchFieldOption(accessor, { ...field, dataType })).toBeUndefined();
+});
+it.each(['Int', 'Float'] as const)('includes %s fields without discrete known values', (dataType) => {
+  expect(
+    getValueSwitchFieldOption(accessor, {
+      ...field,
+      dataType,
+      values: [1, 2],
+    }),
+  ).toMatchObject({
+    field: expect.objectContaining({ dataType }),
+    knownValues: [],
+  });
+});
 it('carries resolved metadata and closed-list options without stale keys', () => {
   expect(getValueSwitchFieldOption(accessor, field, ['stale'])).toMatchObject({
     field,

@@ -198,6 +198,9 @@
 
 @custom-variant sentinel-intersect ([data-sentinel][data-intersect] + &, &:has(+ [data-sentinel][data-intersect]));
 
+@custom-variant disabled (&:is(:disabled, [aria-disabled="true"]));
+@custom-variant enabled (&:not(:disabled):not([aria-disabled="true"]));
+
 .dark {
   /* ========================================
    * SEMANTIC SURFACE TOKENS - Dark mode

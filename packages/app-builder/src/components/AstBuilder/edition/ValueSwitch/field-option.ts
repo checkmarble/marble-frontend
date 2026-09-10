@@ -9,8 +9,9 @@ export function getValueSwitchFieldOption(
   field: DataModelField,
   currentValues: EnumValue[] = [],
 ) {
-  if (field.dataType !== 'String') return undefined;
-  const resolved = isEnumField(field) ? resolveEnumValues(field, currentValues) : undefined;
+  if (!['String', 'Int', 'Float'].includes(field.dataType)) return undefined;
+  const resolved =
+    field.dataType === 'String' && isEnumField(field) ? resolveEnumValues(field, currentValues) : undefined;
   const dimension = { type: 'field' as const, field: accessor };
   return {
     key: getValueSwitchDimensionKey(dimension),
@@ -18,6 +19,9 @@ export function getValueSwitchFieldOption(
     dimension,
     field,
     closed: resolved?.closed,
-    knownValues: (resolved?.values ?? field.values ?? []).filter((value): value is string => typeof value === 'string'),
+    knownValues:
+      field.dataType === 'String'
+        ? (resolved?.values ?? field.values ?? []).filter((value): value is string => typeof value === 'string')
+        : [],
   };
 }

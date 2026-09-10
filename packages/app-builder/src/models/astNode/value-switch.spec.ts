@@ -83,6 +83,47 @@ describe('value switch AST', () => {
     expect(stripModelIds(parseValueSwitchAstNode(ast)!)).toEqual(stripModelIds(model));
   });
 
+  it('round-trips numeric upper-bound bands', () => {
+    const model: ValueSwitchModel = {
+      dimensionCount: 1,
+      dimensions: [{ type: 'field', field: NewPayloadAstNode('amount'), values: [10, 20] }],
+      thresholds: {
+        [getValueSwitchCellKey([10])]: 30,
+        [getValueSwitchCellKey([20])]: 40,
+      },
+      fallback: 50,
+    };
+
+    const ast = valueSwitchModelToAst(model);
+
+    expect(ast.children.map((child) => child.children[0].name)).toEqual(['<=', '<=']);
+    expect(ast.children.map((child) => child.children[0].children[1]?.constant)).toEqual([10, 20]);
+    expect(stripModelIds(parseValueSwitchAstNode(ast)!)).toEqual(stripModelIds(model));
+  });
+
+  it('round-trips numeric row bands with a discrete column dimension', () => {
+    const model: ValueSwitchModel = {
+      dimensionCount: 2,
+      dimensions: [
+        { type: 'field', field: NewPayloadAstNode('amount'), values: [10, 20] },
+        { type: 'risk-level', values: [1, 2] },
+      ],
+      thresholds: {
+        [getValueSwitchCellKey([10, 1])]: 10,
+        [getValueSwitchCellKey([10, 2])]: 20,
+        [getValueSwitchCellKey([20, 1])]: 30,
+        [getValueSwitchCellKey([20, 2])]: 40,
+      },
+      fallback: 50,
+    };
+
+    const ast = valueSwitchModelToAst(model);
+
+    expect(ast.children).toHaveLength(4);
+    expect(ast.children.map((child) => child.children[0].children[0]?.name)).toEqual(['<=', '<=', '<=', '<=']);
+    expect(stripModelIds(parseValueSwitchAstNode(ast)!)).toEqual(stripModelIds(model));
+  });
+
   it('keeps existing cells and initializes new cells from the fallback', () => {
     const current = oneDimensionModel();
     const dimension = current.dimensions[0];
@@ -111,6 +152,17 @@ describe('value switch AST', () => {
       fallback: 0,
     };
     expect(isValueSwitchModelComplete(duplicateDimensionModel)).toBe(false);
+    expect(
+      isValueSwitchModelComplete({
+        dimensionCount: 1,
+        dimensions: [{ type: 'field', field: NewPayloadAstNode('amount'), values: [20, 10] }],
+        thresholds: {
+          [getValueSwitchCellKey([20])]: 1,
+          [getValueSwitchCellKey([10])]: 2,
+        },
+        fallback: 0,
+      }),
+    ).toBe(false);
 
     const validMatrix: ValueSwitchModel = {
       dimensionCount: 2,
