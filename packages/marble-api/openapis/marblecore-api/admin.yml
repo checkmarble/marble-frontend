@@ -725,7 +725,6 @@ components:
       required:
         - email
         - role
-        - organization_id
         - first_name
         - last_name
       properties:
@@ -756,7 +755,6 @@ components:
       required:
         - email
         - role
-        - organization_id
         - first_name
         - last_name
       properties:

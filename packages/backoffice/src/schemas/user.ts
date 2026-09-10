@@ -8,6 +8,9 @@ const ROLE_ANALYST = 'ANALYST';
 
 export const USER_ROLES = [ROLE_ADMIN, ROLE_PUBLISHER, ROLE_BUILDER, ROLE_VIEWER, ROLE_ANALYST] as const;
 
+// Global Backoffice management can provision the internal operator role as well.
+export const GLOBAL_USER_ROLES = [...USER_ROLES, 'MARBLE_ADMIN'] as const;
+
 export const createUserPayloadSchema = z.object({
   first_name: z.string().min(1),
   last_name: z.string().min(1),
@@ -16,6 +19,22 @@ export const createUserPayloadSchema = z.object({
 });
 
 export type CreateUserPayload = z.infer<typeof createUserPayloadSchema>;
+
+const globalUserDetailsSchema = z.object({
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  email: z.email(),
+  role: z.enum(GLOBAL_USER_ROLES),
+});
+
+export const createGlobalUserPayloadSchema = globalUserDetailsSchema;
+export type CreateGlobalUserPayload = z.infer<typeof createGlobalUserPayloadSchema>;
+
+export const updateGlobalUserPayloadSchema = globalUserDetailsSchema.extend({
+  userId: z.uuid(),
+  organization_id: z.uuid().optional(),
+});
+export type UpdateGlobalUserPayload = z.infer<typeof updateGlobalUserPayloadSchema>;
 
 /**
  * Error code thrown by `createOrganizationUserFn` when the email is already taken, so the
