@@ -183,6 +183,8 @@ paths:
 
   /scenarios:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios
+  /scenarios/catalog:
+    $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1catalog
   /scenarios/{scenarioId}:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}
   /scenarios/{scenarioId}/copy:

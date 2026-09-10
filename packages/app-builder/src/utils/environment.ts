@@ -40,10 +40,9 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
 
-  ENABLE_GRAPH_EXPLORATION: z
-    .string()
-    .transform((val) => val === 'true')
-    .optional(),
+  ENABLE_GRAPH_EXPLORATION: z.string().optional(),
+
+  AI_RULE_CATALOG_ENABLED: z.string().optional(),
 
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
@@ -99,9 +98,10 @@ interface ServerEnvVars {
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
-  ENABLE_GRAPH_EXPLORATION?: boolean;
+  ENABLE_GRAPH_EXPLORATION?: string;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
+  AI_RULE_CATALOG_ENABLED?: string;
 }
 
 /**
@@ -120,7 +120,8 @@ interface ClientEnvVars {
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
-  ENABLE_GRAPH_EXPLORATION?: boolean;
+  ENABLE_GRAPH_EXPLORATION?: string;
+  AI_RULE_CATALOG_ENABLED?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -130,6 +131,7 @@ export function getClientEnvVars(): ClientEnvVars {
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
     ENABLE_GRAPH_EXPLORATION: getServerEnv('ENABLE_GRAPH_EXPLORATION'),
+    AI_RULE_CATALOG_ENABLED: getServerEnv('AI_RULE_CATALOG_ENABLED'),
   };
 }
 
@@ -149,4 +151,8 @@ export function getClientEnv<K extends keyof ClientEnvVars>(clientEnvVarName: K)
   }
 
   return clientEnv[clientEnvVarName];
+}
+
+export function isFlagActive(flag: string | undefined, orgId: string) {
+  return flag === 'all' || !!flag?.split(',').find((segment) => segment.trim() === orgId);
 }
