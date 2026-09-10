@@ -394,19 +394,11 @@ function RuleEditForm({
               </div>
             </div>
             {isAiRuleDescriptionEnabled ? (
-              <div
-                className={cn('min-w-0 overflow-hidden transition-[opacity,transform] duration-300 ease-in-out', {
-                  'translate-x-0 opacity-100': !isValueSwitchOpen,
-                  'pointer-events-none translate-x-md opacity-0': isValueSwitchOpen,
-                })}
-                aria-hidden={isValueSwitchOpen}
-              >
-                <AiDescription
-                  isPending={isDebouncing || ruleDescriptionMutation.isPending}
-                  description={ruleDescription}
-                  className="self-start max-w-2xl"
-                />
-              </div>
+              <AiDescription
+                isPending={isDebouncing || ruleDescriptionMutation.isPending}
+                description={ruleDescription}
+                docked={isValueSwitchOpen}
+              />
             ) : null}
           </div>
         </div>

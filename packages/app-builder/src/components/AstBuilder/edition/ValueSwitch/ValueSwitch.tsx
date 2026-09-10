@@ -32,7 +32,7 @@ import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAs
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -64,12 +64,14 @@ type DimensionOption = {
   closed?: boolean;
 };
 
+/** Int/Float field (or already numeric bounds). Picks the threshold-band UI in OneDimensionEditor and TwoDimensionEditor. */
 function isNumericDimension(dimension: ValueSwitchDimension | null | undefined, field?: DataModelField) {
   if (dimension?.type !== 'field') return false;
   if (field) return field.dataType === 'Int' || field.dataType === 'Float';
   return dimension.values.length > 0 && dimension.values.every((value) => typeof value === 'number');
 }
 
+/** Midpoint between two consecutive bounds, or `current + 1` after the last. Used when inserting a band in NumericBandRow. */
 function getInsertedNumericBound(bounds: number[], index: number) {
   const current = bounds[index];
   if (current === undefined) return null;
@@ -77,10 +79,12 @@ function getInsertedNumericBound(bounds: number[], index: number) {
   return next === undefined ? current + 1 : current + (next - current) / 2;
 }
 
+/** Numeric values from a mixed dimension. Ordered bounds in NumericBandRow and TwoDimensionEditor. */
 function getNumericValues(values: Array<string | number>) {
   return values.filter((value): value is number => typeof value === 'number');
 }
 
+/** String values from a mixed dimension. Enum menus in DimensionValueInput and DimensionValuesSelect. */
 function getStringValues(values: Array<string | number>) {
   return values.filter((value): value is string => typeof value === 'string');
 }
@@ -614,6 +618,7 @@ function InsertThresholdControl({
   );
 }
 
+/** After inserting a band, focus the next threshold input. Used by InsertThresholdControl and NumericTableBandHeader. */
 function focusNextThresholdInput(control: HTMLElement) {
   requestAnimationFrame(() => {
     const nextInput = [...document.querySelectorAll<HTMLInputElement>('[data-value-switch-threshold-input]')].find(
@@ -1002,6 +1007,7 @@ function DimensionSelect({
   );
 }
 
+/** Maps an operand AST node to a DimensionOption.key. Used by DimensionSelect to filter the field menu and resolve a selection. */
 function getDimensionKeyForAstNode(node: AstNode | IdLessAstNode) {
   if (isRecordRiskLevelCheckAstNode(node)) return 'risk-level';
   if (isPayload(node)) return `payload:${node.children[0].constant}`;
