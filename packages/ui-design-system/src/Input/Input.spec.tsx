@@ -33,17 +33,53 @@ describe('Input', () => {
 });
 
 describe('NumberInput', () => {
-  it('forces a sign for non-negative values when requested', () => {
+  it('shows a plus or minus icon for the value sign when requested', () => {
     const onChange = vi.fn();
     const { rerender } = render(<NumberInput aria-label="number input" value={12} onChange={onChange} forceSign />);
 
-    expect(screen.getByLabelText('number input')).toHaveValue('+12');
+    expect(screen.getByLabelText('number input')).toHaveValue('12');
+    expect(screen.getByRole('img', { name: '+' })).toBeInTheDocument();
 
     rerender(<NumberInput aria-label="number input" value={-12} onChange={onChange} forceSign />);
-    expect(screen.getByLabelText('number input')).toHaveValue('-12');
+    expect(screen.getByLabelText('number input')).toHaveValue('12');
+    expect(screen.getByRole('img', { name: '-' })).toBeInTheDocument();
 
     rerender(<NumberInput aria-label="number input" value={0} onChange={onChange} forceSign />);
-    expect(screen.getByLabelText('number input')).toHaveValue('+0');
+    expect(screen.getByLabelText('number input')).toHaveValue('0');
+    expect(screen.getByRole('img', { name: '+' })).toBeInTheDocument();
+  });
+
+  it('updates the sign icon when + or - is typed', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(<NumberInput aria-label="number input" value={12} onChange={onChange} forceSign />);
+    const input = screen.getByLabelText('number input');
+
+    await user.type(input, '-');
+
+    expect(onChange).toHaveBeenCalledWith(-12);
+    expect(input).toHaveValue('12');
+    expect(screen.getByRole('img', { name: '-' })).toBeInTheDocument();
+
+    await user.type(input, '+');
+
+    expect(onChange).toHaveBeenCalledWith(12);
+    expect(input).toHaveValue('12');
+    expect(screen.getByRole('img', { name: '+' })).toBeInTheDocument();
+  });
+
+  it('applies a pasted sign to the icon and value', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(<NumberInput aria-label="number input" value={12} onChange={onChange} forceSign />);
+    const input = screen.getByLabelText('number input');
+
+    await user.clear(input);
+    await user.paste('-8');
+
+    expect(onChange).toHaveBeenCalledWith(-8);
+    expect(input).toHaveValue('8');
+    expect(screen.getByRole('img', { name: '-' })).toBeInTheDocument();
   });
 
   it('uses the first matching threshold color and falls back to the default color', () => {

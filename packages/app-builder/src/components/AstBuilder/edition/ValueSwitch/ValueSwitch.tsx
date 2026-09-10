@@ -292,6 +292,14 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
           aria-label={t('scenarios:value_switch.fallback')}
           value={model.fallback}
           onChange={(fallback) => updateModel((current) => ({ ...current, fallback }))}
+          forceSign
+          colorByValue={{
+            thresholds: [
+              { threshold: 0, comparison: '<', color: 'green' },
+              { threshold: 0, comparison: '>', color: 'red' },
+            ],
+            defaultColor: 'primary',
+          }}
         />
       </div>
     </>
@@ -496,6 +504,96 @@ function ScoreInput({ value, onChange }: { value: number; onChange: (value: numb
   );
 }
 
+/** 3+7+2+7+3rem columns + 4×gap-sm. Table cells add 1rem of padding. */
+const NUMERIC_BAND_EDITOR_WIDTH_REM = 24;
+const NUMERIC_ROW_HEADER_WIDTH_REM = NUMERIC_BAND_EDITOR_WIDTH_REM + 1;
+
+function NumericBandOperator({ kind }: { kind: 'first' | 'middle' | 'overflow' }) {
+  const { t } = useTranslation(['user-scoring']);
+  const isBadge = kind !== 'middle';
+  return (
+    <span
+      className={CtaV2ClassName({
+        variant: 'secondary',
+        mode: isBadge ? 'icon' : 'normal',
+        appearance: isBadge ? 'stroked' : 'link',
+      })}
+      aria-disabled={isBadge}
+    >
+      {kind === 'overflow' ? '>' : kind === 'first' ? '≤' : t('user-scoring:switch.number.middle')}
+    </span>
+  );
+}
+
+type NumericBandRowProps = {
+  bounds: number[];
+  index: number;
+  onValueChange: (value: number) => void;
+  onValuesChange: (values: number[]) => void;
+  trailing?: ReactNode;
+};
+
+function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing }: NumericBandRowProps) {
+  const { t } = useTranslation(['scenarios', 'user-scoring']);
+  const bound = bounds[index] ?? 0;
+  const insertedBound = getInsertedNumericBound(bounds, index);
+
+  function insertBound() {
+    if (insertedBound === null) return;
+    const next = [...bounds];
+    next.splice(index + 1, 0, insertedBound);
+    onValuesChange(next);
+  }
+
+  return (
+    <div>
+      <div
+        className={cn(
+          'grid items-center gap-sm',
+          trailing ? 'grid-cols-[3rem_7rem_2rem_7rem_minmax(7rem,1fr)_3rem]' : 'grid-cols-[3rem_7rem_2rem_7rem_3rem]',
+        )}
+      >
+        <NumericBandOperator kind={index === 0 ? 'first' : 'middle'} />
+        {index > 0 ? <Input disabled value={(bounds[index - 1] ?? 0) + 1} /> : null}
+        {index > 0 ? (
+          <span className="text-grey-secondary text-center">{t('user-scoring:switch.number.and')}</span>
+        ) : null}
+        <NumberInput
+          data-value-switch-threshold-input
+          className={index === 0 ? 'col-start-2 col-span-3' : undefined}
+          value={bound}
+          onChange={onValueChange}
+        />
+        {trailing}
+        <Button
+          mode="icon"
+          variant="secondary"
+          appearance="stroked"
+          aria-label={t('scenarios:value_switch.remove_value')}
+          disabled={bounds.length === 1}
+          onClick={() => onValuesChange(bounds.filter((_, currentIndex) => currentIndex !== index))}
+        >
+          <Icon icon="delete" className="size-4" />
+        </Button>
+      </div>
+      <InsertThresholdControl
+        disabled={insertedBound === null}
+        onClick={insertBound}
+        label={t('scenarios:value_switch.add_value')}
+      />
+    </div>
+  );
+}
+
+function NumericBandOverflow({ bound }: { bound: number | undefined }) {
+  return (
+    <div className="grid grid-cols-[3rem_7rem] items-center gap-sm">
+      <NumericBandOperator kind="overflow" />
+      <Input readOnly disabled value={bound ?? ''} />
+    </div>
+  );
+}
+
 type NumericOneDimensionEditorProps = {
   dimension: ValueSwitchDimension;
   fallback: number;
@@ -513,78 +611,26 @@ function NumericOneDimensionEditor({
   onValueChange,
   onThresholdChange,
 }: NumericOneDimensionEditorProps) {
-  const { t } = useTranslation(['scenarios', 'user-scoring']);
   const bounds = getNumericValues(dimension.values);
-
-  function insertBound(index: number) {
-    const value = getInsertedNumericBound(bounds, index);
-    if (value === null) return;
-    const next = [...bounds];
-    next.splice(index + 1, 0, value);
-    onValuesChange(next);
-  }
-
-  function removeBound(index: number) {
-    if (bounds.length === 1) return;
-    onValuesChange(bounds.filter((_, currentIndex) => currentIndex !== index));
-  }
 
   return (
     <div className="flex flex-col">
       {bounds.map((bound, index) => (
-        <div key={`numeric-bound-${index}`}>
-          <div className="grid grid-cols-[3rem_7rem_2rem_7rem_minmax(7rem,1fr)_3rem] items-center gap-sm">
-            <span
-              className={CtaV2ClassName({
-                variant: 'secondary',
-                mode: index === 0 ? 'icon' : 'normal',
-                appearance: index === 0 ? 'stroked' : 'link',
-              })}
-              aria-disabled={index === 0}
-            >
-              {index === 0 ? '≤' : t('user-scoring:switch.number.middle')}
-            </span>
-            {index > 0 ? <Input disabled value={(bounds[index - 1] ?? 0) + 1} /> : null}
-            {index > 0 ? (
-              <span className="text-grey-secondary text-center">{t('user-scoring:switch.number.and')}</span>
-            ) : null}
-            <NumberInput
-              data-value-switch-threshold-input
-              className={index === 0 ? 'col-start-2 col-span-3' : undefined}
-              value={bound}
-              onChange={(value) => onValueChange(index, value)}
-            />
+        <NumericBandRow
+          key={`numeric-bound-${index}`}
+          bounds={bounds}
+          index={index}
+          onValueChange={(value) => onValueChange(index, value)}
+          onValuesChange={onValuesChange}
+          trailing={
             <ScoreInput
               value={thresholds[getValueSwitchCellKey([bound])] ?? fallback}
               onChange={(value) => onThresholdChange([bound], value)}
             />
-            <Button
-              mode="icon"
-              variant="secondary"
-              appearance="stroked"
-              aria-label={t('scenarios:value_switch.remove_value')}
-              disabled={bounds.length === 1}
-              onClick={() => removeBound(index)}
-            >
-              <Icon icon="delete" className="size-4" />
-            </Button>
-          </div>
-          <InsertThresholdControl
-            disabled={getInsertedNumericBound(bounds, index) === null}
-            onClick={() => insertBound(index)}
-            label={t('scenarios:value_switch.add_value')}
-          />
-        </div>
+          }
+        />
       ))}
-      <div className="grid grid-cols-[3rem_7rem] items-center gap-sm">
-        <span
-          className={CtaV2ClassName({ variant: 'secondary', mode: 'icon', appearance: 'stroked' })}
-          aria-disabled={true}
-        >
-          &gt;
-        </span>
-        <Input readOnly disabled value={bounds.at(-1) ?? ''} />
-      </div>
+      <NumericBandOverflow bound={bounds.at(-1)} />
     </div>
   );
 }
@@ -618,7 +664,7 @@ function InsertThresholdControl({
   );
 }
 
-/** After inserting a band, focus the next threshold input. Used by InsertThresholdControl and NumericTableBandHeader. */
+/** After inserting a band, focus the next threshold input. Used by InsertThresholdControl. */
 function focusNextThresholdInput(control: HTMLElement) {
   requestAnimationFrame(() => {
     const nextInput = [...document.querySelectorAll<HTMLInputElement>('[data-value-switch-threshold-input]')].find(
@@ -661,6 +707,8 @@ function TwoDimensionEditor({
     : undefined;
   const numericRows = isNumericDimension(rowDimension, rowOption?.field);
   const numericBounds = numericRows && rowDimension ? getNumericValues(rowDimension.values) : [];
+  const rowHeaderWidthRem = numericRows ? NUMERIC_ROW_HEADER_WIDTH_REM : 12;
+  const columnWidthRem = hasCompactCells ? 6.5 : 7;
 
   function handleCellKeyDown(event: KeyboardEvent<HTMLInputElement>, rowIndex: number, columnIndex: number) {
     if (!['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter'].includes(event.key)) return;
@@ -738,11 +786,17 @@ function TwoDimensionEditor({
         >
           <table
             className="table-fixed border-collapse"
-            style={{ width: `${(numericRows ? 20 : 12) + columnCount * (hasCompactCells ? 6.5 : 7)}rem` }}
+            style={{ width: `${rowHeaderWidthRem + columnCount * columnWidthRem}rem` }}
           >
+            <colgroup>
+              <col style={{ width: `${rowHeaderWidthRem}rem` }} />
+              {columnDimension.values.map((value) => (
+                <col key={`${typeof value}:${String(value)}`} style={{ width: `${columnWidthRem}rem` }} />
+              ))}
+            </colgroup>
             <thead>
               <tr>
-                <th className="border-grey-border bg-surface-card sticky top-0 left-0 z-20 w-48 border-r border-b p-sm" />
+                <th className="border-grey-border bg-surface-card sticky top-0 left-0 z-20 border-r border-b p-sm" />
                 {columnDimension.values.map((value) => (
                   <th
                     key={`${typeof value}:${String(value)}`}
@@ -751,14 +805,16 @@ function TwoDimensionEditor({
                       hasCompactCells ? 'p-xs' : 'p-sm',
                     )}
                   >
-                    <ValueSwitchValueTag
-                      dimension={columnDimension}
-                      value={value}
-                      field={
-                        options.find((option) => option.key === getValueSwitchDimensionKey(columnDimension))?.field
-                      }
-                      className="max-w-full"
-                    />
+                    <div className="w-0 min-w-full overflow-hidden">
+                      <ValueSwitchValueTag
+                        dimension={columnDimension}
+                        value={value}
+                        field={
+                          options.find((option) => option.key === getValueSwitchDimensionKey(columnDimension))?.field
+                        }
+                        className="w-full"
+                      />
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -768,31 +824,33 @@ function TwoDimensionEditor({
                 <tr key={`${typeof rowValue}:${String(rowValue)}`}>
                   <th
                     className={cn(
-                      'border-grey-border bg-surface-card sticky left-0 z-10 overflow-visible border-r text-start font-normal',
-                      numericRows ? 'w-80' : 'w-48 overflow-hidden',
-                      hasCompactCells ? 'p-xs' : 'p-sm',
+                      'border-grey-border bg-surface-card sticky left-0 z-10 border-r text-start font-normal',
+                      numericRows ? 'overflow-visible align-top p-sm pb-0' : 'overflow-hidden',
+                      !numericRows && (hasCompactCells ? 'p-xs' : 'p-sm'),
                     )}
                   >
                     {numericRows && typeof rowValue === 'number' ? (
-                      <NumericTableBandHeader
+                      <NumericBandRow
                         bounds={numericBounds}
                         index={rowIndex}
                         onValueChange={(value) => onValueChange(0, rowIndex, value)}
                         onValuesChange={(values) => onValuesChange(0, values)}
                       />
                     ) : (
-                      <ValueSwitchValueTag
-                        dimension={rowDimension}
-                        value={rowValue}
-                        field={rowOption?.field}
-                        className="max-w-full"
-                      />
+                      <div className="w-0 min-w-full overflow-hidden">
+                        <ValueSwitchValueTag
+                          dimension={rowDimension}
+                          value={rowValue}
+                          field={rowOption?.field}
+                          className="w-full"
+                        />
+                      </div>
                     )}
                   </th>
                   {columnDimension.values.map((columnValue, columnIndex) => (
                     <td
                       key={getValueSwitchCellKey([rowValue, columnValue])}
-                      className={hasCompactCells ? 'p-xs' : 'p-sm'}
+                      className={cn(hasCompactCells ? 'p-xs' : 'p-sm', numericRows && 'pt-sm align-top')}
                     >
                       <NumberInput
                         ref={(element) => {
@@ -807,6 +865,14 @@ function TwoDimensionEditor({
                         value={model.thresholds[getValueSwitchCellKey([rowValue, columnValue])] ?? model.fallback}
                         onChange={(threshold) => onThresholdChange([rowValue, columnValue], threshold)}
                         onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
+                        forceSign
+                        colorByValue={{
+                          thresholds: [
+                            { threshold: 0, comparison: '<', color: 'green' },
+                            { threshold: 0, comparison: '>', color: 'red' },
+                          ],
+                          defaultColor: 'primary',
+                        }}
                       />
                     </td>
                   ))}
@@ -814,21 +880,16 @@ function TwoDimensionEditor({
               ))}
               {numericRows ? (
                 <tr>
-                  <th
-                    className={cn(
-                      'border-grey-border bg-surface-card sticky left-0 z-10 w-80 border-r text-start font-normal',
-                      hasCompactCells ? 'p-xs' : 'p-sm',
-                    )}
-                  >
-                    <div className="grid grid-cols-[3rem_7rem] items-center gap-sm">
-                      <span className="text-center text-purple-primary">&gt;</span>
-                      <Input readOnly disabled value={numericBounds.at(-1) ?? ''} />
-                    </div>
+                  <th className="border-grey-border bg-surface-card sticky left-0 z-10 border-r p-sm text-start align-top font-normal">
+                    <NumericBandOverflow bound={numericBounds.at(-1)} />
                   </th>
                   {columnDimension.values.map((columnValue, columnIndex) => {
                     const rowIndex = numericBounds.length;
                     return (
-                      <td key={`fallback:${String(columnValue)}`} className={hasCompactCells ? 'p-xs' : 'p-sm'}>
+                      <td
+                        key={`fallback:${String(columnValue)}`}
+                        className={cn(hasCompactCells ? 'p-xs' : 'p-sm', 'align-top')}
+                      >
                         <NumberInput
                           ref={(element) => {
                             cellRefs.current[rowIndex * columnCount + columnIndex] = element;
@@ -839,6 +900,14 @@ function TwoDimensionEditor({
                           value={model.fallback}
                           onChange={onFallbackChange}
                           onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
+                          forceSign
+                          colorByValue={{
+                            thresholds: [
+                              { threshold: 0, comparison: '<', color: 'green' },
+                              { threshold: 0, comparison: '>', color: 'red' },
+                            ],
+                            defaultColor: 'primary',
+                          }}
                         />
                       </td>
                     );
@@ -848,72 +917,6 @@ function TwoDimensionEditor({
             </tbody>
           </table>
         </div>
-      ) : null}
-    </div>
-  );
-}
-
-function NumericTableBandHeader({
-  bounds,
-  index,
-  onValueChange,
-  onValuesChange,
-}: {
-  bounds: number[];
-  index: number;
-  onValueChange: (value: number) => void;
-  onValuesChange: (values: number[]) => void;
-}) {
-  const { t } = useTranslation(['scenarios', 'user-scoring']);
-  const bound = bounds[index] ?? 0;
-  const insertedBound = getInsertedNumericBound(bounds, index);
-
-  function insertBound() {
-    if (insertedBound === null) return;
-    const next = [...bounds];
-    next.splice(index + 1, 0, insertedBound);
-    onValuesChange(next);
-  }
-
-  return (
-    <div className="group relative grid grid-cols-[3rem_6rem_2rem_6rem_3rem] items-center gap-xs">
-      <span className="text-center text-purple-primary">
-        {index === 0 ? '≤' : t('user-scoring:switch.number.middle')}
-      </span>
-      {index > 0 ? <Input readOnly value={(bounds[index - 1] ?? 0) + 1} /> : null}
-      {index > 0 ? (
-        <span className="text-grey-secondary text-center">{t('user-scoring:switch.number.and')}</span>
-      ) : null}
-      <NumberInput
-        data-value-switch-threshold-input
-        className={index === 0 ? 'col-start-2 col-span-3' : undefined}
-        value={bound}
-        onChange={onValueChange}
-      />
-      <Button
-        mode="icon"
-        variant="secondary"
-        appearance="stroked"
-        aria-label={t('scenarios:value_switch.remove_value')}
-        disabled={bounds.length === 1}
-        onClick={() => onValuesChange(bounds.filter((_, currentIndex) => currentIndex !== index))}
-      >
-        <Icon icon="delete" className="size-4" />
-      </Button>
-      {insertedBound !== null ? (
-        <Button
-          mode="icon"
-          variant="secondary"
-          appearance="stroked"
-          className="absolute -bottom-5 left-1/2 z-30 size-6 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-          aria-label={t('scenarios:value_switch.add_value')}
-          onClick={(event) => {
-            insertBound();
-            focusNextThresholdInput(event.currentTarget);
-          }}
-        >
-          <Icon icon="plus" className="size-3" />
-        </Button>
       ) : null}
     </div>
   );

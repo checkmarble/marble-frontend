@@ -16,7 +16,7 @@ import { ValueSwitchValueTag } from './ValueSwitchValueTag';
 const MAX_PREVIEW_VALUES = 6;
 
 export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwitchAstNode> }) {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation('scenarios');
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const data = dataSharp.select((state) => state.data);
   // Parsing only reads children and namedChildren; ids are irrelevant to the preview.
@@ -96,15 +96,19 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
             )}
           </thead>
           <tbody>
-            {rows.map((rowValue) => (
+            {rows.map((rowValue, index) => (
               <tr key={rowValue}>
                 <th scope="row" className="overflow-hidden p-sm text-start font-normal">
-                  <ValueSwitchValueTag
-                    dimension={rowDimension}
-                    value={rowValue}
-                    field={rowField}
-                    className="max-w-full"
-                  />
+                  {typeof rowValue === 'string' ? (
+                    <ValueSwitchValueTag
+                      dimension={rowDimension}
+                      value={rowValue}
+                      field={rowField}
+                      className="max-w-full"
+                    />
+                  ) : (
+                    <NumericRowValue rows={rows as number[]} index={index} />
+                  )}
                 </th>
                 {columnDimension ? (
                   columns.map((columnValue) => (
@@ -131,5 +135,19 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
         <span>{model.fallback}</span>
       </div>
     </div>
+  );
+}
+
+function NumericRowValue({ rows, index }: { rows: number[]; index: number }) {
+  const { t } = useTranslation('user-scoring');
+  const value = rows[index];
+
+  if (index === 0) return <span>&lt;&nbsp;{value}</span>;
+  return (
+    <span className="flex gap-xs">
+      <span>{t('user-scoring:switch.number.middle')}</span>
+      <span>{rows[index - 1]}</span>
+      <span>&amp;&nbsp;{value}</span>
+    </span>
   );
 }

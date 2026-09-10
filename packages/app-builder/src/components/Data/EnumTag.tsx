@@ -14,8 +14,8 @@ export function EnumTag({ field, value, className }: { field: EnumField; value: 
 
   if (isCountryEnumField(field)) {
     return (
-      <div className={cn('min-w-0', className)}>
-        <StringCountryComponent value={String(value)} />
+      <div className={cn('min-w-0 overflow-hidden', className)}>
+        <StringCountryComponent value={String(value)} withCountryCode className="w-full" />
       </div>
     );
   }

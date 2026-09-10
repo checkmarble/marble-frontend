@@ -7,7 +7,7 @@ export const inputClassName = cva(
   [
     'peer min-w-10 size-full rounded-md text-small font-medium outline-hidden border',
     // Light mode
-    'bg-surface-card text-grey-primary placeholder:text-grey-placeholder data-[placeholder-shown]:text-grey-placeholder disabled:bg-grey-background disabled:text-grey-disabled is-[input]:read-only:bg-grey-background-light data-[read-only]:bg-grey-background-light focus:not-data-[read-only]:border-purple-primary focus:is-[input]:not-read-only:border-purple-primary',
+    'bg-surface-card text-grey-primary placeholder:text-grey-placeholder data-placeholder-shown:text-grey-placeholder disabled:bg-grey-background disabled:text-grey-disabled is-[input]:read-only:bg-grey-background-light data-read-only:bg-grey-background-light focus:not-data-read-only:border-purple-primary focus:is-[input]:not-read-only:border-purple-primary',
     // Dark mode
     'dark:bg-transparent dark:text-grey-primary dark:disabled:bg-transparent',
   ],
@@ -175,6 +175,8 @@ export type InputProps = Omit<BaseInputProps, 'size'> &
   VariantProps<typeof inputClassName> & {
     inputClassName?: string;
     startAdornment?: IconName;
+    startAdornmentClassName?: string;
+    startAdornmentAriaLabel?: string;
     endAdornment?: IconName;
     onEnterKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
     onStartAdornmentClick?: () => void;
@@ -186,6 +188,8 @@ export const Input = function Input({
   className,
   inputClassName: actualInputClassName,
   startAdornment,
+  startAdornmentClassName,
+  startAdornmentAriaLabel,
   endAdornment,
   size = 'large',
   borderColor = 'greyfigma-90',
@@ -228,13 +232,24 @@ export const Input = function Input({
           <button
             type="button"
             disabled={props.disabled || props.readOnly}
-            className={cn(startIconClassName, 'cursor-pointer')}
+            className={cn(startIconClassName, 'cursor-pointer', startAdornmentClassName)}
+            aria-label={startAdornmentAriaLabel}
             onClick={onStartAdornmentClick}
           >
             <Icon icon={startAdornment} className="size-full" />
           </button>
         ) : (
-          <Icon icon={startAdornment} className={cn('pointer-events-none', startIconClassName)} />
+          <span
+            className={cn(
+              'pointer-events-none flex items-center justify-center',
+              startIconClassName,
+              startAdornmentClassName,
+            )}
+            role={startAdornmentAriaLabel ? 'img' : undefined}
+            aria-label={startAdornmentAriaLabel}
+          >
+            <Icon icon={startAdornment} className="size-full" />
+          </span>
         )
       ) : null}
       {endAdornment ? (
@@ -272,15 +287,54 @@ export type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterK
   value: number;
   onChange: (value: number) => void;
   onEnterKeyDown?: (value: number) => void;
-  /** Prefix non-negative values with `+`. Negative values keep their `-` prefix. */
+  /** Show a plus or minus icon for the value's sign. Typing `+` or `-` updates the icon. */
   forceSign?: boolean;
   /** Apply the color from the first matching threshold, or `defaultColor` when none match. */
   colorByValue?: NumberInputColorByValue;
 };
 
+type NumberInputSign = '+' | '-';
+
+const numberInputSignIconClassName = cva(
+  'top-1/2 -translate-y-1/2 rounded-sm bg-grey-background text-grey-primary dark:bg-grey-background-light',
+  {
+    variants: {
+      size: {
+        small: 'size-4',
+        medium: 'size-5',
+        large: 'size-6',
+      },
+    },
+    defaultVariants: {
+      size: 'large',
+    },
+  },
+);
+
+const numberInputSignPaddingClassName = cva('', {
+  variants: {
+    size: {
+      small: '',
+      medium: 'ps-9',
+      large: 'ps-10',
+    },
+  },
+  defaultVariants: {
+    size: 'large',
+  },
+});
+
+function getNumberInputSign(value: number): NumberInputSign {
+  return value < 0 ? '-' : '+';
+}
+
+function applyNumberInputSign(value: number, sign: NumberInputSign) {
+  return sign === '-' ? -Math.abs(value) : Math.abs(value);
+}
+
 function formatNumberInputValue(value: number, forceSign: boolean) {
   const formattedValue = value.toString(10);
-  return forceSign && value >= 0 ? `+${formattedValue}` : formattedValue;
+  return forceSign && formattedValue.startsWith('-') ? formattedValue.slice(1) : formattedValue;
 }
 
 function matchesNumberInputThreshold(value: number, { comparison, threshold }: NumberInputColorThreshold) {
@@ -311,49 +365,82 @@ export const NumberInput = function NumberInput({
   forceSign = false,
   inputClassName,
   onChange,
+  onKeyDown,
   value,
   onEnterKeyDown,
+  size = 'large',
+  startAdornment,
+  startAdornmentAriaLabel,
+  startAdornmentClassName,
   ...props
 }: NumberInputProps & { ref?: React.Ref<HTMLInputElement> }) {
   const [internalValue, setInternalValue] = useState(() => formatNumberInputValue(value, forceSign));
+  const [sign, setSign] = useState<NumberInputSign>(() => getNumberInputSign(value));
+  const valueColor = getNumberInputColor(value, colorByValue);
 
   useEffect(() => {
     const newInternalValue = formatNumberInputValue(value, forceSign);
     setInternalValue((currentValue) => (currentValue === newInternalValue ? currentValue : newInternalValue));
+    setSign(getNumberInputSign(value));
   }, [forceSign, value]);
 
   return (
     <Input
       ref={ref}
       {...props}
+      size={size}
+      startAdornment={forceSign ? (sign === '-' ? 'minus' : 'plus') : startAdornment}
+      startAdornmentAriaLabel={forceSign ? sign : startAdornmentAriaLabel}
+      startAdornmentClassName={
+        forceSign
+          ? cn(numberInputSignIconClassName({ size }), numberInputColorClassName({ color: valueColor }))
+          : startAdornmentClassName
+      }
       inputClassName={cn(
         inputClassName,
-        numberInputColorClassName({ color: getNumberInputColor(value, colorByValue) }),
+        forceSign && numberInputSignPaddingClassName({ size }),
+        numberInputColorClassName({ color: valueColor }),
       )}
       value={internalValue}
       onChange={(e) => {
         const inputValue = e.target.value;
-        const signedInputValue =
-          forceSign &&
-          inputValue !== '' &&
-          inputValue !== '-' &&
-          !inputValue.startsWith('+') &&
-          !inputValue.startsWith('-')
-            ? `+${inputValue}`
-            : inputValue;
-        setInternalValue(signedInputValue);
-
-        const inputNumberValue = parseInt(signedInputValue, 10);
-        if (!isNaN(inputNumberValue)) {
-          onChange(inputNumberValue);
+        if (!forceSign) {
+          setInternalValue(inputValue);
+          const inputNumberValue = parseInt(inputValue, 10);
+          if (!isNaN(inputNumberValue)) {
+            onChange(inputNumberValue);
+          }
+          return;
         }
+
+        const nextSign: NumberInputSign = inputValue.includes('-') ? '-' : inputValue.includes('+') ? '+' : sign;
+        const unsignedValue = inputValue.replaceAll('+', '').replaceAll('-', '');
+        setSign(nextSign);
+        setInternalValue(unsignedValue);
+
+        const inputNumberValue = parseInt(unsignedValue, 10);
+        if (!isNaN(inputNumberValue)) {
+          onChange(applyNumberInputSign(inputNumberValue, nextSign));
+        }
+      }}
+      onKeyDown={(e) => {
+        if (forceSign && (e.key === '+' || e.key === '-')) {
+          e.preventDefault();
+          const nextSign: NumberInputSign = e.key === '-' ? '-' : '+';
+          setSign(nextSign);
+          const inputNumberValue = parseInt(internalValue, 10);
+          if (!isNaN(inputNumberValue)) {
+            onChange(applyNumberInputSign(inputNumberValue, nextSign));
+          }
+        }
+        onKeyDown?.(e);
       }}
       onEnterKeyDown={
         onEnterKeyDown
           ? (e) => {
               const inputNumberValue = parseInt(internalValue, 10);
               if (!isNaN(inputNumberValue)) {
-                onEnterKeyDown(inputNumberValue);
+                onEnterKeyDown(forceSign ? applyNumberInputSign(inputNumberValue, sign) : inputNumberValue);
               }
             }
           : undefined

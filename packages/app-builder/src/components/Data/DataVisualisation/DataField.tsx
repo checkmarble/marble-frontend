@@ -326,18 +326,24 @@ function StringCountry() {
 export function StringCountryComponent({
   value,
   withCountryName = true,
+  withCountryCode = false,
+  className,
 }: {
   value: string;
   withCountryName?: boolean;
+  withCountryCode?: boolean;
+  className?: string;
 }) {
   const language = useFormatLanguage();
   const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
-  if (!result.ok) return <span>{value}</span>;
+  if (!result.ok) return <span className={className}>{value}</span>;
   const country = result.value;
+  const countryName = formatCountryName(country.isoAlpha2, language);
   return (
-    <span className="inline-flex items-center gap-xs">
-      <span>{country.flag}</span>
-      {withCountryName && <span>{formatCountryName(country.isoAlpha2, language)}</span>}
+    <span className={cn('inline-flex min-w-0 max-w-full items-center gap-xs', className)} title={countryName}>
+      <span className="shrink-0">{country.flag}</span>
+      {withCountryCode && <span className="shrink-0">({value})</span>}
+      {withCountryName && <span className="min-w-0 truncate">{countryName}</span>}
     </span>
   );
 }
