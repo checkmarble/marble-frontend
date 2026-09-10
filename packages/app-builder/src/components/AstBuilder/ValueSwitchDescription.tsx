@@ -8,6 +8,7 @@ import {
 } from '@app-builder/models/astNode/value-switch';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';
 import { AstBuilderDataSharpFactory } from './Provider';
@@ -17,6 +18,7 @@ const MAX_PREVIEW_VALUES = 6;
 
 export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwitchAstNode> }) {
   const { t } = useTranslation('scenarios');
+  const language = useFormatLanguage();
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const data = dataSharp.select((state) => state.data);
   // Parsing only reads children and namedChildren; ids are irrelevant to the preview.
@@ -52,6 +54,7 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
   const omittedRows = rowDimension.values.length - rows.length;
   const omittedColumns = (columnDimension?.values.length ?? 0) - columns.length;
   const headerClassName = 'border-grey-border border-b p-sm text-start font-medium break-words';
+  const isNumeric = rows.every((row) => typeof row === 'number');
 
   return (
     <div
@@ -99,15 +102,15 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
             {rows.map((rowValue, index) => (
               <tr key={rowValue}>
                 <th scope="row" className="overflow-hidden p-sm text-start font-normal">
-                  {typeof rowValue === 'string' ? (
+                  {isNumeric ? (
+                    <NumericRowValue rows={rows as number[]} index={index} />
+                  ) : (
                     <ValueSwitchValueTag
                       dimension={rowDimension}
                       value={rowValue}
                       field={rowField}
                       className="max-w-full"
                     />
-                  ) : (
-                    <NumericRowValue rows={rows as number[]} index={index} />
                   )}
                 </th>
                 {columnDimension ? (
@@ -130,9 +133,10 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
       {omittedColumns > 0 ? (
         <p>{t('scenarios:value_switch.preview_omitted_columns', { count: omittedColumns })}</p>
       ) : null}
-      <div className="flex items-center gap-sm">
-        <span>{t('scenarios:value_switch.else')}</span>
-        <span>{model.fallback}</span>
+      <div>
+        {t('scenarios:value_switch.else')}
+        {isNumeric && <span>&nbsp;&gt;&nbsp;{formatNumber(rows.at(-1) ?? 0, { language })}</span>}
+        :&nbsp;{model.fallback}
       </div>
     </div>
   );
@@ -140,14 +144,15 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
 
 function NumericRowValue({ rows, index }: { rows: number[]; index: number }) {
   const { t } = useTranslation('user-scoring');
+  const language = useFormatLanguage();
   const value = rows[index];
 
-  if (index === 0) return <span>&lt;&nbsp;{value}</span>;
+  if (index === 0) return <span>&lt;&nbsp;{formatNumber(value ?? 0, { language })}</span>;
   return (
     <span className="flex gap-xs">
       <span>{t('user-scoring:switch.number.middle')}</span>
-      <span>{rows[index - 1]}</span>
-      <span>&amp;&nbsp;{value}</span>
+      <span>{formatNumber(rows[index - 1] ?? 0, { language })}</span>
+      <span>&amp;&nbsp;{formatNumber(value ?? 0, { language })}</span>
     </span>
   );
 }

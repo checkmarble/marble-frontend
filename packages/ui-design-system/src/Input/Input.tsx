@@ -207,7 +207,11 @@ export const Input = function Input({
         ref={ref}
         className={cn(
           inputClassName({ borderColor, size }),
-          inputPaddingsClassName({ hasStartIcon: !!startAdornment, hasEndIcon: !!endAdornment, size }),
+          inputPaddingsClassName({
+            hasStartIcon: !!startAdornment || !!startAdornmentClassName,
+            hasEndIcon: !!endAdornment,
+            size,
+          }),
           actualInputClassName,
         )}
         // className="order-2 h-4 grow outline-none placeholder:text-grey-disabled"
@@ -227,8 +231,8 @@ export const Input = function Input({
         }
       />
       {/* Order matter, for peer to work */}
-      {startAdornment ? (
-        onStartAdornmentClick ? (
+      {startAdornment || startAdornmentClassName ? (
+        onStartAdornmentClick && startAdornment ? (
           <button
             type="button"
             disabled={props.disabled || props.readOnly}
@@ -247,8 +251,9 @@ export const Input = function Input({
             )}
             role={startAdornmentAriaLabel ? 'img' : undefined}
             aria-label={startAdornmentAriaLabel}
+            aria-hidden={startAdornmentAriaLabel ? undefined : true}
           >
-            <Icon icon={startAdornment} className="size-full" />
+            {startAdornment ? <Icon icon={startAdornment} className="size-full" /> : null}
           </span>
         )
       ) : null}
@@ -287,7 +292,7 @@ export type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterK
   value: number;
   onChange: (value: number) => void;
   onEnterKeyDown?: (value: number) => void;
-  /** Show a plus or minus icon for the value's sign. Typing `+` or `-` updates the icon. */
+  /** Show a plus or minus icon for the value's sign. Zero shows an empty placeholder. Typing `+` or `-` updates the icon. */
   forceSign?: boolean;
   /** Apply the color from the first matching threshold, or `defaultColor` when none match. */
   colorByValue?: NumberInputColorByValue;
@@ -377,11 +382,15 @@ export const NumberInput = function NumberInput({
   const [internalValue, setInternalValue] = useState(() => formatNumberInputValue(value, forceSign));
   const [sign, setSign] = useState<NumberInputSign>(() => getNumberInputSign(value));
   const valueColor = getNumberInputColor(value, colorByValue);
+  const parsedInternalValue = parseInt(internalValue, 10);
+  const showForceSignIcon = forceSign && !isNaN(parsedInternalValue) && parsedInternalValue !== 0;
 
   useEffect(() => {
     const newInternalValue = formatNumberInputValue(value, forceSign);
     setInternalValue((currentValue) => (currentValue === newInternalValue ? currentValue : newInternalValue));
-    setSign(getNumberInputSign(value));
+    if (value !== 0) {
+      setSign(getNumberInputSign(value));
+    }
   }, [forceSign, value]);
 
   return (
@@ -389,8 +398,8 @@ export const NumberInput = function NumberInput({
       ref={ref}
       {...props}
       size={size}
-      startAdornment={forceSign ? (sign === '-' ? 'minus' : 'plus') : startAdornment}
-      startAdornmentAriaLabel={forceSign ? sign : startAdornmentAriaLabel}
+      startAdornment={showForceSignIcon ? (sign === '-' ? 'minus' : 'plus') : forceSign ? undefined : startAdornment}
+      startAdornmentAriaLabel={showForceSignIcon ? sign : forceSign ? undefined : startAdornmentAriaLabel}
       startAdornmentClassName={
         forceSign
           ? cn(numberInputSignIconClassName({ size }), numberInputColorClassName({ color: valueColor }))
@@ -420,7 +429,10 @@ export const NumberInput = function NumberInput({
 
         const inputNumberValue = parseInt(unsignedValue, 10);
         if (!isNaN(inputNumberValue)) {
-          onChange(applyNumberInputSign(inputNumberValue, nextSign));
+          const signedValue = applyNumberInputSign(inputNumberValue, nextSign);
+          if (signedValue !== value) {
+            onChange(signedValue);
+          }
         }
       }}
       onKeyDown={(e) => {
@@ -430,7 +442,10 @@ export const NumberInput = function NumberInput({
           setSign(nextSign);
           const inputNumberValue = parseInt(internalValue, 10);
           if (!isNaN(inputNumberValue)) {
-            onChange(applyNumberInputSign(inputNumberValue, nextSign));
+            const signedValue = applyNumberInputSign(inputNumberValue, nextSign);
+            if (signedValue !== value) {
+              onChange(signedValue);
+            }
           }
         }
         onKeyDown?.(e);

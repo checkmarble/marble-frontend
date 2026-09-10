@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { createRef } from 'react';
+import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Input, NumberInput } from './Input';
@@ -46,13 +46,28 @@ describe('NumberInput', () => {
 
     rerender(<NumberInput aria-label="number input" value={0} onChange={onChange} forceSign />);
     expect(screen.getByLabelText('number input')).toHaveValue('0');
-    expect(screen.getByRole('img', { name: '+' })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: '+' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: '-' })).not.toBeInTheDocument();
   });
 
   it('updates the sign icon when + or - is typed', async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<NumberInput aria-label="number input" value={12} onChange={onChange} forceSign />);
+    function ControlledNumberInput() {
+      const [value, setValue] = useState(12);
+      return (
+        <NumberInput
+          aria-label="number input"
+          value={value}
+          onChange={(nextValue) => {
+            onChange(nextValue);
+            setValue(nextValue);
+          }}
+          forceSign
+        />
+      );
+    }
+    render(<ControlledNumberInput />);
     const input = screen.getByLabelText('number input');
 
     await user.type(input, '-');
@@ -66,6 +81,27 @@ describe('NumberInput', () => {
     expect(onChange).toHaveBeenCalledWith(12);
     expect(input).toHaveValue('12');
     expect(screen.getByRole('img', { name: '+' })).toBeInTheDocument();
+  });
+
+  it('shows an empty sign placeholder for 0 until a non-zero value is entered', async () => {
+    const user = userEvent.setup();
+    function ControlledNumberInput() {
+      const [value, setValue] = useState(0);
+      return <NumberInput aria-label="number input" value={value} onChange={setValue} forceSign />;
+    }
+    render(<ControlledNumberInput />);
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('number input'), '-');
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('number input')).toHaveValue('0');
+
+    await user.type(screen.getByLabelText('number input'), '{backspace}5');
+
+    expect(screen.getByRole('img', { name: '-' })).toBeInTheDocument();
+    expect(screen.getByLabelText('number input')).toHaveValue('5');
   });
 
   it('applies a pasted sign to the icon and value', async () => {

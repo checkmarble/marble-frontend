@@ -55,6 +55,14 @@ import {
   type TwoDimensionGridNavigationKey,
 } from './two-dimension-grid-navigation';
 
+const ColoredNumberOptions = {
+  thresholds: [
+    { threshold: 0, comparison: '<', color: 'green' },
+    { threshold: 0, comparison: '>', color: 'red' },
+  ],
+  defaultColor: 'primary',
+} as const;
+
 type DimensionOption = {
   key: string;
   label: string;
@@ -293,13 +301,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
           value={model.fallback}
           onChange={(fallback) => updateModel((current) => ({ ...current, fallback }))}
           forceSign
-          colorByValue={{
-            thresholds: [
-              { threshold: 0, comparison: '<', color: 'green' },
-              { threshold: 0, comparison: '>', color: 'red' },
-            ],
-            defaultColor: 'primary',
-          }}
+          colorByValue={ColoredNumberOptions}
         />
       </div>
     </>
@@ -488,19 +490,7 @@ function OneDimensionEditor({
 
 function ScoreInput({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   return (
-    <NumberInput
-      className="w-full"
-      value={value}
-      onChange={onChange}
-      forceSign
-      colorByValue={{
-        thresholds: [
-          { threshold: 0, comparison: '<', color: 'green' },
-          { threshold: 0, comparison: '>', color: 'red' },
-        ],
-        defaultColor: 'primary',
-      }}
-    />
+    <NumberInput className="w-full" value={value} onChange={onChange} forceSign colorByValue={ColoredNumberOptions} />
   );
 }
 
@@ -537,6 +527,7 @@ function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing
   const { t } = useTranslation(['scenarios', 'user-scoring']);
   const bound = bounds[index] ?? 0;
   const insertedBound = getInsertedNumericBound(bounds, index);
+  const hasError = index > 0 && bound <= (bounds[index - 1] ?? 0);
 
   function insertBound() {
     if (insertedBound === null) return;
@@ -563,6 +554,8 @@ function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing
           className={index === 0 ? 'col-start-2 col-span-3' : undefined}
           value={bound}
           onChange={onValueChange}
+          borderColor={hasError ? 'redfigma-47' : 'greyfigma-90'}
+          aria-invalid={hasError}
         />
         {trailing}
         <Button
@@ -587,7 +580,7 @@ function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing
 
 function NumericBandOverflow({ bound }: { bound: number | undefined }) {
   return (
-    <div className="grid grid-cols-[3rem_7rem] items-center gap-sm">
+    <div className="grid grid-cols-[3rem_1fr_3rem] items-center gap-sm">
       <NumericBandOperator kind="overflow" />
       <Input readOnly disabled value={bound ?? ''} />
     </div>
@@ -649,15 +642,15 @@ function InsertThresholdControl({
       {!disabled ? (
         <button
           type="button"
-          className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 flex items-center w-full"
+          className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 flex items-center w-full gap-2xs"
           aria-label={label}
           onClick={(event) => {
             onClick();
             focusNextThresholdInput(event.currentTarget);
           }}
         >
-          <Icon icon="plus" className="size-4 p-1 border border-grey-placeholder rounded-full text-grey-primary" />
-          <div className="bg-grey-placeholder h-1 w-full" />
+          <Icon icon="plus" className="size-4 border border-purple-primary rounded-full text-purple-primary" />
+          <div className="bg-purple-primary h-0.5 w-full" />
         </button>
       ) : null}
     </div>
@@ -866,13 +859,7 @@ function TwoDimensionEditor({
                         onChange={(threshold) => onThresholdChange([rowValue, columnValue], threshold)}
                         onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
                         forceSign
-                        colorByValue={{
-                          thresholds: [
-                            { threshold: 0, comparison: '<', color: 'green' },
-                            { threshold: 0, comparison: '>', color: 'red' },
-                          ],
-                          defaultColor: 'primary',
-                        }}
+                        colorByValue={ColoredNumberOptions}
                       />
                     </td>
                   ))}
@@ -883,35 +870,6 @@ function TwoDimensionEditor({
                   <th className="border-grey-border bg-surface-card sticky left-0 z-10 border-r p-sm text-start align-top font-normal">
                     <NumericBandOverflow bound={numericBounds.at(-1)} />
                   </th>
-                  {columnDimension.values.map((columnValue, columnIndex) => {
-                    const rowIndex = numericBounds.length;
-                    return (
-                      <td
-                        key={`fallback:${String(columnValue)}`}
-                        className={cn(hasCompactCells ? 'p-xs' : 'p-sm', 'align-top')}
-                      >
-                        <NumberInput
-                          ref={(element) => {
-                            cellRefs.current[rowIndex * columnCount + columnIndex] = element;
-                          }}
-                          size="medium"
-                          className="min-w-24"
-                          aria-label={t('scenarios:value_switch.fallback')}
-                          value={model.fallback}
-                          onChange={onFallbackChange}
-                          onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
-                          forceSign
-                          colorByValue={{
-                            thresholds: [
-                              { threshold: 0, comparison: '<', color: 'green' },
-                              { threshold: 0, comparison: '>', color: 'red' },
-                            ],
-                            defaultColor: 'primary',
-                          }}
-                        />
-                      </td>
-                    );
-                  })}
                 </tr>
               ) : null}
             </tbody>
