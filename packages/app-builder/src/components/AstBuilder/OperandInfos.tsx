@@ -152,7 +152,7 @@ function OperandDescription({ node }: OperandDescriptionProps) {
 
 function Description({ description }: { description: string }) {
   return description ? (
-    <p className="text-grey-secondary max-w-[300px] text-xs font-normal first-letter:capitalize">{description}</p>
+    <p className="text-grey-secondary max-w-75 text-xs font-normal first-letter:capitalize">{description}</p>
   ) : null;
 }
 
@@ -279,7 +279,7 @@ function DataAccessorDescription({ node, dataModel, triggerObjectTable }: DataAc
     <>
       <Description description={field.description} />
       {values.length > 0 ? (
-        <div className="text-grey-secondary flex max-w-[300px] flex-col gap-xs">
+        <div className="text-grey-secondary flex max-w-75 flex-col gap-xs">
           <p className="text-s">{t('scenarios:enum_options')}</p>
           <ul className="flex flex-col">
             {values.slice(0, MAX_ENUM_VALUES).map((value) => (

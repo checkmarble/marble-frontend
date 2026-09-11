@@ -147,7 +147,12 @@ function NumericRowValue({ rows, index }: { rows: number[]; index: number }) {
   const language = useFormatLanguage();
   const value = rows[index];
 
-  if (index === 0) return <span>&lt;&nbsp;{formatNumber(value ?? 0, { language })}</span>;
+  if (index === 0)
+    return (
+      <span>
+        {'≤'}&nbsp;{formatNumber(value ?? 0, { language })}
+      </span>
+    );
   return (
     <span className="flex gap-xs">
       <span>{t('user-scoring:switch.number.middle')}</span>
