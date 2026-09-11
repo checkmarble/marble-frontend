@@ -9,6 +9,7 @@ import {
   type ScheduledExecution,
 } from '@app-builder/models/decision';
 import { adaptGoTimeDuration } from '@app-builder/models/duration';
+import { isRequestTimeoutHttpError, RequestTimeoutError } from '@app-builder/models/http-errors';
 import { type Outcome } from '@app-builder/models/outcome';
 import {
   adaptPagination,
@@ -84,28 +85,35 @@ export function makeGetDecisionRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
-      // Nb: the constant value of 25 for limit is used for rank display in PaginationButtons - logic to adapt if we make it more dynamic
-      const { items, ...pagination } = await marbleCoreApiClient.listDecisions({
-        caseId,
-        endDate,
-        hasCase,
-        outcome,
-        pivotValue,
-        scenarioId,
-        caseInboxId,
-        scheduledExecutionId,
-        triggerObject,
-        triggerObjectId: triggerObjectId ? [triggerObjectId] : undefined,
-        startDate,
-        reviewStatus,
-        limit: defaultPaginationSize,
-        ...rest,
-      });
+      try {
+        // Nb: the constant value of 25 for limit is used for rank display in PaginationButtons - logic to adapt if we make it more dynamic
+        const { items, ...pagination } = await marbleCoreApiClient.listDecisions({
+          caseId,
+          endDate,
+          hasCase,
+          outcome,
+          pivotValue,
+          scenarioId,
+          caseInboxId,
+          scheduledExecutionId,
+          triggerObject,
+          triggerObjectId: triggerObjectId ? [triggerObjectId] : undefined,
+          startDate,
+          reviewStatus,
+          limit: defaultPaginationSize,
+          ...rest,
+        });
 
-      return {
-        items: items.map(adaptDecision),
-        ...adaptPagination(pagination),
-      };
+        return {
+          items: items.map(adaptDecision),
+          ...adaptPagination(pagination),
+        };
+      } catch (error) {
+        if (isRequestTimeoutHttpError(error)) {
+          throw new RequestTimeoutError();
+        }
+        throw error;
+      }
     },
     getDecisionById: async (id, args) => {
       const decisionDetailDto = await marbleCoreApiClient.getDecision(id /*, args*/);

@@ -1,4 +1,6 @@
 import {
+  Callout,
+  DecisionFilterPopover,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -16,12 +18,16 @@ import {
   usePaginationsButton,
 } from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
-import { FiltersButton } from '@app-builder/components/Filters';
+import { FiltersButton, last30DaysDuration } from '@app-builder/components/Filters';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { type Decision } from '@app-builder/models/decision';
+import { RequestTimeoutError } from '@app-builder/models/http-errors';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { DecisionFilters, decisionFiltersSchema } from '@app-builder/schemas/decisions';
 import { handleSubmit } from '@app-builder/utils/form';
+import { DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { useForm } from '@tanstack/react-form';
@@ -34,8 +40,52 @@ import { Button, Panel, SearchInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
+const DEFAULT_DECISIONS_DATE_RANGE = {
+  type: 'dynamic',
+  fromNow: last30DaysDuration,
+} as const satisfies DateRangeFilter;
+
 const decisionsListQueryParamsSchema = z.intersection(decisionFiltersSchema, paginationSchema);
 type DecisionsListQueryParams = z.infer<typeof decisionsListQueryParamsSchema>;
+
+function getDecisionFilters(filters: DecisionsListQueryParams): DecisionFilters {
+  return {
+    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
+    triggerObject: filters.triggerObject,
+    triggerObjectId: filters.triggerObjectId,
+    dateRange: filters.dateRange,
+    pivotValue: filters.pivotValue,
+    scenarioId: filters.scenarioId,
+    scheduledExecutionId: filters.scheduledExecutionId,
+    caseInboxId: filters.caseInboxId,
+    hasCase: filters.hasCase,
+  };
+}
+
+function withDefaultDecisionDateRange(params: DecisionsListQueryParams): DecisionsListQueryParams {
+  if (params.dateRange) {
+    return params;
+  }
+
+  const filters = getDecisionFilters(params);
+  const hasOtherFilters =
+    filters.outcomeAndReviewStatus !== undefined ||
+    (filters.triggerObject?.length ?? 0) > 0 ||
+    filters.triggerObjectId !== undefined ||
+    filters.pivotValue !== undefined ||
+    (filters.scenarioId?.length ?? 0) > 0 ||
+    (filters.scheduledExecutionId?.length ?? 0) > 0 ||
+    (filters.caseInboxId?.length ?? 0) > 0 ||
+    filters.hasCase !== undefined;
+
+  if (hasOtherFilters) {
+    return params;
+  }
+
+  return { ...params, dateRange: DEFAULT_DECISIONS_DATE_RANGE };
+}
+
+const decisionsListSearchSchema = decisionsListQueryParamsSchema.transform(withDefaultDecisionDateRange);
 
 export const buildQueryParams = (
   filters: DecisionFilters,
@@ -71,40 +121,37 @@ export const buildQueryParams = (
   };
 };
 
-function getDecisionFilters(filters: DecisionsListQueryParams): DecisionFilters {
-  return {
-    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
-    triggerObject: filters.triggerObject,
-    triggerObjectId: filters.triggerObjectId,
-    dateRange: filters.dateRange,
-    pivotValue: filters.pivotValue,
-    scenarioId: filters.scenarioId,
-    scheduledExecutionId: filters.scheduledExecutionId,
-    caseInboxId: filters.caseInboxId,
-    hasCase: filters.hasCase,
-  };
-}
-
 const decisionsLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .validator(decisionsListQueryParamsSchema)
+  .validator(decisionsListSearchSchema)
   .handler(async function decisionsLoader({ context, data }) {
     const { decision, scenario, dataModelRepository, inbox } = context.authInfo;
 
     const { outcomeAndReviewStatus, ...filters } = data;
-    const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
-      decision.listDecisions({
-        outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
-        reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
-        ...filters,
-      }),
+    const [decisionsResult, scenarios, pivots, inboxes] = await Promise.all([
+      decision
+        .listDecisions({
+          outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
+          reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
+          ...filters,
+        })
+        .then((decisionsData) => ({ decisionsData, listError: undefined }))
+        .catch((error) => {
+          if (error instanceof RequestTimeoutError) {
+            return {
+              decisionsData: { items: [] as Decision[], hasNextPage: false },
+              listError: 'request_timeout' as const,
+            };
+          }
+          throw error;
+        }),
       scenario.listScenarios(),
       dataModelRepository.listPivots({}),
       inbox.listInboxes(),
     ]);
 
     return {
-      decisionsData,
+      ...decisionsResult,
       scenarios,
       filters: data,
       hasPivots: pivots.length > 0,
@@ -113,7 +160,7 @@ const decisionsLoader = createServerFn({ method: 'GET' })
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
-  validateSearch: decisionsListQueryParamsSchema,
+  validateSearch: decisionsListSearchSchema,
   loaderDeps: ({ search }) => search,
   loader: ({ deps }) => decisionsLoader({ data: deps }),
   errorComponent: ({ error }) => {
@@ -124,7 +171,9 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
 });
 
 function DetectionDecisions() {
-  const { decisionsData, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
+  const { t } = useTranslation(['common', ...decisionsI18n]);
+  const revalidate = useLoaderRevalidator();
+  const { decisionsData, filters, scenarios, hasPivots, inboxes, listError } = Route.useLoaderData();
   const { items: decisions, ...pagination } = decisionsData;
   const decisionFilters = getDecisionFilters(filters);
   const paginationState = usePaginationsButton({
@@ -183,25 +232,39 @@ function DetectionDecisions() {
                 </div>
               </div>
               <DecisionFiltersBar />
-              <DecisionsList
-                className="max-h-[60dvh]"
-                decisions={decisions}
-                selectable
-                selectionProps={selectionProps}
-                tableProps={tableProps}
-                columnVisibility={{
-                  pivot_value: false,
-                }}
-              />
-              <CursorPaginationButtons
-                items={decisions}
-                onPaginationChange={(paginationParams: PaginationParams) =>
-                  navigateDecisionList(decisionFilters, paginationParams)
-                }
-                paginationState={paginationState}
-                boundariesDisplay="dates"
-                {...pagination}
-              />
+              {listError === 'request_timeout' ? (
+                <Callout variant="outlined" color="red" icon="error" iconColor="red">
+                  <div className="flex flex-wrap gap-md items-center">
+                    <span className="text-red-primary">{t('decisions:errors.request_timeout')}</span>
+                    <DecisionFilterPopover filterName="dateRange" />
+                    <Button variant="secondary" onClick={() => revalidate()}>
+                      {t('common:retry')}
+                    </Button>
+                  </div>
+                </Callout>
+              ) : (
+                <>
+                  <DecisionsList
+                    className="max-h-[60dvh]"
+                    decisions={decisions}
+                    selectable
+                    selectionProps={selectionProps}
+                    tableProps={tableProps}
+                    columnVisibility={{
+                      pivot_value: false,
+                    }}
+                  />
+                  <CursorPaginationButtons
+                    items={decisions}
+                    onPaginationChange={(paginationParams: PaginationParams) =>
+                      navigateDecisionList(decisionFilters, paginationParams)
+                    }
+                    paginationState={paginationState}
+                    boundariesDisplay="dates"
+                    {...pagination}
+                  />
+                </>
+              )}
             </DecisionFiltersProvider>
           </div>
         </Page.Content>
