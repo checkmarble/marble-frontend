@@ -57,8 +57,8 @@ const keyed: DataModelField = {
   ...field,
   semanticSubType: 'key_color_value',
   enumValues: [
-    { key: 'approved', color: '#46BB7F' },
-    { key: 'other', color: '#838292' },
+    { key: 'approved', color: 'var(--color-enum-green)' },
+    { key: 'other', color: 'var(--color-enum-grey)' },
   ],
 };
 
@@ -99,10 +99,15 @@ function Editor({
 
 describe('shared enum tags', () => {
   it('displays the exact key with its configured color', () => {
-    render(<EnumTag field={{ ...keyed, enumValues: [{ key: 'COMPLETED', color: '#46BB7F' }] }} value="COMPLETED" />);
+    render(
+      <EnumTag
+        field={{ ...keyed, enumValues: [{ key: 'COMPLETED', color: 'var(--color-enum-green)' }] }}
+        value="COMPLETED"
+      />,
+    );
     expect(screen.getByTitle('COMPLETED').textContent).toBe('COMPLETED');
-    expect(screen.getByTitle('COMPLETED').style.color).toBe('rgb(70, 187, 127)');
-    expect(screen.getByTitle('COMPLETED').style.borderColor).toBe('rgb(70, 187, 127)');
+    expect(screen.getByTitle('COMPLETED').style.color).toBe('var(--color-enum-green)');
+    expect(screen.getByTitle('COMPLETED').style.borderColor).toBe('var(--color-enum-green)');
   });
 
   it('renders ordinary enums explicitly purple', () => {
@@ -111,8 +116,8 @@ describe('shared enum tags', () => {
   });
   it('renders configured outlines and presentation-only fallback keys', () => {
     render(<EnumTag field={keyed} value="stale" />);
-    expect(screen.getByTitle('stale').style.color).toBe('rgb(131, 130, 146)');
-    expect(screen.getByTitle('stale').style.borderColor).toBe('rgb(131, 130, 146)');
+    expect(screen.getByTitle('stale').style.color).toBe('var(--color-enum-grey)');
+    expect(screen.getByTitle('stale').style.borderColor).toBe('var(--color-enum-grey)');
     expect(screen.getByTitle('stale').textContent).toBe('other');
   });
   it('renders countries without a purple tag', () => {
@@ -234,7 +239,7 @@ describe('enum metadata controls', () => {
       .array(z.object({ key: z.string(), color: z.string() }))
       .parse(JSON.parse(screen.getByTestId('metadata').textContent ?? '[]'));
     expect(editedEntries.at(-1)!.key).toBe('COMPLETED');
-    expect(editedEntries.at(-1)!.color).toBe('#88DCDE');
+    expect(editedEntries.at(-1)!.color).toBe('var(--color-enum-teal)');
     expect(screen.getByTitle('unmatched').textContent).toBe('COMPLETED');
     await userEvent.click(screen.getAllByRole('button', { name: 'data:upload_data.field_enum_remove_value' }).at(-1)!);
     expect(JSON.parse(screen.getByTestId('metadata').textContent ?? '[]')).toEqual(keyed.enumValues);

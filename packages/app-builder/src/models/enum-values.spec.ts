@@ -13,8 +13,8 @@ import {
 
 const base: EnumField = { dataType: 'String', isEnum: false, semanticType: 'enum', values: ['legacy'] };
 const entries = [
-  { key: 'approved', color: '#46BB7F' },
-  { key: 'other', color: '#838292' },
+  { key: 'approved', color: 'var(--color-enum-green)' },
+  { key: 'other', color: 'var(--color-enum-grey)' },
 ] as const;
 const keyed: EnumField = { ...base, semanticSubType: 'key_color_value', enumValues: [...entries] };
 
@@ -94,15 +94,18 @@ describe('enum values', () => {
   });
   it('keeps key/color closed and resolves only presentation through the final entry', () => {
     expect(resolveEnumValues(keyed, ['stale'])).toEqual({ closed: true, values: ['approved', 'other'] });
-    expect(resolveEnumDisplay(keyed, 'approved', 'en')).toEqual({ label: 'approved', color: '#46BB7F' });
-    expect(resolveEnumDisplay(keyed, 'stale', 'en')).toEqual({ label: 'other', color: '#838292' });
+    expect(resolveEnumDisplay(keyed, 'approved', 'en')).toEqual({
+      label: 'approved',
+      color: 'var(--color-enum-green)',
+    });
+    expect(resolveEnumDisplay(keyed, 'stale', 'en')).toEqual({ label: 'other', color: 'var(--color-enum-grey)' });
     expect(resolveEnumDisplay({ ...keyed, enumValues: [entries[0]] }, 'stale', 'en')).toEqual({
       label: 'approved',
-      color: '#46BB7F',
+      color: 'var(--color-enum-green)',
     });
   });
   it('starts new entries with an empty key for the user to enter', () => {
-    expect(createEnumEntry()).toEqual({ key: '', color: '#88DCDE' });
+    expect(createEnumEntry()).toEqual({ key: '', color: 'var(--color-enum-teal)' });
     expect(enumEntriesSchema.safeParse([createEnumEntry()]).success).toBe(false);
   });
   it.each([
@@ -116,7 +119,9 @@ describe('enum values', () => {
     expect(enumEntriesSchema.safeParse(entries).success).toBe(false);
   });
   it('validates keys without rewriting their stored identity', () => {
-    expect(enumEntriesSchema.parse([{ key: ' existing key ', color: '#46BB7F' }])[0]?.key).toBe(' existing key ');
+    expect(enumEntriesSchema.parse([{ key: ' existing key ', color: 'var(--color-enum-green)' }])[0]?.key).toBe(
+      ' existing key ',
+    );
   });
   it('keeps numeric enum values and display raw', () => {
     const field: EnumField = { ...keyed, dataType: 'Int', values: [0, 1, 10000] };

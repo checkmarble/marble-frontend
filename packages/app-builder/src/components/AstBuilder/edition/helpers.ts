@@ -255,3 +255,11 @@ export function getValidationStatus(
   const errors = getErrorsForNode(validation, nodeIds, direct);
   return errors.length > 0 ? 'error' : 'valid';
 }
+
+export const ColoredNumberOptions = {
+  thresholds: [
+    { threshold: 0, comparison: '<', color: 'green' },
+    { threshold: 0, comparison: '>', color: 'red' },
+  ],
+  defaultColor: 'primary',
+} as const;

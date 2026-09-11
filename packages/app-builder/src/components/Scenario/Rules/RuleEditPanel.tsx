@@ -1,3 +1,4 @@
+import { ColoredNumberOptions } from '@app-builder/components/AstBuilder/edition/helpers';
 import { Callout } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -384,6 +385,8 @@ function RuleEditForm({
                             onBlur={field.handleBlur}
                             onChange={field.handleChange}
                             borderColor={field.state.meta.errors?.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                            colorByValue={ColoredNumberOptions}
+                            forceSign
                           />
                           <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                         </div>
@@ -394,11 +397,19 @@ function RuleEditForm({
               </div>
             </div>
             {isAiRuleDescriptionEnabled ? (
-              <AiDescription
-                isPending={isDebouncing || ruleDescriptionMutation.isPending}
-                description={ruleDescription}
-                docked={isValueSwitchOpen}
-              />
+              <div
+                className={cn('min-w-0 overflow-hidden transition-[opacity,transform] duration-300 ease-in-out', {
+                  'translate-x-0 opacity-100': !isValueSwitchOpen,
+                  'pointer-events-none translate-x-md opacity-0': isValueSwitchOpen,
+                })}
+                aria-hidden={isValueSwitchOpen}
+              >
+                <AiDescription
+                  isPending={isDebouncing || ruleDescriptionMutation.isPending}
+                  description={ruleDescription}
+                  className="self-start max-w-2xl"
+                />
+              </div>
             ) : null}
           </div>
         </div>

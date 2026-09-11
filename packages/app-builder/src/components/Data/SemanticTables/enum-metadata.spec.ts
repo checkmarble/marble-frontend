@@ -23,8 +23,8 @@ const field: TableField = {
   semanticSubType: 'key_color_value',
   isNew: false,
   enumValues: [
-    { key: 'ok', color: '#46BB7F' },
-    { key: 'other', color: '#838292' },
+    { key: 'ok', color: 'var(--color-enum-green)' },
+    { key: 'other', color: 'var(--color-enum-grey)' },
   ],
   countryCodeFormat: 'alpha3',
 };
@@ -49,12 +49,12 @@ describe('enum metadata persistence', () => {
       const metadata = {
         semanticTypeForFront: 'enum',
         semanticSubType: 'key_color_value',
-        enumValues: [{ key: 'COMPLETED', color: '#46BB7F', value }],
+        enumValues: [{ key: 'COMPLETED', color: 'var(--color-enum-green)', value }],
       };
       const adapted = adaptDataModelField(dto(metadata));
-      expect(adapted.enumValues).toEqual([{ key: 'COMPLETED', color: '#46BB7F' }]);
+      expect(adapted.enumValues).toEqual([{ key: 'COMPLETED', color: 'var(--color-enum-green)' }]);
       const saved = createFieldValuesSchema.parse(adaptTableField(adaptFieldToTableField(adapted)));
-      expect(saved.metadata?.['enumValues']).toEqual([{ key: 'COMPLETED', color: '#46BB7F' }]);
+      expect(saved.metadata?.['enumValues']).toEqual([{ key: 'COMPLETED', color: 'var(--color-enum-green)' }]);
     },
   );
 
@@ -68,24 +68,24 @@ describe('enum metadata persistence', () => {
       countryCodeFormat: 'alpha3',
     });
   });
-  it.each([{ countryCodeFormat: 'alpha2' as const }, { enumValues: [{ key: 'ok', color: '#DB5F4A' as const }] }])(
-    'detects and persists metadata-only updates %j',
-    (patch) => {
-      const current = { ...field, ...patch };
-      const payload = adaptUpdateTableValue(
-        { ...defaultCreateTableFormValues, tableId: 'table', fields: [current] },
-        [{ type: 'field', operation: 'MOD', objectId: field.id }],
-        [field],
-        [],
-        new Map(),
-      );
-      expect(editSemanticTablePayloadSchema.safeParse(payload).success).toBe(true);
-      expect(payload.fields?.[0]?.data).toMatchObject({ metadata: patch });
-      const operation = payload.fields?.[0];
-      if (!operation || operation.op !== 'MOD') throw new Error('Expected update');
-      expect(adaptDataModelField(dto(operation.data.metadata))).toMatchObject(patch);
-    },
-  );
+  it.each([
+    { countryCodeFormat: 'alpha2' as const },
+    { enumValues: [{ key: 'ok', color: 'var(--color-enum-red)' as const }] },
+  ])('detects and persists metadata-only updates %j', (patch) => {
+    const current = { ...field, ...patch };
+    const payload = adaptUpdateTableValue(
+      { ...defaultCreateTableFormValues, tableId: 'table', fields: [current] },
+      [{ type: 'field', operation: 'MOD', objectId: field.id }],
+      [field],
+      [],
+      new Map(),
+    );
+    expect(editSemanticTablePayloadSchema.safeParse(payload).success).toBe(true);
+    expect(payload.fields?.[0]?.data).toMatchObject({ metadata: patch });
+    const operation = payload.fields?.[0];
+    if (!operation || operation.op !== 'MOD') throw new Error('Expected update');
+    expect(adaptDataModelField(dto(operation.data.metadata))).toMatchObject(patch);
+  });
   it('does not send unchanged entry arrays as metadata updates', () => {
     const current = { ...field, enumValues: field.enumValues?.map((entry) => ({ ...entry })) };
     const payload = adaptUpdateTableValue(
@@ -114,8 +114,8 @@ describe('enum metadata persistence', () => {
   it.each([
     undefined,
     [],
-    [{ key: '', color: '#838292' as const }],
-    [{ key: ' ', color: '#838292' as const }],
+    [{ key: '', color: 'var(--color-enum-grey)' as const }],
+    [{ key: ' ', color: 'var(--color-enum-grey)' as const }],
     [field.enumValues![0]!, field.enumValues![0]!],
   ])('validates missing, incomplete and duplicate entries %j', (enumValues) => {
     const result = validateValues(

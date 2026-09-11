@@ -1,18 +1,18 @@
 import { z } from 'zod/v4';
 
 export const enumColors = [
-  '#88DCDE',
-  '#46BB7F',
-  '#8FA251',
-  '#EEA200',
-  '#FF8533',
-  '#DB5F4A',
-  '#CD719C',
-  '#D06FF4',
-  '#7F76F7',
-  '#4D73E5',
-  '#589FFF',
-  '#838292',
+  'var(--color-enum-teal)',
+  'var(--color-enum-green)',
+  'var(--color-enum-lime)',
+  'var(--color-enum-yellow)',
+  'var(--color-enum-orange)',
+  'var(--color-enum-red)',
+  'var(--color-enum-pink)',
+  'var(--color-enum-magenta)',
+  'var(--color-enum-purple)',
+  'var(--color-enum-blue)',
+  'var(--color-enum-sky)',
+  'var(--color-enum-grey)',
 ] as const;
 
 export type EnumColors = (typeof enumColors)[number];

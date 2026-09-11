@@ -36,7 +36,7 @@ export function ValueSwitchValueTag({
     const label = labelKey ? t(labelKey) : String(value);
     return (
       <Tag
-        className={cn('flex min-w-0 overflow-hidden', className)}
+        className={cn('flex min-w-0 overflow-hidden rounded-sm', className)}
         style={{ borderColor: color, color }}
         title={label}
       >
@@ -47,7 +47,7 @@ export function ValueSwitchValueTag({
 
   const label = String(value) || '—';
   return (
-    <Tag className={cn('flex min-w-0 overflow-hidden', className)} title={label}>
+    <Tag className={cn('flex min-w-0 overflow-hidden rounded-sm', className)} title={label}>
       <span className="min-w-0 truncate">{label}</span>
     </Tag>
   );

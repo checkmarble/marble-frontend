@@ -50,18 +50,12 @@ import { OperandEditModalProps } from '../EditModal/EditModal';
 import { AstBuilderOperandMenu } from '../OperandMenu';
 import { getValueSwitchFieldOption } from './field-option';
 import {
+  focusValueSwitchGridCell,
   getTwoDimensionGridNavigationTarget,
+  handleValueSwitchGridKeyDown,
   scrollTwoDimensionGridCellIntoView,
   type TwoDimensionGridNavigationKey,
 } from './two-dimension-grid-navigation';
-
-const ColoredNumberOptions = {
-  thresholds: [
-    { threshold: 0, comparison: '<', color: 'green' },
-    { threshold: 0, comparison: '>', color: 'red' },
-  ],
-  defaultColor: 'primary',
-} as const;
 
 type DimensionOption = {
   key: string;
@@ -300,8 +294,6 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
           aria-label={t('scenarios:value_switch.fallback')}
           value={model.fallback}
           onChange={(fallback) => updateModel((current) => ({ ...current, fallback }))}
-          forceSign
-          colorByValue={ColoredNumberOptions}
         />
       </div>
     </>
@@ -372,7 +364,8 @@ function OneDimensionEditor({
   onValueChange,
   onThresholdChange,
 }: OneDimensionEditorProps) {
-  const { t } = useTranslation(['scenarios']);
+  const { t, i18n } = useTranslation(['scenarios']);
+  const gridRef = useRef<HTMLDivElement>(null);
   const dimension = model.dimensions[0];
   const currentOption = dimension
     ? options.find((option) => option.key === getValueSwitchDimensionKey(dimension))
@@ -391,7 +384,11 @@ function OneDimensionEditor({
       unusedValue ??
       (dimension.type === 'field' && !currentOption?.closed && !dimension.values.includes('') ? '' : undefined);
     if (nextValue === undefined) return;
+    const nextRowIndex = dimension.values.length;
     onValuesChange([...dimension.values, nextValue] as Array<string | number>);
+    requestAnimationFrame(() => {
+      focusValueSwitchGridCell(gridRef.current, nextRowIndex, 0);
+    });
   }
 
   function replaceValue(index: number, value: string | number) {
@@ -435,7 +432,18 @@ function OneDimensionEditor({
             />
           ) : (
             <>
-              <div className={parentGridClassName}>
+              <div
+                ref={gridRef}
+                className={parentGridClassName}
+                onKeyDown={(event) =>
+                  handleValueSwitchGridKeyDown(event, {
+                    container: gridRef.current,
+                    rowCount: dimension.values.length,
+                    columnCount: 2,
+                    direction: i18n.dir(),
+                  })
+                }
+              >
                 <div className={cn(rowSubgridClassName, 'text-default text-grey-secondary font-medium')}>
                   <span className="whitespace-nowrap">
                     {t('scenarios:value_switch.if_value_is', { variable: currentOption?.label ?? '' })}
@@ -444,19 +452,23 @@ function OneDimensionEditor({
                   <span aria-hidden />
                 </div>
                 {dimension.values.map((value, index) => (
-                  <div key={`${typeof value}:${String(value)}`} className={rowSubgridClassName}>
-                    <DimensionValueInput
-                      dimension={dimension}
-                      value={value}
-                      field={currentOption?.field}
-                      knownValues={availableValues}
-                      unavailableValues={dimension.values.filter((_, currentIndex) => currentIndex !== index)}
-                      onChange={(next) => replaceValue(index, next)}
-                    />
-                    <ScoreInput
-                      value={model.thresholds[getValueSwitchCellKey([value])] ?? model.fallback}
-                      onChange={(threshold) => onThresholdChange([value], threshold)}
-                    />
+                  <div key={index} className={rowSubgridClassName}>
+                    <div data-value-switch-cell={`${index}:0`} className="min-w-0">
+                      <DimensionValueInput
+                        dimension={dimension}
+                        value={value}
+                        field={currentOption?.field}
+                        knownValues={availableValues}
+                        unavailableValues={dimension.values.filter((_, currentIndex) => currentIndex !== index)}
+                        onChange={(next) => replaceValue(index, next)}
+                      />
+                    </div>
+                    <div data-value-switch-cell={`${index}:1`} className="min-w-0">
+                      <ScoreInput
+                        value={model.thresholds[getValueSwitchCellKey([value])] ?? model.fallback}
+                        onChange={(threshold) => onThresholdChange([value], threshold)}
+                      />
+                    </div>
                     <Button
                       mode="icon"
                       variant="secondary"
@@ -489,9 +501,7 @@ function OneDimensionEditor({
 }
 
 function ScoreInput({ value, onChange }: { value: number; onChange: (value: number) => void }) {
-  return (
-    <NumberInput className="w-full" value={value} onChange={onChange} forceSign colorByValue={ColoredNumberOptions} />
-  );
+  return <NumberInput className="w-full" value={value} onChange={onChange} />;
 }
 
 /** 3+7+2+7+3rem columns + 4×gap-sm. Table cells add 1rem of padding. */
@@ -521,9 +531,10 @@ type NumericBandRowProps = {
   onValueChange: (value: number) => void;
   onValuesChange: (values: number[]) => void;
   trailing?: ReactNode;
+  cellRow?: number;
 };
 
-function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing }: NumericBandRowProps) {
+function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing, cellRow }: NumericBandRowProps) {
   const { t } = useTranslation(['scenarios', 'user-scoring']);
   const bound = bounds[index] ?? 0;
   const insertedBound = getInsertedNumericBound(bounds, index);
@@ -551,6 +562,7 @@ function NumericBandRow({ bounds, index, onValueChange, onValuesChange, trailing
         ) : null}
         <NumberInput
           data-value-switch-threshold-input
+          data-value-switch-cell={cellRow === undefined ? undefined : `${cellRow}:0`}
           className={index === 0 ? 'col-start-2 col-span-3' : undefined}
           value={bound}
           onChange={onValueChange}
@@ -604,22 +616,38 @@ function NumericOneDimensionEditor({
   onValueChange,
   onThresholdChange,
 }: NumericOneDimensionEditorProps) {
+  const { i18n } = useTranslation(['scenarios']);
+  const gridRef = useRef<HTMLDivElement>(null);
   const bounds = getNumericValues(dimension.values);
 
   return (
-    <div className="flex flex-col">
+    <div
+      ref={gridRef}
+      className="flex flex-col"
+      onKeyDown={(event) =>
+        handleValueSwitchGridKeyDown(event, {
+          container: gridRef.current,
+          rowCount: bounds.length,
+          columnCount: 2,
+          direction: i18n.dir(),
+        })
+      }
+    >
       {bounds.map((bound, index) => (
         <NumericBandRow
           key={`numeric-bound-${index}`}
           bounds={bounds}
           index={index}
+          cellRow={index}
           onValueChange={(value) => onValueChange(index, value)}
           onValuesChange={onValuesChange}
           trailing={
-            <ScoreInput
-              value={thresholds[getValueSwitchCellKey([bound])] ?? fallback}
-              onChange={(value) => onThresholdChange([bound], value)}
-            />
+            <div data-value-switch-cell={`${index}:1`} className="min-w-0">
+              <ScoreInput
+                value={thresholds[getValueSwitchCellKey([bound])] ?? fallback}
+                onChange={(value) => onThresholdChange([bound], value)}
+              />
+            </div>
           }
         />
       ))}
@@ -858,8 +886,6 @@ function TwoDimensionEditor({
                         value={model.thresholds[getValueSwitchCellKey([rowValue, columnValue])] ?? model.fallback}
                         onChange={(threshold) => onThresholdChange([rowValue, columnValue], threshold)}
                         onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
-                        forceSign
-                        colorByValue={ColoredNumberOptions}
                       />
                     </td>
                   ))}

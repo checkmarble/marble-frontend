@@ -25,7 +25,7 @@ export function EnumTag({ field, value, className }: { field: EnumField; value: 
       color={display.neutral ? 'grey' : 'purple'}
       style={display.color ? { color: display.color, borderColor: display.color } : undefined}
       title={String(value)}
-      className={cn('min-w-0 overflow-hidden', className)}
+      className={cn('min-w-0 overflow-hidden rounded-sm', className)}
     >
       {display.flag ? <span className="shrink-0">{display.flag}</span> : null}
       <span className="min-w-0 truncate">{display.label || '—'}</span>

@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  focusValueSwitchGridCell,
   getTwoDimensionGridNavigationTarget,
+  handleValueSwitchGridKeyDown,
   scrollTwoDimensionGridCellIntoView,
   type TwoDimensionGridNavigationKey,
 } from './two-dimension-grid-navigation';
@@ -177,5 +179,144 @@ describe('scrollTwoDimensionGridCellIntoView', () => {
     );
     expect(wrappedToLastColumn.scrollLeft).toBe(800);
     expect(wrappedToLastColumn.scrollTop).toBe(180);
+  });
+});
+
+function createOneDimensionGrid() {
+  const container = document.createElement('div');
+  for (let rowIndex = 0; rowIndex < 2; rowIndex++) {
+    for (let columnIndex = 0; columnIndex < 2; columnIndex++) {
+      const cell = document.createElement('div');
+      cell.setAttribute('data-value-switch-cell', `${rowIndex}:${columnIndex}`);
+      if (rowIndex === 0 && columnIndex === 0) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'value';
+        cell.append(button);
+      } else {
+        const input = document.createElement('input');
+        input.value = `${rowIndex}:${columnIndex}`;
+        cell.append(input);
+      }
+      container.append(cell);
+    }
+  }
+  document.body.append(container);
+  return container;
+}
+
+function gridKeyDown(
+  container: HTMLElement,
+  target: HTMLElement,
+  key: string,
+  extra?: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean; altKey?: boolean },
+) {
+  const event = {
+    key,
+    shiftKey: extra?.shiftKey ?? false,
+    metaKey: extra?.metaKey ?? false,
+    ctrlKey: extra?.ctrlKey ?? false,
+    altKey: extra?.altKey ?? false,
+    preventDefault: vi.fn(),
+    target,
+  };
+  handleValueSwitchGridKeyDown(event, {
+    container,
+    rowCount: 2,
+    columnCount: 2,
+    direction: 'ltr',
+  });
+  return event;
+}
+
+describe('focusValueSwitchGridCell', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  it('focuses a button nested in a marked cell', () => {
+    const container = createOneDimensionGrid();
+
+    focusValueSwitchGridCell(container, 0, 0);
+
+    expect(document.activeElement).toBe(container.querySelector('[data-value-switch-cell="0:0"] button'));
+  });
+
+  it('focuses and selects an input nested in a marked cell', () => {
+    const container = createOneDimensionGrid();
+    const input = container.querySelector('[data-value-switch-cell="0:1"] input') as HTMLInputElement;
+    const select = vi.spyOn(input, 'select');
+
+    focusValueSwitchGridCell(container, 0, 1);
+
+    expect(document.activeElement).toBe(input);
+    expect(select).toHaveBeenCalled();
+  });
+
+  it('focuses an input that itself carries the cell attribute', () => {
+    const container = document.createElement('div');
+    const input = document.createElement('input');
+    input.setAttribute('data-value-switch-cell', '0:0');
+    container.append(input);
+    document.body.append(container);
+
+    focusValueSwitchGridCell(container, 0, 0);
+
+    expect(document.activeElement).toBe(input);
+  });
+});
+
+describe('handleValueSwitchGridKeyDown', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  it('moves from the value field to the score field with ArrowRight', () => {
+    const container = createOneDimensionGrid();
+    const button = container.querySelector('button')!;
+
+    const event = gridKeyDown(container, button, 'ArrowRight');
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(document.activeElement).toBe(container.querySelector('[data-value-switch-cell="0:1"] input'));
+  });
+
+  it('moves down a column with ArrowDown', () => {
+    const container = createOneDimensionGrid();
+    const score = container.querySelector('[data-value-switch-cell="0:1"] input') as HTMLInputElement;
+
+    gridKeyDown(container, score, 'ArrowDown');
+
+    expect(document.activeElement).toBe(container.querySelector('[data-value-switch-cell="1:1"] input'));
+  });
+
+  it('does not steal Enter from a menu button', () => {
+    const container = createOneDimensionGrid();
+    const button = container.querySelector('button')!;
+
+    const event = gridKeyDown(container, button, 'Enter');
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(document.activeElement).not.toBe(container.querySelector('[data-value-switch-cell="1:0"] input'));
+  });
+
+  it('moves down from a score input with Enter', () => {
+    const container = createOneDimensionGrid();
+    const score = container.querySelector('[data-value-switch-cell="0:1"] input') as HTMLInputElement;
+
+    const event = gridKeyDown(container, score, 'Enter');
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(document.activeElement).toBe(container.querySelector('[data-value-switch-cell="1:1"] input'));
+  });
+
+  it('ignores modified arrow keys', () => {
+    const container = createOneDimensionGrid();
+    const button = container.querySelector('button')!;
+
+    const event = gridKeyDown(container, button, 'ArrowRight', { metaKey: true });
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(document.activeElement).not.toBe(container.querySelector('[data-value-switch-cell="0:1"] input'));
   });
 });
