@@ -1,4 +1,5 @@
 import {
+  Callout,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -17,8 +18,11 @@ import {
 } from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { type Decision } from '@app-builder/models/decision';
+import { RequestTimeoutError } from '@app-builder/models/http-errors';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { DecisionFilters, decisionFiltersSchema } from '@app-builder/schemas/decisions';
 import { handleSubmit } from '@app-builder/utils/form';
@@ -92,19 +96,30 @@ const decisionsLoader = createServerFn({ method: 'GET' })
     const { decision, scenario, dataModelRepository, inbox } = context.authInfo;
 
     const { outcomeAndReviewStatus, ...filters } = data;
-    const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
-      decision.listDecisions({
-        outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
-        reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
-        ...filters,
-      }),
+    const [decisionsResult, scenarios, pivots, inboxes] = await Promise.all([
+      decision
+        .listDecisions({
+          outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
+          reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
+          ...filters,
+        })
+        .then((decisionsData) => ({ decisionsData, listError: undefined }))
+        .catch((error) => {
+          if (error instanceof RequestTimeoutError) {
+            return {
+              decisionsData: { items: [] as Decision[], hasNextPage: false },
+              listError: 'request_timeout' as const,
+            };
+          }
+          throw error;
+        }),
       scenario.listScenarios(),
       dataModelRepository.listPivots({}),
       inbox.listInboxes(),
     ]);
 
     return {
-      decisionsData,
+      ...decisionsResult,
       scenarios,
       filters: data,
       hasPivots: pivots.length > 0,
@@ -124,7 +139,9 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
 });
 
 function DetectionDecisions() {
-  const { decisionsData, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
+  const { t } = useTranslation(['common', ...decisionsI18n]);
+  const revalidate = useLoaderRevalidator();
+  const { decisionsData, filters, scenarios, hasPivots, inboxes, listError } = Route.useLoaderData();
   const { items: decisions, ...pagination } = decisionsData;
   const decisionFilters = getDecisionFilters(filters);
   const paginationState = usePaginationsButton({
@@ -183,25 +200,38 @@ function DetectionDecisions() {
                 </div>
               </div>
               <DecisionFiltersBar />
-              <DecisionsList
-                className="max-h-[60dvh]"
-                decisions={decisions}
-                selectable
-                selectionProps={selectionProps}
-                tableProps={tableProps}
-                columnVisibility={{
-                  pivot_value: false,
-                }}
-              />
-              <CursorPaginationButtons
-                items={decisions}
-                onPaginationChange={(paginationParams: PaginationParams) =>
-                  navigateDecisionList(decisionFilters, paginationParams)
-                }
-                paginationState={paginationState}
-                boundariesDisplay="dates"
-                {...pagination}
-              />
+              {listError === 'request_timeout' ? (
+                <Callout variant="outlined" color="red" icon="error" iconColor="red">
+                  <div className="flex gap-md items-center text-red-primary">
+                    <span>{t('decisions:errors.request_timeout')}</span>
+                    <Button variant="secondary" onClick={() => revalidate()}>
+                      {t('common:retry')}
+                    </Button>
+                  </div>
+                </Callout>
+              ) : (
+                <>
+                  <DecisionsList
+                    className="max-h-[60dvh]"
+                    decisions={decisions}
+                    selectable
+                    selectionProps={selectionProps}
+                    tableProps={tableProps}
+                    columnVisibility={{
+                      pivot_value: false,
+                    }}
+                  />
+                  <CursorPaginationButtons
+                    items={decisions}
+                    onPaginationChange={(paginationParams: PaginationParams) =>
+                      navigateDecisionList(decisionFilters, paginationParams)
+                    }
+                    paginationState={paginationState}
+                    boundariesDisplay="dates"
+                    {...pagination}
+                  />
+                </>
+              )}
             </DecisionFiltersProvider>
           </div>
         </Page.Content>

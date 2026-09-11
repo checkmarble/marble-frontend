@@ -1,4 +1,11 @@
-import { BAD_REQUEST, CONFLICT, FORBIDDEN, NOT_FOUND, UNAUTHORIZED } from '@app-builder/utils/http/http-status-codes';
+import {
+  BAD_REQUEST,
+  CONFLICT,
+  FORBIDDEN,
+  NOT_FOUND,
+  REQUEST_TIMEOUT,
+  UNAUTHORIZED,
+} from '@app-builder/utils/http/http-status-codes';
 import type * as Oazapfts from '@oazapfts/runtime';
 import * as z from 'zod/v4';
 
@@ -24,6 +31,14 @@ export function isUnauthorizedHttpError(error: unknown): error is Oazapfts.HttpE
 
 export function isForbiddenHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === FORBIDDEN;
+}
+
+export function isRequestTimeoutHttpError(error: unknown): error is Oazapfts.HttpError {
+  return isHttpError(error) && error.status === REQUEST_TIMEOUT;
+}
+
+export class RequestTimeoutError extends Error {
+  override name = 'RequestTimeoutError';
 }
 
 const marbleErrorSchema = z.object({
