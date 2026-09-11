@@ -1,5 +1,6 @@
 import {
   Callout,
+  DecisionFilterPopover,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -202,8 +203,9 @@ function DetectionDecisions() {
               <DecisionFiltersBar />
               {listError === 'request_timeout' ? (
                 <Callout variant="outlined" color="red" icon="error" iconColor="red">
-                  <div className="flex gap-md items-center text-red-primary">
-                    <span>{t('decisions:errors.request_timeout')}</span>
+                  <div className="flex flex-wrap gap-md items-center">
+                    <span className="text-red-primary">{t('decisions:errors.request_timeout')}</span>
+                    <DecisionFilterPopover filterName="dateRange" />
                     <Button variant="secondary" onClick={() => revalidate()}>
                       {t('common:retry')}
                     </Button>
