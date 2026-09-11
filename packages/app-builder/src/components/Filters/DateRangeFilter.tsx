@@ -1,12 +1,11 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { formatDuration, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { clsx } from 'clsx';
 import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Calendar, type DateRange } from 'ui-design-system';
+import { Calendar, cn, type DateRange } from 'ui-design-system';
 
 import { filtersI18n } from './filters-i18n';
 
@@ -98,14 +97,27 @@ function DateRangeFilterRoot({
   );
 }
 
+// used as default date range in the DateRangeFilterFromNowPicker
+export const last30DaysDuration = Temporal.Duration.from({ days: -30 }).toString();
+
 export const fromNowDurations = [
   Temporal.Duration.from({ days: -7 }).toString(),
   Temporal.Duration.from({ days: -14 }).toString(),
-  Temporal.Duration.from({ days: -30 }).toString(),
+  last30DaysDuration,
   Temporal.Duration.from({ months: -3 }).toString(),
   Temporal.Duration.from({ months: -6 }).toString(),
   Temporal.Duration.from({ months: -12 }).toString(),
 ] as const;
+
+function isSameFromNow(fromNow: string | undefined, duration: string) {
+  if (!fromNow) return false;
+  if (fromNow === duration) return true;
+  try {
+    return Temporal.Duration.from(fromNow).toString() === Temporal.Duration.from(duration).toString();
+  } catch {
+    return false;
+  }
+}
 
 function DateRangeFilterFromNowPicker({ title, className }: { title: string; className?: string }) {
   const language = useFormatLanguage();
@@ -113,7 +125,7 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
   const { fromNow } = useDateRangeFilterContext();
 
   return (
-    <div className={clsx('flex flex-col gap-md p-md', className)}>
+    <div className={cn('flex flex-col gap-md p-md', className)}>
       <div className="flex items-center">
         <p className="text-grey-primary text-s font-normal first-letter:capitalize">{title}</p>
       </div>
@@ -124,11 +136,11 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
             onClick={() => {
               onFromNowSelect(duration);
             }}
-            className={clsx(
+            className={cn(
               'text-s bg-surface-card text-grey-primary border-grey-white dark:border-grey-border flex h-10 items-center rounded-sm border p-sm outline-hidden',
               'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
-              fromNow === duration &&
-                'bg-purple-background border-purple-primary text-purple-primary dark:bg-grey-background-light dark:text-purple-hover', // highlight the currently selected
+              isSameFromNow(fromNow, duration) &&
+                'bg-purple-background border-purple-primary text-purple-primary dark:bg-grey-background-light dark:text-purple-hover',
             )}
           >
             <time dateTime={duration}>{formatDuration(duration, language)}</time>
@@ -144,7 +156,7 @@ function DateRangeFilterCalendar({ className }: { className?: string }) {
   const { calendarSelected, onCalendarSelect } = useDateRangeFilterContext();
 
   return (
-    <div className={clsx('p-md', className)}>
+    <div className={cn('p-md', className)}>
       <Calendar
         mode="range"
         selected={calendarSelected}
@@ -163,7 +175,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
 
   if (fromNow) {
     return (
-      <div className={clsx('m-md flex h-10 w-full items-center justify-center', className)}>
+      <div className={cn('m-md flex h-10 w-full items-center justify-center', className)}>
         <time
           className="text-s text-grey-primary flex h-10 items-center rounded-sm p-sm outline-hidden"
           dateTime={fromNow}
@@ -177,7 +189,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
   }
 
   return (
-    <div className={clsx('grid grid-cols-[1fr_max-content_1fr] gap-xs p-md', className)}>
+    <div className={cn('grid grid-cols-[1fr_max-content_1fr] gap-xs p-md', className)}>
       <FormatStaticDate className="justify-self-end" date={calendarSelected?.from} />
       <span className="text-l self-center">→</span>
       <FormatStaticDate date={calendarSelected?.to} />
@@ -194,7 +206,7 @@ function FormatStaticDate({ date, className }: { date?: string | Date; className
   return (
     <time
       dateTime={dateTime}
-      className={clsx(
+      className={cn(
         'border-grey-border h-10 w-fit rounded-sm border p-sm',
         date ? 'text-grey-primary' : 'text-grey-secondary',
         className,

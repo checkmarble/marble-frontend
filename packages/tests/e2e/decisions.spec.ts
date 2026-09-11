@@ -18,6 +18,8 @@ test('Decisions page loads with chrome', async ({ page }) => {
   await expect(page).toHaveURL(/\/detection\/decisions(?:[?/]|$)/);
 
   await expect(filtersTrigger(page)).toBeVisible();
+  // Empty search defaults to a last-30-days date range, which renders as a Date chip.
+  await expect(page.locator('button', { hasText: /^Date$/ })).toBeVisible();
   // The Input has type="search" + placeholder "Search by id" — anchor the
   // smoke on the placeholder, not the searchbox role (whose accessible name
   // computation has been flaky in this codebase's snapshot tree).

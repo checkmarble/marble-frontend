@@ -4,8 +4,8 @@ import * as z from 'zod/v4';
 export const dateRangeSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('static'),
-    startDate: z.string().datetime().optional(),
-    endDate: z.string().datetime().optional(),
+    startDate: z.iso.datetime().optional(),
+    endDate: z.iso.datetime().optional(),
   }),
   z.object({
     type: z.literal('dynamic'),
