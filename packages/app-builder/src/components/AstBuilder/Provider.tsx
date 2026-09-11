@@ -8,8 +8,14 @@ export type AstBuilderMode = 'edit' | 'view';
 
 export const AstBuilderDataSharpFactory = createSharpFactory({
   name: 'AstBuilderData',
-  initializer(init: { scenarioId?: string; data: BuilderOptionsResource; mode: AstBuilderMode; showValues: boolean }) {
-    return { ...init };
+  initializer(init: {
+    scenarioId?: string;
+    data: BuilderOptionsResource;
+    mode: AstBuilderMode;
+    showValues: boolean;
+    onValueSwitchOpenChange?: (open: boolean) => void;
+  }) {
+    return { ...init, isValueSwitchOpen: false };
   },
 }).withComputed({
   triggerObjectTable(state) {
@@ -29,6 +35,7 @@ type AstBuilderDataProviderProps = {
   initialData?: BuilderOptionsResource;
   mode?: AstBuilderMode;
   showValues?: boolean;
+  onValueSwitchOpenChange?: (open: boolean) => void;
 };
 
 type AstBuilderInternalProviderProps = {
@@ -36,6 +43,7 @@ type AstBuilderInternalProviderProps = {
   data: BuilderOptionsResource;
   mode: AstBuilderMode;
   showValues: boolean;
+  onValueSwitchOpenChange?: (open: boolean) => void;
   children: ReactNode;
 };
 function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
@@ -44,6 +52,7 @@ function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
     data: props.data,
     mode: props.mode,
     showValues: props.showValues,
+    onValueSwitchOpenChange: props.onValueSwitchOpenChange,
   });
 
   useEffect(() => {
@@ -54,6 +63,10 @@ function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
   useEffect(() => {
     store.value.data = props.data;
   }, [store, props.data]);
+
+  useEffect(() => {
+    store.value.onValueSwitchOpenChange = props.onValueSwitchOpenChange;
+  }, [store, props.onValueSwitchOpenChange]);
 
   return <AstBuilderDataSharpFactory.Provider value={store}>{props.children}</AstBuilderDataSharpFactory.Provider>;
 }
@@ -94,6 +107,7 @@ export function AstBuilderProvider(props: AstBuilderDataProviderProps) {
       scenarioId={props.scenarioId}
       data={builderOptionsQuery.data}
       showValues={props.showValues ?? false}
+      onValueSwitchOpenChange={props.onValueSwitchOpenChange}
     >
       {props.children}
     </AstBuilderInternalProvider>

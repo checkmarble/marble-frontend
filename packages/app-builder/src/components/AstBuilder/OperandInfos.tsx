@@ -17,18 +17,22 @@ import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isRecordRiskLevelCheckAstNode, RecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { type FuzzyMatchComparatorAstNode, isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
+import { isValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { type CustomList } from '@app-builder/models/custom-list';
+import { isEnumField, resolveEnumDisplay, resolveEnumValues } from '@app-builder/models/enum-values';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
-import clsx from 'clsx';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AstBuilderDataSharpFactory } from './Provider';
 import { LogicalOperatorLabel } from './styles/LogicalOperatorLabel';
+import { ValueSwitchDescription } from './ValueSwitchDescription';
 import { ViewingAstBuilderOperand } from './viewing/ViewingOperand';
 import { ViewingOperator } from './viewing/ViewingOperator';
 
@@ -41,7 +45,7 @@ type OperandInfosProps = {
   displayName: string;
 };
 
-const contentClassnames = clsx([
+const contentClassnames = cn([
   'flex flex-col w-full flex-1 overflow-hidden z-50',
   'bg-surface-card border-grey-border rounded-sm border shadow-md outline-hidden',
 ]);
@@ -56,11 +60,19 @@ export function OperandInfos(props: OperandInfosProps) {
         />
       </HoverCardTrigger>
       <HoverCardPortal>
-        <HoverCardContent side="right" align="start" sideOffset={20} alignOffset={-8} className={contentClassnames}>
+        <HoverCardContent
+          side="right"
+          align="start"
+          sideOffset={20}
+          alignOffset={-8}
+          className={cn(contentClassnames, isValueSwitchAstNode(props.node) && 'max-w-[calc(100vw-2rem)]')}
+        >
           <div className="bg-surface-card flex flex-col gap-sm overflow-auto p-md">
             <div className="flex flex-col gap-xs">
               <TypeInfos operandType={props.operandType} dataType={props.dataType} />
-              <p className="text-grey-primary text-s text-ellipsis hyphens-auto font-normal">{props.displayName}</p>
+              <p className="text-grey-primary text-s text-ellipsis wrap-break-word hyphens-auto font-normal">
+                {props.displayName}
+              </p>
             </div>
             <OperandDescription node={props.node} />
           </div>
@@ -109,6 +121,9 @@ function OperandDescription({ node }: OperandDescriptionProps) {
   if (isAggregation(node)) {
     return <AggregatorDescription node={node} />;
   }
+  if (isValueSwitchAstNode(node)) {
+    return <ValueSwitchDescription node={node} />;
+  }
   if (isFuzzyMatchComparator(node)) {
     return <FuzzyMatchComparatorDescription node={node} />;
   }
@@ -137,7 +152,7 @@ function OperandDescription({ node }: OperandDescriptionProps) {
 
 function Description({ description }: { description: string }) {
   return description ? (
-    <p className="text-grey-secondary max-w-[300px] text-xs font-normal first-letter:capitalize">{description}</p>
+    <p className="text-grey-secondary max-w-75 text-xs font-normal first-letter:capitalize">{description}</p>
   ) : null;
 }
 
@@ -256,24 +271,23 @@ type DataAccessorDescriptionProps = {
 };
 function DataAccessorDescription({ node, dataModel, triggerObjectTable }: DataAccessorDescriptionProps) {
   const { t } = useTranslation(['scenarios']);
+  const language = useFormatLanguage();
   const field = getDataAccessorAstNodeField(node, { triggerObjectTable, dataModel });
+  const values = isEnumField(field) ? resolveEnumValues(field).values : [];
 
   return (
     <>
       <Description description={field.description} />
-      {field.isEnum && field.values && field.values.length > 0 ? (
-        <div className="text-grey-secondary flex max-w-[300px] flex-col gap-xs">
+      {values.length > 0 ? (
+        <div className="text-grey-secondary flex max-w-75 flex-col gap-xs">
           <p className="text-s">{t('scenarios:enum_options')}</p>
           <ul className="flex flex-col">
-            {field.values
-              .slice(0, MAX_ENUM_VALUES)
-              .sort()
-              .map((value) => (
-                <li key={value} className="truncate text-xs font-normal">
-                  {value}
-                </li>
-              ))}
-            {field.values.length > MAX_ENUM_VALUES ? <li className="text-xs font-normal">...</li> : null}
+            {values.slice(0, MAX_ENUM_VALUES).map((value) => (
+              <li key={String(value)} className="truncate text-xs font-normal">
+                {resolveEnumDisplay(field, value, language).label}
+              </li>
+            ))}
+            {values.length > MAX_ENUM_VALUES ? <li className="text-xs font-normal">...</li> : null}
           </ul>
         </div>
       ) : null}

@@ -96,7 +96,7 @@
   "switch.number.and": "and",
   "switch.number.default": "otherwise, ≥ to",
   "switch.number.first": "if value ≤ to",
-  "switch.number.middle": "if value is between",
+  "switch.number.middle": "btw",
   "switch.number.then": "then",
   "switch.past_alerts.depending_on": "Depending on past alerts",
   "switch.screening_tags.add_branch": "Add branch",

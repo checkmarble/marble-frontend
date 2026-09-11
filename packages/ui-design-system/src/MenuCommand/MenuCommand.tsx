@@ -318,8 +318,18 @@ const commandClassname = cva(
 type ContentProps = React.ComponentProps<typeof Popover.Content> &
   VariantProps<typeof commandClassname> & {
     size?: 'small' | 'default';
+    /** Set false when the caller filters and virtualizes items; cmdk would otherwise only see mounted rows. */
+    shouldFilter?: boolean;
   };
-function Content({ children, className, sameWidth, collisionPadding, size = 'default', ...props }: ContentProps) {
+function Content({
+  children,
+  className,
+  sameWidth,
+  collisionPadding,
+  size = 'default',
+  shouldFilter = true,
+  ...props
+}: ContentProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const menuState = MenuCommandSharpFactory.useSharp();
   const Portal = internalSharp.value.hover ? HoverCard.Portal : Popover.Portal;
@@ -338,7 +348,7 @@ function Content({ children, className, sameWidth, collisionPadding, size = 'def
         data-size={size}
         {...props}
       >
-        <Command className={cn(commandClassname({ sameWidth }))} filter={filter}>
+        <Command shouldFilter={shouldFilter} className={cn(commandClassname({ sameWidth }))} filter={filter}>
           {children}
           <InsertKeyboardNav />
         </Command>

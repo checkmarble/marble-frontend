@@ -11,6 +11,7 @@ import {
   isUnaryMainAstOperatorFunction,
 } from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isEnumField, resolveEnumValues } from '@app-builder/models/enum-values';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
@@ -102,8 +103,8 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
           dataModel: data.dataModel,
           triggerObjectTable: triggerTable,
         });
-        if (field.isEnum) {
-          enums.push(...(field.values ?? []));
+        if (isEnumField(field)) {
+          enums.push(...resolveEnumValues(field).values);
         }
       }
     }
@@ -114,6 +115,9 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
   const setNode = (newNode: AstNode) => {
     nodeSharp.actions.setNodeAtPath(props.path, newNode);
     nodeSharp.actions.validate();
+  };
+  const replaceNode = (newNode: AstNode) => {
+    nodeSharp.actions.setNodeAtPath(props.path, newNode);
   };
   const setOperator = (operator: string) => {
     if (node.value) {
@@ -176,7 +180,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
 
       return props.root ? (
-        <div className="inline-flex flex-row flex-wrap items-center gap-sm">{wrappedChildren}</div>
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -216,7 +220,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
 
       return props.root ? (
-        <div className="inline-flex flex-row flex-wrap items-center gap-sm">{wrappedChildren}</div>
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-start gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -227,6 +231,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
         <EditionAstBuilderOperand
           node={node}
           onChange={setNode}
+          onReplaceNode={replaceNode}
           enumValues={enumValues.value}
           validationStatus={hasDirectError ? 'error' : 'valid'}
           {...operandProps}
@@ -257,11 +262,21 @@ function Brackets({ children, ...props }: BracketProps) {
 const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps) => {
   const { t } = useTranslation(['scenarios']);
   const [open, setOpen] = useState(false);
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
 
   return (
-    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+    <MenuCommand.Menu
+      open={isValueSwitchOpen ? false : open}
+      onOpenChange={(nextOpen) => {
+        if (!isValueSwitchOpen) setOpen(nextOpen);
+      }}
+    >
       <MenuCommand.Trigger>
-        <button className="text-grey-primary border-grey-border [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-background [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-placeholder flex h-10 items-center justify-center rounded-sm border px-xs">
+        <button
+          type="button"
+          disabled={isValueSwitchOpen}
+          className="text-grey-primary border-grey-border [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-background [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-placeholder disabled:text-grey-disabled disabled:bg-grey-background-light disabled:border-grey-border flex h-10 items-center justify-center rounded-sm border px-xs"
+        >
           {children}
         </button>
       </MenuCommand.Trigger>

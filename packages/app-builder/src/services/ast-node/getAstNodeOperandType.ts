@@ -8,6 +8,7 @@ import { isMonitoringListCheckAstNode } from '@app-builder/models/astNode/monito
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimeNow, isTimestampExtract } from '@app-builder/models/astNode/time';
+import { isValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';
 
@@ -51,7 +52,8 @@ export function getAstNodeOperandType(
     isTimestampExtract(astNode) ||
     isIsMultipleOf(astNode) ||
     isStringTemplateAstNode(astNode) ||
-    isIpHasFlag(astNode)
+    isIpHasFlag(astNode) ||
+    isValueSwitchAstNode(astNode)
   ) {
     return 'Function';
   }

@@ -1,6 +1,7 @@
 import { Nudge } from '@app-builder/components/Nudge';
 import { undefinedAstNodeName } from '@app-builder/models';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
+import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
@@ -10,8 +11,8 @@ import { Icon } from 'ui-icons';
 
 export const operatorContainerClassnames = cva(
   [
-    'flex h-10 min-w-[40px] items-center justify-between outline-hidden gap-sm rounded-sm px-xs border',
-    'bg-surface-card disabled:border-transparent disabled:bg-grey-background-light',
+    'flex h-10 min-w-10 items-center justify-between outline-hidden gap-sm rounded-sm px-xs border group',
+    'bg-surface-card disabled:border-grey-border disabled:bg-grey-background-light disabled:text-grey-disabled',
     'radix-state-open:border-purple-primary  radix-state-open:bg-purple-background-light',
   ],
   {
@@ -64,6 +65,7 @@ export function OperatorSelect<Op extends string>({
   const [open, setOpen] = useState(false);
   const { t } = useTranslation(['common', 'scenarios']);
   const mappedOptions = mapOptions(options);
+  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
 
   const _value = operator !== undefinedAstNodeName && operator !== null ? operator : null;
   const isRestricted = featureAccess && featureAccess !== 'allowed';
@@ -74,10 +76,19 @@ export function OperatorSelect<Op extends string>({
   const currentTooltipKey = _value ? mappedOptions.find((op) => op.value === _value)?.tooltipKey : undefined;
 
   return (
-    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+    <MenuCommand.Menu
+      open={isValueSwitchOpen ? false : open}
+      onOpenChange={(nextOpen) => {
+        if (!isValueSwitchOpen) setOpen(nextOpen);
+      }}
+    >
       <MenuCommand.Trigger>
-        <button type="button" className={operatorContainerClassnames({ validationStatus })}>
-          <span className="text-s text-grey-primary w-full text-center font-medium">
+        <button
+          type="button"
+          disabled={isValueSwitchOpen}
+          className={operatorContainerClassnames({ validationStatus })}
+        >
+          <span className="text-s text-grey-primary group-disabled:text-grey-disabled w-full text-center font-medium">
             {_value ? getOperatorName(t, _value, isFilter) : '...'}
           </span>
           {currentTooltipKey ? <OperatorTooltip tooltipKey={currentTooltipKey} /> : null}

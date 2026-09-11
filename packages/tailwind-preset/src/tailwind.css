@@ -107,6 +107,22 @@
   --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
   --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
 
+  /* ========================================
+   * ENUM Colors - Semantic naming
+   * ======================================== */
+   --color-enum-teal: oklch(84.366% 0.08339 196.707); /* #88DCDE */
+   --color-enum-green: oklch(80.874% 0.09573 160.636); /* #89D4AD */
+   --color-enum-lime: oklch(83.95% 0.09945 119.026); /* #C3D489 */
+   --color-enum-yellow: oklch(89.104% 0.11572 84.327); /* #FFD57E */
+   --color-enum-orange: oklch(79.951% 0.13153 53.81); /* #FFA568 */
+   --color-enum-red: oklch(77.027% 0.13561 20.644); /* #FF8F8F */
+   --color-enum-pink: oklch(80.174% 0.13384 350.837); /* #FF99C9 */
+   --color-enum-magenta: oklch(80.356% 0.1501 316.512); /* #E59FFF */
+   --color-enum-purple: oklch(76.647% 0.12195 286.333); /* #ADA7FD */
+   --color-enum-blue: oklch(69.238% 0.16077 268.264); /* #7295FF */
+   --color-enum-sky: oklch(82.325% 0.08956 255.934); /* #9FC8FF */
+   --color-enum-grey: oklch(81.1% 0.01124 291.741); /* #C1C0C8 */
+
   --spacing-4xl: 5rem;
   --spacing-3xl: 3rem;
   --spacing-2xl: 2.5rem;
@@ -198,6 +214,9 @@
 
 @custom-variant sentinel-intersect ([data-sentinel][data-intersect] + &, &:has(+ [data-sentinel][data-intersect]));
 
+@custom-variant disabled (&:is(:disabled, [aria-disabled="true"]));
+@custom-variant enabled (&:not(:disabled):not([aria-disabled="true"]));
+
 .dark {
   /* ========================================
    * SEMANTIC SURFACE TOKENS - Dark mode
@@ -275,6 +294,20 @@
   --color-orange-border: oklch(0.8468 0.0976 54.87); /* #FFBC8F */
   --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
   --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
+
+    /* Enum - Dark mode overrides */
+   --color-enum-teal: #206566; /* #206566 */
+   --color-enum-green: #266745; /* #266745 */
+   --color-enum-lime: #536123; /* #536123 */
+   --color-enum-yellow: #715824; /* #715824 */
+   --color-enum-orange: #854F2A; /* #854F2A */
+   --color-enum-red: #A43434; /* #A43434 */
+   --color-enum-pink: #9F3265; /* #9F3265 */
+   --color-enum-magenta: #8835A7; /* #8835A7 */
+   --color-enum-purple: #5249C5; /* #5249C5 */
+   --color-enum-blue: #3855B0; /* #3855B0 */
+   --color-enum-sky: #305C98; /* #305C98 */
+   --color-enum-grey: #5C5A67; /* #5C5A67 */
 }
 
 /* Custom keyframes */

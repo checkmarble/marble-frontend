@@ -226,6 +226,9 @@ const metadataKeys = [
   'hidden',
   'booleanDisplay',
   'isInteger',
+  'enumValues',
+  'countryCodeFormat',
+  'currencyCodeFormat',
 ] as const satisfies (keyof TableField)[];
 
 function adaptTableFieldUpdate(current: TableField, original: TableField, rawModelField?: DataModelField) {
@@ -236,7 +239,8 @@ function adaptTableFieldUpdate(current: TableField, original: TableField, rawMod
   const originalSemanticSubType = rawModelField ? rawModelField.semanticSubType : original.semanticSubType;
   const semanticTypeChanged =
     current.semanticType !== originalSemanticType || current.semanticSubType !== originalSemanticSubType;
-  const metadataChanged = semanticTypeChanged || metadataKeys.some((k) => current[k] !== original[k]);
+  const metadataChanged =
+    semanticTypeChanged || metadataKeys.some((k) => JSON.stringify(current[k]) !== JSON.stringify(original[k]));
 
   const field = omitUndefined({
     id: current.id,
@@ -262,6 +266,9 @@ function adaptTableFieldUpdate(current: TableField, original: TableField, rawMod
           hidden: current.hidden,
           booleanDisplay: current.booleanDisplay,
           isInteger: current.isInteger,
+          enumValues: current.enumValues,
+          countryCodeFormat: current.countryCodeFormat,
+          currencyCodeFormat: current.currencyCodeFormat,
         }
       : undefined,
   });

@@ -46,12 +46,14 @@ export const FieldAstFormula = ({
   options,
   onChange,
   onBlur,
+  onValueSwitchOpenChange,
   defaultValue,
 }: {
   type: 'rule' | 'screening';
   astNode?: AstNode;
   onChange?: (node?: AstNode) => void;
   onBlur?: () => void;
+  onValueSwitchOpenChange?: (open: boolean) => void;
   scenarioId: string;
   triggerObjectType: string;
   options?: BuilderOptionsResource;
@@ -75,7 +77,7 @@ export const FieldAstFormula = ({
   };
 
   return (
-    <div onBlur={onBlur} className="flex flex-col gap-md">
+    <div onBlur={onBlur} className="flex min-w-0 flex-col gap-md">
       {isAstNull ? (
         <div className="border-blue-58 bg-blue-96 text-blue-58 text-s flex items-center rounded-sm border p-sm dark:bg-transparent">
           <span>
@@ -87,7 +89,12 @@ export const FieldAstFormula = ({
           </span>
         </div>
       ) : (
-        <AstBuilder.Provider scenarioId={scenarioId} initialData={options} mode={editor}>
+        <AstBuilder.Provider
+          scenarioId={scenarioId}
+          initialData={options}
+          mode={editor}
+          onValueSwitchOpenChange={onValueSwitchOpenChange}
+        >
           <AstBuilder.Root
             node={formula}
             onStoreChange={(nodeStore) => {

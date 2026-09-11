@@ -6,6 +6,7 @@ import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
+import { type ValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { type ParseKeys } from 'i18next';
 import { type ComponentType, type ReactNode } from 'react';
 import { match } from 'ts-pattern';
@@ -26,8 +27,10 @@ import { EditTimestampExtract } from './modals/TimestampExtract/TimestampExtract
 export type EditModalContent = {
   titleTKey: ParseKeys<['scenarios']>;
   Content: ComponentType;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
 };
+
+type ModalEditableAstNode = Exclude<EditableAstNode, ValueSwitchAstNode>;
 
 export type OperandEditModalProps = {
   onSave: (node: EditableAstNode) => void;
@@ -36,7 +39,7 @@ export type OperandEditModalProps = {
   saveLabel?: ReactNode;
 };
 
-export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
+export function OperandEditModal({ node, ...props }: OperandEditModalProps & { node: ModalEditableAstNode }) {
   const validation = AstBuilderNodeSharpFactory.useOptionalSharp()?.select((s) => s.validation);
   const nodeSharp = useRoot(
     {
