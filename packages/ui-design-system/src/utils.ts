@@ -5,8 +5,10 @@ const twMerge = extendTailwindMerge({
   override: {
     classGroups: {
       'font-size': [
+        'text-2xs',
         'text-xs',
         'text-s',
+        'text-r',
         'text-m',
         'text-l',
         'text-2xl', // Old ones

@@ -1,5 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
-import { type DataModelField } from '@app-builder/models';
+import { type DataModelField, getDeclaredSemanticType } from '@app-builder/models';
 import { type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -433,7 +433,7 @@ function adaptFieldToTableField(field: DataModelField): TableField {
         ? 'unique_id'
         : field.name === 'updated_at'
           ? 'last_update'
-          : (field.semanticType ?? fallbackSemanticType),
+          : (getDeclaredSemanticType(field) ?? fallbackSemanticType),
     semanticSubType: field.name === 'object_id' ? 'opaque_id' : (field.semanticSubType ?? fallbackSemanticSubType),
     currencyExponent: field.currencyExponent,
     decimalPrecision: field.decimalPrecision,
@@ -548,7 +548,7 @@ function computeChangeSet(
         // Compare against the original backend data to detect these as real changes.
         const originalField = originalFieldMap.get(field.id);
         if (originalField) {
-          const hasInferredSemanticType = !originalField.semanticType && field.semanticType;
+          const hasInferredSemanticType = !getDeclaredSemanticType(originalField) && field.semanticType;
           const hasInferredSemanticSubType = !originalField.semanticSubType && field.semanticSubType;
           if (hasInferredSemanticType || hasInferredSemanticSubType) {
             changes.push({ type: 'field', operation: 'MOD', objectId: field.id });

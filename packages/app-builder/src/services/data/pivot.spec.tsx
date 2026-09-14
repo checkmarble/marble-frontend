@@ -1,4 +1,5 @@
 import { type DataModel, type DataModelField, type DataType, type TableModel } from '@app-builder/models';
+import { getDefaultSemanticType } from '@app-builder/models/semantic-types';
 
 import { describe, expect, it } from 'vitest';
 
@@ -284,6 +285,7 @@ function helperFields(dataTypes: DataType[]): DataModelField[] {
     return {
       id,
       dataType,
+      semanticType: getDefaultSemanticType(dataType),
       name: `field${id}`,
       // above values are not impactfull in this test and are just for the sake of completion
       description: '',

@@ -25,6 +25,7 @@ import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 import { RiskTagCategory } from './screening';
 import {
+  getDefaultSemanticType,
   isSemanticSubTypeField,
   isSemanticTypeField,
   type SemanticSubTypeField,
@@ -64,6 +65,8 @@ export interface DataModelField {
   alias?: string;
   order?: number;
   semanticType?: SemanticTypeField;
+  /** True when no semantic type was declared and read-time defaults apply. */
+  semanticTypeIsFallback?: boolean;
   semanticSubType?: SemanticSubTypeField;
   currencyExponent?: number;
   decimalPrecision?: number;
@@ -72,6 +75,11 @@ export interface DataModelField {
   isInteger?: boolean;
   foreignkeyTable?: string;
   hidden?: boolean;
+}
+
+/** Returns the saved declaration so supervised editing can still infer missing semantics. */
+export function getDeclaredSemanticType(field: DataModelField) {
+  return field.semanticTypeIsFallback ? undefined : field.semanticType;
 }
 
 function readMetadataString(m: Record<string, unknown>, ...keys: string[]): string | undefined {
@@ -143,7 +151,8 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
     ftmProperty: raw.ftm_property,
     alias,
     order,
-    semanticType,
+    semanticType: semanticType ?? getDefaultSemanticType(raw.data_type),
+    semanticTypeIsFallback: semanticType === undefined,
     semanticSubType,
     currencyExponent,
     decimalPrecision,
