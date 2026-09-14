@@ -32,6 +32,27 @@ import { Button, cn, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod/v4';
 
+function isDecisionsListPath(pathname: string) {
+  return pathname === '/detection/decisions' || pathname === '/detection/decisions/';
+}
+
+function decisionsListRedirectFromReferer(referer: string | null) {
+  if (!referer) {
+    return '/detection/decisions';
+  }
+
+  try {
+    const { pathname, search } = new URL(referer);
+    if (isDecisionsListPath(pathname)) {
+      return pathname + search;
+    }
+  } catch {
+    // Malformed referer URL, use default redirect
+  }
+
+  return '/detection/decisions';
+}
+
 const handleScreenings = async (screenings: Screening[], screeningRepository: ScreeningRepository) => {
   if (screenings.length === 0) {
     return [];
@@ -85,20 +106,9 @@ const decisionLoader = createServerFn()
           message: t('decisions:errors.decision_not_found'),
         });
 
-        let redirectPath = '/detection/decisions';
-        try {
-          const referer = request.headers.get('Referer');
-          if (referer) {
-            const { pathname, search } = new URL(referer);
-            if (pathname.startsWith('/detection/decisions')) {
-              redirectPath = pathname + search;
-            }
-          }
-        } catch {
-          // Malformed referer URL, use default redirect
-        }
-
-        throw redirect({ href: redirectPath });
+        throw redirect({
+          href: decisionsListRedirectFromReferer(request.headers.get('Referer')),
+        });
       }
       throw error;
     });

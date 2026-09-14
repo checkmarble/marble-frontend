@@ -10,7 +10,12 @@ import {
   decisionsI18n,
   ErrorComponent,
   Page,
+  useDecisionFiltersContext,
 } from '@app-builder/components';
+import {
+  getDecisionFilters,
+  toSubmittedDecisionFilters,
+} from '@app-builder/components/Decisions/Filters/decision-filters';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import {
   CursorPaginationButtons,
@@ -19,23 +24,24 @@ import {
 } from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton, last30DaysDuration } from '@app-builder/components/Filters';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { Spinner } from '@app-builder/components/Spinner';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Decision } from '@app-builder/models/decision';
 import { RequestTimeoutError } from '@app-builder/models/http-errors';
 import { type PaginationParams } from '@app-builder/models/pagination';
-import { DecisionFilters, decisionFiltersSchema } from '@app-builder/schemas/decisions';
+import { DecisionFilters, decisionFiltersSchema, isUnboundedDateRange } from '@app-builder/schemas/decisions';
 import { handleSubmit } from '@app-builder/utils/form';
 import { DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { useForm } from '@tanstack/react-form';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Await, createFileRoute, redirect, useNavigate, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { type MouseEvent, useCallback, useState } from 'react';
+import { type MouseEvent, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button, Panel, SearchInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
@@ -48,27 +54,14 @@ const DEFAULT_DECISIONS_DATE_RANGE = {
 const decisionsListQueryParamsSchema = z.intersection(decisionFiltersSchema, paginationSchema);
 type DecisionsListQueryParams = z.infer<typeof decisionsListQueryParamsSchema>;
 
-function getDecisionFilters(filters: DecisionsListQueryParams): DecisionFilters {
-  return {
-    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
-    triggerObject: filters.triggerObject,
-    triggerObjectId: filters.triggerObjectId,
-    dateRange: filters.dateRange,
-    pivotValue: filters.pivotValue,
-    scenarioId: filters.scenarioId,
-    scheduledExecutionId: filters.scheduledExecutionId,
-    caseInboxId: filters.caseInboxId,
-    hasCase: filters.hasCase,
-  };
-}
+type DecisionsListResult = {
+  decisionsData: { items: Decision[]; hasNextPage: boolean };
+  listError: 'request_timeout' | undefined;
+};
 
-function withDefaultDecisionDateRange(params: DecisionsListQueryParams): DecisionsListQueryParams {
-  if (params.dateRange) {
-    return params;
-  }
-
+function hasOtherDecisionFilters(params: DecisionsListQueryParams) {
   const filters = getDecisionFilters(params);
-  const hasOtherFilters =
+  return (
     filters.outcomeAndReviewStatus !== undefined ||
     (filters.triggerObject?.length ?? 0) > 0 ||
     filters.triggerObjectId !== undefined ||
@@ -76,42 +69,16 @@ function withDefaultDecisionDateRange(params: DecisionsListQueryParams): Decisio
     (filters.scenarioId?.length ?? 0) > 0 ||
     (filters.scheduledExecutionId?.length ?? 0) > 0 ||
     (filters.caseInboxId?.length ?? 0) > 0 ||
-    filters.hasCase !== undefined;
-
-  if (hasOtherFilters) {
-    return params;
-  }
-
-  return { ...params, dateRange: DEFAULT_DECISIONS_DATE_RANGE };
+    filters.hasCase !== undefined
+  );
 }
-
-const decisionsListSearchSchema = decisionsListQueryParamsSchema.transform(withDefaultDecisionDateRange);
 
 export const buildQueryParams = (
   filters: DecisionFilters,
   paginationParams?: PaginationParams,
 ): DecisionsListQueryParams => {
   return {
-    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
-    triggerObject: filters.triggerObject,
-    triggerObjectId: filters.triggerObjectId,
-    dateRange: filters.dateRange
-      ? filters.dateRange.type === 'static'
-        ? {
-            type: 'static',
-            endDate: filters.dateRange.endDate,
-            startDate: filters.dateRange.startDate,
-          }
-        : {
-            type: 'dynamic',
-            fromNow: filters.dateRange.fromNow,
-          }
-      : undefined,
-    pivotValue: filters.pivotValue,
-    scenarioId: filters.scenarioId,
-    scheduledExecutionId: filters.scheduledExecutionId,
-    caseInboxId: filters.caseInboxId,
-    hasCase: filters?.hasCase,
+    ...getDecisionFilters(filters),
     offsetId: paginationParams?.offsetId,
     next: paginationParams?.next,
     previous: paginationParams?.previous,
@@ -121,37 +88,18 @@ export const buildQueryParams = (
   };
 };
 
-const decisionsLoader = createServerFn({ method: 'GET' })
+const decisionsPageLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .validator(decisionsListSearchSchema)
-  .handler(async function decisionsLoader({ context, data }) {
-    const { decision, scenario, dataModelRepository, inbox } = context.authInfo;
-
-    const { outcomeAndReviewStatus, ...filters } = data;
-    const [decisionsResult, scenarios, pivots, inboxes] = await Promise.all([
-      decision
-        .listDecisions({
-          outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
-          reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
-          ...filters,
-        })
-        .then((decisionsData) => ({ decisionsData, listError: undefined }))
-        .catch((error) => {
-          if (error instanceof RequestTimeoutError) {
-            return {
-              decisionsData: { items: [] as Decision[], hasNextPage: false },
-              listError: 'request_timeout' as const,
-            };
-          }
-          throw error;
-        }),
+  .validator(decisionsListQueryParamsSchema)
+  .handler(async function decisionsPageLoader({ context, data }) {
+    const { scenario, dataModelRepository, inbox } = context.authInfo;
+    const [scenarios, pivots, inboxes] = await Promise.all([
       scenario.listScenarios(),
       dataModelRepository.listPivots({}),
       inbox.listInboxes(),
     ]);
 
     return {
-      ...decisionsResult,
       scenarios,
       filters: data,
       hasPivots: pivots.length > 0,
@@ -159,10 +107,57 @@ const decisionsLoader = createServerFn({ method: 'GET' })
     };
   });
 
+const listDecisionsLoader = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(decisionsListQueryParamsSchema)
+  .handler(async function listDecisionsLoader({ context, data }) {
+    const { decision } = context.authInfo;
+    const { outcomeAndReviewStatus, dateRange, ...filters } = data;
+    const listDateRange = isUnboundedDateRange(dateRange) ? undefined : dateRange;
+
+    try {
+      const decisionsData = await decision.listDecisions({
+        outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
+        reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
+        ...filters,
+        dateRange: listDateRange,
+      });
+      return { decisionsData, listError: undefined };
+    } catch (error) {
+      if (error instanceof RequestTimeoutError) {
+        return {
+          decisionsData: { items: [] as Decision[], hasNextPage: false },
+          listError: 'request_timeout' as const,
+        };
+      }
+      throw error;
+    }
+  });
+
 export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
-  validateSearch: decisionsListSearchSchema,
+  validateSearch: decisionsListQueryParamsSchema,
+  beforeLoad: ({ search }) => {
+    if (search.dateRange || hasOtherDecisionFilters(search)) {
+      return;
+    }
+
+    throw redirect({
+      to: '/detection/decisions',
+      search: {
+        ...search,
+        dateRange: DEFAULT_DECISIONS_DATE_RANGE,
+      },
+      replace: true,
+    });
+  },
   loaderDeps: ({ search }) => search,
-  loader: ({ deps }) => decisionsLoader({ data: deps }),
+  loader: ({ deps }) => {
+    const decisionsPromise = listDecisionsLoader({ data: deps });
+    return decisionsPageLoader({ data: deps }).then((page) => ({
+      ...page,
+      decisionsPromise,
+    }));
+  },
   errorComponent: ({ error }) => {
     Sentry.captureException(error);
     return <ErrorComponent error={error} />;
@@ -171,16 +166,8 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
 });
 
 function DetectionDecisions() {
-  const { t } = useTranslation(['common', ...decisionsI18n]);
-  const revalidate = useLoaderRevalidator();
-  const { decisionsData, filters, scenarios, hasPivots, inboxes, listError } = Route.useLoaderData();
-  const { items: decisions, ...pagination } = decisionsData;
+  const { decisionsPromise, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
   const decisionFilters = getDecisionFilters(filters);
-  const paginationState = usePaginationsButton({
-    filterValues: decisionFilters,
-    items: decisions,
-    initialOffsetId: filters.offsetId,
-  });
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
@@ -201,9 +188,16 @@ function DetectionDecisions() {
     [filters.limit, filters.order, filters.sorting, navigate],
   );
 
-  const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
-    useTanstackTableListSelection<DecisionViewModel>(decisions, (row) => row.id);
   const [decisionIdsToAdd, setDecisionIdsToAdd] = useState<string[]>([]);
+  const getSelectedRowsRef = useRef<() => DecisionViewModel[]>(() => []);
+  const [hasSelectedRows, setHasSelectedRows] = useState(false);
+  const onSelectionChange = useCallback(
+    (selection: { hasSelectedRows: boolean; getSelectedRows: () => DecisionViewModel[] }) => {
+      getSelectedRowsRef.current = selection.getSelectedRows;
+      setHasSelectedRows(selection.hasSelectedRows);
+    },
+    [],
+  );
 
   return (
     <Panel.Root>
@@ -226,51 +220,158 @@ function DetectionDecisions() {
                   </DecisionFiltersMenu>
                   <AddToCase
                     hasSelection={hasSelectedRows}
-                    getSelectedDecisions={getSelectedRows}
+                    getSelectedDecisions={() => getSelectedRowsRef.current()}
                     onDecisionIdsChange={setDecisionIdsToAdd}
                   />
                 </div>
               </div>
               <DecisionFiltersBar />
-              {listError === 'request_timeout' ? (
-                <Callout variant="outlined" color="red" icon="error" iconColor="red">
-                  <div className="flex flex-wrap gap-md items-center">
-                    <span className="text-red-primary">{t('decisions:errors.request_timeout')}</span>
-                    <DecisionFilterPopover filterName="dateRange" />
-                    <Button variant="secondary" onClick={() => revalidate()}>
-                      {t('common:retry')}
-                    </Button>
-                  </div>
-                </Callout>
-              ) : (
-                <>
-                  <DecisionsList
-                    className="max-h-[60dvh]"
-                    decisions={decisions}
-                    selectable
-                    selectionProps={selectionProps}
-                    tableProps={tableProps}
-                    columnVisibility={{
-                      pivot_value: false,
-                    }}
-                  />
-                  <CursorPaginationButtons
-                    items={decisions}
-                    onPaginationChange={(paginationParams: PaginationParams) =>
-                      navigateDecisionList(decisionFilters, paginationParams)
-                    }
-                    paginationState={paginationState}
-                    boundariesDisplay="dates"
-                    {...pagination}
-                  />
-                </>
-              )}
+              <Suspense fallback={<DecisionsListSkeleton />}>
+                <Await promise={decisionsPromise} fallback={<DecisionsListSkeleton />}>
+                  {(result) =>
+                    result.listError === 'request_timeout' ? (
+                      <DecisionsTimeout currentSearch={filters} />
+                    ) : (
+                      <DecisionsLoaded
+                        decisionsData={result.decisionsData}
+                        decisionFilters={decisionFilters}
+                        filters={filters}
+                        navigateDecisionList={navigateDecisionList}
+                        onSelectionChange={onSelectionChange}
+                      />
+                    )
+                  }
+                </Await>
+              </Suspense>
             </DecisionFiltersProvider>
           </div>
         </Page.Content>
       </Page.Main>
       <DecisionRightPanel decisionIds={decisionIdsToAdd} />
     </Panel.Root>
+  );
+}
+
+interface DecisionsTimeoutProps {
+  currentSearch: DecisionsListQueryParams;
+}
+
+function DecisionsTimeout({ currentSearch }: DecisionsTimeoutProps) {
+  const { t } = useTranslation(['common', ...decisionsI18n]);
+
+  return (
+    <Callout variant="outlined" color="red" icon="error" iconColor="red">
+      <div className="flex flex-wrap gap-md items-center">
+        <span className="text-red-primary">{t('decisions:errors.request_timeout')}</span>
+        <DecisionFilterPopover filterName="dateRange" />
+        <DecisionListRetryButton currentSearch={currentSearch} />
+      </div>
+    </Callout>
+  );
+}
+
+interface DecisionsLoadedProps {
+  decisionsData: DecisionsListResult['decisionsData'];
+  decisionFilters: DecisionFilters;
+  filters: DecisionsListQueryParams;
+  navigateDecisionList: (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => void;
+  onSelectionChange: (selection: { hasSelectedRows: boolean; getSelectedRows: () => DecisionViewModel[] }) => void;
+}
+
+function DecisionsLoaded({
+  decisionsData,
+  decisionFilters,
+  filters,
+  navigateDecisionList,
+  onSelectionChange,
+}: DecisionsLoadedProps) {
+  const { items: decisions, ...pagination } = decisionsData;
+  const paginationState = usePaginationsButton({
+    filterValues: decisionFilters,
+    items: decisions,
+    initialOffsetId: filters.offsetId,
+  });
+  const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
+    useTanstackTableListSelection<DecisionViewModel>(decisions, (row) => row.id);
+
+  useEffect(() => {
+    onSelectionChange({ hasSelectedRows, getSelectedRows });
+    return () => onSelectionChange({ hasSelectedRows: false, getSelectedRows: () => [] });
+  }, [getSelectedRows, hasSelectedRows, onSelectionChange]);
+
+  return (
+    <>
+      <DecisionsList
+        className="max-h-[60dvh]"
+        decisions={decisions}
+        selectable
+        selectionProps={selectionProps}
+        tableProps={tableProps}
+        columnVisibility={{
+          pivot_value: false,
+        }}
+      />
+      <CursorPaginationButtons
+        items={decisions}
+        onPaginationChange={(paginationParams: PaginationParams) =>
+          navigateDecisionList(decisionFilters, paginationParams)
+        }
+        paginationState={paginationState}
+        boundariesDisplay="dates"
+        {...pagination}
+      />
+    </>
+  );
+}
+
+function DecisionsListSkeleton() {
+  return (
+    <div className="border border-grey-border rounded-md max-h-[60dvh]">
+      <div className="h-13 border-b border-grey-border" />
+      <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
+        <Spinner className="size-12" />
+      </div>
+    </div>
+  );
+}
+
+interface DecisionListRetryButtonProps {
+  currentSearch: DecisionsListQueryParams;
+}
+
+function DecisionListRetryButton({ currentSearch }: DecisionListRetryButtonProps) {
+  const { t } = useTranslation(['common']);
+  const { form } = useDecisionFiltersContext();
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  return (
+    <Button
+      variant="secondary"
+      onClick={() => {
+        const nextFilters = toSubmittedDecisionFilters(form.state.values);
+        const currentFilters = getDecisionFilters(currentSearch);
+
+        if (R.isDeepEqual(nextFilters, currentFilters)) {
+          void router.invalidate();
+          return;
+        }
+
+        const searchPaginationParams: PaginationParams = {
+          ...(currentSearch.order ? { order: currentSearch.order } : {}),
+          ...(currentSearch.sorting ? { sorting: currentSearch.sorting } : {}),
+          ...(currentSearch.limit ? { limit: currentSearch.limit } : {}),
+        };
+
+        void navigate({
+          to: '/detection/decisions',
+          search: buildQueryParams(nextFilters, searchPaginationParams),
+          replace: true,
+        });
+      }}
+    >
+      {t('common:retry')}
+    </Button>
   );
 }
 
