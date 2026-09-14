@@ -1,4 +1,5 @@
 import { type DataModelField } from '@app-builder/models';
+import { serializeLifecycleDuration } from '@app-builder/models/duration';
 import { EditSemanticFieldPayload, EditSemanticLinkPayload, EditSemanticTablePayload } from '@app-builder/schemas/data';
 import { ifChanged, omitUndefined } from '@app-builder/utils/omit-undefined';
 import { adaptLink, adaptSemanticField, adaptTableField, getEntitySubtype } from '../CreateTable/createTable-types';
@@ -70,6 +71,15 @@ export function adaptUpdateTableValue(
       tableState.links,
     ),
     ...(fieldOrderChanged ? { metadata: { fieldOrder: currentFieldOrder } } : {}),
+    ...(changedProperties.includes('lifecycle')
+      ? {
+          lifecycle: {
+            enabled: tableState.lifecycle.enabled,
+            delete_stale_rows_after: serializeLifecycleDuration(tableState.lifecycle.deleteStaleRowsAfter),
+            delete_active_rows_after: serializeLifecycleDuration(tableState.lifecycle.deleteActiveRowsAfter),
+          },
+        }
+      : {}),
   };
   return adaptedTable;
 }

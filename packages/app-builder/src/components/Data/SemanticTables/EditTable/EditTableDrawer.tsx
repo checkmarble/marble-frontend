@@ -1,6 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import { type DataModelField } from '@app-builder/models';
 import { type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
+import { parseLifecycleDuration } from '@app-builder/models/duration';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +17,7 @@ import {
 } from '../CreateTable/createTable-types';
 import { DrawerContext } from '../Shared/DrawerContext';
 import { EntityTypeMenu } from '../Shared/EntityTypeMenu';
+import { LifecycleSettings } from '../Shared/LifecycleSettings';
 import type {
   ChangeRecord,
   LinkValue,
@@ -224,6 +226,10 @@ export function EditTableDrawer({
     () => validationErrors.some((e) => e.kind === 'table' && e.field === 'name'),
     [validationErrors],
   );
+  const hasLifecycleError = useMemo(
+    () => validationErrors.some((e) => e.kind === 'table' && e.field === 'lifecycle'),
+    [validationErrors],
+  );
 
   async function handleSave() {
     const links = getLinksForTable(tableModel.id);
@@ -332,12 +338,20 @@ export function EditTableDrawer({
             </Panel.Header>
 
             <div className="flex-1 overflow-hidden flex flex-col">
-              <FormTable
-                tableId={tableModel.id}
-                errorFieldIds={fieldErrorIds}
-                errorLinkIds={linkErrorIds}
-                destinationTableOptions={destinationTableOptions}
+              <LifecycleSettings
+                value={tableState.lifecycle}
+                onChange={(lifecycle) => updateTableState(tableModel.id, { lifecycle })}
+                hasError={hasLifecycleError}
+                className="mt-lg shrink-0"
               />
+              <div className="flex min-h-0 flex-1 pt-lg">
+                <FormTable
+                  tableId={tableModel.id}
+                  errorFieldIds={fieldErrorIds}
+                  errorLinkIds={linkErrorIds}
+                  destinationTableOptions={destinationTableOptions}
+                />
+              </div>
             </div>
             <Panel.Footer>
               {validationErrors.length > 0 || isSemanticTypeChanged ? (
@@ -471,6 +485,11 @@ function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormV
     metaData: {},
     isCanceled: false,
     isVisited: true,
+    lifecycle: {
+      enabled: tableModel.lifecycle.enabled,
+      deleteStaleRowsAfter: parseLifecycleDuration(tableModel.lifecycle.deleteStaleRowsAfter),
+      deleteActiveRowsAfter: parseLifecycleDuration(tableModel.lifecycle.deleteActiveRowsAfter),
+    },
   };
 }
 

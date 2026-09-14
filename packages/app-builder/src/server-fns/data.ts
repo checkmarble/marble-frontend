@@ -275,6 +275,7 @@ export const editSemanticTableFn = createServerFn({ method: 'POST' })
         fields: data.fields,
         links: data.links,
         metadata: data.metadata,
+        lifecycle: data.lifecycle,
       } satisfies UpdateTableBodyDto);
 
       await context.authInfo.dataModelRepository.patchDataModelTable(data.tableId, patchBody);

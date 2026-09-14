@@ -1425,6 +1425,11 @@ export type TableDto = {
     } | null;
     /** Name of the field used as default ordering */
     primary_ordering_field?: string;
+    lifecycle?: {
+        enabled: boolean;
+        delete_stale_rows_after?: string | null;
+        delete_active_rows_after?: string | null;
+    };
 };
 export type DataModelDto = {
     tables: {
@@ -1468,6 +1473,11 @@ export type CreateTableBody = {
     primary_ordering_field?: string;
     fields?: CreateTableBodyField[];
     links?: CreateTableBodyLink[];
+    lifecycle?: {
+        enabled: boolean;
+        delete_stale_rows_after?: string | null;
+        delete_active_rows_after?: string | null;
+    };
 };
 export type CreateTableResponseDto = {
     /** ID of the newly created table */
@@ -1536,6 +1546,11 @@ export type UpdateTableBodyDto = {
     metadata?: {
         [key: string]: any;
     } | null;
+    lifecycle?: {
+        enabled: boolean;
+        delete_stale_rows_after?: string | null;
+        delete_active_rows_after?: string | null;
+    };
 };
 export type Items = {
     id?: string;
