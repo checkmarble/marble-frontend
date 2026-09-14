@@ -1,4 +1,5 @@
 import { AddNewFilterButton, ClearAllFiltersLink, FilterItem, FilterPopover } from '@app-builder/components/Filters';
+import { unboundedDateRange } from '@app-builder/schemas/decisions';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
@@ -98,7 +99,7 @@ export function DecisionFiltersBar() {
             </DecisionFiltersMenu>
           ) : null}
         </div>
-        <ClearAllFiltersLink to="/detection/decisions" replace />
+        <ClearAllFiltersLink to="/detection/decisions" search={{ dateRange: unboundedDateRange }} replace />
       </div>
     </>
   );

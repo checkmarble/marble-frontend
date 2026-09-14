@@ -1,15 +1,21 @@
-import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Inbox } from '@app-builder/models/inbox';
-import { type KnownOutcome } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
-import { DecisionFilters } from '@app-builder/schemas/decisions';
+import { DecisionFilters, isUnboundedDateRange } from '@app-builder/schemas/decisions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type DateRangeFilterForm } from '@app-builder/utils/schema/filterSchema';
 import { useForm, useStore } from '@tanstack/react-form';
 import * as React from 'react';
 import * as R from 'remeda';
+import {
+  adaptFilterValues,
+  type DecisionFiltersForm,
+  emptyDecisionFilters,
+  toSubmittedDecisionFilters,
+} from './decision-filters';
 import { type DecisionFilterName, decisionFilterNames } from './filters';
+
+export type { DecisionFiltersForm } from './decision-filters';
 
 // Helper to capture the inferred form type without partial generic application
 function _useDecisionFiltersForm() {
@@ -22,62 +28,12 @@ interface DecisionFiltersContextValue {
   filterValues: DecisionFilters;
   scenarios: Scenario[];
   inboxes: Inbox[];
-  submitDecisionFilters: () => void;
+  submitDecisionFilters: (values?: DecisionFiltersForm) => void;
   onDecisionFilterClose: () => void;
   form: DecisionFiltersFormApi;
 }
 
 const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>('DecisionFiltersContext');
-
-export type DecisionFiltersForm = {
-  dateRange: DateRangeFilterForm;
-  hasCase: boolean | null;
-  outcomeAndReviewStatus: {
-    outcome: KnownOutcome;
-    reviewStatus?: ReviewStatus;
-  } | null;
-  pivotValue: string | null;
-  scenarioId: string[];
-  scheduledExecutionId: string[];
-  caseInboxId: string[];
-  triggerObject: string[];
-  triggerObjectId: string | null;
-};
-const emptyDecisionFilters: DecisionFiltersForm = {
-  dateRange: null,
-  hasCase: null,
-  outcomeAndReviewStatus: null,
-  pivotValue: null,
-  scenarioId: [],
-  scheduledExecutionId: [],
-  caseInboxId: [],
-  triggerObject: [],
-  triggerObjectId: null,
-};
-
-function adaptFilterValues(filterValues: DecisionFilters): DecisionFiltersForm {
-  let dateRange: DateRangeFilterForm = null;
-  if (filterValues.dateRange?.type === 'static') {
-    dateRange = {
-      type: 'static',
-      startDate: filterValues.dateRange.startDate ?? '',
-      endDate: filterValues.dateRange.endDate ?? '',
-    };
-  } else if (filterValues.dateRange?.type === 'dynamic' && filterValues.dateRange.fromNow) {
-    dateRange = { type: 'dynamic', fromNow: filterValues.dateRange.fromNow };
-  }
-  return {
-    dateRange,
-    hasCase: filterValues.hasCase ?? null,
-    outcomeAndReviewStatus: filterValues.outcomeAndReviewStatus ?? null,
-    pivotValue: filterValues.pivotValue ?? null,
-    scenarioId: filterValues.scenarioId ?? [],
-    scheduledExecutionId: filterValues.scheduledExecutionId ?? [],
-    caseInboxId: filterValues.caseInboxId ?? [],
-    triggerObject: filterValues.triggerObject ?? [],
-    triggerObjectId: filterValues.triggerObjectId ?? null,
-  };
-}
 
 export function DecisionFiltersProvider({
   hasPivots,
@@ -102,20 +58,8 @@ export function DecisionFiltersProvider({
     form.reset(adaptFilterValues(filterValues));
   }, [filterValues]);
 
-  const submitDecisionFilters = useCallbackRef(() => {
-    const formValues = form.state.values;
-    _submitDecisionFilters({
-      ...formValues,
-      outcomeAndReviewStatus: formValues.outcomeAndReviewStatus ?? undefined,
-      dateRange: formValues.dateRange ?? undefined,
-      hasCase: formValues.hasCase ?? undefined,
-      pivotValue: formValues.pivotValue ?? undefined,
-      triggerObjectId: formValues.triggerObjectId ?? undefined,
-      scenarioId: formValues.scenarioId?.length ? formValues.scenarioId : undefined,
-      scheduledExecutionId: formValues.scheduledExecutionId?.length ? formValues.scheduledExecutionId : undefined,
-      caseInboxId: formValues.caseInboxId?.length ? formValues.caseInboxId : undefined,
-      triggerObject: formValues.triggerObject?.length ? formValues.triggerObject : undefined,
-    });
+  const submitDecisionFilters = useCallbackRef((values?: DecisionFiltersForm) => {
+    _submitDecisionFilters(toSubmittedDecisionFilters(values ?? form.state.values));
   });
   const onDecisionFilterClose = useCallbackRef(() => {
     if (form.state.isDirty) {
@@ -232,6 +176,7 @@ export function useDecisionFiltersPartition() {
     decisionFilterNames,
     R.partition((filterName) => {
       const value = filterValues[filterName];
+      if (filterName === 'dateRange' && isUnboundedDateRange(value)) return true;
       if (R.isArray(value)) return value.length === 0;
       if (R.isPlainObject(value)) return R.isEmpty(value);
       return R.isNullish(value);
@@ -248,8 +193,12 @@ export function useClearFilter() {
 
   return React.useCallback(
     (filterName: DecisionFilterName) => {
-      form.setFieldValue(filterName, emptyDecisionFilters[filterName] as never);
-      submitDecisionFilters();
+      const cleared = emptyDecisionFilters[filterName];
+      form.setFieldValue(filterName, cleared as never);
+      submitDecisionFilters({
+        ...form.state.values,
+        [filterName]: cleared,
+      });
     },
     [form, submitDecisionFilters],
   );

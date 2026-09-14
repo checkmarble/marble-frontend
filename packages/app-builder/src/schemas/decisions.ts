@@ -4,8 +4,16 @@ import { dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
+export const unboundedDateRange = { type: 'unbounded' } as const;
+export const unboundedDateRangeSchema = z.object({ type: z.literal('unbounded') });
+export const decisionDateRangeSchema = z.union([dateRangeSchema, unboundedDateRangeSchema]);
+
+export function isUnboundedDateRange(value: unknown): value is typeof unboundedDateRange {
+  return typeof value === 'object' && value !== null && 'type' in value && value.type === 'unbounded';
+}
+
 export const decisionFiltersSchema = z.object({
-  dateRange: dateRangeSchema.optional(),
+  dateRange: decisionDateRangeSchema.optional(),
   hasCase: z.union([z.stringbool().optional(), z.boolean()]),
   outcomeAndReviewStatus: z
     .object({
