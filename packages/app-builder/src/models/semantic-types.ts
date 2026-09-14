@@ -1,3 +1,5 @@
+import type { DataType } from './data-model';
+
 export const semanticTypeField = [
   'text',
   'name',
@@ -109,4 +111,33 @@ const _semanticSubTypeValues = new Set<string>(
 
 export function isSemanticSubTypeField(v: string): v is SemanticSubTypeField {
   return _semanticSubTypeValues.has(v);
+}
+
+/** Generic defaults shared by model reads and supervised field inference. */
+export function getDefaultSemanticType(dataType: DataType): SemanticTypeField | undefined {
+  switch (dataType) {
+    // Boolean display is already determined by the data type.
+    case 'Bool':
+    case 'Bool[]':
+      return undefined;
+    case 'Int':
+    case 'Int[]':
+    case 'Float':
+    case 'Float[]':
+      return 'number';
+    case 'Timestamp':
+    case 'Timestamp[]':
+      return 'timestamp';
+    case 'String':
+    case 'String[]':
+    case 'Coords':
+    case 'Coords[]':
+    case 'IpAddress':
+    case 'IpAddress[]':
+    case 'DerivedData':
+    case 'unknown':
+      return 'text';
+    default:
+      throw new Error(`Unhandled data type: ${dataType satisfies never}`);
+  }
 }

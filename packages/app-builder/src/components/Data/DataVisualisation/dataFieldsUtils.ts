@@ -1,4 +1,5 @@
 import { DataType, type SemanticSubTypeField, type SemanticTypeField, TableModel } from '@app-builder/models';
+import { getDefaultSemanticType } from '@app-builder/models/semantic-types';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import * as R from 'remeda';
 import { VALID_DATA_TYPE } from './data-type';
@@ -116,6 +117,8 @@ export function inferSemanticTypeFromName(
   dataType: DataType,
   isEnum?: boolean,
 ): { semanticType: SemanticTypeField; semanticSubType?: SemanticSubTypeField } {
+  // The supervised form requires a semantic type, including for boolean fields.
+  const defaultSemanticType = getDefaultSemanticType(dataType) ?? 'text';
   if (isEnum) return { semanticType: 'enum', semanticSubType: dataType === 'String' ? 'autocomplete' : undefined };
   switch (dataType) {
     case 'String':
@@ -134,7 +137,7 @@ export function inferSemanticTypeFromName(
       if (/currency|curr_/i.test(name)) return { semanticType: 'currency_code' };
       if (/url/i.test(name)) return { semanticType: 'link', semanticSubType: 'url' };
       if (/account/i.test(name)) return { semanticType: 'account_identifier', semanticSubType: 'account_number' };
-      return { semanticType: 'text' };
+      return { semanticType: defaultSemanticType };
     case 'Timestamp':
     case 'Timestamp[]':
       if (/birth(?:_| )?date|date_of_birth/i.test(name)) return { semanticType: 'date_of_birth' };
@@ -142,20 +145,20 @@ export function inferSemanticTypeFromName(
       if (/creat/i.test(name)) return { semanticType: 'creation_date' };
       if (/updat/i.test(name)) return { semanticType: 'last_update' };
       if (/valid/i.test(name)) return { semanticType: 'validation_date' };
-      return { semanticType: 'timestamp' };
+      return { semanticType: defaultSemanticType };
     case 'Int':
     case 'Int[]':
     case 'Float':
     case 'Float[]':
       if (/amount/i.test(name)) return { semanticType: 'monetary_amount' };
-      return { semanticType: 'number' };
+      return { semanticType: defaultSemanticType };
     case 'Bool':
     case 'Bool[]':
     case 'Coords':
     case 'Coords[]':
     case 'IpAddress':
     case 'IpAddress[]':
-      return { semanticType: 'text' };
+      return { semanticType: defaultSemanticType };
     default:
       throw new Error(`Unhandled data type: ${dataType satisfies never}`);
   }

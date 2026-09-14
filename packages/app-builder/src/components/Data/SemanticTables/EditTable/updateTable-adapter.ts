@@ -1,4 +1,4 @@
-import { type DataModelField } from '@app-builder/models';
+import { type DataModelField, getDeclaredSemanticType } from '@app-builder/models';
 import { EditSemanticFieldPayload, EditSemanticLinkPayload, EditSemanticTablePayload } from '@app-builder/schemas/data';
 import { ifChanged, omitUndefined } from '@app-builder/utils/omit-undefined';
 import { adaptLink, adaptSemanticField, adaptTableField, getEntitySubtype } from '../CreateTable/createTable-types';
@@ -232,7 +232,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField, rawMod
   // When a raw model field is available, compare against the actual backend values
   // to detect inferred semantic types as real changes
 
-  const originalSemanticType = rawModelField ? rawModelField.semanticType : original.semanticType;
+  const originalSemanticType = rawModelField ? getDeclaredSemanticType(rawModelField) : original.semanticType;
   const originalSemanticSubType = rawModelField ? rawModelField.semanticSubType : original.semanticSubType;
   const semanticTypeChanged =
     current.semanticType !== originalSemanticType || current.semanticSubType !== originalSemanticSubType;
