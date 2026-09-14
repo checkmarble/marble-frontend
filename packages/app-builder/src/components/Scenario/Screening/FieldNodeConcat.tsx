@@ -9,7 +9,7 @@ import { splice } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { MatchOperand } from './MatchOperand';
+import { MatchOperand, OperandDisplayDateOptions } from './MatchOperand';
 
 function concatFromNodes(nodes: KnownOperandAstNode[]): AstNode | null {
   const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
@@ -31,7 +31,7 @@ export function FieldNodeConcat({
   onChange?: (node: AstNode | null) => void;
   onBlur?: () => void;
   viewOnly?: boolean;
-  withDate?: boolean;
+  withDate?: OperandDisplayDateOptions;
 }) {
   const [nodes, setNodes] = useState<KnownOperandAstNode[]>(() =>
     value?.children?.length ? value.children : [NewUndefinedAstNode()],
