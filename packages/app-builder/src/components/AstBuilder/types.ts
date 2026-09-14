@@ -28,5 +28,6 @@ export type AstBuilderRootProps<NodeType extends AstNode = AstNode> = {
   returnType?: ReturnValueType;
   coerceDataType?: AstBuilderOperandProps['coerceDataType'];
   optionsDataType?: AstBuilderOperandProps['optionsDataType'];
+  excludeFuntionsType?: AstBuilderOperandProps['excludeFuntionsType'];
   excludeFields?: AstBuilderOperandProps['excludeFields'];
 };

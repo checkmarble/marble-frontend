@@ -47,13 +47,20 @@ export const editionOperandLabelClassnames = cva(
   },
 );
 
+type DataTypeFilter = DataType[] | ((o: EnrichedMenuOption) => boolean);
+
 type EditionOperandStore = {
   enumValues: EnumValue[] | undefined;
   options: EnrichedMenuOption[];
-  optionsDataType: DataType[] | ((o: EnrichedMenuOption) => boolean) | undefined;
+  optionsDataType: DataTypeFilter | undefined;
+  excludeFuntionsType: DataTypeFilter | undefined;
   coerceDataType: DataType[] | undefined;
   excludeFields?: string[];
 };
+
+function optionMatchesDataTypeFilter(option: EnrichedMenuOption, filter: DataTypeFilter) {
+  return typeof filter === 'function' ? filter(option) : filter.includes(option.dataType);
+}
 
 export const EditionOperandSharpFactory = createSharpFactory({
   name: 'EditionOperand',
@@ -79,17 +86,17 @@ export const EditionOperandSharpFactory = createSharpFactory({
     filteredOptions(state) {
       const dataTypes = state.optionsDataType;
       const excludeFields = state.excludeFields;
-
+      const excludeFuntionsType = state.excludeFuntionsType;
       return state.options.filter((option) => {
-        const matchesDataType = dataTypes
-          ? typeof dataTypes === 'function'
-            ? dataTypes(option)
-            : dataTypes.includes(option.dataType)
-          : true;
+        const matchesDataType = !dataTypes || optionMatchesDataTypeFilter(option, dataTypes);
         const fieldName = getFieldName(option.astNode);
         const isExcludedField = fieldName !== 'unknown' ? excludeFields?.includes(fieldName) : false;
+        const isExcludedFunction =
+          option.operandType === 'Function' &&
+          !!excludeFuntionsType &&
+          optionMatchesDataTypeFilter(option, excludeFuntionsType);
 
-        return matchesDataType && !isExcludedField;
+        return matchesDataType && !isExcludedField && !isExcludedFunction;
       });
     },
   });
@@ -117,6 +124,7 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
       excludeFields: props.excludeFields,
     }),
     optionsDataType: props.optionsDataType,
+    excludeFuntionsType: props.excludeFuntionsType,
     coerceDataType: props.coerceDataType,
     excludeFields: props.excludeFields,
   });

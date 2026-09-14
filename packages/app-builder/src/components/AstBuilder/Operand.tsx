@@ -15,6 +15,7 @@ export type AstBuilderOperandProps = AstBuilderBaseProps<KnownOperandAstNode> & 
   placeholder?: string;
   onChange?: (node: AstNode) => void;
   optionsDataType?: DataType[] | ((o: EnrichedMenuOption) => boolean);
+  excludeFuntionsType?: DataType[] | ((o: EnrichedMenuOption) => boolean);
   excludeFields?: string[];
   coerceDataType?: DataType[];
   returnValue?: string;

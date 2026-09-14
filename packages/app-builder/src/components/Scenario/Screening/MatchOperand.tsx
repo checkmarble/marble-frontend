@@ -3,6 +3,8 @@ import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { memo } from 'react';
 
+export type OperandDisplayDateOptions = 'all' | 'fields' | 'functions';
+
 export const MatchOperand = memo(function MatchOperand({
   node,
   onSave,
@@ -12,13 +14,14 @@ export const MatchOperand = memo(function MatchOperand({
   node?: KnownOperandAstNode;
   onSave?: (astNode: AstNode) => void;
   placeholder?: string;
-  withDate?: boolean;
+  withDate?: OperandDisplayDateOptions;
 }) {
   return (
     <AstBuilder.Operand
       placeholder={placeholder}
       node={node ?? NewUndefinedAstNode()}
-      optionsDataType={withDate ? ['String', 'Timestamp'] : ['String']}
+      optionsDataType={withDate === 'all' || withDate === 'fields' ? ['String', 'Timestamp'] : ['String']}
+      excludeFuntionsType={withDate === 'fields' ? ['Timestamp'] : []}
       excludeFields={withDate ? ['updated_at'] : undefined}
       validationStatus="valid"
       onChange={onSave}

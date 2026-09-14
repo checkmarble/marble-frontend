@@ -73,11 +73,13 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
   path: string;
   coerceDataType?: AstBuilderOperandProps['coerceDataType'];
   optionsDataType?: AstBuilderOperandProps['optionsDataType'];
+  excludeFuntionsType?: AstBuilderOperandProps['excludeFuntionsType'];
   excludeFields?: AstBuilderOperandProps['excludeFields'];
 }) {
   const operandProps = {
     coerceDataType: props.coerceDataType,
     optionsDataType: props.optionsDataType,
+    excludeFuntionsType: props.excludeFuntionsType,
     excludeFields: props.excludeFields,
   };
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
