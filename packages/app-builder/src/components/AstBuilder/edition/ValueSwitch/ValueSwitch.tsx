@@ -835,7 +835,7 @@ function TwoDimensionEditor({
             </thead>
             <tbody>
               {rowDimension.values.map((rowValue, rowIndex) => (
-                <tr key={`${typeof rowValue}:${String(rowValue)}`}>
+                <tr key={numericRows ? `numeric-row-${rowIndex}` : `${typeof rowValue}:${String(rowValue)}`}>
                   <th
                     className={cn(
                       'border-grey-border bg-surface-card sticky left-0 z-10 border-r text-start font-normal',
@@ -863,7 +863,7 @@ function TwoDimensionEditor({
                   </th>
                   {columnDimension.values.map((columnValue, columnIndex) => (
                     <td
-                      key={getValueSwitchCellKey([rowValue, columnValue])}
+                      key={numericRows ? `${rowIndex}:${columnIndex}` : getValueSwitchCellKey([rowValue, columnValue])}
                       className={cn(hasCompactCells ? 'p-xs' : 'p-sm', numericRows && 'pt-sm align-top')}
                     >
                       <NumberInput
