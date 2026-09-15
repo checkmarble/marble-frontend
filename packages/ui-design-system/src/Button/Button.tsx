@@ -2,6 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../utils';
 
+// `disabled:` / `enabled:` also cover `[aria-disabled="true"]` (tailwind-preset).
 export const CtaV2ClassName = cva(
   'text-default font-medium w-fit rounded-md inline-flex items-center gap-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus-visible:outline-2 outline-offset-2',
   {
@@ -74,11 +75,7 @@ export const CtaV2ClassName = cva(
       },
       // Subtle elevation on filled + stroked (Figma "Shadow/light"); not on link
       {
-        appearance: 'filled',
-        class: 'shadow-[0px_4px_10px_0px_rgba(0,0,0,0.05)]',
-      },
-      {
-        appearance: 'stroked',
+        appearance: ['filled', 'stroked'],
         class: 'shadow-[0px_4px_10px_0px_rgba(0,0,0,0.05)]',
       },
       // Primary + Filled + Primary color (default purple)
@@ -87,7 +84,7 @@ export const CtaV2ClassName = cva(
         appearance: 'filled',
         color: 'primary',
         class:
-          'bg-purple-primary border-purple-primary text-white enabled:hover:bg-purple-hover enabled:hover:border-purple-hover disabled:bg-purple-disabled disabled:border-purple-disabled dark:text-grey-primary dark:enabled:hover:bg-purple-hover dark:enabled:hover:border-purple-hover dark:disabled:text-grey-secondary focus-visible:outline-purple-primary',
+          'bg-purple-primary border-purple-primary text-white enabled:hover:bg-purple-hover enabled:hover:border-purple-hover disabled:bg-purple-disabled disabled:border-purple-disabled dark:text-grey-primary dark:enabled:hover:bg-purple-hover dark:enabled:hover:border-purple-hover',
       },
       // Primary + Filled + Grey color (Figma Color=Grey)
       {
@@ -166,7 +163,7 @@ export const CtaV2ClassName = cva(
         variant: 'success',
         appearance: 'stroked',
         class:
-          'bg-transparent border-green-primary text-green-primary enabled:hover:bg-green-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled focus-visible:outline-green-primary ',
+          'bg-transparent border-green-primary text-green-primary enabled:hover:bg-green-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled focus-visible:outline-green-primary',
       },
       // destructive stroked
       {

@@ -2,6 +2,7 @@ import { semanticTypeTable } from '@app-builder/components/Data/SemanticTables/S
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { semanticFieldForBack } from '@app-builder/constants/data-model';
 import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
+import { enumEntrySchema } from '@app-builder/models/enum';
 import { z } from 'zod/v4';
 
 export const applyArchetypePayloadSchema = z.object({
@@ -20,7 +21,9 @@ export const createFieldValuesSchema = z.object({
   is_enum: z.boolean().optional(),
   is_unique: z.boolean().optional(),
   ftm_property: z.string().optional(),
-  metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()).optional(),
+  metadata: z
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(enumEntrySchema)]).optional())
+    .optional(),
   semantic_type: z.enum(semanticFieldForBack).optional(),
 });
 export const createLinksValuesSchema = z.object({
@@ -89,7 +92,9 @@ const fieldOperationSchema = z.union([
       ftm_property: z.string().optional(),
       alias: z.string().optional(),
       semantic_type: z.enum(semanticFieldForBack).optional(),
-      metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()).optional(),
+      metadata: z
+        .record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(enumEntrySchema)]).optional())
+        .optional(),
     }),
   }),
   z.object({
