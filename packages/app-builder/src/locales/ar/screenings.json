@@ -138,6 +138,8 @@
   "freeform_search.new_search": "بحث جديد",
   "freeform_search.no_results_description": "حاول تعديل معايير البحث أو خفض حد التشابه.",
   "freeform_search.no_results_title": "لم يتم العثور على مطابقات",
+  "freeform_search.preset_edited": "(معدّل)",
+  "freeform_search.preset_name_already_exists": "يوجد إعداد مسبق بهذا الاسم بالفعل",
   "freeform_search.preset_name_placeholder": "اسم الإعداد المسبق",
   "freeform_search.preset_name_required": "الاسم مطلوب",
   "freeform_search.preset_placeholder": "اختر مجموعة محددة...",

@@ -7,7 +7,7 @@ import {
   createFreeFormSearchPresetFn,
   deleteFreeFormSearchPresetFn,
   type FreeformSearchInput,
-  FreeformSearchPreset,
+  type FreeformSearchPreset,
   freeformSearchFn,
   getFreeFormSearchPresetFn,
   getFreeformSearchFn,
@@ -73,11 +73,17 @@ export const useGetFreeformSearchQuery = (id: string) => {
   });
 };
 
+export const freeformSearchPresetsQueryKey = ['screening', 'freeform-search', 'presets'] as const;
+
+export function getFreeformSearchPresetQueryKey(name: string) {
+  return ['screening', 'freeform-search', 'preset', name] as const;
+}
+
 export const useListFreeFormSearchPresetsQuery = () => {
   const getListFFS = useServerFn(getListFreeFormSearchPresetsFn);
 
   return useQuery({
-    queryKey: ['screening', 'freeform-search'],
+    queryKey: freeformSearchPresetsQueryKey,
     queryFn: async () => {
       const result = await getListFFS();
       return result;
@@ -85,26 +91,36 @@ export const useListFreeFormSearchPresetsQuery = () => {
   });
 };
 
-export const useGetFreeFormSearchPresetQuery = (name: string) => {
+export const useGetFreeFormSearchPresetQuery = (name: string | undefined) => {
   const getFreeFormSearchPreset = useServerFn(getFreeFormSearchPresetFn);
 
   return useQuery({
-    queryKey: ['screening', 'freeform-search', 'preset', name],
+    queryKey: getFreeformSearchPresetQueryKey(name ?? ''),
     queryFn: async () => {
+      if (!name) throw new Error('Preset name is required');
       const result = await getFreeFormSearchPreset({ data: { name } });
       return result;
     },
+    enabled: !!name,
   });
 };
 
 export const useCreateFreeFormSearchPresetMutation = () => {
   const createFreeFormSearchPreset = useServerFn(createFreeFormSearchPresetFn);
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['screening', 'freeform-search', 'preset'],
+    mutationKey: ['screening', 'freeform-search', 'preset', 'create'],
     mutationFn: async ({ name, value }: { name: string; value: FreeformSearchPreset }) => {
-      console.log('createFreeFormSearchPreset', { name, value });
       return createFreeFormSearchPreset({ data: { name, value } });
+    },
+    onSuccess: (result, { name, value }) => {
+      if (!result.success) return;
+      queryClient.setQueryData<string[]>(freeformSearchPresetsQueryKey, (old = []) =>
+        old.includes(name) ? old : [...old, name],
+      );
+      queryClient.setQueryData(getFreeformSearchPresetQueryKey(name), value);
+      void queryClient.invalidateQueries({ queryKey: freeformSearchPresetsQueryKey });
     },
   });
 };

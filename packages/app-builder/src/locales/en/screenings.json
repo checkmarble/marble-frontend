@@ -138,6 +138,8 @@
   "freeform_search.new_search": "New Search",
   "freeform_search.no_results_description": "Try adjusting your search criteria or lowering the similarity threshold.",
   "freeform_search.no_results_title": "No matches found",
+  "freeform_search.preset_edited": "(edited)",
+  "freeform_search.preset_name_already_exists": "A preset with this name already exists",
   "freeform_search.preset_name_placeholder": "Preset name",
   "freeform_search.preset_name_required": "Name is required",
   "freeform_search.preset_placeholder": "Select a preset...",
