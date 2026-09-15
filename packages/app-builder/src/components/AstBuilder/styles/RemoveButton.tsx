@@ -12,6 +12,8 @@ export const RemoveButton = ({ ref, className, ...props }: ButtonV2Props & { ref
         'bg-surface-card text-grey-secondary border-grey-border',
         'hover:text-grey-white hover:border-red-primary hover:bg-red-primary',
         'active:bg-red-hover active:border-red-hover',
+        'disabled:bg-grey-background-light disabled:text-grey-disabled disabled:border-grey-border',
+        'disabled:hover:text-grey-disabled disabled:hover:border-grey-border disabled:hover:bg-grey-background-light',
         className,
       )}
       {...props}
