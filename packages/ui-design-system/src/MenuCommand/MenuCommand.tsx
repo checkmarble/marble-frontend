@@ -282,7 +282,7 @@ function MenuArrow() {
   );
 }
 
-const contentClassname = cva('flex z-50 text-s group/menu-command-content', {
+const contentClassname = cva('pointer-events-auto flex z-50 text-s group/menu-command-content', {
   variants: {
     hover: {
       true: 'max-h-[min(var(--radix-hover-card-content-available-height),500px)]',
