@@ -1,5 +1,4 @@
-import { DateRangeFilter } from '@app-builder/components/Filters';
-import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
+import { DateRangeFilter, type DateRangeFilterType } from '@app-builder/components/Filters';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Separator } from 'ui-design-system';
