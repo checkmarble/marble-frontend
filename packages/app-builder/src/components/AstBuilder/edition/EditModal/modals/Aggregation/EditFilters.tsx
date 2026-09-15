@@ -2,7 +2,7 @@ import { Callout } from '@app-builder/components';
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { RemoveButton } from '@app-builder/components/AstBuilder/styles/RemoveButton';
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { type DataModel, getEnumValues, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { type DataModel, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationFilterOperators,
@@ -19,6 +19,7 @@ import {
 } from '@app-builder/models/astNode/aggregation';
 import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import { getResolvedEnumValues } from '@app-builder/models/enum-values';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
@@ -92,7 +93,7 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
 
             const enumValues =
               filter.namedChildren.tableName.constant && filter.namedChildren.fieldName.constant
-                ? getEnumValues(
+                ? getResolvedEnumValues(
                     dataModel,
                     filter.namedChildren.tableName.constant,
                     filter.namedChildren.fieldName.constant,
