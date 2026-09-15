@@ -287,6 +287,17 @@ export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
 /** Freeform Search Presets */
 
 const FreeformSearchPresetSchema = z.object({
+  entityType: z.enum(['Thing', 'Person', 'Organization', 'Vehicle']).optional(),
+  fields: z
+    .object({
+      birthDate: z.string().optional(),
+      nationality: z.string().optional(),
+      passportNumber: z.string().optional(),
+      address: z.string().optional(),
+      country: z.string().optional(),
+      registrationNumber: z.string().optional(),
+    })
+    .optional(),
   datasets: z.array(z.string()).optional(),
   threshold: z.number().min(0).max(100).optional(),
   limit: z.number().min(10).max(50).optional(),
@@ -298,34 +309,35 @@ const FFSMap = new Map<string, FreeformSearchPreset>();
 
 export const getListFreeFormSearchPresetsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => {
+  .handler(async () => {
     // const result = await context.authInfo.screening.getListFreeFormSearch();
-    const result = Array.from(FFSMap.keys());
-    return result;
+    return Array.from(FFSMap.keys());
   });
 
 export const getFreeFormSearchPresetFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ name: z.string() }))
-  .handler(async ({ context, data }) => {
+  .validator(z.object({ name: z.string() }))
+  .handler(async ({ data }) => {
     // const result = await context.authInfo.screening.getFreeFormSearchPreset();
-    const result = FFSMap.get(data.name);
-    return result;
+    return FFSMap.get(data.name);
   });
 
 export const createFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ name: z.string(), value: FreeformSearchPresetSchema }))
-  .handler(async ({ context, data }) => {
+  .validator(z.object({ name: z.string(), value: FreeformSearchPresetSchema }))
+  .handler(async ({ data }) => {
     // const result = await context.authInfo.screening.createFreeFormSearchPreset();
+    if (FFSMap.has(data.name)) {
+      return { success: false as const, error: 'duplicate_name' as const };
+    }
     FFSMap.set(data.name, data.value);
-    return { success: true };
+    return { success: true as const };
   });
 
 export const deleteFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ name: z.string() }))
-  .handler(async ({ context, data }) => {
+  .validator(z.object({ name: z.string() }))
+  .handler(async ({ data }) => {
     // const result = await context.authInfo.screening.deleteFreeFormSearchPreset();
     FFSMap.delete(data.name);
     return { success: true };

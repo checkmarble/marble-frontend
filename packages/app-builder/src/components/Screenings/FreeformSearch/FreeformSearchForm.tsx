@@ -1,5 +1,4 @@
 import {
-  applyAliveDeceasedDefaults,
   applyUniqueLexisNexisSectionDefault,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
@@ -9,27 +8,51 @@ import {
 import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { Spinner } from '@app-builder/components/Spinner';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
-import { type ScreeningMatchPayload, ScreeningProviders } from '@app-builder/models/screening';
+import { type ScreeningMatchPayload, type ScreeningProviders } from '@app-builder/models/screening';
 import {
+  getFreeformSearchPresetQueryKey,
   useCreateFreeFormSearchPresetMutation,
   useFreeformSearchMutation,
   useListFreeFormSearchPresetsQuery,
 } from '@app-builder/queries/screening/freeform-search';
 import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
+import {
+  type FreeformSearchInput,
+  type FreeformSearchPreset,
+  getFreeFormSearchPresetFn,
+} from '@app-builder/server-fns/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
-import { useForm, useStore } from '@tanstack/react-form';
-import { createContext, type FunctionComponent, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
+import {
+  createContext,
+  type FunctionComponent,
+  type SyntheticEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Input, Popover, SelectV2 } from 'ui-design-system';
+import { Button, cn, Input, Popover, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields } from '../set-additional-fields';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
 import { EntitySearchFormProvider } from './entity-search-form-context';
+import {
+  buildFreeformSearchPreset,
+  getDefaultManualSearchDatasets,
+  getPresetFormFields,
+  hasFilledPresetFields,
+  isFreeformSearchPresetDirty,
+  normalizeFreeformSearchPreset,
+} from './freeform-search-preset';
 import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
 
 interface FreeformSearchFormProps {
@@ -83,25 +106,27 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     ));
 };
 
-const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders } & FreeformSearchFormProps> = ({
+function FreeformSearchFormInner({
   provider,
   onSearchComplete,
   listConfig,
-}) => {
+}: { provider: ScreeningProviders } & FreeformSearchFormProps) {
   const { t } = useTranslation(screeningsI18n);
+  const { org } = useOrganizationDetails();
+  const queryClient = useQueryClient();
+  const getFreeFormSearchPreset = useServerFn(getFreeFormSearchPresetFn);
   const searchMutation = useFreeformSearchMutation();
-  const [selectedDatasets, setSelectedDatasets] = useState<string[]>(() => {
-    const initial: Record<string, boolean> = {};
-    applyAliveDeceasedDefaults(initial, listConfig, 'manual_search');
-    applyUniqueLexisNexisSectionDefault(initial, listConfig, provider);
-    return getCanonicalSelectedKeys(initial);
-  });
+  const defaultThreshold = org.sanctionThreshold ?? 70;
+  const defaultDatasets = useMemo(() => getDefaultManualSearchDatasets(listConfig, provider), [listConfig, provider]);
+  const [selectedDatasets, setSelectedDatasets] = useState(defaultDatasets);
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
   const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery();
   const [selectedPreset, setSelectedPreset] = useState<string | undefined>(undefined);
   const [savePresetPopoverOpen, setSavePresetPopoverOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [presetNameError, setPresetNameError] = useState<string | undefined>(undefined);
+  const [appliedPreset, setAppliedPreset] = useState<FreeformSearchPreset | undefined>(undefined);
+  const presetRequestRef = useRef(0);
 
   const createFreeFormSearchPresetMutation = useCreateFreeFormSearchPresetMutation();
 
@@ -146,22 +171,77 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
     },
   });
 
-  const threshold = useStore(form.store, (state) => state.values.threshold);
-  const entityType = useStore(form.store, (state) => state.values.entityType);
-  const limit = useStore(form.store, (state) => state.values.limit);
+  const threshold = useSelector(form.store, (state) => state.values.threshold);
+  const entityType = useSelector(form.store, (state) => state.values.entityType);
+  const limit = useSelector(form.store, (state) => state.values.limit);
+  const fields = useSelector(form.store, (state) => state.values.fields);
   const originalLimit = useRef(limit ?? DEFAULT_LIMIT);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const currentPreset = buildFreeformSearchPreset({
+    entityType,
+    fields,
+    datasets: selectedDatasets,
+    threshold: threshold ?? defaultThreshold,
+    limit: limit ?? DEFAULT_LIMIT,
+  });
+  const isPresetDirty =
+    !!selectedPreset && !!appliedPreset && isFreeformSearchPresetDirty(currentPreset, appliedPreset);
+
+  const applyPreset = (preset: FreeformSearchPreset) => {
+    const normalized = normalizeFreeformSearchPreset(preset, {
+      threshold: defaultThreshold,
+      datasets: defaultDatasets,
+      limit: DEFAULT_LIMIT,
+    });
+    const nextEntityType = normalized.entityType ?? 'Thing';
+    const currentName = form.state.values.fields.name ?? '';
+    form.setFieldValue('entityType', nextEntityType);
+    form.setFieldValue('fields', getPresetFormFields(nextEntityType, normalized.fields, currentName));
+    form.setFieldValue('threshold', normalized.threshold);
+    form.setFieldValue('limit', normalized.limit);
+    originalLimit.current = normalized.limit ?? DEFAULT_LIMIT;
+    setSelectedDatasets(normalized.datasets ?? []);
+    setAppliedPreset(normalized);
+  };
+
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
     form.handleSubmit();
   };
 
   const handleClearFilters = () => {
+    presetRequestRef.current += 1;
+    setAppliedPreset(undefined);
     form.reset();
     setSelectedDatasets([]);
-    //     setSelectedPreset(undefined);
+    setSelectedPreset(undefined);
     originalLimit.current = DEFAULT_LIMIT;
+  };
+
+  const handlePresetSelect = (name: string) => {
+    const requestId = ++presetRequestRef.current;
+    setAppliedPreset(undefined);
+    setSelectedPreset(name);
+    void queryClient
+      .fetchQuery({
+        queryKey: getFreeformSearchPresetQueryKey(name),
+        queryFn: () => getFreeFormSearchPreset({ data: { name } }),
+      })
+      .then((data) => {
+        if (requestId !== presetRequestRef.current) return;
+        if (data === undefined) {
+          toast.error(t('common:errors.unknown'));
+          setSelectedPreset(undefined);
+          return;
+        }
+        applyPreset(data);
+      })
+      .catch(() => {
+        if (requestId !== presetRequestRef.current) return;
+        toast.error(t('common:errors.unknown'));
+        setSelectedPreset(undefined);
+      });
   };
 
   const handleSaveFilters = async () => {
@@ -170,19 +250,23 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
       setPresetNameError(t('screenings:freeform_search.preset_name_required'));
       return;
     }
+    if (listFreeFormSearchPresetsQuery.data?.includes(trimmedName)) {
+      setPresetNameError(t('screenings:freeform_search.preset_name_already_exists'));
+      return;
+    }
     const result = await createFreeFormSearchPresetMutation.mutateAsync({
       name: trimmedName,
-      value: {
-        datasets: selectedDatasets,
-        threshold,
-        limit,
-      },
+      value: currentPreset,
     });
     if (result.success) {
-      listFreeFormSearchPresetsQuery.refetch();
+      presetRequestRef.current += 1;
+      applyPreset(currentPreset);
+      setSelectedPreset(trimmedName);
       setSavePresetPopoverOpen(false);
       setPresetName('');
       setPresetNameError(undefined);
+    } else if (result.error === 'duplicate_name') {
+      setPresetNameError(t('screenings:freeform_search.preset_name_already_exists'));
     } else {
       toast.error(t('common:errors.unknown'));
     }
@@ -199,7 +283,9 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
   const hasActiveFilters =
     selectedDatasets.length > 0 ||
     (entityType && entityType !== 'Thing') ||
-    (limit !== undefined && limit !== DEFAULT_LIMIT);
+    hasFilledPresetFields(fields, entityType) ||
+    (limit !== undefined && limit !== DEFAULT_LIMIT) ||
+    (threshold !== undefined && threshold !== defaultThreshold);
 
   return (
     <ManualSearchFormContext.Provider value={form}>
@@ -241,13 +327,20 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
           <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
             <div className="bg-surface-card border-grey-border rounded-lg border p-md space-y-md">
               {listFreeFormSearchPresetsQuery?.data?.length ? (
-                <SelectV2
-                  options={listFreeFormSearchPresetsQuery.data.map((preset) => ({ label: preset, value: preset }))}
-                  placeholder={t('screenings:freeform_search.preset_placeholder')}
-                  value={selectedPreset}
-                  onChange={(value) => setSelectedPreset(value)}
-                  className="w-full"
-                />
+                <div className="w-full [&>div]:w-full">
+                  <SelectV2
+                    options={listFreeFormSearchPresetsQuery.data.map((preset) => ({ label: preset, value: preset }))}
+                    placeholder={t('screenings:freeform_search.preset_placeholder')}
+                    value={selectedPreset}
+                    onChange={(value) => {
+                      if (value) handlePresetSelect(value);
+                    }}
+                    displayedValue={(option) =>
+                      isPresetDirty ? `${option.value} ${t('screenings:freeform_search.preset_edited')}` : option.value
+                    }
+                    className={cn('w-full', isPresetDirty && 'bg-grey-background text-grey-disabled')}
+                  />
+                </div>
               ) : null}
               <ScreeningThreshold
                 threshold={threshold}
@@ -332,6 +425,6 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
       </EntitySearchFormProvider>
     </ManualSearchFormContext.Provider>
   );
-};
+}
 
 export default FreeformSearchForm;
