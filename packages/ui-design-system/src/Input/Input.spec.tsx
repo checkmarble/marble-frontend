@@ -33,6 +33,20 @@ describe('Input', () => {
 });
 
 describe('NumberInput', () => {
+  it('formats negative values with formatNumber instead of a manual minus prefix', () => {
+    const onChange = vi.fn();
+    render(<NumberInput aria-label="number input" value={-12} onChange={onChange} />);
+
+    expect(screen.getByLabelText('number input')).toHaveValue('-12');
+  });
+
+  it('forces LTR so the minus sign stays on the left in RTL layouts', () => {
+    const onChange = vi.fn();
+    render(<NumberInput aria-label="number input" value={-12} onChange={onChange} />);
+
+    expect(screen.getByLabelText('number input')).toHaveAttribute('dir', 'ltr');
+  });
+
   it('shows a plus or minus icon for the value sign when requested', () => {
     const onChange = vi.fn();
     const { rerender } = render(<NumberInput aria-label="number input" value={12} onChange={onChange} forceSign />);
