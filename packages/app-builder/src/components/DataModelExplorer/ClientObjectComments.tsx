@@ -41,7 +41,7 @@ export function ClientObjectComments({ comments, className }: ClientObjectCommen
 
   return (
     <div className={cn('relative z-0 flex flex-col text-xs', className)}>
-      <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
+      <div className="absolute start-0 top-0 flex h-full w-6 flex-col items-center">
         <div className="bg-grey-border -z-10 h-full w-px" />
       </div>
       <div className="grid grid-cols-[24px_1fr] gap-sm">

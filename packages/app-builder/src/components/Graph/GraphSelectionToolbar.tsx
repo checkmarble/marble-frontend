@@ -170,7 +170,7 @@ export function GraphSelectionToolbar() {
 
   if (!selectionMode) {
     return (
-      <div className="pointer-events-none absolute top-sm right-sm z-20">
+      <div className="pointer-events-none absolute top-sm end-sm z-20">
         <Button
           type="button"
           variant="secondary"
@@ -188,7 +188,7 @@ export function GraphSelectionToolbar() {
   return (
     <div
       className={cn(
-        'pointer-events-auto absolute top-sm right-sm z-20',
+        'pointer-events-auto absolute top-sm end-sm z-20',
         'bg-surface-card flex items-center gap-sm rounded-lg px-sm py-xs shadow-md',
       )}
     >

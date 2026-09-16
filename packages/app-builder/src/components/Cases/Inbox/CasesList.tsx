@@ -76,7 +76,7 @@ export function CasesList({
           <div className="relative flex items-center gap-sm ps-md">
             {selectable ? (
               <div
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 p-md"
+                className="absolute start-0 top-1/2 -translate-y-1/2 -translate-x-1/2 p-md"
                 onClick={(e) => {
                   e.stopPropagation();
                   table.getToggleAllPageRowsSelectedHandler()(e);
@@ -147,7 +147,7 @@ export function CasesList({
               {selectable ? (
                 <div
                   className={cn(
-                    'absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 p-md opacity-0 focus-within:opacity-100 group-hover/row:opacity-100',
+                    'absolute start-0 top-1/2 -translate-x-1/2 -translate-y-1/2 p-md opacity-0 focus-within:opacity-100 group-hover/row:opacity-100',
                     isSelected && 'opacity-100',
                   )}
                   onClick={handleSelect}

@@ -116,6 +116,7 @@
   --spacing-sm: 0.5rem;
   --spacing-xs: 0.25rem;
   --spacing-2xs: 0.125rem;
+  --spacing-0: 0;
 
   --radius-2xl: 1.5rem;
   --radius-xl: 1rem;
@@ -123,6 +124,7 @@
   --radius-md: 0.5rem;
   --radius-sm: 0.25rem;
   --radius-xs: 0.125rem;
+  --radius-0: 0;
 
   /* Font sizes */
   --text-2xl: 28px;
@@ -164,6 +166,7 @@
   --animate-slide-down: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
   --animate-slide-up: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
   --animate-slide-right-fade-in: slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-left-fade-in: slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ========================================

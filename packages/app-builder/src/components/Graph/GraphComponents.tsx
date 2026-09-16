@@ -560,7 +560,7 @@ export function EdgeLabel({
       {menuOpen ? (
         <div
           className={cn(
-            'nodrag nopan absolute left-full top-1/2 z-10 ml-xs -translate-y-1/2 shrink-0 p-xs leading-none flex',
+            'nodrag nopan absolute start-full top-1/2 z-10 ml-xs -translate-y-1/2 shrink-0 p-xs leading-none flex',
           )}
         >
           <EdgeTags through={through} field={field} />

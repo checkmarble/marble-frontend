@@ -135,7 +135,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
             );
           })}
           <TabBarActions
-            className="absolute right-2 top-2"
+            className="absolute end-xs top-2"
             options={[
               {
                 label: 'Reopen last closed tab',

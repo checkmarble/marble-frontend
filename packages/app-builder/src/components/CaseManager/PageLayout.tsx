@@ -229,7 +229,7 @@ function StickyCommentForm({ objectId, objectType }: StickyCommentFormProps) {
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
 
   return (
-    <div className="sticky flex justify-end right-lg bottom-lg mt-lg">
+    <div className="sticky flex justify-end end-lg bottom-lg mt-lg">
       <ClientCommentForm annotationsQuery={annotationsQuery} objectId={objectId} objectType={objectType} />
     </div>
   );
