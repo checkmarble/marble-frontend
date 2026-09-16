@@ -1,4 +1,10 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import {
+  adaptSavedFreeformSearchPreset,
+  adaptSaveFreeformSearchPresetDto,
+  type FreeformSearchPreset,
+  type SavedFreeformSearchPreset,
+} from '@app-builder/models/freeform-search-preset';
 import { isNotFoundHttpError } from '@app-builder/models/http-errors';
 import {
   type AvailableFeatures,
@@ -59,10 +65,23 @@ export interface ScreeningRepository {
   getAvailableFilters(args: { feature: AvailableFeatures }): Promise<ScreeningAvailableFiltersAdapted>;
   listSavedScreeningSearches(filters: SavedScreeningSearchFilters): Promise<SavedScreeningSearchPage>;
   getFreeformSearch(args: { id: string }): Promise<{ id: string; matches: ScreeningMatchPayload[] }>;
+  listFreeformSearchPresets(): Promise<SavedFreeformSearchPreset[]>;
+  saveFreeformSearchPreset(args: { name: string; value: FreeformSearchPreset }): Promise<SavedFreeformSearchPreset>;
+  deleteFreeformSearchPreset(args: { id: string }): Promise<void>;
 }
 
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
+    listFreeformSearchPresets: async () => {
+      return (await marbleCoreApiClient.listScreeningSavedSearches()).map(adaptSavedFreeformSearchPreset);
+    },
+    saveFreeformSearchPreset: async ({ name, value }) => {
+      const result = await marbleCoreApiClient.saveScreeningSearch(adaptSaveFreeformSearchPresetDto(name, value));
+      return adaptSavedFreeformSearchPreset(result);
+    },
+    deleteFreeformSearchPreset: async ({ id }) => {
+      await marbleCoreApiClient.deleteScreeningSavedSearch(id);
+    },
     getAvailableFilters: async ({ feature }) => {
       try {
         const listFeature: ScreeningAvailableFiltersAdapted =

@@ -124,6 +124,8 @@
   "freeform_search.datasets_no_results": "No datasets found",
   "freeform_search.datasets_search_placeholder": "Search for a specific list",
   "freeform_search.datasets_selected": "{{count}} selected",
+  "freeform_search.delete_preset": "Delete this preset",
+  "freeform_search.delete_preset_confirmation": "Are you sure you want to delete the preset “{{name}}”?",
   "freeform_search.entity_type_label": "Entity Type",
   "freeform_search.entity_type_placeholder": "Select entity type...",
   "freeform_search.fields_for_entity": "Fields for {{entity}}",
