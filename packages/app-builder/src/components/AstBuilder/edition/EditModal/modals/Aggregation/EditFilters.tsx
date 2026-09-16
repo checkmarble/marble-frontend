@@ -305,14 +305,7 @@ function FieldSelect({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>{trigger}</MenuCommand.Trigger>
-      <MenuCommand.Content
-        className="text-s w-[300px]"
-        align="start"
-        sideOffset={4}
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-        }}
-      >
+      <MenuCommand.Content className="text-s w-75" align="start" sideOffset={4}>
         {tableName && options ? (
           <EditDataModelFieldTableMenu tableName={tableName} fields={options} onChange={onChange} />
         ) : null}
