@@ -1,6 +1,8 @@
+import { formatNumber } from '@app-builder/utils/format';
 import { cva, VariantProps } from 'class-variance-authority';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import { Icon, type IconName } from 'ui-icons';
+import { useFormatLanguage } from '../contexts/FormattingContext';
 import { cn } from '../utils';
 
 export const inputClassName = cva(
@@ -186,6 +188,7 @@ export type InputProps = Omit<BaseInputProps, 'size'> &
 export const Input = function Input({
   ref,
   className,
+  dir,
   inputClassName: actualInputClassName,
   startAdornment,
   startAdornmentClassName,
@@ -202,9 +205,10 @@ export const Input = function Input({
   const endIconClassName = cn(inputIconClassName({ inputSize: size, placement: 'end' }));
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative', className)} dir={dir}>
       <UnstyledInput
         ref={ref}
+        dir={dir}
         className={cn(
           inputClassName({ borderColor, size }),
           inputPaddingsClassName({
@@ -337,9 +341,13 @@ function applyNumberInputSign(value: number, sign: NumberInputSign) {
   return sign === '-' ? -Math.abs(value) : Math.abs(value);
 }
 
-function formatNumberInputValue(value: number, forceSign: boolean) {
-  const formattedValue = value.toString(10);
-  return forceSign && formattedValue.startsWith('-') ? formattedValue.slice(1) : formattedValue;
+function formatNumberInputValue(value: number, forceSign: boolean, language: string) {
+  return formatNumber(value, {
+    language,
+    maximumFractionDigits: 0,
+    useGrouping: false,
+    signDisplay: forceSign ? 'never' : 'auto',
+  });
 }
 
 function matchesNumberInputThreshold(value: number, { comparison, threshold }: NumberInputColorThreshold) {
@@ -363,7 +371,17 @@ function getNumberInputColor(value: number, colorByValue: NumberInputColorByValu
     colorByValue.defaultColor
   );
 }
-
+/**
+ * A number input component that allows the user to input a number.
+ * @param ref - The ref to the input element.
+ * @param colorByValue - The color to apply to the input based on the value.
+ * @param forceSign - Whether to show the sign icon (for score value).
+ * @param inputClassName - The class name to apply to the input element.
+ * @param size - The size of the input (small, medium, large = default).
+ * @param startAdornment - The start adornment to show (icon, overrided if forceSign = true).
+ * @param startAdornmentAriaLabel - The aria label for the start adornment.
+ * @param startAdornmentClassName - The class name to apply to the start adornment. (overrided if forceSign = true))
+ */
 export const NumberInput = function NumberInput({
   ref,
   colorByValue,
@@ -379,24 +397,26 @@ export const NumberInput = function NumberInput({
   startAdornmentClassName,
   ...props
 }: NumberInputProps & { ref?: React.Ref<HTMLInputElement> }) {
-  const [internalValue, setInternalValue] = useState(() => formatNumberInputValue(value, forceSign));
+  const language = useFormatLanguage();
+  const [internalValue, setInternalValue] = useState(() => formatNumberInputValue(value, forceSign, language));
   const [sign, setSign] = useState<NumberInputSign>(() => getNumberInputSign(value));
   const valueColor = getNumberInputColor(value, colorByValue);
   const parsedInternalValue = parseInt(internalValue, 10);
   const showForceSignIcon = forceSign && !isNaN(parsedInternalValue) && parsedInternalValue !== 0;
 
   useEffect(() => {
-    const newInternalValue = formatNumberInputValue(value, forceSign);
+    const newInternalValue = formatNumberInputValue(value, forceSign, language);
     setInternalValue((currentValue) => (currentValue === newInternalValue ? currentValue : newInternalValue));
     if (value !== 0) {
       setSign(getNumberInputSign(value));
     }
-  }, [forceSign, value]);
+  }, [forceSign, language, value]);
 
   return (
     <Input
       ref={ref}
       {...props}
+      dir="ltr"
       size={size}
       startAdornment={showForceSignIcon ? (sign === '-' ? 'minus' : 'plus') : forceSign ? undefined : startAdornment}
       startAdornmentAriaLabel={showForceSignIcon ? sign : forceSign ? undefined : startAdornmentAriaLabel}
