@@ -253,6 +253,10 @@ paths:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1freshness
   /screenings/entities/{entityId}:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1entities~1{entityId}
+  /screenings/searches:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1searches
+  /screenings/searches/{id}:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1searches~1{id}
 
   # RULES
 

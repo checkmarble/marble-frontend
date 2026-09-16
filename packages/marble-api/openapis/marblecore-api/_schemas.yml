@@ -331,6 +331,10 @@ ScreeningFreeformSearchDto:
   $ref: screenings.yml#/components/schemas/ScreeningFreeformSearchDto
 ScreeningFreeformSearchConfigDto:
   $ref: screenings.yml#/components/schemas/ScreeningFreeformSearchConfigDto
+SaveScreeningSearchDto:
+  $ref: screenings.yml#/components/schemas/SaveScreeningSearchDto
+ScreeningSavedSearch:
+  $ref: screenings.yml#/components/schemas/ScreeningSavedSearch
 
 # SCENARIO PUBLICATIONS
 
