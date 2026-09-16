@@ -238,10 +238,7 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
                     </div>
                     <RemoveButton
                       onClick={() => {
-                        nodeSharp.update(() => {
-                          filters.splice(filterIndex, 1);
-                        });
-                        nodeSharp.actions.validate();
+                        filters.splice(filterIndex, 1);
                         onChange?.();
                       }}
                     />
