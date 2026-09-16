@@ -106,7 +106,9 @@ describe('shared enum tags', () => {
       />,
     );
     expect(screen.getByTitle('COMPLETED').textContent).toBe('COMPLETED');
-    expect(screen.getByTitle('COMPLETED').style.color).toBe('var(--color-enum-green)');
+    expect(screen.getByTitle('COMPLETED').style.color).toBe(
+      'color-mix(in oklch, var(--color-enum-green), var(--enum-tag-mix) 20%)',
+    );
     expect(screen.getByTitle('COMPLETED').style.borderColor).toBe('var(--color-enum-green)');
   });
 
@@ -116,7 +118,9 @@ describe('shared enum tags', () => {
   });
   it('renders configured outlines and presentation-only fallback keys', () => {
     render(<EnumTag field={keyed} value="stale" />);
-    expect(screen.getByTitle('stale').style.color).toBe('var(--color-enum-grey)');
+    expect(screen.getByTitle('stale').style.color).toBe(
+      'color-mix(in oklch, var(--color-enum-grey), var(--enum-tag-mix) 20%)',
+    );
     expect(screen.getByTitle('stale').style.borderColor).toBe('var(--color-enum-grey)');
     expect(screen.getByTitle('stale').textContent).toBe('other');
   });
