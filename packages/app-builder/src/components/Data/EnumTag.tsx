@@ -23,9 +23,16 @@ export function EnumTag({ field, value, className }: { field: EnumField; value: 
   return (
     <Tag
       color={display.neutral ? 'grey' : 'purple'}
-      style={display.color ? { color: display.color, borderColor: display.color } : undefined}
+      style={
+        display.color
+          ? {
+              color: `color-mix(in oklch, ${display.color}, var(--enum-tag-mix) 20%)`,
+              borderColor: display.color,
+            }
+          : undefined
+      }
       title={String(value)}
-      className={cn('min-w-0 overflow-hidden rounded-sm', className)}
+      className={cn('min-w-0 overflow-hidden rounded-sm [--enum-tag-mix:black] dark:[--enum-tag-mix:white]', className)}
     >
       {display.flag ? <span className="shrink-0">{display.flag}</span> : null}
       <span className="min-w-0 truncate">{display.label || '—'}</span>
