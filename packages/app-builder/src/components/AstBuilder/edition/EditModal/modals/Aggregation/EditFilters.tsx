@@ -21,12 +21,11 @@ import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/mo
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import clsx from 'clsx';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, MenuCommand } from 'ui-design-system';
+import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { EditionAstBuilderOperand } from '../../../EditionOperand';
@@ -109,18 +108,16 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
                         tableName={tableName}
                         options={options}
                         trigger={
-                          <div
-                            className={clsx(
-                              'text-s aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-xs',
-                              {
-                                'border-grey-border': filteredFieldErrors.length === 0,
-                                'border-red-primary': filteredFieldErrors.length > 0,
-                              },
+                          <button
+                            type="button"
+                            className={cn(
+                              'text-s bg-surface-card aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-xs',
+                              filteredFieldErrors.length > 0 ? 'border-red-primary' : 'border-grey-border',
                             )}
                           >
                             {filter.namedChildren.fieldName.constant}
                             <Icon icon="arrow-2-down" className="size-5" />
-                          </div>
+                          </button>
                         }
                         onChange={(filteredField) => {
                           nodeSharp.update(() => {
@@ -267,16 +264,19 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
             </Button>
           }
           onChange={(filteredField) => {
-            filters.push(
-              NewAggregatorFilterAstNode({
-                namedChildren: {
-                  fieldName: NewConstantAstNode({ constant: filteredField.fieldName }),
-                  tableName: NewConstantAstNode({ constant: filteredField.tableName }),
-                  operator: NewConstantAstNode({ constant: null }),
-                  value: NewUndefinedAstNode(),
-                },
-              }),
-            );
+            nodeSharp.update(() => {
+              filters.push(
+                NewAggregatorFilterAstNode({
+                  namedChildren: {
+                    fieldName: NewConstantAstNode({ constant: filteredField.fieldName }),
+                    tableName: NewConstantAstNode({ constant: filteredField.tableName }),
+                    operator: NewConstantAstNode({ constant: null }),
+                    value: NewUndefinedAstNode(),
+                  },
+                }),
+              );
+            });
+            nodeSharp.actions.validate();
             onChange?.();
           }}
         />
@@ -302,7 +302,7 @@ function FieldSelect({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>{trigger}</MenuCommand.Trigger>
-      <MenuCommand.Content>
+      <MenuCommand.Content className="text-s w-75" align="start" sideOffset={4}>
         {tableName && options ? (
           <EditDataModelFieldTableMenu tableName={tableName} fields={options} onChange={onChange} />
         ) : null}

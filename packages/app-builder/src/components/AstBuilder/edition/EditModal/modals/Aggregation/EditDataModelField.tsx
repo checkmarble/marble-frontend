@@ -145,12 +145,12 @@ function FieldInfo({ field }: { field: DataModelField }) {
       // clamp and keep the original 400px ceiling.
       className="border-grey-border text-s flex max-h-[min(var(--radix-tooltip-content-available-height),400px)] max-w-(--radix-tooltip-content-available-width) border p-0 shadow-md"
     >
-      <button type="button">
+      <span tabIndex={0}>
         <Icon
           icon="tip"
           className="hover:group-hover:text-purple-primary group-hover:text-purple-disabled size-5 shrink-0 text-transparent transition-colors"
         />
-      </button>
+      </span>
     </Tooltip.Default>
   );
 }
