@@ -223,7 +223,11 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
         )}
       >
         {access === 'test' ? (
-          <Nudge className="absolute -right-3 -top-3 size-6" content={t('scenarios:testrun.nudge')} kind="test" />
+          <Nudge
+            className="absolute -end-[12px] -top-[12px] size-6"
+            content={t('scenarios:testrun.nudge')}
+            kind="test"
+          />
         ) : null}
 
         <p>{t('scenarios:testrun.description')}</p>
@@ -547,7 +551,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
       <section className="bg-surface-card border-grey-border relative flex flex-col gap-md rounded-lg border p-md rounded-tl-none flex-1">
         {access === 'test' ? (
           <Nudge
-            className="absolute -right-3 -top-3 size-6"
+            className="absolute -end-[12px] -top-[12px] size-6"
             content={t('workflows:nudge')}
             link="https://docs.checkmarble.com/docs/introduction-5"
             kind="test"

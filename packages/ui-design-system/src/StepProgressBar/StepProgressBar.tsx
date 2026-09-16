@@ -83,7 +83,7 @@ export function StepProgressBar<const K extends string>({
       >
         <div
           className={cn(
-            'absolute inset-y-0 left-0 rounded-full bg-current transition-[width] duration-500 ease-out',
+            'absolute inset-y-0 start-0 rounded-full bg-current transition-[width] duration-500 ease-out',
             colorClassName({ color }),
             isPending && 'animate-pulse [animation-duration:2.5s]',
           )}

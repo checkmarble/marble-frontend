@@ -17,7 +17,7 @@ export const WorkflowNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, '
     >
       <Typo variant="subtitle1">{t('scenarios:home.workflow')}</Typo>
 
-      <Nudge kind={kind} className="absolute -right-3 -top-3 size-6" content={t('workflows:nudge')} />
+      <Nudge kind={kind} className="absolute -end-[12px] -top-3 size-6" content={t('workflows:nudge')} />
 
       <CalloutV2>{t('scenarios:home.workflow_description')}</CalloutV2>
 

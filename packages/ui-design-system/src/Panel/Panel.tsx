@@ -185,7 +185,7 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
       <div
         ref={panelRef}
         className={cn(
-          'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border w-full flex flex-col not-motion-reduce:animate-slide-right-fade-in overflow-y-auto',
+          'fixed inset-y-0 z-20 end-0 bg-surface-card border-l border-grey-border w-full flex flex-col not-motion-reduce:animate-slide-right-fade-in rtl:not-motion-reduce:animate-slide-left-fade-in overflow-y-auto',
           sizeClasses[size],
           className,
         )}

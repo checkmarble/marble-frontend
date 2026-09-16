@@ -187,14 +187,14 @@ export const SelectCountry = function SelectCountry({
             <button
               type="button"
               aria-label="Clear selection"
-              className="text-grey-secondary hover:text-grey-primary absolute right-7 top-0 flex h-10 items-center"
+              className="text-grey-secondary hover:text-grey-primary absolute end-[28px] top-0 flex h-10 items-center"
               onClick={handleClear}
             >
               <Icon icon="cross" className="size-4" />
             </button>
             <span
               aria-hidden
-              className="text-grey-primary pointer-events-none absolute right-2 top-0 flex h-10 items-center"
+              className="text-grey-primary pointer-events-none absolute end-sm top-0 flex h-10 items-center"
             >
               <Icon icon="caret-down" className="size-4 shrink-0" />
             </span>

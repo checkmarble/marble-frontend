@@ -88,11 +88,11 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
   return (
     <div className="relative z-0 flex w-full flex-col gap-md">
       {filteredEvents.length > 0 ? (
-        <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
+        <div className="absolute start-0 top-0 flex h-full w-6 flex-col items-center">
           <div className="bg-grey-border -z-10 h-full w-px" />
         </div>
       ) : null}
-      <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between ps-lg">
+      <div className="bg-surface-card sticky start-0 top-0 z-[-15] flex w-full items-center justify-between ps-lg">
         <span className={cn('text-grey-secondary text-small')}>
           {t('cases:investigation.more_recent', { number: newerEvents })}
         </span>
@@ -118,7 +118,7 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
       </div>
       {showAll ? null : (
         <span
-          className={cn('bg-surface-card text-grey-secondary sticky left-0 top-0 z-[-15] ps-lg text-xs', {
+          className={cn('bg-surface-card text-grey-secondary sticky start-0 top-0 z-[-15] ps-lg text-xs', {
             'text-grey-white': showAll,
           })}
         >

@@ -416,7 +416,7 @@ const KeyboardNav = () => {
     inputRef.current?.focus();
   }, []);
 
-  return <Command.Input ref={inputRef} className="fixed left-[-10000px]" />;
+  return <Command.Input ref={inputRef} className="fixed start-[-10000px]" />;
 };
 
 /**

@@ -331,7 +331,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   <th
                     ref={rowNumberColRef}
                     className={cn(
-                      'border-grey-border bg-surface-card sticky left-0 z-30 border-y border-r p-sm font-normal',
+                      'border-grey-border bg-surface-card sticky start-0 z-30 border-y border-r p-sm font-normal',
                       {
                         'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
                       },
@@ -401,7 +401,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   <tr key={row.id} className="border-grey-border group z-0 h-10">
                     <td
                       className={cn(
-                        'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky left-0 z-10 h-full border-b border-r p-sm',
+                        'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky start-0 z-10 h-full border-b border-r p-sm',
                         {
                           'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
                         },
