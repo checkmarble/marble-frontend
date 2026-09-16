@@ -4,7 +4,7 @@ import { createScreeningFilters, getDatasetFromFilters } from './screening-confi
 
 export const freeformSearchPresetSchema = z.object({
   datasets: z.array(z.string()).optional(),
-  threshold: z.number().min(0).max(100).optional(),
+  threshold: z.number().int().min(0).max(100).optional(),
 });
 
 export type FreeformSearchPreset = z.infer<typeof freeformSearchPresetSchema>;

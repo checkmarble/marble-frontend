@@ -39,6 +39,16 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+function isRtlElement(element: Element) {
+  return getComputedStyle(element).direction === 'rtl';
+}
+
+function getHorizontalRatio(clientX: number, element: HTMLElement) {
+  const rect = element.getBoundingClientRect();
+  const ratio = clamp((clientX - rect.left) / rect.width, 0, 1);
+  return isRtlElement(element) ? 1 - ratio : ratio;
+}
+
 function getSegments(steps: ThresholdRangeStep[], min: number, initialColor: string) {
   const firstStep = steps[0];
   if (!firstStep) return [];
@@ -115,10 +125,7 @@ export function ThresholdRange({
 
   const selectNearestStep = (clientX: number, element: HTMLDivElement) => {
     if (disabled) return;
-    const rect = element.getBoundingClientRect();
-    const rawRatio = (clientX - rect.left) / rect.width;
-    const ratio = clamp(rawRatio, 0, 1);
-    const targetValue = ratio * normalizedMax;
+    const targetValue = getHorizontalRatio(clientX, element) * normalizedMax;
 
     let nearestIndex = 0;
     let nearestDistance = Number.POSITIVE_INFINITY;
@@ -170,27 +177,45 @@ export function ThresholdRange({
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return;
 
+    const selectNext = () => {
+      event.preventDefault();
+      if (activeIndex < 0) {
+        selectStepAtIndex(0);
+        return;
+      }
+      selectStepAtIndex(activeIndex + 1);
+    };
+
+    const selectPrevious = () => {
+      event.preventDefault();
+      if (activeIndex < 0) {
+        selectStepAtIndex(steps.length - 1);
+        return;
+      }
+      selectStepAtIndex(activeIndex - 1);
+    };
+
     switch (event.key) {
+      case 'ArrowUp':
+        selectNext();
+        return;
+      case 'ArrowDown':
+        selectPrevious();
+        return;
       case 'ArrowRight':
-      case 'ArrowUp': {
-        event.preventDefault();
-        if (activeIndex < 0) {
-          selectStepAtIndex(0);
+        if (isRtlElement(event.currentTarget)) {
+          selectPrevious();
           return;
         }
-        selectStepAtIndex(activeIndex + 1);
+        selectNext();
         return;
-      }
       case 'ArrowLeft':
-      case 'ArrowDown': {
-        event.preventDefault();
-        if (activeIndex < 0) {
-          selectStepAtIndex(steps.length - 1);
+        if (isRtlElement(event.currentTarget)) {
+          selectNext();
           return;
         }
-        selectStepAtIndex(activeIndex - 1);
+        selectPrevious();
         return;
-      }
       case 'Home':
         event.preventDefault();
         selectStepAtIndex(0);
@@ -264,20 +289,18 @@ export function ThresholdRange({
                   const end = (segment.endValue / normalizedMax) * 100;
                   const width = end - start;
                   const isCompleted = activeIndex >= segment.completedStepIndex;
-                  const background = isCompleted
-                    ? `linear-gradient(90deg, ${segment.fromColor} 0%, ${segment.toColor} 100%)`
-                    : undefined;
-
                   return (
                     <div
                       key={segment.key}
                       aria-hidden="true"
-                      className={cn('absolute rounded-full', isCompleted ? '' : 'bg-grey-border')}
+                      className={cn('absolute rounded-full', isCompleted ? 'rtl:-scale-x-100' : 'bg-grey-border')}
                       style={{
-                        left: `${start}%`,
+                        insetInlineStart: `${start}%`,
                         width: `${width}%`,
                         height: `${RAIL_HEIGHT}px`,
-                        background,
+                        background: isCompleted
+                          ? `linear-gradient(to right, ${segment.fromColor} 0%, ${segment.toColor} 100%)`
+                          : undefined,
                       }}
                     />
                   );
@@ -299,7 +322,7 @@ export function ThresholdRange({
                       disabled={disabled}
                       data-testid={isActive ? 'threshold-range-thumb-active' : undefined}
                       className={cn(
-                        'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
+                        'absolute top-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
                         disabled
                           ? 'cursor-not-allowed'
                           : isActive
@@ -309,7 +332,8 @@ export function ThresholdRange({
                             : 'cursor-pointer',
                       )}
                       style={{
-                        left: `${position}%`,
+                        insetInlineStart: `${position}%`,
+                        marginInlineStart: `-${size / 2}px`,
                         width: `${size}px`,
                         height: `${size}px`,
                         backgroundColor,
@@ -330,11 +354,10 @@ export function ThresholdRange({
 
               {activeStep ? (
                 <div
-                  className="absolute text-s leading-none font-medium pointer-events-none"
+                  className="absolute text-s leading-none font-medium pointer-events-none -translate-x-1/2 rtl:translate-x-1/2"
                   style={{
                     top: `${LABEL_TOP_OFFSET}px`,
-                    left: `${(activeStep.value / normalizedMax) * 100}%`,
-                    transform: 'translateX(-50%)',
+                    insetInlineStart: `${(activeStep.value / normalizedMax) * 100}%`,
                     color: activeStep.color,
                   }}
                 >
@@ -344,11 +367,10 @@ export function ThresholdRange({
 
               {activeStep?.value !== lastStep.value ? (
                 <div
-                  className="text-grey-placeholder absolute text-s leading-none font-medium pointer-events-none"
+                  className="text-grey-placeholder absolute text-s leading-none font-medium pointer-events-none -translate-x-1/2 rtl:translate-x-1/2"
                   style={{
                     top: `${LABEL_TOP_OFFSET}px`,
-                    left: `${(lastStep.value / normalizedMax) * 100}%`,
-                    transform: 'translateX(-50%)',
+                    insetInlineStart: `${(lastStep.value / normalizedMax) * 100}%`,
                   }}
                 >
                   {lastStep.value.toString()}

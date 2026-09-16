@@ -144,7 +144,7 @@
   "freeform_search.preset_name_already_exists": "يوجد إعداد مسبق بهذا الاسم بالفعل",
   "freeform_search.preset_name_placeholder": "اسم الإعداد المسبق",
   "freeform_search.preset_name_required": "الاسم مطلوب",
-  "freeform_search.preset_placeholder": "اختر مجموعة محددة...",
+  "freeform_search.preset_placeholder": "اختر إعدادًا مسبقًا...",
   "freeform_search.results_count_one": "تم العثور على {{count}} مطابقة",
   "freeform_search.results_count_other": "تم العثور على {{count}} مطابقات",
   "freeform_search.results_title": "نتائج البحث",

@@ -242,6 +242,8 @@ function FreeformSearchFormInner({
     (limit !== undefined && limit !== DEFAULT_LIMIT) ||
     (threshold !== undefined && threshold !== defaultThreshold);
 
+  const hasPresetFilters = selectedDatasets.length > 0 || (threshold !== undefined && threshold !== defaultThreshold);
+
   return (
     <ManualSearchFormContext.Provider value={form}>
       <EntitySearchFormProvider form={form}>
@@ -294,7 +296,9 @@ function FreeformSearchFormInner({
                       if (value) handlePresetSelect(value);
                     }}
                     displayedValue={(option) =>
-                      isPresetDirty ? `${option.label} ${t('screenings:freeform_search.preset_edited')}` : option.label
+                      isPresetDirty && option.value === selectedPresetId
+                        ? `${option.label} ${t('screenings:freeform_search.preset_edited')}`
+                        : option.label
                     }
                     className="w-full"
                   />
@@ -339,7 +343,7 @@ function FreeformSearchFormInner({
                 <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
-                {isPresetDirty || (hasActiveFilters && !selectedPresetId) ? (
+                {isPresetDirty || (hasPresetFilters && !selectedPresetId) ? (
                   <Popover.Root open={savePresetPopoverOpen} onOpenChange={handleSavePresetPopoverChange}>
                     <Popover.Trigger asChild>
                       <Button variant="primary" appearance="stroked" size="medium">
@@ -353,7 +357,7 @@ function FreeformSearchFormInner({
                           e.stopPropagation();
                           handleSaveFilters();
                         }}
-                        className="flex flex-col gap-2"
+                        className="flex gap-2 items-center"
                       >
                         <Input
                           autoFocus
@@ -365,8 +369,17 @@ function FreeformSearchFormInner({
                           placeholder={t('screenings:freeform_search.preset_name_placeholder')}
                           borderColor={presetNameError ? 'redfigma-47' : 'greyfigma-90'}
                           disabled={createFreeFormSearchPresetMutation.isPending}
+                          className="flex-1"
                         />
                         {presetNameError ? <span className="text-red-primary text-xs">{presetNameError}</span> : null}
+                        <Button
+                          type="submit"
+                          appearance="stroked"
+                          mode="icon"
+                          disabled={createFreeFormSearchPresetMutation.isPending}
+                        >
+                          <Icon icon="tick" className="size-5" />
+                        </Button>
                       </form>
                     </Popover.Content>
                   </Popover.Root>
