@@ -476,6 +476,74 @@
       '404':
         $ref: 'components.yml#/responses/404'
 
+/screenings/searches:
+  get:
+    tags:
+      - Screening
+    summary: List saved search in the organization
+    operationId: listScreeningSavedSearches
+    responses:
+      '200':
+        description: List of saved searches
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScreeningSavedSearch'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+  post:
+    tags:
+      - Screening
+    summary: Save a screening search
+    operationId: saveScreeningSearch
+    requestBody:
+      description: Search to be saved
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SaveScreeningSearchDto'
+    responses:
+      '201':
+        description: The search that was just saved
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreeningSavedSearch'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '409':
+        $ref: 'components.yml#/responses/409'
+
+/screenings/searches/{id}:
+  delete:
+    tags:
+      - Screening
+    summary: Delete a saved screening search
+    operationId: deleteScreeningSavedSearch
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: Saved search was deleted
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
 components:
   schemas:
     OpenSanctionsCatalogDataset:
@@ -1207,3 +1275,36 @@ components:
           type: string
         registrationNumber:
           type: string
+    SaveScreeningSearchDto:
+      type: object
+      required: [name, config]
+      properties:
+        name:
+          type: string
+        config:
+          $ref: "#/components/schemas/ScreeningFreeformDto"
+    ScreeningSavedSearch:
+      type: object
+      required:
+        - id
+        - org_id
+        - name
+        - provider
+        - config
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        provider:
+          type: string
+        config:
+          $ref: "#/components/schemas/ScreeningFreeformDto"
+        created_at:
+          type: string
+          format: date-time
