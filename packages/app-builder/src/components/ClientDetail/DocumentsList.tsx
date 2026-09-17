@@ -156,7 +156,7 @@ const FileItem = ({
             className={CtaV2ClassName({
               variant: 'secondary',
               mode: 'icon',
-              className: 'absolute top-xs right-xs',
+              className: 'absolute top-xs end-xs',
             })}
           >
             <Icon icon={file.content_type?.startsWith('image/') ? 'eye' : 'download'} className="size-3.5" />

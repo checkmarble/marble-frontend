@@ -17,7 +17,7 @@ export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'a
     >
       <Typo variant="subtitle1">{t('scenarios:home.testrun')}</Typo>
 
-      <Nudge kind={kind} className="absolute -right-3 -top-3 size-6" content={t('scenarios:testrun.nudge')} />
+      <Nudge kind={kind} className="absolute -end-[12px] -top-3 size-6" content={t('scenarios:testrun.nudge')} />
 
       <CalloutV2>{t('scenarios:testrun.description')}</CalloutV2>
 

@@ -248,7 +248,7 @@ function Onboarding() {
           </form>
         )}
       </div>
-      <div className="absolute bottom-6 right-6">
+      <div className="absolute bottom-6 end-lg">
         <LanguagePicker />
       </div>
     </div>

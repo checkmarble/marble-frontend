@@ -1,4 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { freeformSearchPresetSchema } from '@app-builder/models/freeform-search-preset';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { availableFeatures, type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
@@ -282,4 +283,33 @@ export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
       statusText: upstream.statusText,
       headers,
     });
+  });
+
+/** Freeform Search Presets */
+
+export const getListFreeFormSearchPresetsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => context.authInfo.screening.listFreeformSearchPresets());
+
+export const createFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(z.object({ name: z.string().trim().min(1), value: freeformSearchPresetSchema }))
+  .handler(async ({ context, data }) => {
+    try {
+      const preset = await context.authInfo.screening.saveFreeformSearchPreset(data);
+      return { success: true as const, preset };
+    } catch (error) {
+      if (isStatusConflictHttpError(error)) {
+        return { success: false as const, error: 'duplicate_name' as const };
+      }
+      throw error;
+    }
+  });
+
+export const deleteFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ context, data }) => {
+    await context.authInfo.screening.deleteFreeformSearchPreset(data);
+    return { success: true };
   });

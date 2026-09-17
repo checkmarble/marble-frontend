@@ -134,7 +134,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
               <div className="bg-surface-card p-md transition-all duration-200 relative">
                 {/* Drag Handle */}
                 <div
-                  className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-12 rounded-full cursor-grab active:cursor-grabbing transition-all duration-200 flex items-center justify-center ${
+                  className={`absolute start-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-12 rounded-full cursor-grab active:cursor-grabbing transition-all duration-200 flex items-center justify-center ${
                     snapshot.isDragging ? 'bg-purple-hover shadow-lg' : 'bg-grey-30 hover:bg-grey-40'
                   }`}
                   {...provided.dragHandleProps}
@@ -152,7 +152,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                           >
                             {/* Vertical line connecting conditions */}
                             {conditionIndex > 0 && (
-                              <div className="absolute left-8 top-0 w-0.5 h-8 bg-grey-30 -translate-y-4"></div>
+                              <div className="absolute start-xl top-0 w-0.5 h-8 bg-grey-30 -translate-y-4"></div>
                             )}
                             <div className="flex items-center gap-sm flex-1">
                               <div>
@@ -200,7 +200,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
           {/* "Then" arrow + Actions Box — grouped so the arrow aligns to the action box center */}
           <div className="flex items-center self-center">
             <div className="w-28 h-0.5 bg-grey-disabled relative">
-              <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-disabled"></div>
+              <div className="absolute -end-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-disabled"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-border px-md py-2xs rounded-sm z-10">
                 <span className="text-sm font-bold text-white uppercase tracking-wide">{t('common:then')}</span>
               </div>

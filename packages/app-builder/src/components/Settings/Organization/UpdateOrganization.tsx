@@ -36,7 +36,7 @@ export function UpdateOrganizationSettings({
           {t('common:edit')}
         </Button>
         <Nudge
-          className="absolute -top-1 -right-1 size-4"
+          className="absolute -top-1 -end-xs size-4"
           iconClass="size-2.5"
           kind="restricted"
           content={t('settings:inboxes.auto_assign_queue_limit.nudge', {

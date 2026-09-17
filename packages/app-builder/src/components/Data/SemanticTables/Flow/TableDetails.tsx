@@ -267,7 +267,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                     <div key={`${group.fields[0].id}-${group.fields[1].id}`} className="relative flex flex-col gap-sm">
                       <div
                         className={cn(
-                          'absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l ',
+                          'absolute -start-sm top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l ',
                           group.linkType === 'belongs_to'
                             ? 'border-purple-primary'
                             : 'border-grey-secondary border-dashed',

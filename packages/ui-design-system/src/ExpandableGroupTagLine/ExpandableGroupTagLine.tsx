@@ -146,7 +146,7 @@ export function ExpandableGroupTagLine({
       <div
         ref={ghostRef}
         className={cn(
-          'pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-sm overflow-x-hidden [&>*]:shrink-0',
+          'pointer-events-none invisible absolute top-0 end-0 start-0 flex items-center gap-sm overflow-x-hidden [&>*]:shrink-0',
           classname,
         )}
         aria-hidden="true"
