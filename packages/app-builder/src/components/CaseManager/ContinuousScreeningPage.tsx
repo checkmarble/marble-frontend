@@ -16,6 +16,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
 import { useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
+import { useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, TagList } from 'ui-design-system';
@@ -23,6 +24,7 @@ import { Icon } from 'ui-icons';
 import { ReviewStatusBadge } from '../ContinuousScreening/ReviewStatusBadge';
 import { CaseEvents } from './CaseEvents';
 import { CaseInfo } from './CaseInfo';
+import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
 import { ScreeningMatchList } from './ContinuousScreening/MatchList';
 import { RequestSideInfo } from './ContinuousScreening/RequestSideInfo';
 import { EscalateCaseButton } from './EscalateCaseButton';
@@ -39,6 +41,8 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
   const { orgTags } = useOrganizationTags();
   const isUserAdmin = isAdmin(currentUser);
   const revalidate = useLoaderRevalidator();
+  const rootRef = useRef<HTMLDivElement>(null);
+
   const hasRemainingMatchesToExamine = screening.matches.some((match) => match.status === 'pending');
 
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
@@ -162,6 +166,7 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
               </Card>
             </div>
             <ScreeningMatchList screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />
+            <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} className="order-4" />
           </div>
           <RequestSideInfo caseDetail={caseDetail} screening={screening} />
         </Page.Content>
