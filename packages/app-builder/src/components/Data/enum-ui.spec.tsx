@@ -3,7 +3,7 @@ import {
   DimensionValuesSelect,
 } from '@app-builder/components/AstBuilder/edition/ValueSwitch/ValueSwitch';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
-import type { DataModelField } from '@app-builder/models/data-model';
+import type { DataModelField, EnumValue } from '@app-builder/models/data-model';
 import { cleanup, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
@@ -69,7 +69,7 @@ function Editor({
 }: {
   multiple: boolean;
   definition?: DataModelField;
-  initial?: string[];
+  initial?: EnumValue[];
 }) {
   const [values, setValues] = useState(initial);
   const dimension = { type: 'field' as const, field: NewPayloadAstNode('status'), values };
@@ -77,12 +77,7 @@ function Editor({
     <>
       <output data-testid="values">{JSON.stringify(values)}</output>
       {multiple ? (
-        <DimensionValuesSelect
-          field={definition}
-          dimension={dimension}
-          knownValues={[]}
-          onChange={(next) => setValues(next.map(String))}
-        />
+        <DimensionValuesSelect field={definition} dimension={dimension} knownValues={[]} onChange={setValues} />
       ) : (
         <DimensionValueInput
           field={definition}
@@ -90,7 +85,7 @@ function Editor({
           knownValues={[]}
           value={values[0] ?? ''}
           unavailableValues={[]}
-          onChange={(next) => setValues([String(next)])}
+          onChange={(next) => setValues([next])}
         />
       )}
     </>
@@ -148,6 +143,51 @@ describe('shared enum tags', () => {
 });
 
 describe.each([false, true])('ValueSwitch enum selector (multiple=%s)', (multiple) => {
+  it.each([
+    { dataType: 'Int' as const, selected: 2 },
+    { dataType: 'Float' as const, selected: 2.5 },
+  ])('preserves $dataType options and selections as numbers', async ({ dataType, selected }) => {
+    render(<Editor multiple={multiple} definition={{ ...field, dataType, values: [0, selected] }} initial={[0]} />);
+    await userEvent.click(screen.getByRole('button'));
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), String(selected));
+    expect(screen.queryByRole('option', { name: /use_custom_value/ })).toBeNull();
+    await userEvent.click(screen.getByRole('option', { name: String(selected) }));
+    expect(screen.getByTestId('values').textContent).toBe(JSON.stringify(multiple ? [0, selected] : [selected]));
+    if (multiple) {
+      await userEvent.clear(screen.getByPlaceholderText('scenarios:value_switch.search_values'));
+      await userEvent.click(screen.getByRole('option', { name: '0' }));
+      expect(screen.getByTestId('values').textContent).toBe(JSON.stringify([selected]));
+    }
+  });
+  it.each([
+    { dataType: 'Int' as const, custom: 0 },
+    { dataType: 'Float' as const, custom: 1.5 },
+  ])('creates numeric custom values for $dataType', async ({ dataType, custom }) => {
+    render(<Editor multiple={multiple} definition={{ ...field, dataType, values: [] }} initial={[]} />);
+    await userEvent.click(screen.getByRole('button'));
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), String(custom));
+    await userEvent.click(screen.getByRole('option', { name: `scenarios:value_switch.use_custom_value ${custom}` }));
+    expect(screen.getByTestId('values').textContent).toBe(JSON.stringify([custom]));
+  });
+  it.each([
+    { dataType: 'Int' as const, search: '1.5' },
+    { dataType: 'Float' as const, search: 'Infinity' },
+    { dataType: 'Float' as const, search: 'invalid' },
+  ])('rejects invalid $dataType custom value $search', async ({ dataType, search }) => {
+    render(<Editor multiple={multiple} definition={{ ...field, dataType, values: [] }} initial={[]} />);
+    await userEvent.click(screen.getByRole('button'));
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), search);
+    expect(screen.queryByRole('option')).toBeNull();
+  });
+  it('preserves numbers when searching a virtualized enum', async () => {
+    const values = Array.from({ length: 80 }, (_, index) => index);
+    render(<Editor multiple={multiple} definition={{ ...field, dataType: 'Int', values }} initial={[]} />);
+    await userEvent.click(screen.getByRole('button'));
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), '79');
+    expect(screen.queryByRole('option', { name: /use_custom_value/ })).toBeNull();
+    await userEvent.click(screen.getByRole('option', { name: '79' }));
+    expect(screen.getByTestId('values').textContent).toBe('[79]');
+  });
   it('searches and creates a rule-local value', async () => {
     render(<Editor multiple={multiple} />);
     await userEvent.click(screen.getByRole('button'));
