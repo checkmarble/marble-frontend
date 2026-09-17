@@ -5,6 +5,7 @@ import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimeNow, isTimestampExtract } from '@app-builder/models/astNode/time';
+import { isValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import * as R from 'remeda';
 import { getDataAccessorAstNodeField } from './getDataAccessorAstNodeField';
@@ -43,6 +44,14 @@ export function getAstNodeDataType(
 
   if (isIpHasFlag(astNode)) {
     return 'Bool';
+  }
+
+  if (isValueSwitchAstNode(astNode)) {
+    const values = [
+      astNode.namedChildren.fallback.constant,
+      ...astNode.children.map((child) => child.children[1]?.constant),
+    ];
+    return values.every((value) => typeof value === 'number' && Number.isInteger(value)) ? 'Int' : 'Float';
   }
 
   return 'unknown';
