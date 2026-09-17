@@ -20,7 +20,7 @@ interface DynamicDateRangeFilterType {
   fromNow: string;
 }
 
-type DateRangeFilterType = StaticDateRangeFilterType | DynamicDateRangeFilterType | null | undefined;
+export type DateRangeFilterType = StaticDateRangeFilterType | DynamicDateRangeFilterType | null | undefined;
 
 function adaptStaticDateRangeFilterType({ from, to }: DateRange): StaticDateRangeFilterType {
   const startDate = from?.toISOString() ?? '';
