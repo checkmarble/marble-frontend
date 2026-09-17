@@ -119,11 +119,11 @@ export function DataField({ field, value, linkedTo, metaData, currency }: DataFi
 
   return (
     <DataFieldProvider value={contextValue}>
-      <div className="col-span-2 grid grid-cols-subgrid items-start">
+      <div className="col-span-2 grid min-w-0 grid-cols-subgrid items-start">
         <label htmlFor={field?.id} className="text-grey-secondary truncate" title={field?.name}>
           {field?.name}
         </label>
-        <div id={field?.id}>
+        <div id={field?.id} className="min-w-0">
           {isNonNullish(value) ? (
             <>{linkedTo ? <LinkToValue value={`${value}`} linkedTo={linkedTo} /> : <FieldRenderer />}</>
           ) : (
