@@ -73,7 +73,7 @@ export const StepperComponent = ({
               {getStepLabel(step.name)}
             </span>
             {index < steps.length - 1 ? (
-              <div className="h-1 w-10 border-b border-dashed border-grey-border"></div>
+              <div className="h-1 w-6 border-b border-dashed border-grey-border"></div>
             ) : null}
           </Fragment>
         );
