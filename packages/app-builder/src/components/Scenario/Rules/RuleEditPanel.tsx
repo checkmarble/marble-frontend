@@ -20,6 +20,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { isDeepEqual } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, Card, cn, NumberInput, Panel, PanelSharpFactory } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -158,13 +159,17 @@ function RuleEditForm({
   const [isDebouncing, setIsDebouncing] = useState(false);
 
   const serverValidationMessages = useMemo(() => {
+    // Scenario validation describes the saved formula, not the current edits.
+    if (!isDeepEqual(formFormula, rule.formula)) {
+      return [];
+    }
     if (!hasRuleErrors(ruleValidation, { formFormula })) {
       return [];
     }
     return collectRuleValidationMessages(ruleValidation, getScenarioErrorMessage, t('scenarios:edit_rule.formula'), {
       formFormula,
     });
-  }, [ruleValidation, formFormula, getScenarioErrorMessage, t]);
+  }, [ruleValidation, formFormula, rule.formula, getScenarioErrorMessage, t]);
 
   const innerHandleFormulaChange = useDebouncedCallbackRef((value: AstNode | undefined) => {
     setIsDebouncing(false);
