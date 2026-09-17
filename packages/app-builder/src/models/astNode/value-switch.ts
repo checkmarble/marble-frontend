@@ -119,7 +119,7 @@ function getDimensionValueKey(value: string | number): string {
 }
 
 export function getValueSwitchCellKey(values: Array<string | number>): string {
-  return values.map(getDimensionValueKey).join('|');
+  return JSON.stringify(values.map((value) => [typeof value, value]));
 }
 
 export function getValueSwitchCombinations(model: Pick<ValueSwitchModel, 'dimensions'>): Array<Array<string | number>> {

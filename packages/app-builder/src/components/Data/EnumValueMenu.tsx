@@ -1,3 +1,4 @@
+import type { EnumValue } from '@app-builder/models/data-model';
 import { type EnumField, resolveEnumDisplay, resolveEnumValues } from '@app-builder/models/enum-values';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -9,12 +10,12 @@ import { EnumTag } from './EnumTag';
 
 type EnumValueMenuProps = {
   field: EnumField;
-  selectedValues: string[];
-  currentValues?: string[];
-  unavailableValues?: Array<string | number>;
+  selectedValues: EnumValue[];
+  currentValues?: EnumValue[];
+  unavailableValues?: EnumValue[];
 } & (
-  | { multiple: true; onChange: (values: string[]) => void }
-  | { multiple?: false; onChange: (value: string) => void }
+  | { multiple: true; onChange: (values: EnumValue[]) => void }
+  | { multiple?: false; onChange: (value: EnumValue) => void }
 );
 
 const VIRTUALIZE_AFTER = 50;
@@ -27,11 +28,19 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
   const language = useFormatLanguage();
   const [search, setSearch] = useState('');
   const resolved = resolveEnumValues(field, currentValues);
-  const values = resolved.values.filter((value): value is string => typeof value === 'string');
+  const values = resolved.values;
   const searchValue = search.trim();
+  const numeric = field.dataType === 'Int' || field.dataType === 'Float';
+  const parsedValue = numeric ? Number(searchValue) : searchValue;
+  const validValue =
+    !numeric || (Number.isFinite(parsedValue) && (field.dataType !== 'Int' || Number.isInteger(parsedValue)));
   const customValue =
-    !resolved.closed && searchValue && !values.includes(searchValue) && !unavailableValues.includes(searchValue)
-      ? searchValue
+    !resolved.closed &&
+    searchValue &&
+    validValue &&
+    !values.includes(parsedValue) &&
+    !unavailableValues.includes(parsedValue)
+      ? parsedValue
       : undefined;
   const staleValues = selectedValues.filter((value) => value !== '' && !values.includes(value));
   const virtualize = values.length > VIRTUALIZE_AFTER;
@@ -43,7 +52,7 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
     ? staleValues.filter((value) => matchesEnumSearch(field, value, language, searchValue))
     : staleValues;
 
-  function select(value: string) {
+  function select(value: EnumValue) {
     if (props.multiple)
       props.onChange(
         selectedValues.includes(value)
@@ -106,9 +115,9 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
               actionIcon={props.multiple ? 'delete' : undefined}
             />
           ))}
-          {customValue ? (
-            <MenuCommand.Item value={customValue} onSelect={() => select(customValue)}>
-              {t('scenarios:value_switch.use_custom_value', { value: customValue })}
+          {customValue !== undefined ? (
+            <MenuCommand.Item value={searchValue} onSelect={() => select(customValue)}>
+              {t('scenarios:value_switch.use_custom_value', { value: String(customValue) })}
             </MenuCommand.Item>
           ) : null}
         </MenuCommand.List>
@@ -117,7 +126,7 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
   );
 }
 
-function matchesEnumSearch(field: EnumField, value: string, language: string, search: string) {
+function matchesEnumSearch(field: EnumField, value: EnumValue, language: string, search: string) {
   if (!search) return true;
   const query = search.toLowerCase();
   return `${value} ${resolveEnumDisplay(field, value, language).label}`.toLowerCase().includes(query);
@@ -132,10 +141,10 @@ function EnumValueItem({
   actionIcon,
 }: {
   field: EnumField;
-  value: string;
+  value: EnumValue;
   language: string;
   disabled: boolean;
-  onSelect: (value: string) => void;
+  onSelect: (value: EnumValue) => void;
   actionIcon?: 'tick' | 'delete';
 }) {
   return (
@@ -159,11 +168,11 @@ function VirtualizedEnumItems({
   onSelect,
 }: {
   field: EnumField;
-  values: string[];
-  selectedValues: string[];
-  unavailableValues: Array<string | number>;
+  values: EnumValue[];
+  selectedValues: EnumValue[];
+  unavailableValues: EnumValue[];
   language: string;
-  onSelect: (value: string) => void;
+  onSelect: (value: EnumValue) => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const viewportHeight = Math.min(320, Math.max(values.length, 1) * ENUM_ITEM_HEIGHT);

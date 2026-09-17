@@ -26,6 +26,7 @@ import {
   type ValueSwitchModel,
   valueSwitchModelToAst,
 } from '@app-builder/models/astNode/value-switch';
+import type { EnumValue } from '@app-builder/models/data-model';
 import { isEnumField } from '@app-builder/models/enum-values';
 import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, scoringLevelEntries } from '@app-builder/models/scoring';
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
@@ -77,11 +78,6 @@ function getInsertedNumericBound(bounds: number[], index: number) {
 /** Numeric values from a mixed dimension. Ordered bounds in NumericBandRow and TwoDimensionEditor. */
 function getNumericValues(values: Array<string | number>) {
   return values.filter((value): value is number => typeof value === 'number');
-}
-
-/** String values from a mixed dimension. Enum menus in DimensionValueInput and DimensionValuesSelect. */
-function getStringValues(values: Array<string | number>) {
-  return values.filter((value): value is string => typeof value === 'string');
 }
 
 type EditValueSwitchProps = Omit<OperandEditModalProps, 'node'> & {
@@ -155,14 +151,17 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
     return options;
   }, [data, model.dimensions, t, triggerObjectTable]);
 
+  const lastDraftModel = useRef(model);
+  useEffect(() => {
+    if (lastDraftModel.current === model) return;
+    lastDraftModel.current = model;
+    const nextAst = valueSwitchModelToAst(model, node.id);
+    Object.assign(nodeSharp.value.node, nextAst);
+    onDraftChange?.(nodeSharp.value.node as ValueSwitchAstNode);
+  }, [model, node.id, nodeSharp, onDraftChange]);
+
   function updateModel(updater: (current: ValueSwitchModel) => ValueSwitchModel) {
-    setModel((current) => {
-      const next = normalizeValueSwitchThresholds(updater(current));
-      const nextAst = valueSwitchModelToAst(next, node.id);
-      Object.assign(nodeSharp.value.node, nextAst);
-      onDraftChange?.(nodeSharp.value.node as ValueSwitchAstNode);
-      return next;
-    });
+    setModel((current) => normalizeValueSwitchThresholds(updater(current)));
   }
 
   function setDimensionCount(dimensionCount: 1 | 2) {
@@ -728,7 +727,7 @@ function TwoDimensionEditor({
     if (!['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter'].includes(event.key)) return;
 
     event.preventDefault();
-    const rowCount = (rowDimension?.values.length ?? 0) + (numericRows ? 1 : 0);
+    const rowCount = rowDimension?.values.length ?? 0;
     const target = getTwoDimensionGridNavigationTarget({
       key: event.key as TwoDimensionGridNavigationKey,
       shiftKey: event.shiftKey,
@@ -1013,17 +1012,17 @@ export function DimensionValueInput({
 }: {
   dimension: ValueSwitchDimension;
   field?: DataModelField;
-  value: string | number;
-  knownValues: Array<string | number>;
-  unavailableValues: Array<string | number>;
-  onChange: (value: string | number) => void;
+  value: EnumValue;
+  knownValues: EnumValue[];
+  unavailableValues: EnumValue[];
+  onChange: (value: EnumValue) => void;
 }) {
   if (field && isEnumField(field))
     return (
       <EnumValueMenu
         field={field}
-        selectedValues={[String(value)]}
-        currentValues={getStringValues(dimension.values)}
+        selectedValues={[value]}
+        currentValues={dimension.values}
         unavailableValues={unavailableValues}
         onChange={onChange}
       />
@@ -1064,18 +1063,18 @@ export function DimensionValuesSelect({
 }: {
   dimension: ValueSwitchDimension;
   field?: DataModelField;
-  knownValues: Array<string | number>;
-  onChange: (values: Array<string | number>) => void;
+  knownValues: EnumValue[];
+  onChange: (values: EnumValue[]) => void;
 }) {
   const { t } = useTranslation(['scenarios']);
   const [manualValue, setManualValue] = useState('');
   const availableValues = [...new Set([...knownValues, ...dimension.values])];
 
-  function toggle(value: string | number) {
+  function toggle(value: EnumValue) {
     onChange(
       dimension.values.includes(value as never)
         ? dimension.values.filter((current) => current !== value)
-        : ([...dimension.values, value] as Array<string | number>),
+        : ([...dimension.values, value] as EnumValue[]),
     );
   }
 
@@ -1088,9 +1087,7 @@ export function DimensionValuesSelect({
   }
 
   if (field && isEnumField(field))
-    return (
-      <EnumValueMenu multiple field={field} selectedValues={getStringValues(dimension.values)} onChange={onChange} />
-    );
+    return <EnumValueMenu multiple field={field} selectedValues={dimension.values} onChange={onChange} />;
 
   return (
     <div className="flex flex-col gap-sm">
