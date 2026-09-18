@@ -65,7 +65,7 @@
     "country-flag-emojis": "^1.0.4",
     "date-fns": "^4.1.0",
     "markdown-to-jsx": "9.10.2",
-    "react-day-picker": "^9.6.2",
+    "react-day-picker": "^10.0.1",
     "remeda": "^2.38.0",
     "sharpstate": "^0.0.13",
     "tailwind-merge": "^3.0.2",
