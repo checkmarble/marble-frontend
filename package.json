@@ -8,7 +8,7 @@
     "@vitest/ui": "4.1.11",
     "lefthook": "^2.1.9",
     "react-refresh": "^0.18.0",
-    "typescript": "5.8.2"
+    "typescript": "7.0.2"
   },
   "license": "MIT",
   "overrides": {
