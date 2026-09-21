@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, useTable } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 const inboxesLoader = createServerFn()
   .middleware([authMiddleware])
@@ -128,6 +129,14 @@ function CaseManagerSettings() {
         id: 'cases',
         header: t('settings:inboxes.cases'),
         size: 100,
+      }),
+      inboxColumnHelper.accessor((row) => row.hasCases, {
+        id: 'hasCases',
+        header: t('settings:inboxes.hasCases'),
+        size: 100,
+        cell: ({ getValue }) => {
+          return getValue() ? <Icon icon="tick" className="size-4" /> : <Icon icon="x" className="size-4" />;
+        },
       }),
     ];
   }, [t]);

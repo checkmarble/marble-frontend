@@ -2,6 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { type Inbox } from '@app-builder/models/inbox';
 import { useDeleteInboxMutation } from '@app-builder/queries/settings/inboxes/delete-inbox';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -10,9 +11,7 @@ export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: bool
   const { t } = useTranslation(['common', 'settings']);
   const [open, setOpen] = useState(false);
 
-  const handleOnSuccess = () => {
-    setOpen(false);
-  };
+  const handleOnSettled = () => setOpen(false);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
@@ -23,24 +22,26 @@ export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: bool
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <DeleteInboxContent inboxId={inbox.id} onSuccess={handleOnSuccess} />
+        <DeleteInboxContent inboxId={inbox.id} onSettled={handleOnSettled} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-const DeleteInboxContent = ({ inboxId, onSuccess }: { inboxId: string; onSuccess: () => void }) => {
+const DeleteInboxContent = ({ inboxId, onSettled }: { inboxId: string; onSettled: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxMutation = useDeleteInboxMutation();
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteInbox = () => {
-    deleteInboxMutation.mutateAsync({ inboxId }).then((res) => {
-      if (!res) {
-        onSuccess();
-      }
-      revalidate();
-    });
+    deleteInboxMutation.mutateAsync(
+      { inboxId },
+      {
+        onError: (error) => toast.error(error.message),
+        onSuccess: () => revalidate(),
+        onSettled: () => onSettled(),
+      },
+    );
   };
 
   return (

@@ -64,6 +64,7 @@ export function adaptInboxMetadata(inbox: InboxMetadataDto): InboxMetadata {
 
 export interface InboxWithCasesCount extends Inbox {
   casesCount: number;
+  hasCases: boolean;
 }
 
 export function adaptInboxWithCasesCount(inbox: InboxDto): InboxWithCasesCount {
@@ -71,6 +72,7 @@ export function adaptInboxWithCasesCount(inbox: InboxDto): InboxWithCasesCount {
   return {
     ...adaptInbox(inbox),
     casesCount: inbox.cases_count,
+    hasCases: inbox.has_cases ?? false,
   };
 }
 
