@@ -1,12 +1,16 @@
+import { type FreeformSearchPreset, type SavedFreeformSearchPreset } from '@app-builder/models/freeform-search-preset';
 import {
   type SavedScreeningSearchFilters,
   type SavedScreeningSearchPage,
   type ScreeningMatchPayload,
 } from '@app-builder/models/screening';
 import {
+  createFreeFormSearchPresetFn,
+  deleteFreeFormSearchPresetFn,
   type FreeformSearchInput,
   freeformSearchFn,
   getFreeformSearchFn,
+  getListFreeFormSearchPresetsFn,
   listSavedFreeformSearchesFn,
   saveFreeformSearchFn,
 } from '@app-builder/server-fns/screenings';
@@ -64,6 +68,58 @@ export const useGetFreeformSearchQuery = (id: string) => {
     queryKey: ['screening', 'freeform-search', id],
     queryFn: async (): Promise<GetFreeformSearchResponse> => {
       return getFreeformSearch({ data: { id } }) as Promise<GetFreeformSearchResponse>;
+    },
+  });
+};
+
+export const freeformSearchPresetsQueryKey = ['screening', 'freeform-search', 'presets'] as const;
+
+export const useListFreeFormSearchPresetsQuery = () => {
+  const getListFFS = useServerFn(getListFreeFormSearchPresetsFn);
+
+  return useQuery({
+    queryKey: freeformSearchPresetsQueryKey,
+    queryFn: async () => {
+      const result = await getListFFS();
+      return result;
+    },
+  });
+};
+
+export const useCreateFreeFormSearchPresetMutation = () => {
+  const createFreeFormSearchPreset = useServerFn(createFreeFormSearchPresetFn);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['screening', 'freeform-search', 'preset', 'create'],
+    mutationFn: async ({ name, value }: { name: string; value: FreeformSearchPreset }) => {
+      return createFreeFormSearchPreset({ data: { name, value } });
+    },
+    onSuccess: (result) => {
+      if (!result.success) return;
+      queryClient.setQueryData<SavedFreeformSearchPreset[]>(freeformSearchPresetsQueryKey, (old = []) => [
+        ...old.filter((preset) => preset.id !== result.preset.id),
+        result.preset,
+      ]);
+      void queryClient.invalidateQueries({ queryKey: freeformSearchPresetsQueryKey });
+    },
+  });
+};
+
+export const useDeleteFreeFormSearchPresetMutation = () => {
+  const deleteFreeFormSearchPreset = useServerFn(deleteFreeFormSearchPresetFn);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['screening', 'freeform-search', 'preset', 'delete'],
+    mutationFn: async ({ id }: { id: string }) => {
+      return deleteFreeFormSearchPreset({ data: { id } });
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.setQueryData<SavedFreeformSearchPreset[]>(freeformSearchPresetsQueryKey, (old) =>
+        old?.filter((preset) => preset.id !== id),
+      );
+      void queryClient.invalidateQueries({ queryKey: freeformSearchPresetsQueryKey });
     },
   });
 };

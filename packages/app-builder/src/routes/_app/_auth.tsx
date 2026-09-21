@@ -58,7 +58,7 @@ function AuthLayout() {
         </div>
       </div>
       <div className="relative bg-surface-card basis-[600px] px-[120px] py-[124px] grid place-items-center">
-        <div className="absolute bottom-6 right-6">
+        <div className="absolute bottom-6 end-lg">
           <LanguagePicker />
         </div>
         <div className="min-h-[500px] w-full">

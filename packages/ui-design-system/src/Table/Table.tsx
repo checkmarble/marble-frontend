@@ -97,9 +97,9 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
                     {header.column.getCanResize() ? (
                       <div
                         className={clsx(
-                          'hover:bg-grey-border active:bg-grey-placeholder absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
+                          'hover:bg-grey-border active:bg-grey-placeholder absolute end-0 h-full w-1 cursor-col-resize touch-none select-none',
                           // Hack to take scroll bar into account
-                          index === headerGroup.headers.length - 1 && 'right-2',
+                          index === headerGroup.headers.length - 1 && 'end-sm',
                         )}
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}

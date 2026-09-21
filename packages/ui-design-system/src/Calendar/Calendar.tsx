@@ -28,20 +28,20 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [UI.MonthCaption]: 'bloc text-center',
         [UI.CaptionLabel]:
           'text-grey-primary text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
-        [UI.Nav]: 'absolute top-0 left-0 right-0',
+        [UI.Nav]: 'absolute top-0 start-0 end-0',
         [UI.PreviousMonthButton]: clsx(
           CtaV2ClassName({
             variant: 'secondary',
             mode: 'icon',
           }),
-          'size-10 absolute left-0',
+          'size-10 absolute start-0',
         ),
         [UI.NextMonthButton]: clsx(
           CtaV2ClassName({
             variant: 'secondary',
             mode: 'icon',
           }),
-          'size-10 absolute right-0',
+          'size-10 absolute end-0',
         ),
         [UI.Chevron]: 'absolute m-auto size-5',
         [UI.MonthGrid]: 'w-full border-none',
@@ -61,7 +61,7 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [DayFlag.outside]: 'text-grey-disabled',
         [DayFlag.disabled]: 'text-grey-disabled',
         [DayFlag.today]:
-          'after:absolute after:bottom-0 after:left-0 after:right-0 after:content-["."] after:text-l after:text-center relative after:pointer-events-none',
+          'after:absolute after:bottom-0 after:start-0 after:end-0 after:content-["."] after:text-l after:text-center relative after:pointer-events-none',
         [DayFlag.hidden]: 'invisible',
         ...classNames,
       }}

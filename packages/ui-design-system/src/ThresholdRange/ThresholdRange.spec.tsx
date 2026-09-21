@@ -216,9 +216,102 @@ describe('ThresholdRange', () => {
     const firstSegment = segments?.[0] as HTMLDivElement | undefined;
 
     expect(firstSegment).toBeTruthy();
-    expect(firstSegment?.style.left).toBe('0%');
+    expect(firstSegment?.style.insetInlineStart).toBe('0%');
     expect(firstSegment?.style.background).toContain('linear-gradient');
     expect(firstSegment?.style.background).toContain('rgb(210, 55, 29)');
     expect(firstSegment?.style.background).toContain('rgb(255, 0, 0)');
+    expect(firstSegment?.className).toContain('rtl:-scale-x-100');
+  });
+
+  describe('RTL', () => {
+    afterEach(() => {
+      document.documentElement.removeAttribute('dir');
+    });
+
+    it('clicking the rail maps from the right edge', () => {
+      document.documentElement.dir = 'rtl';
+      const { onChange } = renderThresholdRange();
+      const rail = container?.querySelector('[data-testid="threshold-range-rail"]') as HTMLDivElement | null;
+      expect(rail).toBeTruthy();
+
+      vi.spyOn(rail!, 'getBoundingClientRect').mockReturnValue({
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 12,
+        top: 0,
+        right: 100,
+        bottom: 12,
+        left: 0,
+        toJSON: () => ({}),
+      });
+
+      act(() => {
+        rail?.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 37 }));
+      });
+
+      expect(onChange).toHaveBeenCalledWith(60);
+    });
+
+    it('dragging the active thumb maps from the right edge', () => {
+      document.documentElement.dir = 'rtl';
+      const { onChange } = renderThresholdRange({ value: 40 });
+      const rail = container?.querySelector('[data-testid="threshold-range-rail"]') as HTMLDivElement | null;
+      const thumb = container?.querySelector('[data-testid="threshold-range-thumb-active"]');
+      expect(rail).toBeTruthy();
+      expect(thumb).toBeTruthy();
+
+      vi.spyOn(rail!, 'getBoundingClientRect').mockReturnValue({
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 12,
+        top: 0,
+        right: 100,
+        bottom: 12,
+        left: 0,
+        toJSON: () => ({}),
+      });
+
+      act(() => {
+        thumb?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: 50, pointerId: 1 }));
+        rail?.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 37, pointerId: 1 }));
+        rail?.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 25, pointerId: 1 }));
+        rail?.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: 25, pointerId: 1 }));
+      });
+
+      expect(onChange).toHaveBeenNthCalledWith(1, 50);
+      expect(onChange).toHaveBeenNthCalledWith(2, 60);
+      expect(onChange).toHaveBeenNthCalledWith(3, 70);
+      expect(onChange).toHaveBeenCalledTimes(3);
+    });
+
+    it('arrow keys follow the visual direction', () => {
+      document.documentElement.dir = 'rtl';
+      const { onChange } = renderThresholdRange({ value: 50 });
+      const slider = getSlider();
+
+      act(() => {
+        slider.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
+        slider.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowLeft' }));
+      });
+
+      expect(onChange).toHaveBeenNthCalledWith(1, 40);
+      expect(onChange).toHaveBeenNthCalledWith(2, 60);
+    });
+
+    it('positions steps from the inline start edge', () => {
+      document.documentElement.dir = 'rtl';
+      renderThresholdRange({ value: 40 });
+
+      const thumb = container?.querySelector(
+        '[data-testid="threshold-range-thumb-active"]',
+      ) as HTMLButtonElement | null;
+      const segments = container?.querySelectorAll('[data-testid="threshold-range-rail"] > div[aria-hidden="true"]');
+      const firstSegment = segments?.[0] as HTMLDivElement | undefined;
+
+      expect(thumb?.style.insetInlineStart).toBe('40%');
+      expect(firstSegment?.style.insetInlineStart).toBe('0%');
+    });
   });
 });

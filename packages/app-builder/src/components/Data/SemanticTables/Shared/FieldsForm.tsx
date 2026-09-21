@@ -148,7 +148,7 @@ function FieldRow({
   const semanticLabel = getSemanticLabel(field, t);
 
   return (
-    <div className="flex items-center gap-md">
+    <div className="flex items-center gap-md rtl:flex-row-reverse">
       <div {...dragHandleProps} className="flex shrink-0 items-center">
         <Icon icon="drag" className="size-4 text-grey-secondary cursor-grab" />
       </div>
@@ -158,7 +158,7 @@ function FieldRow({
         onClick={onSelect}
         onKeyDown={onKeyDown}
         className={cn(
-          'flex flex-1 items-center gap-md rounded-lg border p-md transition-colors',
+          'flex flex-1 items-center gap-md rounded-lg border p-md transition-colors rtl:flex-row-reverse',
           hasError
             ? 'border-red-primary'
             : isSelected
@@ -170,7 +170,7 @@ function FieldRow({
       >
         <DatatypeIcon dataType={field.dataType} />
         <span className="text-s font-medium">{field.alias || field.name}</span>
-        <div className="ms-auto flex items-center gap-sm">
+        <div className="me-auto flex items-center gap-sm rtl:flex-row-reverse">
           {semanticLabel ? (
             <span className="rounded-sm border border-grey-border bg-grey-98 px-sm py-0.5 text-xs text-grey-secondary">
               {semanticLabel}
@@ -184,7 +184,7 @@ function FieldRow({
           {field.locked ? <Icon icon="lock" className="size-4 text-grey-secondary" /> : null}
           {!field.nullable ? <span className="size-2 rounded-full bg-purple-primary" /> : null}
           {field.hidden ? <Icon icon="visibility_off" className="size-4 text-grey-secondary" /> : null}
-          <Icon icon="arrow-right" className="size-4 text-grey-secondary" />
+          <Icon icon="arrow-right" className="size-4 text-grey-secondary rtl:rotate-180" />
         </div>
       </button>
     </div>

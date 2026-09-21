@@ -79,7 +79,7 @@ const TokenRefresher = () => {
 };
 
 const SIDEBAR_NUDGE_CLASS = cn(
-  'absolute top-sm right-sm translate-x-[50%] -translate-y-[50%] rounded-full size-2.5',
+  'absolute top-sm end-sm translate-x-[50%] -translate-y-[50%] rounded-full size-2.5',
   'group-hover/sidebar:static group-hover/sidebar:translate-x-0 group-hover/sidebar:translate-y-0',
   'group-hover/sidebar:rounded-sm group-hover/sidebar:size-6',
   'transition-all delay-400 group-hover/sidebar:delay-200 motion-reduce:delay-0 motion-reduce:duration-0',

@@ -47,7 +47,7 @@ function SignUp() {
 
   return (
     <div className="flex w-full flex-col gap-2xl items-center text-s">
-      <Link className="absolute top-[60px] left-[60px] flex gap-sm text-s items-center" to="/sign-in-email">
+      <Link className="absolute top-[60px] start-[60px] flex gap-sm text-s items-center" to="/sign-in-email">
         <Icon icon="arrow-left" className="size-4" />
         {t('common:back')}
       </Link>

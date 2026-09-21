@@ -1207,6 +1207,45 @@ export type OpenSanctionsDatasetFreshnessDto = {
     version: string;
     up_to_date: boolean;
 };
+export type Schema = {
+    /** One of Thing, Person, Organization, or Vehicle must be provided */
+    query: {
+        Thing?: {
+            name: string;
+        };
+        Person?: {
+            name?: string;
+            birthDate?: string;
+            nationality?: string;
+            passportNumber?: string;
+            address?: string;
+        };
+        Organization?: {
+            name?: string;
+            country?: string;
+            registrationNumber?: string;
+            address?: string;
+        };
+        Vehicle?: {
+            name?: string;
+            registrationNumber?: string;
+        };
+    };
+    datasets?: string[];
+    threshold?: number;
+};
+export type ScreeningSavedSearch = {
+    id: string;
+    org_id: string;
+    name: string;
+    provider: string;
+    config: Schema;
+    created_at: string;
+};
+export type SaveScreeningSearchDto = {
+    name: string;
+    config: Schema;
+};
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
     name?: string;
@@ -1541,7 +1580,7 @@ export type Items = {
     id?: string;
     label?: string;
 };
-export type Schema = {
+export type Schema2 = {
     performed?: boolean;
     conflicts?: {
         /** Whether a continuous screening config uses the resource */
@@ -4486,6 +4525,65 @@ export function getEnrichedData(entityId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * List saved search in the organization
+ */
+export function listScreeningSavedSearches(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningSavedSearch[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/screenings/searches", {
+        ...opts
+    }));
+}
+/**
+ * Save a screening search
+ */
+export function saveScreeningSearch(saveScreeningSearchDto?: SaveScreeningSearchDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: ScreeningSavedSearch;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/screenings/searches", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: saveScreeningSearchDto
+    })));
+}
+/**
+ * Delete a saved screening search
+ */
+export function deleteScreeningSavedSearch(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/screenings/searches/${encodeURIComponent(id)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
  * List rules with full data
  */
 export function listScenarioIterationRules(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
@@ -5019,7 +5117,7 @@ export function patchDataModelTable(tableId: string, updateTableBodyDto: UpdateT
         data: string;
     } | {
         status: 409;
-        data: Schema;
+        data: Schema2;
     }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
@@ -5034,7 +5132,7 @@ export function deleteDataModelTable(tableId: string, { perform }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema;
+        data: Schema2;
     } | {
         status: 401;
         data: string;
@@ -5046,7 +5144,7 @@ export function deleteDataModelTable(tableId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema;
+        data: Schema2;
     }>(`/data-model/tables/${encodeURIComponent(tableId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -5104,7 +5202,7 @@ export function deleteDataModelField(fieldId: string, { perform }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema;
+        data: Schema2;
     } | {
         status: 401;
         data: string;
@@ -5116,7 +5214,7 @@ export function deleteDataModelField(fieldId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema;
+        data: Schema2;
     }>(`/data-model/fields/${encodeURIComponent(fieldId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -5200,7 +5298,7 @@ export function deleteDataModelLink(linkId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema;
+        data: Schema2;
     }>(`/data-model/links/${encodeURIComponent(linkId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -5294,7 +5392,7 @@ export function deleteDataModelPivot(pivotId: string, { perform }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema;
+        data: Schema2;
     } | {
         status: 401;
         data: string;
@@ -5306,7 +5404,7 @@ export function deleteDataModelPivot(pivotId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema;
+        data: Schema2;
     }>(`/data-model/pivots/${encodeURIComponent(pivotId)}${QS.query(QS.explode({
         perform
     }))}`, {
