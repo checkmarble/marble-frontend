@@ -6,6 +6,6 @@ import iconsSVGSpriteHref from './generated/icons-svg-sprite.svg';
 
 export * from './generated/icon-names';
 export * from './generated/logo-names';
-export { Icon } from './Icon';
+export { Icon, type IconProps } from './Icon';
 export { Logo } from './Logo';
 export { iconsSVGSpriteHref };

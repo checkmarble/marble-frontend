@@ -1,10 +1,9 @@
 import { Slot } from '@radix-ui/react-slot';
-import { IconProps } from 'packages/ui-icons/src/Icon';
 import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
-import { Icon } from 'ui-icons';
+import { Icon, type IconProps } from 'ui-icons';
 import { Button, type ButtonAppearance, type ButtonVariant } from '../Button/Button';
 import { UnstyledInput } from '../Input/Input';
 import { StickyComponent } from '../StickyComponent/StickyComponent';

@@ -5,6 +5,24 @@ import type { Stream } from 'node:stream';
 import ora from 'ora';
 import SVGSpriter from 'svg-sprite';
 
+type SvgSpriteConfig = ConstructorParameters<typeof SVGSpriter>[0];
+
+type SvgoNamedPlugin = {
+  name: string;
+  params?: Record<string, unknown>;
+};
+
+type SpriteConfig = Omit<SvgSpriteConfig, 'shape'> & {
+  shape?: Omit<NonNullable<SvgSpriteConfig['shape']>, 'transform'> & {
+    transform?: Array<{ svgo: { plugins?: SvgoNamedPlugin[] } }>;
+  };
+};
+
+function createSpriter(config: SpriteConfig) {
+  // @types/svg-sprite types SVGO plugins as `{ pluginName: boolean }[]`
+  return new SVGSpriter(config as SvgSpriteConfig);
+}
+
 const OUT_DIR = join(process.cwd(), '/src/generated');
 const IN_ICONS_DIR = join(process.cwd(), '/svgs/icons/');
 const IN_LOGOS_DIR = join(process.cwd(), '/svgs/logos');
@@ -21,7 +39,7 @@ async function buildIconTypeFile(svgFileNames: string[]) {
 }
 
 async function buildIconSvgSprite(svgFileNames: string[]) {
-  const spriter = new SVGSpriter({
+  const spriter = createSpriter({
     dest: OUT_DIR,
     mode: {
       symbol: true,
@@ -30,15 +48,7 @@ async function buildIconSvgSprite(svgFileNames: string[]) {
       transform: [
         {
           svgo: {
-            //@ts-expect-error svg-sprite types are not up to date
-            plugins: [
-              {
-                name: 'convertColors',
-                params: {
-                  currentColor: true,
-                },
-              },
-            ],
+            plugins: [{ name: 'convertColors', params: { currentColor: true } }],
           },
         },
       ],
@@ -73,7 +83,7 @@ async function buildLogoTypeFile(svgFileNames: string[]) {
 }
 
 async function buildLogoSvgSprite(svgFileNames: string[]) {
-  const spriter = new SVGSpriter({
+  const spriter = createSpriter({
     dest: OUT_DIR,
     mode: {
       symbol: true,
