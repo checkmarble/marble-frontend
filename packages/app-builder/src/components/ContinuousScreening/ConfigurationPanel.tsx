@@ -80,7 +80,7 @@ const ConfigurationPanelHeader = () => {
 
   return (
     <Panel.Header>
-      <div className="flex items-center justify-between gap-md shrink-0 sticky top-0 z-10">
+      <div className="flex items-center justify-between gap-md shrink-0 sticky top-0 z-10 flex-wrap">
         <span className="me-auto">
           {mode === 'view' ? t('continuousScreening:panel.title.view') : t('continuousScreening:panel.title.edit')}
         </span>

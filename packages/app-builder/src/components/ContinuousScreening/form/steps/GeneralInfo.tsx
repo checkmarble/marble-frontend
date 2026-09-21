@@ -13,9 +13,9 @@ export const GeneralInfo = ({ stableId }: { stableId: string }) => {
     <div className="flex flex-col gap-sm p-md rounded-md bg-surface-card border border-grey-border">
       <div className="grid grid-cols-[3fr_2fr] gap-lg">
         <Input readOnly={mode === 'view'} value={name.value} onChange={(e) => (name.value = e.target.value)} />
-        <div className="self-center">
+        <div className="self-center min-w-0">
           <CopyToClipboardButton toCopy={stableId} size="chip" rounded>
-            <span className="text-xs">{stableId}</span>
+            <span className="text-xs truncate">{stableId}</span>
           </CopyToClipboardButton>
         </div>
       </div>
