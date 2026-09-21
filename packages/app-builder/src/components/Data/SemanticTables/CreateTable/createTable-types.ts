@@ -15,6 +15,7 @@ import {
   SemanticTypeField,
   type TableModel,
 } from '@app-builder/models';
+import { enumEntriesSchema } from '@app-builder/models/enum';
 import { CreateTableValue } from '@app-builder/schemas/data';
 import { TFunction } from 'i18next';
 import { FieldSemanticType } from 'marble-api';
@@ -246,6 +247,9 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       hidden: field.hidden,
       booleanDisplay: field.booleanDisplay,
       isInteger: field.isInteger,
+      enumValues: field.enumValues,
+      countryCodeFormat: field.countryCodeFormat,
+      currencyCodeFormat: field.currencyCodeFormat,
     },
   };
 }
@@ -381,6 +385,18 @@ function getFieldErrors(values: SemanticTableFormValues, t: TFunction<['data']>)
   const nameCounts = new Map<string, string[]>();
 
   for (const field of values.fields) {
+    if (
+      field.semanticType === 'enum' &&
+      field.semanticSubType === 'key_color_value' &&
+      !enumEntriesSchema.safeParse(field.enumValues).success
+    ) {
+      errors.push({
+        kind: 'field',
+        fieldId: field.id,
+        message: t('data:create_table.invalid_enum_entries', { field: field.alias || field.name }),
+      });
+    }
+
     if (!field.name.trim()) {
       errors.push({
         kind: 'field',

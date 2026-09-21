@@ -12,12 +12,13 @@ import { Typo } from '../Typography/Typo';
 import { cn } from '../utils';
 import { PanelOverlay } from './PanelOverlay';
 
-export type PanelSize = 'small' | 'medium' | 'large' | 'full';
+export type PanelSize = 'small' | 'medium' | 'large' | 'xlarge' | 'full' | 'full';
 
 const sizeClasses: Record<PanelSize, string> = {
   small: 'max-w-[calc(100vw_/_3)]',
   medium: 'max-w-[50vw]',
   large: 'max-w-[calc(100vw_*_(2_/_3))]',
+  xlarge: 'max-w-[calc(100vw_*_(5_/_6))]',
   full: 'max-w-[calc(100vw_-_3rem)]',
 };
 
@@ -251,7 +252,7 @@ interface PanelContentProps {
 }
 
 export function PanelContent({ children, className }: PanelContentProps) {
-  return <div className={cn('relative min-h-screen p-lg flex flex-col grow', className)}>{children}</div>;
+  return <div className={cn('relative flex min-h-screen min-w-0 grow flex-col p-lg', className)}>{children}</div>;
 }
 
 interface PanelFooterProps {

@@ -16,7 +16,7 @@ export interface SwitchAstNode {
 }
 
 export function isSwitchAstNode(node: IdLessAstNode | AstNode): node is CheckNodeId<SwitchAstNode, typeof node> {
-  return node.name === switchAstNodeName;
+  return node.name === switchAstNodeName && 'field' in node.namedChildren && 'type' in node.namedChildren;
 }
 
 export function NewSwitchAstNode(ruleType: string, field?: AstNode): SwitchAstNode {

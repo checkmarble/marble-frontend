@@ -23,6 +23,14 @@ import {
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
+import {
+  type CountryCodeFormat,
+  CurrencyCodeFormat,
+  countryCodeFormatSchema,
+  currencyCodeFormatSchema,
+  type EnumEntry,
+  enumEntriesSchema,
+} from './enum';
 import { RiskTagCategory } from './screening';
 import {
   getDefaultSemanticType,
@@ -60,6 +68,9 @@ export interface DataModelField {
   nullable: boolean;
   tableId: string;
   values?: EnumValue[];
+  enumValues?: EnumEntry[];
+  countryCodeFormat?: CountryCodeFormat;
+  currencyCodeFormat?: CurrencyCodeFormat;
   unicityConstraint: UnicityConstraintType;
   ftmProperty?: string;
   alias?: string;
@@ -103,7 +114,7 @@ function readMetadataBoolean(m: Record<string, unknown>, key: string): boolean |
   return typeof v === 'boolean' ? v : undefined;
 }
 
-function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
+export function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
   const raw = dataModelFieldDto as FieldDto & {
     alias?: string;
     order?: number;
@@ -142,11 +153,14 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
     id: raw.id,
     dataType: raw.data_type,
     description: raw.description,
-    isEnum: raw.is_enum,
+    isEnum: raw.is_enum || (semanticType === 'enum' && semanticSubType === 'autocomplete'),
     name: raw.name,
     nullable: raw.nullable,
     tableId: raw.table_id,
     values: raw.values,
+    enumValues: enumEntriesSchema.safeParse(meta['enumValues']).data,
+    countryCodeFormat: countryCodeFormatSchema.safeParse(meta['countryCodeFormat']).data,
+    currencyCodeFormat: currencyCodeFormatSchema.safeParse(meta['currencyCodeFormat']).data,
     unicityConstraint: raw.unicity_constraint,
     ftmProperty: raw.ftm_property,
     alias,

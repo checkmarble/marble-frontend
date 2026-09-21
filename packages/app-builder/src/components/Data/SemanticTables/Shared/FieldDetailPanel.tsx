@@ -5,10 +5,27 @@ import {
   SemanticTypeField,
   semanticTypesByDataType,
 } from '@app-builder/models';
+import {
+  countryCodeFormatSchema,
+  createEnumEntry,
+  currencyCodeFormatSchema,
+  type EnumEntry,
+} from '@app-builder/models/enum';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal, NumberInput, type SelectOption, SelectV2, Switch, Typo } from 'ui-design-system';
+import {
+  Button,
+  Card,
+  Input,
+  MenuCommand,
+  Modal,
+  NumberInput,
+  type SelectOption,
+  SelectV2,
+  Switch,
+  Typo,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../../DataVisualisation/DataField';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
@@ -157,17 +174,17 @@ export function FieldDetailPanel({
     });
   }
 
-  const mockedValue = getMockValue(field.dataType, field.semanticType, field.semanticSubType);
+  const mockedValue = getMockValue(field);
 
   return (
     <>
-      <div className="flex w-1/2 shrink-0 flex-col border-l border-grey-border overflow-y-auto">
-        <div className="flex items-center justify-between p-md border-b border-grey-border">
+      <Card className="flex w-1/2 shrink-0 flex-col overflow-y-auto shadow-xl">
+        <div className="flex items-center justify-between p-md">
           <div className="flex items-center gap-sm">
             <button type="button" onClick={onClose} className="rounded-lg p-xs hover:bg-grey-border">
               <Icon icon="x" className="size-4" />
             </button>
-            <Typo variant="subtitle2">{title ?? t('data:upload_data.field_detail_title')}</Typo>
+            <Typo variant="title2">{title ?? t('data:upload_data.field_detail_title')}</Typo>
           </div>
           {canDeleteField ? (
             <Button variant="destructive" onClick={handleDeleteClick}>
@@ -294,7 +311,16 @@ export function FieldDetailPanel({
                 placeholder=""
                 onChange={(value) => {
                   setHasBeenChangedManually(true);
-                  update({ semanticSubType: value as SemanticSubTypeField });
+                  const semanticSubType = value as SemanticSubTypeField;
+                  update({
+                    semanticSubType,
+                    ...(semanticSubType === 'currency' && !field.currencyCodeFormat
+                      ? { currencyCodeFormat: 'ISO 4217' as const }
+                      : {}),
+                    ...(semanticSubType === 'country' && !field.countryCodeFormat
+                      ? { countryCodeFormat: 'alpha2' as const }
+                      : {}),
+                  });
                 }}
                 options={semanticSubOptions}
                 disabled={isLocked}
@@ -332,6 +358,53 @@ export function FieldDetailPanel({
             <EnumValuesSettings field={field} onChange={update} disabled={isLocked} />
           ) : null}
 
+          {field.semanticType === 'country' ||
+          (field.semanticType === 'enum' && field.semanticSubType === 'country') ? (
+            <div className="flex flex-col gap-xs">
+              <span className="text-s text-grey-secondary">{t('data:upload_data.country_code_format')}</span>
+              <MenuCommand.Menu>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton disabled={isLocked}>
+                    {field.countryCodeFormat === 'alpha3' ? 'Alpha-3 (FRA)' : 'Alpha-2 (FR)'}
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content>
+                  <MenuCommand.List>
+                    {countryCodeFormatSchema.options.map((format) => (
+                      <MenuCommand.Item key={format} onSelect={() => update({ countryCodeFormat: format })}>
+                        {format === 'alpha3' ? 'Alpha-3 (FRA)' : 'Alpha-2 (FR)'}
+                      </MenuCommand.Item>
+                    ))}
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
+              <p className="text-xs text-grey-secondary">{t('data:upload_data.country_code_format_help')}</p>
+            </div>
+          ) : null}
+          {field.semanticType === 'currency_code' ||
+          (field.semanticType === 'enum' && field.semanticSubType === 'currency') ? (
+            <div className="flex flex-col gap-xs">
+              <span className="text-s text-grey-secondary">{t('data:upload_data.currency_code_format')}</span>
+              <MenuCommand.Menu>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton disabled={isLocked}>
+                    {field.currencyCodeFormat === 'Number' ? 'Number (978)' : 'ISO 4217 (EUR)'}
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content>
+                  <MenuCommand.List>
+                    {currencyCodeFormatSchema.options.map((format) => (
+                      <MenuCommand.Item key={format} onSelect={() => update({ currencyCodeFormat: format })}>
+                        {format === 'ISO 4217' ? 'ISO 4217 (EUR)' : 'Number (978)'}
+                      </MenuCommand.Item>
+                    ))}
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
+              <p className="text-xs text-grey-secondary">{t('data:upload_data.currency_code_format_help')}</p>
+            </div>
+          ) : null}
+
           {/* Boolean-specific: display as switch or yes/no */}
           {field.dataType === 'Bool' ? (
             <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} disabled={isLocked} />
@@ -360,7 +433,9 @@ export function FieldDetailPanel({
                     id: field.id,
                     dataType: field.dataType,
                     description: field.description,
-                    isEnum: false,
+                    isEnum: field.isEnum || field.semanticType === 'enum',
+                    enumValues: field.enumValues,
+                    countryCodeFormat: field.countryCodeFormat,
                     name: field.alias || field.name,
                     nullable: field.nullable,
                     tableId: 'id',
@@ -380,7 +455,7 @@ export function FieldDetailPanel({
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       <Modal.Root open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
         <Modal.Content>
@@ -564,15 +639,7 @@ function ForeignKeySettings({
   );
 }
 
-function toSnakeCase(str: string): string {
-  return str
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-z0-9_]/g, '');
-}
-
-function EnumValuesSettings({
+export function EnumValuesSettings({
   field,
   onChange,
   disabled,
@@ -598,20 +665,11 @@ function EnumValuesSettings({
   );
 
   function addValue() {
-    onChange({ enumValues: [...enumValues, { key: '', color: 'gray', value: '' }] });
+    onChange({ enumValues: [...enumValues, createEnumEntry()] });
   }
 
-  function updateValue(index: number, patch: Partial<{ key: string; color: EnumColors; value: string }>) {
-    const newValues = enumValues.map((v, i) => {
-      if (i !== index) return v;
-      const newValue = patch.value !== undefined ? patch.value : v.value;
-      return {
-        key: patch.value !== undefined ? toSnakeCase(patch.value) : (patch.key ?? v.key),
-        color: patch.color ?? v.color,
-        value: newValue,
-      };
-    });
-    onChange({ enumValues: newValues });
+  function updateValue(index: number, patch: Partial<EnumEntry>) {
+    onChange({ enumValues: enumValues.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)) });
   }
 
   function removeValue(index: number) {
@@ -621,13 +679,13 @@ function EnumValuesSettings({
   return (
     <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_enum_settings')}</span>
+      <p className="text-xs text-grey-secondary">{t('data:upload_data.field_enum_key_help')}</p>
       <div className="flex flex-col gap-sm">
         {enumValues.map((enumValue, index) => {
-          const candidateKey = toSnakeCase(enumValue.value);
           const isDuplicate =
-            enumValue.value !== '' && enumValues.some((v, i) => i !== index && toSnakeCase(v.value) === candidateKey);
+            enumValue.key.trim().length > 0 && enumValues.some((v, i) => i !== index && v.key === enumValue.key);
           return (
-            <div key={`enum-value-${index}`} className="flex flex-col gap-xs">
+            <div key={index} className="flex flex-col gap-xs">
               <div className="flex items-center gap-sm">
                 <div className="w-max shrink-0">
                   <SelectV2
@@ -639,15 +697,18 @@ function EnumValuesSettings({
                   />
                 </div>
                 <Input
-                  className="flex-1"
-                  value={enumValue.value}
-                  placeholder={t('data:upload_data.field_enum_value_placeholder')}
-                  onChange={(e) => updateValue(index, { value: e.currentTarget.value })}
+                  className="min-w-0 flex-1 font-mono"
+                  value={enumValue.key}
+                  aria-label={t('data:upload_data.field_enum_key_placeholder')}
+                  placeholder={t('data:upload_data.field_enum_key_placeholder')}
+                  onChange={(e) => updateValue(index, { key: e.currentTarget.value })}
                   disabled={disabled}
+                  aria-invalid={isDuplicate || !enumValue.key.trim()}
                 />
                 <button
                   type="button"
                   onClick={() => removeValue(index)}
+                  aria-label={t('data:upload_data.field_enum_remove_value')}
                   className="shrink-0 rounded-lg p-xs text-grey-secondary hover:bg-grey-border hover:text-red-primary"
                   disabled={disabled}
                 >

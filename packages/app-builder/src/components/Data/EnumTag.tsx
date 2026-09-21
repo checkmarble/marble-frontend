@@ -1,0 +1,44 @@
+import type { EnumValue } from '@app-builder/models/data-model';
+import { type EnumField, resolveEnumDisplay } from '@app-builder/models/enum-values';
+import { useFormatLanguage } from '@app-builder/utils/format';
+import { cn, Tag } from 'ui-design-system';
+import { StringCountryComponent } from './DataVisualisation/DataField';
+
+function isCountryEnumField(field: EnumField) {
+  return field.semanticSubType === 'country' || field.semanticType === 'country';
+}
+
+export function EnumTag({ field, value, className }: { field: EnumField; value: EnumValue; className?: string }) {
+  const language = useFormatLanguage();
+  const display = resolveEnumDisplay(field, value, language);
+
+  if (isCountryEnumField(field)) {
+    return (
+      <div className={cn('min-w-0 max-w-full overflow-hidden', className)}>
+        <StringCountryComponent value={String(value)} withCountryCode className="w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <Tag
+      color={display.neutral ? 'grey' : 'purple'}
+      style={
+        display.color
+          ? {
+              color: `color-mix(in oklch, ${display.color}, var(--enum-tag-mix) 20%)`,
+              borderColor: display.color,
+            }
+          : undefined
+      }
+      title={String(value)}
+      className={cn(
+        'max-w-full min-w-0 overflow-hidden rounded-sm [--enum-tag-mix:black] dark:[--enum-tag-mix:white]',
+        className,
+      )}
+    >
+      {display.flag ? <span className="shrink-0">{display.flag}</span> : null}
+      <span className="min-w-0 truncate">{display.label || '—'}</span>
+    </Tag>
+  );
+}
