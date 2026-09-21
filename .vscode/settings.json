@@ -17,6 +17,7 @@
     "numericCollation": true,
     "typeOrder": "inline"
   },
+  "js/ts.tsdk.path": "./node_modules/typescript",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "biomejs.biome",
   "files.associations": {

@@ -39,5 +39,6 @@
     "unicodeCollation": "unicode",
     "numericCollation": true,
     "typeOrder": "inline"
-  }
+  },
+  "js/ts.tsdk.path": "../../node_modules/typescript"
 }

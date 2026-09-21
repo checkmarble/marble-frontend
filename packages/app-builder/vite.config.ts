@@ -6,7 +6,7 @@ import viteReact from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
 import type { PluginOption } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
-import { defineConfig, type Plugin } from 'vitest/config';
+import { defineConfig } from 'vitest/config';
 
 const isSentryConfigured = !!process.env['SENTRY_AUTH_TOKEN'];
 const isTest = !!process.env['VITEST'];
@@ -20,8 +20,6 @@ const externalNativeModules: PluginOption = {
   },
 };
 
-// Cast bridges vite@7 plugin types (used at runtime, required by @tanstack/react-start)
-// to vite@6 types that vitest@3.0.9's `defineConfig` still expects.
 const plugins = [
   ...(isTest
     ? []
@@ -61,7 +59,7 @@ const plugins = [
   tailwindcss(),
   viteTsConfigPaths(),
   viteReact(),
-] as Plugin[];
+] satisfies PluginOption[];
 
 export default defineConfig({
   plugins,
