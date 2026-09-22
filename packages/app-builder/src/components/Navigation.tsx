@@ -42,7 +42,7 @@ export function SidebarLink({ Icon, labelTKey, to, children, className }: Sideba
       to={to}
     >
       <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-sidebar-open:opacity-100 delay-400 group-sidebar-open:delay-200">
         {t(labelTKey)}
       </span>
       {children}
@@ -67,7 +67,7 @@ export const SidebarButton = function SidebarButton({
   return (
     <button ref={ref} className={sidebarLink({ className })} {...props}>
       <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-sidebar-open:opacity-100 delay-400 group-sidebar-open:delay-200">
         {t(labelTKey)}
       </span>
     </button>
@@ -103,6 +103,13 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
   );
 }
 
+const sidebarIconInsetClassName = 'ps-[calc(var(--spacing-sm)-var(--default-border-width))]';
+const stagingClusterInsetClassName = 'ps-2xs';
+const sidebarRevealRowClassName =
+  'grid grid-rows-[0fr] transition-[grid-template-rows] duration-150 delay-400 group-sidebar-open:grid-rows-[1fr] group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0';
+const sidebarChevronClassName =
+  'grid shrink-0 grid-cols-[0fr] transition-[grid-template-columns] duration-150 delay-400 group-sidebar-open:grid-cols-[1fr] group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0';
+
 export function OrganizationSwitcher() {
   const { org, organizations } = useOrganizationDetails();
   const { t } = useTranslation('navigation');
@@ -112,34 +119,70 @@ export function OrganizationSwitcher() {
   if (!userOrg) return null;
 
   const orgWords = org.name.split(' ');
+  const isStaging = userOrg.environment === 'staging';
+  const environmentLabel = t(`organization.${userOrg.environment}`);
+
   return (
     <MenuCommand.Menu>
       <MenuCommand.Trigger>
         <button
-          role="button"
-          className="flex gap-sm items-center justify-start border-grey-border rounded-md group-hover/sidebar:p-sm group-hover/sidebar:border transition-all duration-200 group-hover/sidebar:delay-200"
+          type="button"
+          className={cn(
+            'flex min-w-0 flex-row items-center overflow-hidden rounded-md border border-transparent py-[calc(var(--spacing-sm)-var(--default-border-width))] transition-[padding,margin-inline,width,border-color] duration-150 delay-400 group-sidebar-open:border-grey-border group-sidebar-open:px-xs group-sidebar-open:py-[calc(var(--spacing-sm)+var(--spacing-xs)-var(--default-border-width))] group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0',
+            isStaging
+              ? '-mx-xs w-[calc(100%+2*var(--spacing-xs))] group-sidebar-open:mx-0 group-sidebar-open:w-full'
+              : 'w-full',
+          )}
         >
-          <div>
-            <div className="flex items-center justify-center group-hover/sidebar:justify-start flex-1 group-hover/sidebar:gap-xs">
-              <Avatar firstName={orgWords[0]} lastName={orgWords[1]} size="xs" />
-              {userOrg.environment === 'staging' ? (
-                <div className="flex items-center justify-center gap-xs -ms-1.5 group-hover/sidebar:translate-x-1.5 p-xs bg-purple-primary rounded-full h-6 w-min-6 shrink-0">
-                  <Icon icon="tool" className="size-4 text-white" />
-                  <span className="text-white text-xs hidden group-hover/sidebar:inline">
-                    {t(`organization.${userOrg.environment}`)}
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-w-0 items-center">
+              <div
+                className={cn(
+                  'flex shrink-0 items-center',
+                  isStaging ? stagingClusterInsetClassName : sidebarIconInsetClassName,
+                )}
+              >
+                <Avatar firstName={orgWords[0]} lastName={orgWords[1]} size="xs" />
+                {isStaging ? (
+                  <div className="-ms-1.5 flex h-6 max-w-6 shrink-0 items-center overflow-hidden rounded-full bg-purple-primary transition-[max-width,margin-inline-start] duration-150 delay-400 group-sidebar-open:ms-xs group-sidebar-open:max-w-40 group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0">
+                    <span className="flex size-6 shrink-0 items-center justify-center">
+                      <Icon icon="tool" className="size-4 text-white" />
+                    </span>
+                    <span className="pe-xs text-xs whitespace-nowrap text-white">{environmentLabel}</span>
+                  </div>
+                ) : null}
+              </div>
+              {isStaging ? null : (
+                <>
+                  <div className="w-sm shrink-0" />
+                  <span className="flex shrink-0 items-center gap-xs text-xs whitespace-nowrap">
+                    <span>{org.name}</span>
+                    <span>{'-'}</span>
+                    <span>{environmentLabel}</span>
                   </span>
-                </div>
-              ) : (
-                <span className="group-hover/sidebar:inline-flex hidden gap-xs text-xs">
-                  <span>{org.name}</span>
-                  <span>{'-'}</span>
-                  <span className="truncate">{t(`organization.${userOrg.environment}`)}</span>
-                </span>
+                </>
               )}
             </div>
-            {userOrg.environment === 'staging' && <span className="text-xs">{org.name}</span>}
+            {isStaging ? (
+              <div className={sidebarRevealRowClassName}>
+                <div className="min-h-0 overflow-hidden">
+                  <span
+                    className={cn('block pt-2xs text-start text-xs whitespace-nowrap', stagingClusterInsetClassName)}
+                  >
+                    {org.name}
+                  </span>
+                </div>
+              </div>
+            ) : null}
           </div>
-          <Icon icon="arrow-down" className="size-4 shrink-0 hidden group-hover/sidebar:block" />
+          <div className={sidebarChevronClassName}>
+            <div className="min-w-0 overflow-hidden">
+              <Icon
+                icon="arrow-down"
+                className="ms-xs me-[calc(var(--spacing-sm)-var(--default-border-width))] size-4 transition-transform duration-200 group-radix-state-open:rotate-180 motion-reduce:transition-none"
+              />
+            </div>
+          </div>
         </button>
       </MenuCommand.Trigger>
       <MenuCommand.Content side="bottom" align="start" sameWidth sideOffset={4}>
