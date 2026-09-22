@@ -1875,6 +1875,7 @@ export type InboxDto = {
     status: "active" | "archived";
     users?: InboxUserDto[];
     cases_count?: number;
+    has_cases?: boolean;
     escalation_inbox_id?: string;
     auto_assign_enabled: boolean;
     case_review_manual?: boolean;

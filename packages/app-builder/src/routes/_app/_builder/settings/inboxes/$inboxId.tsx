@@ -41,6 +41,7 @@ type LoaderData = {
   escalationInboxes: InboxMetadata[];
   escalationInbox: InboxMetadata | null;
   caseCount: number;
+  hasCases: boolean;
   entitlements: FeatureAccesses;
   inboxUserRoles: ReturnType<typeof getInboxUserRoles>;
   isEditInboxAvailable: boolean;
@@ -74,6 +75,7 @@ const inboxDetailLoader = createServerFn()
       escalationInboxes,
       escalationInbox: inbox.escalationInboxId ? await inboxApi.getInboxMetadata(inbox.escalationInboxId) : null,
       caseCount: inbox.casesCount,
+      hasCases: inbox.hasCases,
       entitlements,
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
       inboxUserRoles: getInboxUserRoles(entitlements),
@@ -97,6 +99,7 @@ const columnHelper = createColumnHelper<MarbleTableFeatures, InboxUser>();
 function Inbox() {
   const {
     caseCount,
+    hasCases,
     inbox,
     escalationInboxes,
     escalationInbox,
@@ -219,6 +222,8 @@ function Inbox() {
             {inbox.name}
             <span className="font-bold">{t('settings:inboxes.inbox_details.case_count')}</span>
             {caseCount}
+            <span className="font-bold">{t('settings:inboxes.inbox_details.has_cases')}</span>
+            <Switch checked={hasCases} disabled />
             <span className="font-bold">{t('settings:inboxes.inbox_details.escalation_inbox')}</span>
             {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
             <span className="font-bold flex items-center gap-sm">
@@ -268,7 +273,7 @@ function Inbox() {
       </CollapsiblePaper.Container>
 
       {isDeleteInboxAvailable ? (
-        caseCount === 0 ? (
+        !hasCases ? (
           <DeleteInbox inbox={inbox} />
         ) : (
           <Tooltip.Default content={<p className="p-sm">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>}>
