@@ -41,6 +41,13 @@ export type CredentialsDto = {
         permissions: string[];
     };
 };
+export type OrganizationEnvironmentDto = "production" | "staging" | "demo";
+export type UserOrganizationDto = {
+    id: string;
+    name: string;
+    roles: string[];
+    environment: OrganizationEnvironmentDto;
+};
 export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" | "unknown";
 export type ReviewStatusDto = "pending" | "approve" | "decline";
 export type Pagination = {
@@ -2364,6 +2371,22 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>("/credentials", {
+        ...opts
+    }));
+}
+/**
+ * List the current user's organizations
+ */
+export function listMyOrganizations(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            organizations: UserOrganizationDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    }>("/me/organizations", {
         ...opts
     }));
 }

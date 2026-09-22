@@ -1,4 +1,4 @@
-import { navigationI18n, SidebarLink } from '@app-builder/components';
+import { navigationI18n, OrganizationSwitcher, SidebarLink } from '@app-builder/components';
 import { HeaderLogo } from '@app-builder/components/HeaderLogo';
 import { LeftSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
@@ -32,8 +32,9 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async function appBuilderLayout({ context }) {
     const { user, inbox, organization, entitlements } = context.authInfo;
-    const [organizationDetail, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
+    const [organizationDetail, organizations, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
       organization.getCurrentOrganization(),
+      organization.listMyOrganizations(),
       organization.listUsers(),
       organization.listTags(),
       organization.listTags({ target: 'object' }),
@@ -42,11 +43,12 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
 
     const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
     const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)?.settings[0];
-
+    console.log('organizations', JSON.stringify(organizations, null, 2));
     return {
       user,
       orgUsers,
       organization: organizationDetail,
+      organizations,
       orgTags,
       orgObjectTags,
       featuresAccess: {
@@ -91,8 +93,17 @@ function SidebarNudge(props: Omit<ComponentProps<typeof Nudge>, 'className' | 'i
 }
 
 function Builder() {
-  const { user, orgUsers, organization, orgTags, orgObjectTags, featuresAccess, authProvider, sentryReplayEnabled } =
-    Route.useLoaderData();
+  const {
+    user,
+    orgUsers,
+    organization,
+    organizations,
+    orgTags,
+    orgObjectTags,
+    featuresAccess,
+    authProvider,
+    sentryReplayEnabled,
+  } = Route.useLoaderData();
   useSegmentIdentification(user);
   useSentryIdentification(user);
   useSentryReplay(sentryReplayEnabled);
@@ -104,7 +115,7 @@ function Builder() {
       <ClientOnly>
         <VersionUpdateModalContainer />
       </ClientOnly>
-      <OrganizationDetailsContextProvider org={organization} currentUser={user}>
+      <OrganizationDetailsContextProvider org={organization} currentUser={user} organizations={organizations}>
         <OrganizationUsersContextProvider orgUsers={orgUsers}>
           <OrganizationTagsContextProvider orgTags={orgTags}>
             <OrganizationObjectTagsContextProvider tags={orgObjectTags}>
@@ -118,6 +129,7 @@ function Builder() {
                     <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
                       <ul className="flex flex-col gap-sm">
                         {/* Detection - flat link (tabs are inside the page) */}
+                        {organizations.length > 0 && <OrganizationSwitcher />}
                         {!isAnalyst(user) && (
                           <li>
                             <SidebarLink

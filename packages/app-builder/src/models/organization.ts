@@ -1,4 +1,4 @@
-import { type OrganizationDto } from 'marble-api';
+import type { OrganizationDto, OrganizationEnvironmentDto, UserOrganizationDto } from 'marble-api';
 
 export type ScreeningProvider = 'opensanctions' | 'lexisnexis';
 export interface Organization {
@@ -39,4 +39,20 @@ export interface OrganizationUpdateInput {
   sanctionLimit?: number;
   autoAssignQueueLimit?: number;
   screeningProviders?: Organization['screeningProviders'];
+}
+
+export interface UserOrganization {
+  id: string;
+  name: string;
+  environment: OrganizationEnvironmentDto;
+  roles: string[];
+}
+
+export function adaptUserOrganization(dto: UserOrganizationDto): UserOrganization {
+  return {
+    id: dto.id,
+    name: dto.name,
+    environment: dto.environment,
+    roles: dto.roles,
+  };
 }
