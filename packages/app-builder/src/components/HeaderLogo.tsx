@@ -8,13 +8,13 @@ export function HeaderLogo() {
           <CustomLogo
             logo="logo"
             alt="Logo"
-            className="size-6 shrink-0 transition-all group-hover/sidebar:size-12 delay-400 group-hover/sidebar:delay-200 text-grey-primary"
-            customLogoClassName="size-8 shrink-0 object-contain transition-all group-hover/sidebar:size-14 delay-400 group-hover/sidebar:delay-200"
+            className="size-6 shrink-0 transition-all group-sidebar-open:size-12 delay-400 group-sidebar-open:delay-200 text-grey-primary"
+            customLogoClassName="size-8 shrink-0 object-contain transition-all group-sidebar-open:size-14 delay-400 group-sidebar-open:delay-200"
           />
           <CustomLogo
             logo="marble"
             alt="Logo"
-            className="h-6 w-full opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200 dark:invert"
+            className="h-6 w-full opacity-0 transition-opacity group-sidebar-open:opacity-100 delay-400 group-sidebar-open:delay-200 dark:invert"
             hideWhenCustom
           />
         </div>
