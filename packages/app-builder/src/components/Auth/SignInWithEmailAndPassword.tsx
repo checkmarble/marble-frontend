@@ -17,11 +17,9 @@ import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
 import * as z from 'zod/v4';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '../Form/Tanstack/FormInput';
-import { FormLabel } from '../Form/Tanstack/FormLabel';
 import { Spinner } from '../Spinner';
 import { MfaChallenge } from './MfaChallenge';
 
@@ -107,15 +105,21 @@ export function SignInWithEmailAndPassword({
         >
           {(field) => (
             <div className="flex flex-col items-start gap-sm">
-              <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+              <label
+                htmlFor={field.name}
+                className={field.state.meta.errors.length === 0 ? 'text-grey-primary' : 'text-red-primary'}
+              >
                 {t('auth:sign_in.email')}
-              </FormLabel>
-              <FormInput
+              </label>
+              <Input
+                id={field.name}
                 type="email"
                 name={field.name}
                 disabled={!hydrated}
                 className="w-full"
-                valid={field.state.meta.errors.length === 0}
+                inputClassName={
+                  field.state.meta.errors.length === 0 ? 'text-grey-primary' : 'text-red-primary border-red-primary'
+                }
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 enablePasswordManagers
@@ -132,16 +136,22 @@ export function SignInWithEmailAndPassword({
         >
           {(field) => (
             <div className="flex flex-col items-start gap-sm">
-              <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+              <label
+                htmlFor={field.name}
+                className={field.state.meta.errors.length === 0 ? 'text-grey-primary' : 'text-red-primary'}
+              >
                 {t('auth:sign_in.password')}
-              </FormLabel>
-              <FormInput
+              </label>
+              <Input
+                id={field.name}
                 className="w-full"
                 name={field.name}
                 type="password"
                 autoComplete="current-password"
                 disabled={!hydrated}
-                valid={field.state.meta.errors.length === 0}
+                inputClassName={
+                  field.state.meta.errors.length === 0 ? 'text-grey-primary' : 'text-red-primary border-red-primary'
+                }
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 enablePasswordManagers
@@ -178,26 +188,30 @@ export const StaticSignInWithEmailAndPassword = ({
     <form className="contents">
       <div className="flex w-full flex-col gap-md">
         <div className="flex flex-col items-start gap-sm">
-          <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
-          <FormInput
+          <label htmlFor="credentials.email" className="text-grey-primary">
+            {t('auth:sign_in.email')}
+          </label>
+          <Input
+            id="credentials.email"
             type="email"
             name="credentials.email"
             disabled={!hydrated}
             className="w-full"
-            valid
             defaultValue={prefilledEmail ?? ''}
             enablePasswordManagers
           />
         </div>
         <div className="flex flex-col items-start gap-sm">
-          <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
-          <FormInput
+          <label htmlFor="credentials.password" className="text-grey-primary">
+            {t('auth:sign_in.password')}
+          </label>
+          <Input
+            id="credentials.password"
             type="password"
             name="credentials.password"
             autoComplete="current-password"
             disabled={!hydrated}
             className="w-full"
-            valid
             enablePasswordManagers
           />
         </div>

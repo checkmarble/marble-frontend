@@ -1,3 +1,29 @@
+/me/organizations:
+  get:
+    tags:
+      - Users
+      - Organizations
+    summary: List the current user's organizations
+    operationId: listMyOrganizations
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Organizations the current user belongs to
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - organizations
+              properties:
+                organizations:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/UserOrganizationDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+
 /settings/me/unavailable:
   get:
     tags:
@@ -56,6 +82,28 @@
 
 components:
   schemas:
+    OrganizationEnvironmentDto:
+      type: string
+      enum: [production, staging, demo]
+    UserOrganizationDto:
+      type: object
+      required:
+        - id
+        - name
+        - roles
+        - environment
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        environment:
+          $ref: "#/components/schemas/OrganizationEnvironmentDto"
     PersonalSettingsUnavailableDto:
       type: object
       required:
