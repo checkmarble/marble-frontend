@@ -131,7 +131,7 @@ function Login() {
   return (
     <div className="flex flex-col gap-2xl w-full">
       <div className="flex flex-col gap-xl">
-        <Typo variant="title2" className="text-center">
+        <Typo variant="title1" className="text-center">
           {t('auth:sign_in')}
         </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
@@ -183,11 +183,11 @@ function Login() {
         <>
           <div className="flex items-center gap-md self-stretch">
             <div className="h-px bg-grey-border grow" />
-            <span>{t('common:or')}</span>
+            <span className="text-purple-primary">{t('common:or')}</span>
             <div className="h-px bg-grey-border grow" />
           </div>
           <div className="flex flex-col gap-xl">
-            <Typo variant="title2" className="text-center">
+            <Typo variant="title1" as="h2" className="text-center">
               {t('auth:sign_in.first_connection')}
             </Typo>
             <div className="flex flex-col gap-sm">

@@ -140,6 +140,7 @@ export const iconNames = [
   'thumb-up',
   'tick',
   'tip',
+  'tool',
   'tree-schema',
   'trigger',
   'uncheck',
