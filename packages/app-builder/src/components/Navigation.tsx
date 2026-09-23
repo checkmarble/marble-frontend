@@ -1,3 +1,4 @@
+import { useNewOrganizationId } from '@app-builder/hooks/useNewOrganizationId';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
@@ -113,6 +114,7 @@ const sidebarChevronClassName =
 export function OrganizationSwitcher() {
   const { org, organizations } = useOrganizationDetails();
   const { t } = useTranslation('navigation');
+  const changeOrganizationId = useNewOrganizationId();
 
   if (!org) return null;
   const userOrg = organizations.find((o) => o.id === org.id);
@@ -121,6 +123,11 @@ export function OrganizationSwitcher() {
   const orgWords = org.name.split(' ');
   const isStaging = userOrg.environment === 'staging';
   const environmentLabel = t(`organization.${userOrg.environment}`);
+
+  const handleChangeOrganizationId = (organizationId: string) => {
+    if (organizationId === org.id) return;
+    changeOrganizationId(organizationId);
+  };
 
   return (
     <MenuCommand.Menu>
@@ -188,13 +195,16 @@ export function OrganizationSwitcher() {
       <MenuCommand.Content side="bottom" align="start" sameWidth sideOffset={4}>
         <MenuCommand.List>
           {organizations.map((organization) => (
-            <MenuCommand.Item key={organization.id}>
-              <span className="inline-flex items-center gap-xs">
+            <MenuCommand.Item key={organization.id} asChild>
+              <button
+                className="inline-flex items-center gap-xs cursor-pointer w-full"
+                onClick={() => handleChangeOrganizationId(organization.id)}
+              >
                 <span>{organization.name}</span>
                 {organization.environment === 'staging' && (
-                  <Icon icon="tool" className="size-5 text-white bg-purple-primary rounded-full" />
+                  <Icon icon="tool" className="size-5 p-2xs text-white bg-purple-primary rounded-full" />
                 )}
-              </span>
+              </button>
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>
