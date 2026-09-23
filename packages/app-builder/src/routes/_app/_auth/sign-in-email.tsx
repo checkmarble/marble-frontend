@@ -11,6 +11,11 @@ import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { signInEmailFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import {
+  isSignedOutTabRequest,
+  notifyOtherTabsToCheckSession,
+  signedOutTabHref,
+} from '@app-builder/utils/cross-tab-session';
 import { useMutation } from '@tanstack/react-query';
 import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -23,15 +28,19 @@ const signInEmailLoader = createServerFn()
   .middleware([servicesMiddleware])
   .handler(async function signInEmailLoader({ context }) {
     const request = getRequest();
-    try {
-      await context.services.authService.isAuthenticated(request, {
-        successRedirect: '/app-router',
-      });
-    } catch (error) {
-      if (error instanceof Response && error.status >= 300 && error.status < 400) {
-        throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
+    const url = new URL(request.url);
+    const signedOut = isSignedOutTabRequest(url);
+    if (!signedOut) {
+      try {
+        await context.services.authService.isAuthenticated(request, {
+          successRedirect: '/app-router',
+        });
+      } catch (error) {
+        if (error instanceof Response && error.status >= 300 && error.status < 400) {
+          throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
+        }
+        throw error;
       }
-      throw error;
     }
     const appConfig = context.appConfig;
 
@@ -41,7 +50,7 @@ const signInEmailLoader = createServerFn()
     }
 
     if (appConfig?.auth.provider === 'oidc') {
-      throw redirect({ to: '/sign-in' });
+      throw redirect({ href: signedOut ? signedOutTabHref() : '/sign-in' });
     }
 
     let authError: AuthErrors | undefined;
@@ -54,7 +63,6 @@ const signInEmailLoader = createServerFn()
       }
     }
 
-    const url = new URL(request.url);
     // Handle email parameter manually to preserve literal '+' characters
     const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
     const prefilledEmail = emailParam ? decodeURIComponent(emailParam.replace(/\+/g, '%2B')) : null;
@@ -97,6 +105,7 @@ function LoginWithEmail() {
         },
       }).then((r) => r.redirectTo),
     onSuccess: (destination) => {
+      notifyOtherTabsToCheckSession();
       window.location.href = destination;
     },
   });
