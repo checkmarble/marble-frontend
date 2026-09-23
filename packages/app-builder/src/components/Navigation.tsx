@@ -111,10 +111,13 @@ const sidebarRevealRowClassName =
 const sidebarChevronClassName =
   'grid shrink-0 grid-cols-[0fr] transition-[grid-template-columns] duration-150 delay-400 group-sidebar-open:grid-cols-[1fr] group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0';
 
+const COMBO_BOX_THRESHOLD = 10;
+
 export function OrganizationSwitcher() {
   const { org, organizations } = useOrganizationDetails();
   const { t } = useTranslation('navigation');
   const changeOrganizationId = useNewOrganizationId();
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   if (!org) return null;
   const userOrg = organizations.find((o) => o.id === org.id);
@@ -130,7 +133,7 @@ export function OrganizationSwitcher() {
   };
 
   return (
-    <MenuCommand.Menu>
+    <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
       <MenuCommand.Trigger>
         <button
           type="button"
@@ -193,18 +196,20 @@ export function OrganizationSwitcher() {
         </button>
       </MenuCommand.Trigger>
       <MenuCommand.Content side="bottom" align="start" sameWidth sideOffset={4}>
+        {organizations.length > COMBO_BOX_THRESHOLD ? <MenuCommand.Combobox /> : null}
         <MenuCommand.List>
           {organizations.map((organization) => (
-            <MenuCommand.Item key={organization.id} asChild>
-              <button
-                className="inline-flex items-center gap-xs cursor-pointer w-full"
-                onClick={() => handleChangeOrganizationId(organization.id)}
-              >
+            <MenuCommand.Item
+              key={organization.id}
+              className="cursor-pointer"
+              onSelect={() => handleChangeOrganizationId(organization.id)}
+            >
+              <span className="inline-flex items-center gap-xs">
                 <span>{organization.name}</span>
                 {organization.environment === 'staging' && (
                   <Icon icon="tool" className="size-5 p-2xs text-white bg-purple-primary rounded-full" />
                 )}
-              </button>
+              </span>
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>
