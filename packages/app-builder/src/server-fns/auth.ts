@@ -1,3 +1,4 @@
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { safeRedirect } from '@app-builder/utils/safe-redirect';
 import { redirect } from '@tanstack/react-router';
@@ -67,6 +68,10 @@ export const refreshTokenFn = createServerFn({ method: 'POST' })
     }
   });
 
+export const getSessionOrganizationIdFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => ({ organizationId: context.authInfo.user.organizationId }));
+
 export const changeOrganizationId = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
   .validator(z.object({ idToken: z.string(), csrf: z.string(), newOrganizationId: z.uuid() }))
@@ -76,7 +81,7 @@ export const changeOrganizationId = createServerFn({ method: 'POST' })
       await context.services.authService.refresh(
         request,
         { idToken: data.idToken, csrf: data.csrf, newOrganizationId: data.newOrganizationId },
-        { failureRedirect: '/sign-in' },
+        { failureRedirect: '/sign-in', preserveSessionOnFailure: true },
       );
     } catch (err) {
       if (err instanceof Response && err.status >= 300 && err.status < 400) {
