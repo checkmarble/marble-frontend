@@ -27,8 +27,10 @@ export function preserveSignedOut(href: string, signedOut: boolean) {
   return `${href}${separator}${SIGNED_OUT_PARAM}=1`;
 }
 
-export function isSignedOutTabRequest(url: URL) {
-  return url.searchParams.get(SIGNED_OUT_PARAM) === '1';
+// TanStack Router JSON-parses `signedOut=1` as the number 1.
+export function signedOutPageSearch(search: { signedOut?: unknown }): { signedOut?: 1 } {
+  if (search.signedOut === 1) return { signedOut: 1 };
+  return {};
 }
 
 export function notifyOtherTabsToCheckSession() {

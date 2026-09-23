@@ -12,24 +12,33 @@ import { signInEmailFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import {
-  isSignedOutTabRequest,
   notifyOtherTabsToCheckSession,
+  signedOutPageSearch,
   signedOutTabHref,
 } from '@app-builder/utils/cross-tab-session';
 import { useMutation } from '@tanstack/react-query';
-import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { ClientOnly, createFileRoute, Link, redirect, type SearchSchemaInput } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
 import { Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
+
+// Onboarding links here with `email`. Keep that input, and leave it out of
+// validated search so it is not router state on this page.
+function signInEmailPageSearch(search: { signedOut?: 1; email?: string } & SearchSchemaInput): {
+  signedOut?: 1;
+} {
+  return signedOutPageSearch(search);
+}
 
 const signInEmailLoader = createServerFn()
   .middleware([servicesMiddleware])
-  .handler(async function signInEmailLoader({ context }) {
+  .validator(z.object({ signedOut: z.boolean() }))
+  .handler(async function signInEmailLoader({ context, data: { signedOut } }) {
     const request = getRequest();
     const url = new URL(request.url);
-    const signedOut = isSignedOutTabRequest(url);
     if (!signedOut) {
       try {
         await context.services.authService.isAuthenticated(request, {
@@ -78,6 +87,7 @@ const signInEmailLoader = createServerFn()
       isManagedMarble: appConfig?.isManagedMarble ?? false,
       prefilledEmail,
       redirectTo,
+      signedOut,
     };
   });
 
@@ -85,14 +95,24 @@ export const Route = createFileRoute('/_app/_auth/sign-in-email')({
   staticData: {
     i18n: authI18n,
   },
-  loader: () => signInEmailLoader(),
+  validateSearch: signInEmailPageSearch,
+  loaderDeps: ({ search }) => ({ signedOut: search.signedOut === 1 }),
+  loader: ({ deps }) => signInEmailLoader({ data: deps }),
   component: LoginWithEmail,
 });
 
 function LoginWithEmail() {
   const { t } = useTranslation(['common', 'auth']);
-  const { authError, isSsoEnabled, isSignupReady, didMigrationsRun, isManagedMarble, prefilledEmail, redirectTo } =
-    Route.useLoaderData();
+  const {
+    authError,
+    isSsoEnabled,
+    isSignupReady,
+    didMigrationsRun,
+    isManagedMarble,
+    prefilledEmail,
+    redirectTo,
+    signedOut,
+  } = Route.useLoaderData();
 
   const signInMutation = useMutation({
     mutationFn: async (authPayload: AuthPayload) =>
@@ -117,7 +137,11 @@ function LoginWithEmail() {
   return (
     <div className="flex flex-col gap-2xl w-full">
       {isSsoEnabled ? (
-        <Link className="absolute top-[60px] start-[60px] flex gap-sm text-s items-center" to="/sign-in">
+        <Link
+          className="absolute top-[60px] start-[60px] flex gap-sm text-s items-center"
+          to="/sign-in"
+          search={signedOut ? { signedOut: 1 } : undefined}
+        >
           <Icon icon="arrow-left" className="size-4" />
           {t('common:back')}
         </Link>

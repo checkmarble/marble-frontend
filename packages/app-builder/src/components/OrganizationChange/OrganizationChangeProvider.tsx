@@ -9,6 +9,7 @@ import {
   signedOutTabHref,
 } from '@app-builder/utils/cross-tab-session';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
+import { useDelayedVisibility } from '@app-builder/utils/hooks';
 import { withOrganizationChangeLock } from '@app-builder/utils/organization-change-lock';
 import { focusManager, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
@@ -17,9 +18,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod/v4';
-import { OrganizationChangeModal, type OrganizationChangeModalPhase } from './OrganizationChangeModal';
+import {
+  OrganizationChangeModal,
+  type OrganizationChangeModalPhase,
+  OrganizationSwitchingModal,
+} from './OrganizationChangeModal';
 
 const RECOVERY_TIMEOUT_MS = 10_000;
+const SWITCHING_MODAL_DELAY_MS = 300;
 
 const organizationChangeMessageSchema = z.object({
   status: z.enum(['started', 'committed', 'cancelled']),
@@ -71,7 +77,12 @@ export function OrganizationChangeProvider({
   const clientServices = useClientServices();
   const [transition, setTransition] = useState<OrganizationTransitionState | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [switchingToOrganizationId, setSwitchingToOrganizationId] = useState<string | null>(null);
+  const isUserSwitchInProgress =
+    switchingToOrganizationId !== null && (transition === null || transition.silent === true);
+  const showSwitchingModal = useDelayedVisibility(isUserSwitchInProgress, SWITCHING_MODAL_DELAY_MS);
   const transitionRef = useRef<OrganizationTransitionState | null>(null);
+  const wasSilentSwitchRef = useRef(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
   const tabIdRef = useRef<string | null>(null);
   const loggedOutRef = useRef(false);
@@ -227,14 +238,6 @@ export function OrganizationChangeProvider({
   );
 
   useEffect(() => {
-    if (!supportsBroadcastChannel()) return;
-
-    const tabId = getTabId();
-    const channel = new BroadcastChannel(ORGANIZATION_CHANGE_CHANNEL);
-    channelRef.current = channel;
-    channel.addEventListener('message', handleChannelMessage);
-    channel.postMessage({ status: 'check', sourceTabId: tabId } satisfies z.infer<typeof sessionCheckMessageSchema>);
-
     const reconcileVisibleTab = () => {
       if (document.visibilityState !== 'visible') return;
       const activeTransition = transitionRef.current;
@@ -246,9 +249,19 @@ export function OrganizationChangeProvider({
     window.addEventListener('pageshow', reconcileVisibleTab);
     void reconcileFromServer();
 
+    let channel: BroadcastChannel | null = null;
+    if (supportsBroadcastChannel()) {
+      const tabId = getTabId();
+      channel = new BroadcastChannel(ORGANIZATION_CHANGE_CHANNEL);
+      channelRef.current = channel;
+      channel.addEventListener('message', handleChannelMessage);
+      channel.postMessage({ status: 'check', sourceTabId: tabId } satisfies z.infer<typeof sessionCheckMessageSchema>);
+    }
+
     return () => {
       document.removeEventListener('visibilitychange', reconcileVisibleTab);
       window.removeEventListener('pageshow', reconcileVisibleTab);
+      if (!channel) return;
       channel.removeEventListener('message', handleChannelMessage);
       channel.close();
       if (channelRef.current === channel) channelRef.current = null;
@@ -274,6 +287,14 @@ export function OrganizationChangeProvider({
       setCurrentTransition(null);
     }
   }, [currentOrganization.id, setCurrentTransition, transition]);
+
+  useEffect(() => {
+    const isSilentSwitch = transition?.silent === true;
+    if (wasSilentSwitchRef.current && !isSilentSwitch) {
+      setSwitchingToOrganizationId(null);
+    }
+    wasSilentSwitchRef.current = isSilentSwitch;
+  }, [transition]);
 
   useEffect(() => {
     if (transition?.phase !== 'pending') return;
@@ -336,51 +357,59 @@ export function OrganizationChangeProvider({
     (organizationId: string) => {
       if (organizationId === currentOrganization.id) return;
 
+      setSwitchingToOrganizationId(organizationId);
+
       void withOrganizationChangeLock(async () => {
-        if (transitionRef.current) return;
-
-        const session = await fetchSessionIdentity().catch(() => undefined);
-        if (!session) {
-          toast.error(t('organization_change.switch_error'));
-          return;
-        }
-
-        if (sessionAction(session) === 'logout') {
-          logoutThisTab();
-          return;
-        }
-
-        if (session.organizationId !== currentOrganization.id) {
-          reconcileWithSessionOrganization(session.organizationId);
-          return;
-        }
-
-        if (!supportsBroadcastChannel() || !channelRef.current) {
-          await performUncoordinatedChange(organizationId);
-          return;
-        }
-
-        const nextTransition = createTransition(currentOrganization.id, organizationId);
-        setCurrentTransition({ ...nextTransition, phase: 'pending', silent: true });
-        broadcast('started', nextTransition);
-
         try {
-          await changeServerOrganization(organizationId);
-        } catch {
-          broadcast('cancelled', nextTransition);
-          await reconcileFromServer();
-          revealCurrentTransition();
-          toast.error(t('organization_change.switch_error'));
-          return;
-        }
+          if (transitionRef.current) return;
 
-        broadcast('committed', nextTransition);
-        setCurrentTransition({ ...nextTransition, phase: 'decision', silent: true });
-        try {
-          await navigateToSessionOrganization();
-        } catch {
-          revealCurrentTransition();
-          toast.error(t('organization_change.switch_error'));
+          const session = await fetchSessionIdentity().catch(() => undefined);
+          if (!session) {
+            toast.error(t('organization_change.switch_error'));
+            return;
+          }
+
+          if (sessionAction(session) === 'logout') {
+            logoutThisTab();
+            return;
+          }
+
+          if (session.organizationId !== currentOrganization.id) {
+            reconcileWithSessionOrganization(session.organizationId);
+            return;
+          }
+
+          if (!supportsBroadcastChannel() || !channelRef.current) {
+            await performUncoordinatedChange(organizationId);
+            return;
+          }
+
+          const nextTransition = createTransition(currentOrganization.id, organizationId);
+          setCurrentTransition({ ...nextTransition, phase: 'pending', silent: true });
+          broadcast('started', nextTransition);
+
+          try {
+            await changeServerOrganization(organizationId);
+          } catch {
+            broadcast('cancelled', nextTransition);
+            await reconcileFromServer();
+            revealCurrentTransition();
+            toast.error(t('organization_change.switch_error'));
+            return;
+          }
+
+          broadcast('committed', nextTransition);
+          setCurrentTransition({ ...nextTransition, phase: 'decision', silent: true });
+          try {
+            await navigateToSessionOrganization();
+          } catch {
+            revealCurrentTransition();
+            toast.error(t('organization_change.switch_error'));
+          }
+        } finally {
+          if (!transitionRef.current?.silent) {
+            setSwitchingToOrganizationId(null);
+          }
         }
       });
     },
@@ -510,9 +539,12 @@ export function OrganizationChangeProvider({
 
   return (
     <OrganizationChangeContext.Provider value={contextValue}>
-      <div className="contents" inert={signingOut || transition?.silent === true}>
+      <div className="contents" inert={signingOut || isUserSwitchInProgress || transition?.silent === true}>
         {signingOut ? null : children}
       </div>
+      {showSwitchingModal && switchingToOrganizationId ? (
+        <OrganizationSwitchingModal organizationName={getOrganizationName(switchingToOrganizationId)} />
+      ) : null}
       {transition && !transition.silent && !signingOut ? (
         <OrganizationChangeModal
           phase={transition.phase}

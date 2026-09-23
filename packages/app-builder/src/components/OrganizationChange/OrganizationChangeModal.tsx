@@ -1,3 +1,4 @@
+import { Spinner } from '@app-builder/components/Spinner';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
@@ -86,6 +87,31 @@ export function OrganizationChangeModal({
             />
           </Modal.Footer>
         ) : null}
+      </Modal.Content>
+    </Modal.Root>
+  );
+}
+
+interface OrganizationSwitchingModalProps {
+  organizationName: string;
+}
+
+export function OrganizationSwitchingModal({ organizationName }: OrganizationSwitchingModalProps) {
+  const { t } = useTranslation('navigation');
+
+  return (
+    <Modal.Root open onOpenChange={() => undefined}>
+      <Modal.Content
+        size="small"
+        onEscapeKeyDown={(event) => event.preventDefault()}
+        onPointerDownOutside={(event) => event.preventDefault()}
+        onInteractOutside={(event) => event.preventDefault()}
+      >
+        <Modal.Title>{t('organization_change.switching_title')}</Modal.Title>
+        <Modal.Description className="flex items-center gap-sm p-md text-s text-grey-primary" aria-live="polite">
+          <Spinner className="size-5" />
+          <span>{t('organization_change.switching', { organization: organizationName })}</span>
+        </Modal.Description>
       </Modal.Content>
     </Modal.Root>
   );

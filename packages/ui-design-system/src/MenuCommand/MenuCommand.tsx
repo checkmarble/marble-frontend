@@ -255,7 +255,7 @@ const SelectButton = function SelectButton({
           'flex items-center',
           inputClassName({ size }),
           inputPaddingsClassName({ size, hasEndIcon: true }),
-          'data-[read-only]:pointer-events-none data-[state=open]:border-purple-primary',
+          'data-read-only:pointer-events-none data-[state=open]:border-purple-primary',
           className,
         )}
         {...(readOnly ? { 'data-read-only': readOnly } : {})}
@@ -467,7 +467,7 @@ const Separator = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof Command.Separator> & {
-  ref?: React.Ref<React.ElementRef<typeof Command.Separator>>;
+  ref?: React.Ref<React.ComponentRef<typeof Command.Separator>>;
 }) => <Command.Separator ref={ref} className={cn('bg-grey-border -mx-sm my-sm h-px', className)} {...props} />;
 
 type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
@@ -475,7 +475,7 @@ function List({ className, ...props }: ListProps) {
   return (
     <Command.List
       className={cn(
-        'flex-1 overflow-y-auto overflow-x-hidden p-sm group-[[data-size="small"]]/menu-command-content:p-xs',
+        'flex-1 overflow-y-auto overflow-x-hidden p-sm group-data-[size="small"]/menu-command-content:p-xs',
         className,
       )}
       {...props}

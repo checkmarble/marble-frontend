@@ -12,9 +12,9 @@ import { signInFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import {
-  isSignedOutTabRequest,
   notifyOtherTabsToCheckSession,
   preserveSignedOut,
+  signedOutPageSearch,
 } from '@app-builder/utils/cross-tab-session';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, ErrorComponent, Link, redirect } from '@tanstack/react-router';
@@ -24,13 +24,14 @@ import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, Typo } from 'ui-design-system';
+import { z } from 'zod/v4';
 
 const signInLoader = createServerFn()
   .middleware([servicesMiddleware])
-  .handler(async function signInLoader({ context }) {
+  .validator(z.object({ signedOut: z.boolean() }))
+  .handler(async function signInLoader({ context, data: { signedOut } }) {
     const request = getRequest();
     const url = new URL(request.url);
-    const signedOut = isSignedOutTabRequest(url);
     if (!signedOut) {
       try {
         await context.services.authService.isAuthenticated(request, {
@@ -83,6 +84,7 @@ const signInLoader = createServerFn()
       authError: authError ?? (!appConfig ? ('BackendUnavailable' as AuthErrors) : undefined),
       isManagedMarble: appConfig?.isManagedMarble ?? false,
       redirectTo,
+      signedOut,
     };
   });
 
@@ -90,14 +92,16 @@ export const Route = createFileRoute('/_app/_auth/sign-in')({
   staticData: {
     i18n: authI18n,
   },
-  loader: () => signInLoader(),
+  validateSearch: signedOutPageSearch,
+  loaderDeps: ({ search }) => ({ signedOut: search.signedOut === 1 }),
+  loader: ({ deps }) => signInLoader({ data: deps }),
   component: Login,
   errorComponent: ErrorComponent,
 });
 
 function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble, authError, redirectTo } =
+  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
     Route.useLoaderData();
 
   const signInMutation = useMutation({
@@ -183,6 +187,7 @@ function Login() {
                   className: 'w-full justify-center',
                 })}
                 to="/sign-in-email"
+                search={signedOut ? { signedOut: 1 } : undefined}
               >
                 {t('auth:sign_in.with_email')}
               </Link>

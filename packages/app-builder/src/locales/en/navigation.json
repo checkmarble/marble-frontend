@@ -32,6 +32,8 @@
   "organization_change.return_error": "We could not return to {{previousOrganization}}. Your work is still preserved in this tab. Retry, or switch this tab to {{nextOrganization}}.",
   "organization_change.returning": "Returning every open tab to {{organization}}…",
   "organization_change.switch_error": "The organization could not be changed. Please try again.",
+  "organization_change.switching": "Switching to {{organization}}…",
+  "organization_change.switching_title": "Switching organization",
   "organization_change.title": "Organization changed in another tab",
   "organization_change.unknown": "another organization",
   "organization.demo": "Demo",
