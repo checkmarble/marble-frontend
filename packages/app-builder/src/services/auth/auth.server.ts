@@ -97,6 +97,7 @@ export interface AuthenticationServerService {
     payload: { idToken?: string; csrf: string; newOrganizationId?: string },
     options: {
       failureRedirect: string;
+      preserveSessionOnFailure?: boolean;
     },
   ): Promise<void>;
 
@@ -364,6 +365,7 @@ export function makeAuthenticationServerService({
     payload: { idToken?: string; csrf: string; newOrganizationId?: string },
     options: {
       failureRedirect: string;
+      preserveSessionOnFailure?: boolean;
     },
   ): Promise<void> {
     const authSession = await useAuthSession();
@@ -398,6 +400,10 @@ export function makeAuthenticationServerService({
       if (!expectedErrors(error)) {
         captureUnexpectedError(error, 'auth.server@refresh', request);
       }
+      if (options.preserveSessionOnFailure) {
+        throw error;
+      }
+
       await authSession.clear();
       throw redirect(options.failureRedirect);
     }
