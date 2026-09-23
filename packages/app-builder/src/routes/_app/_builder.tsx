@@ -43,7 +43,6 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
 
     const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
     const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)?.settings[0];
-    console.log('organizations', JSON.stringify(organizations, null, 2));
     return {
       user,
       orgUsers,
@@ -128,8 +127,9 @@ function Builder() {
                     </div>
                     <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
                       <ul className="flex w-full min-w-0 flex-col gap-sm">
+                        {/* Organization Switcher */}
+                        {organizations.length > 1 && <OrganizationSwitcher />}
                         {/* Detection - flat link (tabs are inside the page) */}
-                        {organizations.length > 0 && <OrganizationSwitcher />}
                         {!isAnalyst(user) && (
                           <li>
                             <SidebarLink
