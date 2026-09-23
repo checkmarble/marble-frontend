@@ -68,9 +68,12 @@ export const refreshTokenFn = createServerFn({ method: 'POST' })
     }
   });
 
-export const getSessionOrganizationIdFn = createServerFn({ method: 'GET' })
+export const getSessionIdentityFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => ({ organizationId: context.authInfo.user.organizationId }));
+  .handler(async ({ context }) => ({
+    organizationId: context.authInfo.user.organizationId,
+    email: context.authInfo.user.actorIdentity.email ?? null,
+  }));
 
 export const changeOrganizationId = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
