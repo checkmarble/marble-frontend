@@ -22,6 +22,13 @@
         name: x-oidc-access-token
         schema:
           type: string
+      - name: organization_id
+        description: Organization ID to generate a new access token
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
     responses:
       '200':
         description: New access token

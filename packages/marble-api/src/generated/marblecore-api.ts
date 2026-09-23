@@ -2336,10 +2336,11 @@ export function searchClient360(body?: {
 /**
  * Get an access token
  */
-export function postToken({ xApiKey, authorization, xOidcAccessToken }: {
+export function postToken({ xApiKey, authorization, xOidcAccessToken, organizationId }: {
     xApiKey?: string;
     authorization?: string;
     xOidcAccessToken?: string;
+    organizationId?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -2347,7 +2348,9 @@ export function postToken({ xApiKey, authorization, xOidcAccessToken }: {
     } | {
         status: 401;
         data: string;
-    }>("/token", {
+    }>(`/token${QS.query(QS.explode({
+        organization_id: organizationId
+    }))}`, {
         ...opts,
         method: "POST",
         headers: oazapfts.mergeHeaders(opts?.headers, {
