@@ -539,8 +539,12 @@ WorkflowActionDisabled:
 WorkflowActionCase:
   $ref: workflow.yml#/components/schemas/WorkflowActionCase
 
-# USER SETTINGS
+# USERS
 
+UserOrganizationDto:
+  $ref: users.yml#/components/schemas/UserOrganizationDto
+OrganizationEnvironmentDto:
+  $ref: users.yml#/components/schemas/OrganizationEnvironmentDto
 PersonalSettingsUnavailableDto:
   $ref: users.yml#/components/schemas/PersonalSettingsUnavailableDto
 

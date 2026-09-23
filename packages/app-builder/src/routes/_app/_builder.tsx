@@ -1,4 +1,4 @@
-import { navigationI18n, SidebarLink } from '@app-builder/components';
+import { navigationI18n, OrganizationSwitcher, SidebarLink } from '@app-builder/components';
 import { HeaderLogo } from '@app-builder/components/HeaderLogo';
 import { LeftSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
@@ -32,8 +32,9 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async function appBuilderLayout({ context }) {
     const { user, inbox, organization, entitlements } = context.authInfo;
-    const [organizationDetail, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
+    const [organizationDetail, organizations, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
       organization.getCurrentOrganization(),
+      organization.listMyOrganizations(),
       organization.listUsers(),
       organization.listTags(),
       organization.listTags({ target: 'object' }),
@@ -42,11 +43,11 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
 
     const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
     const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)?.settings[0];
-
     return {
       user,
       orgUsers,
       organization: organizationDetail,
+      organizations,
       orgTags,
       orgObjectTags,
       featuresAccess: {
@@ -80,19 +81,28 @@ const TokenRefresher = () => {
 
 const SIDEBAR_NUDGE_CLASS = cn(
   'absolute top-sm end-sm translate-x-[50%] -translate-y-[50%] rounded-full size-2.5',
-  'group-hover/sidebar:static group-hover/sidebar:translate-x-0 group-hover/sidebar:translate-y-0',
-  'group-hover/sidebar:rounded-sm group-hover/sidebar:size-6',
-  'transition-all delay-400 group-hover/sidebar:delay-200 motion-reduce:delay-0 motion-reduce:duration-0',
+  'group-sidebar-open:static group-sidebar-open:translate-x-0 group-sidebar-open:translate-y-0',
+  'group-sidebar-open:rounded-sm group-sidebar-open:size-6',
+  'transition-all delay-400 group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0',
 );
-const SIDEBAR_NUDGE_ICON_CLASS = 'size-2.5 group-hover/sidebar:size-3';
+const SIDEBAR_NUDGE_ICON_CLASS = 'size-2.5 group-sidebar-open:size-3';
 
 function SidebarNudge(props: Omit<ComponentProps<typeof Nudge>, 'className' | 'iconClass'>) {
   return <Nudge {...props} className={SIDEBAR_NUDGE_CLASS} iconClass={SIDEBAR_NUDGE_ICON_CLASS} />;
 }
 
 function Builder() {
-  const { user, orgUsers, organization, orgTags, orgObjectTags, featuresAccess, authProvider, sentryReplayEnabled } =
-    Route.useLoaderData();
+  const {
+    user,
+    orgUsers,
+    organization,
+    organizations,
+    orgTags,
+    orgObjectTags,
+    featuresAccess,
+    authProvider,
+    sentryReplayEnabled,
+  } = Route.useLoaderData();
   useSegmentIdentification(user);
   useSentryIdentification(user);
   useSentryReplay(sentryReplayEnabled);
@@ -104,7 +114,7 @@ function Builder() {
       <ClientOnly>
         <VersionUpdateModalContainer />
       </ClientOnly>
-      <OrganizationDetailsContextProvider org={organization} currentUser={user}>
+      <OrganizationDetailsContextProvider org={organization} currentUser={user} organizations={organizations}>
         <OrganizationUsersContextProvider orgUsers={orgUsers}>
           <OrganizationTagsContextProvider orgTags={orgTags}>
             <OrganizationObjectTagsContextProvider tags={orgObjectTags}>
@@ -116,7 +126,9 @@ function Builder() {
                       <HeaderLogo />
                     </div>
                     <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
-                      <ul className="flex flex-col gap-sm">
+                      <ul className="flex w-full min-w-0 flex-col gap-sm">
+                        {/* Organization Switcher */}
+                        {organizations.length > 1 && <OrganizationSwitcher />}
                         {/* Detection - flat link (tabs are inside the page) */}
                         {!isAnalyst(user) && (
                           <li>
@@ -144,7 +156,7 @@ function Builder() {
                                 return (
                                   <div className="text-grey-disabled relative flex gap-sm p-sm">
                                     <Icon icon="123" className="size-6 shrink-0" />
-                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
+                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-sidebar-open:opacity-100 delay-400 group-sidebar-open:delay-200">
                                       {t('navigation:user_scoring')}
                                     </span>
                                     <SidebarNudge kind={value} content={t('navigation:user_scoring.nudge')} />
@@ -170,7 +182,7 @@ function Builder() {
                                 return (
                                   <div className="text-grey-disabled relative flex gap-sm p-sm">
                                     <Icon icon="scan-eye" className="size-6 shrink-0" />
-                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
+                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-sidebar-open:opacity-100 delay-400 group-sidebar-open:delay-200">
                                       {t('navigation:continuous_screening')}
                                     </span>
                                     <SidebarNudge kind={value} content={t('navigation:continuous_screening.nudge')} />
@@ -209,7 +221,7 @@ function Builder() {
                     </nav>
                     {/* Secondary Navigation - Bottom */}
                     <nav className="p-sm pb-md">
-                      <ul className="flex flex-col gap-sm">
+                      <ul className="flex w-full min-w-0 flex-col gap-sm">
                         {/* Your Data */}
                         {!isAnalyst(user) && (
                           <li>

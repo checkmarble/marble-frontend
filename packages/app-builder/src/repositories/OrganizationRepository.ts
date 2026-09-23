@@ -1,14 +1,17 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { adaptUser, type User } from '@app-builder/models';
+import { adaptUser, isNotFoundHttpError, type User } from '@app-builder/models';
 import {
   adaptOrganizationDto,
+  adaptUserOrganization,
   type Organization,
   type OrganizationUpdateInput,
+  type UserOrganization,
 } from '@app-builder/models/organization';
 import { type Tag } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
+  listMyOrganizations(): Promise<UserOrganization[]>;
   exportOrganization(): Promise<unknown>;
   importOrganization(body: unknown): Promise<{ org_id: string }>;
   importOrganizationFromFile(file: Blob): Promise<{ org_id: string }>;
@@ -24,6 +27,10 @@ export function makeGetOrganizationRepository() {
       const { organization } = await marbleCoreApiClient.getOrganization(organizationId);
 
       return adaptOrganizationDto(organization);
+    },
+    listMyOrganizations: async () => {
+      const organizations = await readMyOrganizations(() => marbleCoreApiClient.listMyOrganizations());
+      return organizations.map(adaptUserOrganization);
     },
     exportOrganization: async () => {
       return marbleCoreApiClient.exportOrganization();
@@ -76,4 +83,15 @@ export function makeGetOrganizationRepository() {
       });
     },
   });
+}
+
+// if GET /me/organizations does not exist on the backend, it will return [] (essentially for e2e tests).
+export async function readMyOrganizations<T>(list: () => Promise<{ organizations: T[] }>): Promise<T[]> {
+  try {
+    const { organizations } = await list();
+    return organizations ?? [];
+  } catch (error) {
+    if (isNotFoundHttpError(error)) return [];
+    throw error;
+  }
 }
