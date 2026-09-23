@@ -18,7 +18,7 @@ import { type DecisionRepository } from '@app-builder/repositories/DecisionRepos
 import { type makeGetFeatureAccessRepository } from '@app-builder/repositories/FeatureAccessRepository';
 import { type GraphRepository } from '@app-builder/repositories/GraphRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
-import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
+import { type OrganizationRepository, readMyOrganizations } from '@app-builder/repositories/OrganizationRepository';
 import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
@@ -530,12 +530,13 @@ async function getToken({
     { baseUrl: getServerEnv('MARBLE_API_URL') },
   );
   if (organizationId) return token;
-  // list organizations
-  const { organizations } = await marblecoreApi.listMyOrganizations({
-    headers: { authorization: `Bearer ${token.access_token}` },
-    baseUrl: getServerEnv('MARBLE_API_URL'),
-  });
-  if (!organizations || !organizations.length) return token;
+  const organizations = await readMyOrganizations(() =>
+    marblecoreApi.listMyOrganizations({
+      headers: { authorization: `Bearer ${token.access_token}` },
+      baseUrl: getServerEnv('MARBLE_API_URL'),
+    }),
+  );
+  if (!organizations.length) return token;
   // if one or more orgs exist, take the first 'production' one
   const productionOrg = organizations.find((org) => org.environment === 'production');
   // get token for this org
