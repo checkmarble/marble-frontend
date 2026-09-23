@@ -32,6 +32,8 @@
   "organization_change.return_error": "تعذّر الرجوع إلى {{previousOrganization}}. لا يزال عملك محفوظًا في علامة التبويب هذه. أعد المحاولة أو بدّل علامة التبويب هذه إلى {{nextOrganization}}.",
   "organization_change.returning": "جارٍ إرجاع جميع علامات التبويب المفتوحة إلى {{organization}}…",
   "organization_change.switch_error": "تعذّر تغيير المؤسسة. يُرجى المحاولة مرة أخرى.",
+  "organization_change.switching": "جارٍ التبديل إلى {{organization}}…",
+  "organization_change.switching_title": "جارٍ تبديل المؤسسة",
   "organization_change.title": "تم تغيير المؤسسة في علامة تبويب أخرى",
   "organization_change.unknown": "مؤسسة أخرى",
   "organization.demo": "التجريبي",
