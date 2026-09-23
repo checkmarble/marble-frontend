@@ -1,8 +1,13 @@
 import { OrganizationChangeContext } from '@app-builder/contexts/OrganizationChangeContext';
 import type { Organization, UserOrganization } from '@app-builder/models/organization';
 import { useChangeOrganizationIdMutation } from '@app-builder/queries/auth/new-organization-id';
-import { getSessionOrganizationIdFn } from '@app-builder/server-fns/auth';
+import { getSessionIdentityFn } from '@app-builder/server-fns/auth';
 import { useClientServices } from '@app-builder/services/init-client';
+import {
+  ORGANIZATION_CHANGE_CHANNEL,
+  resolveCrossTabSession,
+  signedOutTabHref,
+} from '@app-builder/utils/cross-tab-session';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { withOrganizationChangeLock } from '@app-builder/utils/organization-change-lock';
 import { focusManager, useQueryClient } from '@tanstack/react-query';
@@ -14,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod/v4';
 import { OrganizationChangeModal, type OrganizationChangeModalPhase } from './OrganizationChangeModal';
 
-const CHANNEL_NAME = 'marble:organization-change';
 const RECOVERY_TIMEOUT_MS = 10_000;
 
 const organizationChangeMessageSchema = z.object({
@@ -25,6 +29,13 @@ const organizationChangeMessageSchema = z.object({
   toOrganizationId: z.string(),
   startedAt: z.number(),
 });
+
+const sessionCheckMessageSchema = z.object({
+  status: z.literal('check'),
+  sourceTabId: z.string(),
+});
+
+const channelMessageSchema = z.union([organizationChangeMessageSchema, sessionCheckMessageSchema]);
 
 type OrganizationChangeMessage = z.infer<typeof organizationChangeMessageSchema>;
 type OrganizationTransition = Omit<OrganizationChangeMessage, 'status'>;
@@ -38,6 +49,7 @@ interface OrganizationChangeProviderProps {
   children: React.ReactNode;
   currentOrganization: Organization;
   organizations: UserOrganization[];
+  currentUserEmail?: string;
 }
 
 function supportsBroadcastChannel() {
@@ -48,18 +60,21 @@ export function OrganizationChangeProvider({
   children,
   currentOrganization,
   organizations,
+  currentUserEmail,
 }: OrganizationChangeProviderProps) {
   const { t } = useTranslation('navigation');
   const router = useRouter();
   const queryClient = useQueryClient();
   const csrf = useCsrfToken();
-  const getSessionOrganizationId = useServerFn(getSessionOrganizationIdFn);
+  const getSessionIdentity = useServerFn(getSessionIdentityFn);
   const changeOrganizationIdMutation = useChangeOrganizationIdMutation();
   const clientServices = useClientServices();
   const [transition, setTransition] = useState<OrganizationTransitionState | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
   const transitionRef = useRef<OrganizationTransitionState | null>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
   const tabIdRef = useRef<string | null>(null);
+  const loggedOutRef = useRef(false);
 
   const setCurrentTransition = useCallback((nextTransition: OrganizationTransitionState | null) => {
     transitionRef.current = nextTransition;
@@ -93,10 +108,28 @@ export function OrganizationChangeProvider({
     channelRef.current?.postMessage({ ...value, status } satisfies OrganizationChangeMessage);
   }, []);
 
-  const fetchSessionOrganizationId = useCallback(async () => {
-    const result = await getSessionOrganizationId();
-    return result.organizationId;
-  }, [getSessionOrganizationId]);
+  const fetchSessionIdentity = useCallback(async () => {
+    return getSessionIdentity();
+  }, [getSessionIdentity]);
+
+  // One cookie is shared by every tab. Clearing it would also sign out the tab
+  // that just signed in, so this tab only leaves the previous user's screen.
+  const logoutThisTab = useCallback(() => {
+    if (loggedOutRef.current) return;
+    loggedOutRef.current = true;
+    setSigningOut(true);
+    window.location.replace(signedOutTabHref());
+  }, []);
+
+  const sessionAction = useCallback(
+    (session: { organizationId: string; email: string | null }) => {
+      return resolveCrossTabSession(
+        { organizationId: currentOrganization.id, email: currentUserEmail },
+        { organizationId: session.organizationId, email: session.email ?? undefined },
+      );
+    },
+    [currentOrganization.id, currentUserEmail],
+  );
 
   const reconcileWithSessionOrganization = useCallback(
     (organizationId: string) => {
@@ -122,21 +155,38 @@ export function OrganizationChangeProvider({
   const reconcileFromServer = useCallback(async () => {
     const transitionAtStart = transitionRef.current;
     try {
-      const organizationId = await fetchSessionOrganizationId();
+      const session = await fetchSessionIdentity();
+      const action = sessionAction(session);
+      if (action === 'logout') {
+        logoutThisTab();
+        return;
+      }
       if (transitionRef.current !== transitionAtStart) return;
-      reconcileWithSessionOrganization(organizationId);
+      if (action === 'none') {
+        setCurrentTransition(null);
+        return;
+      }
+      reconcileWithSessionOrganization(session.organizationId);
     } catch {
       // Authentication redirects are handled by the server function. Keep the
       // current protection state until navigation completes or recovery retries.
     }
-  }, [fetchSessionOrganizationId, reconcileWithSessionOrganization]);
+  }, [fetchSessionIdentity, logoutThisTab, reconcileWithSessionOrganization, sessionAction, setCurrentTransition]);
 
   const handleChannelMessage = useCallback(
     (event: MessageEvent<unknown>) => {
-      const parsedMessage = organizationChangeMessageSchema.safeParse(event.data);
+      const parsedMessage = channelMessageSchema.safeParse(event.data);
       if (!parsedMessage.success) return;
 
       const message = parsedMessage.data;
+      if (message.status === 'check') {
+        if (message.sourceTabId === tabIdRef.current) return;
+        const activeTransition = transitionRef.current;
+        if (activeTransition?.phase === 'pending' || activeTransition?.phase === 'returning') return;
+        void reconcileFromServer();
+        return;
+      }
+
       const activeTransition = transitionRef.current;
       if (
         activeTransition &&
@@ -179,10 +229,11 @@ export function OrganizationChangeProvider({
   useEffect(() => {
     if (!supportsBroadcastChannel()) return;
 
-    getTabId();
-    const channel = new BroadcastChannel(CHANNEL_NAME);
+    const tabId = getTabId();
+    const channel = new BroadcastChannel(ORGANIZATION_CHANGE_CHANNEL);
     channelRef.current = channel;
     channel.addEventListener('message', handleChannelMessage);
+    channel.postMessage({ status: 'check', sourceTabId: tabId } satisfies z.infer<typeof sessionCheckMessageSchema>);
 
     const reconcileVisibleTab = () => {
       if (document.visibilityState !== 'visible') return;
@@ -205,7 +256,7 @@ export function OrganizationChangeProvider({
   }, [getTabId, handleChannelMessage, reconcileFromServer]);
 
   useEffect(() => {
-    if (!transition) return;
+    if (!transition && !signingOut) return;
 
     void queryClient.cancelQueries();
     focusManager.setFocused(false);
@@ -216,7 +267,7 @@ export function OrganizationChangeProvider({
       window.removeEventListener('focus', keepQueriesPaused);
       focusManager.setFocused(undefined);
     };
-  }, [queryClient, transition]);
+  }, [queryClient, signingOut, transition]);
 
   useEffect(() => {
     if (transition?.phase === 'decision' && transition.toOrganizationId === currentOrganization.id) {
@@ -285,24 +336,27 @@ export function OrganizationChangeProvider({
     (organizationId: string) => {
       if (organizationId === currentOrganization.id) return;
 
-      if (!supportsBroadcastChannel() || !channelRef.current) {
-        void performUncoordinatedChange(organizationId);
-        return;
-      }
-
       void withOrganizationChangeLock(async () => {
         if (transitionRef.current) return;
 
-        let sessionOrganizationId: string;
-        try {
-          sessionOrganizationId = await fetchSessionOrganizationId();
-        } catch {
+        const session = await fetchSessionIdentity().catch(() => undefined);
+        if (!session) {
           toast.error(t('organization_change.switch_error'));
           return;
         }
 
-        if (sessionOrganizationId !== currentOrganization.id) {
-          reconcileWithSessionOrganization(sessionOrganizationId);
+        if (sessionAction(session) === 'logout') {
+          logoutThisTab();
+          return;
+        }
+
+        if (session.organizationId !== currentOrganization.id) {
+          reconcileWithSessionOrganization(session.organizationId);
+          return;
+        }
+
+        if (!supportsBroadcastChannel() || !channelRef.current) {
+          await performUncoordinatedChange(organizationId);
           return;
         }
 
@@ -335,12 +389,14 @@ export function OrganizationChangeProvider({
       changeServerOrganization,
       createTransition,
       currentOrganization.id,
-      fetchSessionOrganizationId,
+      fetchSessionIdentity,
+      logoutThisTab,
       navigateToSessionOrganization,
       performUncoordinatedChange,
       reconcileFromServer,
       reconcileWithSessionOrganization,
       revealCurrentTransition,
+      sessionAction,
       setCurrentTransition,
       t,
     ],
@@ -349,15 +405,20 @@ export function OrganizationChangeProvider({
   const acceptNextOrganization = useCallback(() => {
     void (async () => {
       try {
-        const sessionOrganizationId = await fetchSessionOrganizationId();
-        if (sessionOrganizationId === currentOrganization.id) {
+        const session = await fetchSessionIdentity();
+        if (sessionAction(session) === 'logout') {
+          logoutThisTab();
+          return;
+        }
+
+        if (session.organizationId === currentOrganization.id) {
           setCurrentTransition(null);
           return;
         }
 
         const activeTransition = transitionRef.current;
-        if (activeTransition && activeTransition.toOrganizationId !== sessionOrganizationId) {
-          reconcileWithSessionOrganization(sessionOrganizationId);
+        if (activeTransition && activeTransition.toOrganizationId !== session.organizationId) {
+          reconcileWithSessionOrganization(session.organizationId);
           return;
         }
 
@@ -368,9 +429,11 @@ export function OrganizationChangeProvider({
     })();
   }, [
     currentOrganization.id,
-    fetchSessionOrganizationId,
+    fetchSessionIdentity,
+    logoutThisTab,
     navigateToSessionOrganization,
     reconcileWithSessionOrganization,
+    sessionAction,
     setCurrentTransition,
     t,
   ]);
@@ -384,21 +447,24 @@ export function OrganizationChangeProvider({
     void withOrganizationChangeLock(async () => {
       if (transitionRef.current?.transitionId !== protectedTransition.transitionId) return;
 
-      let sessionOrganizationId: string;
-      try {
-        sessionOrganizationId = await fetchSessionOrganizationId();
-      } catch {
+      const session = await fetchSessionIdentity().catch(() => undefined);
+      if (!session) {
         setCurrentTransition({ ...protectedTransition, phase: 'error' });
         return;
       }
 
-      if (sessionOrganizationId === protectedTransition.fromOrganizationId) {
+      if (sessionAction(session) === 'logout') {
+        logoutThisTab();
+        return;
+      }
+
+      if (session.organizationId === protectedTransition.fromOrganizationId) {
         setCurrentTransition(null);
         return;
       }
 
-      if (sessionOrganizationId !== protectedTransition.toOrganizationId) {
-        reconcileWithSessionOrganization(sessionOrganizationId);
+      if (session.organizationId !== protectedTransition.toOrganizationId) {
+        reconcileWithSessionOrganization(session.organizationId);
         return;
       }
 
@@ -423,8 +489,10 @@ export function OrganizationChangeProvider({
     broadcast,
     changeServerOrganization,
     createTransition,
-    fetchSessionOrganizationId,
+    fetchSessionIdentity,
+    logoutThisTab,
     reconcileWithSessionOrganization,
+    sessionAction,
     setCurrentTransition,
   ]);
 
@@ -442,10 +510,10 @@ export function OrganizationChangeProvider({
 
   return (
     <OrganizationChangeContext.Provider value={contextValue}>
-      <div className="contents" inert={transition?.silent === true}>
-        {children}
+      <div className="contents" inert={signingOut || transition?.silent === true}>
+        {signingOut ? null : children}
       </div>
-      {transition && !transition.silent ? (
+      {transition && !transition.silent && !signingOut ? (
         <OrganizationChangeModal
           phase={transition.phase}
           previousOrganizationName={getOrganizationName(transition.fromOrganizationId)}
