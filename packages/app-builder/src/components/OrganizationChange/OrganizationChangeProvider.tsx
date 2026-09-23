@@ -9,7 +9,6 @@ import {
   signedOutTabHref,
 } from '@app-builder/utils/cross-tab-session';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
-import { useDelayedVisibility } from '@app-builder/utils/hooks';
 import { withOrganizationChangeLock } from '@app-builder/utils/organization-change-lock';
 import { focusManager, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
@@ -17,6 +16,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useSpinDelay } from 'spin-delay';
 import { z } from 'zod/v4';
 import {
   OrganizationChangeModal,
@@ -80,7 +80,10 @@ export function OrganizationChangeProvider({
   const [switchingToOrganizationId, setSwitchingToOrganizationId] = useState<string | null>(null);
   const isUserSwitchInProgress =
     switchingToOrganizationId !== null && (transition === null || transition.silent === true);
-  const showSwitchingModal = useDelayedVisibility(isUserSwitchInProgress, SWITCHING_MODAL_DELAY_MS);
+  const showSwitchingModal = useSpinDelay(isUserSwitchInProgress, {
+    delay: SWITCHING_MODAL_DELAY_MS,
+    minDuration: 0,
+  });
   const transitionRef = useRef<OrganizationTransitionState | null>(null);
   const wasSilentSwitchRef = useRef(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
