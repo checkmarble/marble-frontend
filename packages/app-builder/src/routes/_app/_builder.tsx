@@ -115,7 +115,11 @@ function Builder() {
       <ClientOnly>
         <VersionUpdateModalContainer />
       </ClientOnly>
-      <OrganizationChangeProvider currentOrganization={organization} organizations={organizations}>
+      <OrganizationChangeProvider
+        currentOrganization={organization}
+        organizations={organizations}
+        currentUserEmail={user.actorIdentity.email}
+      >
         <OrganizationDetailsContextProvider org={organization} currentUser={user} organizations={organizations}>
           <OrganizationUsersContextProvider orgUsers={orgUsers}>
             <OrganizationTagsContextProvider orgTags={orgTags}>
