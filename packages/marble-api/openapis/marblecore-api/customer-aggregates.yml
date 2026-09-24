@@ -1,0 +1,236 @@
+/client360/{recordType}/aggregates:
+  post:
+    tags:
+      - Customer Aggregates
+    summary: Create a customer aggregate
+    description: Create and evaluate a customer aggregate. When dry run is enabled, the aggregate is evaluated without being persisted.
+    operationId: createCustomerAggregate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: recordType
+        description: Name of the customer record type.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: dry_run
+        description: Evaluate the aggregate without persisting the change.
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCustomerAggregateBodyDto'
+    responses:
+      '201':
+        description: The created or dry-run customer aggregate and its evaluated results.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerAggregateDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '422':
+        $ref: 'components.yml#/responses/422'
+
+/client360/{recordType}/aggregates/{id}:
+  put:
+    tags:
+      - Customer Aggregates
+    summary: Update a customer aggregate
+    description: Update and evaluate a customer aggregate. When dry run is enabled, the aggregate is evaluated without being persisted.
+    operationId: updateCustomerAggregate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: recordType
+        description: Name of the customer record type.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        description: ID of the customer aggregate.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: dry_run
+        description: Evaluate the aggregate without persisting the change.
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCustomerAggregateBodyDto'
+    responses:
+      '201':
+        description: The updated or dry-run customer aggregate and its evaluated results.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerAggregateDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
+  delete:
+    tags:
+      - Customer Aggregates
+    summary: Delete a customer aggregate
+    operationId: deleteCustomerAggregate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: recordType
+        description: Name of the customer record type.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        description: ID of the customer aggregate.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The customer aggregate was deleted.
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
+
+/client360/{recordType}/aggregates/{customerId}/compute:
+  get:
+    tags:
+      - Customer Aggregates
+    summary: List customer aggregates
+    description: List the configured aggregates for a record type and evaluate them for the provided customer record.
+    operationId: listCustomerAggregates
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: recordType
+        description: Name of the customer record type.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: customerId
+        description: ID of the customer record for which the aggregates are evaluated.
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: The configured customer aggregates and their evaluated results.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomerAggregateDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    CreateCustomerAggregateBodyDto:
+      type: object
+      required:
+        - name
+        - type
+        - expression
+        - customer_id
+        - time_slice
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - period
+        expression:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+        customer_id:
+          type: string
+          description: ID of the customer record used to evaluate the aggregate.
+        time_slice:
+          type: string
+          description: ISO 8601 duration defining the comparison period.
+          example: P30D
+    CustomerAggregateDto:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - expression
+        - time_slice
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - period
+        expression:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+        time_slice:
+          type: string
+          description: ISO 8601 duration defining the comparison period.
+          example: P30D
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerAggregateResultDto'
+    CustomerAggregateResultDto:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: number
+          format: double

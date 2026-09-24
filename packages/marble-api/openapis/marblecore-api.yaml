@@ -50,6 +50,8 @@ tags:
     description: Scenario workflow management.
   - name: OrgImport
     description: Operations about organization import and archetypes.
+  - name: Customer Aggregates
+    description: Customer aggregate configuration and evaluation.
 servers:
   - url: "http://localhost:8080"
     description: Local devlopment server
@@ -59,6 +61,12 @@ paths:
     $ref: ./marblecore-api/client-360.yml#/~1client360~1tables
   /client360/search:
     $ref: ./marblecore-api/client-360.yml#/~1client360~1search
+  /client360/{recordType}/aggregates:
+    $ref: ./marblecore-api/customer-aggregates.yml#/~1client360~1{recordType}~1aggregates
+  /client360/{recordType}/aggregates/{id}:
+    $ref: ./marblecore-api/customer-aggregates.yml#/~1client360~1{recordType}~1aggregates~1{id}
+  /client360/{recordType}/aggregates/{customerId}/compute:
+    $ref: ./marblecore-api/customer-aggregates.yml#/~1client360~1{recordType}~1aggregates~1{customerId}~1compute
 
   # AUTHORIZATION
 
