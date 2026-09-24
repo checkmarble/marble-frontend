@@ -1,7 +1,7 @@
 import { env } from '@bo/env';
 import { authMiddleware, needAuth } from '@bo/middlewares/auth';
 import { useAuthSession } from '@bo/utils/session';
-import { redirect } from '@tanstack/react-router';
+import { isRedirect, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { marblecoreApi } from 'marble-api';
 import z from 'zod';
@@ -22,11 +22,12 @@ export const signinFn = createServerFn({ method: 'POST' })
       await authSession.update({
         authToken: marbleToken,
       });
-
-      throw redirect({ to: '/dashboard' });
-    } catch {
-      throw redirect({ to: '/sign-in' });
+    } catch (error) {
+      if (isRedirect(error) || (error instanceof Response && error.status >= 300 && error.status < 400)) throw error;
+      return { redirectTo: '/sign-in' };
     }
+
+    return { redirectTo: '/dashboard' };
   });
 
 export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {
