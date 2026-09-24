@@ -26,7 +26,7 @@ import {
 } from './OrganizationChangeModal';
 
 const RECOVERY_TIMEOUT_MS = 10_000;
-const SWITCHING_MODAL_DELAY_MS = 300;
+const SWITCHING_MODAL_DELAY_MS = 500;
 
 const organizationChangeMessageSchema = z.object({
   status: z.enum(['started', 'committed', 'cancelled']),
@@ -538,8 +538,8 @@ export function OrganizationChangeProvider({
   ]);
 
   const contextValue = useMemo(
-    () => ({ changeOrganizationId: requestOrganizationChange }),
-    [requestOrganizationChange],
+    () => ({ changeOrganizationId: requestOrganizationChange, isSwitching: isUserSwitchInProgress }),
+    [isUserSwitchInProgress, requestOrganizationChange],
   );
 
   const getOrganizationName = (organizationId: string) => {

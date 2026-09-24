@@ -1,10 +1,11 @@
-import { useNewOrganizationId } from '@app-builder/hooks/useNewOrganizationId';
+import { useOrganizationChange } from '@app-builder/contexts/OrganizationChangeContext';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
 import { type Namespace, type ParseKeys } from 'i18next';
 import type { JSX } from 'react';
 import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, cn, MenuCommand } from 'ui-design-system';
 import { Icon, type IconProps } from 'ui-icons';
@@ -116,8 +117,8 @@ const COMBO_BOX_THRESHOLD = 10;
 export function OrganizationSwitcher() {
   const { org, organizations } = useOrganizationDetails();
   const { t } = useTranslation('navigation');
-  const changeOrganizationId = useNewOrganizationId();
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const { changeOrganizationId, isSwitching } = useOrganizationChange();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (!org) return null;
   const userOrg = organizations.find((o) => o.id === org.id);
@@ -128,16 +129,27 @@ export function OrganizationSwitcher() {
   const environmentLabel = t(`organization.${userOrg.environment}`);
 
   const handleChangeOrganizationId = (organizationId: string) => {
-    if (organizationId === org.id) return;
+    if (isSwitching || organizationId === org.id) return;
     changeOrganizationId(organizationId);
+    setMenuOpen(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (isSwitching) {
+      setMenuOpen(false);
+      return;
+    }
+    setMenuOpen(open);
   };
 
   return (
-    <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
+    <MenuCommand.Menu open={menuOpen && !isSwitching} onOpenChange={handleOpenChange}>
       <MenuCommand.Trigger>
         <button
           type="button"
+          disabled={isSwitching}
           className={cn(
+            'disabled:cursor-not-allowed disabled:opacity-50',
             'flex min-w-0 flex-row items-center overflow-hidden rounded-md border border-transparent py-[calc(var(--spacing-sm)-var(--default-border-width))] transition-[padding,margin-inline,width,border-color] duration-150 delay-400 group-sidebar-open:border-grey-border group-sidebar-open:px-xs group-sidebar-open:py-[calc(var(--spacing-sm)+var(--spacing-xs)-var(--default-border-width))] group-sidebar-open:delay-200 motion-reduce:delay-0 motion-reduce:duration-0',
             isStaging
               ? '-mx-xs w-[calc(100%+2*var(--spacing-xs))] group-sidebar-open:mx-0 group-sidebar-open:w-full'
@@ -203,6 +215,7 @@ export function OrganizationSwitcher() {
               key={organization.id}
               className="cursor-pointer"
               onSelect={() => handleChangeOrganizationId(organization.id)}
+              value={organization.id}
             >
               <span className="inline-flex items-center gap-xs">
                 <span>{organization.name}</span>
