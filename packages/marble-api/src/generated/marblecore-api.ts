@@ -22,6 +22,40 @@ export type Client360Table = {
     caption_field: string;
     ready: boolean;
 };
+export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
+    [key: string]: ConstantDto;
+} | null)) | null;
+export type NodeDto = {
+    id?: string;
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
+};
+export type CreateCustomerAggregateBodyDto = {
+    name: string;
+    "type": "period";
+    expression: NodeDto;
+    /** ID of the customer record used to evaluate the aggregate. */
+    customer_id: string;
+    /** ISO 8601 duration defining the comparison period. */
+    time_slice: string;
+};
+export type CustomerAggregateResultDto = {
+    name: string;
+    value: number;
+};
+export type CustomerAggregateDto = {
+    id: string;
+    name: string;
+    "type": "period";
+    expression: NodeDto;
+    /** ISO 8601 duration defining the comparison period. */
+    time_slice: string;
+    results?: CustomerAggregateResultDto[];
+};
 export type Token = {
     access_token: string;
     token_type: string;
@@ -483,9 +517,6 @@ export type UpdateCaseBodyDto = {
 export type AssignCaseBodyDto = {
     user_id: string;
 };
-export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
-    [key: string]: ConstantDto;
-} | null)) | null;
 export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS" | "MISSING_NAMED_ARGUMENT" | "ARGUMENTS_MUST_BE_INT_OR_FLOAT" | "ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME" | "ARGUMENT_MUST_BE_INTEGER" | "ARGUMENT_MUST_BE_STRING" | "ARGUMENT_MUST_BE_BOOLEAN" | "ARGUMENT_MUST_BE_LIST" | "ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION" | "ARGUMENT_MUST_BE_TIME" | "ARGUMENT_REQUIRED" | "ARGUMENT_INVALID_TYPE" | "LIST_NOT_FOUND" | "DATABASE_ACCESS_NOT_FOUND" | "PAYLOAD_FIELD_NOT_FOUND" | "NULL_FIELD_READ" | "NO_ROWS_READ" | "DIVISION_BY_ZERO" | "PAYLOAD_FIELD_NOT_FOUND" | "RUNTIME_EXPRESSION_ERROR";
 export type EvaluationErrorDto = {
     error: EvaluationErrorCodeDto;
@@ -855,15 +886,6 @@ export type ScenarioUpdateInputDto = {
 };
 export type ScenarioCopyInputDto = {
     name?: string;
-};
-export type NodeDto = {
-    id?: string;
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
-    };
 };
 export type ScenarioAstValidateInputDto = {
     node?: NodeDto;
@@ -2325,6 +2347,113 @@ export function searchClient360(body?: {
         method: "POST",
         body
     })));
+}
+/**
+ * Create a customer aggregate
+ */
+export function createCustomerAggregate(recordType: string, createCustomerAggregateBodyDto: CreateCustomerAggregateBodyDto, { dryRun }: {
+    dryRun?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: CustomerAggregateDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client360/${encodeURIComponent(recordType)}/aggregates${QS.query(QS.explode({
+        dry_run: dryRun
+    }))}`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCustomerAggregateBodyDto
+    })));
+}
+/**
+ * Update a customer aggregate
+ */
+export function updateCustomerAggregate(recordType: string, id: string, createCustomerAggregateBodyDto: CreateCustomerAggregateBodyDto, { dryRun }: {
+    dryRun?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: CustomerAggregateDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client360/${encodeURIComponent(recordType)}/aggregates/${encodeURIComponent(id)}${QS.query(QS.explode({
+        dry_run: dryRun
+    }))}`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: createCustomerAggregateBodyDto
+    })));
+}
+/**
+ * Delete a customer aggregate
+ */
+export function deleteCustomerAggregate(recordType: string, id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client360/${encodeURIComponent(recordType)}/aggregates/${encodeURIComponent(id)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * List customer aggregates
+ */
+export function listCustomerAggregates(recordType: string, customerId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomerAggregateDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/client360/${encodeURIComponent(recordType)}/aggregates/${encodeURIComponent(customerId)}/compute`, {
+        ...opts
+    }));
 }
 /**
  * Get an access token

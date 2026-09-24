@@ -23,6 +23,15 @@ Pagination:
 Client360Table:
   $ref: client-360.yml#/components/schemas/Client360Table
 
+# CUSTOMER AGGREGATES
+
+CustomerAggregateDto:
+  $ref: customer-aggregates.yml#/components/schemas/CustomerAggregateDto
+CustomerAggregateResultDto:
+  $ref: customer-aggregates.yml#/components/schemas/CustomerAggregateResultDto
+CreateCustomerAggregateBodyDto:
+  $ref: customer-aggregates.yml#/components/schemas/CreateCustomerAggregateBodyDto
+
 # ANNOTATIONS
 
 GroupedAnnotations:
