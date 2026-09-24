@@ -1,9 +1,12 @@
 import { changeOrganizationId } from '@app-builder/server-fns/auth';
 import { useMutation } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 export const useChangeOrganizationIdMutation = () => {
+  const changeOrganization = useServerFn(changeOrganizationId);
+
   return useMutation({
-    mutationKey: ['auth', 'refresh-token'],
+    mutationKey: ['auth', 'change-organization'],
     mutationFn: async ({
       idToken,
       csrf,
@@ -13,7 +16,7 @@ export const useChangeOrganizationIdMutation = () => {
       csrf: string;
       newOrganizationId: string;
     }) => {
-      return changeOrganizationId({ data: { idToken, csrf, newOrganizationId } });
+      return changeOrganization({ data: { idToken, csrf, newOrganizationId } });
     },
   });
 };

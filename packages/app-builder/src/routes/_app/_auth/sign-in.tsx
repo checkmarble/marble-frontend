@@ -11,6 +11,11 @@ import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { signInFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import {
+  notifyOtherTabsToCheckSession,
+  preserveSignedOut,
+  signedOutPageSearch,
+} from '@app-builder/utils/cross-tab-session';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, ErrorComponent, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -19,23 +24,27 @@ import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, Typo } from 'ui-design-system';
+import { z } from 'zod/v4';
 
 const signInLoader = createServerFn()
   .middleware([servicesMiddleware])
-  .handler(async function signInLoader({ context }) {
+  .validator(z.object({ signedOut: z.boolean() }))
+  .handler(async function signInLoader({ context, data: { signedOut } }) {
     const request = getRequest();
-    try {
-      await context.services.authService.isAuthenticated(request, {
-        successRedirect: '/app-router',
-      });
-    } catch (error) {
-      if (error instanceof Response && error.status >= 300 && error.status < 400) {
-        throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
+    const url = new URL(request.url);
+    if (!signedOut) {
+      try {
+        await context.services.authService.isAuthenticated(request, {
+          successRedirect: '/app-router',
+        });
+      } catch (error) {
+        if (error instanceof Response && error.status >= 300 && error.status < 400) {
+          throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
+        }
+        throw error;
       }
-      throw error;
     }
     const appConfig = context.appConfig;
-    const url = new URL(request.url);
 
     // A migrated but empty instance has nothing to sign into yet: onboard first.
     if (appConfig?.status.migrations && !appConfig.status.hasOrg) {
@@ -49,7 +58,9 @@ const signInLoader = createServerFn()
     const prefilledEmail = emailParam ? decodeURIComponent(emailParam.replace(/\+/g, '%2B')) : '';
 
     if (!isSsoEnabled || prefilledEmail) {
-      throw redirect({ href: `/sign-in-email?email=${encodeURIComponent(prefilledEmail)}` });
+      throw redirect({
+        href: preserveSignedOut(`/sign-in-email?email=${encodeURIComponent(prefilledEmail)}`, signedOut),
+      });
     }
 
     const redirectTo = url.searchParams.get('redirectTo');
@@ -73,6 +84,7 @@ const signInLoader = createServerFn()
       authError: authError ?? (!appConfig ? ('BackendUnavailable' as AuthErrors) : undefined),
       isManagedMarble: appConfig?.isManagedMarble ?? false,
       redirectTo,
+      signedOut,
     };
   });
 
@@ -80,14 +92,16 @@ export const Route = createFileRoute('/_app/_auth/sign-in')({
   staticData: {
     i18n: authI18n,
   },
-  loader: () => signInLoader(),
+  validateSearch: signedOutPageSearch,
+  loaderDeps: ({ search }) => ({ signedOut: search.signedOut === 1 }),
+  loader: ({ deps }) => signInLoader({ data: deps }),
   component: Login,
   errorComponent: ErrorComponent,
 });
 
 function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble, authError, redirectTo } =
+  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
     Route.useLoaderData();
 
   const signInMutation = useMutation({
@@ -101,6 +115,7 @@ function Login() {
         },
       }).then((r) => r.redirectTo),
     onSuccess: (destination) => {
+      notifyOtherTabsToCheckSession();
       window.location.href = destination;
     },
   });
@@ -172,6 +187,7 @@ function Login() {
                   className: 'w-full justify-center',
                 })}
                 to="/sign-in-email"
+                search={signedOut ? { signedOut: 1 } : undefined}
               >
                 {t('auth:sign_in.with_email')}
               </Link>
