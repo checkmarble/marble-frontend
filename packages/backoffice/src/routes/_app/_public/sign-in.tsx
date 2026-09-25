@@ -82,9 +82,15 @@ function GoogleSignIn() {
     }
 
     // A redirect thrown inside the server function is followed by the fetch and never
-    // changes the page. The app-builder does the same: return the destination and navigate.
+    // changes the page. Success returns a destination; token exchange and session
+    // update failures reject so we can show the error here.
     try {
       const result = await callSigninFn({ data: { idToken } });
+      if (result.redirectTo !== '/dashboard') {
+        setError(toErrorCopy(result));
+        setPending(false);
+        return;
+      }
       window.location.href = result.redirectTo;
     } catch (serverError) {
       setError(toErrorCopy(serverError));
