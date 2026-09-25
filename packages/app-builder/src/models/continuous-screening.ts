@@ -119,7 +119,7 @@ export function adaptContinuousScreeningDatasetUpdateSummary(
   };
 }
 
-export type ContinuousScreeningUpdateJobStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type ContinuousScreeningUpdateJobStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
 
 export type ContinuousScreeningJobError = {
   details: { error: string };

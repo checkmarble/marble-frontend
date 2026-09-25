@@ -54,6 +54,7 @@ export function TagStatus({
     .with('failed', () => 'red')
     .with('processing', () => 'yellow')
     .with('pending', () => 'yellow')
+    .with('skipped', () => 'grey')
     .otherwise(() => 'white') as TagProps['color'];
 
   const icon = match(status)
@@ -61,6 +62,7 @@ export function TagStatus({
     .with('failed', () => 'x')
     .with('processing', () => 'in-progress')
     .with('pending', () => 'schedule')
+    .with('skipped', () => 'minus')
     .otherwise(() => 'info') as IconName;
 
   return (
@@ -111,6 +113,10 @@ export function GridStatus({
   if (status === 'pending')
     return (
       <TagStatus status="pending">{t('continuousScreening:observability.grid_versions_status_pending')}</TagStatus>
+    );
+  if (status === 'skipped')
+    return (
+      <TagStatus status="skipped">{t('continuousScreening:observability.grid_versions_status_skipped')}</TagStatus>
     );
   return (
     <TagStatus status="processing">
