@@ -756,6 +756,7 @@ components:
       type: object
       required:
         - id
+        - tenant_id
         - name
         - sanction_threshold
         - sanction_limit
@@ -764,6 +765,10 @@ components:
         id:
           type: string
           format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          description: ID of the tenant grouping this organization with the other organizations of the same customer
         name:
           type: string
           description: (Immutable) name of the organization
