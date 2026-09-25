@@ -16,7 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",
-    "@storybook/addon-docs": "^10.5.5",
+    "@storybook/addon-docs": "^10.6.0",
     "@storybook/addon-links": "^10.5.5",
     "@storybook/react": "^10.5.5",
     "@storybook/react-vite": "^10.5.5",
