@@ -18,6 +18,7 @@ import { Route as AppPublicSignInRouteImport } from './routes/_app/_public/sign-
 import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 import { Route as AppPrivateLicensesIndexRouteImport } from './routes/_app/_private/licenses/index'
 import { Route as AppPrivateOrganizationsOrgIdRouteImport } from './routes/_app/_private/organizations/$orgId'
+import { Route as AppPrivateTenantsIndexRouteImport } from './routes/_app/_private/tenants/index'
 import { Route as AppPrivateUsersIndexRouteImport } from './routes/_app/_private/users/index'
 import { Route as AppPrivateOrganizationsOrgIdIndexRouteImport } from './routes/_app/_private/organizations/$orgId.index'
 import { Route as AppPrivateOrganizationsOrgIdOverviewRouteImport } from './routes/_app/_private/organizations/$orgId.overview'
@@ -68,6 +69,11 @@ const AppPrivateOrganizationsOrgIdRoute =
     path: '/organizations/$orgId',
     getParentRoute: () => AppPrivateRoute,
   } as any)
+const AppPrivateTenantsIndexRoute = AppPrivateTenantsIndexRouteImport.update({
+  id: '/tenants/',
+  path: '/tenants/',
+  getParentRoute: () => AppPrivateRoute,
+} as any)
 const AppPrivateUsersIndexRoute = AppPrivateUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/organizations/$orgId': typeof AppPrivateOrganizationsOrgIdRouteWithChildren
   '/licenses/': typeof AppPrivateLicensesIndexRoute
+  '/tenants/': typeof AppPrivateTenantsIndexRoute
   '/users/': typeof AppPrivateUsersIndexRoute
   '/organizations/$orgId/overview': typeof AppPrivateOrganizationsOrgIdOverviewRoute
   '/organizations/$orgId/screenings': typeof AppPrivateOrganizationsOrgIdScreeningsRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AppPublicSignInRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/licenses': typeof AppPrivateLicensesIndexRoute
+  '/tenants': typeof AppPrivateTenantsIndexRoute
   '/users': typeof AppPrivateUsersIndexRoute
   '/organizations/$orgId/overview': typeof AppPrivateOrganizationsOrgIdOverviewRoute
   '/organizations/$orgId/screenings': typeof AppPrivateOrganizationsOrgIdScreeningsRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/_app/_private/organizations/$orgId': typeof AppPrivateOrganizationsOrgIdRouteWithChildren
   '/_app/_private/licenses/': typeof AppPrivateLicensesIndexRoute
+  '/_app/_private/tenants/': typeof AppPrivateTenantsIndexRoute
   '/_app/_private/users/': typeof AppPrivateUsersIndexRoute
   '/_app/_private/organizations/$orgId/overview': typeof AppPrivateOrganizationsOrgIdOverviewRoute
   '/_app/_private/organizations/$orgId/screenings': typeof AppPrivateOrganizationsOrgIdScreeningsRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/api/trpc/$'
     | '/organizations/$orgId'
     | '/licenses/'
+    | '/tenants/'
     | '/users/'
     | '/organizations/$orgId/overview'
     | '/organizations/$orgId/screenings'
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/api/trpc/$'
     | '/licenses'
+    | '/tenants'
     | '/users'
     | '/organizations/$orgId/overview'
     | '/organizations/$orgId/screenings'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/api/trpc/$'
     | '/_app/_private/organizations/$orgId'
     | '/_app/_private/licenses/'
+    | '/_app/_private/tenants/'
     | '/_app/_private/users/'
     | '/_app/_private/organizations/$orgId/overview'
     | '/_app/_private/organizations/$orgId/screenings'
@@ -267,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPrivateOrganizationsOrgIdRouteImport
       parentRoute: typeof AppPrivateRoute
     }
+    '/_app/_private/tenants/': {
+      id: '/_app/_private/tenants/'
+      path: '/tenants'
+      fullPath: '/tenants/'
+      preLoaderRoute: typeof AppPrivateTenantsIndexRouteImport
+      parentRoute: typeof AppPrivateRoute
+    }
     '/_app/_private/users/': {
       id: '/_app/_private/users/'
       path: '/users'
@@ -343,6 +362,7 @@ interface AppPrivateRouteChildren {
   AppPrivateDashboardRoute: typeof AppPrivateDashboardRoute
   AppPrivateOrganizationsOrgIdRoute: typeof AppPrivateOrganizationsOrgIdRouteWithChildren
   AppPrivateLicensesIndexRoute: typeof AppPrivateLicensesIndexRoute
+  AppPrivateTenantsIndexRoute: typeof AppPrivateTenantsIndexRoute
   AppPrivateUsersIndexRoute: typeof AppPrivateUsersIndexRoute
 }
 
@@ -351,6 +371,7 @@ const AppPrivateRouteChildren: AppPrivateRouteChildren = {
   AppPrivateOrganizationsOrgIdRoute:
     AppPrivateOrganizationsOrgIdRouteWithChildren,
   AppPrivateLicensesIndexRoute: AppPrivateLicensesIndexRoute,
+  AppPrivateTenantsIndexRoute: AppPrivateTenantsIndexRoute,
   AppPrivateUsersIndexRoute: AppPrivateUsersIndexRoute,
 }
 
