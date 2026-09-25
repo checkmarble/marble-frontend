@@ -55,6 +55,7 @@ export const applyOrganizationArchetype = () =>
     mutationFn: (payload: {
       name: string;
       org_name: string;
+      environment: 'production' | 'staging';
       admins: { email: string; first_name?: string; last_name?: string }[];
     }) => applyOrganizationArchetypeFn({ data: payload }),
     meta: {
@@ -73,7 +74,8 @@ export const patchOrganizationFeatures = () =>
 
 export const createEmptyOrganization = () =>
   mutationOptions({
-    mutationFn: (payload: { name: string }) => createEmptyOrganizationFn({ data: payload }),
+    mutationFn: (payload: { name: string; environment: 'production' | 'staging' }) =>
+      createEmptyOrganizationFn({ data: payload }),
     meta: {
       invalidates: () => [['organizations']],
     },

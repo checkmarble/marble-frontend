@@ -1830,9 +1830,11 @@ export type OrganizationDto = {
         continuous_monitoring?: "opensanctions" | "lexisnexis";
         manual_search?: "opensanctions" | "lexisnexis";
     };
+    environment: OrganizationEnvironmentDto;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
+    environment?: OrganizationEnvironmentDto;
 };
 export type UpdateOrganizationBodyDto = {
     default_scenario_timezone?: string;
@@ -1844,6 +1846,7 @@ export type UpdateOrganizationBodyDto = {
         continuous_monitoring?: "opensanctions" | "lexisnexis";
         manual_search?: "opensanctions" | "lexisnexis";
     };
+    environment?: OrganizationEnvironmentDto;
 };
 export type OrganizationSubnetsDto = {
     /** List of CIDR subnets (x.x.x.x/yy) */
