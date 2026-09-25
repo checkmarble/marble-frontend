@@ -2,7 +2,7 @@
   "name": "marble-front",
   "version": "0.0.0",
   "devDependencies": {
-    "@biomejs/biome": "2.5.12",
+    "@biomejs/biome": "2.5.13",
     "@vitejs/plugin-react": "^5.0.4",
     "@vitest/coverage-v8": "5.0.0",
     "@vitest/ui": "5.0.0",
