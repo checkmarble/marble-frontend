@@ -12,6 +12,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import { Button, cn, Input } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { z } from 'zod/v4';
+import { type CreatableOrganizationEnvironment, EnvironmentField } from './EnvironmentField';
 import { OrganizationCreationFlow } from './types';
 
 export const MAX_FILE_SIZE_MB = 20;
@@ -114,6 +115,7 @@ function MethodRow({
 
 function UploadMethod({ onChooseFlow }: { onChooseFlow: (flow: OrganizationCreationFlow) => void }) {
   const [error, setError] = useState<string | null>(null);
+  const [environment, setEnvironment] = useState<CreatableOrganizationEnvironment>('production');
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: async (acceptedFiles, fileRejections) => {
@@ -129,7 +131,10 @@ function UploadMethod({ onChooseFlow }: { onChooseFlow: (flow: OrganizationCreat
         const data = JSON.parse(await file.text());
         const parsed = orgImportSpecSchema.safeParse(data);
         if (parsed.success) {
-          onChooseFlow({ type: 'import', data: parsed.data });
+          onChooseFlow({
+            type: 'import',
+            data: { ...parsed.data, org: { ...parsed.data.org, environment } },
+          });
         } else {
           // Surface the offending paths — a generic message here makes a spec produced by a
           // newer backend indistinguishable from a corrupt file.
@@ -146,7 +151,8 @@ function UploadMethod({ onChooseFlow }: { onChooseFlow: (flow: OrganizationCreat
   });
 
   return (
-    <div className="flex flex-col gap-sm">
+    <div className="flex flex-col gap-md">
+      <EnvironmentField value={environment} onChange={setEnvironment} />
       <div
         {...getRootProps()}
         className={cn(
@@ -184,14 +190,19 @@ const ArchetypesError = makeQueryErrorComponent(
 );
 
 function ArchetypeMethod() {
+  const [environment, setEnvironment] = useState<CreatableOrganizationEnvironment>('production');
+
   return (
-    <SuspenseQuery
-      query={listOrganizationArchetypes()}
-      fallback={<ArchetypesSkeleton />}
-      errorComponent={ArchetypesError}
-    >
-      {(archetypes) => <ArchetypeStep archetypes={archetypes} />}
-    </SuspenseQuery>
+    <div className="flex flex-col gap-md">
+      <EnvironmentField value={environment} onChange={setEnvironment} />
+      <SuspenseQuery
+        query={listOrganizationArchetypes()}
+        fallback={<ArchetypesSkeleton />}
+        errorComponent={ArchetypesError}
+      >
+        {(archetypes) => <ArchetypeStep archetypes={archetypes} environment={environment} />}
+      </SuspenseQuery>
+    </div>
   );
 }
 
@@ -225,7 +236,13 @@ function ErrorText({ children }: { children: ReactNode }) {
   return <span className="text-red-primary text-xs">{children}</span>;
 }
 
-function ArchetypeStep({ archetypes }: { archetypes: ArchetypeDto[] }) {
+function ArchetypeStep({
+  archetypes,
+  environment,
+}: {
+  archetypes: ArchetypeDto[];
+  environment: CreatableOrganizationEnvironment;
+}) {
   const router = useRouter();
   const applyMutation = useMutation(applyOrganizationArchetype());
   const [selected, setSelected] = useState<string | null>(archetypes[0]?.name ?? null);
@@ -245,6 +262,7 @@ function ArchetypeStep({ archetypes }: { archetypes: ArchetypeDto[] }) {
       const { orgId } = await applyMutation.mutateAsync({
         name: selected,
         org_name: value.org_name,
+        environment,
         admins: value.admins,
       });
       router.navigate({ to: '/organizations/$orgId', params: { orgId } });
@@ -428,7 +446,8 @@ function EmptyMethod() {
   const form = useForm({
     defaultValues: {
       name: '',
-    },
+      environment: 'production',
+    } as z.infer<typeof createEmptyOrganizationFnInputSchema>,
     validators: {
       onSubmit: createEmptyOrganizationFnInputSchema,
       onChange: createEmptyOrganizationFnInputSchema,
@@ -445,39 +464,46 @@ function EmptyMethod() {
 
   return (
     <form
-      className="flex flex-col gap-sm sm:flex-row sm:items-end"
+      className="flex flex-col gap-md"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
       }}
     >
-      <form.Field name="name">
-        {(field) => (
-          <label className="flex flex-1 flex-col gap-xs">
-            <span className="text-grey-primary text-s font-medium">Organisation name</span>
-            <Input
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
-              placeholder="Acme Inc."
-            />
-          </label>
-        )}
+      <div className="flex flex-col gap-sm sm:flex-row sm:items-end">
+        <form.Field name="name">
+          {(field) => (
+            <label className="flex flex-1 flex-col gap-xs">
+              <span className="text-grey-primary text-s font-medium">Organisation name</span>
+              <Input
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                placeholder="Acme Inc."
+              />
+            </label>
+          )}
+        </form.Field>
+        <form.Subscribe selector={(state) => [state.canSubmit]}>
+          {([canSubmit]) => (
+            <Button
+              variant="primary"
+              size="large"
+              type="submit"
+              disabled={!canSubmit || createEmptyOrganizationMutation.isPending}
+            >
+              {createEmptyOrganizationMutation.isPending ? (
+                <Icon icon="spinner" className="size-4 animate-spin" />
+              ) : null}
+              Create organization
+            </Button>
+          )}
+        </form.Subscribe>
+      </div>
+      <form.Field name="environment">
+        {(field) => <EnvironmentField value={field.state.value} onChange={field.handleChange} />}
       </form.Field>
-      <form.Subscribe selector={(state) => [state.canSubmit]}>
-        {([canSubmit]) => (
-          <Button
-            variant="primary"
-            size="large"
-            type="submit"
-            disabled={!canSubmit || createEmptyOrganizationMutation.isPending}
-          >
-            {createEmptyOrganizationMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
-            Create organization
-          </Button>
-        )}
-      </form.Subscribe>
     </form>
   );
 }

@@ -10,7 +10,7 @@ export type AuthPageHandle = {
   alignment?: 'reverse' | 'default';
 };
 
-const layoutClassName = cva('flex h-screen bg-[#080525] relative isolate overflow-hidden', {
+const layoutClassName = cva('flex h-dvh bg-[#080525] relative isolate overflow-hidden', {
   variants: {
     alignment: {
       reverse: 'flex-row-reverse',
@@ -58,7 +58,7 @@ function AuthLayout() {
           <img src="/img/main-illu.svg" alt="main-illu" className="size-full" />
         </div>
       </div>
-      <div className="static right-0 top-0 bottom-0 lg:min-w-[min(33%,600px)] min-w-full bg-surface-card p-5 grid grid-rows-[1fr_auto] place-items-center">
+      <div className="static right-0 top-0 bottom-0 lg:min-w-[min(33%,600px)] min-w-full min-h-0 overflow-y-auto bg-surface-card p-5 grid grid-rows-[1fr_auto] place-items-center">
         <div>
           <Logo
             logo="logo-standard"

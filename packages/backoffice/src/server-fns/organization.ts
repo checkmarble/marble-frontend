@@ -129,8 +129,11 @@ export const createOrganizationUserFn = createServerFn({ method: 'POST' })
     }
   });
 
+export const organizationEnvironmentSchema = z.enum(['production', 'staging']);
+
 export const createEmptyOrganizationFnInputSchema = z.object({
   name: z.string().min(1),
+  environment: organizationEnvironmentSchema,
 });
 
 export const createEmptyOrganizationFn = createServerFn({ method: 'POST' })
@@ -157,10 +160,21 @@ export const importOrganizationFn = createServerFn({ method: 'POST' })
   .middleware([needAuth])
   .validator(orgImportSpecSchema)
   .handler(async ({ context, data }) => {
-    await backofficeApi.importOrganization(data, {
+    const { org_id } = await marblecoreApi.importOrganization(data, {
       baseUrl: env.API_BASE_URL,
       fetch: context.authFetch,
     });
+
+    if (data.org.environment === 'production' || data.org.environment === 'staging') {
+      await marblecoreApi.updateOrganization(
+        org_id,
+        { environment: data.org.environment },
+        {
+          baseUrl: env.API_BASE_URL,
+          fetch: context.authFetch,
+        },
+      );
+    }
   });
 
 export const archetypeAdminSchema = z.object({
@@ -173,6 +187,7 @@ export const applyOrganizationArchetypeFnInputSchema = z.object({
   name: z.string().min(1),
   org_name: z.string().min(1),
   admins: z.array(archetypeAdminSchema).min(1),
+  environment: organizationEnvironmentSchema,
 });
 
 export const applyOrganizationArchetypeFn = createServerFn({ method: 'POST' })
@@ -190,6 +205,15 @@ export const applyOrganizationArchetypeFn = createServerFn({ method: 'POST' })
         })),
       },
       {},
+      {
+        baseUrl: env.API_BASE_URL,
+        fetch: context.authFetch,
+      },
+    );
+
+    await marblecoreApi.updateOrganization(
+      org_id,
+      { environment: data.environment },
       {
         baseUrl: env.API_BASE_URL,
         fetch: context.authFetch,
