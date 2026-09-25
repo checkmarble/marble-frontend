@@ -6,6 +6,7 @@ import { type ReactNode, useState } from 'react';
 import { Button, Checkbox, Input, Panel, PanelSharpFactory, Tabs, Typo, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
+import { creatableEnvironment, EnvironmentField } from './EnvironmentField';
 
 const FORM_ID = 'org-import-form';
 
@@ -19,6 +20,7 @@ const numericString = z
 const importEditSchema = z.object({
   org: z.object({
     name: z.string().min(1, 'A name is required.'),
+    environment: z.enum(['production', 'staging']),
     default_scenario_timezone: z.string().optional(),
     sanctions_threshold: numericString,
     sanctions_limit: numericString,
@@ -48,6 +50,7 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
     defaultValues: {
       org: {
         name: data.org.name,
+        environment: creatableEnvironment(data.org.environment),
         default_scenario_timezone: data.org.default_scenario_timezone ?? '',
         sanctions_threshold: data.org.sanctions_threshold?.toString() ?? '',
         sanctions_limit: data.org.sanctions_limit?.toString() ?? '',
@@ -73,6 +76,7 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
           // environment, and any key a newer backend added).
           ...data.org,
           name: value.org.name,
+          environment: value.org.environment,
           default_scenario_timezone: value.org.default_scenario_timezone || undefined,
           sanctions_threshold: value.org.sanctions_threshold ? Number(value.org.sanctions_threshold) : undefined,
           sanctions_limit: value.org.sanctions_limit ? Number(value.org.sanctions_limit) : undefined,
@@ -111,6 +115,10 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
                   {field.state.meta.isTouched ? <ErrorText>{firstError(field.state.meta.errors)}</ErrorText> : null}
                 </Field>
               )}
+            </form.Field>
+
+            <form.Field name="org.environment">
+              {(field) => <EnvironmentField value={field.state.value} onChange={field.handleChange} />}
             </form.Field>
 
             <form.Field name="org.default_scenario_timezone">

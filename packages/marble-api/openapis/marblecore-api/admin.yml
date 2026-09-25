@@ -761,6 +761,7 @@ components:
         - sanction_threshold
         - sanction_limit
         - allowed_networks
+        - environment
       properties:
         id:
           type: string
@@ -803,6 +804,8 @@ components:
             manual_search:
               type: string
               enum: [opensanctions, lexisnexis]
+        environment:
+          $ref: "users.yml#/components/schemas/OrganizationEnvironmentDto"
     CreateOrganizationBodyDto:
       type: object
       required:
@@ -810,6 +813,8 @@ components:
       properties:
         name:
           type: string
+        environment:
+          $ref: "users.yml#/components/schemas/OrganizationEnvironmentDto"
     UpdateOrganizationBodyDto:
       type: object
       properties:
@@ -833,6 +838,8 @@ components:
             manual_search:
               type: string
               enum: [opensanctions, lexisnexis]
+        environment:
+          $ref: "users.yml#/components/schemas/OrganizationEnvironmentDto"
     OrganizationSubnetsDto:
       type: object
       properties:
