@@ -1810,6 +1810,8 @@ export type UpdateUser = {
 };
 export type OrganizationDto = {
     id: string;
+    /** ID of the tenant grouping this organization with the other organizations of the same customer */
+    tenant_id: string;
     /** (Immutable) name of the organization */
     name: string;
     /** Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes. */
@@ -5846,6 +5848,88 @@ export function updateUser(userId: string, updateUser: UpdateUser, opts?: Oazapf
         ...opts,
         method: "PATCH",
         body: updateUser
+    })));
+}
+/**
+ * List active tenants
+ */
+export function listTenants(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            tenants: {
+                id: string;
+                name: string;
+            }[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/tenants", {
+        ...opts
+    }));
+}
+/**
+ * Rename a tenant
+ */
+export function updateTenant(tenantId: string, body: {
+    /** New tenant name. Must not be blank. */
+    name: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body
+    })));
+}
+/**
+ * Merge source tenants into a target tenant
+ */
+export function mergeTenants(tenantId: string, body: {
+    /** Tenants to merge into the target. Must not include the target or a nil id.
+     */
+    source_tenant_ids: string[];
+    /** When set, the target tenant is renamed to this value. */
+    name?: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/merge`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
     })));
 }
 /**
