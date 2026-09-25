@@ -101,6 +101,11 @@ export interface AuthenticationServerService {
     },
   ): Promise<void>;
 
+  changeOrganization(
+    request: Request,
+    payload: { csrf: string; newOrganizationId: string; idToken?: string },
+  ): Promise<void>;
+
   isAuthenticated(
     request: Request,
     options?: { successRedirect?: never; failureRedirect?: never },
@@ -217,7 +222,7 @@ export function makeAuthenticationServerService({
     const appConfig = await appConfigRepository.getAppConfig();
     const authSession = await useAuthSession();
     const storedRefreshToken = authSession.data.refreshToken;
-    const organizationId = organizationIdOverride ?? organizationIdFromMarbleToken(authSession?.data);
+    const organizationId = organizationIdOverride ?? organizationIdFromMarbleToken(authSession.data);
 
     if (!storedRefreshToken) {
       return { status: false, marbleToken: null, refreshToken: null };
@@ -288,14 +293,13 @@ export function makeAuthenticationServerService({
     },
   ): Promise<{ redirectTo: string }> {
     const authSession = await useAuthSession();
+    const preferredOrganizationId = organizationIdFromMarbleToken(authSession.data);
     let redirectUrl = options.failureRedirect;
 
     try {
       await validateCsrf(request, payload.csrf);
 
-      // Fresh sign-in: omit any org from the existing session so a stale cookie
-      // cannot pin the new token to the previous organization.
-      const marbleToken = await getToken({ idToken: payload.idToken });
+      const marbleToken = await getToken({ idToken: payload.idToken, preferredOrganizationId });
 
       await authSession.update({
         authToken: marbleToken,
@@ -332,14 +336,13 @@ export function makeAuthenticationServerService({
     },
   ): Promise<never> {
     const authSession = await useAuthSession();
+    const preferredOrganizationId = organizationIdFromMarbleToken(authSession.data);
     let redirectUrl = options.failureRedirect;
 
     try {
       const { idToken, accessToken, refreshToken } = tokens;
 
-      // Fresh sign-in: omit any org from the existing session so a stale cookie
-      // cannot pin the new token to the previous organization.
-      const marbleToken = await getToken({ idToken, oldToken: accessToken });
+      const marbleToken = await getToken({ idToken, oldToken: accessToken, preferredOrganizationId });
 
       await authSession.update({
         authToken: marbleToken,
@@ -407,6 +410,42 @@ export function makeAuthenticationServerService({
       await authSession.clear();
       throw redirect(options.failureRedirect);
     }
+  }
+
+  async function changeOrganization(
+    request: Request,
+    payload: { csrf: string; newOrganizationId: string; idToken?: string },
+  ): Promise<void> {
+    const appConfig = await getAppConfigRepository(marblecoreApi).getAppConfig();
+    if (appConfig.auth.provider === 'firebase') {
+      if (!payload.idToken) throw new Error('A Firebase ID token is required to switch organizations');
+      return refresh(
+        request,
+        { ...payload, idToken: payload.idToken },
+        {
+          failureRedirect: '/sign-in',
+          preserveSessionOnFailure: true,
+        },
+      );
+    }
+
+    if (appConfig.auth.provider !== 'oidc') throw new Error('Unsupported authentication provider');
+    await validateCsrf(request, payload.csrf);
+    const authSession = await useAuthSession();
+    if (!authSession.data.refreshToken) throw new Error('No OIDC refresh token is available to switch organizations');
+    const oidc = await makeOidcService(appConfig);
+    const response = await oidc.refreshToken(authSession.data.refreshToken);
+    // Rotation may invalidate the old refresh token even if the target
+    // organization exchange fails. Keep the active Marble token until success.
+    if (response.hasRefreshToken()) {
+      await authSession.update({ refreshToken: response.refreshToken() });
+    }
+    const marbleToken = await getToken({
+      idToken: response.idToken(),
+      oldToken: response.accessToken(),
+      organizationId: payload.newOrganizationId,
+    });
+    await authSession.update({ authToken: marbleToken });
   }
 
   async function isAuthenticated(
@@ -549,6 +588,7 @@ export function makeAuthenticationServerService({
     authenticate,
     authenticateOidc,
     refresh,
+    changeOrganization,
     isAuthenticated,
     logout,
   };
@@ -558,12 +598,15 @@ async function getToken({
   idToken,
   oldToken,
   organizationId,
+  preferredOrganizationId,
 }: {
   idToken: string;
   oldToken?: string;
   organizationId?: string;
+  preferredOrganizationId?: string;
 }) {
-  // first call with no organizationId
+  // Refreshes and switches use an explicit organization. Sign-in first resolves
+  // memberships for the incoming account before reusing a session preference.
   const token = await marblecoreApi.postToken(
     {
       authorization: `Bearer ${idToken}`,
@@ -580,14 +623,15 @@ async function getToken({
     }),
   );
   if (!organizations.length) return token;
-  // if one or more orgs exist, take the first 'production' one
-  const productionOrg = organizations.find((org) => org.environment === 'production');
-  // get token for this org
+  const selectedOrganization =
+    organizations.find((org) => org.id === preferredOrganizationId) ??
+    organizations.find((org) => org.environment === 'production') ??
+    organizations[0]!;
   const tokenWithOrg = await marblecoreApi.postToken(
     {
       authorization: `Bearer ${idToken}`,
       xOidcAccessToken: oldToken,
-      organizationId: productionOrg?.id ?? organizations[0]!.id,
+      organizationId: selectedOrganization.id,
     },
     { baseUrl: getServerEnv('MARBLE_API_URL') },
   );
