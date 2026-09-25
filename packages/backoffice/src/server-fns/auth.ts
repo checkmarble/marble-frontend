@@ -24,7 +24,7 @@ export const signinFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (isRedirect(error) || (error instanceof Response && error.status >= 300 && error.status < 400)) throw error;
-      return { redirectTo: '/sign-in' };
+      throw new Error('Failed to sign in');
     }
 
     return { redirectTo: '/dashboard' };
