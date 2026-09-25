@@ -216,6 +216,7 @@ export function OrganizationSwitcher() {
               className="cursor-pointer"
               onSelect={() => handleChangeOrganizationId(organization.id)}
               value={organization.id}
+              keywords={[organization.name]}
             >
               <span className="inline-flex items-center gap-xs">
                 <span>{organization.name}</span>
