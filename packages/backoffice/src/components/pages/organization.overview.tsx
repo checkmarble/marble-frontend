@@ -127,6 +127,12 @@ function NotSet() {
 
 /* ------------------------------ Configuration ------------------------------ */
 
+const ENVIRONMENT_LABELS: Record<string, string> = {
+  production: 'Production',
+  staging: 'Staging',
+  demo: 'Demo',
+};
+
 const PROVIDER_LABELS: Record<string, string> = {
   opensanctions: 'OpenSanctions',
   lexisnexis: 'LexisNexis',
@@ -143,13 +149,20 @@ function ConfigurationFields({ organization }: { organization: OrganizationDto }
 
   return (
     <dl className="grid grid-cols-1 gap-lg sm:grid-cols-2">
-      <div className="flex flex-col gap-xs sm:col-span-2">
+      <div className="flex flex-col gap-xs">
         <FieldLabel>Organization ID</FieldLabel>
         <dd>
           <CopyableValue value={organization.id} />
         </dd>
       </div>
-
+      <div className="flex flex-col gap-xs">
+        <FieldLabel>Environment</FieldLabel>
+        <dd>
+          <Tag color={organization.environment === 'staging' ? 'purple' : 'grey'} size="small">
+            {ENVIRONMENT_LABELS[organization.environment] ?? organization.environment}
+          </Tag>
+        </dd>
+      </div>
       <div className="flex flex-col gap-xs sm:col-span-2">
         <FieldLabel>Tenant</FieldLabel>
         <SuspenseQuery query={listTenantsQueryOptions()} fallback={<TenantSkeleton />} errorComponent={TenantError}>
