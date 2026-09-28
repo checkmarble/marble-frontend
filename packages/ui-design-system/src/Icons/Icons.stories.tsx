@@ -2,6 +2,8 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import { type ReactNode, useMemo, useState } from 'react';
 import { Icon, type IconName, iconNames, Logo, type LogoName, logoNames } from 'ui-icons';
 
+import { cn } from '../utils';
+
 const Story: Meta = {
   title: 'Icons',
 };
@@ -11,9 +13,11 @@ export default Story;
 function IconGallery<T extends string>({
   names,
   renderItem,
+  autoWidth = false,
 }: {
   names: readonly T[];
   renderItem: (name: T) => ReactNode;
+  autoWidth?: boolean;
 }) {
   const [search, setSearch] = useState('');
 
@@ -24,7 +28,7 @@ function IconGallery<T extends string>({
   }, [names, search]);
 
   return (
-    <div className="flex flex-col gap-md">
+    <div className="bg-surface-page text-grey-primary flex flex-col gap-md p-md">
       <input
         type="search"
         placeholder="Search icons…"
@@ -35,14 +39,19 @@ function IconGallery<T extends string>({
       <p className="text-s text-grey-secondary">
         {filteredNames.length} of {names.length}
       </p>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-sm">
+      <div
+        className={cn(autoWidth ? 'flex flex-wrap' : 'grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))]', 'gap-sm')}
+      >
         {filteredNames.map((name) => (
           <button
             key={name}
             type="button"
             onClick={() => navigator.clipboard.writeText(name)}
             title="Click to copy name"
-            className="border-grey-border hover:bg-grey-background flex flex-col items-center gap-xs rounded-sm border p-sm text-center transition-colors"
+            className={cn(
+              'border-grey-border hover:bg-grey-background flex flex-col items-center gap-xs rounded-sm border p-sm text-center transition-colors',
+              autoWidth && 'w-fit',
+            )}
           >
             {renderItem(name)}
             <span className="text-xs text-grey-secondary break-all">{name}</span>
@@ -61,5 +70,9 @@ export const AllIcons: StoryFn = () => (
 );
 
 export const AllLogos: StoryFn = () => (
-  <IconGallery<LogoName> names={logoNames} renderItem={(name) => <Logo logo={name} className="h-8 w-auto" />} />
+  <IconGallery<LogoName>
+    names={logoNames}
+    autoWidth
+    renderItem={(name) => <Logo logo={name} className="h-8 w-auto" />}
+  />
 );
