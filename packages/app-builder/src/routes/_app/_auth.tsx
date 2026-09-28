@@ -47,7 +47,7 @@ function AuthLayout() {
         <Logo
           logo="logo-standard"
           className="text-grey-white size-full h-16"
-          preserveAspectRatio="xMinYMid meet"
+          preserveAspectRatio="xMidYMid meet"
           aria-labelledby="marble"
         />
         <div className="text-[40px] text-[#ADA7FD] font-medium text-center">

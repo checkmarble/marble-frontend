@@ -72,11 +72,46 @@ async function buildIconSvgSprite(svgFileNames: string[]) {
   await writeFile(join(OUT_DIR, 'icons-svg-sprite.svg'), contents);
 }
 
+function readViewBoxSize(svgCode: string, fileName: string) {
+  const match = /viewBox="([^"]+)"/.exec(svgCode);
+  const parts = match?.[1]
+    ?.trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  const width = parts?.[2];
+  const height = parts?.[3];
+
+  if (
+    parts?.length !== 4 ||
+    width === undefined ||
+    height === undefined ||
+    Number.isNaN(width) ||
+    Number.isNaN(height)
+  ) {
+    throw new Error(`Missing or invalid viewBox in ${fileName}`);
+  }
+
+  return { width, height };
+}
+
 async function buildLogoTypeFile(svgFileNames: string[]) {
-  const logos = svgFileNames.map((file) => basename(file, '.svg'));
+  const logos = await Promise.all(
+    svgFileNames.map(async (file) => {
+      const svgCode = await readFile(join(IN_LOGOS_DIR, file), 'utf-8');
+      return {
+        name: basename(file, '.svg'),
+        ...readViewBoxSize(svgCode, file),
+      };
+    }),
+  );
+
   const output = `
-    export const logoNames = [${logos.map((logo) => `"${logo}",`).join('')}] as const;
+    export const logoNames = [${logos.map((logo) => `"${logo.name}",`).join('')}] as const;
     export type LogoName = typeof logoNames[number];
+
+    export const logoViewBoxes = {
+      ${logos.map((logo) => `"${logo.name}": { width: ${logo.width}, height: ${logo.height} },`).join('\n')}
+    } as const satisfies Record<LogoName, { width: number; height: number }>;
   `;
 
   await writeFile(join(OUT_DIR, 'logo-names.ts'), output);
