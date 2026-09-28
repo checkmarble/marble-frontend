@@ -83,12 +83,11 @@ export function GridStatus({
   errors?: ContinuousScreeningJobError[];
 }) {
   const { t } = useTranslation(['continuousScreening']);
-  if (status === 'completed')
-    return (
+  return match(status)
+    .with('completed', () => (
       <TagStatus status="completed">{t('continuousScreening:observability.grid_versions_status_completed')}</TagStatus>
-    );
-  if (status === 'failed') {
-    return (
+    ))
+    .with('failed', () => (
       <TagStatus status="failed">
         <span>{t('continuousScreening:observability.grid_versions_status_failed')}</span>
         {(errors ?? []).length > 0 ? (
@@ -108,23 +107,21 @@ export function GridStatus({
           </Tooltip.Default>
         ) : null}
       </TagStatus>
-    );
-  }
-  if (status === 'pending')
-    return (
+    ))
+    .with('pending', () => (
       <TagStatus status="pending">{t('continuousScreening:observability.grid_versions_status_pending')}</TagStatus>
-    );
-  if (status === 'skipped')
-    return (
+    ))
+    .with('skipped', () => (
       <TagStatus status="skipped">{t('continuousScreening:observability.grid_versions_status_skipped')}</TagStatus>
-    );
-  return (
-    <TagStatus status="processing">
-      {progressValue === null
-        ? t('continuousScreening:observability.grid_versions_status_processing')
-        : t('continuousScreening:observability.grid_versions_status_in_progress', { progressValue })}
-    </TagStatus>
-  );
+    ))
+    .with('processing', () => (
+      <TagStatus status="processing">
+        {progressValue === null
+          ? t('continuousScreening:observability.grid_versions_status_processing')
+          : t('continuousScreening:observability.grid_versions_status_in_progress', { progressValue })}
+      </TagStatus>
+    ))
+    .exhaustive();
 }
 
 export function getProgressValue({
