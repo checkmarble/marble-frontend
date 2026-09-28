@@ -5,6 +5,7 @@ import {
   logger,
   runWithLogger,
 } from '@app-builder/utils/logger.server';
+import { observeRequestMemory } from '@app-builder/utils/memory-observability.server';
 import { createMiddleware } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 
@@ -39,9 +40,14 @@ function resolveRequestId(request: Request): string {
 export const requestLoggingMiddleware = createMiddleware().server(async ({ next }) => {
   const request = getRequest();
   const url = new URL(request.url);
+  const finishMemoryObservation = observeRequestMemory();
 
   if (EXCLUDE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) {
-    return await next();
+    try {
+      return await next();
+    } finally {
+      finishMemoryObservation();
+    }
   }
 
   const requestId = resolveRequestId(request);
@@ -90,6 +96,8 @@ export const requestLoggingMiddleware = createMiddleware().server(async ({ next 
       );
 
       throw err;
+    } finally {
+      finishMemoryObservation(getRequestServerFn());
     }
   });
 });
