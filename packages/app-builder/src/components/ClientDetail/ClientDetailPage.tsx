@@ -29,6 +29,7 @@ import { GraphSessionProvider, useGraphSession } from '../Graph/contexts/GraphSe
 import { GraphAccessPlaceholder } from '../Graph/GraphAccessPlaceholder';
 import { SessionGraphCanvas } from '../Graph/SessionGraphCanvas';
 import { pageLayoutGutter } from '../Page/page-layout';
+import { ClientAddToCasePanel } from './AddToCasePanel';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';
 import { ConfigureMonitoringForObjectId } from './ConfigureMonitoringForObjectId';
@@ -100,15 +101,25 @@ export const ClientDetailPage = ({
   return (
     <DataModelExplorerProvider>
       <Page.Main>
-        <Page.Header className="gap-md">
-          <BackButton back="/client-detail" />
-          <TitleBar
-            objectType={objectType}
-            objectId={objectId}
-            objectDetails={objectDetails}
-            annotationsQuery={annotationsQuery}
-            metadata={metadata}
-          />
+        <Page.Header className="gap-md flex justify-between items-center">
+          <div className="flex items-center gap-md">
+            <BackButton back="/client-detail" />
+            <TitleBar
+              objectType={objectType}
+              objectId={objectId}
+              objectDetails={objectDetails}
+              annotationsQuery={annotationsQuery}
+              metadata={metadata}
+            />
+          </div>
+          <Panel.Root>
+            <Panel.Trigger asChild>
+              <Button variant="primary" appearance="stroked">
+                {t('cases:add_to_case.create')}
+              </Button>
+            </Panel.Trigger>
+            <ClientAddToCasePanel objectType={objectType} objectId={objectId} />
+          </Panel.Root>
         </Page.Header>
         <Page.Container ref={containerRef}>
           <Page.Content width="table">

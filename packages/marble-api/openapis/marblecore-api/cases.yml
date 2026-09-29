@@ -130,6 +130,36 @@
         $ref: "components.yml#/responses/401"
       "403":
         $ref: "components.yml#/responses/403"
+/cases/objects:
+  post:
+    tags:
+      - Cases
+    summary: Create a case from objects
+    operationId: createCaseFromObjects
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateCaseFromObjectsBodyDto"
+    responses:
+      "200":
+        description: The created case
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - case
+              properties:
+                case:
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /cases/{caseId}:
   get:
     tags:
@@ -401,6 +431,54 @@
     responses:
       "200":
         description: The updated case corresponding to the provided `caseId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - case
+              properties:
+                case:
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+/cases/{caseId}/objects:
+  post:
+    tags:
+      - Cases
+    summary: Add objects to a case
+    operationId: addObjectsToCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - objects
+            properties:
+              objects:
+                type: array
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/CaseObjectReferenceDto"
+    responses:
+      "200":
+        description: The updated case
         content:
           application/json:
             schema:
@@ -1287,6 +1365,34 @@ components:
         user_id:
           type: string
           format: uuid
+    CaseObjectReferenceDto:
+      type: object
+      required:
+        - object_type
+        - object_id
+      properties:
+        object_type:
+          type: string
+        object_id:
+          type: string
+          format: uuid
+    CreateCaseFromObjectsBodyDto:
+      type: object
+      required:
+        - name
+        - inbox_id
+        - objects
+      properties:
+        name:
+          type: string
+        inbox_id:
+          type: string
+          format: uuid
+        objects:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/CaseObjectReferenceDto"
     CreateCaseBodyDto:
       type: object
       required:

@@ -214,6 +214,23 @@ export const addToCasePayloadSchema = z.discriminatedUnion('newCase', [newCaseSc
 
 export type AddToCasePayload = z.infer<typeof addToCasePayloadSchema>;
 
+// Add objects to a case
+
+const caseObjectReferenceSchema = z.object({ objectType: z.string().min(1), objectId: z.string().min(1) });
+const caseObjectsSchema = protectArray(z.array(caseObjectReferenceSchema).min(1));
+
+export const newObjectsToCaseSchema = newCaseSchema.omit({ decisionIds: true }).extend({ objects: caseObjectsSchema });
+export const existingObjectsToCaseSchema = existingCaseSchema
+  .omit({ decisionIds: true })
+  .extend({ objects: caseObjectsSchema });
+
+export const addObjectsToCasePayloadSchema = z.discriminatedUnion('newCase', [
+  newObjectsToCaseSchema,
+  existingObjectsToCaseSchema,
+]);
+
+export type AddObjectsToCasePayload = z.infer<typeof addObjectsToCasePayloadSchema>;
+
 // Update inbox escalation
 
 export const updateInboxEscalationPayloadSchema = z.object({

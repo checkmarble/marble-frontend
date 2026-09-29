@@ -498,6 +498,15 @@ export interface CaseCreateBody {
   decisionIds?: string[];
 }
 
+export interface CaseObjectReference {
+  objectType: string;
+  objectId: string;
+}
+
+export function adaptCaseObjectReferences(objects: CaseObjectReference[]) {
+  return objects.map(({ objectType, objectId }) => ({ object_type: objectType, object_id: objectId }));
+}
+
 export function adaptCaseCreateBody(body: CaseCreateBody): CreateCaseBodyDto {
   return {
     name: body.name,
