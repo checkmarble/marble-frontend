@@ -1,13 +1,5 @@
 {
   "add_to_case": "Ajouter à une investigation",
-  "add_to_case.create_new_case": "Créer une investigation",
-  "add_to_case.new_case.attribution": "Attribution",
-  "add_to_case.new_case.case_id.label": "Sélectionner une investigation",
-  "add_to_case.new_case.case_id.placeholder": "Saisissez l'ID de l'investigation",
-  "add_to_case.new_case.informations": "Informations",
-  "add_to_case.new_case.new_case_name": "Nom de la nouvelle investigation",
-  "add_to_case.new_case.no_inbox": "Vous n'avez accès à aucune boîte de réception. Veuillez contacter votre administrateur pour obtenir l'accès ou créer une première boîte de réception.",
-  "add_to_case.new_case.select_inbox": "Sélectionner une boîte de réception",
   "case": "Investigation",
   "created_at": "Créée le",
   "decision": "Décision",
