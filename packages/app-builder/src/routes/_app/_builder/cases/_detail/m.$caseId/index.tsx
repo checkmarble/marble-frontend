@@ -1,4 +1,8 @@
 import { ContinuousScreeningPage } from '@app-builder/components/CaseManager/ContinuousScreeningPage';
+import {
+  caseDetailBreadcrumbData,
+  caseDetailBreadcrumbs,
+} from '@app-builder/components/CaseManager/case-detail-breadcrumbs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, redirect } from '@tanstack/react-router';
@@ -20,9 +24,13 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
   });
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/m/$caseId/')({
+  staticData: {
+    BreadCrumbs: caseDetailBreadcrumbs,
+  },
   beforeLoad: async ({ params }) => {
     return beforeLoadFn({ data: { caseId: params.caseId } });
   },
+  loader: ({ context }) => caseDetailBreadcrumbData(context.caseDetail, context.inboxes),
   component: RouteComponent,
 });
 

@@ -1,3 +1,7 @@
+import {
+  caseDetailBreadcrumbData,
+  caseDetailBreadcrumbs,
+} from '@app-builder/components/CaseManager/case-detail-breadcrumbs';
 import { CommentContext } from '@app-builder/components/CaseManager/hooks/comment-context';
 import { CaseManagerPageLayout } from '@app-builder/components/CaseManager/PageLayout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -37,9 +41,13 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
   });
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId')({
+  staticData: {
+    BreadCrumbs: caseDetailBreadcrumbs,
+  },
   beforeLoad: async ({ params }) => {
     return beforeLoadFn({ data: { caseId: params.caseId } });
   },
+  loader: ({ context }) => caseDetailBreadcrumbData(context.caseDetail, context.inboxes),
   component: RouteComponent,
 });
 
