@@ -47,7 +47,7 @@ export function CreateFilter({
   function summaryLabel() {
     const v = form.state.values as CreateExportedFieldPayload;
     if ('ingestedDataField' in v && v.ingestedDataField) {
-      return `->${v.ingestedDataField.path.join('->')}.${v.ingestedDataField.name}`;
+      return `→${v.ingestedDataField.path.join('→')}.${v.ingestedDataField.name}`;
     }
     if ('triggerObjectField' in v && v.triggerObjectField) {
       const tableName = selectedTable?.name ?? '';

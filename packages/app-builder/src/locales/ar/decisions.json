@@ -1,13 +1,5 @@
 {
   "add_to_case": "إضافة إلى الحالة",
-  "add_to_case.create_new_case": "إنشاء حالة جديدة",
-  "add_to_case.new_case.attribution": "الإسناد",
-  "add_to_case.new_case.case_id.label": "اختر حالة",
-  "add_to_case.new_case.case_id.placeholder": "أدخل معرّف الحالة",
-  "add_to_case.new_case.informations": "معلومات",
-  "add_to_case.new_case.new_case_name": "اسم الحالة الجديدة",
-  "add_to_case.new_case.no_inbox": "لا تملك حاليًا حق الوصول إلى أي صندوق وارد. يُرجى التواصل مع المسؤول للحصول على حق الوصول إلى صندوق وارد، أو إنشاء أول صندوق وارد.",
-  "add_to_case.new_case.select_inbox": "اختر الصندوق الوارد",
   "case": "الحالة",
   "created_at": "التاريخ",
   "decision": "قرار",
