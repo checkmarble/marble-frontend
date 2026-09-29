@@ -49,7 +49,7 @@ function encodeFilterKey(tableId: string, selection: CustomFilterSelection): str
   if (selection.kind === 'trigger') {
     return `${tableId}::trigger::${selection.fieldName}`;
   }
-  return `${tableId}::ingested::${selection.path.join('->')}.${selection.fieldName}`;
+  return `${tableId}::ingested::${selection.path.join('→')}.${selection.fieldName}`;
 }
 
 export function buildPersistedKey(tableId: string, payload: ExportedFieldPayload): string {
@@ -98,7 +98,7 @@ export function getFieldSelectionLabel(tableName: string, selection: CustomFilte
   if (selection.kind === 'trigger') {
     return selection.fieldName;
   }
-  return `-> ${selection.path.join('->')}.${selection.fieldName}`;
+  return `→ ${selection.path.join('→ ')}.${selection.fieldName}`;
 }
 
 export function buildExistingFilterRows(

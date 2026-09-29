@@ -16,6 +16,7 @@ import { DecisionRepository } from '@app-builder/repositories/DecisionRepository
 import { ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import {
   addCommentPayloadSchema,
+  addObjectsToCasePayloadSchema,
   addRuleSnoozePayloadSchema,
   addToCasePayloadSchema,
   caseReviewReactionSchema,
@@ -369,6 +370,28 @@ export const addToCaseFn = createServerFn({ method: 'POST' })
       if (isStatusBadRequestHttpError(error)) {
         throw new Error(t('common:errors.add_to_case.invalid'));
       } else if (isNotFoundHttpError(error)) {
+        throw new Error(t('cases:errors.case_not_found'));
+      }
+      throw new Error(t('common:errors.unknown'));
+    }
+  });
+
+export const addObjectsToCaseFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(addObjectsToCasePayloadSchema)
+  .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+
+    try {
+      if (data.newCase) {
+        return await context.authInfo.cases.createCaseFromObjects(data);
+      }
+      return await context.authInfo.cases.addObjectsToCase(data);
+    } catch (error) {
+      if (isStatusBadRequestHttpError(error)) {
+        throw new Error(t('common:errors.add_to_case.invalid'));
+      } else if (!data.newCase && isNotFoundHttpError(error)) {
         throw new Error(t('cases:errors.case_not_found'));
       }
       throw new Error(t('common:errors.unknown'));

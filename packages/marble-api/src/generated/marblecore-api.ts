@@ -509,6 +509,10 @@ export type CaseDetailDto = CaseDto & {
     events: CaseEventDto[];
     files: CaseFileDto[];
 };
+export type Items = {
+    object_type: string;
+    object_id: string;
+};
 export type UpdateCaseBodyDto = {
     name?: string;
     inbox_id?: string;
@@ -1599,7 +1603,7 @@ export type UpdateTableBodyDto = {
         [key: string]: any;
     } | null;
 };
-export type Items = {
+export type Items2 = {
     id?: string;
     label?: string;
 };
@@ -1615,9 +1619,9 @@ export type Schema2 = {
         /** Number of analytics settings referring to the resource */
         analytics_settings: number;
         /** Scenarios using the resource as a trigger object */
-        scenarios: Items[];
+        scenarios: Items2[];
         /** List of scenarios that would have no live or draft version after deleting the resource */
-        empty_scenarios: Items[];
+        empty_scenarios: Items2[];
         /** Map of scenario iterations which components refer to the resource */
         scenario_iterations: {
             [key: string]: {
@@ -1625,12 +1629,12 @@ export type Schema2 = {
                 scenario_id?: string;
                 draft?: boolean;
                 trigger_condition?: boolean;
-                rules?: Items[];
-                screenings?: Items[];
+                rules?: Items2[];
+                screenings?: Items2[];
             };
         };
         /** List of scenarios which workflows use the resource */
-        workflows: Items[];
+        workflows: Items2[];
         /** Whether an active test run uses an iteration that would be disabled */
         test_runs: boolean;
     };
@@ -2732,6 +2736,31 @@ export function createCase(createCaseBodyDto: CreateCaseBodyDto, opts?: Oazapfts
     })));
 }
 /**
+ * Create a case from objects
+ */
+export function createCaseFromObjects(body: {
+    name: string;
+    inbox_id: string;
+    objects: Items[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetailDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/cases/objects", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * Get a case by id
  */
 export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
@@ -2876,6 +2905,35 @@ export function addDecisionsToCase(caseId: string, body: {
         status: 404;
         data: string;
     }>(`/cases/${encodeURIComponent(caseId)}/decisions`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Add objects to a case
+ */
+export function addObjectsToCase(caseId: string, body: {
+    objects: {
+        object_type: string;
+        object_id: string;
+    }[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetailDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/objects`, oazapfts.json({
         ...opts,
         method: "POST",
         body
@@ -5394,9 +5452,9 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                 /** Number of analytics settings referring to the resource */
                 analytics_settings: number;
                 /** Scenarios using the resource as a trigger object */
-                scenarios: Items[];
+                scenarios: Items2[];
                 /** List of scenarios that would have no live or draft version after deleting the resource */
-                empty_scenarios: Items[];
+                empty_scenarios: Items2[];
                 /** Map of scenario iterations which components refer to the resource */
                 scenario_iterations: {
                     [key: string]: {
@@ -5404,12 +5462,12 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                         scenario_id?: string;
                         draft?: boolean;
                         trigger_condition?: boolean;
-                        rules?: Items[];
-                        screenings?: Items[];
+                        rules?: Items2[];
+                        screenings?: Items2[];
                     };
                 };
                 /** List of scenarios which workflows use the resource */
-                workflows: Items[];
+                workflows: Items2[];
                 /** Whether an active test run uses an iteration that would be disabled */
                 test_runs: boolean;
             };
