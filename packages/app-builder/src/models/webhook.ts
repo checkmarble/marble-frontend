@@ -22,6 +22,8 @@ export const eventTypes = [
   'continuous_screening.created',
   'continuous_screening.match_reviewed',
   'user_scoring.risk_level_changed',
+  'ingestion.completed',
+  'ingestion.failed',
 ] as const;
 export type EventType = (typeof eventTypes)[number];
 
