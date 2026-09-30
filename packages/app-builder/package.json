@@ -75,7 +75,7 @@
     "@sentry/tanstackstart-react": "^10.52.0",
     "@swan-io/boxed": "^3.2.0",
     "@tanstack/react-form": "^1.29.3",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.103.0",
     "@tanstack/react-router": "1.170.32",
     "@tanstack/react-router-ssr-query": "1.167.2",
     "@tanstack/react-start": "1.168.49",
