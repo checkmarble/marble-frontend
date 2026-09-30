@@ -26,7 +26,6 @@ import {
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import { match } from 'ts-pattern';
-import { z } from 'zod/v4';
 import { adaptContinuousScreening, ContinuousScreening } from './continuous-screening';
 import { adaptClientObjectDetail, type ClientObjectDetail, DataModelObjectValue } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
@@ -152,8 +151,6 @@ export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'sar_status_changed',
   'sar_file_uploaded',
   'entity_annotated',
-  'entity_added',
-  'entity_removed',
 ]);
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -258,33 +255,6 @@ export interface EntityAnnotatedEvent extends CaseEventBase<'entity_annotated'> 
   annotation: TagEntityAnnotationDto | CommentEntityAnnotationDto | FileEntityAnnotationDto;
 }
 
-export interface CaseEntityRef {
-  tableName: string;
-  objectId: string;
-}
-
-export interface CaseEntityAddedEvent extends CaseEventBase<'entity_added'> {
-  userId?: string;
-  manualLinkId: string;
-  entity: CaseEntityRef;
-}
-
-export interface CaseEntityRemovedEvent extends CaseEventBase<'entity_removed'> {
-  userId?: string;
-  manualLinkId: string;
-  entity: CaseEntityRef;
-}
-
-const caseEntityRefDtoSchema = z.object({
-  table_name: z.string().min(1),
-  object_id: z.string().min(1),
-});
-
-function parseCaseEntityRef(value: string): CaseEntityRef {
-  const dto = caseEntityRefDtoSchema.parse(JSON.parse(value));
-  return { tableName: dto.table_name, objectId: dto.object_id };
-}
-
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -304,9 +274,7 @@ export type CaseEvent =
   | SarDeletedEvent
   | SarStatusChangedEvent
   | SarFileUploadedEvent
-  | EntityAnnotatedEvent
-  | CaseEntityAddedEvent
-  | CaseEntityRemovedEvent;
+  | EntityAnnotatedEvent;
 
 export async function adaptCaseEventDto(
   caseEventDto: CaseEventDto,
@@ -433,20 +401,6 @@ export async function adaptCaseEventDto(
       userId: dto.user_id,
       sarId: dto.resource_id,
       filename: dto.new_value,
-    }))
-    .with({ event_type: 'entity_added' }, async (dto) => ({
-      ...baseEvent,
-      eventType: dto.event_type,
-      userId: dto.user_id ?? undefined,
-      manualLinkId: dto.resource_id,
-      entity: parseCaseEntityRef(dto.new_value),
-    }))
-    .with({ event_type: 'entity_removed' }, async (dto) => ({
-      ...baseEvent,
-      eventType: dto.event_type,
-      userId: dto.user_id ?? undefined,
-      manualLinkId: dto.resource_id,
-      entity: parseCaseEntityRef(dto.previous_value),
     }))
     .with({ event_type: 'entity_annotated' }, async (dto) => {
       const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);
