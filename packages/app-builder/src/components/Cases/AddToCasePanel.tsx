@@ -5,7 +5,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
 import { useNavigate, useRouter } from '@tanstack/react-router';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Panel, PanelSharpFactory, SelectV2, Switch } from 'ui-design-system';
 import { z } from 'zod/v4';
@@ -15,11 +15,17 @@ const existingCaseFieldsSchema = z.object({ caseId: z.string().min(1) });
 
 interface AddToCasePanelProps {
   initialMode?: 'new' | 'existing';
+  leadingContent?: ReactNode;
   onCreateCase: (values: z.infer<typeof newCaseFieldsSchema>) => Promise<CaseDetail>;
   onAddToCase: (values: z.infer<typeof existingCaseFieldsSchema>) => Promise<CaseDetail>;
 }
 
-export function AddToCasePanel({ initialMode = 'existing', onCreateCase, onAddToCase }: AddToCasePanelProps) {
+export function AddToCasePanel({
+  initialMode = 'existing',
+  leadingContent,
+  onCreateCase,
+  onAddToCase,
+}: AddToCasePanelProps) {
   const { t } = useTranslation('cases');
 
   return (
@@ -28,13 +34,18 @@ export function AddToCasePanel({ initialMode = 'existing', onCreateCase, onAddTo
         <Panel.Header>
           <span className="first-letter:capitalize">{t('cases:add_to_case.title')}</span>
         </Panel.Header>
-        <AddToCaseForm initialMode={initialMode} onCreateCase={onCreateCase} onAddToCase={onAddToCase} />
+        <AddToCaseForm
+          initialMode={initialMode}
+          leadingContent={leadingContent}
+          onCreateCase={onCreateCase}
+          onAddToCase={onAddToCase}
+        />
       </Panel.Content>
     </Panel.Container>
   );
 }
 
-function AddToCaseForm({ initialMode = 'existing', onCreateCase, onAddToCase }: AddToCasePanelProps) {
+function AddToCaseForm({ initialMode = 'existing', leadingContent, onCreateCase, onAddToCase }: AddToCasePanelProps) {
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const [isNewCase, setIsNewCase] = useState(initialMode === 'new');
@@ -76,6 +87,7 @@ function AddToCaseForm({ initialMode = 'existing', onCreateCase, onAddToCase }: 
   return (
     <>
       <div className="flex flex-col gap-md">
+        {leadingContent}
         <div className="flex items-center gap-sm">
           <label htmlFor="newCase" className="text-xs first-letter:capitalize">
             {t('cases:add_to_case.create_new_case')}
