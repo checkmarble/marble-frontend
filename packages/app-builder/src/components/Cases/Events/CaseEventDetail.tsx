@@ -21,7 +21,7 @@ import { EventTimeSuffixContext } from '@app-builder/components/Cases/Events/Tim
 import { type CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { Trans } from 'react-i18next';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 export function CaseEventDetail({
   event,
@@ -56,6 +56,7 @@ export function CaseEventDetail({
     .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
     .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
     .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
+    .with({ eventType: P.union('entity_added', 'entity_removed') }, () => null)
     .exhaustive();
 
   return (
