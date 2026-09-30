@@ -104,6 +104,9 @@
     tags:
       - Cases
     summary: Create a case
+    description: |
+      Create a case with optional decisions and manual entity references.
+      Both decision_ids and entities may be omitted or empty.
     operationId: createCase
     security:
       - bearerAuth: []
@@ -115,7 +118,7 @@
             $ref: "#/components/schemas/CreateCaseBodyDto"
       required: true
     responses:
-      "200":
+      "201":
         description: The case corresponding to the provided payload
         content:
           application/json:
@@ -126,6 +129,10 @@
               properties:
                 case:
                   $ref: "#/components/schemas/CaseDetailDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "422":
+        $ref: "components.yml#/responses/422"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -156,6 +163,10 @@
               properties:
                 case:
                   $ref: "#/components/schemas/CaseDetailDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "422":
+        $ref: "components.yml#/responses/422"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -446,17 +457,20 @@
         $ref: "components.yml#/responses/403"
       "404":
         $ref: "components.yml#/responses/404"
-/cases/{caseId}/objects:
+/cases/{caseId}/entities:
   post:
     tags:
       - Cases
-    summary: Add objects to a case
-    operationId: addObjectsToCase
+    summary: Add manual entities to a case
+    description: |
+      Add manual links to active objects in person, company or partner tables.
+      Entities may have both manual and decision sources. Repeated additions are idempotent.
+    operationId: addEntitiesToCase
     security:
       - bearerAuth: []
     parameters:
       - name: caseId
-        description: ID of the case that needs to be updated
+        description: ID of the case to update
         in: path
         required: true
         schema:
@@ -464,21 +478,14 @@
           format: uuid
     requestBody:
       required: true
+      description: Non-empty list of distinct (table_name, object_id) references
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - objects
-            properties:
-              objects:
-                type: array
-                minItems: 1
-                items:
-                  $ref: "#/components/schemas/CaseObjectReferenceDto"
+            $ref: "#/components/schemas/UpdateCaseEntitiesBodyDto"
     responses:
       "200":
-        description: The updated case
+        description: The updated case with details
         content:
           application/json:
             schema:
@@ -488,12 +495,62 @@
               properties:
                 case:
                   $ref: "#/components/schemas/CaseDetailDto"
+      "400":
+        $ref: "components.yml#/responses/400"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
         $ref: "components.yml#/responses/403"
       "404":
         $ref: "components.yml#/responses/404"
+      "422":
+        $ref: "components.yml#/responses/422"
+  delete:
+    tags:
+      - Cases
+    summary: Remove manual entities from a case
+    description: |
+      Remove manual links while preserving decision sources. Repeated removals are idempotent.
+    operationId: removeEntitiesFromCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      description: Non-empty list of distinct (table_name, object_id) references
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateCaseEntitiesBodyDto"
+    responses:
+      "200":
+        description: The updated case with details
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - case
+              properties:
+                case:
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+      "422":
+        $ref: "components.yml#/responses/422"
 /cases/{caseId}/snooze:
   post:
     tags:
@@ -638,7 +695,7 @@
                   type: string
                   format: uuid
     responses:
-      "200":
+      "201":
         description: The updated case corresponding to the provided `caseId`
         content:
           application/json:
@@ -1167,13 +1224,80 @@ components:
         due_at:
           type: string
           format: date-time
+    CaseEntityRefDto:
+      type: object
+      required:
+        - table_name
+        - object_id
+      properties:
+        table_name:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Table name; blank or whitespace-only values are rejected
+        object_id:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Arbitrary object identifier; does not need to be a UUID
+      example:
+        table_name: customers
+        object_id: customer-123
+    CaseEntityDto:
+      type: object
+      required:
+        - table_name
+        - object_id
+        - sources
+        - data
+      properties:
+        table_name:
+          type: string
+        object_id:
+          type: string
+          description: Arbitrary object identifier; does not need to be a UUID
+        sources:
+          type: array
+          description: An entity may have both manual and decision sources
+          items:
+            type: string
+            enum: ["manual", "decision"]
+        data:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Available client object data, or null
+      example:
+        table_name: customers
+        object_id: customer-123
+        sources: ["manual", "decision"]
+        data:
+          object_id: customer-123
+          name: Alice
+    UpdateCaseEntitiesBodyDto:
+      type: object
+      required:
+        - entities
+      properties:
+        entities:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          description: Duplicate (table_name, object_id) pairs are rejected, regardless of extra properties
+          items:
+            $ref: "#/components/schemas/CaseEntityRefDto"
     CaseDetailDto:
+      description: |
+        Case with details, including the union of manual and decision entity links.
+        Manual links do not extend risk/score calculations, automatic grouping or the client
+        context used by AI case reviews.
       allOf:
         - $ref: "#/components/schemas/CaseDto"
         - type: object
           required:
             - decisions
             - continuous_screenings
+            - entities
             - events
             - files
           properties:
@@ -1181,6 +1305,11 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/CaseDecisionDto"
+            entities:
+              type: array
+              description: Always returned; empty when no entities are linked
+              items:
+                $ref: "#/components/schemas/CaseEntityDto"
             continuous_screenings:
               type: array
               items:
@@ -1395,6 +1524,7 @@ components:
             $ref: "#/components/schemas/CaseObjectReferenceDto"
     CreateCaseBodyDto:
       type: object
+      description: decision_ids and entities may be absent or empty; no decision is required
       required:
         - name
         - inbox_id
@@ -1404,6 +1534,12 @@ components:
         inbox_id:
           type: string
           format: uuid
+        entities:
+          type: array
+          uniqueItems: true
+          description: Optional manual links; duplicate (table_name, object_id) pairs are rejected
+          items:
+            $ref: "#/components/schemas/CaseEntityRefDto"
         decision_ids:
           type: array
           items:
@@ -1433,11 +1569,14 @@ components:
           sar_status_changed: "#/components/schemas/SarStatusChangedEventDto"
           sar_file_uploaded: "#/components/schemas/SarFileUploadedEventDto"
           entity_annotated: "#/components/schemas/EntityAnnotatedEventDto"
+          entity_added: "#/components/schemas/CaseEntityAddedEventDto"
+          entity_removed: "#/components/schemas/CaseEntityRemovedEventDto"
       required:
         - id
         - case_id
         - created_at
         - event_type
+        - previous_value
       properties:
         id:
           type: string
@@ -1450,6 +1589,9 @@ components:
           format: date-time
         event_type:
           type: string
+        previous_value:
+          type: string
+          description: Previous value; may be empty. For entity_removed, a JSON-serialized CaseEntityRefDto string.
         inbox_id:
           type: string
           format: uuid
@@ -2039,3 +2181,61 @@ components:
             inbox_id:
               type: string
               format: uuid
+    CaseEntityAddedEventDto:
+      allOf:
+        - $ref: "#/components/schemas/CaseEventDto"
+        - type: object
+          required:
+            - new_value
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+              nullable: true
+            new_value:
+              type: string
+              description: JSON-serialized CaseEntityRefDto string for the added entity
+            resource_type:
+              type: string
+              enum: ["case_manual_entity"]
+            resource_id:
+              type: string
+              format: uuid
+              description: UUID of the manual link, not the client object_id
+          example:
+            new_value: '{"table_name":"customers","object_id":"customer-123"}'
+            resource_type: case_manual_entity
+            resource_id: 7a563824-c8e7-461e-bfc0-b73cb568a8cb
+    CaseEntityRemovedEventDto:
+      allOf:
+        - $ref: "#/components/schemas/CaseEventDto"
+        - type: object
+          required:
+            - new_value
+            - previous_value
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+              nullable: true
+            new_value:
+              type: string
+              description: Empty for entity_removed
+            previous_value:
+              type: string
+              description: JSON-serialized CaseEntityRefDto string for the removed entity
+            resource_type:
+              type: string
+              enum: ["case_manual_entity"]
+            resource_id:
+              type: string
+              format: uuid
+              description: UUID of the manual link, not the client object_id
+          example:
+            previous_value: '{"table_name":"customers","object_id":"customer-123"}'
+            resource_type: case_manual_entity
+            resource_id: 7a563824-c8e7-461e-bfc0-b73cb568a8cb

@@ -97,6 +97,9 @@
     tags:
       - Ingestion
     summary: Get cases for an object
+    description: |
+      Includes cases linked through manual entity links as well as decisions.
+      Returns the existing case summary DTO, without detailed entities.
     operationId: getCasesForObject
     security:
       - bearerAuth: []
