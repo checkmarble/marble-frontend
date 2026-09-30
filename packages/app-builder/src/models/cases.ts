@@ -26,6 +26,7 @@ import {
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import { match } from 'ts-pattern';
+import { z } from 'zod/v4';
 import { adaptContinuousScreening, ContinuousScreening } from './continuous-screening';
 import { adaptClientObjectDetail, type ClientObjectDetail, DataModelObjectValue } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
@@ -130,10 +131,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
 // Case Events
 //
 
-// Manual entity events will be supported when their application integration is implemented.
-type SupportedCaseEventDto = Exclude<CaseEventDto, { event_type: 'entity_added' | 'entity_removed' }>;
-
-export type CaseEventType = SupportedCaseEventDto['event_type'];
+export type CaseEventType = CaseEventDto['event_type'];
 export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'case_created',
   'status_updated',
@@ -154,6 +152,8 @@ export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'sar_status_changed',
   'sar_file_uploaded',
   'entity_annotated',
+  'entity_added',
+  'entity_removed',
 ]);
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -258,6 +258,33 @@ export interface EntityAnnotatedEvent extends CaseEventBase<'entity_annotated'> 
   annotation: TagEntityAnnotationDto | CommentEntityAnnotationDto | FileEntityAnnotationDto;
 }
 
+export interface CaseEntityRef {
+  tableName: string;
+  objectId: string;
+}
+
+export interface CaseEntityAddedEvent extends CaseEventBase<'entity_added'> {
+  userId?: string;
+  manualLinkId: string;
+  entity: CaseEntityRef;
+}
+
+export interface CaseEntityRemovedEvent extends CaseEventBase<'entity_removed'> {
+  userId?: string;
+  manualLinkId: string;
+  entity: CaseEntityRef;
+}
+
+const caseEntityRefDtoSchema = z.object({
+  table_name: z.string().min(1),
+  object_id: z.string().min(1),
+});
+
+function parseCaseEntityRef(value: string): CaseEntityRef {
+  const dto = caseEntityRefDtoSchema.parse(JSON.parse(value));
+  return { tableName: dto.table_name, objectId: dto.object_id };
+}
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -277,10 +304,12 @@ export type CaseEvent =
   | SarDeletedEvent
   | SarStatusChangedEvent
   | SarFileUploadedEvent
-  | EntityAnnotatedEvent;
+  | EntityAnnotatedEvent
+  | CaseEntityAddedEvent
+  | CaseEntityRemovedEvent;
 
 export async function adaptCaseEventDto(
-  caseEventDto: SupportedCaseEventDto,
+  caseEventDto: CaseEventDto,
   marbleCoreApiClient: MarbleCoreApi,
 ): Promise<CaseEvent> {
   const baseEvent = {
@@ -291,7 +320,7 @@ export async function adaptCaseEventDto(
     inboxId: caseEventDto.inbox_id,
   };
 
-  return match<SupportedCaseEventDto, Promise<CaseEvent>>(caseEventDto)
+  return match<CaseEventDto, Promise<CaseEvent>>(caseEventDto)
     .with({ event_type: 'case_created' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
@@ -405,6 +434,20 @@ export async function adaptCaseEventDto(
       sarId: dto.resource_id,
       filename: dto.new_value,
     }))
+    .with({ event_type: 'entity_added' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id ?? undefined,
+      manualLinkId: dto.resource_id,
+      entity: parseCaseEntityRef(dto.new_value),
+    }))
+    .with({ event_type: 'entity_removed' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id ?? undefined,
+      manualLinkId: dto.resource_id,
+      entity: parseCaseEntityRef(dto.previous_value),
+    }))
     .with({ event_type: 'entity_annotated' }, async (dto) => {
       const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);
       return {
@@ -488,7 +531,7 @@ export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: M
     continuousScreenings: dto.continuous_screenings.map(adaptContinuousScreening),
     events: await Promise.all(
       dto.events
-        .filter((e): e is SupportedCaseEventDto => caseEventTypes.some((type) => type === e.event_type))
+        .filter((e) => caseEventTypes.includes(e.event_type))
         .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
     ),
     files: dto.files.map(adaptCaseFile),
