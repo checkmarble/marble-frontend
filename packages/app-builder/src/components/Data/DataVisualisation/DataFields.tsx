@@ -145,7 +145,15 @@ export function DataFields({ table, object, preset, customFields, className, opt
           })}
           {hasMoreFields && displayExpandButton ? (
             <div className="col-span-full flex justify-start">
-              <Button variant="secondary" size="small" onClick={() => setShowAllFields(!showAllFields)}>
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowAllFields(!showAllFields);
+                }}
+              >
                 {showAllFields
                   ? t('data:fields_show_less')
                   : t('data:fields_show_more', { count: visibleFields.length - maxVisibleFields })}
