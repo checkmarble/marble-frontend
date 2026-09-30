@@ -70,6 +70,10 @@ CaseStatusForCaseEventDto:
   $ref: cases.yml#/components/schemas/CaseStatusForCaseEventDto
 CaseDto:
   $ref: cases.yml#/components/schemas/CaseDto
+CaseEntityRefDto:
+  $ref: cases.yml#/components/schemas/CaseEntityRefDto
+CaseEntityDto:
+  $ref: cases.yml#/components/schemas/CaseEntityDto
 CaseDetailDto:
   $ref: cases.yml#/components/schemas/CaseDetailDto
 CaseDecisionDto:
@@ -84,6 +88,10 @@ CaseTagDto:
   $ref: cases.yml#/components/schemas/CaseTagDto
 CaseEventDto:
   $ref: cases.yml#/components/schemas/CaseEventDto
+CaseEntityAddedEventDto:
+  $ref: cases.yml#/components/schemas/CaseEntityAddedEventDto
+CaseEntityRemovedEventDto:
+  $ref: cases.yml#/components/schemas/CaseEntityRemovedEventDto
 CaseCreatedEventDto:
   $ref: cases.yml#/components/schemas/CaseCreatedEventDto
 CaseStatusUpdatedEventDto:
@@ -128,6 +136,8 @@ UpdateCaseBodyDto:
   $ref: cases.yml#/components/schemas/UpdateCaseBodyDto
 AssignCaseBodyDto:
   $ref: cases.yml#/components/schemas/AssignCaseBodyDto
+UpdateCaseEntitiesBodyDto:
+  $ref: cases.yml#/components/schemas/UpdateCaseEntitiesBodyDto
 CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 PivotObjectDto:

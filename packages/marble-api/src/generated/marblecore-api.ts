@@ -182,9 +182,17 @@ export type ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1 = {
 export type CreateAnnotationDto = (ComponentsSchemasTagEntityAnnotationDtoAllOf1 | ComponentsSchemasCommentEntityAnnotationDtoAllOf1 | ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1) & {
     caseId?: string;
 };
+export type CaseEntityRefDto = {
+    /** Table name; blank or whitespace-only values are rejected */
+    table_name: string;
+    /** Arbitrary object identifier; does not need to be a UUID */
+    object_id: string;
+};
 export type CreateCaseBodyDto = {
     name: string;
     inbox_id: string;
+    /** Optional manual links; duplicate (table_name, object_id) pairs are rejected */
+    entities?: CaseEntityRefDto[];
     decision_ids?: string[];
 };
 export type CaseDecisionDto = {
@@ -205,6 +213,17 @@ export type CaseDecisionDto = {
     };
     score: number;
     error?: Error;
+};
+export type CaseEntityDto = {
+    table_name: string;
+    /** Arbitrary object identifier; does not need to be a UUID */
+    object_id: string;
+    /** An entity may have both manual and decision sources */
+    sources: ("manual" | "decision")[];
+    /** Available client object data, or null */
+    data: {
+        [key: string]: any;
+    } | null;
 };
 export type ScreeningEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
 export type ScreeningQueryDto = {
@@ -309,6 +328,8 @@ export type CaseEventDtoBase = {
     case_id: string;
     created_at: string;
     event_type: string;
+    /** Previous value; may be empty. For entity_removed, a JSON-serialized CaseEntityRefDto string. */
+    previous_value: string;
 };
 export type CaseCreatedEventDto = {
     event_type: "case_created";
@@ -461,7 +482,29 @@ export type EntityAnnotatedEventDto = {
     /** The type of annotation */
     additional_note: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto;
+export type CaseEntityAddedEventDto = {
+    event_type: "entity_added";
+} & CaseEventDtoBase & {
+    user_id?: string | null;
+    /** JSON-serialized CaseEntityRefDto string for the added entity */
+    new_value: string;
+    resource_type: "case_manual_entity";
+    /** UUID of the manual link, not the client object_id */
+    resource_id: string;
+};
+export type CaseEntityRemovedEventDto = {
+    event_type: "entity_removed";
+} & CaseEventDtoBase & {
+    user_id?: string | null;
+    /** Empty for entity_removed */
+    new_value: string;
+    /** JSON-serialized CaseEntityRefDto string for the removed entity */
+    previous_value: string;
+    resource_type: "case_manual_entity";
+    /** UUID of the manual link, not the client object_id */
+    resource_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto | CaseEntityAddedEventDto | CaseEntityRemovedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -470,6 +513,8 @@ export type CaseFileDto = {
 };
 export type CaseDetailDto = CaseDto & {
     decisions: CaseDecisionDto[];
+    /** Always returned; empty when no entities are linked */
+    entities: CaseEntityDto[];
     continuous_screenings: ContinuousScreeningDto[];
     events: CaseEventDto[];
     files: CaseFileDto[];
@@ -524,6 +569,10 @@ export type DetailedCaseDecisionDto = CaseDecisionDto & {
         partial: boolean;
         count: number;
     }[];
+};
+export type UpdateCaseEntitiesBodyDto = {
+    /** Duplicate (table_name, object_id) pairs are rejected, regardless of extra properties */
+    entities: CaseEntityRefDto[];
 };
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
@@ -2585,16 +2634,22 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
  */
 export function createCase(createCaseBodyDto: CreateCaseBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
+        status: 201;
         data: {
             "case": CaseDetailDto;
         };
+    } | {
+        status: 400;
+        data: string;
     } | {
         status: 401;
         data: string;
     } | {
         status: 403;
         data: string;
+    } | {
+        status: 422;
+        data: object;
     }>("/cases", oazapfts.json({
         ...opts,
         method: "POST",
@@ -2752,6 +2807,66 @@ export function addDecisionsToCase(caseId: string, body: {
     })));
 }
 /**
+ * Add manual entities to a case
+ */
+export function addEntitiesToCase(caseId: string, updateCaseEntitiesBodyDto: UpdateCaseEntitiesBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetailDto;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/cases/${encodeURIComponent(caseId)}/entities`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: updateCaseEntitiesBodyDto
+    })));
+}
+/**
+ * Remove manual entities from a case
+ */
+export function removeEntitiesFromCase(caseId: string, updateCaseEntitiesBodyDto: UpdateCaseEntitiesBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetailDto;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/cases/${encodeURIComponent(caseId)}/entities`, oazapfts.json({
+        ...opts,
+        method: "DELETE",
+        body: updateCaseEntitiesBodyDto
+    })));
+}
+/**
  * Add a comment to a case
  */
 export function addCommentToCase(caseId: string, body: {
@@ -2834,7 +2949,7 @@ export function updateTagsForCase(caseId: string, body: {
     tag_ids: string[];
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
+        status: 201;
         data: {
             "case": CaseDetailDto;
         };
