@@ -430,7 +430,7 @@
     summary: Add manual entities to a case
     description: |
       Add manual links to active objects in person, company or partner tables.
-      Entities may have both manual and decision sources. Repeated additions are idempotent.
+      Repeated additions are idempotent.
     operationId: addEntitiesToCase
     security:
       - bearerAuth: []
@@ -476,7 +476,7 @@
       - Cases
     summary: Remove manual entities from a case
     description: |
-      Remove manual links while preserving decision sources. Repeated removals are idempotent.
+      Remove manual links. Repeated removals are idempotent.
     operationId: removeEntitiesFromCase
     security:
       - bearerAuth: []
@@ -1210,11 +1210,11 @@ components:
         table_name: customers
         object_id: customer-123
     CaseEntityDto:
+      description: An entity manually linked to the case
       type: object
       required:
         - table_name
         - object_id
-        - sources
         - data
       properties:
         table_name:
@@ -1222,12 +1222,6 @@ components:
         object_id:
           type: string
           description: Arbitrary object identifier; does not need to be a UUID
-        sources:
-          type: array
-          description: An entity may have both manual and decision sources
-          items:
-            type: string
-            enum: ["manual", "decision"]
         data:
           type: object
           additionalProperties: true
@@ -1236,7 +1230,6 @@ components:
       example:
         table_name: customers
         object_id: customer-123
-        sources: ["manual", "decision"]
         data:
           object_id: customer-123
           name: Alice
@@ -1254,7 +1247,7 @@ components:
             $ref: "#/components/schemas/CaseEntityRefDto"
     CaseDetailDto:
       description: |
-        Case with details, including the union of manual and decision entity links.
+        Case with details, including only manually linked entities in entities.
         Manual links do not extend risk/score calculations, automatic grouping or the client
         context used by AI case reviews.
       allOf:
@@ -1273,7 +1266,7 @@ components:
                 $ref: "#/components/schemas/CaseDecisionDto"
             entities:
               type: array
-              description: Always returned; empty when no entities are linked
+              description: Manually linked entities only; always returned, empty when no manual links exist
               items:
                 $ref: "#/components/schemas/CaseEntityDto"
             continuous_screenings:
