@@ -30,7 +30,7 @@ export function AddToCasePanel({
 
   return (
     <Panel.Container size="small" className="max-w-md">
-      <Panel.Content className="gap-md">
+      <Panel.Content>
         <Panel.Header>
           <span className="first-letter:capitalize">{t('cases:add_to_case.title')}</span>
         </Panel.Header>
