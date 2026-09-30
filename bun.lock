@@ -300,7 +300,7 @@
         "react-day-picker": "^10.0.1",
         "remeda": "^2.38.0",
         "sharpstate": "^0.0.13",
-        "tailwind-merge": "^3.0.2",
+        "tailwind-merge": "^3.7.0",
         "tailwindcss-radix": "^4.0.2",
         "temporal-polyfill": "^1.0.2",
         "ts-pattern": "^5.9.0",
@@ -2565,7 +2565,7 @@
 
     "symbol-tree": ["symbol-tree@3.2.4", "", {}, "sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw=="],
 
-    "tailwind-merge": ["tailwind-merge@3.6.0", "", {}, "sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w=="],
+    "tailwind-merge": ["tailwind-merge@3.7.0", "", {}, "sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA=="],
 
     "tailwind-preset": ["tailwind-preset@workspace:packages/tailwind-preset"],
 
