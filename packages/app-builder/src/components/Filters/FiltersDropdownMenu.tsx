@@ -16,7 +16,7 @@ const FiltersDropdownMenuContent = function FiltersDropdownMenuContent({
           className,
         )}
         side="bottom"
-        align="end"
+        align="start"
         sideOffset={8}
         {...props}
       >
