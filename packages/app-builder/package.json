@@ -97,7 +97,7 @@
     "dinero.js": "2.0.2",
     "ego-graph": "0.4.1",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^12.13.0",
+    "firebase": "^12.19.0",
     "i18next": "^26.4.2",
     "i18next-browser-languagedetector": "^8.0.4",
     "i18next-fetch-backend": "^8.0.0",
