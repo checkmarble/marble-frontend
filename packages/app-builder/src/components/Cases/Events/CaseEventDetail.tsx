@@ -18,9 +18,10 @@ import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/Sar
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
 import { type CaseEvent } from '@app-builder/models/cases';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 export function CaseEventDetail({ event }: { event: CaseEvent }) {
+  // Rendering manual entity events is part of the separate UI integration.
   return match(event)
     .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
     .with({ eventType: 'status_updated' }, (e) => <StatusUpdatedDetail event={e} />)
@@ -41,5 +42,6 @@ export function CaseEventDetail({ event }: { event: CaseEvent }) {
     .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
     .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
     .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
+    .with({ eventType: P.union('entity_added', 'entity_removed') }, () => null)
     .exhaustive();
 }
