@@ -130,7 +130,10 @@ export const adaptCase = (dto: CaseDto): Case => ({
 // Case Events
 //
 
-export type CaseEventType = CaseEventDto['event_type'];
+// Manual entity events will be supported when their application integration is implemented.
+type SupportedCaseEventDto = Exclude<CaseEventDto, { event_type: 'entity_added' | 'entity_removed' }>;
+
+export type CaseEventType = SupportedCaseEventDto['event_type'];
 export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'case_created',
   'status_updated',
@@ -276,7 +279,7 @@ export type CaseEvent =
   | EntityAnnotatedEvent;
 
 export async function adaptCaseEventDto(
-  caseEventDto: CaseEventDto,
+  caseEventDto: SupportedCaseEventDto,
   marbleCoreApiClient: MarbleCoreApi,
 ): Promise<CaseEvent> {
   const baseEvent = {
@@ -286,7 +289,7 @@ export async function adaptCaseEventDto(
     createdAt: caseEventDto.created_at,
   };
 
-  return match<CaseEventDto, Promise<CaseEvent>>(caseEventDto)
+  return match<SupportedCaseEventDto, Promise<CaseEvent>>(caseEventDto)
     .with({ event_type: 'case_created' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
@@ -483,7 +486,7 @@ export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: M
     continuousScreenings: dto.continuous_screenings.map(adaptContinuousScreening),
     events: await Promise.all(
       dto.events
-        .filter((e) => caseEventTypes.includes(e.event_type))
+        .filter((e): e is SupportedCaseEventDto => caseEventTypes.some((type) => type === e.event_type))
         .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
     ),
     files: dto.files.map(adaptCaseFile),
