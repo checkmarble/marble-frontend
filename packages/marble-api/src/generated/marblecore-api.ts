@@ -252,8 +252,6 @@ export type CaseEntityDto = {
     table_name: string;
     /** Arbitrary object identifier; does not need to be a UUID */
     object_id: string;
-    /** An entity may have both manual and decision sources */
-    sources: ("manual" | "decision")[];
     /** Available client object data, or null */
     data: {
         [key: string]: any;
@@ -548,7 +546,7 @@ export type CaseFileDto = {
 };
 export type CaseDetailDto = CaseDto & {
     decisions: CaseDecisionDto[];
-    /** Always returned; empty when no entities are linked */
+    /** Manually linked entities only; always returned, empty when no manual links exist */
     entities: CaseEntityDto[];
     continuous_screenings: ContinuousScreeningDto[];
     events: CaseEventDto[];
