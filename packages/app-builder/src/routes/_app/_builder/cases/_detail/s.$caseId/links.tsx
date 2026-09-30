@@ -17,7 +17,6 @@ function RouteComponent() {
   const { pivotObjects, dataModel } = Route.useRouteContext();
   const { set } = CommentContext.useValue();
   const eligiblePivots = getGraphEligiblePivots(pivotObjects, dataModel);
-
   useEffect(() => {
     set(null);
   }, [set]);

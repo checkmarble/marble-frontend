@@ -585,8 +585,8 @@ export type PivotObject = {
  * (e.g. a User "123" and a Merchant "123" under polymorphic belongs_to) and must not
  * be merged. Falls back to the value when the id is absent.
  */
-export function getPivotObjectKey(pivotObject: Pick<PivotObject, 'pivotId' | 'pivotValue'>): string {
-  return pivotObject.pivotId ?? pivotObject.pivotValue;
+export function getPivotObjectKey(pivotObject: Pick<PivotObject, 'pivotObjectId' | 'pivotValue'>): string {
+  return pivotObject.pivotObjectId ?? pivotObject.pivotValue;
 }
 
 export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
