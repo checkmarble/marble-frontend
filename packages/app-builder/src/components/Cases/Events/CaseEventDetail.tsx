@@ -19,6 +19,8 @@ import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/Status
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
 import { type CaseEvent } from '@app-builder/models/cases';
 import { match } from 'ts-pattern';
+import { CaseEntityAddedDetail } from './CaseEntityAddedDetail';
+import { CaseEntityRemovedDetail } from './CaseEntityRemovedDetail';
 
 export function CaseEventDetail({ event }: { event: CaseEvent }) {
   return match(event)
@@ -41,5 +43,7 @@ export function CaseEventDetail({ event }: { event: CaseEvent }) {
     .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
     .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
     .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
+    .with({ eventType: 'entity_added' }, (e) => <CaseEntityAddedDetail event={e} />)
+    .with({ eventType: 'entity_removed' }, (e) => <CaseEntityRemovedDetail event={e} />)
     .exhaustive();
 }
