@@ -552,10 +552,6 @@ export type CaseDetailDto = CaseDto & {
     events: CaseEventDto[];
     files: CaseFileDto[];
 };
-export type Items = {
-    object_type: string;
-    object_id: string;
-};
 export type UpdateCaseBodyDto = {
     name?: string;
     inbox_id?: string;
@@ -1650,7 +1646,7 @@ export type UpdateTableBodyDto = {
         [key: string]: any;
     } | null;
 };
-export type Items2 = {
+export type Items = {
     id?: string;
     label?: string;
 };
@@ -1666,9 +1662,9 @@ export type Schema2 = {
         /** Number of analytics settings referring to the resource */
         analytics_settings: number;
         /** Scenarios using the resource as a trigger object */
-        scenarios: Items2[];
+        scenarios: Items[];
         /** List of scenarios that would have no live or draft version after deleting the resource */
-        empty_scenarios: Items2[];
+        empty_scenarios: Items[];
         /** Map of scenario iterations which components refer to the resource */
         scenario_iterations: {
             [key: string]: {
@@ -1676,12 +1672,12 @@ export type Schema2 = {
                 scenario_id?: string;
                 draft?: boolean;
                 trigger_condition?: boolean;
-                rules?: Items2[];
-                screenings?: Items2[];
+                rules?: Items[];
+                screenings?: Items[];
             };
         };
         /** List of scenarios which workflows use the resource */
-        workflows: Items2[];
+        workflows: Items[];
         /** Whether an active test run uses an iteration that would be disabled */
         test_runs: boolean;
     };
@@ -2794,7 +2790,10 @@ export function createCase(createCaseBodyDto: CreateCaseBodyDto, opts?: Oazapfts
 export function createCaseFromObjects(body: {
     name: string;
     inbox_id: string;
-    objects: Items[];
+    objects: {
+        object_type: string;
+        object_id: string;
+    }[];
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -2802,11 +2801,17 @@ export function createCaseFromObjects(body: {
             "case": CaseDetailDto;
         };
     } | {
+        status: 400;
+        data: string;
+    } | {
         status: 401;
         data: string;
     } | {
         status: 403;
         data: string;
+    } | {
+        status: 422;
+        data: object;
     }>("/cases/objects", oazapfts.json({
         ...opts,
         method: "POST",
@@ -5536,9 +5541,9 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                 /** Number of analytics settings referring to the resource */
                 analytics_settings: number;
                 /** Scenarios using the resource as a trigger object */
-                scenarios: Items2[];
+                scenarios: Items[];
                 /** List of scenarios that would have no live or draft version after deleting the resource */
-                empty_scenarios: Items2[];
+                empty_scenarios: Items[];
                 /** Map of scenario iterations which components refer to the resource */
                 scenario_iterations: {
                     [key: string]: {
@@ -5546,12 +5551,12 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                         scenario_id?: string;
                         draft?: boolean;
                         trigger_condition?: boolean;
-                        rules?: Items2[];
-                        screenings?: Items2[];
+                        rules?: Items[];
+                        screenings?: Items[];
                     };
                 };
                 /** List of scenarios which workflows use the resource */
-                workflows: Items2[];
+                workflows: Items[];
                 /** Whether an active test run uses an iteration that would be disabled */
                 test_runs: boolean;
             };
