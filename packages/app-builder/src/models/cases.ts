@@ -180,6 +180,7 @@ export interface DecisionAddedEvent extends CaseEventBase<'decision_added'> {
 
 export interface CommentAddedEvent extends CaseEventBase<'comment_added'> {
   comment: string;
+  inboxId: string;
   userId: string;
 }
 
@@ -314,6 +315,7 @@ export async function adaptCaseEventDto(
       eventType: dto.event_type,
       userId: dto.user_id,
       comment: dto.additional_note,
+      inboxId: dto.inbox_id,
     }))
     .with({ event_type: 'name_updated' }, async (dto) => ({
       ...baseEvent,

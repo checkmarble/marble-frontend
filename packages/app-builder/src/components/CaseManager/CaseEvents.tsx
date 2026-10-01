@@ -1,5 +1,6 @@
 import { CaseEventDetail } from '@app-builder/components/Cases/Events/CaseEventDetail';
 import { type CaseEvent, type CaseEventType, type CaseStatus } from '@app-builder/models/cases';
+import { type Inbox } from '@app-builder/models/inbox';
 import {
   type CalendarDayDistance,
   getCalendarDayDistance,
@@ -15,6 +16,8 @@ import { Icon } from 'ui-icons';
 
 type CaseEventsProps = {
   events: CaseEvent[];
+  currentInboxId: string;
+  inboxes: Inbox[];
   /** When set, only these event types are shown. Empty array => no event steps, only due date eventually. */
   includeEventTypes?: CaseEventType[];
   /** Removed after include filtering. Ignored types that were never included. */
@@ -27,7 +30,15 @@ type TimelineStep =
   | { kind: 'event'; id: string; at: string; eventType: CaseEventType }
   | { kind: 'due'; id: 'due'; at: string; isLate: boolean };
 
-export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt, status }: CaseEventsProps) {
+export function CaseEvents({
+  events,
+  currentInboxId,
+  inboxes,
+  includeEventTypes,
+  excludeEventTypes,
+  dueAt,
+  status,
+}: CaseEventsProps) {
   const { t } = useTranslation(['cases']);
   const timeZone = useFormatTimezone();
   const [panelOpen, setPanelOpen] = useState(false);
@@ -147,7 +158,7 @@ export function CaseEvents({ events, includeEventTypes, excludeEventTypes, dueAt
                 <div className="bg-grey-border -z-10 h-full w-px" />
               </div>
               {allEvents.map((event) => (
-                <CaseEventDetail key={event.id} event={event} />
+                <CaseEventDetail key={event.id} event={event} currentInboxId={currentInboxId} inboxes={inboxes} />
               ))}
             </div>
           </Panel.Content>
