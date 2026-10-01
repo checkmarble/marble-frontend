@@ -356,6 +356,7 @@
   "manage_clients_panel.already_added": "تمت الإضافة بالفعل",
   "manage_clients_panel.save_changes": "حفظ التغييرات",
   "manage_clients_panel.search_placeholder": "البحث حسب معرف الكائن",
+  "manage_clients_panel.table_placeholder": "اختر جدولاً",
   "manage_clients_panel.title": "إدارة العملاء في الحالة",
   "manager.actions.complete_sar": "إكمال SAR",
   "manager.actions.create_sar": "الإبلاغ عن نشاط مشبوه",

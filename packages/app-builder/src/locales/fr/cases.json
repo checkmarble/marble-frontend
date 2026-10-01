@@ -356,6 +356,7 @@
   "manage_clients_panel.already_added": "Déjà ajouté",
   "manage_clients_panel.save_changes": "Enregistrer les modifications",
   "manage_clients_panel.search_placeholder": "Ajouter un client par ID...",
+  "manage_clients_panel.table_placeholder": "Sélectionner une table",
   "manage_clients_panel.title": "Gestion des clients sur le dossier",
   "manager.actions.complete_sar": "Compléter la SAR",
   "manager.actions.create_sar": "Signaler une activité suspecte",
