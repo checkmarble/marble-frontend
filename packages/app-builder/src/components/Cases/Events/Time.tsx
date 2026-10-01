@@ -1,13 +1,16 @@
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { differenceInDays } from 'date-fns';
-import { type ReactNode } from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 import { TooltipV2 } from 'ui-design-system';
 
-export const EventTime = ({ time, children }: { time: string; children?: ReactNode }) => {
+export const EventTimeSuffixContext = createContext<ReactNode>(null);
+
+export const EventTime = ({ time }: { time: string }) => {
   const date = new Date(time);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
   const is6daysOld = Math.abs(differenceInDays(new Date(), date)) > 6;
+  const suffix = useContext(EventTimeSuffixContext);
 
   return (
     <TooltipV2.Provider>
@@ -15,7 +18,7 @@ export const EventTime = ({ time, children }: { time: string; children?: ReactNo
         <TooltipV2.TooltipTrigger asChild>
           <span className="text-grey-secondary shrink-0 grow-0 text-xs font-normal">
             {formatDateRelative(date, { language })}
-            {children ? <> {children}</> : null}
+            {suffix ? <> {suffix}</> : null}
           </span>
         </TooltipV2.TooltipTrigger>
         <TooltipV2.TooltipContent>
