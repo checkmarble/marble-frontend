@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/lin
 });
 
 function RouteComponent() {
-  const { pivotObjects, dataModel } = Route.useRouteContext();
+  const { pivotObjects, dataModel, caseDetail, userScoringAccess } = Route.useRouteContext();
   const { set } = CommentContext.useValue();
   const eligiblePivots = getGraphEligiblePivots(pivotObjects, dataModel);
   useEffect(() => {
@@ -23,7 +23,13 @@ function RouteComponent() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PivotTabs pivots={eligiblePivots} numberedFrom={pivotObjects} to="./links/$pivotValue" />
+      <PivotTabs
+        pivots={eligiblePivots}
+        numberedFrom={pivotObjects}
+        to="./links/$pivotValue"
+        caseStatus={caseDetail?.status}
+        userScoringAccess={userScoringAccess}
+      />
       <div className="flex min-h-0 flex-1 flex-col">
         <Outlet />
       </div>
