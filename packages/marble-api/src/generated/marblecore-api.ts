@@ -309,6 +309,7 @@ export type CaseEventDtoBase = {
     case_id: string;
     created_at: string;
     event_type: string;
+    inbox_id?: string;
 };
 export type CaseCreatedEventDto = {
     event_type: "case_created";
@@ -338,7 +339,6 @@ export type CommentAddedEventDto = {
     event_type: "comment_added";
 } & CaseEventDtoBase & {
     additional_note: string;
-    inbox_id: string;
     user_id: string;
 };
 export type NameUpdatedEventDto = {
