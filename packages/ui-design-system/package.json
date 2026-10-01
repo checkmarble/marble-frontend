@@ -68,7 +68,7 @@
     "react-day-picker": "^10.0.1",
     "remeda": "^2.38.0",
     "sharpstate": "^0.0.13",
-    "tailwind-merge": "^3.0.2",
+    "tailwind-merge": "^3.7.0",
     "tailwindcss-radix": "^4.0.2",
     "temporal-polyfill": "^1.0.5",
     "ts-pattern": "^5.9.0",
