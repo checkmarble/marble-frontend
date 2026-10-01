@@ -153,6 +153,8 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
                 <CaseInfo caseDetail={caseDetail} currentUser={currentUser} />
                 <CaseEvents
                   events={caseDetail.events}
+                  currentInboxId={caseDetail.inboxId}
+                  inboxes={inboxes}
                   includeEventTypes={[
                     'case_created',
                     'inbox_changed',
@@ -166,7 +168,14 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
               </Card>
             </div>
             <ScreeningMatchList screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />
-            <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} className="order-4" />
+            <CaseInvestigation
+              root={rootRef}
+              caseId={caseDetail.id}
+              currentInboxId={caseDetail.inboxId}
+              events={caseDetail.events}
+              inboxes={inboxes}
+              className="order-4"
+            />
           </div>
           <RequestSideInfo caseDetail={caseDetail} screening={screening} />
         </Page.Content>

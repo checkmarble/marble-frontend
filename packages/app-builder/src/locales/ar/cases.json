@@ -106,6 +106,7 @@
   "case_detail.history.event_detail.case_assigned_himself": "<Style>{{actor}}</Style> عيّن نفسه",
   "case_detail.history.event_detail.case_snoozed": "تم <Style>تأجيل</Style> الحالة حتى <Style>{{date}}</Style> بواسطة <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.case_unsnoozed": "تم <Style>إلغاء التأجيل</Style> بواسطة <Style>{{actor}}</Style>",
+  "case_detail.history.event_detail.comment_inbox": "في <Inbox>{{inbox}}</Inbox>",
   "case_detail.history.event_detail.created_by": "تم إنشاء الحالة بواسطة <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.decision_added": "تمت إضافة قرار بواسطة <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.decision_reviewed": "تمت مراجعة القرار إلى <Status /> بواسطة <Actor>{{actor}}</Actor>",
