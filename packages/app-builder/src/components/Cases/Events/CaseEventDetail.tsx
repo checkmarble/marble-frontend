@@ -18,15 +18,26 @@ import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/Sar
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
 import { type CaseEvent } from '@app-builder/models/cases';
+import { type Inbox } from '@app-builder/models/inbox';
 import { match } from 'ts-pattern';
 
-export function CaseEventDetail({ event }: { event: CaseEvent }) {
+export function CaseEventDetail({
+  event,
+  currentInboxId,
+  inboxes,
+}: {
+  event: CaseEvent;
+  currentInboxId: string;
+  inboxes: Inbox[];
+}) {
   return match(event)
     .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
     .with({ eventType: 'status_updated' }, (e) => <StatusUpdatedDetail event={e} />)
     .with({ eventType: 'outcome_updated' }, (e) => <OutcomeUpdatedDetail event={e} />)
     .with({ eventType: 'decision_added' }, (e) => <DecisionAddedDetail event={e} />)
-    .with({ eventType: 'comment_added' }, (e) => <CommentAddedDetail event={e} />)
+    .with({ eventType: 'comment_added' }, (e) => (
+      <CommentAddedDetail event={e} currentInboxId={currentInboxId} inboxes={inboxes} />
+    ))
     .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
     .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
     .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)

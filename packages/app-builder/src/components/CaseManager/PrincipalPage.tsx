@@ -112,6 +112,8 @@ export function CaseManagerPrincipalPage({
               <CaseInfo caseDetail={caseDetail} currentUser={currentUser} />
               <CaseEvents
                 events={caseDetail.events}
+                currentInboxId={caseDetail.inboxId}
+                inboxes={inboxes}
                 includeEventTypes={['case_created', 'inbox_changed', 'case_snoozed', 'case_unsnoozed', 'case_assigned']}
                 dueAt={caseDetail.dueAt}
                 status={caseDetail.status}
@@ -158,7 +160,13 @@ export function CaseManagerPrincipalPage({
             </Card>
           )}
           <CaseDocuments files={caseDetail.files} />
-          <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
+          <CaseInvestigation
+            root={rootRef}
+            caseId={caseDetail.id}
+            currentInboxId={caseDetail.inboxId}
+            events={caseDetail.events}
+            inboxes={inboxes}
+          />
         </div>
       </div>
       <Panel.Root open={snoozePanelOpen} onOpenChange={setSnoozePanelOpen}>

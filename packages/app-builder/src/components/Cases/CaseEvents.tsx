@@ -5,6 +5,7 @@ import {
   DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
 } from '@app-builder/constants/cases';
 import { type CaseEvent, CaseEventType } from '@app-builder/models/cases';
+import { type Inbox } from '@app-builder/models/inbox';
 import { debounce } from 'radash';
 import { Fragment, type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,17 @@ import { Icon } from 'ui-icons';
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
 const EVENT_DELAY = 100;
 
-export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObject<HTMLDivElement | null> }) {
+export function CaseEvents({
+  events,
+  currentInboxId,
+  inboxes,
+  root,
+}: {
+  events: CaseEvent[];
+  currentInboxId: string;
+  inboxes: Inbox[];
+  root: RefObject<HTMLDivElement | null>;
+}) {
   const { t } = useTranslation(['common', 'cases']);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
@@ -112,7 +123,7 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
       >
         {filteredEvents.map((event) => (
           <Fragment key={event.id}>
-            <CaseEventDetail event={event} />
+            <CaseEventDetail event={event} currentInboxId={currentInboxId} inboxes={inboxes} />
           </Fragment>
         ))}
       </div>

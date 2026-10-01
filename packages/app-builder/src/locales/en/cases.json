@@ -106,6 +106,7 @@
   "case_detail.history.event_detail.case_assigned_himself": "<Style>{{actor}}</Style> assigned themselves",
   "case_detail.history.event_detail.case_snoozed": "Case <Style>snoozed</Style> until <Style>{{date}}</Style> by <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.case_unsnoozed": "Case <Style>unsnoozed</Style> by <Style>{{actor}}</Style>",
+  "case_detail.history.event_detail.comment_inbox": "in <Inbox>{{inbox}}</Inbox>",
   "case_detail.history.event_detail.created_by": "Case created by <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.decision_added": "Decision added by <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.decision_reviewed": "Decision reviewed to <Status /> by <Actor>{{actor}}</Actor>",

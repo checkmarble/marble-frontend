@@ -1406,10 +1406,14 @@ components:
         - type: object
           required:
             - additional_note
+            - inbox_id
             - user_id
           properties:
             additional_note:
               type: string
+            inbox_id:
+              type: string
+              format: uuid
             user_id:
               type: string
               format: uuid
