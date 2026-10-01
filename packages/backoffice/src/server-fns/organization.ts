@@ -2,6 +2,13 @@ import { env } from '@bo/env';
 import { needAuth } from '@bo/middlewares/auth';
 import { OVERRIDABLE_FEATURES, patchOrganizationFeaturesPayloadSchema } from '@bo/schemas/features';
 import { orgImportSpecSchema } from '@bo/schemas/org-import';
+import {
+  CLIENT_OBJECT_FETCH_ERROR,
+  CLIENT_OBJECT_FORBIDDEN_ERROR,
+  CLIENT_OBJECT_NOT_FOUND_ERROR,
+  organizationClientObjectInputSchema,
+  organizationDataModelInputSchema,
+} from '@bo/schemas/screenings';
 import { createUserPayloadSchema, DUPLICATE_EMAIL_ERROR } from '@bo/schemas/user';
 import { isRedirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -70,6 +77,37 @@ export const getOrganizationFeaturesFn = createServerFn({ method: 'GET' })
     });
 
     return feature_access;
+  });
+
+export const getOrganizationDataModelFn = createServerFn({ method: 'GET' })
+  .middleware([needAuth])
+  .validator(organizationDataModelInputSchema)
+  .handler(async ({ context, data }) => {
+    const { data_model } = await backofficeApi.getOrganizationDataModel(data.orgId, {
+      baseUrl: env.API_BASE_URL,
+      fetch: context.authFetch,
+    });
+
+    return data_model;
+  });
+
+export const getOrganizationClientObjectFn = createServerFn({ method: 'GET' })
+  .middleware([needAuth])
+  .validator(organizationClientObjectInputSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      return await backofficeApi.getOrganizationClientObject(data.orgId, data.tableName, data.objectId, {
+        baseUrl: env.API_BASE_URL,
+        fetch: context.authFetch,
+      });
+    } catch (error) {
+      if (isRedirect(error)) throw error;
+
+      const status = error instanceof Error ? (error as Error & { status?: number }).status : undefined;
+      if (status === 404) throw new Error(CLIENT_OBJECT_NOT_FOUND_ERROR);
+      if (status === 403) throw new Error(CLIENT_OBJECT_FORBIDDEN_ERROR);
+      throw new Error(CLIENT_OBJECT_FETCH_ERROR);
+    }
   });
 
 export const listOrganizationArchetypesFn = createServerFn({ method: 'GET' })

@@ -5,6 +5,8 @@ import {
   applyOrganizationArchetypeFn,
   createEmptyOrganizationFn,
   createOrganizationUserFn,
+  getOrganizationClientObjectFn,
+  getOrganizationDataModelFn,
   getOrganizationFeaturesFn,
   getOrganizationFn,
   getOrganizationsFn,
@@ -40,6 +42,26 @@ export const listOrganizationFeatures = (orgId: string) =>
   queryOptions({
     queryKey: ['organizations', orgId, 'features'],
     queryFn: () => getOrganizationFeaturesFn({ data: { orgId } }),
+  });
+
+export const getOrganizationDataModelQueryOptions = (orgId: string) =>
+  queryOptions({
+    queryKey: ['organizations', orgId, 'data-model'],
+    queryFn: () => getOrganizationDataModelFn({ data: { orgId } }),
+  });
+
+export const getOrganizationClientObjectQueryOptions = ({
+  orgId,
+  tableName,
+  objectId,
+}: {
+  orgId: string;
+  tableName: string;
+  objectId: string;
+}) =>
+  queryOptions({
+    queryKey: ['organizations', orgId, 'client-data', tableName, objectId],
+    queryFn: () => getOrganizationClientObjectFn({ data: { orgId, tableName, objectId } }),
   });
 
 export const listOrganizationArchetypes = () =>

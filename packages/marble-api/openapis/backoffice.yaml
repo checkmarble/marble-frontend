@@ -8,6 +8,81 @@ servers:
     description: Local development server
 
 paths:
+  /data-model:
+    get:
+      summary: Retrieve an organization data model
+      description: Returns the data model for an organization
+      operationId: getOrganizationDataModel
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization-id
+          description: The organization id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Organization data model response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data_model:
+                    $ref: "marblecore-api/data-model.yml#/components/schemas/DataModelDto"
+                required:
+                  - data_model
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+
+  /client_data/{tableName}/{objectId}:
+    get:
+      summary: Retrieve an organization client object
+      description: Returns an ingested client object from an organization's data model
+      operationId: getOrganizationClientObject
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization-id
+          description: The organization id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: tableName
+          description: The exact name of the data-model table
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: objectId
+          description: The client object identifier
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Organization client object response
+          content:
+            application/json:
+              schema:
+                $ref: "marblecore-api/ingestion.yml#/components/schemas/DataModelObjectDto"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+
   /organizations/{organizationId}/feature_access:
     get:
       summary: Retrieve organization features
@@ -314,3 +389,10 @@ components:
           schema:
             type: string
             example: Forbidden
+    "404":
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Resource not found

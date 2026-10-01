@@ -23,6 +23,7 @@ It is never exposed to customers. Access requires a Marble user whose role is `M
 
 - A running Marble backend, reachable at `API_BASE_URL`.
 - A user on that backend with the `MARBLE_ADMIN` role.
+- A running Motiva instance, reachable at `MOTIVA_BASE_URL`.
 
 ### Environment
 
@@ -36,9 +37,10 @@ Variables validated in `src/env.ts`:
 
 | Variable         | Scope  | Required | Description                                                     |
 | ---------------- | ------ | -------- | --------------------------------------------------------------- |
-| `API_BASE_URL`   | server | yes      | Base URL of the Marble backend, e.g. `http://localhost:8080`     |
-| `SESSION_SECRET` | server | yes      | Secret used to seal the `auth-session` cookie. Any long string.  |
-| `VITE_APP_TITLE` | client | no       | Document title                                                   |
+| `API_BASE_URL`    | server | yes      | Base URL of the Marble backend, e.g. `http://localhost:8080`     |
+| `MOTIVA_BASE_URL` | server | no       | Base URL of Motiva. Defaults to `http://localhost:8000`          |
+| `SESSION_SECRET`  | server | yes      | Secret used to seal the `auth-session` cookie. Any long string.  |
+| `VITE_APP_TITLE`  | client | no       | Document title                                                   |
 
 Read directly, outside the schema: `VITE_SENTRY_DSN` (`src/router.tsx` and `instrument.server.mjs`) and `PORT` (SSR tRPC base URL, defaults to `3000`).
 

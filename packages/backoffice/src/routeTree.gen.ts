@@ -21,6 +21,7 @@ import { Route as AppPrivateOrganizationsOrgIdRouteImport } from './routes/_app/
 import { Route as AppPrivateUsersIndexRouteImport } from './routes/_app/_private/users/index'
 import { Route as AppPrivateOrganizationsOrgIdIndexRouteImport } from './routes/_app/_private/organizations/$orgId.index'
 import { Route as AppPrivateOrganizationsOrgIdOverviewRouteImport } from './routes/_app/_private/organizations/$orgId.overview'
+import { Route as AppPrivateOrganizationsOrgIdScreeningsRouteImport } from './routes/_app/_private/organizations/$orgId.screenings'
 import { Route as AppPrivateOrganizationsOrgIdSettingsRouteImport } from './routes/_app/_private/organizations/$orgId.settings'
 import { Route as AppPrivateOrganizationsOrgIdUsersRouteImport } from './routes/_app/_private/organizations/$orgId.users'
 
@@ -84,6 +85,12 @@ const AppPrivateOrganizationsOrgIdOverviewRoute =
     path: '/overview',
     getParentRoute: () => AppPrivateOrganizationsOrgIdRoute,
   } as any)
+const AppPrivateOrganizationsOrgIdScreeningsRoute =
+  AppPrivateOrganizationsOrgIdScreeningsRouteImport.update({
+    id: '/screenings',
+    path: '/screenings',
+    getParentRoute: () => AppPrivateOrganizationsOrgIdRoute,
+  } as any)
 const AppPrivateOrganizationsOrgIdSettingsRoute =
   AppPrivateOrganizationsOrgIdSettingsRouteImport.update({
     id: '/settings',
@@ -106,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/licenses/': typeof AppPrivateLicensesIndexRoute
   '/users/': typeof AppPrivateUsersIndexRoute
   '/organizations/$orgId/overview': typeof AppPrivateOrganizationsOrgIdOverviewRoute
+  '/organizations/$orgId/screenings': typeof AppPrivateOrganizationsOrgIdScreeningsRoute
   '/organizations/$orgId/settings': typeof AppPrivateOrganizationsOrgIdSettingsRoute
   '/organizations/$orgId/users': typeof AppPrivateOrganizationsOrgIdUsersRoute
   '/organizations/$orgId/': typeof AppPrivateOrganizationsOrgIdIndexRoute
@@ -118,6 +126,7 @@ export interface FileRoutesByTo {
   '/licenses': typeof AppPrivateLicensesIndexRoute
   '/users': typeof AppPrivateUsersIndexRoute
   '/organizations/$orgId/overview': typeof AppPrivateOrganizationsOrgIdOverviewRoute
+  '/organizations/$orgId/screenings': typeof AppPrivateOrganizationsOrgIdScreeningsRoute
   '/organizations/$orgId/settings': typeof AppPrivateOrganizationsOrgIdSettingsRoute
   '/organizations/$orgId/users': typeof AppPrivateOrganizationsOrgIdUsersRoute
   '/organizations/$orgId': typeof AppPrivateOrganizationsOrgIdIndexRoute
@@ -135,6 +144,7 @@ export interface FileRoutesById {
   '/_app/_private/licenses/': typeof AppPrivateLicensesIndexRoute
   '/_app/_private/users/': typeof AppPrivateUsersIndexRoute
   '/_app/_private/organizations/$orgId/overview': typeof AppPrivateOrganizationsOrgIdOverviewRoute
+  '/_app/_private/organizations/$orgId/screenings': typeof AppPrivateOrganizationsOrgIdScreeningsRoute
   '/_app/_private/organizations/$orgId/settings': typeof AppPrivateOrganizationsOrgIdSettingsRoute
   '/_app/_private/organizations/$orgId/users': typeof AppPrivateOrganizationsOrgIdUsersRoute
   '/_app/_private/organizations/$orgId/': typeof AppPrivateOrganizationsOrgIdIndexRoute
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/licenses/'
     | '/users/'
     | '/organizations/$orgId/overview'
+    | '/organizations/$orgId/screenings'
     | '/organizations/$orgId/settings'
     | '/organizations/$orgId/users'
     | '/organizations/$orgId/'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/licenses'
     | '/users'
     | '/organizations/$orgId/overview'
+    | '/organizations/$orgId/screenings'
     | '/organizations/$orgId/settings'
     | '/organizations/$orgId/users'
     | '/organizations/$orgId'
@@ -178,6 +190,7 @@ export interface FileRouteTypes {
     | '/_app/_private/licenses/'
     | '/_app/_private/users/'
     | '/_app/_private/organizations/$orgId/overview'
+    | '/_app/_private/organizations/$orgId/screenings'
     | '/_app/_private/organizations/$orgId/settings'
     | '/_app/_private/organizations/$orgId/users'
     | '/_app/_private/organizations/$orgId/'
@@ -275,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPrivateOrganizationsOrgIdOverviewRouteImport
       parentRoute: typeof AppPrivateOrganizationsOrgIdRoute
     }
+    '/_app/_private/organizations/$orgId/screenings': {
+      id: '/_app/_private/organizations/$orgId/screenings'
+      path: '/screenings'
+      fullPath: '/organizations/$orgId/screenings'
+      preLoaderRoute: typeof AppPrivateOrganizationsOrgIdScreeningsRouteImport
+      parentRoute: typeof AppPrivateOrganizationsOrgIdRoute
+    }
     '/_app/_private/organizations/$orgId/settings': {
       id: '/_app/_private/organizations/$orgId/settings'
       path: '/settings'
@@ -294,6 +314,7 @@ declare module '@tanstack/react-router' {
 
 interface AppPrivateOrganizationsOrgIdRouteChildren {
   AppPrivateOrganizationsOrgIdOverviewRoute: typeof AppPrivateOrganizationsOrgIdOverviewRoute
+  AppPrivateOrganizationsOrgIdScreeningsRoute: typeof AppPrivateOrganizationsOrgIdScreeningsRoute
   AppPrivateOrganizationsOrgIdSettingsRoute: typeof AppPrivateOrganizationsOrgIdSettingsRoute
   AppPrivateOrganizationsOrgIdUsersRoute: typeof AppPrivateOrganizationsOrgIdUsersRoute
   AppPrivateOrganizationsOrgIdIndexRoute: typeof AppPrivateOrganizationsOrgIdIndexRoute
@@ -303,6 +324,8 @@ const AppPrivateOrganizationsOrgIdRouteChildren: AppPrivateOrganizationsOrgIdRou
   {
     AppPrivateOrganizationsOrgIdOverviewRoute:
       AppPrivateOrganizationsOrgIdOverviewRoute,
+    AppPrivateOrganizationsOrgIdScreeningsRoute:
+      AppPrivateOrganizationsOrgIdScreeningsRoute,
     AppPrivateOrganizationsOrgIdSettingsRoute:
       AppPrivateOrganizationsOrgIdSettingsRoute,
     AppPrivateOrganizationsOrgIdUsersRoute:
