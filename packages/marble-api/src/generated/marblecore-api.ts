@@ -2656,40 +2656,6 @@ export function createCase(createCaseBodyDto: CreateCaseBodyDto, opts?: Oazapfts
     })));
 }
 /**
- * Create a case from objects
- */
-export function createCaseFromObjects(body: {
-    name: string;
-    inbox_id: string;
-    objects: {
-        object_type: string;
-        object_id: string;
-    }[];
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            "case": CaseDetailDto;
-        };
-    } | {
-        status: 400;
-        data: string;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 422;
-        data: object;
-    }>("/cases/objects", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body
-    })));
-}
-/**
  * Get a case by id
  */
 export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {

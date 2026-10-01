@@ -137,40 +137,6 @@
         $ref: "components.yml#/responses/401"
       "403":
         $ref: "components.yml#/responses/403"
-/cases/objects:
-  post:
-    tags:
-      - Cases
-    summary: Create a case from objects
-    operationId: createCaseFromObjects
-    security:
-      - bearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CreateCaseFromObjectsBodyDto"
-    responses:
-      "200":
-        description: The created case
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - case
-              properties:
-                case:
-                  $ref: "#/components/schemas/CaseDetailDto"
-      "400":
-        $ref: "components.yml#/responses/400"
-      "422":
-        $ref: "components.yml#/responses/422"
-      "401":
-        $ref: "components.yml#/responses/401"
-      "403":
-        $ref: "components.yml#/responses/403"
 /cases/{caseId}:
   get:
     tags:
@@ -1498,23 +1464,6 @@ components:
         object_id:
           type: string
           format: uuid
-    CreateCaseFromObjectsBodyDto:
-      type: object
-      required:
-        - name
-        - inbox_id
-        - objects
-      properties:
-        name:
-          type: string
-        inbox_id:
-          type: string
-          format: uuid
-        objects:
-          type: array
-          minItems: 1
-          items:
-            $ref: "#/components/schemas/CaseObjectReferenceDto"
     CreateCaseBodyDto:
       type: object
       description: decision_ids and entities may be absent or empty; no decision is required

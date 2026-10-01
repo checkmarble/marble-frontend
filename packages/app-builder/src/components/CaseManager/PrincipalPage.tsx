@@ -5,8 +5,14 @@ import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataF
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
-import { DataModel, DataModelObject } from '@app-builder/models';
-import { CaseDetail, PivotObject } from '@app-builder/models/cases';
+import { DataModel } from '@app-builder/models';
+import {
+  adaptEntityClient,
+  adaptPivotClient,
+  type CaseClient,
+  CaseDetail,
+  PivotObject,
+} from '@app-builder/models/cases';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { Inbox } from '@app-builder/models/inbox';
 import { isAdmin } from '@app-builder/models/user';
@@ -21,7 +27,7 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, cn, Panel, Tag, TagList } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, Panel, Tabs, Tag, TagList, Typo, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewCard } from './AiReview/AiReviewCard';
 import { CaseDocuments } from './CaseDocuments/CaseDocuments';
@@ -57,7 +63,9 @@ export function CaseManagerPrincipalPage({
   const { orgTags } = useOrganizationTags();
   const { currentUser } = useOrganizationDetails();
   const caseInbox = inboxes.find((inbox) => inbox.id === caseDetail.inboxId) ?? null;
-  const mainPivotObject = pivotObjects?.[0] ?? null;
+  const mainPivotObject = pivotObjects?.[0];
+  const mainPivotClient = mainPivotObject ? adaptPivotClient(mainPivotObject) : null;
+  const entityClients = caseDetail.entities.map(adaptEntityClient);
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
   const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
     page?.decisions?.some((d) => d.rules?.some((r) => r.outcome === 'hit')),
@@ -66,6 +74,8 @@ export function CaseManagerPrincipalPage({
   const rootRef = useRef<HTMLDivElement>(null);
   const editTagsMutation = useEditTagsMutation();
   const caseTagsIds = caseDetail.tags.map((t) => t.tagId);
+  const [activeEntityKey, setActiveEntityKey] = useState<string | undefined>(undefined);
+  const activeEntityClient = entityClients.find((c) => c.key === activeEntityKey) ?? entityClients[0];
 
   const tagsForm = useForm({
     onSubmit: ({ value }) => {
@@ -124,8 +134,8 @@ export function CaseManagerPrincipalPage({
           <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
 
           <div className="flex flex-col justify-start gap-sm">
-            <div className="text-default text-grey-primary flex items-center justify-between px-2xs font-medium">
-              <span>{t('cases:alerts')}</span>
+            <div className="flex items-center justify-between px-2xs font-medium">
+              <Typo variant="subtitle1">{t('cases:alerts')}</Typo>
               {hasRuleHits ? (
                 <Button variant="secondary" onClick={() => handleDisplaySnoozePanel()}>
                   <Icon icon="snooze" className="size-3.5" />
@@ -137,15 +147,15 @@ export function CaseManagerPrincipalPage({
           </div>
         </div>
         <div className="flex flex-col gap-lg">
-          {mainPivotObject ? (
+          {mainPivotClient ? (
             <ClientCard
               caseId={caseDetail.id}
-              pivotObject={mainPivotObject}
+              client={mainPivotClient}
               dataModel={dataModel}
               client360Tables={client360Tables}
               userScoringAccess={userScoringAccess}
             />
-          ) : (
+          ) : entityClients.length === 0 ? (
             <Card className="flex flex-col items-center justify-center gap-sm text-small text-center">
               <span className="text-grey-secondary">
                 {isAdmin(currentUser)
@@ -158,7 +168,35 @@ export function CaseManagerPrincipalPage({
                 </Link>
               ) : null}
             </Card>
-          )}
+          ) : null}
+          {activeEntityClient ? (
+            <div className="flex flex-col gap-sm">
+              <Typo variant="subtitle1">{t('cases:case_detail.entities')}</Typo>
+              {entityClients.length > 1 ? (
+                <Tabs>
+                  {entityClients.map((client) => (
+                    <button
+                      key={client.key}
+                      type="button"
+                      className={tabClassName}
+                      data-status={activeEntityClient.key === client.key ? 'active' : 'inactive'}
+                      onClick={() => setActiveEntityKey(client.key)}
+                    >
+                      {getClientDisplayInfo(client, client360Tables).clientName || client.objectId}
+                    </button>
+                  ))}
+                </Tabs>
+              ) : null}
+              <ClientCard
+                key={activeEntityClient.key}
+                caseId={caseDetail.id}
+                client={activeEntityClient}
+                dataModel={dataModel}
+                client360Tables={client360Tables}
+                userScoringAccess={userScoringAccess}
+              />
+            </div>
+          ) : null}
           <CaseDocuments files={caseDetail.files} />
           <CaseInvestigation
             root={rootRef}
@@ -188,17 +226,17 @@ export function CaseManagerPrincipalPage({
 
 type ClientCardProps = {
   caseId: string;
-  pivotObject: PivotObject;
+  client: CaseClient;
   dataModel: DataModel;
   client360Tables: Client360Table[];
   userScoringAccess: FeatureAccessLevelDto;
 };
 
-function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScoringAccess }: ClientCardProps) {
+function ClientCard({ caseId, client, dataModel, client360Tables, userScoringAccess }: ClientCardProps) {
   const { t } = useTranslation(['common']);
   const { currentUser } = useOrganizationDetails();
-  const currentTable = dataModel.find((t) => t.name === pivotObject.pivotObjectName);
-  const { metadata, entityName, clientName } = getClientDisplayInfo(pivotObject, client360Tables);
+  const currentTable = dataModel.find((t) => t.name === client.tableName);
+  const { metadata, entityName, clientName } = getClientDisplayInfo(client, client360Tables);
   const [explorationOpen, setExplorationOpen] = useState(false);
 
   return (
@@ -206,17 +244,17 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
       <div className="flex justify-between items-center">
         <span className="font-medium">{clientName}</span>
         <div className="flex items-center gap-sm">
-          {pivotObject.pivotObjectId ? (
+          {client.objectId ? (
             <UserScoreBadge
-              objectType={pivotObject.pivotObjectName}
-              objectId={pivotObject.pivotObjectId}
+              objectType={client.tableName}
+              objectId={client.objectId}
               userScoringAccess={userScoringAccess}
             />
           ) : null}
-          {metadata && pivotObject.isIngested ? (
+          {metadata && client.isIngested && client.objectId ? (
             <Link
               to="/client-detail/$objectType/$objectId"
-              params={clientDetailLinkParams(pivotObject.pivotObjectName, pivotObject.pivotObjectId!)}
+              params={clientDetailLinkParams(client.tableName, client.objectId)}
               className={CtaV2ClassName({ appearance: 'link', variant: 'primary' })}
             >
               <Icon icon="eye" className="size-4" />
@@ -229,25 +267,21 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
         <Tag color="grey" className="capitalize">
           {entityName}
         </Tag>
-        {pivotObject.pivotObjectId ? (
-          <ClientObjectTagList
-            caseId={caseId}
-            tableName={pivotObject.pivotObjectName}
-            objectId={pivotObject.pivotObjectId}
-          />
+        {client.objectId ? (
+          <ClientObjectTagList caseId={caseId} tableName={client.tableName} objectId={client.objectId} />
         ) : null}
       </div>
       <div>
         <DataFields
           options={{ layout: '2-columns', maxVisibleFields: 6, displayExpandButton: false }}
-          object={pivotObject.pivotObjectData as DataModelObject}
-          table={pivotObject.pivotObjectName}
+          object={client.object}
+          table={client.tableName}
         />
         {currentTable ? (
           <DataModelExplorerProvider>
             <NavigationOptions
               currentUser={currentUser}
-              pivotObject={pivotObject}
+              client={client}
               table={currentTable}
               dataModel={dataModel}
               onExplore={() => setExplorationOpen(true)}
