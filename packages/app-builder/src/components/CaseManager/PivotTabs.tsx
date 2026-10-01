@@ -1,5 +1,5 @@
 import { type DataModel, type DataModelObjectValue } from '@app-builder/models';
-import { CaseStatus, getPivotObjectKey, type PivotObject } from '@app-builder/models/cases';
+import { type CaseClient, CaseStatus } from '@app-builder/models/cases';
 import { isMaxRiskLevelInRange } from '@app-builder/models/scoring';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
@@ -18,32 +18,32 @@ import { createGraphTypeHelpers } from '../Graph/lib/data-model-map';
 import { RiskLevelBadge } from '../UserScoring/RiskLevelBadge';
 
 type PivotTabsProps = {
-  /** Pivots to render a tab for. Nothing renders when there is only one. */
-  pivots: PivotObject[];
+  /** Clients to render a tab for. Nothing renders when there is only one. */
+  clients: CaseClient[];
   /**
-   * Pivot list the tab numbers come from. Pass the case's full list when `pivots`
+   * Client list the tab numbers come from. Pass the case's full list when `clients`
    * is a subset, so a client and its links tab carry the same number.
    */
-  numberedFrom?: PivotObject[];
+  numberedFrom?: CaseClient[];
   to: './clients/$pivotValue' | './links/$pivotValue';
   caseStatus: CaseStatus;
   userScoringAccess: FeatureAccessLevelDto;
 };
 
-/** The "Client 1 / Client 2" strip above a pivot-scoped case tab. */
-export function PivotTabs({ pivots, numberedFrom = pivots, to, caseStatus, userScoringAccess }: PivotTabsProps) {
+/** The "Client 1 / Client 2" strip above a client-scoped case tab. */
+export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, userScoringAccess }: PivotTabsProps) {
   const { t } = useTranslation(['cases', 'common']);
   const [openAddClientPanel, setOpenAddClientPanel] = useState(false);
   const [addedObjects, setAddedObjects] = useState<AddedObject[]>([]);
 
-  if (pivots.length <= 1) return null;
+  if (clients.length <= 1) return null;
 
-  const orderedKeys = numberedFrom.map(getPivotObjectKey);
+  const orderedKeys = numberedFrom.map((client) => client.key);
   const isNotClosed = caseStatus !== 'closed';
   const showRiskLevel = isAccessible(userScoringAccess);
 
   const knownObjectKeys = new Set([
-    ...pivots.flatMap((pivot) => (pivot.pivotObjectId ? [objectKey(pivot.pivotObjectName, pivot.pivotObjectId)] : [])),
+    ...clients.flatMap((client) => (client.objectId ? [objectKey(client.tableName, client.objectId)] : [])),
     ...addedObjects.map((object) => objectKey(object.tableName, object.objectId)),
   ]);
 
@@ -72,8 +72,8 @@ export function PivotTabs({ pivots, numberedFrom = pivots, to, caseStatus, userS
 
   return (
     <div className="mb-lg flex shrink-0 gap-sm items-center">
-      {pivots.map((pivot) => {
-        const pivotValue = getPivotObjectKey(pivot);
+      {clients.map((client) => {
+        const pivotValue = client.key;
         return (
           <Link
             key={pivotValue}
@@ -115,10 +115,10 @@ export function PivotTabs({ pivots, numberedFrom = pivots, to, caseStatus, userS
                   }
                 />
               ))}
-              {pivots.map((pivot) => (
-                <PivotObjectItem
-                  key={pivot.pivotObjectId}
-                  pivot={pivot}
+              {clients.map((client) => (
+                <ClientObjectItem
+                  key={client.key}
+                  client={client}
                   canDelete={isNotClosed}
                   showRiskLevel={showRiskLevel}
                   onDelete={handleDelete}
@@ -148,30 +148,28 @@ type AddedObject = {
 
 const objectKey = (tableName: string, objectId: string) => `${tableName}:${objectId}`;
 
-function PivotObjectItem({
-  pivot,
+function ClientObjectItem({
+  client,
   canDelete,
   showRiskLevel,
   onDelete,
 }: {
-  pivot: PivotObject;
+  client: CaseClient;
   canDelete: boolean;
   showRiskLevel: boolean;
   onDelete: (name: string, id: string) => void;
 }) {
+  const objectId = client.objectId;
+
   return (
     <ObjectItem
-      tableName={pivot.pivotObjectName}
-      objectId={pivot.pivotObjectId ?? pivot.pivotObjectData.data.object_id}
-      data={pivot.pivotObjectData.data}
-      showRiskLevel={showRiskLevel && pivot.isIngested}
+      tableName={client.tableName}
+      objectId={objectId ?? client.key}
+      data={client.object.data}
+      showRiskLevel={showRiskLevel && client.isIngested}
       action={
-        canDelete && pivot.pivotObjectId ? (
-          <Button
-            variant="secondary"
-            appearance="link"
-            onClick={() => onDelete(pivot.pivotObjectName, pivot.pivotObjectId!)}
-          >
+        canDelete && objectId ? (
+          <Button variant="secondary" appearance="link" onClick={() => onDelete(client.tableName, objectId)}>
             <Icon icon="delete" className="size-4" />
           </Button>
         ) : null

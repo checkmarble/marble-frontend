@@ -1,21 +1,22 @@
 import { CurrentUser, DataModel, isAdmin, TableModel } from '@app-builder/models';
-import { PivotObject } from '@app-builder/models/cases';
+import { CaseClient } from '@app-builder/models/cases';
 import { Fragment, useMemo } from 'react';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateNavigationOptionModal } from '../Data/CreateNavigationOptionModal';
 import { DataModelExplorerContext } from '../DataModelExplorer/Provider';
+import { type DataModelExplorerNavigationTab } from '../DataModelExplorer/types';
 
 export type NavigationOptionsProps = {
   currentUser: CurrentUser;
-  pivotObject: PivotObject;
+  client: CaseClient;
   table: TableModel;
   dataModel: DataModel;
   onExplore: () => void;
 };
 
-export function NavigationOptions({ currentUser, pivotObject, table, dataModel, onExplore }: NavigationOptionsProps) {
+export function NavigationOptions({ currentUser, client, table, dataModel, onExplore }: NavigationOptionsProps) {
   const linksToTable = useMemo(() => {
     return R.pipe(
       dataModel,
@@ -51,8 +52,8 @@ export function NavigationOptions({ currentUser, pivotObject, table, dataModel, 
                 disabled={navOption.status === 'pending'}
                 onClick={() => {
                   dataModelExplorerContext.startNavigation({
-                    pivotObject,
-                    sourceObject: pivotObject.pivotObjectData.data,
+                    pivotObject: getExplorerPivotObject(client),
+                    sourceObject: client.object.data,
                     navigationOptionId: navOption.id,
                     sourceTableName: table.name,
                     sourceFieldName: navOption.sourceFieldName,
@@ -86,4 +87,9 @@ export function NavigationOptions({ currentUser, pivotObject, table, dataModel, 
       })}
     </div>
   );
+}
+
+function getExplorerPivotObject(client: CaseClient): DataModelExplorerNavigationTab['pivotObject'] {
+  if (client.kind === 'pivot') return client.pivotObject;
+  return { pivotValue: client.entity.objectId, pivotObjectName: client.tableName, isIngested: client.isIngested };
 }

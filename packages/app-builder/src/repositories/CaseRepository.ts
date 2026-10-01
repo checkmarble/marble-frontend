@@ -171,10 +171,10 @@ export function makeGetCaseRepository() {
       return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     createCaseFromObjects: async ({ name, inboxId, objects }) => {
-      const result = await marbleCoreApiClient.createCaseFromObjects({
+      const result = await marbleCoreApiClient.createCase({
         name,
         inbox_id: inboxId,
-        objects: adaptCaseObjectReferences(objects),
+        entities: adaptCaseObjectReferences(objects),
       });
       return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
@@ -203,8 +203,8 @@ export function makeGetCaseRepository() {
       return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     addObjectsToCase: async ({ caseId, objects }) => {
-      const result = await marbleCoreApiClient.addObjectsToCase(caseId, {
-        objects: adaptCaseObjectReferences(objects),
+      const result = await marbleCoreApiClient.addEntitiesToCase(caseId, {
+        entities: adaptCaseObjectReferences(objects),
       });
       return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
