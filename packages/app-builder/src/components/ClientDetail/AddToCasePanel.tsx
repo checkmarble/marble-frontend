@@ -3,7 +3,9 @@ import { type DataModelObjectValue } from '@app-builder/models';
 import { useAddObjectsToCaseMutation } from '@app-builder/queries/cases/add-objects-to-case';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useDataModel } from '@app-builder/services/data/data-model';
+import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { useQueryClient } from '@tanstack/react-query';
+import { useMatch } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 import { subEntityIcon } from '../Graph/GraphComponents';
@@ -21,6 +23,8 @@ interface ClientAddToCasePanelProps {
 }
 
 export function ClientAddToCasePanel({ objects }: ClientAddToCasePanelProps) {
+  const caseRouteMatch = useMatch({ from: '/_app/_builder/cases/_detail/s/$caseId', shouldThrow: false });
+  const caseId = caseRouteMatch ? fromSUUIDtoUUID(caseRouteMatch.params.caseId) : undefined;
   const addObjectsToCaseMutation = useAddObjectsToCaseMutation();
   const queryClient = useQueryClient();
 
@@ -46,6 +50,7 @@ export function ClientAddToCasePanel({ objects }: ClientAddToCasePanelProps) {
         await refreshClientCases();
         return caseDetail;
       }}
+      caseId={caseId}
     />
   );
 }

@@ -31,6 +31,7 @@ import {
   listCasesInputSchema,
   massUpdateCasesPayloadSchema,
   openCasePayloadSchema,
+  removeObjectsFromCasePayloadSchema,
   reviewDecisionPayloadSchema,
   reviewScreeningMatchPayloadSchema,
   snoozeCasePayloadSchema,
@@ -392,6 +393,25 @@ export const addObjectsToCaseFn = createServerFn({ method: 'POST' })
       if (isStatusBadRequestHttpError(error)) {
         throw new Error(t('common:errors.add_to_case.invalid'));
       } else if (!data.newCase && isNotFoundHttpError(error)) {
+        throw new Error(t('cases:errors.case_not_found'));
+      }
+      throw new Error(t('common:errors.unknown'));
+    }
+  });
+
+export const removeObjectsFromCaseFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(removeObjectsFromCasePayloadSchema)
+  .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+
+    try {
+      return await context.authInfo.cases.removeObjectsFromCase(data);
+    } catch (error) {
+      if (isStatusBadRequestHttpError(error)) {
+        throw new Error(t('common:errors.add_to_case.invalid'));
+      } else if (isNotFoundHttpError(error)) {
         throw new Error(t('cases:errors.case_not_found'));
       }
       throw new Error(t('common:errors.unknown'));

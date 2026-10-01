@@ -231,6 +231,13 @@ export const addObjectsToCasePayloadSchema = z.discriminatedUnion('newCase', [
 
 export type AddObjectsToCasePayload = z.infer<typeof addObjectsToCasePayloadSchema>;
 
+export const removeObjectsFromCasePayloadSchema = z.object({
+  caseId: z.string().min(1),
+  objects: caseObjectsSchema,
+});
+
+export type RemoveObjectsFromCasePayload = z.infer<typeof removeObjectsFromCasePayloadSchema>;
+
 // Update inbox escalation
 
 export const updateInboxEscalationPayloadSchema = z.object({
