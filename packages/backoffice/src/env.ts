@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const env = createEnv({
   server: {
     API_BASE_URL: z.string().url(),
+    MOTIVA_BASE_URL: z.string().url().default('http://localhost:8000'),
     SESSION_SECRET: z.string(),
   },
 

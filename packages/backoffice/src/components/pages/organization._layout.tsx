@@ -3,7 +3,7 @@ import { OrganizationDto } from 'marble-api';
 import { ReactNode } from 'react';
 import { Tabs, Typo, tabClassName } from 'ui-design-system';
 
-const ORGANIZATION_TABS = ['overview', 'users' /* , 'settings' */] as const;
+const ORGANIZATION_TABS = ['overview', 'users', 'screenings' /* , 'settings' */] as const;
 
 type OrganizationLayoutProps = {
   organization: OrganizationDto;

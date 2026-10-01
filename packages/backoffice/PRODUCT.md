@@ -51,6 +51,15 @@ manual, multi-system setup into a reviewable, repeatable artifact.
     email, role). Available roles depend on the org's `roles` feature access.
   - **Organization features** — set overridable feature access to
     `restricted` / `test` / `allowed` and save.
+  - **Screening object lookup** — choose a screening provider (OpenSanctions or
+    LexisNexis), select an organization's data-model table, retrieve an ingested
+    object by its ID, and inspect the FTM attributes sent to Motiva. The
+    provider is picked per lookup, independently of the organization's
+    configuration, and is kept in the URL with the table and object ID.
+    Operators can review ranked candidates in a left/right comparison grouped by
+    compatible FTM property types. Complete client, query, and raw Motiva result
+    payloads remain available in detail dialogs, and failed screenings show
+    Motiva's error.
 - Data these operators reason about: organizations, users, roles, feature
   access, data-model tables/fields/links, ingestion seeds, and decisions.
 

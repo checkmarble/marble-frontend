@@ -64,6 +64,119 @@ export type LicenseDto = {
     license_entitlements: LicenseEntitlementsDto;
 };
 /**
+ * Retrieve an organization data model
+ */
+export function getOrganizationDataModel(organizationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data_model: {
+                tables: {
+                    [key: string]: {
+                        id: string;
+                        name: string;
+                        description: string;
+                        fields: {
+                            [key: string]: {
+                                id: string;
+                                data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords" | "unknown";
+                                description: string;
+                                is_enum: boolean;
+                                name: string;
+                                nullable: boolean;
+                                table_id: string;
+                                values?: (string | number)[];
+                                unicity_constraint: "no_unicity_constraint" | "pending_unique_constraint" | "active_unique_constraint";
+                                ftm_property?: string;
+                            };
+                        };
+                        links_to_single?: {
+                            [key: string]: {
+                                id: string;
+                                parent_table_name: string;
+                                parent_table_id: string;
+                                parent_field_name: string;
+                                parent_field_id: string;
+                                child_table_name: string;
+                                child_table_id: string;
+                                child_field_name: string;
+                                child_field_id: string;
+                            };
+                        };
+                        navigation_options?: {
+                            /** name of the table we use as a starting point to explore "many" entries from another table, by correlating fields. */
+                            source_table_name: string;
+                            source_table_id: string;
+                            /** name of the field whose value we use as a filter on this object. */
+                            source_field_name: string;
+                            source_field_id: string;
+                            /** name of the table for which we explore "many" entries from a reference object. May be the same as the parent table. */
+                            target_table_name: string;
+                            target_table_id: string;
+                            /** name of the field on which to filter the target table (on the "many" side of the relation) */
+                            filter_field_name: string;
+                            filter_field_id: string;
+                            /** name of the field on which to order the target table (on the "many" side of the relation) */
+                            ordering_field_name: string;
+                            ordering_field_id: string;
+                            /** status of the index that is created in the database to allow data exploration on the child table. */
+                            status: "pending" | "valid" | "invalid";
+                        }[];
+                        ftm_entity?: "Person" | "Company" | "Organization" | "Vessel" | "Airplane";
+                        metadata?: {
+                            [key: string]: any;
+                        } | null;
+                        /** Name of the field used as default ordering */
+                        primary_ordering_field?: string;
+                    };
+                };
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model${QS.query(QS.explode({
+        "organization-id": organizationId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Retrieve an organization client object
+ */
+export function getOrganizationClientObject(organizationId: string, tableName: string, objectId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data: {
+                [key: string]: any;
+            };
+            metadata: {
+                valid_from: string;
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}${QS.query(QS.explode({
+        "organization-id": organizationId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
  * Retrieve organization features
  */
 export function getOrganizationFeatures(organizationId: string, opts?: Oazapfts.RequestOpts) {
