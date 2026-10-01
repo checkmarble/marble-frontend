@@ -1,17 +1,21 @@
 import { type DataModel, type DataModelObjectValue } from '@app-builder/models';
-import { type CaseClient, CaseStatus } from '@app-builder/models/cases';
+import { type CaseClient, type CaseObjectReference, CaseStatus } from '@app-builder/models/cases';
 import { isMaxRiskLevelInRange } from '@app-builder/models/scoring';
+import { useAddObjectsToCaseMutation } from '@app-builder/queries/cases/add-objects-to-case';
+import { useRemoveObjectsFromCaseMutation } from '@app-builder/queries/cases/remove-objects-from-case';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useGetScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { isAccessible } from '@app-builder/services/feature-access';
+import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { Link } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { Link, useMatch, useRouter } from '@tanstack/react-router';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Input, MenuCommand, Panel, Tag } from 'ui-design-system';
+import { Button, Card, cn, Input, MenuCommand, Panel, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { subEntityIcon } from '../Graph/GraphComponents';
 import { createGraphTypeHelpers } from '../Graph/lib/data-model-map';
@@ -33,34 +37,102 @@ type PivotTabsProps = {
 /** The "Client 1 / Client 2" strip above a client-scoped case tab. */
 export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, userScoringAccess }: PivotTabsProps) {
   const { t } = useTranslation(['cases', 'common']);
+  const { caseId: caseSuuid } = useMatch({ from: '/_app/_builder/cases/_detail/s/$caseId' }).params;
+  const caseId = fromSUUIDtoUUID(caseSuuid);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const addObjectsToCase = useAddObjectsToCaseMutation();
+  const removeObjectsFromCase = useRemoveObjectsFromCaseMutation();
   const [openAddClientPanel, setOpenAddClientPanel] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [addedObjects, setAddedObjects] = useState<AddedObject[]>([]);
+  const [deletedObjects, setDeletedObjects] = useState<CaseObjectReference[]>([]);
 
   if (clients.length <= 1) return null;
 
   const orderedKeys = numberedFrom.map((client) => client.key);
   const isNotClosed = caseStatus !== 'closed';
   const showRiskLevel = isAccessible(userScoringAccess);
+  const deletedObjectKeys = new Set(deletedObjects.map((object) => objectKey(object.objectType, object.objectId)));
+  const hasPendingChanges = addedObjects.length > 0 || deletedObjects.length > 0;
 
   const knownObjectKeys = new Set([
-    ...clients.flatMap((client) => (client.objectId ? [objectKey(client.tableName, client.objectId)] : [])),
+    ...clients.flatMap((client) =>
+      client.objectId && !deletedObjectKeys.has(objectKey(client.tableName, client.objectId))
+        ? [objectKey(client.tableName, client.objectId)]
+        : [],
+    ),
     ...addedObjects.map((object) => objectKey(object.tableName, object.objectId)),
   ]);
 
   const handleOpenChange = (open: boolean) => {
+    if (isSaving) return;
     setOpenAddClientPanel(open);
-    if (!open) setAddedObjects([]);
+    if (!open) {
+      setAddedObjects([]);
+      setDeletedObjects([]);
+    }
   };
 
-  const handleSaveChanges = () => {
-    handleOpenChange(false);
+  const handleSaveChanges = async () => {
+    const pendingAdds = addedObjects.map(toCaseObjectReference);
+    const pendingRemoves = deletedObjects;
+    if (pendingAdds.length === 0 && pendingRemoves.length === 0) return;
+
+    setIsSaving(true);
+    const pendingAddKeys = new Set(pendingAdds.map((object) => objectKey(object.objectType, object.objectId)));
+    const pendingRemoveKeys = new Set(pendingRemoves.map((object) => objectKey(object.objectType, object.objectId)));
+    let didChange = false;
+    try {
+      if (pendingAdds.length > 0) {
+        await addObjectsToCase.mutateAsync({ newCase: false, caseId, objects: pendingAdds });
+        setAddedObjects((prev) =>
+          prev.filter((object) => !pendingAddKeys.has(objectKey(object.tableName, object.objectId))),
+        );
+        didChange = true;
+      }
+      if (pendingRemoves.length > 0) {
+        await removeObjectsFromCase.mutateAsync({ caseId, objects: pendingRemoves });
+        setDeletedObjects((prev) =>
+          prev.filter((object) => !pendingRemoveKeys.has(objectKey(object.objectType, object.objectId))),
+        );
+        didChange = true;
+      }
+      setOpenAddClientPanel(false);
+    } finally {
+      if (didChange) {
+        await Promise.all([
+          router.invalidate(),
+          ...[...pendingAdds, ...pendingRemoves].map((object) =>
+            queryClient.invalidateQueries({ queryKey: ['data', object.objectType, object.objectId, 'cases'] }),
+          ),
+        ]);
+      }
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = (name: string, id: string) => {
-    console.log('delete', { name, id });
+  const handleDelete = (tableName: string, objectId: string) => {
+    const key = objectKey(tableName, objectId);
+    setDeletedObjects((prev) =>
+      prev.some((object) => objectKey(object.objectType, object.objectId) === key)
+        ? prev
+        : [...prev, { objectType: tableName, objectId }],
+    );
+  };
+
+  const handleRestore = (tableName: string, objectId: string) => {
+    const key = objectKey(tableName, objectId);
+    setDeletedObjects((prev) => prev.filter((object) => objectKey(object.objectType, object.objectId) !== key));
   };
 
   const handleAdd = (object: AddedObject) => {
+    const key = objectKey(object.tableName, object.objectId);
+    // Re-adding a client queued for removal cancels that removal. The case still has it until save.
+    if (deletedObjectKeys.has(key)) {
+      handleRestore(object.tableName, object.objectId);
+      return;
+    }
     setAddedObjects((prev) => [...prev, object]);
   };
 
@@ -77,12 +149,17 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
         return (
           <Link
             key={pivotValue}
-            className="px-sm h-8 rounded-md border border-grey-border flex items-center aria-[current=page]:border-purple-primary"
+            className="px-sm h-8 rounded-md border border-grey-border flex items-center aria-[current=page]:border-purple-primary space-x-sm"
             from="/cases/s/$caseId/"
             to={to}
             params={{ pivotValue }}
           >
-            {t('cases:case_manager.client_panel.label', { index: orderedKeys.indexOf(pivotValue) + 1 })}
+            <span>{t('cases:case_manager.client_panel.label', { index: orderedKeys.indexOf(pivotValue) + 1 })}</span>
+            {client.kind === 'entity' ? (
+              <Tag color="grey" size="xs">
+                {t('cases:case_manager.added_entity')}
+              </Tag>
+            ) : null}
           </Link>
         );
       })}
@@ -113,6 +190,7 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
                       <Icon icon="delete" className="size-4" />
                     </Button>
                   }
+                  kind="new"
                 />
               ))}
               {clients.map((client) => (
@@ -120,8 +198,12 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
                   key={client.key}
                   client={client}
                   canDelete={isNotClosed}
+                  isPendingRemoval={
+                    !!client.objectId && deletedObjectKeys.has(objectKey(client.tableName, client.objectId))
+                  }
                   showRiskLevel={showRiskLevel}
                   onDelete={handleDelete}
+                  onRestore={handleRestore}
                 />
               ))}
             </div>
@@ -129,8 +211,9 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
               <Panel.FooterButton isCloseButton label={t('common:close')} />
               <Panel.FooterButton
                 label={t('cases:manage_clients_panel.save_changes')}
-                color="primary"
                 onClick={handleSaveChanges}
+                disabled={!hasPendingChanges}
+                isLoading={isSaving}
               />
             </Panel.Footer>
           </Panel.Content>
@@ -148,18 +231,28 @@ type AddedObject = {
 
 const objectKey = (tableName: string, objectId: string) => `${tableName}:${objectId}`;
 
+const toCaseObjectReference = (object: AddedObject): CaseObjectReference => ({
+  objectType: object.tableName,
+  objectId: object.objectId,
+});
+
 function ClientObjectItem({
   client,
   canDelete,
+  isPendingRemoval,
   showRiskLevel,
   onDelete,
+  onRestore,
 }: {
   client: CaseClient;
   canDelete: boolean;
+  isPendingRemoval: boolean;
   showRiskLevel: boolean;
-  onDelete: (name: string, id: string) => void;
+  onDelete: (tableName: string, objectId: string) => void;
+  onRestore: (tableName: string, objectId: string) => void;
 }) {
   const objectId = client.objectId;
+  const canChangeMembership = canDelete && !!objectId && client.kind !== 'pivot';
 
   return (
     <ObjectItem
@@ -167,11 +260,18 @@ function ClientObjectItem({
       objectId={objectId ?? client.key}
       data={client.object.data}
       showRiskLevel={showRiskLevel && client.isIngested}
+      kind={isPendingRemoval ? 'deleted' : client.kind}
       action={
-        canDelete && objectId ? (
-          <Button variant="secondary" appearance="link" onClick={() => onDelete(client.tableName, objectId)}>
-            <Icon icon="delete" className="size-4" />
-          </Button>
+        canChangeMembership ? (
+          isPendingRemoval ? (
+            <Button variant="secondary" appearance="link" onClick={() => onRestore(client.tableName, objectId)}>
+              <Icon icon="plus" className="size-4" />
+            </Button>
+          ) : (
+            <Button variant="secondary" appearance="link" onClick={() => onDelete(client.tableName, objectId)}>
+              <Icon icon="delete" className="size-4" />
+            </Button>
+          )
         ) : null
       }
     />
@@ -183,19 +283,22 @@ function ObjectItem({
   objectId,
   data,
   showRiskLevel,
+  kind,
   action,
 }: {
   tableName: string;
   objectId: string;
   data: Record<string, DataModelObjectValue>;
   showRiskLevel: boolean;
+  kind: 'pivot' | 'entity' | 'new' | 'deleted';
   action?: ReactNode;
 }) {
   const dataModel = useDataModel();
   const typeHelpers = createGraphTypeHelpers(dataModel);
+  const { t } = useTranslation('cases');
 
   return (
-    <Card className="p-md flex items-center gap-sm justify-between">
+    <Card className={cn('p-md flex items-center gap-sm justify-between', kind === 'deleted' && 'opacity-60')}>
       <div className="flex items-center gap-sm">
         <Icon
           icon={subEntityIcon({
@@ -209,6 +312,21 @@ function ObjectItem({
           {objectId}
         </Tag>
         {showRiskLevel ? <ObjectRiskLevel objectType={tableName} objectId={objectId} /> : null}
+        {kind === 'entity' && (
+          <Tag color="grey" size="xs">
+            {t('cases:case_manager.added_entity')}
+          </Tag>
+        )}
+        {kind === 'new' && (
+          <Tag color="purple" size="xs">
+            {t('cases:case_manager.new_entity')}
+          </Tag>
+        )}
+        {kind === 'deleted' && (
+          <Tag color="red" size="xs">
+            {t('cases:case_manager.removed_entity')}
+          </Tag>
+        )}
       </div>
       {action}
     </Card>
@@ -336,11 +454,12 @@ function AddClientToCase({
               isAlreadyAdded ? (
                 <span className="text-s text-grey-secondary">{t('cases:manage_clients_panel.already_added')}</span>
               ) : (
-                <Button variant="secondary" appearance="link" onClick={handleAdd}>
+                <Button variant="secondary" mode="icon" onClick={handleAdd}>
                   <Icon icon="plus" className="size-4" />
                 </Button>
               )
             }
+            kind="entity"
           />
         ) : (
           <p className="text-s text-grey-secondary text-center p-sm">

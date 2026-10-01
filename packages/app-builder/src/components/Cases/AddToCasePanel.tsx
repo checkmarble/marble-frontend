@@ -7,7 +7,7 @@ import { useForm } from '@tanstack/react-form';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Panel, PanelSharpFactory, SelectV2, Switch } from 'ui-design-system';
+import { Button, Input, Panel, PanelSharpFactory, SelectV2, Switch } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 const newCaseFieldsSchema = z.object({ name: z.string().min(1), inboxId: z.string().min(1) });
@@ -16,6 +16,7 @@ const existingCaseFieldsSchema = z.object({ caseId: z.string().min(1) });
 interface AddToCasePanelProps {
   initialMode?: 'new' | 'existing';
   leadingContent?: ReactNode;
+  caseId?: string;
   onCreateCase: (values: z.infer<typeof newCaseFieldsSchema>) => Promise<CaseDetail>;
   onAddToCase: (values: z.infer<typeof existingCaseFieldsSchema>) => Promise<CaseDetail>;
 }
@@ -23,6 +24,7 @@ interface AddToCasePanelProps {
 export function AddToCasePanel({
   initialMode = 'existing',
   leadingContent,
+  caseId,
   onCreateCase,
   onAddToCase,
 }: AddToCasePanelProps) {
@@ -39,13 +41,20 @@ export function AddToCasePanel({
           leadingContent={leadingContent}
           onCreateCase={onCreateCase}
           onAddToCase={onAddToCase}
+          caseId={caseId}
         />
       </Panel.Content>
     </Panel.Container>
   );
 }
 
-function AddToCaseForm({ initialMode = 'existing', leadingContent, onCreateCase, onAddToCase }: AddToCasePanelProps) {
+function AddToCaseForm({
+  initialMode = 'existing',
+  leadingContent,
+  onCreateCase,
+  onAddToCase,
+  caseId,
+}: AddToCasePanelProps) {
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const [isNewCase, setIsNewCase] = useState(initialMode === 'new');
@@ -105,7 +114,7 @@ function AddToCaseForm({ initialMode = 'existing', leadingContent, onCreateCase,
             <NewCaseForm inboxes={inboxes} onSubmit={submitNewCase} />
           )
         ) : (
-          <ExistingCaseForm onSubmit={submitExistingCase} />
+          <ExistingCaseForm caseId={caseId} onSubmit={submitExistingCase} />
         )}
       </div>
       <Panel.Footer>
@@ -201,8 +210,10 @@ function NewCaseForm({
 }
 
 function ExistingCaseForm({
+  caseId,
   onSubmit,
 }: {
+  caseId?: string;
   onSubmit: (values: z.infer<typeof existingCaseFieldsSchema>) => Promise<void>;
 }) {
   const { t } = useTranslation('cases');
@@ -230,8 +241,16 @@ function ExistingCaseForm({
         >
           {(field) => (
             <div className="flex flex-col gap-sm">
-              <label htmlFor="existing-case-id" className="text-xs first-letter:capitalize">
-                {t('cases:add_to_case.case_id')}
+              <label
+                htmlFor="existing-case-id"
+                className="text-xs first-letter:capitalize flex items-center justify-between w-full"
+              >
+                <span> {t('cases:add_to_case.case_id')}</span>
+                {caseId ? (
+                  <Button size="small" variant="secondary" onClick={() => field.handleChange(caseId)}>
+                    {t('cases:add_to_case.use_existing_case')}
+                  </Button>
+                ) : null}
               </label>
               <Input
                 id="existing-case-id"

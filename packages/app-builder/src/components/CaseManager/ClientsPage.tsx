@@ -27,8 +27,8 @@ import { isGraphEligibleClient } from './graph-pivots';
 import { CommentContext } from './hooks/comment-context';
 import { MainLinksGraph, mainLinksGraphMinHeight } from './MainLinksGraph';
 import { NavigationOptions } from './NavigationOptions';
+import { getObjectName } from './PivotTabs';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
-import { getClientDisplayInfo } from './utils/client';
 
 /** Fills the viewport so the embedded graph gets its height without the page scrolling. */
 const clientColumnMinHeight = 'min-h-[calc(100dvh-12rem)]';
@@ -61,7 +61,9 @@ export function CaseManagerClientsPage({
   const ingestedInfo =
     client.isIngested && client.objectId ? { objectId: client.objectId, objectType: client.tableName } : null;
   const currentTable = dataModel.find((t) => t.name === client.tableName);
-  const { metadata, entityName, clientName } = getClientDisplayInfo(client, client360Tables);
+  const client360Table = client360Tables.find((table) => table.name === client.tableName);
+  const entityName = client360Table?.alias || client360Table?.name || client.tableName;
+  const clientName = getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '');
   const showMainLinks = graphDisplay !== 'hidden' && isGraphEligibleClient(client, dataModel);
 
   return (
@@ -71,7 +73,7 @@ export function CaseManagerClientsPage({
           <span className="font-medium">{clientName}</span>
           <div className="flex items-center gap-sm">
             {ingestedInfo ? <UserScoreBadge userScoringAccess={userScoringAccess} {...ingestedInfo} /> : null}
-            {metadata && ingestedInfo ? (
+            {client360Table && ingestedInfo ? (
               <Link
                 to="/client-detail/$objectType/$objectId"
                 params={clientDetailLinkParams(ingestedInfo.objectType, ingestedInfo.objectId)}
