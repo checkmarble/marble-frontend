@@ -22,6 +22,8 @@ import { type CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { Trans } from 'react-i18next';
 import { match } from 'ts-pattern';
+import { CaseEntityAddedDetail } from './CaseEntityAddedDetail';
+import { CaseEntityRemovedDetail } from './CaseEntityRemovedDetail';
 
 export function CaseEventDetail({
   event,
@@ -56,6 +58,8 @@ export function CaseEventDetail({
     .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
     .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
     .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
+    .with({ eventType: 'entity_added' }, (e) => <CaseEntityAddedDetail event={e} />)
+    .with({ eventType: 'entity_removed' }, (e) => <CaseEntityRemovedDetail event={e} />)
     .exhaustive();
 
   return (

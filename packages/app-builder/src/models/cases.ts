@@ -151,6 +151,8 @@ export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'sar_status_changed',
   'sar_file_uploaded',
   'entity_annotated',
+  'entity_added',
+  'entity_removed',
 ]);
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -255,6 +257,16 @@ export interface EntityAnnotatedEvent extends CaseEventBase<'entity_annotated'> 
   annotation: TagEntityAnnotationDto | CommentEntityAnnotationDto | FileEntityAnnotationDto;
 }
 
+export interface CaseEntityAddedEvent extends CaseEventBase<'entity_added'> {
+  userId?: string | null;
+  entityId: string;
+}
+
+export interface CaseEntityRemovedEvent extends CaseEventBase<'entity_removed'> {
+  userId?: string | null;
+  entityId: string;
+}
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -274,7 +286,9 @@ export type CaseEvent =
   | SarDeletedEvent
   | SarStatusChangedEvent
   | SarFileUploadedEvent
-  | EntityAnnotatedEvent;
+  | EntityAnnotatedEvent
+  | CaseEntityAddedEvent
+  | CaseEntityRemovedEvent;
 
 export async function adaptCaseEventDto(
   caseEventDto: CaseEventDto,
@@ -402,6 +416,18 @@ export async function adaptCaseEventDto(
       sarId: dto.resource_id,
       filename: dto.new_value,
     }))
+    .with({ event_type: 'entity_added' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      entityId: dto.resource_id,
+    }))
+    .with({ event_type: 'entity_removed' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      entityId: dto.resource_id,
+    }))
     .with({ event_type: 'entity_annotated' }, async (dto) => {
       const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);
       return {
@@ -411,6 +437,7 @@ export async function adaptCaseEventDto(
         annotation,
       };
     })
+
     .exhaustive();
 }
 
