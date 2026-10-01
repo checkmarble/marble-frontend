@@ -11,7 +11,7 @@ import { MouseEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn, ExpandableGroupTagLine, Panel, Tooltip } from 'ui-design-system';
+import { Button, Card, cn, ExpandableGroupTagLine, Panel, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { FormatData } from '../FormatData';
@@ -52,9 +52,9 @@ export const CaseAlerts = ({ caseDecisionsQuery, dataModel }: CaseAlertsProps) =
       <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
     ))
     .otherwise((query) => {
-      const decisions = query.data.pages.flatMap((page) => page.decisions);
+      const decisions = query.data.pages.flatMap((page) => page?.decisions ?? []);
 
-      return (
+      return decisions.length ? (
         <>
           <div className="flex flex-col gap-sm">
             {decisions.map((decision) => {
@@ -76,6 +76,8 @@ export const CaseAlerts = ({ caseDecisionsQuery, dataModel }: CaseAlertsProps) =
             </Button>
           ) : null}
         </>
+      ) : (
+        <Card className="p-md">{t('cases:case_detail.alerts.no_alerts')}</Card>
       );
     });
 };

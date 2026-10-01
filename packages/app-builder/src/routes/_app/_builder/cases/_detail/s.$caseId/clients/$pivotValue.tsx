@@ -1,36 +1,28 @@
 import { CaseManagerClientsPage } from '@app-builder/components/CaseManager/ClientsPage';
-import { getPivotObjectKey } from '@app-builder/models/cases';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/clients/$pivotValue')({
   beforeLoad: ({ context, params }) => {
-    const { pivotObjects } = context;
-
-    // The `$pivotValue` route param carries the pivot object key (pivot id when known),
-    // so same-valued pivots of different parent types resolve to distinct objects.
-    const pivotObject = (pivotObjects ?? []).find((p) => getPivotObjectKey(p) === params.pivotValue);
-    if (!pivotObject) {
+    // The `$pivotValue` route param carries the case client key (see `CaseClient`), so
+    // pivot objects and manually added entities resolve to distinct clients.
+    const client = context.caseClients.find((c) => c.key === params.pivotValue);
+    if (!client) {
       throw redirect({ from: '/cases/s/$caseId/', to: './principal' });
     }
 
-    return { pivotObject };
-  },
-  loader: ({ context: { pivotObject } }) => {
-    return { objectId: pivotObject.pivotObjectId!, objectType: pivotObject.pivotObjectName };
+    return { client };
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { caseDetail, dataModel, pivotObject, client360Tables, userScoringAccess } = Route.useRouteContext();
-  const { objectId, objectType } = Route.useLoaderData();
+  const { caseDetail, dataModel, client, client360Tables, userScoringAccess } = Route.useRouteContext();
 
   return (
     <CaseManagerClientsPage
-      ingestedInfo={pivotObject.isIngested ? { objectId, objectType } : null}
       caseDetail={caseDetail}
       dataModel={dataModel}
-      pivotObject={pivotObject}
+      client={client}
       client360Tables={client360Tables}
       userScoringAccess={userScoringAccess}
     />

@@ -4,7 +4,7 @@ import { CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn } from 'ui-design-system';
+import { cn, Typo } from 'ui-design-system';
 
 type CaseInvestigationProps = {
   caseId: string;
@@ -27,7 +27,7 @@ export const CaseInvestigation = ({
 
   return (
     <div className={cn('flex flex-col justify-start gap-sm', className)}>
-      <span className="text-default text-grey-primary px-2xs font-medium">{t('cases:investigation')}</span>
+      <Typo variant="subtitle1">{t('cases:investigation')}</Typo>
       <div className="border-grey-border bg-surface-card flex flex-col rounded-lg border overflow-hidden">
         <div className="p-md">
           <CaseEvents events={events} currentInboxId={currentInboxId} inboxes={inboxes} root={root} />

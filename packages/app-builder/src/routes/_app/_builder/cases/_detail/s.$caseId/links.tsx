@@ -1,4 +1,4 @@
-import { getGraphEligiblePivots } from '@app-builder/components/CaseManager/graph-pivots';
+import { getGraphEligibleClients } from '@app-builder/components/CaseManager/graph-pivots';
 import { CommentContext } from '@app-builder/components/CaseManager/hooks/comment-context';
 import { PivotTabs } from '@app-builder/components/CaseManager/PivotTabs';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
@@ -14,9 +14,9 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/lin
 });
 
 function RouteComponent() {
-  const { pivotObjects, dataModel, caseDetail, userScoringAccess } = Route.useRouteContext();
+  const { caseClients, dataModel, caseDetail, userScoringAccess } = Route.useRouteContext();
   const { set } = CommentContext.useValue();
-  const eligiblePivots = getGraphEligiblePivots(pivotObjects, dataModel);
+  const eligibleClients = getGraphEligibleClients(caseClients, dataModel);
   useEffect(() => {
     set(null);
   }, [set]);
@@ -24,8 +24,8 @@ function RouteComponent() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <PivotTabs
-        pivots={eligiblePivots}
-        numberedFrom={pivotObjects}
+        clients={eligibleClients}
+        numberedFrom={caseClients}
         to="./links/$pivotValue"
         caseStatus={caseDetail?.status}
         userScoringAccess={userScoringAccess}

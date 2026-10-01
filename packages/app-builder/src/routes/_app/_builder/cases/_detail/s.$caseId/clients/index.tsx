@@ -1,15 +1,14 @@
-import { getPivotObjectKey } from '@app-builder/models/cases';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/clients/')({
   beforeLoad: async ({ context }) => {
-    const { pivotObjects } = context;
+    const firstClient = context.caseClients[0];
 
-    if (pivotObjects.length > 0 && pivotObjects[0]) {
+    if (firstClient) {
       throw redirect({
         from: '/cases/s/$caseId/clients',
         to: './$pivotValue',
-        params: { pivotValue: getPivotObjectKey(pivotObjects[0]) },
+        params: { pivotValue: firstClient.key },
       });
     }
 

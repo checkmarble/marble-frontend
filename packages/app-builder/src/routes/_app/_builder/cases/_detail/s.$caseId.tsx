@@ -6,6 +6,7 @@ import { CommentContext } from '@app-builder/components/CaseManager/hooks/commen
 import { CaseManagerPageLayout } from '@app-builder/components/CaseManager/PageLayout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
+import { getCaseClients } from '@app-builder/models/cases';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
@@ -45,7 +46,8 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId')({
     BreadCrumbs: caseDetailBreadcrumbs,
   },
   beforeLoad: async ({ params }) => {
-    return beforeLoadFn({ data: { caseId: params.caseId } });
+    const context = await beforeLoadFn({ data: { caseId: params.caseId } });
+    return { ...context, caseClients: getCaseClients(context.pivotObjects, context.caseDetail.entities) };
   },
   loader: ({ context }) => caseDetailBreadcrumbData(context.caseDetail, context.inboxes),
   component: RouteComponent,
