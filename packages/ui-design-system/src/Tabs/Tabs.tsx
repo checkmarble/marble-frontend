@@ -1,3 +1,4 @@
+import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '../utils';
 
 // Works for both:
@@ -17,16 +18,28 @@ export const tabClassName = cn(
   'aria-disabled:text-grey-secondary',
 );
 
+const tabsClassName = cva(
+  'flex p-xs gap-xs rounded-md bg-purple-background self-start justify-self-start dark:bg-grey-background',
+  {
+    variants: {
+      variant: {
+        default: '',
+        fluid: 'flex-wrap',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  },
+);
+
 /**
  * Container component for tabs providing consistent spacing and background styling.
  * Children should be buttons or NavLinks with the `tabClassName` applied.
  */
-export function Tabs({ children }: { children: React.ReactNode }) {
+export function Tabs({ children, variant }: { children: React.ReactNode } & VariantProps<typeof tabsClassName>) {
   return (
-    <div
-      role="tablist"
-      className="flex p-xs gap-xs rounded-md bg-purple-background self-start justify-self-start dark:bg-grey-background"
-    >
+    <div role="tablist" className={tabsClassName({ variant })}>
       {children}
     </div>
   );

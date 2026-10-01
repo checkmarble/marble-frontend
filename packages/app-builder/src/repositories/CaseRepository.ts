@@ -85,6 +85,7 @@ export interface CaseRepository {
   setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
   addDecisionsToCase(args: { caseId: string; decisionIds: string[] }): Promise<CaseDetail>;
   addObjectsToCase(args: { caseId: string; objects: CaseObjectReference[] }): Promise<CaseDetail>;
+  removeObjectsFromCase(args: { caseId: string; objects: CaseObjectReference[] }): Promise<CaseDetail>;
   reviewDecision(args: { decisionId: string; reviewComment: string; reviewStatus: ReviewStatus }): Promise<CaseDetail>;
   listSuspiciousActivityReports(args: { caseId: string }): Promise<SuspiciousActivityReport[]>;
   createSuspiciousActivityReport(args: {
@@ -204,6 +205,12 @@ export function makeGetCaseRepository() {
     },
     addObjectsToCase: async ({ caseId, objects }) => {
       const result = await marbleCoreApiClient.addEntitiesToCase(caseId, {
+        entities: adaptCaseObjectReferences(objects),
+      });
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
+    },
+    removeObjectsFromCase: async ({ caseId, objects }) => {
+      const result = await marbleCoreApiClient.removeEntitiesFromCase(caseId, {
         entities: adaptCaseObjectReferences(objects),
       });
       return adaptCaseDetail(result.case, marbleCoreApiClient);
