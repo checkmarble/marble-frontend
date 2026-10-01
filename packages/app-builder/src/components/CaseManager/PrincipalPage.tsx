@@ -36,9 +36,9 @@ import { CaseInfo } from './CaseInfo';
 import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
 import { EscalateCaseButton } from './EscalateCaseButton';
 import { NavigationOptions } from './NavigationOptions';
+import { getObjectName } from './PivotTabs';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
-import { getClientDisplayInfo } from './utils/client';
 
 export type CaseManagerPrincipalPageProps = {
   caseDetail: CaseDetail;
@@ -173,7 +173,7 @@ export function CaseManagerPrincipalPage({
             <div className="flex flex-col gap-sm">
               <Typo variant="subtitle1">{t('cases:case_detail.entities')}</Typo>
               {entityClients.length > 1 ? (
-                <Tabs>
+                <Tabs variant="fluid">
                   {entityClients.map((client) => (
                     <button
                       key={client.key}
@@ -182,7 +182,7 @@ export function CaseManagerPrincipalPage({
                       data-status={activeEntityClient.key === client.key ? 'active' : 'inactive'}
                       onClick={() => setActiveEntityKey(client.key)}
                     >
-                      {getClientDisplayInfo(client, client360Tables).clientName || client.objectId}
+                      {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
                     </button>
                   ))}
                 </Tabs>
@@ -236,7 +236,9 @@ function ClientCard({ caseId, client, dataModel, client360Tables, userScoringAcc
   const { t } = useTranslation(['common']);
   const { currentUser } = useOrganizationDetails();
   const currentTable = dataModel.find((t) => t.name === client.tableName);
-  const { metadata, entityName, clientName } = getClientDisplayInfo(client, client360Tables);
+  const client360Table = client360Tables.find((table) => table.name === client.tableName);
+  const entityName = client360Table?.alias || client360Table?.name || client.tableName;
+  const clientName = getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '');
   const [explorationOpen, setExplorationOpen] = useState(false);
 
   return (
@@ -251,7 +253,7 @@ function ClientCard({ caseId, client, dataModel, client360Tables, userScoringAcc
               userScoringAccess={userScoringAccess}
             />
           ) : null}
-          {metadata && client.isIngested && client.objectId ? (
+          {client360Table && client.isIngested && client.objectId ? (
             <Link
               to="/client-detail/$objectType/$objectId"
               params={clientDetailLinkParams(client.tableName, client.objectId)}
