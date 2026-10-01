@@ -356,6 +356,7 @@
   "manage_clients_panel.already_added": "Already added",
   "manage_clients_panel.save_changes": "Save changes",
   "manage_clients_panel.search_placeholder": "Add client by ID...",
+  "manage_clients_panel.table_placeholder": "Select a table",
   "manage_clients_panel.title": "Client management on the case",
   "manager.actions.complete_sar": "Complete SAR",
   "manager.actions.create_sar": "Report suspicious activity",
