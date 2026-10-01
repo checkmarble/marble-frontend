@@ -6,11 +6,16 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/cli
 });
 
 function RouteComponent() {
-  const { pivotObjects } = Route.useRouteContext();
+  const { pivotObjects, caseDetail, userScoringAccess } = Route.useRouteContext();
 
   return (
     <>
-      <PivotTabs pivots={pivotObjects} to="./clients/$pivotValue" />
+      <PivotTabs
+        pivots={pivotObjects}
+        to="./clients/$pivotValue"
+        caseStatus={caseDetail?.status}
+        userScoringAccess={userScoringAccess}
+      />
       <Outlet />
     </>
   );

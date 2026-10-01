@@ -1,3 +1,4 @@
+import { isNotFoundHttpError } from '@app-builder/models';
 import { getObjectDetailsFn } from '@app-builder/server-fns/data';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
@@ -15,5 +16,6 @@ export const useObjectDetailsQuery = (
       return getObjectDetails({ data: { objectType, objectId } });
     },
     enabled: enabled && !!objectType && !!objectId,
+    retry: (failureCount, error) => !isNotFoundHttpError(error) && failureCount < 3,
   });
 };
