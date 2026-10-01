@@ -11,7 +11,7 @@ import { Link } from '@tanstack/react-router';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, cn, Input, Panel, Tabs, Tag, tabClassName } from 'ui-design-system';
+import { Button, Card, Input, MenuCommand, Panel, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { subEntityIcon } from '../Graph/GraphComponents';
 import { createGraphTypeHelpers } from '../Graph/lib/data-model-map';
@@ -195,7 +195,6 @@ function ObjectItem({
 }) {
   const dataModel = useDataModel();
   const typeHelpers = createGraphTypeHelpers(dataModel);
-  console.log('showRiskLevel', showRiskLevel);
 
   return (
     <Card className="p-md flex items-center gap-sm justify-between">
@@ -259,6 +258,7 @@ function AddClientToCase({
   const [objectIdInput, setObjectIdInput] = useState('');
   const [searchedObjectId, setSearchedObjectId] = useState('');
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
+  const [tableMenuOpen, setTableMenuOpen] = useState(false);
   const dataModel = useDataModel();
 
   const personTables = useMemo(() => dataModel.filter((t) => t.semanticType === 'person'), [dataModel]);
@@ -288,27 +288,41 @@ function AddClientToCase({
 
   return (
     <div className="flex flex-col gap-sm">
-      <Tabs>
-        {personTables.map((table) => (
-          <button
-            key={table.id}
-            type="button"
-            onClick={() => setSelectedTable(table.name)}
-            className={cn(tabClassName, 'cursor-pointer')}
-            data-status={tableName === table.name ? 'active' : 'inactive'}
-          >
-            {table.name}
-          </button>
-        ))}
-      </Tabs>
-      <Input
-        value={objectIdInput}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onEnterKeyDown={handleAdd}
-        startAdornment="search"
-        placeholder={t('cases:manage_clients_panel.search_placeholder')}
-        disabled={!tableName}
-      />
+      <div className="flex items-center gap-sm">
+        <MenuCommand.Menu open={tableMenuOpen} onOpenChange={setTableMenuOpen}>
+          <MenuCommand.Trigger>
+            <MenuCommand.SelectButton className="shrink-0">
+              {tableName ?? t('cases:manage_clients_panel.table_placeholder')}
+            </MenuCommand.SelectButton>
+          </MenuCommand.Trigger>
+          <MenuCommand.Content align="start" sideOffset={4}>
+            <MenuCommand.List>
+              {personTables.map((table) => (
+                <MenuCommand.Item
+                  key={table.id}
+                  value={table.name}
+                  onSelect={() => {
+                    setSelectedTable(table.name);
+                    setTableMenuOpen(false);
+                  }}
+                >
+                  {table.name}
+                  {tableName === table.name ? <Icon icon="tick" className="size-5 text-purple-primary" /> : null}
+                </MenuCommand.Item>
+              ))}
+            </MenuCommand.List>
+          </MenuCommand.Content>
+        </MenuCommand.Menu>
+        <Input
+          className="flex-1 min-w-0"
+          value={objectIdInput}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onEnterKeyDown={handleAdd}
+          startAdornment="search"
+          placeholder={t('cases:manage_clients_panel.search_placeholder')}
+          disabled={!tableName}
+        />
+      </div>
       {tableName && searchedObjectId ? (
         !isSearchUpToDate || objectQuery.isPending ? (
           <div className="flex justify-center p-sm">
