@@ -369,6 +369,8 @@ paths:
     $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}
   /tenants/{tenantId}/merge:
     $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}~1merge
+  /tenants/{tenantId}/users/{userId}/grants:
+    $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}~1users~1{userId}~1grants
   /organizations:
     $ref: ./marblecore-api/admin.yml#/~1organizations
   /organizations/{organizationId}:
