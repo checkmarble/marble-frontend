@@ -6,6 +6,8 @@ import { nitro } from 'nitro/vite';
 import { defineConfig, type Plugin } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
+const isTest = !!process.env['VITEST'];
+
 // Prevent Rollup from trying to parse native .node binaries (e.g. fsevents)
 const externalNativeModules: Plugin = {
   name: 'external-native-modules',
@@ -16,17 +18,21 @@ const externalNativeModules: Plugin = {
 };
 
 const plugins = [
-  devtools(),
-  tanstackStart(),
-  nitro({
-    config: {
-      preset: 'node-server',
-      // Rolldown must retain Nitro's side-effect import that installs SSR fetch routing.
-      moduleSideEffects: ['\0virtual:#nitro-internal-pollyfills'],
-      // Keep the CommonJS debug implementation used by Sentry's instrumentation.
-      alias: { debug: 'debug' },
-    },
-  }),
+  ...(isTest
+    ? []
+    : [
+        devtools(),
+        tanstackStart(),
+        nitro({
+          config: {
+            preset: 'node-server',
+            // Rolldown must retain Nitro's side-effect import that installs SSR fetch routing.
+            moduleSideEffects: ['\0virtual:#nitro-internal-pollyfills'],
+            // Keep the CommonJS debug implementation used by Sentry's instrumentation.
+            alias: { debug: 'debug' },
+          },
+        }),
+      ]),
   externalNativeModules,
   tailwindcss(),
   viteTsConfigPaths(),

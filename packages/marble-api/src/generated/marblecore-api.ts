@@ -64,6 +64,7 @@ export type Token = {
 export type CredentialsDto = {
     credentials: {
         organization_id: string;
+        /** Roles bound to the principal. Omitted when the principal has none. */
         roles?: string[];
         actor_identity: {
             user_id?: string;
@@ -5990,12 +5991,31 @@ export function deleteApiKey(apiKeyId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * List all users present in the database
  */
-export function listUsers(opts?: Oazapfts.RequestOpts) {
+export function listUsers({ organizationId, withTfa, tenantAccess }: {
+    organizationId?: string;
+    withTfa?: boolean;
+    tenantAccess?: "direct" | "missing";
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
             users: UserDto[];
+        } | {
+            users: {
+                user_id: string;
+                email: string;
+                /** ID of the user's home organization */
+                organization_id: string;
+                first_name: string;
+                last_name: string;
+                picture: string;
+                /** Role of the user's direct grant on the requested organization, when any */
+                organization_grant_role?: string;
+            }[];
         };
+    } | {
+        status: 400;
+        data: string;
     } | {
         status: 401;
         data: string;
@@ -6005,7 +6025,11 @@ export function listUsers(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 404;
         data: string;
-    }>("/users", {
+    }>(`/users${QS.query(QS.explode({
+        organization_id: organizationId,
+        with_tfa: withTfa,
+        tenant_access: tenantAccess
+    }))}`, {
         ...opts
     }));
 }
@@ -6103,11 +6127,9 @@ export function listTenants(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            tenants: {
-                id: string;
-                name: string;
-            }[];
-        };
+            id: string;
+            name: string;
+        }[];
     } | {
         status: 401;
         data: string;
@@ -6177,6 +6199,63 @@ export function mergeTenants(tenantId: string, body: {
         method: "POST",
         body
     })));
+}
+/**
+ * Grant a user a role on an organization of the tenant
+ */
+export function replaceOrganizationGrant(tenantId: string, userId: string, body: {
+    role: "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
+}, { organizationId }: {
+    organizationId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/users/${encodeURIComponent(userId)}/grants${QS.query(QS.explode({
+        "organization-id": organizationId
+    }))}`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
+}
+/**
+ * Revoke a user's grant on an organization of the tenant
+ */
+export function revokeOrganizationGrant(tenantId: string, userId: string, { organizationId }: {
+    organizationId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/users/${encodeURIComponent(userId)}/grants${QS.query(QS.explode({
+        "organization-id": organizationId
+    }))}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * List all organizations present in the database
