@@ -305,6 +305,7 @@
   "drop_file_cta": "Drop any file here to attach it to the case. The following extensions are supported:",
   "errors.case_not_found": "Case not found",
   "errors.fetching_cases": "Something went wrong while fetching cases. Please try again.",
+  "errors.invalid_case_objects": "Some of the selected objects cannot be added to a case",
   "escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
   "escalate-button.forbidden.hint.admin": "There is no escalation inbox set.",
   "escalate-button.hint": "Escalate the case to {{inboxName}}.",

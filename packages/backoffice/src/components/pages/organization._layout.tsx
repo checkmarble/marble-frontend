@@ -15,7 +15,7 @@ export function OrganizationLayout({ organization, children }: OrganizationLayou
     <div className="flex flex-col gap-md">
       <div className="flex items-center justify-between">
         <Typo variant="title1">{organization.name}</Typo>
-        <Tabs>
+        <Tabs.Nav>
           {ORGANIZATION_TABS.map((tab) => (
             <Tabs.Link key={tab} asChild>
               <Link to={`/organizations/$orgId/${tab}`} params={{ orgId: organization.id }}>
@@ -23,7 +23,7 @@ export function OrganizationLayout({ organization, children }: OrganizationLayou
               </Link>
             </Tabs.Link>
           ))}
-        </Tabs>
+        </Tabs.Nav>
       </div>
       <div>{children}</div>
     </div>

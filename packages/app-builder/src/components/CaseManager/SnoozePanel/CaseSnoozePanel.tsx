@@ -12,7 +12,7 @@ import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Panel, Tabs } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -38,6 +38,7 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
 
   const pivotKeys = rulesByPivotQuery.data ? Object.keys(rulesByPivotQuery.data.rulesByPivot) : [];
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const tabsId = useId();
 
   const effectiveActiveTab = activeTab ?? pivotKeys[0] ?? null;
 
@@ -61,7 +62,7 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
           </div>
         ) : (
           <div className="flex w-full flex-col">
-            <Tabs value={effectiveActiveTab ?? undefined} onValueChange={setActiveTab}>
+            <Tabs id={tabsId} value={effectiveActiveTab ?? undefined} onValueChange={setActiveTab}>
               {pivotKeys.map((pivotValue) => {
                 return (
                   <Tabs.Button key={`trigger-${pivotValue}`} value={pivotValue} className="gap-sm">
@@ -76,7 +77,12 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
               const table = dataModel.find((t) => t.name === client?.pivotObjectName);
 
               return (
-                <div className="mt-lg flex w-full flex-col items-start gap-lg" key={`content-${pivotValue}`}>
+                <Tabs.Panel
+                  tabsId={tabsId}
+                  value={pivotValue}
+                  className="mt-lg flex w-full flex-col items-start gap-lg"
+                  key={`content-${pivotValue}`}
+                >
                   {table && client ? (
                     <div className="border-grey-border flex flex-col gap-md border p-md bg-grey-background-light rounded-lg">
                       <div className="capitalize font-semibold">{table.name}</div>
@@ -172,7 +178,7 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
                       );
                     })}
                   </div>
-                </div>
+                </Tabs.Panel>
               );
             })}
           </div>

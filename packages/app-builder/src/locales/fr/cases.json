@@ -305,6 +305,7 @@
   "drop_file_cta": "Déposez un fichier ici pour le joindre à l'investigation. Les extensions suivantes sont prises en charge :",
   "errors.case_not_found": "Investigation non trouvée",
   "errors.fetching_cases": "Une erreur est survenue lors du chargement des investigations. Veuillez réessayer.",
+  "errors.invalid_case_objects": "Certains des objets sélectionnés ne peuvent pas être ajoutés à une investigation",
   "escalate-button.forbidden.hint": "Aucune boîte de réception d'escalade n'est définie. Veuillez contacter votre administrateur.",
   "escalate-button.forbidden.hint.admin": "Aucune boîte de réception d'escalade n'est définie.",
   "escalate-button.hint": "Escalader l'investigation vers {{inboxName}}.",

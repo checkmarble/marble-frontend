@@ -146,7 +146,7 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
   };
 
   return (
-    <Tabs color="grey" variant="fluid">
+    <Tabs.Nav color="grey" variant="fluid">
       {clients.map((client) => {
         const pivotValue = client.key;
         return (
@@ -218,7 +218,7 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
-    </Tabs>
+    </Tabs.Nav>
   );
 }
 

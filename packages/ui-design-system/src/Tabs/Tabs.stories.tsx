@@ -1,5 +1,5 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { capitalize } from 'remeda';
 import { Tabs } from './Tabs';
 
@@ -12,17 +12,18 @@ export default Story;
 export const Buttons: StoryFn<typeof Tabs> = () => {
   const [activeTab, setActiveTab] = useState('account');
   const tabs = ['account', 'password', 'settings'];
+  const tabsId = useId();
 
   return (
     <div className="flex flex-col gap-md">
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs id={tabsId} value={activeTab} onValueChange={setActiveTab}>
         {tabs.map((tab) => (
           <Tabs.Button key={tab} value={tab}>
             {capitalize(tab)}
           </Tabs.Button>
         ))}
       </Tabs>
-      <div className="p-md">
+      <Tabs.Panel tabsId={tabsId} value={activeTab} className="p-md">
         {activeTab === 'account' && (
           <div className="flex flex-col gap-sm">
             <h3 className="text-l font-semibold">Account</h3>
@@ -45,20 +46,20 @@ export const Buttons: StoryFn<typeof Tabs> = () => {
             <p className="text-s text-grey-placeholder">Manage your application settings.</p>
           </div>
         )}
-      </div>
+      </Tabs.Panel>
     </div>
   );
 };
 
 export const Links: StoryFn<typeof Tabs> = () => {
   return (
-    <Tabs>
+    <Tabs.Nav>
       <Tabs.Link href="#overview" aria-current="page">
         Overview
       </Tabs.Link>
       <Tabs.Link href="#analytics">Analytics</Tabs.Link>
       <Tabs.Link href="#cases">Cases</Tabs.Link>
-    </Tabs>
+    </Tabs.Nav>
   );
 };
 
@@ -75,13 +76,13 @@ export const Grey: StoryFn<typeof Tabs> = () => {
           </Tabs.Button>
         ))}
       </Tabs>
-      <Tabs color="grey">
+      <Tabs.Nav color="grey">
         <Tabs.Link href="#overview" aria-current="page">
           Overview
         </Tabs.Link>
         <Tabs.Link href="#analytics">Analytics</Tabs.Link>
         <Tabs.Link href="#cases">Cases</Tabs.Link>
-      </Tabs>
+      </Tabs.Nav>
     </div>
   );
 };

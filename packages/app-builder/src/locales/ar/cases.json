@@ -305,6 +305,7 @@
   "drop_file_cta": "أسقط أي ملف هنا لإرفاقه بالحالة. الامتدادات التالية مدعومة:",
   "errors.case_not_found": "لم يتم العثور على الحالة",
   "errors.fetching_cases": "حدث خطأ أثناء تحميل الحالات. يرجى المحاولة مرة أخرى.",
+  "errors.invalid_case_objects": "لا يمكن إضافة بعض العناصر المحددة إلى حالة",
   "escalate-button.forbidden.hint": "لا يوجد صندوق وارد للتصعيد مُعدّ.\nيرجى التواصل مع المسؤول.",
   "escalate-button.forbidden.hint.admin": "لا يوجد صندوق وارد للتصعيد مُعدّ.",
   "escalate-button.hint": "صعّد الحالة إلى {{inboxName}}.",

@@ -19,7 +19,7 @@ import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, CtaV2ClassName, cn, Panel, Tabs, Tag, TagList, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -72,6 +72,18 @@ export function CaseManagerPrincipalPage({
   const activePivotClient = pivotClients.find((c) => c.key === activePivotKey) ?? pivotClients[0];
   const [activeEntityKey, setActiveEntityKey] = useState<string | undefined>(undefined);
   const activeEntityClient = entityClients.find((c) => c.key === activeEntityKey) ?? entityClients[0];
+  const pivotTabsId = useId();
+  const entityTabsId = useId();
+  const renderClientCard = (client: CaseClient) => (
+    <ClientCard
+      key={client.key}
+      caseId={caseDetail.id}
+      client={client}
+      dataModel={dataModel}
+      client360Tables={client360Tables}
+      userScoringAccess={userScoringAccess}
+    />
+  );
 
   const tagsForm = useForm({
     onSubmit: ({ value }) => {
@@ -146,22 +158,26 @@ export function CaseManagerPrincipalPage({
           {activePivotClient ? (
             <div className="flex flex-col gap-sm">
               {pivotClients.length > 1 ? (
-                <Tabs variant="fluid" value={activePivotClient.key} onValueChange={setActivePivotKey}>
-                  {pivotClients.map((client) => (
-                    <Tabs.Button key={client.key} value={client.key}>
-                      {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
-                    </Tabs.Button>
-                  ))}
-                </Tabs>
-              ) : null}
-              <ClientCard
-                key={activePivotClient.key}
-                caseId={caseDetail.id}
-                client={activePivotClient}
-                dataModel={dataModel}
-                client360Tables={client360Tables}
-                userScoringAccess={userScoringAccess}
-              />
+                <>
+                  <Tabs
+                    id={pivotTabsId}
+                    variant="fluid"
+                    value={activePivotClient.key}
+                    onValueChange={setActivePivotKey}
+                  >
+                    {pivotClients.map((client) => (
+                      <Tabs.Button key={client.key} value={client.key}>
+                        {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
+                      </Tabs.Button>
+                    ))}
+                  </Tabs>
+                  <Tabs.Panel tabsId={pivotTabsId} value={activePivotClient.key}>
+                    {renderClientCard(activePivotClient)}
+                  </Tabs.Panel>
+                </>
+              ) : (
+                renderClientCard(activePivotClient)
+              )}
             </div>
           ) : entityClients.length === 0 ? (
             <Card className="flex flex-col items-center justify-center gap-sm text-small text-center">
@@ -181,22 +197,26 @@ export function CaseManagerPrincipalPage({
             <div className="flex flex-col gap-sm">
               <Typo variant="subtitle1">{t('cases:case_detail.entities')}</Typo>
               {entityClients.length > 1 ? (
-                <Tabs variant="fluid" value={activeEntityClient.key} onValueChange={setActiveEntityKey}>
-                  {entityClients.map((client) => (
-                    <Tabs.Button key={client.key} value={client.key}>
-                      {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
-                    </Tabs.Button>
-                  ))}
-                </Tabs>
-              ) : null}
-              <ClientCard
-                key={activeEntityClient.key}
-                caseId={caseDetail.id}
-                client={activeEntityClient}
-                dataModel={dataModel}
-                client360Tables={client360Tables}
-                userScoringAccess={userScoringAccess}
-              />
+                <>
+                  <Tabs
+                    id={entityTabsId}
+                    variant="fluid"
+                    value={activeEntityClient.key}
+                    onValueChange={setActiveEntityKey}
+                  >
+                    {entityClients.map((client) => (
+                      <Tabs.Button key={client.key} value={client.key}>
+                        {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
+                      </Tabs.Button>
+                    ))}
+                  </Tabs>
+                  <Tabs.Panel tabsId={entityTabsId} value={activeEntityClient.key}>
+                    {renderClientCard(activeEntityClient)}
+                  </Tabs.Panel>
+                </>
+              ) : (
+                renderClientCard(activeEntityClient)
+              )}
             </div>
           ) : null}
           <CaseDocuments files={caseDetail.files} />

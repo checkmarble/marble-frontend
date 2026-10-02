@@ -20,7 +20,7 @@ export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
   return (
     <div className="flex flex-col gap-sm">
       <Typo variant="title1">{t('navigation:settings')}</Typo>
-      <Tabs>
+      <Tabs.Nav>
         {(Object.keys(sections) as Array<keyof Sections>).map((sectionKey) => {
           const { settings } = sections[sectionKey];
           if (settings.length === 0) return null;
@@ -33,7 +33,7 @@ export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
             </Tabs.Link>
           );
         })}
-      </Tabs>
+      </Tabs.Nav>
     </div>
   );
 }
