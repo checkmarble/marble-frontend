@@ -3,6 +3,7 @@ import { logoutFn } from '@app-builder/server-fns/auth';
 import { useClientServices } from '@app-builder/services/init-client';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
+import { withOrganizationChangeLock } from '@app-builder/utils/organization-change-lock';
 
 // Totally arbitrary, but we want to refresh the token before it expires
 // 20 minutes seems like a good amount of time (assuming it's done in the background while the user is active)
@@ -20,7 +21,9 @@ export function useRefreshToken() {
 
       firebaseIdToken().then(
         (idToken: string) => {
-          refreshTokenMutation.mutate({ idToken, csrf });
+          void withOrganizationChangeLock(() => refreshTokenMutation.mutateAsync({ idToken, csrf })).catch(
+            () => undefined,
+          );
         },
         () => {
           void logoutFn({
