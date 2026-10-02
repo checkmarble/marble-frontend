@@ -4,6 +4,7 @@ import { createGlobalUserPayloadSchema, DUPLICATE_EMAIL_ERROR, updateGlobalUserP
 import { isRedirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { marblecoreApi } from 'marble-api';
+import type { UserDto } from 'marble-api/generated/marblecore-api';
 
 const CONFLICT_STATUS = 409;
 
@@ -13,12 +14,16 @@ const isConflictError = (error: unknown) =>
 export const getUsersFn = createServerFn({ method: 'GET' })
   .middleware([needAuth])
   .handler(async ({ context }) => {
-    const { users } = await marblecoreApi.listUsers({
-      baseUrl: env.API_BASE_URL,
-      fetch: context.authFetch,
-    });
+    const { users } = await marblecoreApi.listUsers(
+      {},
+      {
+        baseUrl: env.API_BASE_URL,
+        fetch: context.authFetch,
+      },
+    );
 
-    return users;
+    // Without `tenantAccess`, the endpoint returns plain users
+    return users as UserDto[];
   });
 
 export const createGlobalUserFn = createServerFn({ method: 'POST' })

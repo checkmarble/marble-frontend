@@ -90,6 +90,7 @@ components:
               type: string
             roles:
               type: array
+              description: Roles bound to the principal. Omitted when the principal has none.
               items:
                 type: string
             actor_identity:
