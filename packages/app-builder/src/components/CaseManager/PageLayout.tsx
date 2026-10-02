@@ -29,18 +29,7 @@ import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import {
-  ActionBar,
-  ActionButton,
-  Button,
-  CtaV2ClassName,
-  cn,
-  Modal,
-  Radio,
-  Tabs,
-  Typo,
-  tabClassName,
-} from 'ui-design-system';
+import { ActionBar, ActionButton, Button, CtaV2ClassName, cn, Modal, Radio, Tabs, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CloseCase } from '../Cases/CloseCase';
 import { OpenCase } from '../Cases/OpenCase';
@@ -145,39 +134,47 @@ export function CaseManagerPageLayout({
         <Page.Content className={cn('relative', isLinksTab && 'min-h-0 overflow-hidden')}>
           <div className="flex justify-between mb-lg shrink-0">
             <Tabs>
-              <Link className={tabClassName} from="/cases/s/$caseId" to="./principal" preload="render">
-                {t('cases:case_detail.tab.principal')}
-              </Link>
+              <Tabs.Link asChild>
+                <Link from="/cases/s/$caseId" to="./principal" preload="render">
+                  {t('cases:case_detail.tab.principal')}
+                </Link>
+              </Tabs.Link>
               {defaultClientsPivotValue ? (
-                <Link
-                  className={tabClassName}
-                  from="/cases/s/$caseId"
-                  to="./clients/$pivotValue"
-                  params={{ pivotValue: defaultClientsPivotValue }}
-                  preload="render"
-                >
-                  {t('cases:manager.tab.clients_concerned')}
-                </Link>
+                <Tabs.Link asChild>
+                  <Link
+                    from="/cases/s/$caseId"
+                    to="./clients/$pivotValue"
+                    params={{ pivotValue: defaultClientsPivotValue }}
+                    preload="render"
+                  >
+                    {t('cases:manager.tab.clients_concerned')}
+                  </Link>
+                </Tabs.Link>
               ) : (
-                <Link disabled className={tabClassName} from="/cases/s/$caseId" to="./clients" preload={false}>
-                  {t('cases:manager.tab.clients_concerned')}
-                </Link>
+                <Tabs.Link asChild>
+                  <Link disabled from="/cases/s/$caseId" to="./clients" preload={false}>
+                    {t('cases:manager.tab.clients_concerned')}
+                  </Link>
+                </Tabs.Link>
               )}
               {graphDisplay !== 'hidden' ? (
                 defaultLinksPivotValue ? (
-                  <Link
-                    className={tabClassName}
-                    from="/cases/s/$caseId"
-                    to="./links/$pivotValue"
-                    params={{ pivotValue: defaultLinksPivotValue }}
-                    preload="render"
-                  >
-                    {t('cases:manager.tab.links_to_other')}
-                  </Link>
+                  <Tabs.Link asChild>
+                    <Link
+                      from="/cases/s/$caseId"
+                      to="./links/$pivotValue"
+                      params={{ pivotValue: defaultLinksPivotValue }}
+                      preload="render"
+                    >
+                      {t('cases:manager.tab.links_to_other')}
+                    </Link>
+                  </Tabs.Link>
                 ) : (
-                  <Link disabled className={tabClassName} from="/cases/s/$caseId" to="./links" preload={false}>
-                    {t('cases:manager.tab.links_to_other')}
-                  </Link>
+                  <Tabs.Link asChild>
+                    <Link disabled from="/cases/s/$caseId" to="./links" preload={false}>
+                      {t('cases:manager.tab.links_to_other')}
+                    </Link>
+                  </Tabs.Link>
                 )
               ) : null}
             </Tabs>

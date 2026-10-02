@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { OrganizationDto } from 'marble-api';
 import { ReactNode } from 'react';
-import { Tabs, Typo, tabClassName } from 'ui-design-system';
+import { Tabs, Typo } from 'ui-design-system';
 
 const ORGANIZATION_TABS = ['overview', 'users', 'screenings' /* , 'settings' */] as const;
 
@@ -17,14 +17,11 @@ export function OrganizationLayout({ organization, children }: OrganizationLayou
         <Typo variant="title1">{organization.name}</Typo>
         <Tabs>
           {ORGANIZATION_TABS.map((tab) => (
-            <Link
-              key={tab}
-              to={`/organizations/$orgId/${tab}`}
-              params={{ orgId: organization.id }}
-              className={tabClassName}
-            >
-              {tab}
-            </Link>
+            <Tabs.Link key={tab} asChild>
+              <Link to={`/organizations/$orgId/${tab}`} params={{ orgId: organization.id }}>
+                {tab}
+              </Link>
+            </Tabs.Link>
           ))}
         </Tabs>
       </div>

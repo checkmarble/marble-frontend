@@ -14,7 +14,7 @@ import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Panel, Tabs, tabClassName } from 'ui-design-system';
+import { Button, cn, Panel, Tabs } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PivotObjectDetails } from './PivotObjectDetails';
 
@@ -61,18 +61,12 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
           </div>
         ) : (
           <div className="flex w-full flex-col">
-            <Tabs>
+            <Tabs value={effectiveActiveTab ?? undefined} onValueChange={setActiveTab}>
               {pivotKeys.map((pivotValue) => {
                 return (
-                  <button
-                    key={`trigger-${pivotValue}`}
-                    type="button"
-                    className={cn(tabClassName, 'gap-sm')}
-                    data-status={effectiveActiveTab === pivotValue ? 'active' : undefined}
-                    onClick={() => setActiveTab(pivotValue)}
-                  >
+                  <Tabs.Button key={`trigger-${pivotValue}`} value={pivotValue} className="gap-sm">
                     <span className="font-medium">{pivotValue}</span>
-                  </button>
+                  </Tabs.Button>
                 );
               })}
             </Tabs>

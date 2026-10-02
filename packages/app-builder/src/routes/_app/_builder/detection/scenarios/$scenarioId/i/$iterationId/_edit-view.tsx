@@ -25,7 +25,7 @@ import { createServerFn } from '@tanstack/react-start';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
+import { Tabs, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { VersionSelect } from '../$iterationId';
 
@@ -139,37 +139,44 @@ function ScenarioEditLayout() {
         ) : (
           <>
             <Tabs>
-              <Link
-                from="/detection/scenarios/$scenarioId/i/$iterationId"
-                to="./trigger"
-                className={cn(tabClassName, 'gap-sm')}
-                aria-invalid={hasTriggerErrors(scenarioValidation)}
-              >
-                <ScenariosLinkIcon icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} className="size-5" />
-                <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
-              </Link>
-              <Link
-                from="/detection/scenarios/$scenarioId/i/$iterationId"
-                to="./rules"
-                className={cn(tabClassName, 'gap-sm')}
-                aria-invalid={hasRulesErrors(scenarioValidation)}
-              >
-                <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
-                <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
-              </Link>
-              <Link
-                from="/detection/scenarios/$scenarioId/i/$iterationId"
-                to="./decision"
-                className={cn(tabClassName, 'gap-sm')}
-                aria-invalid={hasDecisionErrors(scenarioValidation)}
-              >
-                <ScenariosLinkIcon
-                  icon="decision"
-                  withPing={hasDecisionErrors(scenarioValidation)}
-                  className="size-5"
-                />
-                <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
-              </Link>
+              <Tabs.Link asChild className="gap-sm">
+                <Link
+                  from="/detection/scenarios/$scenarioId/i/$iterationId"
+                  to="./trigger"
+                  aria-invalid={hasTriggerErrors(scenarioValidation)}
+                >
+                  <ScenariosLinkIcon
+                    icon="trigger"
+                    withPing={hasTriggerErrors(scenarioValidation)}
+                    className="size-5"
+                  />
+                  <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
+                </Link>
+              </Tabs.Link>
+              <Tabs.Link asChild className="gap-sm">
+                <Link
+                  from="/detection/scenarios/$scenarioId/i/$iterationId"
+                  to="./rules"
+                  aria-invalid={hasRulesErrors(scenarioValidation)}
+                >
+                  <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
+                  <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
+                </Link>
+              </Tabs.Link>
+              <Tabs.Link asChild className="gap-sm">
+                <Link
+                  from="/detection/scenarios/$scenarioId/i/$iterationId"
+                  to="./decision"
+                  aria-invalid={hasDecisionErrors(scenarioValidation)}
+                >
+                  <ScenariosLinkIcon
+                    icon="decision"
+                    withPing={hasDecisionErrors(scenarioValidation)}
+                    className="size-5"
+                  />
+                  <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
+                </Link>
+              </Tabs.Link>
             </Tabs>
             <Outlet />
           </>

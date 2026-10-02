@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { Tabs, Typo, tabClassName } from 'ui-design-system';
+import { Tabs, Typo } from 'ui-design-system';
 
 export function DetectionNavigationTabs({ actions }: { actions?: React.ReactNode }) {
   const { t } = useTranslation(['navigation']);
@@ -10,18 +10,18 @@ export function DetectionNavigationTabs({ actions }: { actions?: React.ReactNode
       <Typo variant="title1">{t('navigation:detection')}</Typo>
       <div className="flex items-center justify-between">
         <Tabs>
-          <Link to="/detection/scenarios" className={tabClassName}>
-            {t('navigation:scenarios')}
-          </Link>
-          <Link to="/detection/lists" className={tabClassName}>
-            {t('navigation:lists')}
-          </Link>
-          <Link to="/detection/analytics" className={tabClassName}>
-            {t('navigation:analytics')}
-          </Link>
-          <Link to="/detection/decisions" className={tabClassName}>
-            {t('navigation:decisions')}
-          </Link>
+          <Tabs.Link asChild>
+            <Link to="/detection/scenarios">{t('navigation:scenarios')}</Link>
+          </Tabs.Link>
+          <Tabs.Link asChild>
+            <Link to="/detection/lists">{t('navigation:lists')}</Link>
+          </Tabs.Link>
+          <Tabs.Link asChild>
+            <Link to="/detection/analytics">{t('navigation:analytics')}</Link>
+          </Tabs.Link>
+          <Tabs.Link asChild>
+            <Link to="/detection/decisions">{t('navigation:decisions')}</Link>
+          </Tabs.Link>
         </Tabs>
         {actions}
       </div>

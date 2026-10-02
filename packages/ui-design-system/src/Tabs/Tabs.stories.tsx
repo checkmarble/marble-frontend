@@ -1,7 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import { useState } from 'react';
 import { capitalize } from 'remeda';
-import { Tabs, tabClassName } from './Tabs';
+import { Tabs } from './Tabs';
 
 const Story: Meta<typeof Tabs> = {
   component: Tabs,
@@ -9,23 +9,17 @@ const Story: Meta<typeof Tabs> = {
 };
 export default Story;
 
-export const Default: StoryFn<typeof Tabs> = () => {
+export const Buttons: StoryFn<typeof Tabs> = () => {
   const [activeTab, setActiveTab] = useState('account');
   const tabs = ['account', 'password', 'settings'];
 
   return (
     <div className="flex flex-col gap-md">
-      <Tabs>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         {tabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            className={tabClassName}
-            data-status={activeTab === tab ? 'active' : undefined}
-            onClick={() => setActiveTab(tab)}
-          >
+          <Tabs.Button key={tab} value={tab}>
             {capitalize(tab)}
-          </button>
+          </Tabs.Button>
         ))}
       </Tabs>
       <div className="p-md">
@@ -52,6 +46,35 @@ export const Default: StoryFn<typeof Tabs> = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+
+export const Links: StoryFn<typeof Tabs> = () => {
+  return (
+    <Tabs>
+      <Tabs.Link href="#overview" aria-current="page">
+        Overview
+      </Tabs.Link>
+      <Tabs.Link href="#analytics">Analytics</Tabs.Link>
+      <Tabs.Link href="#cases">Cases</Tabs.Link>
+    </Tabs>
+  );
+};
+
+export const Fluid: StoryFn<typeof Tabs> = () => {
+  const [activeTab, setActiveTab] = useState('client-1');
+  const tabs = ['client-1', 'client-2', 'client-3', 'client-4', 'client-5', 'client-6'];
+
+  return (
+    <div className="max-w-xs">
+      <Tabs variant="fluid" value={activeTab} onValueChange={setActiveTab}>
+        {tabs.map((tab) => (
+          <Tabs.Button key={tab} value={tab}>
+            {capitalize(tab.replace('-', ' '))}
+          </Tabs.Button>
+        ))}
+      </Tabs>
     </div>
   );
 };

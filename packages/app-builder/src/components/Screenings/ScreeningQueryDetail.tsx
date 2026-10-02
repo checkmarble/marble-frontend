@@ -5,7 +5,7 @@ import { type Screening, type ScreeningQuery } from '@app-builder/models/screeni
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs, tabClassName } from 'ui-design-system';
+import { Tabs } from 'ui-design-system';
 import { screeningsI18n } from './screenings-i18n';
 
 const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
@@ -43,25 +43,11 @@ export function ScreeningQueryDetail({
 
   return (
     <div>
-      <Tabs>
-        {hasInitialQuery && (
-          <button
-            type="button"
-            className={tabClassName}
-            data-status={activeTab === 'initial' ? 'active' : undefined}
-            onClick={() => setActiveTab('initial')}
-          >
-            {t('screenings:initial_query')}
-          </button>
-        )}
-        <button
-          type="button"
-          className={tabClassName}
-          data-status={activeTab === 'preprocessed' ? 'active' : undefined}
-          onClick={() => setActiveTab('preprocessed')}
-        >
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        {hasInitialQuery && <Tabs.Button value="initial">{t('screenings:initial_query')}</Tabs.Button>}
+        <Tabs.Button value="preprocessed">
           {!hasInitialQuery ? t('screenings:query') : t('screenings:processed_query')}
-        </button>
+        </Tabs.Button>
       </Tabs>
       <div className="mt-sm">
         {activeTab === 'initial' && hasInitialQuery && (
