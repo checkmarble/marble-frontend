@@ -31,10 +31,14 @@ export function ClientAddToCasePanel({ objects }: ClientAddToCasePanelProps) {
   const caseId = caseRouteMatch ? fromSUUIDtoUUID(caseRouteMatch.params.caseId) : undefined;
   const addObjectsToCaseMutation = useAddObjectsToCaseMutation();
   const queryClient = useQueryClient();
+  const dataModel = useDataModel();
+  // The API only links objects from person tables (person, company, partner) and rejects the rest.
+  const typeHelpers = createGraphTypeHelpers(dataModel);
+  const eligibleObjects = objects.filter((object) => typeHelpers.isPersonType(object.objectType));
 
   const refreshClientCases = async () => {
     await Promise.all(
-      objects.map((object) =>
+      eligibleObjects.map((object) =>
         queryClient.invalidateQueries({ queryKey: ['data', object.objectType, object.objectId, 'cases'] }),
       ),
     );
@@ -43,14 +47,23 @@ export function ClientAddToCasePanel({ objects }: ClientAddToCasePanelProps) {
   return (
     <SharedAddToCasePanel
       initialMode="new"
-      leadingContent={<CaseObjectsList objects={objects} />}
+      leadingContent={<CaseObjectsList objects={eligibleObjects} />}
       onCreateCase={async ({ name, inboxId }) => {
-        const caseDetail = await addObjectsToCaseMutation.mutateAsync({ newCase: true, name, inboxId, objects });
+        const caseDetail = await addObjectsToCaseMutation.mutateAsync({
+          newCase: true,
+          name,
+          inboxId,
+          objects: eligibleObjects,
+        });
         await refreshClientCases();
         return caseDetail;
       }}
       onAddToCase={async ({ caseId }) => {
-        const caseDetail = await addObjectsToCaseMutation.mutateAsync({ newCase: false, caseId, objects });
+        const caseDetail = await addObjectsToCaseMutation.mutateAsync({
+          newCase: false,
+          caseId,
+          objects: eligibleObjects,
+        });
         await refreshClientCases();
         return caseDetail;
       }}
