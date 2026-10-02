@@ -25,6 +25,7 @@ import { match } from 'ts-pattern';
 import { Button, Card, cn, Panel, Popover, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { MainLinksGraph, mainLinksGraphMinHeight } from '../CaseManager/MainLinksGraph';
+import { getObjectName } from '../CaseManager/PivotTabs';
 import { GraphSessionProvider, useGraphSession } from '../Graph/contexts/GraphSessionContext';
 import { GraphAccessPlaceholder } from '../Graph/GraphAccessPlaceholder';
 import { SessionGraphCanvas } from '../Graph/SessionGraphCanvas';
@@ -84,17 +85,11 @@ export const ClientDetailPage = ({
   // Prefer client-fetched score (includes evaluations), same source as UserScoreBadge
   const scoreLatestQuery = useScoreLatestQuery(objectType, objectId);
   const scoreForPanel = scoreLatestQuery.data?.score ?? activeScore;
-  const captionValue = objectDetails.data[metadata.caption_field];
-  const caption =
-    typeof captionValue === 'string'
-      ? captionValue.trim()
-      : typeof captionValue === 'number'
-        ? String(captionValue)
-        : '';
+
   const caseObject = {
     objectType,
     objectId,
-    label: caption && caption !== '-' ? caption : undefined,
+    label: getObjectName(dataModel, objectType, objectDetails.data, objectId),
     riskLevel: isAccessible(userScoringAccess) ? scoreForPanel?.risk_level : undefined,
   };
 
