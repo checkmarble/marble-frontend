@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { Tabs, Typo, tabClassName } from 'ui-design-system';
+import { Tabs, Typo } from 'ui-design-system';
 
 export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) {
   const { t } = useTranslation(['navigation', 'cases']);
@@ -10,15 +10,15 @@ export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) 
       <Typo variant="title1">{t('navigation:case_manager')}</Typo>
       <div className="flex items-center justify-between">
         <Tabs>
-          <Link to="/cases/overview" className={tabClassName}>
-            {t('cases:overview.navigation.overview')}
-          </Link>
-          <Link to="/cases/analytics" className={tabClassName}>
-            {t('cases:overview.navigation.analytics')}
-          </Link>
-          <Link to="/cases/inboxes" className={tabClassName}>
-            {t('cases:overview.navigation.cases')}
-          </Link>
+          <Tabs.Link asChild>
+            <Link to="/cases/overview">{t('cases:overview.navigation.overview')}</Link>
+          </Tabs.Link>
+          <Tabs.Link asChild>
+            <Link to="/cases/analytics">{t('cases:overview.navigation.analytics')}</Link>
+          </Tabs.Link>
+          <Tabs.Link asChild>
+            <Link to="/cases/inboxes">{t('cases:overview.navigation.cases')}</Link>
+          </Tabs.Link>
         </Tabs>
         {actions}
       </div>

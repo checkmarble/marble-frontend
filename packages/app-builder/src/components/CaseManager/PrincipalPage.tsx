@@ -27,7 +27,7 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CtaV2ClassName, cn, Panel, Tabs, Tag, TagList, Typo, tabClassName } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, cn, Panel, Tabs, Tag, TagList, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewCard } from './AiReview/AiReviewCard';
 import { CaseDocuments } from './CaseDocuments/CaseDocuments';
@@ -63,8 +63,7 @@ export function CaseManagerPrincipalPage({
   const { orgTags } = useOrganizationTags();
   const { currentUser } = useOrganizationDetails();
   const caseInbox = inboxes.find((inbox) => inbox.id === caseDetail.inboxId) ?? null;
-  const mainPivotObject = pivotObjects?.[0];
-  const mainPivotClient = mainPivotObject ? adaptPivotClient(mainPivotObject) : null;
+  const pivotClients = (pivotObjects ?? []).map(adaptPivotClient);
   const entityClients = caseDetail.entities.map(adaptEntityClient);
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
   const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
@@ -74,6 +73,8 @@ export function CaseManagerPrincipalPage({
   const rootRef = useRef<HTMLDivElement>(null);
   const editTagsMutation = useEditTagsMutation();
   const caseTagsIds = caseDetail.tags.map((t) => t.tagId);
+  const [activePivotKey, setActivePivotKey] = useState<string | undefined>(undefined);
+  const activePivotClient = pivotClients.find((c) => c.key === activePivotKey) ?? pivotClients[0];
   const [activeEntityKey, setActiveEntityKey] = useState<string | undefined>(undefined);
   const activeEntityClient = entityClients.find((c) => c.key === activeEntityKey) ?? entityClients[0];
 
@@ -147,14 +148,26 @@ export function CaseManagerPrincipalPage({
           </div>
         </div>
         <div className="flex flex-col gap-lg">
-          {mainPivotClient ? (
-            <ClientCard
-              caseId={caseDetail.id}
-              client={mainPivotClient}
-              dataModel={dataModel}
-              client360Tables={client360Tables}
-              userScoringAccess={userScoringAccess}
-            />
+          {activePivotClient ? (
+            <div className="flex flex-col gap-sm">
+              {pivotClients.length > 1 ? (
+                <Tabs variant="fluid" value={activePivotClient.key} onValueChange={setActivePivotKey}>
+                  {pivotClients.map((client) => (
+                    <Tabs.Button key={client.key} value={client.key}>
+                      {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
+                    </Tabs.Button>
+                  ))}
+                </Tabs>
+              ) : null}
+              <ClientCard
+                key={activePivotClient.key}
+                caseId={caseDetail.id}
+                client={activePivotClient}
+                dataModel={dataModel}
+                client360Tables={client360Tables}
+                userScoringAccess={userScoringAccess}
+              />
+            </div>
           ) : entityClients.length === 0 ? (
             <Card className="flex flex-col items-center justify-center gap-sm text-small text-center">
               <span className="text-grey-secondary">
@@ -173,17 +186,11 @@ export function CaseManagerPrincipalPage({
             <div className="flex flex-col gap-sm">
               <Typo variant="subtitle1">{t('cases:case_detail.entities')}</Typo>
               {entityClients.length > 1 ? (
-                <Tabs variant="fluid">
+                <Tabs variant="fluid" value={activeEntityClient.key} onValueChange={setActiveEntityKey}>
                   {entityClients.map((client) => (
-                    <button
-                      key={client.key}
-                      type="button"
-                      className={tabClassName}
-                      data-status={activeEntityClient.key === client.key ? 'active' : 'inactive'}
-                      onClick={() => setActiveEntityKey(client.key)}
-                    >
+                    <Tabs.Button key={client.key} value={client.key}>
                       {getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}
-                    </button>
+                    </Tabs.Button>
                   ))}
                 </Tabs>
               ) : null}
