@@ -256,7 +256,7 @@ function ExistingCaseForm({
                 id="existing-case-id"
                 type="text"
                 name={field.name}
-                defaultValue={field.state.value}
+                value={field.state.value}
                 onChange={(event) => field.handleChange(event.currentTarget.value)}
                 onBlur={field.handleBlur}
                 borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
