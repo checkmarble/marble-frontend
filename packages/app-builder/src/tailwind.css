@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import '../../tailwind-preset/src/tailwind.css';
 
+/* Expanded sidebar: hover, or a menu inside it is open (the menu is portaled, so hover ends). */
+@custom-variant group-sidebar-open (.group\/sidebar:is(:hover, :has([data-state='open'])) &);
+
 @config '../tailwind.config.ts';
 
 /*
