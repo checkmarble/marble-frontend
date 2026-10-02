@@ -1,6 +1,6 @@
 import { CaseStatusBadgeV2 } from '@app-builder/components/Cases/CaseStatus';
 import { type Case, type CaseClient } from '@app-builder/models/cases';
-import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
+import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -37,7 +37,7 @@ function ObjectRelatedCasesCard({
   objectType: string;
   objectId: string;
 }) {
-  const casesQuery = useRelatedCasesByObjectQuery(objectType, objectId);
+  const casesQuery = useGetObjectCasesQuery(objectType, objectId);
   return <RelatedCasesCard caseId={caseId} casesQuery={casesQuery} />;
 }
 

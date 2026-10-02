@@ -6,13 +6,7 @@ import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/Dat
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { DataModel } from '@app-builder/models';
-import {
-  adaptEntityClient,
-  adaptPivotClient,
-  type CaseClient,
-  CaseDetail,
-  PivotObject,
-} from '@app-builder/models/cases';
+import { type CaseClient, CaseDetail, getCaseClients, PivotObject } from '@app-builder/models/cases';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { Inbox } from '@app-builder/models/inbox';
 import { isAdmin } from '@app-builder/models/user';
@@ -63,8 +57,9 @@ export function CaseManagerPrincipalPage({
   const { orgTags } = useOrganizationTags();
   const { currentUser } = useOrganizationDetails();
   const caseInbox = inboxes.find((inbox) => inbox.id === caseDetail.inboxId) ?? null;
-  const pivotClients = (pivotObjects ?? []).map(adaptPivotClient);
-  const entityClients = caseDetail.entities.map(adaptEntityClient);
+  const caseClients = getCaseClients(pivotObjects ?? [], caseDetail.entities);
+  const pivotClients = caseClients.filter((c) => c.kind === 'pivot');
+  const entityClients = caseClients.filter((c) => c.kind === 'entity');
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
   const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
     page?.decisions?.some((d) => d.rules?.some((r) => r.outcome === 'hit')),
