@@ -1,8 +1,9 @@
+import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { OrganizationChangeContext } from '@app-builder/contexts/OrganizationChangeContext';
 import type { Organization, UserOrganization } from '@app-builder/models/organization';
 import { useChangeOrganizationIdMutation } from '@app-builder/queries/auth/new-organization-id';
 import { getSessionIdentityFn } from '@app-builder/server-fns/auth';
-import { useClientServices } from '@app-builder/services/init-client';
+import { initializeClientServices } from '@app-builder/services/init-client';
 import {
   ORGANIZATION_CHANGE_CHANNEL,
   resolveCrossTabSession,
@@ -74,9 +75,10 @@ export function OrganizationChangeProvider({
   const csrf = useCsrfToken();
   const getSessionIdentity = useServerFn(getSessionIdentityFn);
   const changeOrganizationIdMutation = useChangeOrganizationIdMutation();
-  const clientServices = useClientServices();
+  const appConfig = AppConfigContext.useValue();
   const [transition, setTransition] = useState<OrganizationTransitionState | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const isSessionProtected = transition !== null || signingOut;
   const [switchingToOrganizationId, setSwitchingToOrganizationId] = useState<string | null>(null);
   const isUserSwitchInProgress =
     switchingToOrganizationId !== null && (transition === null || transition.silent === true);
@@ -272,10 +274,10 @@ export function OrganizationChangeProvider({
   }, [getTabId, handleChannelMessage, reconcileFromServer]);
 
   useEffect(() => {
-    if (!transition && !signingOut) return;
+    if (!isSessionProtected) return;
 
-    void queryClient.cancelQueries();
     focusManager.setFocused(false);
+    void queryClient.cancelQueries();
     const keepQueriesPaused = () => focusManager.setFocused(false);
     window.addEventListener('focus', keepQueriesPaused);
 
@@ -283,7 +285,7 @@ export function OrganizationChangeProvider({
       window.removeEventListener('focus', keepQueriesPaused);
       focusManager.setFocused(undefined);
     };
-  }, [queryClient, signingOut, transition]);
+  }, [queryClient, isSessionProtected]);
 
   useEffect(() => {
     if (transition?.phase === 'decision' && transition.toOrganizationId === currentOrganization.id) {
@@ -312,11 +314,17 @@ export function OrganizationChangeProvider({
 
   const changeServerOrganization = useCallback(
     async (organizationId: string) => {
-      const { firebaseIdToken } = clientServices.authenticationClientService.authenticationClientRepository;
-      const idToken = await firebaseIdToken();
+      // OIDC authenticates on the server. Only initialize Firebase on demand
+      // for a Firebase switch, never while rendering this shared provider.
+      const idToken =
+        appConfig.auth.provider === 'firebase'
+          ? await initializeClientServices(
+              appConfig,
+            ).authenticationClientService.authenticationClientRepository.firebaseIdToken()
+          : undefined;
       await changeOrganizationIdMutation.mutateAsync({ idToken, csrf, newOrganizationId: organizationId });
     },
-    [changeOrganizationIdMutation, clientServices, csrf],
+    [appConfig, changeOrganizationIdMutation, csrf],
   );
 
   const navigateToSessionOrganization = useCallback(async () => {

@@ -77,15 +77,11 @@ export const getSessionIdentityFn = createServerFn({ method: 'GET' })
 
 export const changeOrganizationId = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
-  .validator(z.object({ idToken: z.string(), csrf: z.string(), newOrganizationId: z.uuid() }))
+  .validator(z.object({ idToken: z.string().optional(), csrf: z.string(), newOrganizationId: z.uuid() }))
   .handler(async ({ context, data }) => {
     const request = getRequest();
     try {
-      await context.services.authService.refresh(
-        request,
-        { idToken: data.idToken, csrf: data.csrf, newOrganizationId: data.newOrganizationId },
-        { failureRedirect: '/sign-in', preserveSessionOnFailure: true },
-      );
+      await context.services.authService.changeOrganization(request, data);
     } catch (err) {
       if (err instanceof Response && err.status >= 300 && err.status < 400) {
         throw redirect({ href: err.headers.get('Location')!, statusCode: err.status });

@@ -4,9 +4,12 @@ import { FeatureAccessPanel } from '@bo/components/organisms/FeatureAccessPanel'
 import {
   getOrganizationQueryOptions,
   listOrganizationFeatures,
+  listOrganizationsQueryOptions,
   listOrganizationUsersQueryOptions,
 } from '@bo/data/organization';
+import { groupOrganizationsByTenant, listTenantsQueryOptions } from '@bo/data/tenants';
 import { OVERRIDABLE_FEATURES } from '@bo/schemas/features';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { OrganizationDto } from 'marble-api';
 import { FeatureAccessDto } from 'marble-api/generated/backoffice-api';
@@ -124,6 +127,12 @@ function NotSet() {
 
 /* ------------------------------ Configuration ------------------------------ */
 
+const ENVIRONMENT_LABELS: Record<string, string> = {
+  production: 'Production',
+  staging: 'Staging',
+  demo: 'Demo',
+};
+
 const PROVIDER_LABELS: Record<string, string> = {
   opensanctions: 'OpenSanctions',
   lexisnexis: 'LexisNexis',
@@ -140,11 +149,30 @@ function ConfigurationFields({ organization }: { organization: OrganizationDto }
 
   return (
     <dl className="grid grid-cols-1 gap-lg sm:grid-cols-2">
-      <div className="flex flex-col gap-xs sm:col-span-2">
+      <div className="flex flex-col gap-xs">
         <FieldLabel>Organization ID</FieldLabel>
         <dd>
           <CopyableValue value={organization.id} />
         </dd>
+      </div>
+      <div className="flex flex-col gap-xs">
+        <FieldLabel>Environment</FieldLabel>
+        <dd>
+          <Tag color={organization.environment === 'staging' ? 'purple' : 'grey'} size="small">
+            {ENVIRONMENT_LABELS[organization.environment] ?? organization.environment}
+          </Tag>
+        </dd>
+      </div>
+      <div className="flex flex-col gap-xs sm:col-span-2">
+        <FieldLabel>Tenant</FieldLabel>
+        <SuspenseQuery query={listTenantsQueryOptions()} fallback={<TenantSkeleton />} errorComponent={TenantError}>
+          {(tenants) => (
+            <TenantField
+              organization={organization}
+              tenantName={tenants.find((tenant) => tenant.id === organization.tenant_id)?.name}
+            />
+          )}
+        </SuspenseQuery>
       </div>
 
       <div className="flex flex-col gap-xs">
@@ -203,6 +231,51 @@ function ConfigurationFields({ organization }: { organization: OrganizationDto }
         </dd>
       </div>
     </dl>
+  );
+}
+
+function TenantField({ organization, tenantName }: { organization: OrganizationDto; tenantName?: string }) {
+  const { data: organizations } = useSuspenseQuery(listOrganizationsQueryOptions());
+  const siblings = (groupOrganizationsByTenant(organizations).get(organization.tenant_id) ?? []).filter(
+    (sibling) => sibling.id !== organization.id,
+  );
+
+  return (
+    <dd className="flex flex-col gap-sm">
+      <div className="flex flex-wrap items-center gap-sm">
+        <Link
+          to="/tenants"
+          className="text-grey-primary hover:text-purple-primary text-s font-medium transition-colors"
+        >
+          {tenantName ?? <span className="text-grey-placeholder font-normal">Unknown tenant</span>}
+        </Link>
+        <CopyableValue value={organization.tenant_id} />
+      </div>
+      {siblings.length > 0 ? (
+        <div className="flex flex-col gap-xs">
+          <span className="text-grey-secondary text-xs">
+            Other {siblings.length === 1 ? 'organization' : 'organizations'} in this tenant
+          </span>
+          <ul className="flex flex-wrap gap-xs">
+            {siblings.map((sibling) => (
+              <li key={sibling.id}>
+                <Link
+                  to="/organizations/$orgId/overview"
+                  params={{ orgId: sibling.id }}
+                  title={sibling.id}
+                  className="border-grey-border text-grey-primary hover:border-purple-primary hover:text-purple-primary inline-flex h-6 items-center gap-xs rounded-full border px-sm text-small transition-colors"
+                >
+                  {sibling.name}
+                  <Icon icon="arrow-right" className="size-3.5" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <span className="text-grey-placeholder text-xs">No other organization in this tenant</span>
+      )}
+    </dd>
   );
 }
 
@@ -407,6 +480,15 @@ function ConfigurationSkeleton() {
   );
 }
 
+function TenantSkeleton() {
+  return (
+    <div className="flex flex-col gap-sm">
+      <SkeletonBar className="h-4 w-1/2" />
+      <SkeletonBar className="h-6 w-2/3 rounded-full" />
+    </div>
+  );
+}
+
 function PeopleSkeleton() {
   return (
     <div className="flex flex-col gap-md">
@@ -444,6 +526,7 @@ function FeaturesSkeleton() {
 const ConfigurationError = makeQueryErrorComponent(
   <span className="text-grey-secondary text-s">Could not load configuration.</span>,
 );
+const TenantError = makeQueryErrorComponent(<span className="text-grey-secondary text-s">Could not load tenant.</span>);
 const PeopleError = makeQueryErrorComponent(<span className="text-grey-secondary text-s">Could not load users.</span>);
 const FeaturesError = makeQueryErrorComponent(
   <span className="text-grey-secondary text-s">Could not load feature access.</span>,

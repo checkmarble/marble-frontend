@@ -138,7 +138,7 @@ function LoginWithEmail() {
     <div className="flex flex-col gap-2xl w-full">
       {isSsoEnabled ? (
         <Link
-          className="absolute top-[60px] start-[60px] flex gap-sm text-s items-center"
+          className="lg:absolute lg:top-15 lg:start-15 flex gap-sm text-s items-center"
           to="/sign-in"
           search={signedOut ? { signedOut: 1 } : undefined}
         >

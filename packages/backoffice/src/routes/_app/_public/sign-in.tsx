@@ -81,10 +81,21 @@ function GoogleSignIn() {
       return;
     }
 
-    // On success `signinFn` throws a redirect to /dashboard; on failure it redirects
-    // back here. Either way we let the router follow it — no manual navigation.
-    await callSigninFn({ data: { idToken } });
-    setPending(false);
+    // A redirect thrown inside the server function is followed by the fetch and never
+    // changes the page. Success returns a destination; token exchange and session
+    // update failures reject so we can show the error here.
+    try {
+      const result = await callSigninFn({ data: { idToken } });
+      if (result.redirectTo !== '/dashboard') {
+        setError(toErrorCopy(result));
+        setPending(false);
+        return;
+      }
+      window.location.href = result.redirectTo;
+    } catch (serverError) {
+      setError(toErrorCopy(serverError));
+      setPending(false);
+    }
   };
 
   return (

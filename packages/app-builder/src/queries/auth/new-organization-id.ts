@@ -12,7 +12,7 @@ export const useChangeOrganizationIdMutation = () => {
       csrf,
       newOrganizationId,
     }: {
-      idToken: string;
+      idToken?: string;
       csrf: string;
       newOrganizationId: string;
     }) => {
