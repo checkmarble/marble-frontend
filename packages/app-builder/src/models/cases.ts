@@ -266,12 +266,20 @@ export interface EntityAnnotatedEvent extends CaseEventBase<'entity_annotated'> 
 
 export interface CaseEntityAddedEvent extends CaseEventBase<'entity_added'> {
   userId?: string | null;
+  /** UUID of the manual link, not the client object id. */
   entityId: string;
+  /** Client the link points at, when the event payload could be parsed. */
+  tableName?: string;
+  objectId?: string;
 }
 
 export interface CaseEntityRemovedEvent extends CaseEventBase<'entity_removed'> {
   userId?: string | null;
+  /** UUID of the manual link, not the client object id. */
   entityId: string;
+  /** Client the link pointed at, when the event payload could be parsed. */
+  tableName?: string;
+  objectId?: string;
 }
 
 export type CaseEvent =
@@ -428,12 +436,14 @@ export async function adaptCaseEventDto(
       eventType: dto.event_type,
       userId: dto.user_id,
       entityId: dto.resource_id,
+      ...parseCaseEntityRef(dto.new_value),
     }))
     .with({ event_type: 'entity_removed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       entityId: dto.resource_id,
+      ...parseCaseEntityRef(dto.previous_value),
     }))
     .with({ event_type: 'entity_annotated' }, async (dto) => {
       const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);
@@ -446,6 +456,21 @@ export async function adaptCaseEventDto(
     })
 
     .exhaustive();
+}
+
+function parseCaseEntityRef(value: string): { tableName: string; objectId: string } | undefined {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (typeof parsed !== 'object' || parsed === null) return undefined;
+
+    const tableName = 'table_name' in parsed && typeof parsed.table_name === 'string' ? parsed.table_name.trim() : '';
+    const objectId = 'object_id' in parsed && typeof parsed.object_id === 'string' ? parsed.object_id.trim() : '';
+    if (!tableName || !objectId) return undefined;
+
+    return { tableName, objectId };
+  } catch {
+    return undefined;
+  }
 }
 
 //
