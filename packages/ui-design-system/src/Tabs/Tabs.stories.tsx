@@ -62,6 +62,30 @@ export const Links: StoryFn<typeof Tabs> = () => {
   );
 };
 
+export const Grey: StoryFn<typeof Tabs> = () => {
+  const [activeTab, setActiveTab] = useState('client-1');
+  const tabs = ['client-1', 'client-2', 'client-3'];
+
+  return (
+    <div className="flex flex-col gap-md">
+      <Tabs color="grey" value={activeTab} onValueChange={setActiveTab}>
+        {tabs.map((tab) => (
+          <Tabs.Button key={tab} value={tab}>
+            {capitalize(tab.replace('-', ' '))}
+          </Tabs.Button>
+        ))}
+      </Tabs>
+      <Tabs color="grey">
+        <Tabs.Link href="#overview" aria-current="page">
+          Overview
+        </Tabs.Link>
+        <Tabs.Link href="#analytics">Analytics</Tabs.Link>
+        <Tabs.Link href="#cases">Cases</Tabs.Link>
+      </Tabs>
+    </div>
+  );
+};
+
 export const Fluid: StoryFn<typeof Tabs> = () => {
   const [activeTab, setActiveTab] = useState('client-1');
   const tabs = ['client-1', 'client-2', 'client-3', 'client-4', 'client-5', 'client-6'];
