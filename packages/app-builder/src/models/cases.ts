@@ -5,6 +5,8 @@ import {
   type CaseContributorDto,
   type CaseDetailDto,
   type CaseDto,
+  CaseEntityDto,
+  CaseEntityRefDto,
   type CaseEventDto,
   type CaseFileDto,
   type CaseReviewContentDto,
@@ -27,7 +29,12 @@ import {
 } from 'marble-api';
 import { match } from 'ts-pattern';
 import { adaptContinuousScreening, ContinuousScreening } from './continuous-screening';
-import { adaptClientObjectDetail, type ClientObjectDetail, DataModelObjectValue } from './data-model';
+import {
+  adaptClientObjectDetail,
+  type ClientObjectDetail,
+  type DataModelObject,
+  DataModelObjectValue,
+} from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
 import { ScreeningStatus } from './screening';
@@ -151,6 +158,8 @@ export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'sar_status_changed',
   'sar_file_uploaded',
   'entity_annotated',
+  'entity_added',
+  'entity_removed',
 ]);
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -255,6 +264,24 @@ export interface EntityAnnotatedEvent extends CaseEventBase<'entity_annotated'> 
   annotation: TagEntityAnnotationDto | CommentEntityAnnotationDto | FileEntityAnnotationDto;
 }
 
+export interface CaseEntityAddedEvent extends CaseEventBase<'entity_added'> {
+  userId?: string | null;
+  /** UUID of the manual link, not the client object id. */
+  entityId: string;
+  /** Client the link points at, when the event payload could be parsed. */
+  tableName?: string;
+  objectId?: string;
+}
+
+export interface CaseEntityRemovedEvent extends CaseEventBase<'entity_removed'> {
+  userId?: string | null;
+  /** UUID of the manual link, not the client object id. */
+  entityId: string;
+  /** Client the link pointed at, when the event payload could be parsed. */
+  tableName?: string;
+  objectId?: string;
+}
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -274,7 +301,9 @@ export type CaseEvent =
   | SarDeletedEvent
   | SarStatusChangedEvent
   | SarFileUploadedEvent
-  | EntityAnnotatedEvent;
+  | EntityAnnotatedEvent
+  | CaseEntityAddedEvent
+  | CaseEntityRemovedEvent;
 
 export async function adaptCaseEventDto(
   caseEventDto: CaseEventDto,
@@ -402,6 +431,20 @@ export async function adaptCaseEventDto(
       sarId: dto.resource_id,
       filename: dto.new_value,
     }))
+    .with({ event_type: 'entity_added' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      entityId: dto.resource_id,
+      ...parseCaseEntityRef(dto.new_value),
+    }))
+    .with({ event_type: 'entity_removed' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      entityId: dto.resource_id,
+      ...parseCaseEntityRef(dto.previous_value),
+    }))
     .with({ event_type: 'entity_annotated' }, async (dto) => {
       const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);
       return {
@@ -411,7 +454,23 @@ export async function adaptCaseEventDto(
         annotation,
       };
     })
+
     .exhaustive();
+}
+
+function parseCaseEntityRef(value: string): { tableName: string; objectId: string } | undefined {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (typeof parsed !== 'object' || parsed === null) return undefined;
+
+    const tableName = 'table_name' in parsed && typeof parsed.table_name === 'string' ? parsed.table_name.trim() : '';
+    const objectId = 'object_id' in parsed && typeof parsed.object_id === 'string' ? parsed.object_id.trim() : '';
+    if (!tableName || !objectId) return undefined;
+
+    return { tableName, objectId };
+  } catch {
+    return undefined;
+  }
 }
 
 //
@@ -431,6 +490,23 @@ export function adaptCaseFile(dto: CaseFileDto): CaseFile {
     caseId: dto.case_id,
     fileName: dto.file_name,
     createdAt: dto.created_at,
+  };
+}
+
+export type CaseEntity = {
+  tableName: string;
+  objectId: string;
+  /** Available client object data, or null */
+  data: {
+    [key: string]: any;
+  } | null;
+};
+
+function adaptCaseEntity(dto: CaseEntityDto): CaseEntity {
+  return {
+    tableName: dto.table_name,
+    objectId: dto.object_id,
+    data: dto.data,
   };
 }
 
@@ -458,6 +534,7 @@ export interface CaseDetail extends Case {
   continuousScreenings: ContinuousScreening[];
   events: CaseEvent[];
   files: CaseFile[];
+  entities: CaseEntity[];
 }
 
 export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: MarbleCoreApi): Promise<CaseDetail> {
@@ -489,6 +566,7 @@ export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: M
         .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
     ),
     files: dto.files.map(adaptCaseFile),
+    entities: dto.entities.map(adaptCaseEntity),
   };
 }
 
@@ -496,6 +574,15 @@ export interface CaseCreateBody {
   name: string;
   inboxId: string;
   decisionIds?: string[];
+}
+
+export interface CaseObjectReference {
+  objectType: string;
+  objectId: string;
+}
+
+export function adaptCaseObjectReferences(objects: CaseObjectReference[]): CaseEntityRefDto[] {
+  return objects.map(({ objectType, objectId }) => ({ table_name: objectType, object_id: objectId }));
 }
 
 export function adaptCaseCreateBody(body: CaseCreateBody): CreateCaseBodyDto {
@@ -572,12 +659,80 @@ export type PivotObject = {
 
 /**
  * Stable key identifying a pivot object among a case's pivot objects. Prefers the
- * pivot id, because several pivot objects can share the same pivot value string
- * (e.g. a User "123" and a Merchant "123" under polymorphic belongs_to) and must not
- * be merged. Falls back to the value when the id is absent.
+ * table name and object id (same format as entity keys), because several pivot objects
+ * can share the same id or value string (e.g. a User "123" and a Merchant "123" under
+ * polymorphic belongs_to) and must not be merged. Falls back to the value when the id is absent.
  */
-export function getPivotObjectKey(pivotObject: Pick<PivotObject, 'pivotId' | 'pivotValue'>): string {
-  return pivotObject.pivotId ?? pivotObject.pivotValue;
+export function getPivotObjectKey(
+  pivotObject: Pick<PivotObject, 'pivotObjectName' | 'pivotObjectId' | 'pivotValue'>,
+): string {
+  return pivotObject.pivotObjectId
+    ? getEntityKey({ tableName: pivotObject.pivotObjectName, objectId: pivotObject.pivotObjectId })
+    : pivotObject.pivotValue;
+}
+
+/**
+ * A client shown on the case page. It comes either from a pivot object found on the case
+ * decisions, or from an entity manually linked to the case. A case can have both, or only one kind.
+ */
+export type CaseClient = {
+  /** Stable key identifying the client among the case's clients, used as route param. */
+  key: string;
+  tableName: string;
+  /** The "object_id" of the client, when known (always known for entities). */
+  objectId?: string;
+  /** Whether the client object exists in the ingested data. */
+  isIngested: boolean;
+  /** Data of the client object, as much as is known (only the pivot field for a non ingested pivot). */
+  object: DataModelObject;
+} & ({ kind: 'pivot'; pivotObject: PivotObject } | { kind: 'entity'; entity: CaseEntity });
+
+export function getEntityKey(entity: Pick<CaseEntity, 'tableName' | 'objectId'>): string {
+  return `${entity.tableName}:${entity.objectId}`;
+}
+
+export function adaptPivotClient(pivotObject: PivotObject): CaseClient {
+  const validFrom = pivotObject.pivotObjectData.metadata.validFrom;
+  return {
+    kind: 'pivot',
+    key: getPivotObjectKey(pivotObject),
+    tableName: pivotObject.pivotObjectName,
+    objectId: pivotObject.pivotObjectId,
+    isIngested: pivotObject.isIngested,
+    object: {
+      data: pivotObject.pivotObjectData.data,
+      ...(validFrom ? { metadata: { validFrom } } : {}),
+    },
+    pivotObject,
+  };
+}
+
+export function adaptEntityClient(entity: CaseEntity): CaseClient {
+  return {
+    kind: 'entity',
+    key: getEntityKey(entity),
+    tableName: entity.tableName,
+    objectId: entity.objectId,
+    isIngested: entity.data !== null,
+    object: { data: entity.data ?? {} },
+    entity,
+  };
+}
+
+/**
+ * Pivot objects first, then manually added entities. An entity pointing to an object
+ * already present as a pivot object is merged into it.
+ */
+export function getCaseClients(pivotObjects: PivotObject[], entities: CaseEntity[]): CaseClient[] {
+  const pivotClients = pivotObjects.map(adaptPivotClient);
+  const pivotObjectKeys = new Set(
+    pivotClients.flatMap((client) =>
+      client.objectId ? [getEntityKey({ tableName: client.tableName, objectId: client.objectId })] : [],
+    ),
+  );
+  const entityClients = entities.filter((entity) => !pivotObjectKeys.has(getEntityKey(entity))).map(adaptEntityClient);
+
+  return [...pivotClients, ...entityClients];
 }
 
 export function adaptPivotObject(dto: PivotObjectDto): PivotObject {

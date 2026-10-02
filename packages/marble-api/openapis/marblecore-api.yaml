@@ -91,6 +91,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1assignee
   /cases/{caseId}/decisions:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1decisions
+  /cases/{caseId}/entities:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1entities
   /cases/{caseId}/comments:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1comments
   /cases/{caseId}/snooze:

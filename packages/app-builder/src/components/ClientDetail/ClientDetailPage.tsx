@@ -25,10 +25,12 @@ import { match } from 'ts-pattern';
 import { Button, Card, cn, Panel, Popover, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { MainLinksGraph, mainLinksGraphMinHeight } from '../CaseManager/MainLinksGraph';
+import { getObjectName } from '../CaseManager/PivotTabs';
 import { GraphSessionProvider, useGraphSession } from '../Graph/contexts/GraphSessionContext';
 import { GraphAccessPlaceholder } from '../Graph/GraphAccessPlaceholder';
 import { SessionGraphCanvas } from '../Graph/SessionGraphCanvas';
 import { pageLayoutGutter } from '../Page/page-layout';
+import { ClientAddToCasePanel } from './AddToCasePanel';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';
 import { ConfigureMonitoringForObjectId } from './ConfigureMonitoringForObjectId';
@@ -84,6 +86,13 @@ export const ClientDetailPage = ({
   const scoreLatestQuery = useScoreLatestQuery(objectType, objectId);
   const scoreForPanel = scoreLatestQuery.data?.score ?? activeScore;
 
+  const caseObject = {
+    objectType,
+    objectId,
+    label: getObjectName(dataModel, objectType, objectDetails.data, objectId),
+    riskLevel: isAccessible(userScoringAccess) ? scoreForPanel?.risk_level : undefined,
+  };
+
   let [scoreColor, scoreLabel] = ['', ''];
 
   if (scoringSettings && activeScore) {
@@ -100,15 +109,25 @@ export const ClientDetailPage = ({
   return (
     <DataModelExplorerProvider>
       <Page.Main>
-        <Page.Header className="gap-md">
-          <BackButton back="/client-detail" />
-          <TitleBar
-            objectType={objectType}
-            objectId={objectId}
-            objectDetails={objectDetails}
-            annotationsQuery={annotationsQuery}
-            metadata={metadata}
-          />
+        <Page.Header className="gap-md flex justify-between items-center">
+          <div className="flex items-center gap-md">
+            <BackButton back="/client-detail" />
+            <TitleBar
+              objectType={objectType}
+              objectId={objectId}
+              objectDetails={objectDetails}
+              annotationsQuery={annotationsQuery}
+              metadata={metadata}
+            />
+          </div>
+          <Panel.Root>
+            <Panel.Trigger asChild>
+              <Button variant="primary" appearance="stroked">
+                {t('cases:add_to_case.create')}
+              </Button>
+            </Panel.Trigger>
+            <ClientAddToCasePanel objects={[caseObject]} />
+          </Panel.Root>
         </Page.Header>
         <Page.Container ref={containerRef}>
           <Page.Content width="table">
@@ -196,12 +215,14 @@ export const ClientDetailPage = ({
                 <Card className="flex flex-col gap-sm">
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{t('client360:client_detail.monitoring_hits.title')}</div>
-                    {monitoringHitsCount > 3 ? (
-                      <Button appearance="link" onClick={() => setShowMonitoringHitsPanel(true)}>
-                        <span>{t('common:show')}</span>
-                        <Icon icon="eye" className="size-4" />
-                      </Button>
-                    ) : null}
+                    <div className="flex items-center gap-sm">
+                      {monitoringHitsCount > 3 ? (
+                        <Button appearance="link" variant="secondary" onClick={() => setShowMonitoringHitsPanel(true)}>
+                          <span>{t('common:see_all')}</span>
+                          <Icon icon="eye" className="size-4" />
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="flex items-center gap-sm bg-grey-background-light border border-grey-border py-sm px-md rounded-md mb-sm">
                     {match(activeConfigsQuery)
@@ -266,12 +287,26 @@ export const ClientDetailPage = ({
                 <Card className="flex flex-col gap-sm">
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{t('client360:client_detail.alert_hits.title')}</div>
-                    {alertHitsCount > 3 ? (
-                      <Button appearance="link" onClick={() => setShowAlertHitsPanel(true)}>
-                        <span>{t('common:show')}</span>
-                        <Icon icon="eye" className="size-4" />
-                      </Button>
-                    ) : null}
+                    <div className="flex items-center gap-sm">
+                      {alertHitsCount > 3 ? (
+                        <Button appearance="link" variant="secondary" onClick={() => setShowAlertHitsPanel(true)}>
+                          <span>{t('common:see_all')}</span>
+                          <Icon icon="eye" className="size-4" />
+                        </Button>
+                      ) : null}
+                      {alertHitsCount > 0 ? (
+                        <>
+                          <Panel.Root>
+                            <Panel.Trigger asChild>
+                              <Button variant="primary" appearance="stroked" size="small">
+                                {t('cases:add_to_case.create')}
+                              </Button>
+                            </Panel.Trigger>
+                            <ClientAddToCasePanel objects={[caseObject]} />
+                          </Panel.Root>
+                        </>
+                      ) : null}
+                    </div>
                   </div>
                   <AlertHitsList alertHitsQuery={alertHitsQuery} />
                 </Card>

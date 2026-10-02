@@ -1,7 +1,10 @@
 import { CaseStatusBadgeV2 } from '@app-builder/components/Cases/CaseStatus';
+import { type Case, type CaseClient } from '@app-builder/models/cases';
+import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { type UseQueryResult } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -9,12 +12,37 @@ import { Card, CtaV2ClassName } from 'ui-design-system';
 
 type ClientRelatedAlertCasesCardProps = {
   caseId: string;
-  pivotValue: string;
+  client: CaseClient;
 };
 
-export function ClientRelatedAlertCasesCard({ caseId, pivotValue }: ClientRelatedAlertCasesCardProps) {
-  const { t } = useTranslation(['common', 'cases']);
+export function ClientRelatedAlertCasesCard({ caseId, client }: ClientRelatedAlertCasesCardProps) {
+  return client.kind === 'pivot' ? (
+    <PivotRelatedCasesCard caseId={caseId} pivotValue={client.pivotObject.pivotValue} />
+  ) : (
+    <ObjectRelatedCasesCard caseId={caseId} objectType={client.tableName} objectId={client.entity.objectId} />
+  );
+}
+
+function PivotRelatedCasesCard({ caseId, pivotValue }: { caseId: string; pivotValue: string }) {
   const casesQuery = usePivotRelatedCasesQuery(pivotValue);
+  return <RelatedCasesCard caseId={caseId} casesQuery={casesQuery} />;
+}
+
+function ObjectRelatedCasesCard({
+  caseId,
+  objectType,
+  objectId,
+}: {
+  caseId: string;
+  objectType: string;
+  objectId: string;
+}) {
+  const casesQuery = useGetObjectCasesQuery(objectType, objectId);
+  return <RelatedCasesCard caseId={caseId} casesQuery={casesQuery} />;
+}
+
+function RelatedCasesCard({ caseId, casesQuery }: { caseId: string; casesQuery: UseQueryResult<{ cases: Case[] }> }) {
+  const { t } = useTranslation(['common', 'cases']);
   const formatDateTime = useFormatDateTime();
 
   return (

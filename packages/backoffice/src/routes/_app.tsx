@@ -20,7 +20,7 @@ function ErrorComponent({ error }: ErrorComponentProps) {
     <div className="h-screen w-screen grid place-content-center">
       <div className="bg-surface-card max-w-[80vw] p-lg rounded-xl flex flex-col gap-md items-center">
         <h1 className="text-3xl">An error occured</h1>
-        {import.meta.env.DEV ? <div>{error.stack}</div> : null}
+        {import.meta.env.DEV && error instanceof Error ? <div>{error.stack}</div> : null}
       </div>
     </div>
   );

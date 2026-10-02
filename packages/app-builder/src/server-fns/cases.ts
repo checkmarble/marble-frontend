@@ -1,6 +1,11 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isNotFoundHttpError, isStatusBadRequestHttpError, isStatusConflictHttpError } from '@app-builder/models';
+import {
+  isNotFoundHttpError,
+  isStatusBadRequestHttpError,
+  isStatusConflictHttpError,
+  isUnprocessableEntityHttpError,
+} from '@app-builder/models';
 import { type AiSettingSchema } from '@app-builder/models/ai-settings';
 import {
   type AiCaseReviewListItem,
@@ -16,6 +21,7 @@ import { DecisionRepository } from '@app-builder/repositories/DecisionRepository
 import { ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import {
   addCommentPayloadSchema,
+  addObjectsToCasePayloadSchema,
   addRuleSnoozePayloadSchema,
   addToCasePayloadSchema,
   caseReviewReactionSchema,
@@ -30,6 +36,7 @@ import {
   listCasesInputSchema,
   massUpdateCasesPayloadSchema,
   openCasePayloadSchema,
+  removeObjectsFromCasePayloadSchema,
   reviewDecisionPayloadSchema,
   reviewScreeningMatchPayloadSchema,
   snoozeCasePayloadSchema,
@@ -367,6 +374,51 @@ export const addToCaseFn = createServerFn({ method: 'POST' })
       }
     } catch (error) {
       if (isStatusBadRequestHttpError(error)) {
+        throw new Error(t('common:errors.add_to_case.invalid'));
+      } else if (isNotFoundHttpError(error)) {
+        throw new Error(t('cases:errors.case_not_found'));
+      }
+      throw new Error(t('common:errors.unknown'));
+    }
+  });
+
+export const addObjectsToCaseFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(addObjectsToCasePayloadSchema)
+  .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+
+    try {
+      if (data.newCase) {
+        return await context.authInfo.cases.createCaseFromObjects(data);
+      }
+      return await context.authInfo.cases.addObjectsToCase(data);
+    } catch (error) {
+      if (isUnprocessableEntityHttpError(error)) {
+        throw new Error(t('cases:errors.invalid_case_objects'));
+      } else if (isStatusBadRequestHttpError(error)) {
+        throw new Error(t('common:errors.add_to_case.invalid'));
+      } else if (!data.newCase && isNotFoundHttpError(error)) {
+        throw new Error(t('cases:errors.case_not_found'));
+      }
+      throw new Error(t('common:errors.unknown'));
+    }
+  });
+
+export const removeObjectsFromCaseFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(removeObjectsFromCasePayloadSchema)
+  .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+
+    try {
+      return await context.authInfo.cases.removeObjectsFromCase(data);
+    } catch (error) {
+      if (isUnprocessableEntityHttpError(error)) {
+        throw new Error(t('cases:errors.invalid_case_objects'));
+      } else if (isStatusBadRequestHttpError(error)) {
         throw new Error(t('common:errors.add_to_case.invalid'));
       } else if (isNotFoundHttpError(error)) {
         throw new Error(t('cases:errors.case_not_found'));
