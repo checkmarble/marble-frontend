@@ -121,6 +121,22 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'Ruleset' })).toHaveAttribute('data-status', 'active');
   });
 
+  it('applies the grey color variant to the tablist and its items', () => {
+    render(
+      <Tabs color="grey" value="password">
+        <Tabs.Button value="account">Account</Tabs.Button>
+        <Tabs.Button value="password">Password</Tabs.Button>
+        <Tabs.Link href="/overview">Overview</Tabs.Link>
+      </Tabs>,
+    );
+
+    expect(screen.getByRole('tablist')).not.toHaveClass('bg-purple-background');
+    expect(screen.getByRole('tab', { name: 'Account' })).toHaveClass('border-grey-border');
+    expect(screen.getByRole('tab', { name: 'Password' })).toHaveClass('border-grey-border');
+    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveClass('border-grey-border');
+    expect(screen.getByRole('tab', { name: 'Account' })).not.toHaveClass('bg-purple-background');
+  });
+
   it('passes its ref to the button element', () => {
     const ref = createRef<HTMLButtonElement>();
 

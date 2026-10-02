@@ -15,7 +15,7 @@ import { Link, useMatch, useRouter } from '@tanstack/react-router';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, cn, Input, MenuCommand, Panel, Tag } from 'ui-design-system';
+import { Button, Card, cn, Input, MenuCommand, Panel, Tabs, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { subEntityIcon } from '../Graph/GraphComponents';
 import { createGraphTypeHelpers } from '../Graph/lib/data-model-map';
@@ -47,10 +47,10 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
   const [isSaving, setIsSaving] = useState(false);
   const [addedObjects, setAddedObjects] = useState<AddedObject[]>([]);
   const [deletedObjects, setDeletedObjects] = useState<CaseObjectReference[]>([]);
+  const dataModel = useDataModel();
 
   if (clients.length <= 1) return null;
 
-  const orderedKeys = numberedFrom.map((client) => client.key);
   const isNotClosed = caseStatus !== 'closed';
   const showRiskLevel = isAccessible(userScoringAccess);
   const deletedObjectKeys = new Set(deletedObjects.map((object) => objectKey(object.objectType, object.objectId)));
@@ -143,24 +143,20 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
   };
 
   return (
-    <div className="mb-lg flex shrink-0 gap-sm items-center">
+    <Tabs color="grey" variant="fluid">
       {clients.map((client) => {
         const pivotValue = client.key;
         return (
-          <Link
-            key={pivotValue}
-            className="px-sm h-8 rounded-md border border-grey-border flex items-center aria-[current=page]:border-purple-primary space-x-sm"
-            from="/cases/s/$caseId/"
-            to={to}
-            params={{ pivotValue }}
-          >
-            <span>{t('cases:case_manager.client_panel.label', { index: orderedKeys.indexOf(pivotValue) + 1 })}</span>
-            {client.kind === 'entity' ? (
-              <Tag color="grey" size="xs">
-                {t('cases:case_manager.added_entity')}
-              </Tag>
-            ) : null}
-          </Link>
+          <Tabs.Link asChild key={pivotValue}>
+            <Link from="/cases/s/$caseId/" to={to} params={{ pivotValue }}>
+              <span>{getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}</span>
+              {client.kind === 'entity' ? (
+                <Tag color="grey" size="xs">
+                  {t('cases:case_manager.added_entity')}
+                </Tag>
+              ) : null}
+            </Link>
+          </Tabs.Link>
         );
       })}
       <Panel.Root open={openAddClientPanel} onOpenChange={handleOpenChange}>
@@ -219,7 +215,7 @@ export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, use
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
-    </div>
+    </Tabs>
   );
 }
 
