@@ -108,22 +108,48 @@
       - Users
     summary: List all users present in the database
     operationId: listUsers
+    description: >
+      Without `tenant_access`, returns users (optionally filtered by
+      `organization_id`). With `tenant_access`, returns users of the
+      organization's tenant along with their direct grant on that organization;
+      `organization_id` is then required.
     security:
       - bearerAuth: []
+    parameters:
+      - name: organization_id
+        description: Restrict the list to the users of this organization. Required when `tenant_access` is set.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: with_tfa
+        description: Enrich each user with their two-factor authentication status (fetched from the identity provider). Ignored when `tenant_access` is set.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: tenant_access
+        description: >
+          List users of the organization's tenant by access to the organization:
+          `direct` for users holding a direct grant on it, `missing` for users
+          without any access to it.
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [direct, missing]
     responses:
       "200":
         description: The list of users present in the database
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - users
-              properties:
-                users:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/UserDto"
+              oneOf:
+                - $ref: "#/components/schemas/ListUsersResponseDto"
+                - $ref: "#/components/schemas/ListTenantUsersResponseDto"
+      "400":
+        $ref: "components.yml#/responses/400"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -276,14 +302,9 @@
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - tenants
-              properties:
-                tenants:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/TenantDto"
+              type: array
+              items:
+                $ref: "#/components/schemas/TenantDto"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -366,6 +387,105 @@
             schema:
               type: string
               example: Conflict
+/tenants/{tenantId}/users/{userId}/grants:
+  put:
+    tags:
+      - Admin
+      - Users
+    summary: Grant a user a role on an organization of the tenant
+    operationId: replaceOrganizationGrant
+    description: >
+      Replaces the user's direct grant on the organization identified by the
+      `organization-id` query parameter (defaults to the caller's
+      organization). The organization must belong to the tenant, and the user
+      must belong to the same tenant unless they are a Marble admin.
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tenantId
+        in: path
+        required: true
+        description: ID of the tenant owning the organization
+        schema:
+          type: string
+          format: uuid
+      - name: userId
+        in: path
+        required: true
+        description: ID of the user
+        schema:
+          type: string
+          format: uuid
+      - name: organization-id
+        in: query
+        required: false
+        description: ID of the organization the grant applies to. Defaults to the caller's organization.
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ReplaceOrganizationGrantBodyDto"
+    responses:
+      "204":
+        description: The grant was replaced
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+  delete:
+    tags:
+      - Admin
+      - Users
+    summary: Revoke a user's grant on an organization of the tenant
+    operationId: revokeOrganizationGrant
+    description: >
+      Revokes the user's direct grant on the organization identified by the
+      `organization-id` query parameter (defaults to the caller's
+      organization). The organization must belong to the tenant, and the user
+      must belong to the same tenant unless they are a Marble admin.
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tenantId
+        in: path
+        required: true
+        description: ID of the tenant owning the organization
+        schema:
+          type: string
+          format: uuid
+      - name: userId
+        in: path
+        required: true
+        description: ID of the user
+        schema:
+          type: string
+          format: uuid
+      - name: organization-id
+        in: query
+        required: false
+        description: ID of the organization the grant applies to. Defaults to the caller's organization.
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "204":
+        description: The grant was revoked
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /organizations:
   get:
     tags:
@@ -751,6 +871,62 @@ components:
         name:
           type: string
           description: When set, the target tenant is renamed to this value.
+    OrganizationGrantRole:
+      type: string
+      enum: [VIEWER, BUILDER, PUBLISHER, ADMIN, ANALYST]
+    ReplaceOrganizationGrantBodyDto:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          $ref: "#/components/schemas/OrganizationGrantRole"
+    TenantUserDto:
+      type: object
+      required:
+        - user_id
+        - email
+        - organization_id
+        - first_name
+        - last_name
+        - picture
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+          description: ID of the user's home organization
+        first_name:
+          type: string
+        last_name:
+          type: string
+        picture:
+          type: string
+        organization_grant_role:
+          type: string
+          description: Role of the user's direct grant on the requested organization, when any
+    ListUsersResponseDto:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserDto"
+    ListTenantUsersResponseDto:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantUserDto"
 
     OrganizationDto:
       type: object

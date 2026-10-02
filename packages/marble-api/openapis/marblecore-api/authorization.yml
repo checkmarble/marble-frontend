@@ -83,7 +83,6 @@ components:
           type: object
           required:
             - organization_id
-            - role
             - actor_identity
             - permissions
           properties:
@@ -91,6 +90,13 @@ components:
               type: string
             role:
               type: string
+              deprecated: true
+              description: Single role returned by backends predating multi-role bindings. Use `roles` instead.
+            roles:
+              type: array
+              description: Roles bound to the principal. Omitted when the principal has none.
+              items:
+                type: string
             actor_identity:
               type: object
               properties:
