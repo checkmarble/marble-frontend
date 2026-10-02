@@ -1,5 +1,6 @@
 import { ClientDocumentsPopover } from '@app-builder/components/Annotations/ClientDocumentsPopover';
 import { BackButton } from '@app-builder/components/Breadcrumbs';
+import { CustomerKpis } from '@app-builder/components/CustomerKpis/CustomerKpis';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
@@ -113,66 +114,65 @@ export const ClientDetailPage = ({
         <Page.Container ref={containerRef}>
           <Page.Content width="table">
             {/* Client details */}
-            <div className="flex gap-md">
-              {/* Score card */}
-              {isAccessible(userScoringAccess) ? (
-                scoringSettings && activeScore ? (
-                  <button
-                    type="button"
-                    className="flex flex-col gap-sm border rounded-lg p-md py-sm w-[180px] self-start shrink-0 items-start"
-                    style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
-                    onClick={handleScoreClick}
-                  >
-                    <span className="text-small">{t('client360:client_detail.risk_level')}</span>
-                    <div className="flex gap-xs items-center">
-                      <div className="size-4 rounded-full" style={{ backgroundColor: scoreColor }} />
-                      <span className="font-semibold">{scoreLabel}</span>
-                      <Icon icon="eye" className="size-4" />
+            <div className={cn('grid grid-cols-1 lg:grid-cols-[7fr_5fr]', pageLayoutGutter.gap)}>
+              <div className="flex gap-md self-stretch">
+                {/* Score card */}
+                {isAccessible(userScoringAccess) ? (
+                  scoringSettings && activeScore ? (
+                    <button
+                      type="button"
+                      className="flex flex-col gap-sm border rounded-lg p-md py-sm w-[180px] self-start shrink-0 items-start"
+                      style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
+                      onClick={handleScoreClick}
+                    >
+                      <span className="text-small">{t('client360:client_detail.risk_level')}</span>
+                      <div className="flex gap-xs items-center">
+                        <div className="size-4 rounded-full" style={{ backgroundColor: scoreColor }} />
+                        <span className="font-semibold">{scoreLabel}</span>
+                        <Icon icon="eye" className="size-4" />
+                      </div>
+                    </button>
+                  ) : canConfigureUserScoring ? (
+                    <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-sm rounded-lg border p-md py-sm w-[180px] self-start shrink-0 text-center">
+                      <Icon icon="comet" className="size-10 shrink-0" />
+                      <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
+                      <Link
+                        to="/user-scoring"
+                        className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-xs text-center hover:bg-purple-primary/10 transition-colors"
+                      >
+                        {t('client360:client_detail.risk_level.configure')}
+                      </Link>
                     </div>
-                  </button>
-                ) : canConfigureUserScoring ? (
+                  ) : null
+                ) : (
                   <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-sm rounded-lg border p-md py-sm w-[180px] self-start shrink-0 text-center">
                     <Icon icon="comet" className="size-10 shrink-0" />
                     <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
-                    <Link
-                      to="/user-scoring"
+                    <a
+                      href="https://checkmarble.com/upgrade"
+                      target="_blank"
+                      rel="noreferrer"
                       className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-xs text-center hover:bg-purple-primary/10 transition-colors"
                     >
-                      {t('client360:client_detail.risk_level.configure')}
-                    </Link>
+                      {t('client360:client_detail.risk_level.upgrade')}
+                    </a>
                   </div>
-                ) : null
-              ) : (
-                <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-sm rounded-lg border p-md py-sm w-[180px] self-start shrink-0 text-center">
-                  <Icon icon="comet" className="size-10 shrink-0" />
-                  <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
-                  <a
-                    href="https://checkmarble.com/upgrade"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-xs text-center hover:bg-purple-primary/10 transition-colors"
-                  >
-                    {t('client360:client_detail.risk_level.upgrade')}
-                  </a>
-                </div>
-              )}
-              <div
-                className={cn(
-                  'grid grid-cols-1 grow',
-                  pageLayoutGutter.gap,
-                  graphDisplay !== 'hidden' && 'lg:grid-cols-2',
                 )}
-              >
-                {/* Client fields card */}
-                <Card>
-                  <div className="min-h-[140px]">
-                    <DataFields
-                      table={objectType}
-                      object={objectDetails}
-                      options={{ displayExpandButton: true, maxVisibleFields: 12 }}
-                    />
-                  </div>
-                </Card>
+                <div className="grow">
+                  {/* Client fields card */}
+                  <Card>
+                    <div className="min-h-[140px]">
+                      <DataFields
+                        table={objectType}
+                        object={objectDetails}
+                        options={{ displayExpandButton: true, maxVisibleFields: 12 }}
+                      />
+                    </div>
+                  </Card>
+                </div>
+              </div>
+              <div className="flex flex-col gap-md">
+                <CustomerKpis objectType={objectType} objectId={objectId} />
                 {graphDisplay === 'graph' ? (
                   <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
                     <div className="flex shrink-0 justify-between items-center">

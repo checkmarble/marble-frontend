@@ -1,7 +1,6 @@
 import { Nudge } from '@app-builder/components/Nudge';
 import { undefinedAstNodeName } from '@app-builder/models';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
-import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
@@ -52,6 +51,7 @@ export function OperatorSelect<Op extends string>({
   isFilter = false,
   hideArrow = false,
   featureAccess,
+  isDisabled = false,
   isOperatorRestricted,
 }: {
   options: readonly Op[] | OperatorSelectOptions<Op>;
@@ -60,12 +60,12 @@ export function OperatorSelect<Op extends string>({
   isFilter?: boolean;
   hideArrow?: boolean;
   featureAccess?: FeatureAccessLevelDto;
+  isDisabled?: boolean;
   isOperatorRestricted?: (op: Op) => boolean;
 } & VariantProps<typeof operatorContainerClassnames>) {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation(['common', 'scenarios']);
   const mappedOptions = mapOptions(options);
-  const isValueSwitchOpen = AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen);
 
   const _value = operator !== undefinedAstNodeName && operator !== null ? operator : null;
   const isRestricted = featureAccess && featureAccess !== 'allowed';
@@ -77,17 +77,13 @@ export function OperatorSelect<Op extends string>({
 
   return (
     <MenuCommand.Menu
-      open={isValueSwitchOpen ? false : open}
+      open={isDisabled ? false : open}
       onOpenChange={(nextOpen) => {
-        if (!isValueSwitchOpen) setOpen(nextOpen);
+        if (!isDisabled) setOpen(nextOpen);
       }}
     >
       <MenuCommand.Trigger>
-        <button
-          type="button"
-          disabled={isValueSwitchOpen}
-          className={operatorContainerClassnames({ validationStatus })}
-        >
+        <button type="button" disabled={isDisabled} className={operatorContainerClassnames({ validationStatus })}>
           <span className="text-s text-grey-primary group-disabled:text-grey-disabled w-full text-center font-medium">
             {_value ? getOperatorName(t, _value, isFilter) : '...'}
           </span>
