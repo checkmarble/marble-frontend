@@ -1,6 +1,14 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentProps, createContext, type ReactNode, type Ref, useContext, useMemo } from 'react';
+import {
+  type ComponentProps,
+  createContext,
+  type KeyboardEvent,
+  type ReactNode,
+  type Ref,
+  useContext,
+  useMemo,
+} from 'react';
 import { cn } from '../utils';
 
 const tabClassName = cva(
@@ -54,45 +62,99 @@ const tabsClassName = cva('flex p-xs gap-xs rounded-md self-start justify-self-s
 });
 
 type TabsContextValue = {
+  id: string | undefined;
   value: string | undefined;
   onValueChange: ((value: string) => void) | undefined;
   color: TabColor;
 };
 
 const TabsContext = createContext<TabsContextValue>({
+  id: undefined,
   value: undefined,
   onValueChange: undefined,
   color: 'purple',
 });
 
+const toIdSegment = (value: string) => value.replace(/[^\w-]/g, '_');
+const getTabId = (tabsId: string, value: string) => `${tabsId}-tab-${toIdSegment(value)}`;
+const getPanelId = (tabsId: string, value: string) => `${tabsId}-panel-${toIdSegment(value)}`;
+
+const NAVIGATION_KEYS = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+
+function handleTablistKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+  if (!NAVIGATION_KEYS.includes(event.key)) return;
+
+  const tabs = Array.from(
+    event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]:not(:disabled):not([aria-disabled="true"])'),
+  );
+  const currentIndex = tabs.findIndex((tab) => tab === document.activeElement);
+  if (currentIndex === -1) return;
+
+  event.preventDefault();
+  const step = getComputedStyle(event.currentTarget).direction === 'rtl' ? -1 : 1;
+  const nextIndex =
+    event.key === 'Home'
+      ? 0
+      : event.key === 'End'
+        ? tabs.length - 1
+        : (currentIndex + (event.key === 'ArrowRight' ? step : -step) + tabs.length) % tabs.length;
+  const nextTab = tabs[nextIndex];
+  if (!nextTab) return;
+
+  nextTab.focus();
+  // Selection follows focus (automatic activation).
+  nextTab.click();
+}
+
 interface TabsProps<T extends string = string> extends VariantProps<typeof tabsClassName> {
   children: ReactNode;
+  /** Base id used to link each `Tabs.Button` to the `Tabs.Panel` rendered with the same `tabsId` and `value`. */
+  id?: string;
   /** Currently selected tab. Used by `Tabs.Button` when it has a matching `value`. */
   value?: T;
   /** Called when a `Tabs.Button` with a `value` is clicked. */
   onValueChange?: (value: T) => void;
 }
 
-function TabsRoot<T extends string = string>({ children, variant, color, value, onValueChange }: TabsProps<T>) {
+function TabsRoot<T extends string = string>({ children, variant, color, id, value, onValueChange }: TabsProps<T>) {
   const resolvedColor = color ?? 'purple';
   const contextValue = useMemo(
     (): TabsContextValue => ({
+      id,
       value,
       onValueChange: onValueChange as TabsContextValue['onValueChange'],
       color: resolvedColor,
     }),
-    [value, onValueChange, resolvedColor],
+    [id, value, onValueChange, resolvedColor],
   );
 
   return (
     <TabsContext.Provider value={contextValue}>
-      <div role="tablist" className={tabsClassName({ variant, color: resolvedColor })}>
+      <div role="tablist" onKeyDown={handleTablistKeyDown} className={tabsClassName({ variant, color: resolvedColor })}>
         {children}
       </div>
     </TabsContext.Provider>
   );
 }
 TabsRoot.displayName = 'Tabs';
+
+interface TabsNavProps extends Omit<ComponentProps<'nav'>, 'color'>, VariantProps<typeof tabsClassName> {}
+
+/** Tab-styled navigation between routes. Use with `Tabs.Link`; use `Tabs` for in-place content switching. */
+function TabsNav({ variant, color, className, ...props }: TabsNavProps) {
+  const resolvedColor = color ?? 'purple';
+  const contextValue = useMemo(
+    (): TabsContextValue => ({ id: undefined, value: undefined, onValueChange: undefined, color: resolvedColor }),
+    [resolvedColor],
+  );
+
+  return (
+    <TabsContext.Provider value={contextValue}>
+      <nav {...props} className={cn(tabsClassName({ variant, color: resolvedColor }), className)} />
+    </TabsContext.Provider>
+  );
+}
+TabsNav.displayName = 'Tabs.Nav';
 
 interface TabsButtonProps extends ComponentProps<'button'> {
   /** Force the active style. When omitted, derived from the parent `Tabs` `value`. */
@@ -103,12 +165,15 @@ interface TabsButtonProps extends ComponentProps<'button'> {
 }
 
 function TabsButton({ active, value, className, onClick, type = 'button', ref, ...props }: TabsButtonProps) {
-  const { value: selectedValue, onValueChange, color } = useContext(TabsContext);
+  const { id: tabsId, value: selectedValue, onValueChange, color } = useContext(TabsContext);
   const isActive = active ?? (value !== undefined && selectedValue === value);
+  const isLinked = tabsId !== undefined && value !== undefined;
 
   return (
     <button
       ref={ref}
+      id={isLinked ? getTabId(tabsId, value) : undefined}
+      aria-controls={isLinked ? getPanelId(tabsId, value) : undefined}
       {...props}
       type={type}
       role="tab"
@@ -127,6 +192,28 @@ function TabsButton({ active, value, className, onClick, type = 'button', ref, .
 }
 TabsButton.displayName = 'Tabs.Button';
 
+interface TabsPanelProps extends ComponentProps<'div'> {
+  /** The `id` passed to the parent `Tabs`. */
+  tabsId: string;
+  /** The `value` of the `Tabs.Button` this panel belongs to. */
+  value: string;
+  ref?: Ref<HTMLDivElement>;
+}
+
+function TabsPanel({ tabsId, value, ref, ...props }: TabsPanelProps) {
+  return (
+    <div
+      ref={ref}
+      tabIndex={0}
+      {...props}
+      role="tabpanel"
+      id={getPanelId(tabsId, value)}
+      aria-labelledby={getTabId(tabsId, value)}
+    />
+  );
+}
+TabsPanel.displayName = 'Tabs.Panel';
+
 interface TabsLinkProps extends ComponentProps<'a'> {
   /**
    * Merge tab styles onto the child (typically a router `Link`) instead of rendering an `<a>`.
@@ -140,6 +227,7 @@ interface TabsLinkProps extends ComponentProps<'a'> {
   ref?: Ref<HTMLAnchorElement>;
 }
 
+/** Navigation link styled as a tab. Render inside `Tabs.Nav`. */
 function TabsLink({ asChild, active, className, ref, ...props }: TabsLinkProps) {
   const { color } = useContext(TabsContext);
   const Comp = asChild ? Slot : 'a';
@@ -148,7 +236,6 @@ function TabsLink({ asChild, active, className, ref, ...props }: TabsLinkProps) 
     <Comp
       ref={ref}
       {...props}
-      role="tab"
       className={cn(tabClassName({ color }), className)}
       data-status={active ? 'active' : undefined}
     />
@@ -159,4 +246,6 @@ TabsLink.displayName = 'Tabs.Link';
 export const Tabs = Object.assign(TabsRoot, {
   Button: TabsButton,
   Link: TabsLink,
+  Nav: TabsNav,
+  Panel: TabsPanel,
 });

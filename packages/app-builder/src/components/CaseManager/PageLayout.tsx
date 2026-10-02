@@ -133,7 +133,7 @@ export function CaseManagerPageLayout({
       <Page.Container className={isLinksTab ? 'min-h-0' : undefined}>
         <Page.Content className={cn('relative', isLinksTab && 'min-h-0 overflow-hidden')}>
           <div className="flex justify-between shrink-0">
-            <Tabs>
+            <Tabs.Nav>
               <Tabs.Link asChild>
                 <Link from="/cases/s/$caseId" to="./principal" preload="render">
                   {t('cases:case_detail.tab.principal')}
@@ -177,7 +177,7 @@ export function CaseManagerPageLayout({
                   </Tabs.Link>
                 )
               ) : null}
-            </Tabs>
+            </Tabs.Nav>
             <ActionBar>
               {isSarCompleted && hasSarFile && sarReport ? (
                 <SarReportDownload variant="action" caseId={caseDetail.id} reportId={sarReport.id} />

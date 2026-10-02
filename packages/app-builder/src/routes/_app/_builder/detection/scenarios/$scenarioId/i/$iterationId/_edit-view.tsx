@@ -138,7 +138,7 @@ function ScenarioEditLayout() {
           <ArchivedIterationView rulesMetadata={rulesMetadata} scenarioIteration={scenarioIteration} />
         ) : (
           <>
-            <Tabs>
+            <Tabs.Nav>
               <Tabs.Link asChild className="gap-sm">
                 <Link
                   from="/detection/scenarios/$scenarioId/i/$iterationId"
@@ -177,7 +177,7 @@ function ScenarioEditLayout() {
                   <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
                 </Link>
               </Tabs.Link>
-            </Tabs>
+            </Tabs.Nav>
             <Outlet />
           </>
         )}

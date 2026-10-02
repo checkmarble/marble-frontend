@@ -9,7 +9,7 @@ export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) 
     <div className="flex flex-col gap-sm">
       <Typo variant="title1">{t('navigation:case_manager')}</Typo>
       <div className="flex items-center justify-between">
-        <Tabs>
+        <Tabs.Nav>
           <Tabs.Link asChild>
             <Link to="/cases/overview">{t('cases:overview.navigation.overview')}</Link>
           </Tabs.Link>
@@ -19,7 +19,7 @@ export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) 
           <Tabs.Link asChild>
             <Link to="/cases/inboxes">{t('cases:overview.navigation.cases')}</Link>
           </Tabs.Link>
-        </Tabs>
+        </Tabs.Nav>
         {actions}
       </div>
     </div>

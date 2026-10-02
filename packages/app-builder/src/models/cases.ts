@@ -659,12 +659,16 @@ export type PivotObject = {
 
 /**
  * Stable key identifying a pivot object among a case's pivot objects. Prefers the
- * pivot id, because several pivot objects can share the same pivot value string
- * (e.g. a User "123" and a Merchant "123" under polymorphic belongs_to) and must not
- * be merged. Falls back to the value when the id is absent.
+ * table name and object id (same format as entity keys), because several pivot objects
+ * can share the same id or value string (e.g. a User "123" and a Merchant "123" under
+ * polymorphic belongs_to) and must not be merged. Falls back to the value when the id is absent.
  */
-export function getPivotObjectKey(pivotObject: Pick<PivotObject, 'pivotObjectId' | 'pivotValue'>): string {
-  return pivotObject.pivotObjectId ?? pivotObject.pivotValue;
+export function getPivotObjectKey(
+  pivotObject: Pick<PivotObject, 'pivotObjectName' | 'pivotObjectId' | 'pivotValue'>,
+): string {
+  return pivotObject.pivotObjectId
+    ? getEntityKey({ tableName: pivotObject.pivotObjectName, objectId: pivotObject.pivotObjectId })
+    : pivotObject.pivotValue;
 }
 
 /**
