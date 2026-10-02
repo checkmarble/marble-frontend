@@ -83,58 +83,118 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'Password' })).toHaveAttribute('data-status', 'active');
   });
 
-  it('renders a link tab', () => {
+  it('renders links in a navigation landmark without tab roles', () => {
     render(
-      <Tabs>
+      <Tabs.Nav aria-label="Sections">
         <Tabs.Link href="/overview">Overview</Tabs.Link>
-      </Tabs>,
+      </Tabs.Nav>,
     );
 
-    const link = screen.getByRole('tab', { name: 'Overview' });
+    expect(screen.getByRole('navigation', { name: 'Sections' })).toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    const link = screen.getByRole('link', { name: 'Overview' });
     expect(link).toHaveAttribute('href', '/overview');
     expect(link.tagName).toBe('A');
   });
 
   it('merges tab styles onto a child link when asChild is set', () => {
     render(
-      <Tabs>
+      <Tabs.Nav>
         <Tabs.Link asChild>
           <a href="/analytics">Analytics</a>
         </Tabs.Link>
-      </Tabs>,
+      </Tabs.Nav>,
     );
 
-    const link = screen.getByRole('tab', { name: 'Analytics' });
+    const link = screen.getByRole('link', { name: 'Analytics' });
     expect(link).toHaveAttribute('href', '/analytics');
     expect(link).toHaveClass('text-s');
   });
 
   it('sets data-status on a link when active is passed', () => {
     render(
-      <Tabs>
+      <Tabs.Nav>
         <Tabs.Link href="/rulesets" active>
           Ruleset
         </Tabs.Link>
-      </Tabs>,
+      </Tabs.Nav>,
     );
 
-    expect(screen.getByRole('tab', { name: 'Ruleset' })).toHaveAttribute('data-status', 'active');
+    expect(screen.getByRole('link', { name: 'Ruleset' })).toHaveAttribute('data-status', 'active');
   });
 
-  it('applies the grey color variant to the tablist and its items', () => {
+  it('applies the grey color variant to the tablist, the nav and their items', () => {
     render(
-      <Tabs color="grey" value="password">
-        <Tabs.Button value="account">Account</Tabs.Button>
-        <Tabs.Button value="password">Password</Tabs.Button>
-        <Tabs.Link href="/overview">Overview</Tabs.Link>
-      </Tabs>,
+      <>
+        <Tabs color="grey" value="password">
+          <Tabs.Button value="account">Account</Tabs.Button>
+          <Tabs.Button value="password">Password</Tabs.Button>
+        </Tabs>
+        <Tabs.Nav color="grey">
+          <Tabs.Link href="/overview">Overview</Tabs.Link>
+        </Tabs.Nav>
+      </>,
     );
 
     expect(screen.getByRole('tablist')).not.toHaveClass('bg-purple-background');
+    expect(screen.getByRole('navigation')).not.toHaveClass('bg-purple-background');
     expect(screen.getByRole('tab', { name: 'Account' })).toHaveClass('border-grey-border');
     expect(screen.getByRole('tab', { name: 'Password' })).toHaveClass('border-grey-border');
-    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveClass('border-grey-border');
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveClass('border-grey-border');
     expect(screen.getByRole('tab', { name: 'Account' })).not.toHaveClass('bg-purple-background');
+  });
+
+  it('links each button to its panel when the tabs have an id', () => {
+    render(
+      <>
+        <Tabs id="settings" value="password">
+          <Tabs.Button value="account">Account</Tabs.Button>
+          <Tabs.Button value="password">Password</Tabs.Button>
+        </Tabs>
+        <Tabs.Panel tabsId="settings" value="password">
+          Password content
+        </Tabs.Panel>
+      </>,
+    );
+
+    const tab = screen.getByRole('tab', { name: 'Password' });
+    const panel = screen.getByRole('tabpanel', { name: 'Password' });
+    expect(tab).toHaveAttribute('aria-controls', panel.id);
+    expect(panel).toHaveAttribute('aria-labelledby', tab.id);
+    expect(panel).toHaveTextContent('Password content');
+  });
+
+  it('moves focus and selection with the arrow keys', async () => {
+    const onValueChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <Tabs value="account" onValueChange={onValueChange}>
+        <Tabs.Button value="account">Account</Tabs.Button>
+        <Tabs.Button value="password" disabled>
+          Password
+        </Tabs.Button>
+        <Tabs.Button value="settings">Settings</Tabs.Button>
+      </Tabs>,
+    );
+
+    await user.click(screen.getByRole('tab', { name: 'Account' }));
+    onValueChange.mockClear();
+
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveFocus();
+    expect(onValueChange).toHaveBeenLastCalledWith('settings');
+
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Account' })).toHaveFocus();
+    expect(onValueChange).toHaveBeenLastCalledWith('account');
+
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveFocus();
+
+    await user.keyboard('{Home}');
+    expect(screen.getByRole('tab', { name: 'Account' })).toHaveFocus();
   });
 
   it('passes its ref to the button element', () => {

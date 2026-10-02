@@ -58,7 +58,7 @@ export function ScoringSectionLayout({
               </Button>
             ) : null}
           </div>
-          <Tabs>
+          <Tabs.Nav>
             <Tabs.Link asChild>
               <Link to="/user-scoring/overview">{t('user-scoring:section.tab_overview')}</Link>
             </Tabs.Link>
@@ -69,7 +69,7 @@ export function ScoringSectionLayout({
             ) : (
               rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
             )}
-          </Tabs>
+          </Tabs.Nav>
           <Outlet />
           {maxRiskLevel ? (
             <Panel.Root open={panelOpen} onOpenChange={setPanelOpen}>

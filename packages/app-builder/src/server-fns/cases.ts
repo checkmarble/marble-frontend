@@ -1,6 +1,11 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isNotFoundHttpError, isStatusBadRequestHttpError, isStatusConflictHttpError } from '@app-builder/models';
+import {
+  isNotFoundHttpError,
+  isStatusBadRequestHttpError,
+  isStatusConflictHttpError,
+  isUnprocessableEntityHttpError,
+} from '@app-builder/models';
 import { type AiSettingSchema } from '@app-builder/models/ai-settings';
 import {
   type AiCaseReviewListItem,
@@ -390,7 +395,9 @@ export const addObjectsToCaseFn = createServerFn({ method: 'POST' })
       }
       return await context.authInfo.cases.addObjectsToCase(data);
     } catch (error) {
-      if (isStatusBadRequestHttpError(error)) {
+      if (isUnprocessableEntityHttpError(error)) {
+        throw new Error(t('cases:errors.invalid_case_objects'));
+      } else if (isStatusBadRequestHttpError(error)) {
         throw new Error(t('common:errors.add_to_case.invalid'));
       } else if (!data.newCase && isNotFoundHttpError(error)) {
         throw new Error(t('cases:errors.case_not_found'));
@@ -409,7 +416,9 @@ export const removeObjectsFromCaseFn = createServerFn({ method: 'POST' })
     try {
       return await context.authInfo.cases.removeObjectsFromCase(data);
     } catch (error) {
-      if (isStatusBadRequestHttpError(error)) {
+      if (isUnprocessableEntityHttpError(error)) {
+        throw new Error(t('cases:errors.invalid_case_objects'));
+      } else if (isStatusBadRequestHttpError(error)) {
         throw new Error(t('common:errors.add_to_case.invalid'));
       } else if (isNotFoundHttpError(error)) {
         throw new Error(t('cases:errors.case_not_found'));

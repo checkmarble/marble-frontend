@@ -9,7 +9,7 @@ export function DetectionNavigationTabs({ actions }: { actions?: React.ReactNode
     <div className="flex flex-col gap-sm">
       <Typo variant="title1">{t('navigation:detection')}</Typo>
       <div className="flex items-center justify-between">
-        <Tabs>
+        <Tabs.Nav>
           <Tabs.Link asChild>
             <Link to="/detection/scenarios">{t('navigation:scenarios')}</Link>
           </Tabs.Link>
@@ -22,7 +22,7 @@ export function DetectionNavigationTabs({ actions }: { actions?: React.ReactNode
           <Tabs.Link asChild>
             <Link to="/detection/decisions">{t('navigation:decisions')}</Link>
           </Tabs.Link>
-        </Tabs>
+        </Tabs.Nav>
         {actions}
       </div>
     </div>
