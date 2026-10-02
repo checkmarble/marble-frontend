@@ -84,6 +84,19 @@ export const ClientDetailPage = ({
   // Prefer client-fetched score (includes evaluations), same source as UserScoreBadge
   const scoreLatestQuery = useScoreLatestQuery(objectType, objectId);
   const scoreForPanel = scoreLatestQuery.data?.score ?? activeScore;
+  const captionValue = objectDetails.data[metadata.caption_field];
+  const caption =
+    typeof captionValue === 'string'
+      ? captionValue.trim()
+      : typeof captionValue === 'number'
+        ? String(captionValue)
+        : '';
+  const caseObject = {
+    objectType,
+    objectId,
+    label: caption && caption !== '-' ? caption : undefined,
+    riskLevel: isAccessible(userScoringAccess) ? scoreForPanel?.risk_level : undefined,
+  };
 
   let [scoreColor, scoreLabel] = ['', ''];
 
@@ -118,7 +131,7 @@ export const ClientDetailPage = ({
                 {t('cases:add_to_case.create')}
               </Button>
             </Panel.Trigger>
-            <ClientAddToCasePanel objects={[{ objectType, objectId }]} />
+            <ClientAddToCasePanel objects={[caseObject]} />
           </Panel.Root>
         </Page.Header>
         <Page.Container ref={containerRef}>
@@ -294,7 +307,7 @@ export const ClientDetailPage = ({
                                 {t('cases:add_to_case.create')}
                               </Button>
                             </Panel.Trigger>
-                            <ClientAddToCasePanel objects={[{ objectType, objectId }]} />
+                            <ClientAddToCasePanel objects={[caseObject]} />
                           </Panel.Root>
                         </>
                       ) : null}

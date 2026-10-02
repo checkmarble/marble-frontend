@@ -132,7 +132,7 @@ export function CaseManagerPageLayout({
       </Page.Header>
       <Page.Container className={isLinksTab ? 'min-h-0' : undefined}>
         <Page.Content className={cn('relative', isLinksTab && 'min-h-0 overflow-hidden')}>
-          <div className="flex justify-between mb-lg shrink-0">
+          <div className="flex justify-between shrink-0">
             <Tabs>
               <Tabs.Link asChild>
                 <Link from="/cases/s/$caseId" to="./principal" preload="render">

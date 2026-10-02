@@ -3,52 +3,66 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { type ComponentProps, createContext, type ReactNode, type Ref, useContext, useMemo } from 'react';
 import { cn } from '../utils';
 
-/**
- * Shared tab item styles.
- *
- * Active state works for both:
- * - Links: `aria-current="page"` (set by the router when the destination matches)
- * - Buttons: `data-status="active"` (set by `Tabs.Button`, or by `Tabs.Link` via `active`)
- *
- * @deprecated Use `Tabs.Button` / `Tabs.Link` instead of applying this class yourself.
- */
-export const tabClassName = cn(
-  'flex items-center h-8 px-sm text-s font-medium rounded-sm',
-  'bg-purple-background text-purple-primary',
-  'dark:bg-transparent dark:text-grey-placeholder',
-  // Active state via aria-current (NavLink)
-  'aria-[current=page]:bg-purple-primary aria-[current=page]:text-white',
-  'aria-[current=page]:dark:bg-purple-primary aria-[current=page]:dark:text-grey-white',
-  // Active state via data-status (Button)
-  'data-[status=active]:bg-purple-primary data-[status=active]:text-white',
-  'data-[status=active]:dark:bg-purple-primary data-[status=active]:dark:text-grey-white',
-  // Disabled state
-  'aria-disabled:text-grey-secondary',
-);
-
-const tabsClassName = cva(
-  'flex p-xs gap-xs rounded-md bg-purple-background self-start justify-self-start dark:bg-grey-background',
+const tabClassName = cva(
+  [
+    'flex items-center h-8 px-sm text-s font-medium aria-disabled:text-grey-secondary cursor-pointer aria-disabled:cursor-not-allowed transition-all duration-200',
+  ],
   {
     variants: {
-      variant: {
-        default: '',
-        fluid: 'flex-wrap',
+      color: {
+        purple: [
+          'rounded-sm',
+          'bg-purple-background text-purple-primary hover:text-purple-hover hover:not-dark:bg-purple-hover/10',
+          'dark:bg-transparent dark:text-grey-placeholder hover:dark:text-grey-hover',
+          // Active state via aria-current (NavLink)
+          'aria-[current=page]:bg-purple-primary aria-[current=page]:text-white',
+          'aria-[current=page]:dark:bg-purple-primary aria-[current=page]:dark:text-grey-white',
+          // Active state via data-status (Button)
+          'data-[status=active]:bg-purple-primary data-[status=active]:text-white',
+          'data-[status=active]:dark:bg-purple-primary data-[status=active]:dark:text-grey-white',
+        ],
+        grey: [
+          'rounded-md border border-grey-border gap-sm hover:border-grey-primary hover:bg-grey-hover/5',
+          'aria-[current=page]:border-purple-primary',
+          'data-[status=active]:border-purple-primary',
+        ],
       },
     },
     defaultVariants: {
-      variant: 'default',
+      color: 'purple',
     },
   },
 );
 
+type TabColor = NonNullable<VariantProps<typeof tabClassName>['color']>;
+
+const tabsClassName = cva('flex p-xs gap-xs rounded-md self-start justify-self-start items-center', {
+  variants: {
+    variant: {
+      default: '',
+      fluid: 'flex-wrap',
+    },
+    color: {
+      purple: 'bg-purple-background dark:bg-grey-background',
+      grey: '',
+    } satisfies Record<TabColor, string>,
+  },
+  defaultVariants: {
+    color: 'purple',
+    variant: 'default',
+  },
+});
+
 type TabsContextValue = {
   value: string | undefined;
   onValueChange: ((value: string) => void) | undefined;
+  color: TabColor;
 };
 
 const TabsContext = createContext<TabsContextValue>({
   value: undefined,
   onValueChange: undefined,
+  color: 'purple',
 });
 
 interface TabsProps<T extends string = string> extends VariantProps<typeof tabsClassName> {
@@ -59,18 +73,20 @@ interface TabsProps<T extends string = string> extends VariantProps<typeof tabsC
   onValueChange?: (value: T) => void;
 }
 
-function TabsRoot<T extends string = string>({ children, variant, value, onValueChange }: TabsProps<T>) {
+function TabsRoot<T extends string = string>({ children, variant, color, value, onValueChange }: TabsProps<T>) {
+  const resolvedColor = color ?? 'purple';
   const contextValue = useMemo(
     (): TabsContextValue => ({
       value,
       onValueChange: onValueChange as TabsContextValue['onValueChange'],
+      color: resolvedColor,
     }),
-    [value, onValueChange],
+    [value, onValueChange, resolvedColor],
   );
 
   return (
     <TabsContext.Provider value={contextValue}>
-      <div role="tablist" className={tabsClassName({ variant })}>
+      <div role="tablist" className={tabsClassName({ variant, color: resolvedColor })}>
         {children}
       </div>
     </TabsContext.Provider>
@@ -87,7 +103,7 @@ interface TabsButtonProps extends ComponentProps<'button'> {
 }
 
 function TabsButton({ active, value, className, onClick, type = 'button', ref, ...props }: TabsButtonProps) {
-  const { value: selectedValue, onValueChange } = useContext(TabsContext);
+  const { value: selectedValue, onValueChange, color } = useContext(TabsContext);
   const isActive = active ?? (value !== undefined && selectedValue === value);
 
   return (
@@ -99,7 +115,7 @@ function TabsButton({ active, value, className, onClick, type = 'button', ref, .
       aria-selected={isActive}
       data-status={isActive ? 'active' : undefined}
       value={value}
-      className={cn(tabClassName, className)}
+      className={cn(tabClassName({ color }), className)}
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented && value !== undefined) {
@@ -125,6 +141,7 @@ interface TabsLinkProps extends ComponentProps<'a'> {
 }
 
 function TabsLink({ asChild, active, className, ref, ...props }: TabsLinkProps) {
+  const { color } = useContext(TabsContext);
   const Comp = asChild ? Slot : 'a';
 
   return (
@@ -132,7 +149,7 @@ function TabsLink({ asChild, active, className, ref, ...props }: TabsLinkProps) 
       ref={ref}
       {...props}
       role="tab"
-      className={cn(tabClassName, className)}
+      className={cn(tabClassName({ color }), className)}
       data-status={active ? 'active' : undefined}
     />
   );
