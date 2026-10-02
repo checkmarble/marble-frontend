@@ -13,7 +13,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { type ReactNode, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, cn, Input, MenuCommand, Panel, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -96,7 +95,7 @@ export function ManageClientsPanel({
       }
       setOpen(false);
     } catch {
-      toast.error(t('common:global_error'));
+      // Ignore errors
     } finally {
       if (didChange) {
         await Promise.all([
