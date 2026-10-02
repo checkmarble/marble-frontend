@@ -29,6 +29,7 @@ import { CaseEvents } from './CaseEvents';
 import { CaseInfo } from './CaseInfo';
 import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
 import { EscalateCaseButton } from './EscalateCaseButton';
+import { ManageClientsPanel } from './ManageClientsPanel';
 import { NavigationOptions } from './NavigationOptions';
 import { getObjectName } from './PivotTabs';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
@@ -191,6 +192,17 @@ export function CaseManagerPrincipalPage({
                   {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
                 </Link>
               ) : null}
+              <ManageClientsPanel
+                clients={caseClients}
+                caseId={caseDetail.id}
+                caseStatus={caseDetail.status}
+                userScoringAccess={userScoringAccess}
+              >
+                <Button variant="primary" appearance="stroked">
+                  <Icon icon="plus" className="size-4" />
+                  {t('cases:manage_clients')}
+                </Button>
+              </ManageClientsPanel>
             </Card>
           ) : null}
           {activeEntityClient ? (
