@@ -14,6 +14,7 @@ export const logoViewBoxes = {
   'logo-favicon': { width: 80, height: 80 },
   'logo-standard': { width: 357, height: 80 },
   logo: { width: 80, height: 80 },
+  m: { width: 55.467, height: 42.667 },
   marble: { width: 237, height: 34 },
   'microsoft-logo': { width: 21, height: 21 },
 } as const satisfies Record<LogoName, { width: number; height: number }>;
