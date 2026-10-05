@@ -18,7 +18,7 @@ import { type DecisionRepository } from '@app-builder/repositories/DecisionRepos
 import { type makeGetFeatureAccessRepository } from '@app-builder/repositories/FeatureAccessRepository';
 import { type GraphRepository } from '@app-builder/repositories/GraphRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
-import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
+import { type OrganizationRepository, readMyOrganizations } from '@app-builder/repositories/OrganizationRepository';
 import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
@@ -30,7 +30,7 @@ import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { type UserScoringRepository } from '@app-builder/repositories/UserScoringRepository';
 import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
 import { Tokens } from '@app-builder/routes/oidc/auth';
-import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { AuthSessionData, useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { setToast } from '@app-builder/services/toast.server';
 import { CsrfError, validateCsrf } from '@app-builder/utils/csrf.server';
 import { getServerEnv } from '@app-builder/utils/environment';
@@ -92,7 +92,7 @@ export interface AuthenticationServerService {
 
   refresh(
     request: Request,
-    payload: { idToken: string; csrf: string },
+    payload: { idToken?: string; csrf: string; newOrganizationId?: string },
     options: {
       failureRedirect: string;
     },
@@ -201,11 +201,12 @@ export function makeAuthenticationServerService({
    * `isAuthenticated`) and reactively when the backend answers 401 (see the
    * authorization fetch middleware via `getTokenService`).
    */
-  async function refreshMarbleToken(): Promise<TokenServiceUpdate> {
+  async function refreshMarbleToken(organizationIdOverride?: string): Promise<TokenServiceUpdate> {
     const appConfigRepository = getAppConfigRepository(marblecoreApi);
     const appConfig = await appConfigRepository.getAppConfig();
     const authSession = await useAuthSession();
     const storedRefreshToken = authSession.data.refreshToken;
+    const organizationId = organizationIdOverride ?? organizationIdFromMarbleToken(authSession?.data);
 
     if (!storedRefreshToken) {
       return { status: false, marbleToken: null, refreshToken: null };
@@ -215,13 +216,11 @@ export function makeAuthenticationServerService({
       const oidc = await makeOidcService(appConfig);
       const response = await oidc.refreshToken(storedRefreshToken);
 
-      const marbleToken = await marblecoreApi.postToken(
-        {
-          authorization: `Bearer ${response.idToken()}`,
-          xOidcAccessToken: response.accessToken(),
-        },
-        { baseUrl: getServerEnv('MARBLE_API_URL') },
-      );
+      const marbleToken = await getToken({
+        idToken: response.idToken(),
+        oldToken: response.accessToken(),
+        organizationId,
+      });
 
       return {
         status: true,
@@ -233,10 +232,7 @@ export function makeAuthenticationServerService({
     if (appConfig.auth.provider == 'firebase') {
       const { idToken, refreshToken } = await refreshFirebaseIdToken(appConfig, storedRefreshToken);
 
-      const marbleToken = await marblecoreApi.postToken(
-        { authorization: `Bearer ${idToken}` },
-        { baseUrl: getServerEnv('MARBLE_API_URL') },
-      );
+      const marbleToken = await getToken({ idToken, organizationId });
 
       return { status: true, marbleToken, refreshToken };
     }
@@ -281,18 +277,14 @@ export function makeAuthenticationServerService({
     },
   ): Promise<{ redirectTo: string }> {
     const authSession = await useAuthSession();
-
     let redirectUrl = options.failureRedirect;
 
     try {
       await validateCsrf(request, payload.csrf);
 
-      const marbleToken = await marblecoreApi.postToken(
-        {
-          authorization: `Bearer ${payload.idToken}`,
-        },
-        { baseUrl: getServerEnv('MARBLE_API_URL') },
-      );
+      // Fresh sign-in: omit any org from the existing session so a stale cookie
+      // cannot pin the new token to the previous organization.
+      const marbleToken = await getToken({ idToken: payload.idToken });
 
       await authSession.update({
         authToken: marbleToken,
@@ -329,19 +321,14 @@ export function makeAuthenticationServerService({
     },
   ): Promise<never> {
     const authSession = await useAuthSession();
-
     let redirectUrl = options.failureRedirect;
 
     try {
       const { idToken, accessToken, refreshToken } = tokens;
 
-      const marbleToken = await marblecoreApi.postToken(
-        {
-          authorization: `Bearer ${idToken}`,
-          xOidcAccessToken: accessToken,
-        },
-        { baseUrl: getServerEnv('MARBLE_API_URL') },
-      );
+      // Fresh sign-in: omit any org from the existing session so a stale cookie
+      // cannot pin the new token to the previous organization.
+      const marbleToken = await getToken({ idToken, oldToken: accessToken });
 
       await authSession.update({
         authToken: marbleToken,
@@ -364,22 +351,37 @@ export function makeAuthenticationServerService({
 
   async function refresh(
     request: Request,
-    payload: { idToken: string; csrf: string },
+    payload: { idToken?: string; csrf: string; newOrganizationId?: string },
     options: {
       failureRedirect: string;
     },
   ): Promise<void> {
     const authSession = await useAuthSession();
-
+    const organizationId = payload.newOrganizationId ?? organizationIdFromMarbleToken(authSession?.data);
     try {
       await validateCsrf(request, payload.csrf);
 
-      const marbleToken = await marblecoreApi.postToken(
-        {
-          authorization: `Bearer ${payload.idToken}`,
-        },
-        { baseUrl: getServerEnv('MARBLE_API_URL') },
-      );
+      // OIDC has no Firebase client user. Exchange the refresh token stored at
+      // sign-in for credentials scoped to the requested organization.
+      if (!payload.idToken) {
+        const appConfig = await getAppConfigRepository(marblecoreApi).getAppConfig();
+        if (appConfig.auth.provider !== 'oidc') {
+          throw new Error('Missing id token');
+        }
+
+        const refreshed = await refreshMarbleToken(payload.newOrganizationId);
+        if (!refreshed.status) {
+          throw new Error('Unable to refresh stored OIDC credentials');
+        }
+
+        await authSession.update({
+          authToken: refreshed.marbleToken,
+          ...(refreshed.refreshToken ? { refreshToken: refreshed.refreshToken } : {}),
+        });
+        return;
+      }
+
+      const marbleToken = await getToken({ idToken: payload.idToken, organizationId });
 
       await authSession.update({ authToken: marbleToken });
     } catch (error) {
@@ -529,4 +531,60 @@ export function makeAuthenticationServerService({
     isAuthenticated,
     logout,
   };
+}
+
+async function getToken({
+  idToken,
+  oldToken,
+  organizationId,
+}: {
+  idToken: string;
+  oldToken?: string;
+  organizationId?: string;
+}) {
+  // first call with no organizationId
+  const token = await marblecoreApi.postToken(
+    {
+      authorization: `Bearer ${idToken}`,
+      xOidcAccessToken: oldToken,
+      organizationId: organizationId,
+    },
+    { baseUrl: getServerEnv('MARBLE_API_URL') },
+  );
+  if (organizationId) return token;
+  const organizations = await readMyOrganizations(() =>
+    marblecoreApi.listMyOrganizations({
+      headers: { authorization: `Bearer ${token.access_token}` },
+      baseUrl: getServerEnv('MARBLE_API_URL'),
+    }),
+  );
+  if (!organizations.length) return token;
+  // if one or more orgs exist, take the first 'production' one
+  const productionOrg = organizations.find((org) => org.environment === 'production');
+  // get token for this org
+  const tokenWithOrg = await marblecoreApi.postToken(
+    {
+      authorization: `Bearer ${idToken}`,
+      xOidcAccessToken: oldToken,
+      organizationId: productionOrg?.id ?? organizations[0]!.id,
+    },
+    { baseUrl: getServerEnv('MARBLE_API_URL') },
+  );
+  return tokenWithOrg;
+}
+
+function organizationIdFromMarbleToken(authSessionData?: AuthSessionData): string | undefined {
+  if (!authSessionData?.authToken) return undefined;
+  const accessToken = authSessionData.authToken.access_token;
+  const payload = accessToken.split('.')[1];
+  if (!payload) return undefined;
+
+  const claims = JSON.parse(Buffer.from(payload, 'base64url').toString()) as {
+    credentials?: { organization_id?: string };
+  };
+  const organizationId = claims.credentials?.organization_id;
+
+  // Tokens issued without an org carry the nil UUID.
+  if (!organizationId || organizationId === '00000000-0000-0000-0000-000000000000') return undefined;
+  return organizationId;
 }
