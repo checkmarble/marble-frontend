@@ -15,9 +15,10 @@ export function SignInFirstConnection({
     <>
       <Link
         className={CtaV2ClassName({
-          variant: 'secondary',
+          variant: 'primary',
+          appearance: 'stroked',
           size: 'large',
-          className: 'w-full justify-center text-center h-auto min-h-10 py-sm',
+          className: 'mx-auto h-auto min-h-10 py-sm',
         })}
         to="/create-password"
       >
@@ -26,9 +27,10 @@ export function SignInFirstConnection({
       {showAskDemoButton ? (
         <a
           className={CtaV2ClassName({
-            variant: 'secondary',
+            variant: 'primary',
+            appearance: 'stroked',
             size: 'large',
-            className: 'w-full justify-center text-center h-auto min-h-10 py-sm',
+            className: 'mx-auto h-auto min-h-10 py-sm',
           })}
           href="https://www.checkmarble.com/demo-fraud"
           target="_blank"
