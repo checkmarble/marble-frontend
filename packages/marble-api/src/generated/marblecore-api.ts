@@ -1855,6 +1855,7 @@ export type CreateApiKeyBody = {
 export type CreatedApiKeyDto = ApiKeyDto & {
     key: string;
 };
+export type Role = "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
 export type UserDto = {
     user_id: string;
     email: string;
@@ -1864,6 +1865,12 @@ export type UserDto = {
     organization_id: string;
     /** Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`. */
     tfa_enabled?: boolean;
+    /** The user's direct organization grants. Only present when requested with `with_grants=true`. */
+    grants?: {
+        organization_id: string;
+        tenant_id: string;
+        role: Role;
+    }[];
 };
 export type CreateUser = {
     email: string;
@@ -1878,6 +1885,11 @@ export type UpdateUser = {
     organization_id?: string;
     first_name: string;
     last_name: string;
+};
+export type Items2 = {
+    organization_id: string;
+    tenant_id: string;
+    role: Role;
 };
 export type OrganizationDto = {
     id: string;
@@ -5991,9 +6003,10 @@ export function deleteApiKey(apiKeyId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * List all users present in the database
  */
-export function listUsers({ organizationId, withTfa, tenantAccess }: {
+export function listUsers({ organizationId, withTfa, withGrants, tenantAccess }: {
     organizationId?: string;
     withTfa?: boolean;
+    withGrants?: boolean;
     tenantAccess?: "direct" | "missing";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -6028,6 +6041,7 @@ export function listUsers({ organizationId, withTfa, tenantAccess }: {
     }>(`/users${QS.query(QS.explode({
         organization_id: organizationId,
         with_tfa: withTfa,
+        with_grants: withGrants,
         tenant_access: tenantAccess
     }))}`, {
         ...opts
@@ -6119,6 +6133,31 @@ export function updateUser(userId: string, updateUser: UpdateUser, opts?: Oazapf
         method: "PATCH",
         body: updateUser
     })));
+}
+/**
+ * List a user's organization grants
+ */
+export function listUserGrants(userId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            grants: Items2[];
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/users/${encodeURIComponent(userId)}/grants`, {
+        ...opts
+    }));
 }
 /**
  * List active tenants
