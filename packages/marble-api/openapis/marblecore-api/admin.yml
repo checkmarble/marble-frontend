@@ -129,6 +129,12 @@
         required: false
         schema:
           type: boolean
+      - name: with_grants
+        description: Include each user's direct organization grants. Restricted to Marble admins. Ignored when `tenant_access` is set.
+        in: query
+        required: false
+        schema:
+          type: boolean
       - name: tenant_access
         description: >
           List users of the organization's tenant by access to the organization:
@@ -288,6 +294,42 @@
         $ref: "components.yml#/responses/401"
       "403":
         $ref: "components.yml#/responses/403"
+/users/{userId}/grants:
+  get:
+    tags:
+      - Admin
+      - Users
+    summary: List a user's organization grants
+    operationId: listUserGrants
+    description: >
+      Returns the user's active direct grants on organizations, across all
+      tenants. Tenant-scoped and platform grants are not included. Restricted
+      to Marble admins.
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID of the user
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: The user's organization grants, ordered by organization name
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListUserGrantsResponseDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /tenants:
   get:
     tags:
@@ -909,6 +951,30 @@ components:
         organization_grant_role:
           type: string
           description: Role of the user's direct grant on the requested organization, when any
+    UserGrantDto:
+      type: object
+      required:
+        - organization_id
+        - tenant_id
+        - role
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        role:
+          $ref: "#/components/schemas/OrganizationGrantRole"
+    ListUserGrantsResponseDto:
+      type: object
+      required:
+        - grants
+      properties:
+        grants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserGrantDto"
     ListUsersResponseDto:
       type: object
       required:
@@ -1051,6 +1117,11 @@ components:
         tfa_enabled:
           type: boolean
           description: Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`.
+        grants:
+          type: array
+          description: The user's direct organization grants. Only present when requested with `with_grants=true`.
+          items:
+            $ref: "#/components/schemas/UserGrantDto"
     CreateUser:
       type: object
       required:
