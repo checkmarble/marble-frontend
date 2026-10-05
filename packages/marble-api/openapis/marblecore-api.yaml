@@ -363,6 +363,12 @@ paths:
     $ref: ./marblecore-api/admin.yml#/~1users
   /users/{userId}:
     $ref: ./marblecore-api/admin.yml#/~1users~1{userId}
+  /tenants:
+    $ref: ./marblecore-api/admin.yml#/~1tenants
+  /tenants/{tenantId}:
+    $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}
+  /tenants/{tenantId}/merge:
+    $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}~1merge
   /organizations:
     $ref: ./marblecore-api/admin.yml#/~1organizations
   /organizations/{organizationId}:

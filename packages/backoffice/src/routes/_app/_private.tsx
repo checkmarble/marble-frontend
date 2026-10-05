@@ -59,6 +59,9 @@ function RouteComponent() {
               <Link to="/users" className="data-[status=active]:text-purple-65">
                 Users
               </Link>
+              <Link to="/tenants" className="data-[status=active]:text-purple-65">
+                Tenants
+              </Link>
             </div>
             <div className="flex items-center gap-sm ml-auto">
               <div className="flex gap-xs h-6 items-center">
