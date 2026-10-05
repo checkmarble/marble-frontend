@@ -9,11 +9,13 @@ export const useChangeOrganizationIdMutation = () => {
       csrf,
       newOrganizationId,
     }: {
-      idToken: string;
+      idToken?: string;
       csrf: string;
       newOrganizationId: string;
     }) => {
-      return changeOrganizationId({ data: { idToken, csrf, newOrganizationId } });
+      return changeOrganizationId({
+        data: { csrf, newOrganizationId, ...(idToken ? { idToken } : {}) },
+      });
     },
   });
 };

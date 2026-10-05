@@ -92,7 +92,7 @@ export interface AuthenticationServerService {
 
   refresh(
     request: Request,
-    payload: { idToken: string; csrf: string },
+    payload: { idToken?: string; csrf: string; newOrganizationId?: string },
     options: {
       failureRedirect: string;
     },
@@ -201,12 +201,12 @@ export function makeAuthenticationServerService({
    * `isAuthenticated`) and reactively when the backend answers 401 (see the
    * authorization fetch middleware via `getTokenService`).
    */
-  async function refreshMarbleToken(): Promise<TokenServiceUpdate> {
+  async function refreshMarbleToken(organizationIdOverride?: string): Promise<TokenServiceUpdate> {
     const appConfigRepository = getAppConfigRepository(marblecoreApi);
     const appConfig = await appConfigRepository.getAppConfig();
     const authSession = await useAuthSession();
     const storedRefreshToken = authSession.data.refreshToken;
-    const organizationId = organizationIdFromMarbleToken(authSession?.data);
+    const organizationId = organizationIdOverride ?? organizationIdFromMarbleToken(authSession?.data);
 
     if (!storedRefreshToken) {
       return { status: false, marbleToken: null, refreshToken: null };
@@ -277,13 +277,14 @@ export function makeAuthenticationServerService({
     },
   ): Promise<{ redirectTo: string }> {
     const authSession = await useAuthSession();
-    const organizationId = organizationIdFromMarbleToken(authSession?.data);
     let redirectUrl = options.failureRedirect;
 
     try {
       await validateCsrf(request, payload.csrf);
 
-      const marbleToken = await getToken({ idToken: payload.idToken, organizationId });
+      // Fresh sign-in: omit any org from the existing session so a stale cookie
+      // cannot pin the new token to the previous organization.
+      const marbleToken = await getToken({ idToken: payload.idToken });
 
       await authSession.update({
         authToken: marbleToken,
@@ -320,13 +321,14 @@ export function makeAuthenticationServerService({
     },
   ): Promise<never> {
     const authSession = await useAuthSession();
-    const organizationId = organizationIdFromMarbleToken(authSession?.data);
     let redirectUrl = options.failureRedirect;
 
     try {
       const { idToken, accessToken, refreshToken } = tokens;
 
-      const marbleToken = await getToken({ idToken, oldToken: accessToken, organizationId });
+      // Fresh sign-in: omit any org from the existing session so a stale cookie
+      // cannot pin the new token to the previous organization.
+      const marbleToken = await getToken({ idToken, oldToken: accessToken });
 
       await authSession.update({
         authToken: marbleToken,
@@ -349,7 +351,7 @@ export function makeAuthenticationServerService({
 
   async function refresh(
     request: Request,
-    payload: { idToken: string; csrf: string; newOrganizationId?: string },
+    payload: { idToken?: string; csrf: string; newOrganizationId?: string },
     options: {
       failureRedirect: string;
     },
@@ -358,6 +360,26 @@ export function makeAuthenticationServerService({
     const organizationId = payload.newOrganizationId ?? organizationIdFromMarbleToken(authSession?.data);
     try {
       await validateCsrf(request, payload.csrf);
+
+      // OIDC has no Firebase client user. Exchange the refresh token stored at
+      // sign-in for credentials scoped to the requested organization.
+      if (!payload.idToken) {
+        const appConfig = await getAppConfigRepository(marblecoreApi).getAppConfig();
+        if (appConfig.auth.provider !== 'oidc') {
+          throw new Error('Missing id token');
+        }
+
+        const refreshed = await refreshMarbleToken(payload.newOrganizationId);
+        if (!refreshed.status) {
+          throw new Error('Unable to refresh stored OIDC credentials');
+        }
+
+        await authSession.update({
+          authToken: refreshed.marbleToken,
+          ...(refreshed.refreshToken ? { refreshToken: refreshed.refreshToken } : {}),
+        });
+        return;
+      }
 
       const marbleToken = await getToken({ idToken: payload.idToken, organizationId });
 
@@ -543,6 +565,7 @@ async function getToken({
   const tokenWithOrg = await marblecoreApi.postToken(
     {
       authorization: `Bearer ${idToken}`,
+      xOidcAccessToken: oldToken,
       organizationId: productionOrg?.id ?? organizations[0]!.id,
     },
     { baseUrl: getServerEnv('MARBLE_API_URL') },
