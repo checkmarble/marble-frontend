@@ -36,6 +36,26 @@ export function focusValueSwitchGridCell(
   if (focusable instanceof HTMLInputElement) focusable.select();
 }
 
+/**
+ * Whether a horizontal arrow should move the caret inside a text input rather than leave the cell.
+ * The caret leaves once it sits at the edge it is moving towards, or when the whole value is selected
+ * (as after arrow-navigating into a cell). Shift+arrow always stays in the input to extend the selection.
+ */
+export function shouldArrowKeyStayInInput(target: EventTarget | null, key: string, shiftKey: boolean) {
+  if (key !== 'ArrowLeft' && key !== 'ArrowRight') return false;
+  if (!(target instanceof HTMLInputElement) || target.readOnly || target.disabled) return false;
+  if (shiftKey) return true;
+
+  const { selectionStart, selectionEnd, value } = target;
+  if (selectionStart === null || selectionEnd === null) return false;
+  if (selectionStart === 0 && selectionEnd === value.length) return false;
+
+  const isRtl = target.closest('[dir]')?.getAttribute('dir') === 'rtl';
+  const movesTowardsEnd = (key === 'ArrowRight') !== isRtl;
+  const caret = movesTowardsEnd ? selectionEnd : selectionStart;
+  return selectionStart !== selectionEnd || caret !== (movesTowardsEnd ? value.length : 0);
+}
+
 type GridKeyDownEvent = Pick<
   KeyboardEvent,
   'key' | 'shiftKey' | 'metaKey' | 'ctrlKey' | 'altKey' | 'preventDefault' | 'target'
@@ -67,6 +87,7 @@ export function handleValueSwitchGridKeyDown(
 
   const isMenuButton = Boolean(target.closest('button'));
   if (isMenuButton && event.key === 'Enter') return;
+  if (shouldArrowKeyStayInInput(target, event.key, event.shiftKey)) return;
 
   const [rowIndex, columnIndex] = (cell.getAttribute(VALUE_SWITCH_GRID_CELL_ATTRIBUTE) ?? '')
     .split(':')

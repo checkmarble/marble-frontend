@@ -55,6 +55,7 @@ import {
   getTwoDimensionGridNavigationTarget,
   handleValueSwitchGridKeyDown,
   scrollTwoDimensionGridCellIntoView,
+  shouldArrowKeyStayInInput,
   type TwoDimensionGridNavigationKey,
 } from './two-dimension-grid-navigation';
 
@@ -726,6 +727,7 @@ function TwoDimensionEditor({
 
   function handleCellKeyDown(event: KeyboardEvent<HTMLInputElement>, rowIndex: number, columnIndex: number) {
     if (!['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter'].includes(event.key)) return;
+    if (shouldArrowKeyStayInInput(event.currentTarget, event.key, event.shiftKey)) return;
 
     event.preventDefault();
     const rowCount = rowDimension?.values.length ?? 0;
