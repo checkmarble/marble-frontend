@@ -128,7 +128,11 @@ function Builder() {
                     <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
                       <ul className="flex w-full min-w-0 flex-col gap-sm">
                         {/* Organization Switcher */}
-                        {organizations.length > 1 && <OrganizationSwitcher />}
+                        {organizations.length > 1 && (
+                          <li>
+                            <OrganizationSwitcher />
+                          </li>
+                        )}
                         {/* Detection - flat link (tabs are inside the page) */}
                         {!isAnalyst(user) && (
                           <li>

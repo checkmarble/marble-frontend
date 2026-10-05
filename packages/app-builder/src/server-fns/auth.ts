@@ -69,7 +69,7 @@ export const refreshTokenFn = createServerFn({ method: 'POST' })
 
 export const changeOrganizationId = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
-  .validator(z.object({ idToken: z.string(), csrf: z.string(), newOrganizationId: z.uuid() }))
+  .validator(z.object({ idToken: z.string().optional(), csrf: z.string(), newOrganizationId: z.uuid() }))
   .handler(async ({ context, data }) => {
     const request = getRequest();
     try {
