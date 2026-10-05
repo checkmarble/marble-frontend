@@ -1,5 +1,13 @@
 import { makeQueryErrorComponent } from '@bo/components/common/ErrorComponent';
 import { SuspenseQuery } from '@bo/components/core/SuspenseQuery';
+import { UserGrantsPanel } from '@bo/components/organisms/UserGrantsPanel';
+import {
+  canManageGrants,
+  type GrantOrganization,
+  getUserOrganizationTags,
+} from '@bo/components/organisms/UserGrantsPanel/grants';
+import { listOrganizationsQueryOptions } from '@bo/data/organization';
+import { listTenantsQueryOptions, type Tenant } from '@bo/data/tenants';
 import {
   listUsersQueryOptions,
   useCreateGlobalUserMutationOptions,
@@ -14,16 +22,20 @@ import {
   updateGlobalUserPayloadSchema,
 } from '@bo/schemas/user';
 import { useForm } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type { UserDto } from 'marble-api/generated/marblecore-api';
 import { type ReactNode, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Button, Input, Panel, SelectV2, Tag, Typo } from 'ui-design-system';
+import { Button, cn, ExpandableGroupTagLine, Input, Panel, SelectV2, Tag, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const UsersError = makeQueryErrorComponent(<span className="text-grey-secondary text-s">Could not load users.</span>);
 
-type PanelState = { mode: 'create' } | { mode: 'edit'; user: UserDto } | null;
+type OrganizationLookups = { organizations: GrantOrganization[]; tenants: Tenant[] };
+
+const USER_ROW_COLUMNS = 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,2fr)_auto]';
+
+type PanelState = { mode: 'create' } | { mode: 'edit'; user: UserDto } | { mode: 'grants'; user: UserDto } | null;
 
 export function UsersPage() {
   const [panel, setPanel] = useState<PanelState>(null);
@@ -44,7 +56,13 @@ export function UsersPage() {
       </div>
 
       <SuspenseQuery query={listUsersQueryOptions()} fallback={<UsersSkeleton />} errorComponent={UsersError}>
-        {(users) => <UsersList users={users} onEdit={(user) => setPanel({ mode: 'edit', user })} />}
+        {(users) => (
+          <UsersList
+            users={users}
+            onEdit={(user) => setPanel({ mode: 'edit', user })}
+            onManageGrants={(user) => setPanel({ mode: 'grants', user })}
+          />
+        )}
       </SuspenseQuery>
 
       <UserPanel state={panel} onOpenChange={(open) => (open ? undefined : setPanel(null))} />
@@ -52,8 +70,22 @@ export function UsersPage() {
   );
 }
 
-function UsersList({ users, onEdit }: { users: UserDto[]; onEdit: (user: UserDto) => void }) {
+function UsersList({
+  users,
+  onEdit,
+  onManageGrants,
+}: {
+  users: UserDto[];
+  onEdit: (user: UserDto) => void;
+  onManageGrants: (user: UserDto) => void;
+}) {
   const [search, setSearch] = useState('');
+  const organizationsQuery = useQuery(listOrganizationsQueryOptions());
+  const tenantsQuery = useQuery(listTenantsQueryOptions());
+  const lookups: OrganizationLookups | null =
+    organizationsQuery.data && tenantsQuery.data
+      ? { organizations: organizationsQuery.data, tenants: tenantsQuery.data }
+      : null;
   const filteredUsers = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return users;
@@ -86,15 +118,26 @@ function UsersList({ users, onEdit }: { users: UserDto[]; onEdit: (user: UserDto
         <EmptyState title="No matches" body={`No user matches “${search.trim()}”.`} />
       ) : (
         <div className="border-grey-border bg-surface-card overflow-hidden rounded-lg border">
-          <div className="border-grey-border text-grey-secondary hidden grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.25fr)_auto] gap-md border-b px-md py-sm text-xs font-semibold uppercase tracking-wider lg:grid">
+          <div
+            className={cn(
+              'border-grey-border text-grey-secondary hidden gap-md border-b px-md py-sm text-xs font-semibold uppercase tracking-wider lg:grid',
+              USER_ROW_COLUMNS,
+            )}
+          >
             <span>User</span>
             <span>Role</span>
-            <span>Organization</span>
+            <span>Organizations</span>
             <span className="sr-only">Actions</span>
           </div>
           <ul className="divide-grey-border divide-y">
             {filteredUsers.map((user) => (
-              <UserRow key={user.user_id} user={user} onEdit={() => onEdit(user)} />
+              <UserRow
+                key={user.user_id}
+                user={user}
+                lookups={lookups}
+                onEdit={() => onEdit(user)}
+                onManageGrants={() => onManageGrants(user)}
+              />
             ))}
           </ul>
         </div>
@@ -103,9 +146,19 @@ function UsersList({ users, onEdit }: { users: UserDto[]; onEdit: (user: UserDto
   );
 }
 
-function UserRow({ user, onEdit }: { user: UserDto; onEdit: () => void }) {
+function UserRow({
+  user,
+  lookups,
+  onEdit,
+  onManageGrants,
+}: {
+  user: UserDto;
+  lookups: OrganizationLookups | null;
+  onEdit: () => void;
+  onManageGrants: () => void;
+}) {
   return (
-    <li className="grid grid-cols-1 gap-md px-md py-md lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.25fr)_auto] lg:items-center">
+    <li className={cn('grid grid-cols-1 gap-md px-md py-md lg:items-center', USER_ROW_COLUMNS)}>
       <div className="flex min-w-0 flex-col gap-2xs">
         <span className="text-grey-primary truncate text-s font-medium">
           {user.first_name} {user.last_name}
@@ -120,20 +173,64 @@ function UserRow({ user, onEdit }: { user: UserDto; onEdit: () => void }) {
         </Tag>
       </div>
       <div className="flex min-w-0 flex-col gap-2xs">
-        <span className="text-grey-secondary text-xs font-medium lg:sr-only">Organization</span>
-        {user.organization_id !== '00000000-0000-0000-0000-000000000000' ? (
-          <span className="text-grey-secondary truncate font-mono text-xs">{user.organization_id}</span>
-        ) : (
-          <span className="text-grey-secondary text-s">Unassigned</span>
-        )}
+        <span className="text-grey-secondary text-xs font-medium lg:sr-only">Organizations</span>
+        <UserOrganizations user={user} lookups={lookups} />
       </div>
-      <div className="lg:justify-self-end">
+      <div className="flex items-center gap-sm lg:justify-self-end">
+        <ManageGrantsButton user={user} onClick={onManageGrants} />
         <Button variant="secondary" size="small" onClick={onEdit}>
           <Icon icon="edit-square" className="size-4" />
           Edit
         </Button>
       </div>
     </li>
+  );
+}
+
+function UserOrganizations({ user, lookups }: { user: UserDto; lookups: OrganizationLookups | null }) {
+  if (!lookups) {
+    return <div className="bg-grey-background-light h-5 w-32 animate-pulse rounded" />;
+  }
+
+  const tags = getUserOrganizationTags({ user, ...lookups });
+  if (tags.length === 0) {
+    return <span className="text-grey-secondary text-s">Unassigned</span>;
+  }
+
+  return (
+    <ExpandableGroupTagLine
+      overflowBehavior="popover"
+      items={tags.map((tag) => (
+        <Tag
+          key={tag.organizationId}
+          color={tag.isHome ? 'purple' : 'grey'}
+          size="small"
+          title={tag.isHome ? 'Home organization' : undefined}
+        >
+          {tag.label}
+        </Tag>
+      ))}
+    />
+  );
+}
+
+function ManageGrantsButton({ user, onClick }: { user: UserDto; onClick: () => void }) {
+  const button = (
+    <Button variant="secondary" size="small" disabled={!canManageGrants(user)} onClick={onClick}>
+      <Icon icon="lock" className="size-4" />
+      Manage grants
+    </Button>
+  );
+
+  if (canManageGrants(user)) return button;
+
+  // Disabled buttons swallow pointer events, so the tooltip hangs off a wrapper.
+  return (
+    <Tooltip.Provider>
+      <Tooltip.Default content="Assign the user to an organization first">
+        <span tabIndex={0}>{button}</span>
+      </Tooltip.Default>
+    </Tooltip.Provider>
   );
 }
 
@@ -144,6 +241,7 @@ function UserPanel({ state, onOpenChange }: { state: PanelState; onOpenChange: (
         <Panel.Content>
           {state?.mode === 'create' ? <CreateUserPanel onClose={() => onOpenChange(false)} /> : null}
           {state?.mode === 'edit' ? <EditUserPanel user={state.user} onClose={() => onOpenChange(false)} /> : null}
+          {state?.mode === 'grants' ? <UserGrantsPanel user={state.user} /> : null}
         </Panel.Content>
       </Panel.Container>
     </Panel.Root>
@@ -404,7 +502,7 @@ function Field({
   children: ReactNode;
 }) {
   return (
-    <label htmlFor={htmlFor} className={`flex flex-col gap-xs ${className ?? ''}`}>
+    <label htmlFor={htmlFor} className={cn('flex flex-col gap-xs', className)}>
       <span className="text-grey-primary text-s font-medium">{label}</span>
       {children}
     </label>

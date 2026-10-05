@@ -19,12 +19,10 @@ const hasStatus = (error: unknown, status: number) =>
 export const listTenantsFn = createServerFn({ method: 'GET' })
   .middleware([needAuth])
   .handler(async ({ context }) => {
-    const { tenants } = await marblecoreApi.listTenants({
+    return marblecoreApi.listTenants({
       baseUrl: env.API_BASE_URL,
       fetch: context.authFetch,
     });
-
-    return tenants;
   });
 
 export const renameTenantFn = createServerFn({ method: 'POST' })

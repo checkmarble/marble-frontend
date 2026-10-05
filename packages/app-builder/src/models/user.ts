@@ -44,7 +44,8 @@ export function NewPermissions(): UserPermissions {
 export function adaptCurrentUser(credentials: CredentialsDto['credentials']): CurrentUser {
   return {
     organizationId: credentials.organization_id,
-    role: credentials.role,
+    // Backends with multi-role bindings return `roles` instead of the legacy `role`
+    role: credentials.role ?? credentials.roles?.[0] ?? '',
     actorIdentity: {
       userId: credentials.actor_identity.user_id,
       email: credentials.actor_identity.email,

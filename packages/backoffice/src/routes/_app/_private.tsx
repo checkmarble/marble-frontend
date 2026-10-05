@@ -3,6 +3,7 @@ import { useFirebase } from '@bo/hooks/useFirebase';
 import { useInterval } from '@bo/hooks/useInterval';
 import { getCurrentUserFn, logoutFn, refreshTokenFn } from '@bo/server-fns/auth';
 import { getAppConfigFn, updateUserPreferencesFn } from '@bo/server-fns/core';
+import { isMarbleAdmin } from '@bo/utils/credentials';
 import { ClientOnly, createFileRoute, Link, Outlet, redirect, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { Button, MenuCommand, Switch } from 'ui-design-system';
@@ -17,7 +18,7 @@ export const Route = createFileRoute('/_app/_private')({
     }
 
     // TODO: If user is not a MARBLE_ADMIN, logout the user and redirect to /sign-in with an error message
-    if (currentUser.role !== 'MARBLE_ADMIN') {
+    if (!isMarbleAdmin(currentUser)) {
       await logoutFn();
       throw redirect({ to: '/sign-in' });
     }
