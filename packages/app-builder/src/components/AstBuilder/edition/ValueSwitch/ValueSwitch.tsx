@@ -283,6 +283,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
         <NumberInput
           size="medium"
           className="w-40"
+          decimalPrecision={3}
           aria-label={t('scenarios:value_switch.fallback')}
           value={model.fallback}
           onChange={(fallback) => updateModel((current) => ({ ...current, fallback }))}
@@ -493,7 +494,7 @@ function OneDimensionEditor({
 }
 
 function ScoreInput({ value, onChange }: { value: number; onChange: (value: number) => void }) {
-  return <NumberInput className="w-full" value={value} onChange={onChange} />;
+  return <NumberInput className="w-full" decimalPrecision={3} value={value} onChange={onChange} />;
 }
 
 /** 3+7+2+7+3rem columns + 4×gap-sm. Table cells add 1rem of padding. */
@@ -871,6 +872,7 @@ function TwoDimensionEditor({
                         }}
                         size="medium"
                         className="min-w-24"
+                        decimalPrecision={3}
                         aria-label={t('scenarios:value_switch.cell_value', {
                           row: String(rowValue),
                           column: String(columnValue),
