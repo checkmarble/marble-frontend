@@ -80,9 +80,10 @@ manual, multi-system setup into a reviewable, repeatable artifact.
   TanStack Router (file-based routing), TanStack Query / Form, tRPC, Firebase
   auth, Zod validation, `marble-api`, `ui-design-system`, `ui-icons`, Sentry.
 - **Dashboard** — the operator's landing surface shows organizations, tenants,
-  users and licences totals, weekly All/New graphs, known-date recent records and links
-  to management. Historical gaps are explicit; browser preferences remember
-  the shared period and each indicator's mode.
+  users and licences totals as selectable tiles; the selected indicator shows its
+  listed population and weekly creations side by side, known-date recent records and
+  a link to management. Historical gaps are explicit; browser preferences remember
+  the shared period and the selected indicator.
 - **In scope now, not yet built** (treat as committed product surfaces to
   design, not scaffolding to ignore):
   - **Licences** — a genuine feature (licence management); currently a

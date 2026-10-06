@@ -1,17 +1,10 @@
-import { IndicatorCard } from '@bo/components/dashboard/IndicatorCard';
+import { DashboardCards, DashboardCardsSkeleton } from '@bo/components/dashboard/DashboardCards';
 import { dashboardQueryOptions } from '@bo/data/dashboard';
 import { useDashboardPreferences } from '@bo/hooks/useDashboardPreferences';
 import { DASHBOARD_PERIODS } from '@bo/schemas/dashboard';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Button, RadioGroup, RadioGroupItem } from 'ui-design-system';
-
-const INDICATORS = [
-  { entity: 'organizations', label: 'Organizations', destination: '/organizations' },
-  { entity: 'tenants', label: 'Tenants', destination: '/tenants' },
-  { entity: 'users', label: 'Users', destination: '/users' },
-  { entity: 'licenses', label: 'Licences', destination: '/licenses' },
-] as const;
+import { Button, cn, RadioGroup, RadioGroupItem } from 'ui-design-system';
 
 export function DashboardPage() {
   const { preferences, updatePreferences } = useDashboardPreferences();
@@ -62,7 +55,7 @@ export function DashboardPage() {
       ) : null}
 
       {query.isPending ? (
-        <DashboardSkeleton />
+        <DashboardCardsSkeleton />
       ) : query.data ? (
         <>
           {query.isError ? (
@@ -73,18 +66,12 @@ export function DashboardPage() {
               </Button>
             </div>
           ) : null}
-          <div className="grid items-start gap-lg md:grid-cols-2" aria-busy={query.isFetching}>
-            {INDICATORS.map(({ entity, label, destination }) => (
-              <IndicatorCard
-                key={entity}
-                entity={entity}
-                label={label}
-                destination={destination}
-                indicator={query.data.indicators[entity]}
-                mode={preferences.modes[entity]}
-                onModeChange={(mode) => void savePreferences({ modes: { [entity]: mode } })}
-              />
-            ))}
+          <div aria-busy={query.isFetching} className={cn('transition-opacity', query.isFetching && 'opacity-60')}>
+            <DashboardCards
+              indicators={query.data.indicators}
+              selected={preferences.indicator}
+              onSelectedChange={(indicator) => void savePreferences({ indicator })}
+            />
           </div>
           <p className="text-xs text-grey-secondary" role="status">
             {query.isFetching ? 'Refreshing…' : 'Snapshot: '}
@@ -105,24 +92,6 @@ export function DashboardPage() {
           </Button>
         </div>
       )}
-    </div>
-  );
-}
-
-function DashboardSkeleton() {
-  return (
-    <div className="grid gap-lg md:grid-cols-2" aria-busy="true" aria-label="Loading dashboard">
-      <span className="sr-only" role="status">
-        Loading dashboard indicators…
-      </span>
-      {INDICATORS.map(({ entity, label }) => (
-        <div key={entity} className="flex flex-col gap-lg rounded-xl border border-grey-border bg-surface-card p-lg">
-          <h2 className="text-l font-semibold">{label}</h2>
-          <div className="h-10 w-20 animate-pulse rounded bg-grey-background-light" />
-          <div className="h-40 animate-pulse rounded bg-grey-background-light" />
-          <div className="h-20 animate-pulse rounded bg-grey-background-light" />
-        </div>
-      ))}
     </div>
   );
 }

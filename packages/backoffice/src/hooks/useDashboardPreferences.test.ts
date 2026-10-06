@@ -47,19 +47,13 @@ describe('dashboard preference controls', () => {
     mocks.stored = {
       userId: 'alice',
       months: 12,
-      modes: { organizations: 'new', tenants: 'all', users: 'new', licenses: 'all' },
+      indicator: 'users',
     };
     const { result, rerender } = renderHook(useDashboardPreferences);
-    expect(result.current.preferences).toEqual({
-      months: 12,
-      modes: { organizations: 'new', tenants: 'all', users: 'new', licenses: 'all' },
-    });
+    expect(result.current.preferences).toEqual({ months: 12, indicator: 'users' });
     mocks.userId = 'bob';
     rerender();
-    expect(result.current.preferences).toEqual({
-      months: 6,
-      modes: { organizations: 'all', tenants: 'all', users: 'all', licenses: 'all' },
-    });
+    expect(result.current.preferences).toEqual({ months: 6, indicator: 'organizations' });
   });
 
   it('responds immediately while serializing rapid independent selections and theme writes', async () => {
@@ -78,14 +72,11 @@ describe('dashboard preference controls', () => {
     act(() => {
       writes = [
         result.current.dashboard.updatePreferences({ months: 3 }),
-        result.current.dashboard.updatePreferences({ modes: { users: 'new' } }),
+        result.current.dashboard.updatePreferences({ indicator: 'users' }),
         result.current.updater.updateTheme('dark'),
       ];
     });
-    expect(result.current.dashboard.preferences).toEqual({
-      months: 3,
-      modes: { organizations: 'all', tenants: 'all', users: 'new', licenses: 'all' },
-    });
+    expect(result.current.dashboard.preferences).toEqual({ months: 3, indicator: 'users' });
     await waitFor(() => expect(mocks.update).toHaveBeenCalledTimes(1));
     await act(async () => {
       finishFirst();
@@ -93,13 +84,10 @@ describe('dashboard preference controls', () => {
     });
     expect(mocks.update.mock.calls.map(([request]) => [request.kind, request.data])).toEqual([
       ['dashboard', { months: 3 }],
-      ['dashboard', { modes: { users: 'new' } }],
+      ['dashboard', { indicator: 'users' }],
       ['theme', { theme: 'dark' }],
     ]);
-    expect(result.current.dashboard.preferences).toEqual({
-      months: 3,
-      modes: { organizations: 'all', tenants: 'all', users: 'new', licenses: 'all' },
-    });
+    expect(result.current.dashboard.preferences).toEqual({ months: 3, indicator: 'users' });
   });
 
   it('rolls back a failed selection while retaining a later independent successful change', async () => {
@@ -109,16 +97,13 @@ describe('dashboard preference controls', () => {
     let success: Promise<unknown> = Promise.resolve();
     act(() => {
       failure = result.current.updatePreferences({ months: 12 }).catch((error: Error) => error.message);
-      success = result.current.updatePreferences({ modes: { tenants: 'new' } });
+      success = result.current.updatePreferences({ indicator: 'tenants' });
     });
     await act(async () => {
       expect(await failure).toBe('Could not save');
       await success;
     });
-    expect(result.current.preferences).toEqual({
-      months: 6,
-      modes: { organizations: 'all', tenants: 'new', users: 'all', licenses: 'all' },
-    });
+    expect(result.current.preferences).toEqual({ months: 6, indicator: 'tenants' });
     expect(mocks.update).toHaveBeenCalledTimes(2);
   });
 

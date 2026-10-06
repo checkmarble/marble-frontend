@@ -1,41 +1,28 @@
 import {
   type DashboardEntity,
-  type DashboardMode,
   type DashboardMonths,
   type DashboardPreferencesPatch,
-  dashboardModeSchema,
+  dashboardEntitySchema,
   dashboardMonthsSchema,
 } from '@bo/schemas/dashboard';
 
 export type DashboardPreferences = {
   months: DashboardMonths;
-  modes: Record<DashboardEntity, DashboardMode>;
+  indicator: DashboardEntity;
 };
 export type StoredDashboardPreferences = DashboardPreferences & { userId: string };
 
 export function getDashboardPreferences(stored: unknown, userId: string | undefined): DashboardPreferences {
-  const defaults: DashboardPreferences = {
-    months: 6,
-    modes: { organizations: 'all', tenants: 'all', users: 'all', licenses: 'all' },
-  };
+  const defaults: DashboardPreferences = { months: 6, indicator: 'organizations' };
   if (!userId || !stored || typeof stored !== 'object' || !('userId' in stored) || stored.userId !== userId) {
     return defaults;
   }
 
   const months = dashboardMonthsSchema.safeParse('months' in stored ? stored.months : undefined);
-  const modes = 'modes' in stored && stored.modes && typeof stored.modes === 'object' ? stored.modes : {};
-  const organizations = dashboardModeSchema.safeParse('organizations' in modes ? modes.organizations : undefined);
-  const tenants = dashboardModeSchema.safeParse('tenants' in modes ? modes.tenants : undefined);
-  const users = dashboardModeSchema.safeParse('users' in modes ? modes.users : undefined);
-  const licenses = dashboardModeSchema.safeParse('licenses' in modes ? modes.licenses : undefined);
+  const indicator = dashboardEntitySchema.safeParse('indicator' in stored ? stored.indicator : undefined);
   return {
     months: months.success ? months.data : defaults.months,
-    modes: {
-      organizations: organizations.success ? organizations.data : 'all',
-      tenants: tenants.success ? tenants.data : 'all',
-      users: users.success ? users.data : 'all',
-      licenses: licenses.success ? licenses.data : 'all',
-    },
+    indicator: indicator.success ? indicator.data : defaults.indicator,
   };
 }
 
@@ -45,12 +32,7 @@ export function patchDashboardPreferences(
 ): DashboardPreferences {
   return {
     months: patch.months ?? preferences.months,
-    modes: {
-      organizations: patch.modes?.organizations ?? preferences.modes.organizations,
-      tenants: patch.modes?.tenants ?? preferences.modes.tenants,
-      users: patch.modes?.users ?? preferences.modes.users,
-      licenses: patch.modes?.licenses ?? preferences.modes.licenses,
-    },
+    indicator: patch.indicator ?? preferences.indicator,
   };
 }
 

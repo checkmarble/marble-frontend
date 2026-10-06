@@ -16,10 +16,7 @@ vi.mock('@bo/data/dashboard', () => ({
 
 vi.mock('@bo/hooks/useDashboardPreferences', () => ({
   useDashboardPreferences: () => {
-    const [preferences, setPreferences] = useState<DashboardPreferences>({
-      months: 6,
-      modes: { organizations: 'all', tenants: 'all', users: 'all', licenses: 'all' },
-    });
+    const [preferences, setPreferences] = useState<DashboardPreferences>({ months: 6, indicator: 'organizations' });
     return {
       preferences,
       updatePreferences: async (patch: DashboardPreferencesPatch) => {
@@ -70,39 +67,43 @@ function renderDashboard() {
   );
 }
 
-describe('dashboard controls and history', () => {
-  it('switches each card independently and refetches all cards for the shared period', async () => {
+describe('dashboard indicators and history', () => {
+  it('selects an indicator and refetches every indicator for the shared period', async () => {
     fetchMetrics.mockResolvedValue(metrics);
     renderDashboard();
-    const organizations = await screen.findByRole('region', { name: 'Organizations' });
-    const tenants = screen.getByRole('region', { name: 'Tenants' });
-    fireEvent.click(within(tenants).getByRole('radio', { name: 'New' }));
-    expect(within(tenants).getByRole('radio', { name: 'New' }).getAttribute('aria-checked')).toBe('true');
-    expect(within(organizations).getByRole('radio', { name: 'All' }).getAttribute('aria-checked')).toBe('true');
+    expect(await screen.findByRole('tabpanel', { name: 'Organizations' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab', { name: /Tenants/ }));
+    expect(screen.getByRole('tab', { name: /Tenants/ }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('tabpanel', { name: 'Tenants' })).toBeTruthy();
     expect(fetchMetrics).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('radio', { name: '12 months' }));
     await waitFor(() => expect(fetchMetrics).toHaveBeenLastCalledWith(12));
-    expect(
-      within(await screen.findByRole('region', { name: 'Tenants' }))
-        .getByRole('radio', { name: 'New' })
-        .getAttribute('aria-checked'),
-    ).toBe('true');
+    expect(await screen.findByRole('tabpanel', { name: 'Tenants' })).toBeTruthy();
+  });
+
+  it('moves between indicators with the arrow keys', async () => {
+    fetchMetrics.mockResolvedValue(metrics);
+    renderDashboard();
+    const organizations = await screen.findByRole('tab', { name: /Organizations/ });
+    fireEvent.keyDown(organizations, { key: 'ArrowDown' });
+    expect(screen.getByRole('tab', { name: /Tenants/ }).getAttribute('aria-selected')).toBe('true');
+    fireEvent.keyDown(screen.getByRole('tab', { name: /Tenants/ }), { key: 'End' });
+    expect(screen.getByRole('tabpanel', { name: 'Licences' })).toBeTruthy();
   });
 
   it('distinguishes missing history from zero and exposes partial intervals and known recency', async () => {
     fetchMetrics.mockResolvedValue(metrics);
     renderDashboard();
-    const card = await screen.findByRole('region', { name: 'Organizations' });
-    fireEvent.click(within(card).getByRole('radio', { name: 'New' }));
-    fireEvent.click(within(card).getByText('Weekly data'));
-    const table = within(card).getByRole('table');
-    expect(within(table).getByRole('cell', { name: 'Unavailable' })).toBeTruthy();
+    const panel = await screen.findByRole('tabpanel', { name: 'Organizations' });
+    fireEvent.click(within(panel).getByText('Weekly data'));
+    const table = within(panel).getByRole('table');
+    expect(within(table).getAllByRole('cell', { name: 'Unavailable' })).toHaveLength(2);
     expect(within(table).getByRole('cell', { name: '0' })).toBeTruthy();
+    expect(within(table).getByRole('cell', { name: '4' })).toBeTruthy();
     expect(within(table).getByRole('cell', { name: 'Partial week' })).toBeTruthy();
-    expect(within(card).getByRole('img', { name: /weekly new records/ })).toBeTruthy();
-    expect(within(card).getByText('Current name')).toBeTruthy();
-    expect(within(card).getByText(/Some dates are unknown/)).toBeTruthy();
-    expect(within(card).getByRole('link', { name: 'View all organizations' }).getAttribute('href')).toBe(
+    expect(within(panel).getByText('Current name')).toBeTruthy();
+    expect(within(panel).getByText(/Some dates are unknown/)).toBeTruthy();
+    expect(within(panel).getByRole('link', { name: 'View all organizations' }).getAttribute('href')).toBe(
       '/organizations',
     );
   });
@@ -115,24 +116,24 @@ describe('dashboard controls and history', () => {
       indicators: { organizations: full, tenants: full, users: full, licenses: full },
     });
     renderDashboard();
-    const card = await screen.findByRole('region', { name: 'Organizations' });
-    expect(within(card).getByText('Org 3')).toBeTruthy();
-    expect(within(card).queryByText(/Some dates are unknown/)).toBeNull();
+    const panel = await screen.findByRole('tabpanel', { name: 'Organizations' });
+    expect(within(panel).getByText('Org 3')).toBeTruthy();
+    expect(within(panel).queryByText(/Some dates are unknown/)).toBeNull();
   });
 
-  it('shows a licences card linking to licence management', async () => {
+  it('shows a licences indicator linking to licence management', async () => {
     fetchMetrics.mockResolvedValue(metrics);
     renderDashboard();
-    const card = await screen.findByRole('region', { name: 'Licences' });
-    expect(within(card).getByRole('link', { name: 'View all licences' }).getAttribute('href')).toBe('/licenses');
-    expect(within(card).getByRole('radio', { name: 'All' }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.click(await screen.findByRole('tab', { name: /Licences/ }));
+    const panel = screen.getByRole('tabpanel', { name: 'Licences' });
+    expect(within(panel).getByRole('link', { name: 'View all licences' }).getAttribute('href')).toBe('/licenses');
   });
 
   it('offers a retry after a failed initial request', async () => {
     fetchMetrics.mockRejectedValueOnce(new Error('Offline')).mockResolvedValueOnce(metrics);
     renderDashboard();
     fireEvent.click(await screen.findByRole('button', { name: 'Retry' }));
-    expect(await screen.findByRole('region', { name: 'Organizations' })).toBeTruthy();
+    expect(await screen.findByRole('tabpanel', { name: 'Organizations' })).toBeTruthy();
     expect(fetchMetrics).toHaveBeenCalledTimes(2);
   });
 });
