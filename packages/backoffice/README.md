@@ -8,7 +8,7 @@ It is never exposed to customers. Access requires a Marble user whose role is `M
 
 ## What it does
 
-- **Dashboard** (`/dashboard`, `src/components/pages/dashboard.tsx`) — current organizations, tenants, users and licences totals, weekly All/New charts, and up to three currently listed records with known audit-derived creation dates. A shared 1/3/6/12-month selector defaults to six months. Unproven history appears as gaps; partial weeks are identified. Licences are never deleted and keep their insert-time `created_at`, so their history is complete. Dashboard selections are remembered per account in this browser through the existing preference cookie.
+- **Dashboard** (`/dashboard`, `src/components/pages/dashboard.tsx`) — organizations, tenants, users and licences as selectable tiles (current total, net change, trend). The selected indicator shows two aligned weekly charts (listed population and records created per week), a weekly data table, and up to three currently listed records with known audit-derived creation dates. A shared 1/3/6/12-month selector defaults to six months. Unproven history appears as shaded gaps, never as zero; partial weeks are identified. Licences are never deleted and keep their insert-time `created_at`, so their history is complete. Dashboard selections are remembered per account in this browser through the existing preference cookie.
 - **Organizations launchpad** (`/organizations`, `src/components/pages/organizations.tsx`) — searchable list of every organization, plus the entry point to create a new one. Dashboard and Organizations have dedicated navigation entries.
 - **Create organization** (`src/components/organisms/CreateOrganizationPanel/`) — three flows:
   - _Import_ — drop a JSON import spec (org settings, admins, data model tables/fields/links, optional ingestion and decision seeds). `ImportFlow.tsx` renders a full reviewable recap before the operator confirms. Validated by `src/schemas/org-import.ts`.
@@ -76,7 +76,7 @@ src/
   routes/            # File-based routes (TanStack Router). routeTree.gen.ts is generated — don't edit it.
   components/
     pages/           # One component per screen, mounted by a route
-    dashboard/       # IndicatorCard and WeeklyChart, shared by the dashboard indicators
+    dashboard/       # DashboardCards (indicator tiles + detail panel), TrendChart, Sparkline, WeeklyDataTable
     organisms/       # Multi-step / stateful features (CreateOrganizationPanel, FeatureAccessPanel)
     common/          # ErrorComponent, GridContentLoader
     core/            # SuspenseQuery
@@ -85,9 +85,9 @@ src/
   middlewares/       # authMiddleware / needAuth, appConfigMiddleware, global middlewares
   schemas/           # Zod schemas shared between server fns and forms (dashboard periods and preferences)
   contexts/          # AppConfig, StickyRoots
-  hooks/             # useFirebase, useInterval, useIntersection, useDashboardPreferences, useUserPreferencesUpdater
+  hooks/             # useFirebase, useInterval, useIntersection, useElementWidth, useDashboardPreferences, useUserPreferencesUpdater
   integrations/      # TanStack Query client + tRPC wiring
-  utils/             # session.ts (auth cookie), user-preferences.ts (theme + dashboard cookie), dashboard-preferences.ts
+  utils/             # session.ts (auth cookie), user-preferences.ts (theme + dashboard cookie), dashboard-preferences.ts, dashboard-indicator.ts (pure indicator derivation)
   env.ts             # T3Env schema
   router.tsx         # Router creation, SSR query integration, client Sentry init
   start.ts           # Global middleware registration

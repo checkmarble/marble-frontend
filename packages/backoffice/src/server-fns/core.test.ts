@@ -45,8 +45,8 @@ describe('user preference cookie boundary', () => {
   });
 
   it('uses the authenticated account and preserves theme and unrelated cookie data', async () => {
-    await updateDashboardPreferencesFn({ data: { months: 3, modes: { users: 'new' } } });
-    await updateDashboardPreferencesFn({ data: { modes: { tenants: 'new' } } });
+    await updateDashboardPreferencesFn({ data: { months: 3, indicator: 'users' } });
+    await updateDashboardPreferencesFn({ data: { indicator: 'tenants' } });
     expect(mocks.getCredentials).toHaveBeenCalledWith({ baseUrl: 'https://api.example', fetch: mocks.authFetch });
     expect(mocks.cookie.data).toEqual({
       theme: 'dark',
@@ -54,7 +54,7 @@ describe('user preference cookie boundary', () => {
       dashboard: {
         userId: 'alice',
         months: 3,
-        modes: { organizations: 'all', tenants: 'new', users: 'new', licenses: 'all' },
+        indicator: 'tenants',
       },
     });
   });
@@ -63,7 +63,7 @@ describe('user preference cookie boundary', () => {
     mocks.cookie.data['dashboard'] = {
       userId: 'alice',
       months: 3,
-      modes: { organizations: 'all', tenants: 'new', users: 'new', licenses: 'all' },
+      indicator: 'tenants',
     };
     await updateUserPreferencesFn({ data: { theme: 'light' } });
     expect(mocks.getCredentials).not.toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('user preference cookie boundary', () => {
       dashboard: {
         userId: 'alice',
         months: 3,
-        modes: { organizations: 'all', tenants: 'new', users: 'new', licenses: 'all' },
+        indicator: 'tenants',
       },
     });
   });
@@ -82,13 +82,13 @@ describe('user preference cookie boundary', () => {
     mocks.cookie.data['dashboard'] = {
       userId: 'bob',
       months: 12,
-      modes: { organizations: 'new', tenants: 'new', users: 'new', licenses: 'all' },
+      indicator: 'users',
     };
-    await updateDashboardPreferencesFn({ data: { modes: { tenants: 'new' } } });
+    await updateDashboardPreferencesFn({ data: { indicator: 'tenants' } });
     expect(mocks.cookie.data['dashboard']).toEqual({
       userId: 'alice',
       months: 6,
-      modes: { organizations: 'all', tenants: 'new', users: 'all', licenses: 'all' },
+      indicator: 'tenants',
     });
   });
 
@@ -103,14 +103,20 @@ describe('user preference cookie boundary', () => {
 
   it('normalizes malformed stored selections before exposing them to SSR', async () => {
     mocks.cookie.data['theme'] = 'invalid';
-    mocks.cookie.data['dashboard'] = { userId: 'alice', months: 2, modes: { users: 'new' }, extra: 'ignored' };
+    mocks.cookie.data['dashboard'] = {
+      userId: 'alice',
+      months: 2,
+      indicator: 'users',
+      modes: { users: 'new' },
+      extra: 'ignored',
+    };
     await expect(getUserPreferencesFn()).resolves.toEqual({
       theme: 'light',
       unrelated: 'preserved',
       dashboard: {
         userId: 'alice',
         months: 6,
-        modes: { organizations: 'all', tenants: 'all', users: 'new', licenses: 'all' },
+        indicator: 'users',
       },
     });
   });
