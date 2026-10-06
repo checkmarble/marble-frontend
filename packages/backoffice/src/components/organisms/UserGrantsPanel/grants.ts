@@ -154,7 +154,11 @@ export const getUserOrganizationTags = ({
     const name = organization?.name ?? organizationId;
     const resolvedTenantId = organization?.tenant_id ?? tenantId;
     const tenantName = resolvedTenantId ? (tenantNames.get(resolvedTenantId) ?? resolvedTenantId) : undefined;
-    return { organizationId, label: withTenant && tenantName ? `${tenantName} / ${name}` : name, isHome };
+    return {
+      organizationId,
+      label: withTenant && tenantName && tenantName !== name ? `${tenantName} / ${name}` : name,
+      isHome,
+    };
   };
 
   const homeTag = hasHomeOrganization(user) ? [toTag(user.organization_id, undefined, true)] : [];
