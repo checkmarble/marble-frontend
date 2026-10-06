@@ -26,14 +26,25 @@ export async function refreshFirebaseIdToken(
     ? `${firebase.emulatorUrl}/securetoken.googleapis.com`
     : 'https://securetoken.googleapis.com';
 
+  const headers: Record<string, string> = { 'Content-Type': 'application/x-www-form-urlencoded' };
+
+  // Add origin and referer headers to the refresh call, which are required on
+  // production Firebase.
+  const appOrigin = URL.parse(config.urls.marble ?? '')?.origin;
+
+  if (appOrigin) {
+    headers['origin'] = appOrigin;
+    headers['referer'] = `${appOrigin}/`;
+  }
+
   const response = await fetch(`${baseUrl}/v1/token?key=${apiKey}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers,
     body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken }),
   });
 
   if (!response.ok) {
-    throw new Error(`Firebase token refresh failed with status ${response.status}`);
+    throw new Error(`Firebase token refresh failed with status ${response.status}: ${await response.text()}`);
   }
 
   const data = (await response.json()) as FirebaseSecureTokenResponse;
