@@ -1,0 +1,139 @@
+/admin/dashboard:
+  get:
+    tags: [Admin]
+    operationId: getDashboardMetrics
+    summary: Get global backoffice dashboard metrics
+    description: >
+      Restricted to Marble administrators. Live populations and audit-derived
+      history are calculated from one database snapshot. Unknown observations
+      are null; complete observations with no activity are zero.
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: months
+        in: query
+        description: Shared historical range in calendar months, using UTC Monday weeks.
+        schema:
+          type: integer
+          enum: [1, 3, 6, 12]
+          default: 6
+    responses:
+      "200":
+        description: Platform populations, weekly observations and known-date recent records.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DashboardMetrics"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+components:
+  schemas:
+    DashboardMetrics:
+      type: object
+      required: [generated_at, months, range_start, indicators]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        months:
+          type: integer
+          enum: [1, 3, 6, 12]
+        range_start:
+          type: string
+          format: date-time
+        indicators:
+          type: object
+          required: [organizations, tenants, users, licenses]
+          properties:
+            organizations:
+              $ref: "#/components/schemas/DashboardIndicator"
+            tenants:
+              $ref: "#/components/schemas/DashboardIndicator"
+            users:
+              $ref: "#/components/schemas/DashboardIndicator"
+            licenses:
+              description: >
+                Every listed licence. Licences are never deleted and keep their insert-time
+                created_at, so history is complete and coverage reports range_start.
+              allOf:
+                - $ref: "#/components/schemas/DashboardIndicator"
+    DashboardIndicator:
+      type: object
+      required: [total, coverage, weeks, recent, recent_has_unknown]
+      properties:
+        total:
+          type: integer
+          minimum: 0
+        coverage:
+          $ref: "#/components/schemas/DashboardCoverage"
+        weeks:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardWeek"
+        recent:
+          type: array
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/DashboardRecentRecord"
+        recent_has_unknown:
+          type: boolean
+          description: At least one currently listed record has no recorded creation date.
+    DashboardCoverage:
+      type: object
+      required: [all_since, new_since]
+      properties:
+        all_since:
+          type: string
+          format: date-time
+          nullable: true
+          description: Earliest proven uninterrupted lifecycle coverage retained through generated_at.
+        new_since:
+          type: string
+          format: date-time
+          nullable: true
+          description: Earliest proven uninterrupted creation coverage retained through generated_at.
+    DashboardWeek:
+      type: object
+      required: [start, end, all, new, partial]
+      properties:
+        start:
+          type: string
+          format: date-time
+          description: Monday UTC start of the weekly bucket. Creation counts are clipped to range_start.
+        end:
+          type: string
+          format: date-time
+          description: Exclusive interval end, or the current snapshot for the ongoing week.
+        all:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Active population at interval end; null when reconstruction is not reliable.
+        new:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Creations during the interval, including records later deleted; null when incomplete.
+        partial:
+          type: boolean
+          description: Range boundary, current week or coverage boundary makes the interval incomplete.
+    DashboardRecentRecord:
+      type: object
+      required: [id, name, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          description: >
+            Known creation date derived from an audit INSERT (licences: their insert-time
+            created_at), never an UPDATE or backfill date.
