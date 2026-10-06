@@ -35,7 +35,7 @@ import { setToast } from '@app-builder/services/toast.server';
 import { CsrfError, validateCsrf } from '@app-builder/utils/csrf.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import * as Sentry from '@sentry/node';
-import { BackendGlobalError, marblecoreApi, TokenService, TokenServiceUpdate } from 'marble-api';
+import { BackendGlobalError, marblecoreApi, type Token, TokenService, TokenServiceUpdate } from 'marble-api';
 import * as z from 'zod/v4';
 import { captureUnexpectedError } from '../monitoring';
 import { refreshFirebaseIdToken } from './firebase.server';
@@ -118,6 +118,10 @@ const DEFAULT_SESSION_IDLE_TIMEOUT = 60 * 60 * 24; // 24h, in seconds
 // Throttle activity writes so we don't re-issue the session cookie on every request.
 const SESSION_ACTIVITY_WRITE_THROTTLE_MS = 60 * 1000; // 1 min
 
+const isMarbleTokenExpired = (token: Token): boolean => {
+  return Date.parse(token.expires_at) < Date.now();
+};
+
 const schema = z.object({
   type: z.enum(['google', 'microsoft', 'email']),
   idToken: z.string(),
@@ -127,6 +131,7 @@ const schema = z.object({
 export type AuthPayload = z.infer<typeof schema>;
 
 interface MakeAuthenticationServerServiceArgs {
+  marbleCoreApiClient: MarbleCoreApi;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
   getAppConfigRepository: (marbleCoreApiClient: MarbleCoreApi) => AppConfigRepository;
@@ -163,6 +168,7 @@ function expectedErrors(error: unknown) {
 }
 
 export function makeAuthenticationServerService({
+  marbleCoreApiClient: unauthenticatedMarbleCoreApiClient,
   getMarbleCoreAPIClientWithAuth,
   getFeatureAccessAPIClientWithAuth,
   getAppConfigRepository,
@@ -202,7 +208,7 @@ export function makeAuthenticationServerService({
    * authorization fetch middleware via `getTokenService`).
    */
   async function refreshMarbleToken(): Promise<TokenServiceUpdate> {
-    const appConfigRepository = getAppConfigRepository(marblecoreApi);
+    const appConfigRepository = getAppConfigRepository(unauthenticatedMarbleCoreApiClient);
     const appConfig = await appConfigRepository.getAppConfig();
     const authSession = await useAuthSession();
     const storedRefreshToken = authSession.data.refreshToken;
@@ -434,8 +440,12 @@ export function makeAuthenticationServerService({
     // The browser can't see the Marble token expiry under SSR, so an expired
     // token would otherwise log the user out after inactivity. If we hold a
     // provider refresh token, mint a fresh Marble token server-side first.
-    if (marbleToken && marbleToken.expires_at < new Date().toISOString()) {
-      const refreshed = await refreshMarbleToken().catch(() => null);
+    if (marbleToken && isMarbleTokenExpired(marbleToken)) {
+      const refreshed = await refreshMarbleToken().catch((error) => {
+        console.warn(`SSR token refresh failed: ${error.message}`);
+
+        return null;
+      });
       if (refreshed?.status) {
         await authSession.update({
           authToken: refreshed.marbleToken,
@@ -445,7 +455,7 @@ export function makeAuthenticationServerService({
       }
     }
 
-    if (!marbleToken || marbleToken.expires_at < new Date().toISOString()) {
+    if (!marbleToken || isMarbleTokenExpired(marbleToken)) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }
