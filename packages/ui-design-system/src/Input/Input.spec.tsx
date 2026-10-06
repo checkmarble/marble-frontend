@@ -132,6 +132,47 @@ describe('NumberInput', () => {
     expect(screen.getByRole('img', { name: '-' })).toBeInTheDocument();
   });
 
+  it('keeps as many fractional digits as decimalPrecision allows', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    const { rerender } = render(<NumberInput aria-label="number input" value={1.5} onChange={onChange} />);
+
+    expect(screen.getByLabelText('number input')).toHaveValue('2');
+
+    rerender(<NumberInput aria-label="number input" value={1.256} onChange={onChange} decimalPrecision={2} />);
+    expect(screen.getByLabelText('number input')).toHaveValue('1.26');
+
+    rerender(<NumberInput aria-label="number input" value={1.5} onChange={onChange} decimalPrecision={12} />);
+    expect(screen.getByLabelText('number input')).toHaveValue('1.5');
+
+    function ControlledNumberInput() {
+      const [value, setValue] = useState(0);
+      return (
+        <NumberInput
+          aria-label="decimal input"
+          value={value}
+          decimalPrecision={2}
+          onChange={(nextValue) => {
+            onChange(nextValue);
+            setValue(nextValue);
+          }}
+        />
+      );
+    }
+    render(<ControlledNumberInput />);
+    const input = screen.getByLabelText('decimal input');
+    await user.clear(input);
+    await user.type(input, '1.25');
+
+    expect(onChange).toHaveBeenLastCalledWith(1.25);
+    expect(input).toHaveValue('1.25');
+
+    await user.type(input, '6');
+
+    expect(onChange).toHaveBeenLastCalledWith(1.26);
+    expect(input).toHaveValue('1.26');
+  });
+
   it('uses the first matching threshold color and falls back to the default color', () => {
     const onChange = vi.fn();
     const colorByValue = {

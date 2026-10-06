@@ -298,6 +298,8 @@ export type NumberInputProps = Omit<InputProps, 'onChange' | 'value' | 'onEnterK
   onEnterKeyDown?: (value: number) => void;
   /** Show a plus or minus icon for the value's sign. Zero shows an empty placeholder. Typing `+` or `-` updates the icon. */
   forceSign?: boolean;
+  /** Fractional digits to keep. `0` (the default) accepts integers only. Values above `10` are capped. */
+  decimalPrecision?: number;
   /** Apply the color from the first matching threshold, or `defaultColor` when none match. */
   colorByValue?: NumberInputColorByValue;
 };
@@ -341,13 +343,31 @@ function applyNumberInputSign(value: number, sign: NumberInputSign) {
   return sign === '-' ? -Math.abs(value) : Math.abs(value);
 }
 
-function formatNumberInputValue(value: number, forceSign: boolean, language: string) {
+const MAX_NUMBER_INPUT_DECIMAL_PRECISION = 10;
+
+function clampDecimalPrecision(precision: number) {
+  if (!Number.isFinite(precision)) return 0;
+  return Math.min(MAX_NUMBER_INPUT_DECIMAL_PRECISION, Math.max(0, Math.trunc(precision)));
+}
+
+function formatNumberInputValue(value: number, forceSign: boolean, language: string, decimalPrecision: number) {
   return formatNumber(value, {
     language,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: decimalPrecision,
     useGrouping: false,
     signDisplay: forceSign ? 'never' : 'auto',
   });
+}
+
+function fractionDigitCount(value: string) {
+  return value.replace(',', '.').split('.')[1]?.length ?? 0;
+}
+
+function parseNumberInputValue(value: string, decimalPrecision: number) {
+  if (decimalPrecision === 0) return parseInt(value, 10);
+  const parsed = parseFloat(value.replace(',', '.'));
+  if (Number.isNaN(parsed)) return parsed;
+  return Number(parsed.toFixed(decimalPrecision));
 }
 
 function matchesNumberInputThreshold(value: number, { comparison, threshold }: NumberInputColorThreshold) {
@@ -386,6 +406,7 @@ export const NumberInput = function NumberInput({
   ref,
   colorByValue,
   forceSign = false,
+  decimalPrecision: decimalPrecisionProp = 0,
   inputClassName,
   onChange,
   onKeyDown,
@@ -398,19 +419,31 @@ export const NumberInput = function NumberInput({
   ...props
 }: NumberInputProps & { ref?: React.Ref<HTMLInputElement> }) {
   const language = useFormatLanguage();
-  const [internalValue, setInternalValue] = useState(() => formatNumberInputValue(value, forceSign, language));
+  const decimalPrecision = clampDecimalPrecision(decimalPrecisionProp);
+  const [internalValue, setInternalValue] = useState(() =>
+    formatNumberInputValue(value, forceSign, language, decimalPrecision),
+  );
   const [sign, setSign] = useState<NumberInputSign>(() => getNumberInputSign(value));
   const valueColor = getNumberInputColor(value, colorByValue);
-  const parsedInternalValue = parseInt(internalValue, 10);
+  const parsedInternalValue = parseNumberInputValue(internalValue, decimalPrecision);
   const showForceSignIcon = forceSign && !isNaN(parsedInternalValue) && parsedInternalValue !== 0;
 
   useEffect(() => {
-    const newInternalValue = formatNumberInputValue(value, forceSign, language);
-    setInternalValue((currentValue) => (currentValue === newInternalValue ? currentValue : newInternalValue));
+    const newInternalValue = formatNumberInputValue(value, forceSign, language, decimalPrecision);
+    setInternalValue((currentValue) => {
+      if (currentValue === newInternalValue) return currentValue;
+      // Keep an in-progress decimal ("1.") when it still represents the committed value.
+      if (decimalPrecision > 0 && fractionDigitCount(currentValue) <= decimalPrecision) {
+        const parsed = parseFloat(currentValue.replace(',', '.'));
+        const displayed = forceSign ? Math.abs(value) : value;
+        if (!Number.isNaN(parsed) && parsed === displayed) return currentValue;
+      }
+      return newInternalValue;
+    });
     if (value !== 0) {
       setSign(getNumberInputSign(value));
     }
-  }, [forceSign, language, value]);
+  }, [decimalPrecision, forceSign, language, value]);
 
   return (
     <Input
@@ -430,12 +463,13 @@ export const NumberInput = function NumberInput({
         forceSign && numberInputSignPaddingClassName({ size }),
         numberInputColorClassName({ color: valueColor }),
       )}
+      inputMode={decimalPrecision > 0 ? 'decimal' : props.inputMode}
       value={internalValue}
       onChange={(e) => {
         const inputValue = e.target.value;
         if (!forceSign) {
           setInternalValue(inputValue);
-          const inputNumberValue = parseInt(inputValue, 10);
+          const inputNumberValue = parseNumberInputValue(inputValue, decimalPrecision);
           if (!isNaN(inputNumberValue)) {
             onChange(inputNumberValue);
           }
@@ -447,7 +481,7 @@ export const NumberInput = function NumberInput({
         setSign(nextSign);
         setInternalValue(unsignedValue);
 
-        const inputNumberValue = parseInt(unsignedValue, 10);
+        const inputNumberValue = parseNumberInputValue(unsignedValue, decimalPrecision);
         if (!isNaN(inputNumberValue)) {
           const signedValue = applyNumberInputSign(inputNumberValue, nextSign);
           if (signedValue !== value) {
@@ -460,7 +494,7 @@ export const NumberInput = function NumberInput({
           e.preventDefault();
           const nextSign: NumberInputSign = e.key === '-' ? '-' : '+';
           setSign(nextSign);
-          const inputNumberValue = parseInt(internalValue, 10);
+          const inputNumberValue = parseNumberInputValue(internalValue, decimalPrecision);
           if (!isNaN(inputNumberValue)) {
             const signedValue = applyNumberInputSign(inputNumberValue, nextSign);
             if (signedValue !== value) {
@@ -473,7 +507,7 @@ export const NumberInput = function NumberInput({
       onEnterKeyDown={
         onEnterKeyDown
           ? (e) => {
-              const inputNumberValue = parseInt(internalValue, 10);
+              const inputNumberValue = parseNumberInputValue(internalValue, decimalPrecision);
               if (!isNaN(inputNumberValue)) {
                 onEnterKeyDown(forceSign ? applyNumberInputSign(inputNumberValue, sign) : inputNumberValue);
               }

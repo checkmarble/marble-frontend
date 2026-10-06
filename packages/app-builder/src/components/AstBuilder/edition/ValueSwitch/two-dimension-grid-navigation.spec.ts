@@ -5,6 +5,7 @@ import {
   getTwoDimensionGridNavigationTarget,
   handleValueSwitchGridKeyDown,
   scrollTwoDimensionGridCellIntoView,
+  shouldArrowKeyStayInInput,
   type TwoDimensionGridNavigationKey,
 } from './two-dimension-grid-navigation';
 
@@ -318,5 +319,86 @@ describe('handleValueSwitchGridKeyDown', () => {
 
     expect(event.preventDefault).not.toHaveBeenCalled();
     expect(document.activeElement).not.toBe(container.querySelector('[data-value-switch-cell="0:1"] input'));
+  });
+
+  it('keeps horizontal arrows in the input until the caret reaches an edge', () => {
+    const container = createOneDimensionGrid();
+    const score = container.querySelector('[data-value-switch-cell="0:1"] input') as HTMLInputElement;
+    score.focus();
+    score.setSelectionRange(1, 1);
+
+    const stayEvent = gridKeyDown(container, score, 'ArrowRight');
+    expect(stayEvent.preventDefault).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(score);
+
+    score.setSelectionRange(score.value.length, score.value.length);
+    gridKeyDown(container, score, 'ArrowRight');
+    expect(document.activeElement).toBe(container.querySelector('[data-value-switch-cell="1:0"] input'));
+  });
+});
+
+describe('shouldArrowKeyStayInInput', () => {
+  function createInput(value: string, dir?: 'ltr' | 'rtl') {
+    const input = document.createElement('input');
+    input.value = value;
+    if (dir) input.dir = dir;
+    document.body.append(input);
+    return input;
+  }
+
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  it('stays in the input while the caret can still move', () => {
+    const input = createInput('123');
+    input.setSelectionRange(1, 1);
+
+    expect(shouldArrowKeyStayInInput(input, 'ArrowLeft', false)).toBe(true);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowRight', false)).toBe(true);
+  });
+
+  it('leaves the input when the caret is at the edge it moves towards', () => {
+    const input = createInput('123');
+    input.setSelectionRange(0, 0);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowLeft', false)).toBe(false);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowRight', false)).toBe(true);
+
+    input.setSelectionRange(3, 3);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowRight', false)).toBe(false);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowLeft', false)).toBe(true);
+  });
+
+  it('leaves the input when the whole value is selected, and stays for a partial selection', () => {
+    const input = createInput('123');
+    input.setSelectionRange(0, 3);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowLeft', false)).toBe(false);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowRight', false)).toBe(false);
+
+    input.setSelectionRange(0, 2);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowLeft', false)).toBe(true);
+  });
+
+  it('keeps Shift+arrow in the input to extend the selection', () => {
+    const input = createInput('123');
+    input.setSelectionRange(3, 3);
+
+    expect(shouldArrowKeyStayInInput(input, 'ArrowRight', true)).toBe(true);
+  });
+
+  it('mirrors the edges in a right-to-left input', () => {
+    const input = createInput('abc', 'rtl');
+    input.setSelectionRange(0, 0);
+
+    expect(shouldArrowKeyStayInInput(input, 'ArrowRight', false)).toBe(false);
+    expect(shouldArrowKeyStayInInput(input, 'ArrowLeft', false)).toBe(true);
+  });
+
+  it('never keeps vertical arrows or non-input targets', () => {
+    const input = createInput('123');
+    input.setSelectionRange(1, 1);
+
+    expect(shouldArrowKeyStayInInput(input, 'ArrowUp', false)).toBe(false);
+    expect(shouldArrowKeyStayInInput(document.createElement('button'), 'ArrowLeft', false)).toBe(false);
   });
 });
