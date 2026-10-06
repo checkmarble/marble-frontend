@@ -18,7 +18,14 @@ export const CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING = {
   ],
   case_assignation: ['inbox_changed', 'case_assigned'],
   sar_related: ['sar_created', 'sar_deleted', 'sar_status_changed', 'sar_file_uploaded'],
-  case_review_action: ['comment_added', 'file_added', 'decision_reviewed', 'entity_annotated'],
+  case_review_action: [
+    'comment_added',
+    'file_added',
+    'decision_reviewed',
+    'entity_annotated',
+    'entity_added',
+    'entity_removed',
+  ],
 } as const satisfies Record<CaseEventCategory, CaseEventType[]>;
 
 export const DEFAULT_CASE_EVENT_CATEGORIES_FILTER = ['case_review_action'] as const satisfies CaseEventCategory[];

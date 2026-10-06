@@ -3,9 +3,9 @@ import { SearchableSchema } from '@app-builder/constants/screening-entity';
 import { useEntityName } from '@app-builder/hooks/useEntityName';
 import { type Screening, type ScreeningQuery } from '@app-builder/models/screening';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs, tabClassName } from 'ui-design-system';
+import { Tabs } from 'ui-design-system';
 import { screeningsI18n } from './screenings-i18n';
 
 const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
@@ -40,30 +40,17 @@ export function ScreeningQueryDetail({
   const processedQueries = Object.values(request.queries);
   const hasInitialQuery = Array.isArray(initialQuery) && initialQuery.length > 0;
   const [activeTab, setActiveTab] = useState<'initial' | 'preprocessed'>('preprocessed');
+  const tabsId = useId();
 
   return (
     <div>
-      <Tabs>
-        {hasInitialQuery && (
-          <button
-            type="button"
-            className={tabClassName}
-            data-status={activeTab === 'initial' ? 'active' : undefined}
-            onClick={() => setActiveTab('initial')}
-          >
-            {t('screenings:initial_query')}
-          </button>
-        )}
-        <button
-          type="button"
-          className={tabClassName}
-          data-status={activeTab === 'preprocessed' ? 'active' : undefined}
-          onClick={() => setActiveTab('preprocessed')}
-        >
+      <Tabs id={tabsId} value={activeTab} onValueChange={setActiveTab}>
+        {hasInitialQuery && <Tabs.Button value="initial">{t('screenings:initial_query')}</Tabs.Button>}
+        <Tabs.Button value="preprocessed">
           {!hasInitialQuery ? t('screenings:query') : t('screenings:processed_query')}
-        </button>
+        </Tabs.Button>
       </Tabs>
-      <div className="mt-sm">
+      <Tabs.Panel tabsId={tabsId} value={activeTab} className="mt-sm">
         {activeTab === 'initial' && hasInitialQuery && (
           <>
             {initialQuery.map((q, i) => (
@@ -78,7 +65,7 @@ export function ScreeningQueryDetail({
             ))}
           </>
         )}
-      </div>
+      </Tabs.Panel>
     </div>
   );
 }

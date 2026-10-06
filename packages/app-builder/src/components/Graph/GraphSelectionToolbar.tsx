@@ -1,16 +1,18 @@
+import { ClientAddToCasePanel } from '@app-builder/components/ClientDetail/AddToCasePanel';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { useQueryClient } from '@tanstack/react-query';
 import { type GroupedAnnotations } from 'marble-api';
 import { toggle } from 'radash';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand } from 'ui-design-system';
+import { Button, cn, MenuCommand, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { useGraphAnnotationsActions } from './contexts/GraphAnnotationsContext';
 import { useCheckedNodeIds, useGraphInteractionActions, useSelectionMode } from './contexts/GraphInteractionContext';
+import { useGraphSession } from './contexts/GraphSessionContext';
 import { useGraphStats } from './contexts/GraphStatsContext';
 import { useGraphStructureActions } from './contexts/GraphStructureContext';
 import { graphI18n } from './lib/graph-i18n';
@@ -161,6 +163,18 @@ export function GraphSelectionToolbar() {
   const selectionMode = useSelectionMode();
   const checkedNodeIds = useCheckedNodeIds();
   const hasCheckedNodes = checkedNodeIds.size > 0;
+  const { graphData } = useGraphSession();
+  const checkedCaseObjects = useMemo(() => {
+    const nodesByKey = new Map(graphData?.nodes.map((node) => [nodeKey(node.type, node.id), node]));
+    return [...checkedNodeIds].map((id) => {
+      const metadata = nodesByKey.get(id)?.metadata;
+      return {
+        ...parseNodeKey(id),
+        label: metadata?.label,
+        riskLevel: metadata?.riskLevel,
+      };
+    });
+  }, [checkedNodeIds, graphData]);
 
   const handleHide = () => {
     hideNodes([...checkedNodeIds]);
@@ -192,9 +206,20 @@ export function GraphSelectionToolbar() {
         'bg-surface-card flex items-center gap-sm rounded-lg px-sm py-xs shadow-md',
       )}
     >
-      <Button type="button" variant="primary" appearance="stroked" size="small" disabled>
-        {t('graph:selection.add_to_case')}
-      </Button>
+      {hasCheckedNodes ? (
+        <Panel.Root>
+          <Panel.Trigger asChild>
+            <Button type="button" variant="primary" appearance="stroked" size="small">
+              {t('graph:selection.add_to_case')}
+            </Button>
+          </Panel.Trigger>
+          <ClientAddToCasePanel objects={checkedCaseObjects} />
+        </Panel.Root>
+      ) : (
+        <Button type="button" variant="primary" appearance="stroked" size="small" disabled>
+          {t('graph:selection.add_to_case')}
+        </Button>
+      )}
       <BulkAddTagsMenu checkedKeys={checkedNodeIds} disabled={!hasCheckedNodes} />
       <Button
         type="button"

@@ -3,8 +3,8 @@ import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientO
 import { DocumentsList } from '@app-builder/components/ClientDetail/DocumentsList';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
-import { DataModel, DataModelObject } from '@app-builder/models';
-import { CaseDetail, getPivotObjectKey, PivotObject } from '@app-builder/models/cases';
+import { DataModel } from '@app-builder/models';
+import { CaseClient, CaseDetail } from '@app-builder/models/cases';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getGraphExplorationDisplay } from '@app-builder/services/feature-access';
@@ -23,10 +23,11 @@ import { GraphAccessPlaceholder } from '../Graph/GraphAccessPlaceholder';
 import { pageLayoutGutter } from '../Page/page-layout';
 import { ClientCommentsListCard } from './ClientComments';
 import { ClientRelatedAlertCasesCard } from './ClientRelatedAlertCasesCard';
-import { isGraphEligiblePivot } from './graph-pivots';
+import { isGraphEligibleClient } from './graph-pivots';
 import { CommentContext } from './hooks/comment-context';
 import { MainLinksGraph, mainLinksGraphMinHeight } from './MainLinksGraph';
 import { NavigationOptions } from './NavigationOptions';
+import { getObjectName } from './PivotTabs';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
 
 /** Fills the viewport so the embedded graph gets its height without the page scrolling. */
@@ -35,8 +36,7 @@ const clientColumnMinHeight = 'min-h-[calc(100dvh-12rem)]';
 export type CaseManagerClientsPageProps = {
   caseDetail: CaseDetail;
   dataModel: DataModel;
-  pivotObject: PivotObject;
-  ingestedInfo: { objectId: string; objectType: string } | null;
+  client: CaseClient;
   client360Tables: Client360Table[];
   userScoringAccess: FeatureAccessLevelDto;
 };
@@ -44,8 +44,7 @@ export type CaseManagerClientsPageProps = {
 export function CaseManagerClientsPage({
   caseDetail,
   dataModel,
-  pivotObject,
-  ingestedInfo,
+  client,
   client360Tables,
   userScoringAccess,
 }: CaseManagerClientsPageProps) {
@@ -55,15 +54,17 @@ export function CaseManagerClientsPage({
   const dmfa = useDataModelFeatureAccess();
   const graphDisplay = getGraphExplorationDisplay(dmfa);
   const { set } = CommentContext.useValue();
-  const annotationsQuery = useGetAnnotationsQuery(pivotObject.pivotObjectName, pivotObject.pivotObjectId!, true);
+  const annotationsQuery = useGetAnnotationsQuery(client.tableName, client.objectId!, true);
   const [isEditingDocuments, setIsEditingDocuments] = useState(false);
   const [explorationOpen, setExplorationOpen] = useState(false);
 
-  const currentTable = dataModel.find((t) => t.name === pivotObject.pivotObjectName);
-  const metadata = client360Tables.find((t) => t.name === pivotObject.pivotObjectName);
-  const entityName = metadata?.alias || metadata?.name || pivotObject.pivotObjectName;
-  const clientName = metadata ? (pivotObject.pivotObjectData.data[metadata.caption_field] as string) : '';
-  const showMainLinks = graphDisplay !== 'hidden' && isGraphEligiblePivot(pivotObject, dataModel);
+  const ingestedInfo =
+    client.isIngested && client.objectId ? { objectId: client.objectId, objectType: client.tableName } : null;
+  const currentTable = dataModel.find((t) => t.name === client.tableName);
+  const client360Table = client360Tables.find((table) => table.name === client.tableName);
+  const entityName = client360Table?.alias || client360Table?.name || client.tableName;
+  const clientName = getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '');
+  const showMainLinks = graphDisplay !== 'hidden' && isGraphEligibleClient(client, dataModel);
 
   return (
     <div className={cn('grid grid-cols-1 lg:grid-cols-2', pageLayoutGutter.gap)}>
@@ -72,7 +73,7 @@ export function CaseManagerClientsPage({
           <span className="font-medium">{clientName}</span>
           <div className="flex items-center gap-sm">
             {ingestedInfo ? <UserScoreBadge userScoringAccess={userScoringAccess} {...ingestedInfo} /> : null}
-            {metadata && ingestedInfo ? (
+            {client360Table && ingestedInfo ? (
               <Link
                 to="/client-detail/$objectType/$objectId"
                 params={clientDetailLinkParams(ingestedInfo.objectType, ingestedInfo.objectId)}
@@ -88,11 +89,11 @@ export function CaseManagerClientsPage({
           <Tag color="grey" className="capitalize">
             {entityName}
           </Tag>
-          {pivotObject.pivotObjectId ? (
+          {client.objectId ? (
             <ClientObjectTagList
               caseId={caseDetail.id}
-              tableName={pivotObject.pivotObjectName}
-              objectId={pivotObject.pivotObjectId}
+              tableName={client.tableName}
+              objectId={client.objectId}
               annotations={annotationsQuery.data?.annotations.tags}
               placeholder={t('cases:manager.principal.add_tag_placeholder')}
             />
@@ -100,16 +101,12 @@ export function CaseManagerClientsPage({
         </div>
         <Card className="flex flex-col gap-sm text-small">
           <div>
-            <DataFields
-              object={pivotObject.pivotObjectData as DataModelObject}
-              table={pivotObject.pivotObjectName}
-              options={{ layout: '2-columns' }}
-            />
+            <DataFields object={client.object} table={client.tableName} options={{ layout: '2-columns' }} />
             {currentTable ? (
               <DataModelExplorerProvider>
                 <NavigationOptions
                   currentUser={currentUser}
-                  pivotObject={pivotObject}
+                  client={client}
                   table={currentTable}
                   dataModel={dataModel}
                   onExplore={() => setExplorationOpen(true)}
@@ -127,7 +124,7 @@ export function CaseManagerClientsPage({
                 <Link
                   from="/cases/s/$caseId/clients/$pivotValue"
                   to="/cases/s/$caseId/links/$pivotValue"
-                  params={{ pivotValue: getPivotObjectKey(pivotObject) }}
+                  params={{ pivotValue: client.key }}
                   className={CtaV2ClassName({ appearance: 'link', variant: 'primary' })}
                 >
                   <Icon icon="eye" className="size-4" />
@@ -163,7 +160,7 @@ export function CaseManagerClientsPage({
 
         <div className="flex flex-col gap-sm">
           <div className="font-medium">{t('cases:case_detail.pivot_panel.case_history')}</div>
-          <ClientRelatedAlertCasesCard pivotValue={pivotObject.pivotValue} caseId={caseDetail.id} />
+          <ClientRelatedAlertCasesCard client={client} caseId={caseDetail.id} />
         </div>
 
         {ingestedInfo ? (

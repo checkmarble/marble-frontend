@@ -3,8 +3,8 @@ import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { useFormDropzone } from '@app-builder/hooks/useFormDropzone';
 import { DataModel } from '@app-builder/models';
 import {
+  CaseClient,
   CaseDetail,
-  getPivotObjectKey,
   PivotObject,
   SuspiciousActivityReport,
   SuspiciousActivityReportStatus,
@@ -29,31 +29,21 @@ import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import {
-  ActionBar,
-  ActionButton,
-  Button,
-  CtaV2ClassName,
-  cn,
-  Modal,
-  Radio,
-  Tabs,
-  Typo,
-  tabClassName,
-} from 'ui-design-system';
+import { ActionBar, ActionButton, Button, CtaV2ClassName, cn, Modal, Radio, Tabs, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CloseCase } from '../Cases/CloseCase';
 import { OpenCase } from '../Cases/OpenCase';
 import { SarReportDownload } from '../Cases/SarReportDownload';
 import { SnoozeCase } from '../Cases/SnoozeCase';
 import { ClientCommentForm } from './ClientComments';
-import { getGraphEligiblePivots } from './graph-pivots';
+import { getGraphEligibleClients } from './graph-pivots';
 import { CommentContext } from './hooks/comment-context';
 import { KycEnrichmentPanel } from './KycEnrichment/KycEnrichmentPanel';
 
 type CaseManagerPageLayoutProps = {
   caseDetail: CaseDetail;
   pivotObjects: PivotObject[];
+  caseClients: CaseClient[];
   dataModel: DataModel;
   dataModelFeatureAccess: ReturnType<typeof dataModelFeatureAccessLoader>;
   children: ReactNode;
@@ -63,6 +53,7 @@ export function CaseManagerPageLayout({
   children,
   caseDetail,
   pivotObjects,
+  caseClients,
   dataModel,
   dataModelFeatureAccess,
 }: CaseManagerPageLayoutProps) {
@@ -73,20 +64,14 @@ export function CaseManagerPageLayout({
   const sarReportsQuery = useSarReportsQuery(caseDetail.id);
   const params = useParams({ strict: false });
   const currentPivotValue = typeof params.pivotValue === 'string' ? params.pivotValue : undefined;
-  const eligiblePivots = getGraphEligiblePivots(pivotObjects, dataModel);
+  const eligibleClients = getGraphEligibleClients(caseClients, dataModel);
   const graphDisplay = getGraphExplorationDisplay(dataModelFeatureAccess);
   const clientsPivotValue =
-    currentPivotValue && pivotObjects.some((p) => getPivotObjectKey(p) === currentPivotValue)
-      ? currentPivotValue
-      : undefined;
+    currentPivotValue && caseClients.some((c) => c.key === currentPivotValue) ? currentPivotValue : undefined;
   const linksPivotValue =
-    currentPivotValue && eligiblePivots.some((p) => getPivotObjectKey(p) === currentPivotValue)
-      ? currentPivotValue
-      : undefined;
-  const defaultClientsPivotValue =
-    clientsPivotValue ?? (pivotObjects[0] ? getPivotObjectKey(pivotObjects[0]) : undefined);
-  const defaultLinksPivotValue =
-    linksPivotValue ?? (eligiblePivots[0] ? getPivotObjectKey(eligiblePivots[0]) : undefined);
+    currentPivotValue && eligibleClients.some((c) => c.key === currentPivotValue) ? currentPivotValue : undefined;
+  const defaultClientsPivotValue = clientsPivotValue ?? caseClients[0]?.key;
+  const defaultLinksPivotValue = linksPivotValue ?? eligibleClients[0]?.key;
   // The links tab is the only one that owns the viewport height, so the layout has to
   // stop scrolling and let it flex. Compared by route id, so a rename breaks the build.
   const isLinksTab = useMatches({
@@ -147,44 +132,52 @@ export function CaseManagerPageLayout({
       </Page.Header>
       <Page.Container className={isLinksTab ? 'min-h-0' : undefined}>
         <Page.Content className={cn('relative', isLinksTab && 'min-h-0 overflow-hidden')}>
-          <div className="flex justify-between mb-lg shrink-0">
-            <Tabs>
-              <Link className={tabClassName} from="/cases/s/$caseId" to="./principal" preload="render">
-                {t('cases:case_detail.tab.principal')}
-              </Link>
+          <div className="flex justify-between shrink-0">
+            <Tabs.Nav>
+              <Tabs.Link asChild>
+                <Link from="/cases/s/$caseId" to="./principal" preload="render">
+                  {t('cases:case_detail.tab.principal')}
+                </Link>
+              </Tabs.Link>
               {defaultClientsPivotValue ? (
-                <Link
-                  className={tabClassName}
-                  from="/cases/s/$caseId"
-                  to="./clients/$pivotValue"
-                  params={{ pivotValue: defaultClientsPivotValue }}
-                  preload="render"
-                >
-                  {t('cases:manager.tab.clients_concerned')}
-                </Link>
+                <Tabs.Link asChild>
+                  <Link
+                    from="/cases/s/$caseId"
+                    to="./clients/$pivotValue"
+                    params={{ pivotValue: defaultClientsPivotValue }}
+                    preload="render"
+                  >
+                    {t('cases:manager.tab.clients_concerned')}
+                  </Link>
+                </Tabs.Link>
               ) : (
-                <Link disabled className={tabClassName} from="/cases/s/$caseId" to="./clients" preload={false}>
-                  {t('cases:manager.tab.clients_concerned')}
-                </Link>
+                <Tabs.Link asChild>
+                  <Link disabled from="/cases/s/$caseId" to="./clients" preload={false}>
+                    {t('cases:manager.tab.clients_concerned')}
+                  </Link>
+                </Tabs.Link>
               )}
               {graphDisplay !== 'hidden' ? (
                 defaultLinksPivotValue ? (
-                  <Link
-                    className={tabClassName}
-                    from="/cases/s/$caseId"
-                    to="./links/$pivotValue"
-                    params={{ pivotValue: defaultLinksPivotValue }}
-                    preload="render"
-                  >
-                    {t('cases:manager.tab.links_to_other')}
-                  </Link>
+                  <Tabs.Link asChild>
+                    <Link
+                      from="/cases/s/$caseId"
+                      to="./links/$pivotValue"
+                      params={{ pivotValue: defaultLinksPivotValue }}
+                      preload="render"
+                    >
+                      {t('cases:manager.tab.links_to_other')}
+                    </Link>
+                  </Tabs.Link>
                 ) : (
-                  <Link disabled className={tabClassName} from="/cases/s/$caseId" to="./links" preload={false}>
-                    {t('cases:manager.tab.links_to_other')}
-                  </Link>
+                  <Tabs.Link asChild>
+                    <Link disabled from="/cases/s/$caseId" to="./links" preload={false}>
+                      {t('cases:manager.tab.links_to_other')}
+                    </Link>
+                  </Tabs.Link>
                 )
               ) : null}
-            </Tabs>
+            </Tabs.Nav>
             <ActionBar>
               {isSarCompleted && hasSarFile && sarReport ? (
                 <SarReportDownload variant="action" caseId={caseDetail.id} reportId={sarReport.id} />

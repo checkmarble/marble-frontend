@@ -5,6 +5,7 @@ import {
   adaptCase,
   adaptCaseCreateBody,
   adaptCaseDetail,
+  adaptCaseObjectReferences,
   adaptCaseReview,
   adaptDetailedCaseDecision,
   adaptPivotObject,
@@ -13,6 +14,7 @@ import {
   type Case,
   type CaseDetail,
   CaseMassUpdateBodyDto,
+  type CaseObjectReference,
   CaseReview,
   type CaseStatus,
   type CaseUpdateBody,
@@ -64,6 +66,7 @@ type SuspiciousActivityReportBody =
 export interface CaseRepository {
   listCases(args: CaseFiltersWithPagination): Promise<PaginatedResponse<Case>>;
   createCase(data: { name: string; inboxId: string; decisionIds?: string[] }): Promise<CaseDetail>;
+  createCaseFromObjects(data: { name: string; inboxId: string; objects: CaseObjectReference[] }): Promise<CaseDetail>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
   assignUser(args: { caseId: string; userId: string }): Promise<unknown>;
@@ -81,6 +84,8 @@ export interface CaseRepository {
   }): Promise<CaseDetail>;
   setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
   addDecisionsToCase(args: { caseId: string; decisionIds: string[] }): Promise<CaseDetail>;
+  addObjectsToCase(args: { caseId: string; objects: CaseObjectReference[] }): Promise<CaseDetail>;
+  removeObjectsFromCase(args: { caseId: string; objects: CaseObjectReference[] }): Promise<CaseDetail>;
   reviewDecision(args: { decisionId: string; reviewComment: string; reviewStatus: ReviewStatus }): Promise<CaseDetail>;
   listSuspiciousActivityReports(args: { caseId: string }): Promise<SuspiciousActivityReport[]>;
   createSuspiciousActivityReport(args: {
@@ -166,6 +171,14 @@ export function makeGetCaseRepository() {
       const result = await marbleCoreApiClient.createCase(adaptCaseCreateBody(data));
       return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
+    createCaseFromObjects: async ({ name, inboxId, objects }) => {
+      const result = await marbleCoreApiClient.createCase({
+        name,
+        inbox_id: inboxId,
+        entities: adaptCaseObjectReferences(objects),
+      });
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
+    },
     getCase: async ({ caseId }) => {
       const result = await marbleCoreApiClient.getCase(caseId);
       return adaptCaseDetail(result, marbleCoreApiClient);
@@ -187,6 +200,18 @@ export function makeGetCaseRepository() {
     addDecisionsToCase: async ({ caseId, decisionIds }) => {
       const result = await marbleCoreApiClient.addDecisionsToCase(caseId, {
         decision_ids: decisionIds,
+      });
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
+    },
+    addObjectsToCase: async ({ caseId, objects }) => {
+      const result = await marbleCoreApiClient.addEntitiesToCase(caseId, {
+        entities: adaptCaseObjectReferences(objects),
+      });
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
+    },
+    removeObjectsFromCase: async ({ caseId, objects }) => {
+      const result = await marbleCoreApiClient.removeEntitiesFromCase(caseId, {
+        entities: adaptCaseObjectReferences(objects),
       });
       return adaptCaseDetail(result.case, marbleCoreApiClient);
     },

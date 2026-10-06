@@ -5,6 +5,7 @@ import {
   NOT_FOUND,
   REQUEST_TIMEOUT,
   UNAUTHORIZED,
+  UNPROCESSABLE_ENTITY,
 } from '@app-builder/utils/http/http-status-codes';
 import type * as Oazapfts from '@oazapfts/runtime';
 import * as z from 'zod/v4';
@@ -23,6 +24,10 @@ export function isStatusBadRequestHttpError(error: unknown): error is Oazapfts.H
 
 export function isNotFoundHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === NOT_FOUND;
+}
+
+export function isUnprocessableEntityHttpError(error: unknown): error is Oazapfts.HttpError {
+  return isHttpError(error) && error.status === UNPROCESSABLE_ENTITY;
 }
 
 export function isUnauthorizedHttpError(error: unknown): error is Oazapfts.HttpError {

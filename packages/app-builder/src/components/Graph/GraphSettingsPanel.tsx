@@ -3,7 +3,7 @@ import { ClientComments } from '@app-builder/components/ClientDetail/ClientComme
 import { ScoreDetailPanel } from '@app-builder/components/ClientDetail/ScoreDetailPanel';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { Spinner } from '@app-builder/components/Spinner';
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { RiskLevelBadge } from '@app-builder/components/UserScoring/RiskLevelBadge';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
@@ -151,32 +151,21 @@ function ScoreDetailFetchPanel({
 
 /** Metadata risk level as a badge; the live score is fetched only when the panel opens. */
 function ObjectRiskBadge({ objectType, objectId, riskLevel }: GraphObjectRef) {
-  const { t } = useTranslation(['cases', 'user-scoring']);
   const { maxRiskLevel } = useGraphViewSettings();
   const [panelOpen, setPanelOpen] = useState(false);
 
   if (riskLevel == null || maxRiskLevel == null) return null;
 
-  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][riskLevel] ?? 'inherit';
-  const scoreLabel = t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][riskLevel] ?? riskLevel.toString());
-
   return (
     <>
-      <button
-        type="button"
+      <RiskLevelBadge
+        riskLevel={riskLevel}
+        maxRiskLevel={maxRiskLevel}
         onClick={(event) => {
           event.stopPropagation();
           setPanelOpen(true);
         }}
-        className="inline-flex cursor-pointer items-center gap-xs rounded-full border px-sm py-px text-xs"
-        style={{ backgroundColor: `${scoreColor}20`, borderColor: scoreColor }}
-      >
-        <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: scoreColor }} />
-        <span>
-          {t('cases:manager.client.risk_label')} <strong>{scoreLabel}</strong>
-        </span>
-        <Icon icon="visibility" className="size-3" />
-      </button>
+      />
       {panelOpen ? (
         <ScoreDetailFetchPanel
           open={panelOpen}

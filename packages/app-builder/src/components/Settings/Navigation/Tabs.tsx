@@ -2,7 +2,7 @@ import { type Sections } from '@app-builder/services/settings-access';
 import { Link } from '@tanstack/react-router';
 import { type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Tabs, Typo, tabClassName } from 'ui-design-system';
+import { Tabs, Typo } from 'ui-design-system';
 
 const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
   api: 'settings:api',
@@ -20,7 +20,7 @@ export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
   return (
     <div className="flex flex-col gap-sm">
       <Typo variant="title1">{t('navigation:settings')}</Typo>
-      <Tabs>
+      <Tabs.Nav>
         {(Object.keys(sections) as Array<keyof Sections>).map((sectionKey) => {
           const { settings } = sections[sectionKey];
           if (settings.length === 0) return null;
@@ -28,12 +28,12 @@ export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
           const firstSetting = settings[0]!;
 
           return (
-            <Link key={sectionKey} to={firstSetting.to} className={tabClassName}>
-              {t(sectionTKeys[sectionKey])}
-            </Link>
+            <Tabs.Link key={sectionKey} asChild>
+              <Link to={firstSetting.to}>{t(sectionTKeys[sectionKey])}</Link>
+            </Tabs.Link>
           );
         })}
-      </Tabs>
+      </Tabs.Nav>
     </div>
   );
 }

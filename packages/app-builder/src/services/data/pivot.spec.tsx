@@ -71,7 +71,7 @@ describe('getLinksPivotOptions', () => {
         parentTableId: '2',
         parentTableName: 'table2',
         length: 1,
-        displayPath: '->link1',
+        displayPath: '→link1',
       },
     ];
 
@@ -177,7 +177,7 @@ describe('getLinksPivotOptions', () => {
         parentTableId: '3',
         parentTableName: 'table3',
         length: 2,
-        displayPath: '->link1->link2',
+        displayPath: '→link1→link2',
       },
     ];
 
@@ -259,7 +259,7 @@ describe('getLinksPivotOptions', () => {
         parentTableId: '3',
         parentTableName: 'table3',
         length: 2,
-        displayPath: '->link1->link2',
+        displayPath: '→link1→link2',
       },
     ];
 

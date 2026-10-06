@@ -20,7 +20,6 @@ import {
   Tabs,
   Tooltip,
   Typo,
-  tabClassName,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
@@ -53,10 +52,10 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
               </Button>
             ) : null}
           </div>
-          <Tabs>
-            <Link to="/user-scoring/overview" className={tabClassName}>
-              {t('user-scoring:section.tab_overview')}
-            </Link>
+          <Tabs.Nav>
+            <Tabs.Link asChild>
+              <Link to="/user-scoring/overview">{t('user-scoring:section.tab_overview')}</Link>
+            </Tabs.Link>
             {isPending ? (
               <div className="h-full flex items-center px-sm">
                 <Spinner className="size-4" />
@@ -64,7 +63,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
             ) : (
               rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
             )}
-          </Tabs>
+          </Tabs.Nav>
           <Outlet />
           {maxRiskLevel ? (
             <Panel.Root open={panelOpen} onOpenChange={setPanelOpen}>
@@ -82,19 +81,19 @@ function RulesetTab({ ruleset }: { ruleset: { recordType: string; status: string
   const isActive = params.recordType === ruleset.recordType;
 
   return (
-    <Link
-      to="/user-scoring/$recordType/$version"
-      params={{
-        recordType: ruleset.recordType,
-        version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
-      }}
-      className={tabClassName}
-      activeProps={{}}
-      inactiveProps={{}}
-      data-status={isActive ? 'active' : undefined}
-    >
-      {ruleset.name}
-    </Link>
+    <Tabs.Link asChild active={isActive}>
+      <Link
+        to="/user-scoring/$recordType/$version"
+        params={{
+          recordType: ruleset.recordType,
+          version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
+        }}
+        activeProps={{}}
+        inactiveProps={{}}
+      >
+        {ruleset.name}
+      </Link>
+    </Tabs.Link>
   );
 }
 

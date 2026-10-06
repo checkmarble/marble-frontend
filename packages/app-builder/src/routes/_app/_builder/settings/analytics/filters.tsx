@@ -63,12 +63,12 @@ const getFilters = (exportedEntries: [string, ExportedFields][], dataModel: Data
       .filter((field): field is NonNullable<typeof field> => Boolean(field?.name))
       .map((field) => {
         const pathArr = Array.isArray(field.path) ? field.path : [];
-        const pathStr = pathArr.join('->');
+        const pathStr = pathArr.join('→');
         return {
           id: `${tableId}::ingested::${pathStr}.${field.name}`,
           tableId,
           associatedObject: tableName,
-          definition: `${tableName}->${pathStr}.${field.name}`,
+          definition: `${tableName}→${pathStr}.${field.name}`,
           kind: 'ingested' as const,
           field: field.name,
           name: field.name,
@@ -122,7 +122,7 @@ const getLinkedFieldItems = (pivots: Pivot[], allowedTables: string[], dataModel
         baseTableId,
         pathLinks,
         fieldName: name,
-        label: `${baseTable}->${pathLinks.join('->')}.${name}`,
+        label: `${baseTable}→${pathLinks.join('→')}.${name}`,
       }));
     });
 

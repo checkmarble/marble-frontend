@@ -1,42 +1,65 @@
-import { getPivotObjectKey, type PivotObject } from '@app-builder/models/cases';
-import { Link } from '@tanstack/react-router';
+import { type CaseClient, type CaseStatus } from '@app-builder/models/cases';
+import { useDataModel } from '@app-builder/services/data/data-model';
+import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
+import { Link, useMatch } from '@tanstack/react-router';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
+import { Button, Tabs, Tag } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+import { getObjectName, ManageClientsPanel } from './ManageClientsPanel';
+
+export { getObjectName } from './ManageClientsPanel';
 
 type PivotTabsProps = {
-  /** Pivots to render a tab for. Nothing renders when there is only one. */
-  pivots: PivotObject[];
+  /** Clients to render a tab for. Nothing renders when there is only one. */
+  clients: CaseClient[];
   /**
-   * Pivot list the tab numbers come from. Pass the case's full list when `pivots`
+   * Client list the tab numbers come from. Pass the case's full list when `clients`
    * is a subset, so a client and its links tab carry the same number.
    */
-  numberedFrom?: PivotObject[];
+  numberedFrom?: CaseClient[];
   to: './clients/$pivotValue' | './links/$pivotValue';
+  caseStatus: CaseStatus;
+  userScoringAccess: FeatureAccessLevelDto;
 };
 
-/** The "Client 1 / Client 2" strip above a pivot-scoped case tab. */
-export function PivotTabs({ pivots, numberedFrom = pivots, to }: PivotTabsProps) {
-  const { t } = useTranslation(['cases']);
+/** The "Client 1 / Client 2" strip above a client-scoped case tab. */
+export function PivotTabs({ clients, numberedFrom = clients, to, caseStatus, userScoringAccess }: PivotTabsProps) {
+  const { t } = useTranslation(['cases', 'common']);
+  const { caseId: caseSuuid } = useMatch({ from: '/_app/_builder/cases/_detail/s/$caseId' }).params;
+  const caseId = fromSUUIDtoUUID(caseSuuid);
+  const dataModel = useDataModel();
 
-  if (pivots.length <= 1) return null;
-
-  const orderedKeys = numberedFrom.map(getPivotObjectKey);
+  if (clients.length <= 1) return null;
 
   return (
-    <div className="mb-lg flex shrink-0 gap-sm">
-      {pivots.map((pivot) => {
-        const pivotValue = getPivotObjectKey(pivot);
+    <Tabs.Nav color="grey" variant="fluid">
+      {clients.map((client) => {
+        const pivotValue = client.key;
         return (
-          <Link
-            key={pivotValue}
-            className="px-sm h-8 rounded-md border border-grey-border flex items-center aria-[current=page]:border-purple-primary"
-            from="/cases/s/$caseId/"
-            to={to}
-            params={{ pivotValue }}
-          >
-            {t('cases:case_manager.client_panel.label', { index: orderedKeys.indexOf(pivotValue) + 1 })}
-          </Link>
+          <Tabs.Link asChild key={pivotValue}>
+            <Link from="/cases/s/$caseId/" to={to} params={{ pivotValue }}>
+              <span>{getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '')}</span>
+              {client.kind === 'entity' ? (
+                <Tag color="grey" size="xs">
+                  {t('cases:case_manager.added_entity')}
+                </Tag>
+              ) : null}
+            </Link>
+          </Tabs.Link>
         );
       })}
-    </div>
+      <ManageClientsPanel
+        clients={clients}
+        caseId={caseId}
+        caseStatus={caseStatus}
+        userScoringAccess={userScoringAccess}
+      >
+        <Button variant="secondary" appearance="link">
+          <Icon icon="plus" className="size-4" />
+          <span>{t('cases:manage_clients')}</span>
+        </Button>
+      </ManageClientsPanel>
+    </Tabs.Nav>
   );
 }

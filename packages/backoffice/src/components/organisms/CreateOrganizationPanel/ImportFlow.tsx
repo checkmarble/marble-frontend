@@ -2,8 +2,8 @@ import { importOrganization } from '@bo/data/organization';
 import { OrgImportSpec } from '@bo/schemas/org-import';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { type ReactNode, useState } from 'react';
-import { Button, Checkbox, Input, Panel, PanelSharpFactory, Tabs, Typo, tabClassName } from 'ui-design-system';
+import { type ReactNode, useId, useState } from 'react';
+import { Button, Checkbox, Input, Panel, PanelSharpFactory, Tabs, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -378,6 +378,7 @@ const DataModelRecap = ({ data }: { data: OrgImportSpec }) => {
   const tables = data.data_model.tables ?? [];
   const [activeTab, setActiveTab] = useState<string | undefined>(tables[0]?.name);
   const currentTable = tables.find((table) => table.name === activeTab);
+  const tabsId = useId();
 
   return (
     <section className="flex flex-col gap-sm">
@@ -385,21 +386,19 @@ const DataModelRecap = ({ data }: { data: OrgImportSpec }) => {
         <span>Data model</span>
         <span className="text-default text-grey-placeholder font-normal">({tables.length} tables)</span>
       </Typo>
-      <Tabs>
+      <Tabs id={tabsId} value={activeTab} onValueChange={setActiveTab}>
         {tables.map((table) => (
-          <button
-            key={table.id}
-            type="button"
-            onClick={() => setActiveTab(table.name)}
-            className={tabClassName}
-            data-status={activeTab === table.name ? 'active' : 'inactive'}
-          >
+          <Tabs.Button key={table.id} value={table.name}>
             {table.name}
-          </button>
+          </Tabs.Button>
         ))}
       </Tabs>
       {currentTable ? (
-        <div className="border-grey-border grid grid-cols-[1fr_1fr_1fr] rounded-md border">
+        <Tabs.Panel
+          tabsId={tabsId}
+          value={currentTable.name}
+          className="border-grey-border grid grid-cols-[1fr_1fr_1fr] rounded-md border"
+        >
           <div className="border-grey-border col-span-full grid grid-cols-subgrid not-last:border-b">
             <div className="p-md">Name</div>
             <div className="p-md">Description</div>
@@ -413,7 +412,7 @@ const DataModelRecap = ({ data }: { data: OrgImportSpec }) => {
             </div>
           ))}
           <TableLinks data={data} currentTable={currentTable} />
-        </div>
+        </Tabs.Panel>
       ) : null}
     </section>
   );

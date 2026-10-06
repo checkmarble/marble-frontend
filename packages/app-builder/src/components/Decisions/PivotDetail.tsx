@@ -167,7 +167,7 @@ function PivotDetails({ value, table, object }: { value: string; table: string; 
       table={table}
       object={object}
       preset="essentials"
-      options={{ withId: true }}
+      options={{ withId: true, maxVisibleFields: 5 }}
       className="p-sm my-sm bg-surface-card rounded-lg border-grey-border border cursor-pointer"
     />
   );
