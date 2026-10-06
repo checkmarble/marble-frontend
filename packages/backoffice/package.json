@@ -7,6 +7,7 @@
     "build": "vite build && cp instrument.server.mjs .output/server/instrument.server.mjs",
     "preview": "vite preview",
     "test": "vitest run",
+    "unit-tests": "vitest run",
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check",

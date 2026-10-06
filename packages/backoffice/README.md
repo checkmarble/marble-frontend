@@ -8,7 +8,8 @@ It is never exposed to customers. Access requires a Marble user whose role is `M
 
 ## What it does
 
-- **Organizations launchpad** (`src/components/pages/dashboard.tsx`) — searchable list of every organization, plus the entry point to create a new one.
+- **Dashboard** (`/dashboard`, `src/components/pages/dashboard.tsx`) — current organizations, tenants, users and licences totals, weekly All/New charts, and up to three currently listed records with known audit-derived creation dates. A shared 1/3/6/12-month selector defaults to six months. Unproven history appears as gaps; partial weeks are identified. Licences are never deleted and keep their insert-time `created_at`, so their history is complete. Dashboard selections are remembered per account in this browser through the existing preference cookie.
+- **Organizations launchpad** (`/organizations`, `src/components/pages/organizations.tsx`) — searchable list of every organization, plus the entry point to create a new one. Dashboard and Organizations have dedicated navigation entries.
 - **Create organization** (`src/components/organisms/CreateOrganizationPanel/`) — three flows:
   - _Import_ — drop a JSON import spec (org settings, admins, data model tables/fields/links, optional ingestion and decision seeds). `ImportFlow.tsx` renders a full reviewable recap before the operator confirms. Validated by `src/schemas/org-import.ts`.
   - _Archetype_ — apply a backend-provided template and declare the org admins.
@@ -75,17 +76,18 @@ src/
   routes/            # File-based routes (TanStack Router). routeTree.gen.ts is generated — don't edit it.
   components/
     pages/           # One component per screen, mounted by a route
+    dashboard/       # IndicatorCard and WeeklyChart, shared by the dashboard indicators
     organisms/       # Multi-step / stateful features (CreateOrganizationPanel, FeatureAccessPanel)
     common/          # ErrorComponent, GridContentLoader
     core/            # SuspenseQuery
   data/              # queryOptions / mutationOptions factories, one file per domain
   server-fns/        # createServerFn handlers — the only place that calls the Marble API
   middlewares/       # authMiddleware / needAuth, appConfigMiddleware, global middlewares
-  schemas/           # Zod schemas shared between server fns and forms
+  schemas/           # Zod schemas shared between server fns and forms (dashboard periods and preferences)
   contexts/          # AppConfig, StickyRoots
-  hooks/             # useFirebase, useInterval, useIntersection
+  hooks/             # useFirebase, useInterval, useIntersection, useDashboardPreferences, useUserPreferencesUpdater
   integrations/      # TanStack Query client + tRPC wiring
-  utils/             # session.ts (auth cookie), user-preferences.ts (theme cookie)
+  utils/             # session.ts (auth cookie), user-preferences.ts (theme + dashboard cookie), dashboard-preferences.ts
   env.ts             # T3Env schema
   router.tsx         # Router creation, SSR query integration, client Sentry init
   start.ts           # Global middleware registration
@@ -103,7 +105,8 @@ src/
 | `_app/_public.tsx`                             | Bounces already-authenticated users to `/dashboard`                          |
 | `_app/_public/sign-in.tsx`                     | Google sign-in screen                                                        |
 | `_app/_private.tsx`                            | Requires auth + `MARBLE_ADMIN`; renders the top bar and the token refresher  |
-| `_app/_private/dashboard.tsx`                  | `/dashboard` — organizations launchpad                                       |
+| `_app/_private/dashboard.tsx`                  | `/dashboard` — platform indicators and audit-derived weekly history           |
+| `_app/_private/organizations/index.tsx`        | `/organizations` — organizations launchpad                                   |
 | `_app/_private/organizations/$orgId.*.tsx`     | Org layout with `overview` and `users` tabs                                  |
 | `_app/_private/licenses/index.tsx`             | `/licenses` — licence management                                             |
 | `api.trpc.$.tsx`                               | tRPC fetch adapter mounted at `/api/trpc`                                    |

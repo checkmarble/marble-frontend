@@ -1,3 +1,4 @@
+import { dashboardQueryKey } from '@bo/data/dashboard';
 import { type MergeTenantsPayload, type RenameTenantPayload } from '@bo/schemas/tenant';
 import { listTenantsFn, mergeTenantsFn, renameTenantFn } from '@bo/server-fns/tenants';
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
@@ -29,7 +30,7 @@ export const useRenameTenantMutationOptions = () => {
   return mutationOptions({
     mutationFn: (payload: RenameTenantPayload) => renameTenant({ data: payload }),
     meta: {
-      invalidates: () => [['tenants']],
+      invalidates: () => [['tenants'], dashboardQueryKey],
     },
   });
 };
@@ -40,7 +41,7 @@ export const useMergeTenantsMutationOptions = () => {
   return mutationOptions({
     mutationFn: (payload: MergeTenantsPayload) => mergeTenants({ data: payload }),
     meta: {
-      invalidates: () => [['tenants'], ['organizations']],
+      invalidates: () => [['tenants'], ['organizations'], dashboardQueryKey],
     },
   });
 };

@@ -2,6 +2,7 @@ import { AppConfigContext } from '@bo/contexts/AppConfig';
 import { StickyRootsProvider } from '@bo/contexts/StickyRoots';
 import { getAppConfigFn } from '@bo/server-fns/core';
 import { createFileRoute, ErrorComponentProps, Outlet } from '@tanstack/react-router';
+import { Tooltip } from 'ui-design-system';
 
 export const Route = createFileRoute('/_app')({
   component: RouteComponent,
@@ -32,7 +33,9 @@ function RouteComponent() {
   return (
     <AppConfigContext.Provider value={appConfig}>
       <StickyRootsProvider>
-        <Outlet />
+        <Tooltip.Provider>
+          <Outlet />
+        </Tooltip.Provider>
       </StickyRootsProvider>
     </AppConfigContext.Provider>
   );

@@ -1773,6 +1773,52 @@ export type CreateInitialOrgBody = {
      */
     password?: string;
 };
+export type DashboardCoverage = {
+    /** Earliest proven uninterrupted lifecycle coverage retained through generated_at. */
+    all_since: string | null;
+    /** Earliest proven uninterrupted creation coverage retained through generated_at. */
+    new_since: string | null;
+};
+export type DashboardWeek = {
+    /** Monday UTC start of the weekly bucket. Creation counts are clipped to range_start. */
+    start: string;
+    /** Exclusive interval end, or the current snapshot for the ongoing week. */
+    end: string;
+    /** Active population at interval end; null when reconstruction is not reliable. */
+    all: number | null;
+    /** Creations during the interval, including records later deleted; null when incomplete. */
+    "new": number | null;
+    /** Range boundary, current week or coverage boundary makes the interval incomplete. */
+    partial: boolean;
+};
+export type DashboardRecentRecord = {
+    id: string;
+    name: string;
+    /** Known creation date derived from an audit INSERT (licences: their insert-time created_at), never an UPDATE or backfill date.
+     */
+    created_at: string;
+};
+export type DashboardIndicator = {
+    total: number;
+    coverage: DashboardCoverage;
+    weeks: DashboardWeek[];
+    recent: DashboardRecentRecord[];
+    /** At least one currently listed record has no recorded creation date. */
+    recent_has_unknown: boolean;
+};
+export type DashboardMetrics = {
+    generated_at: string;
+    months: 1 | 3 | 6 | 12;
+    range_start: string;
+    indicators: {
+        organizations: DashboardIndicator;
+        tenants: DashboardIndicator;
+        users: DashboardIndicator;
+        /** Every listed licence. Licences are never deleted and keep their insert-time created_at, so history is complete and coverage reports range_start.
+         */
+        licenses: DashboardIndicator;
+    };
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
@@ -1871,7 +1917,7 @@ export type OrganizationSubnetsDto = {
 export type AuditEventDto = {
     id?: string;
     actor?: {
-        "type"?: "user" | "api_key";
+        "type"?: "user" | "api_key" | "system";
         id?: string;
         name?: string;
     };
@@ -5693,6 +5739,30 @@ export function createInitialOrg(createInitialOrgBody: CreateInitialOrgBody, opt
         method: "POST",
         body: createInitialOrgBody
     })));
+}
+/**
+ * Get global backoffice dashboard metrics
+ */
+export function getDashboardMetrics({ months }: {
+    months?: 1 | 3 | 6 | 12;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DashboardMetrics;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/admin/dashboard${QS.query(QS.explode({
+        months
+    }))}`, {
+        ...opts
+    }));
 }
 /**
  * List api keys associated with the current organization (present in the JWT)

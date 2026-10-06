@@ -1,3 +1,4 @@
+import { dashboardQueryKey } from '@bo/data/dashboard';
 import { PatchOrganizationFeaturesPayload } from '@bo/schemas/features';
 import { OrgImportSpec } from '@bo/schemas/org-import';
 import { CreateUserPayload } from '@bo/schemas/user';
@@ -81,7 +82,7 @@ export const applyOrganizationArchetype = () =>
       admins: { email: string; first_name?: string; last_name?: string }[];
     }) => applyOrganizationArchetypeFn({ data: payload }),
     meta: {
-      invalidates: () => [['organizations']],
+      invalidates: () => [['organizations'], ['tenants'], ['users'], dashboardQueryKey],
     },
   });
 
@@ -99,7 +100,7 @@ export const createEmptyOrganization = () =>
     mutationFn: (payload: { name: string; environment: 'production' | 'staging' }) =>
       createEmptyOrganizationFn({ data: payload }),
     meta: {
-      invalidates: () => [['organizations']],
+      invalidates: () => [['organizations'], ['tenants'], dashboardQueryKey],
     },
   });
 
@@ -107,7 +108,7 @@ export const importOrganization = () =>
   mutationOptions({
     mutationFn: (payload: OrgImportSpec) => importOrganizationFn({ data: payload }),
     meta: {
-      invalidates: () => [['organizations']],
+      invalidates: () => [['organizations'], ['tenants'], ['users'], dashboardQueryKey],
     },
   });
 
@@ -125,7 +126,7 @@ export const useCreateOrganizationUserMutationOptions = () => {
     mutationFn: (payload: { orgId: string; userPayload: CreateUserPayload }) =>
       createOrganizationUser({ data: payload }),
     meta: {
-      invalidates: (data: { orgId: string }) => [['organizations', data.orgId, 'users']],
+      invalidates: (data: { orgId: string }) => [['organizations', data.orgId, 'users'], ['users'], dashboardQueryKey],
     },
   });
 };

@@ -1222,7 +1222,7 @@ components:
           properties:
             type:
               type: string
-              enum: [user, api_key]
+              enum: [user, api_key, system]
             id:
               type: string
               format: uuid

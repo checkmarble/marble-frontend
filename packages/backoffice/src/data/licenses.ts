@@ -1,3 +1,4 @@
+import { dashboardQueryKey } from '@bo/data/dashboard';
 import {
   createLicenseFn,
   getLicensesFn,
@@ -21,7 +22,7 @@ export const createLicense = () =>
   mutationOptions({
     mutationFn: (payload: LicensePayload) => createLicenseFn({ data: payload }),
     meta: {
-      invalidates: () => [['licenses']],
+      invalidates: () => [['licenses'], dashboardQueryKey],
     },
   });
 
@@ -29,6 +30,6 @@ export const updateLicense = () =>
   mutationOptions({
     mutationFn: (payload: UpdateLicenseInput) => updateLicenseFn({ data: payload }),
     meta: {
-      invalidates: () => [['licenses']],
+      invalidates: () => [['licenses'], dashboardQueryKey],
     },
   });
