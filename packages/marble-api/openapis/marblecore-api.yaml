@@ -355,6 +355,8 @@ paths:
 
   /admin/onboard:
     $ref: ./marblecore-api/admin.yml#/~1admin~1onboard
+  /admin/dashboard:
+    $ref: ./marblecore-api/dashboard.yml#/~1admin~1dashboard
   /apikeys:
     $ref: ./marblecore-api/admin.yml#/~1apikeys
   /apikeys/{apiKeyId}:

@@ -682,3 +682,16 @@ GraphNode:
   $ref: graph.yml#/components/schemas/GraphNode
 GraphEdge:
   $ref: graph.yml#/components/schemas/GraphEdge
+
+# BACKOFFICE DASHBOARD
+
+DashboardMetrics:
+  $ref: dashboard.yml#/components/schemas/DashboardMetrics
+DashboardIndicator:
+  $ref: dashboard.yml#/components/schemas/DashboardIndicator
+DashboardCoverage:
+  $ref: dashboard.yml#/components/schemas/DashboardCoverage
+DashboardWeek:
+  $ref: dashboard.yml#/components/schemas/DashboardWeek
+DashboardRecentRecord:
+  $ref: dashboard.yml#/components/schemas/DashboardRecentRecord
