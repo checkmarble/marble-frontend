@@ -59,3 +59,20 @@ Cursor. Domain guidance and manual workflows are in `.claude/skills/`; subagents
 same skills through `.agents/skills`. Codex hooks are registered in `.codex/hooks.json`
 and run the scripts in `.claude/hooks/`. For how the pieces fit and where to put a new
 one, read `.claude/claude-developer-guide.md`.
+
+## Agent skills
+
+### Issue tracker
+
+Track issues and specs in Linear (team `MAR`) through the Linear MCP server.
+Before tracker operations, read `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the five canonical triage labels.
+Before applying labels, read `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use a single-context layout shared across packages.
+Before domain exploration, read `docs/agents/domain.md`.
