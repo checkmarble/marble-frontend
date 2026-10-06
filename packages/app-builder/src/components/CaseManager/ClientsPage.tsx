@@ -1,6 +1,7 @@
 import { ClientDocumentsPopover } from '@app-builder/components/Annotations/ClientDocumentsPopover';
 import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientObjectTagList';
 import { DocumentsList } from '@app-builder/components/ClientDetail/DocumentsList';
+import { CustomerKpis } from '@app-builder/components/CustomerKpis/CustomerKpis';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModel, DataModelObject } from '@app-builder/models';
@@ -119,6 +120,7 @@ export function CaseManagerClientsPage({
             ) : null}
           </div>
         </Card>
+        {ingestedInfo ? <CustomerKpis {...ingestedInfo} /> : null}
         {showMainLinks && ingestedInfo ? (
           <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
             <div className="flex shrink-0 justify-between items-center">

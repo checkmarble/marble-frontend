@@ -141,6 +141,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
       const showBrackets = !props.root || hasAllNestedChildren;
+      const isValueSwitchOpen = dataSharp.value.isValueSwitchOpen;
 
       const children = (
         <>
@@ -150,6 +151,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
             options={allMainAstOperatorFunctionsOptions}
             validationStatus={hasDirectError ? 'error' : 'valid'}
             operator={node.name}
+            isDisabled={isValueSwitchOpen}
             onOperatorChange={setOperator}
           />
           <EditionAstBuilderNode path={`${props.path}.children.1`} {...operandProps} />
@@ -190,6 +192,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
     .when(isMainAstUnaryNode, (node) => {
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
       const showBrackets = !props.root;
+      const isValueSwitchOpen = dataSharp.value.isValueSwitchOpen;
 
       const children = (
         <>
@@ -199,6 +202,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
             options={allMainAstOperatorFunctionsOptions}
             validationStatus={hasDirectError ? 'error' : 'valid'}
             operator={node.name}
+            isDisabled={isValueSwitchOpen}
             onOperatorChange={setOperator}
           />
         </>
