@@ -2,6 +2,12 @@ import { makeQueryErrorComponent } from '@bo/components/common/ErrorComponent';
 import { SuspenseQuery } from '@bo/components/core/SuspenseQuery';
 import { MergeTenantsModal } from '@bo/components/organisms/MergeTenantsModal';
 import { RenameTenantModal } from '@bo/components/organisms/RenameTenantModal';
+import { TenantUsersPanel } from '@bo/components/organisms/TenantUsersPanel';
+import {
+  countTenantUsers,
+  groupMembersByOrganization,
+  type MembersByOrganization,
+} from '@bo/components/organisms/TenantUsersPanel/tenant-users';
 import { listOrganizationsQueryOptions } from '@bo/data/organization';
 import {
   groupOrganizationsByTenant,
@@ -9,9 +15,10 @@ import {
   type Tenant,
   type TenantOrganization,
 } from '@bo/data/tenants';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { listUsersQueryOptions } from '@bo/data/users';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Input, RadioGroup, RadioGroupItem, Tag, Typo } from 'ui-design-system';
+import { Button, Checkbox, cn, Input, RadioGroup, RadioGroupItem, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const TenantsError = makeQueryErrorComponent(
@@ -19,6 +26,10 @@ const TenantsError = makeQueryErrorComponent(
 );
 
 const MIN_TENANTS_TO_MERGE = 2;
+
+// Header and rows are subgrids of the table, so the `auto` columns line up across rows.
+const TENANT_TABLE_COLUMNS = 'grid grid-cols-[auto_minmax(0,1fr)_auto_auto] gap-x-md';
+const TENANT_TABLE_ROW = 'col-span-full grid grid-cols-subgrid';
 
 type TenantFilter = 'all' | 'merged';
 
@@ -44,13 +55,19 @@ export function TenantsPage() {
 
 function TenantsContent({ tenants }: { tenants: Tenant[] }) {
   const { data: organizations } = useSuspenseQuery(listOrganizationsQueryOptions());
+  const usersQuery = useQuery(listUsersQueryOptions());
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<TenantFilter>('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [renamingTenant, setRenamingTenant] = useState<Tenant | null>(null);
+  const [usersTenant, setUsersTenant] = useState<Tenant | null>(null);
   const [isMerging, setIsMerging] = useState(false);
 
   const organizationsByTenant = useMemo(() => groupOrganizationsByTenant(organizations), [organizations]);
+  const membersByOrganization = useMemo(
+    () => (usersQuery.data ? groupMembersByOrganization(usersQuery.data) : null),
+    [usersQuery.data],
+  );
   const getOrganizations = (tenantId: string) => organizationsByTenant.get(tenantId) ?? [];
   const mergedCount = tenants.filter((tenant) => isMergedTenant(getOrganizations(tenant.id))).length;
 
@@ -120,13 +137,26 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
           <EmptyState title="No matches" body={`No tenant matches “${search.trim()}”.`} />
         )
       ) : (
-        <div className="border-grey-border bg-surface-card overflow-hidden rounded-lg border">
-          <div className="border-grey-border text-grey-secondary grid grid-cols-[auto_minmax(0,1fr)_auto] gap-md border-b px-md py-sm text-xs font-semibold uppercase tracking-wider">
-            <span className="sr-only">Select</span>
+        <div
+          className={cn('border-grey-border bg-surface-card overflow-hidden rounded-lg border', TENANT_TABLE_COLUMNS)}
+        >
+          <div
+            className={cn(
+              'border-grey-border text-grey-secondary border-b px-md py-sm text-xs font-semibold uppercase tracking-wider',
+              TENANT_TABLE_ROW,
+            )}
+          >
+            {/* `sr-only` is absolutely positioned and would not take a grid cell on its own. */}
+            <span>
+              <span className="sr-only">Select</span>
+            </span>
             <span>Tenant and organizations</span>
-            <span className="sr-only">Actions</span>
+            <span>Users</span>
+            <span>
+              <span className="sr-only">Actions</span>
+            </span>
           </div>
-          <ul className="divide-grey-border divide-y">
+          <ul className={cn('divide-grey-border divide-y', TENANT_TABLE_ROW)}>
             {filteredTenants.map((tenant) => (
               <TenantRow
                 key={tenant.id}
@@ -134,7 +164,10 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
                 organizations={getOrganizations(tenant.id)}
                 selected={selectedIds.includes(tenant.id)}
                 onSelectedChange={(checked) => toggleSelection(tenant.id, checked)}
+                membersByOrganization={membersByOrganization}
+                isUsersError={usersQuery.isError}
                 onRename={() => setRenamingTenant(tenant)}
+                onShowUsers={() => setUsersTenant(tenant)}
               />
             ))}
           </ul>
@@ -148,6 +181,12 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
       <RenameTenantModal
         tenant={renamingTenant}
         onOpenChange={(open) => (open ? undefined : setRenamingTenant(null))}
+      />
+      <TenantUsersPanel
+        tenant={usersTenant}
+        organizations={usersTenant ? getOrganizations(usersTenant.id) : []}
+        membersByOrganization={membersByOrganization ?? new Map()}
+        onOpenChange={(open) => (open ? undefined : setUsersTenant(null))}
       />
       <MergeTenantsModal
         tenants={selectedTenants}
@@ -165,18 +204,24 @@ function TenantRow({
   organizations,
   selected,
   onSelectedChange,
+  membersByOrganization,
+  isUsersError,
   onRename,
+  onShowUsers,
 }: {
   tenant: Tenant;
   organizations: TenantOrganization[];
   selected: boolean;
   onSelectedChange: (checked: boolean) => void;
+  membersByOrganization: MembersByOrganization | null;
+  isUsersError: boolean;
   onRename: () => void;
+  onShowUsers: () => void;
 }) {
   const checkboxName = `select-tenant-${tenant.id}`;
 
   return (
-    <li className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-md px-md py-md hover:bg-surface-row-hover">
+    <li className={cn('items-center px-md py-md hover:bg-surface-row-hover', TENANT_TABLE_ROW)}>
       <Checkbox
         name={checkboxName}
         size="small"
@@ -196,6 +241,13 @@ function TenantRow({
         <span className="text-grey-placeholder truncate font-mono text-2xs">{tenant.id}</span>
         <OrganizationTags organizations={organizations} />
       </label>
+      <UsersCountButton
+        tenant={tenant}
+        organizations={organizations}
+        membersByOrganization={membersByOrganization}
+        isError={isUsersError}
+        onClick={onShowUsers}
+      />
       <Button variant="secondary" size="small" onClick={onRename}>
         <Icon icon="edit-square" className="size-4" />
         Rename
@@ -220,6 +272,44 @@ function OrganizationTags({ organizations }: { organizations: TenantOrganization
         </Tag>
       ))}
     </span>
+  );
+}
+
+function UsersCountButton({
+  tenant,
+  organizations,
+  membersByOrganization,
+  isError,
+  onClick,
+}: {
+  tenant: Tenant;
+  organizations: TenantOrganization[];
+  membersByOrganization: MembersByOrganization | null;
+  isError: boolean;
+  onClick: () => void;
+}) {
+  if (isError) {
+    return <span className="text-grey-placeholder text-s">—</span>;
+  }
+  if (!membersByOrganization) {
+    return <div className="bg-grey-background-light h-7 w-14 animate-pulse rounded-md" />;
+  }
+
+  const count = countTenantUsers(
+    organizations.map(({ id }) => id),
+    membersByOrganization,
+  );
+
+  return (
+    <Button
+      variant="secondary"
+      size="medium"
+      onClick={onClick}
+      aria-label={`Show the ${count} users of ${tenant.name}`}
+    >
+      <Icon icon="users" className="size-4" />
+      {count}
+    </Button>
   );
 }
 

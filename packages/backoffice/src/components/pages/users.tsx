@@ -125,7 +125,12 @@ function UsersList({
             )}
           >
             <span>User</span>
-            <span>Role</span>
+            <span className="flex items-center gap-sm">
+              <span>Role</span>
+              <Tag color="grey" size="xs">
+                Home
+              </Tag>
+            </span>
             <span>Organizations</span>
             <span className="sr-only">Actions</span>
           </div>
