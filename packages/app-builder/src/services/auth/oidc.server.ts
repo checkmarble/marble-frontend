@@ -18,6 +18,28 @@ async function getOidcDiscovery(issuer: string): Promise<OidcDiscovery> {
   return discoveryCache;
 }
 
+async function requestTokens(tokenEndpoint: string, body: URLSearchParams): Promise<CompatOAuth2Tokens> {
+  const response = await fetch(tokenEndpoint, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    throw new Error(`OIDC token request failed with status ${response.status}`);
+  }
+
+  const data: unknown = await response.json();
+  if (typeof data !== 'object' || data === null) {
+    throw new Error('OIDC token response is invalid');
+  }
+
+  return new CompatOAuth2Tokens(data);
+}
+
 export function getOauth2Cookie({ secrets, secure }: { secrets: string[]; secure: boolean }) {
   return createSignedCookie({
     name: 'oauth2',
@@ -60,12 +82,28 @@ export async function makeOidcService(config: AppConfig) {
     },
 
     refreshToken: async (refreshToken: string) => {
-      return client.refreshAccessToken(tokenEndpoint, refreshToken, scopes);
+      const body = new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id,
+      });
+      if (scopes.length > 0) {
+        body.set('scope', scopes.join(' '));
+      }
+      return requestTokens(tokenEndpoint, body);
     },
 
     exchangeCode: async (code: string, codeVerifier: string): Promise<Tokens> => {
-      const rawTokens = await client.validateAuthorizationCode(tokenEndpoint, code, codeVerifier);
-      const tokens = new CompatOAuth2Tokens(rawTokens.data);
+      const tokens = await requestTokens(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri,
+          code_verifier: codeVerifier,
+          client_id,
+        }),
+      );
       return {
         sub: 'DOES NOT MATTER',
         accessToken: tokens.accessToken() ?? '',

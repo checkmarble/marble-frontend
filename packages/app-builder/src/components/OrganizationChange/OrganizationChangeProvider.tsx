@@ -57,6 +57,7 @@ interface OrganizationChangeProviderProps {
   currentOrganization: Organization;
   organizations: UserOrganization[];
   currentUserEmail?: string;
+  authProvider?: 'firebase' | 'oidc';
 }
 
 function supportsBroadcastChannel() {
@@ -68,6 +69,7 @@ export function OrganizationChangeProvider({
   currentOrganization,
   organizations,
   currentUserEmail,
+  authProvider,
 }: OrganizationChangeProviderProps) {
   const { t } = useTranslation('navigation');
   const appConfig = AppConfigContext.useValue();
@@ -317,14 +319,14 @@ export function OrganizationChangeProvider({
       // OIDC authenticates on the server. Only initialize Firebase on demand
       // for a Firebase switch, never while rendering this shared provider.
       const idToken =
-        appConfig.auth.provider === 'firebase'
+        authProvider === 'firebase'
           ? await initializeClientServices(
               appConfig,
             ).authenticationClientService.authenticationClientRepository.firebaseIdToken()
           : undefined;
       await changeOrganizationIdMutation.mutateAsync({ idToken, csrf, newOrganizationId: organizationId });
     },
-    [appConfig, changeOrganizationIdMutation, csrf],
+    [appConfig, authProvider, changeOrganizationIdMutation, csrf],
   );
 
   const navigateToSessionOrganization = useCallback(async () => {
