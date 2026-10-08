@@ -51,7 +51,7 @@ function RouteComponent() {
 
   return (
     <>
-      <ClientOnly>{appConfig.auth.provider === 'firebase' ? <TokenRefresher /> : null}</ClientOnly>
+      <ClientOnly>{appConfig.auth.providers.includes('firebase') ? <TokenRefresher /> : null}</ClientOnly>
       <div className="relative min-h-screen flex flex-col">
         <StickySentinel threshold={1} rootMargin="0px" className="absolute top-0 h-0">
           <div className="sticky top-0 h-15 flex items-center px-lg gap-lg border-grey-border border-b stickied:shadow-sticky-top stickied:backdrop-blur-lg">

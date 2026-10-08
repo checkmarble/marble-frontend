@@ -33,7 +33,7 @@ const onboardingLoader = createServerFn()
       throw redirect({ to: '/sign-in' });
     }
 
-    return { authProvider: appConfig.auth.provider };
+    return { authProviders: appConfig.auth.providers };
   });
 
 export const Route = createFileRoute('/_app/onboarding')({
@@ -62,14 +62,14 @@ const doPasswordsMatch = ({ password, passwordConfirmation }: OnboardingFormValu
 
 function Onboarding() {
   const { t } = useTranslation(['auth', 'common']);
-  const { authProvider } = Route.useLoaderData();
+  const { authProviders } = Route.useLoaderData();
   const createInitialOrgMutation = useCreateInitialOrgMutation();
 
   // OIDC instances have no local credentials to set: the identity provider owns them.
-  const requiresPassword = authProvider !== 'oidc';
+  const requiresPassword = authProviders.includes('firebase');
   // Distinct from `requiresPassword`: this one guards the Firebase client SDK, which cannot
   // be constructed without an API key. See OnboardingAutoSignIn.
-  const canAutoSignIn = authProvider === 'firebase';
+  const canAutoSignIn = authProviders.includes('firebase');
   const formSchema = useMemo(() => getOnboardingFormSchema(requiresPassword), [requiresPassword]);
 
   const [autoSignIn, setAutoSignIn] = useState<{ email: string; password: string } | null>(null);
