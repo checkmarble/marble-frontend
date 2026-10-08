@@ -141,12 +141,14 @@ components:
         auth:
           type: object
           required:
-            - provider
+            - providers
             - firebase
           properties:
-            provider:
-              type: string
-              enum: [firebase, oidc]
+            providers:
+              type: array
+              items:
+                type: string
+                enum: [firebase, oidc]
             firebase:
               type: object
               required:

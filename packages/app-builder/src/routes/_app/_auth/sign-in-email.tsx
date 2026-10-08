@@ -58,7 +58,7 @@ const signInEmailLoader = createServerFn()
       throw redirect({ to: '/onboarding' });
     }
 
-    if (appConfig?.auth.provider === 'oidc') {
+    if (appConfig && !appConfig.auth.providers.includes('firebase')) {
       throw redirect({ href: signedOut ? signedOutTabHref() : '/sign-in' });
     }
 

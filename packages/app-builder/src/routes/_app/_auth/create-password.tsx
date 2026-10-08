@@ -12,7 +12,7 @@ const createPasswordLoader = createServerFn()
   .handler(async function createPasswordLoader({ context }) {
     const request = getRequest();
     const appConfig = context.appConfig;
-    if (appConfig?.auth.provider === 'oidc') {
+    if (appConfig && !appConfig.auth.providers.includes('firebase')) {
       throw redirect({ to: '/sign-in' });
     }
 
