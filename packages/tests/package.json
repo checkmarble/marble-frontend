@@ -21,6 +21,6 @@
     "knex": "^3.2.10",
     "pg": "^8.13.3",
     "playwright": "^1.63.0",
-    "testcontainers": "^10.18.0"
+    "testcontainers": "^12.1.0"
   }
 }
