@@ -77,9 +77,16 @@ interface RulesTableProps {
   maxRiskLevel: number;
   customLists: CustomList[];
   hasValidLicense?: boolean;
+  canUpdateScoringRulesets: boolean;
 }
 
-export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense }: RulesTableProps) {
+export function RulesTable({
+  ruleset,
+  maxRiskLevel,
+  customLists,
+  hasValidLicense,
+  canUpdateScoringRulesets,
+}: RulesTableProps) {
   const { t } = useTranslation(['user-scoring']);
   const router = useRouter();
   const navigate = useNavigate();
@@ -124,15 +131,20 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
     setOpen(false);
   };
 
-  const onSaveSuccess = async (ruleset: ScoringRulesetWithRules | undefined) => {
+  const onSaveSuccess = async (result: { error: string } | ScoringRulesetWithRules | undefined) => {
+    if (result && 'error' in result) {
+      toast.error(result.error);
+      return false;
+    }
+
     toast.success(t('common:success.save'));
     await router.invalidate();
 
-    if (ruleset) {
+    if (result) {
       navigate({
         to: '/user-scoring/$recordType/$version',
         params: {
-          recordType: ruleset.recordType,
+          recordType: result.recordType,
           version: 'draft',
         },
       });
@@ -196,9 +208,10 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
           },
         ],
       })
-      .then((ruleset) => {
-        setPanelRule(null);
-        return onSaveSuccess(ruleset);
+      .then(async (result) => {
+        const saved = await onSaveSuccess(result);
+        if (saved) setPanelRule(null);
+        return saved;
       })
       .catch(onSaveError);
   };
@@ -234,15 +247,17 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
             <span>{t('user-scoring:ruleset.risk_types_column')}</span>
             <span>{t('user-scoring:ruleset.rules_column')}</span>
           </div>
-          <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
-            <MenuCommand.Trigger>
-              <Button variant="secondary">
-                <Icon icon="plus" className="size-4" />
-                {t('user-scoring:ruleset.add_rule')}
-              </Button>
-            </MenuCommand.Trigger>
-            <AddRuleMenuContent onConfirm={handleConfirm} onCancel={() => setOpen(false)} />
-          </MenuCommand.Menu>
+          {canUpdateScoringRulesets ? (
+            <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
+              <MenuCommand.Trigger>
+                <Button variant="secondary">
+                  <Icon icon="plus" className="size-4" />
+                  {t('user-scoring:ruleset.add_rule')}
+                </Button>
+              </MenuCommand.Trigger>
+              <AddRuleMenuContent onConfirm={handleConfirm} onCancel={() => setOpen(false)} />
+            </MenuCommand.Menu>
+          ) : null}
         </div>
         {rules.length === 0 ? (
           <div className="text-s text-grey-secondary flex items-center justify-center py-xl">
@@ -270,6 +285,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
                   maxRiskLevel={maxRiskLevel}
                   customLists={customLists}
                   hasValidLicense={hasValidLicense}
+                  canEdit={canUpdateScoringRulesets}
                   onRuleChange={(newRule) => handleRuleChange(rule.stableId, newRule)}
                   onRuleDelete={() => handleRuleDelete(rule.stableId)}
                 />
@@ -307,6 +323,7 @@ interface RuleRowProps {
   maxRiskLevel: number;
   customLists: CustomList[];
   hasValidLicense?: boolean;
+  canEdit: boolean;
   onRuleChange?: (rule: ScoringRule) => Promise<boolean>;
   onRuleDelete?: () => void;
 }
@@ -318,6 +335,7 @@ function RuleRow({
   maxRiskLevel,
   customLists,
   hasValidLicense,
+  canEdit,
   onRuleChange,
   onRuleDelete,
 }: RuleRowProps) {
@@ -340,35 +358,37 @@ function RuleRow({
           customLists={customLists}
         />
       </div>
-      <div className="flex shrink-0 items-center justify-end px-md py-sm">
-        <button
-          type="button"
-          className="border-purple-primary text-purple-primary flex size-6 items-center justify-center rounded-lg border shadow-sm"
-          aria-label="Edit rule"
-          onClick={() => setIsEditing(true)}
-        >
-          <Icon icon="edit" className="size-4" />
-        </button>
-        <Panel.Root open={isEditing} onOpenChange={setIsEditing}>
-          <ScoringRuleEditPanel
-            rule={rule}
-            dataModel={dataModel}
-            entityType={entityType}
-            maxRiskLevel={maxRiskLevel}
-            customLists={customLists}
-            hasValidLicense={hasValidLicense}
-            onChange={onRuleChange}
-            onDelete={
-              onRuleDelete
-                ? () => {
-                    onRuleDelete();
-                    setIsEditing(false);
-                  }
-                : undefined
-            }
-          />
-        </Panel.Root>
-      </div>
+      {canEdit ? (
+        <div className="flex shrink-0 items-center justify-end px-md py-sm">
+          <button
+            type="button"
+            className="border-purple-primary text-purple-primary flex size-6 items-center justify-center rounded-lg border shadow-sm"
+            aria-label="Edit rule"
+            onClick={() => setIsEditing(true)}
+          >
+            <Icon icon="edit" className="size-4" />
+          </button>
+          <Panel.Root open={isEditing} onOpenChange={setIsEditing}>
+            <ScoringRuleEditPanel
+              rule={rule}
+              dataModel={dataModel}
+              entityType={entityType}
+              maxRiskLevel={maxRiskLevel}
+              customLists={customLists}
+              hasValidLicense={hasValidLicense}
+              onChange={onRuleChange}
+              onDelete={
+                onRuleDelete
+                  ? () => {
+                      onRuleDelete();
+                      setIsEditing(false);
+                    }
+                  : undefined
+              }
+            />
+          </Panel.Root>
+        </div>
+      ) : null}
     </div>
   );
 }

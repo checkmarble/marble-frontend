@@ -17,7 +17,11 @@ const userScoringLayoutLoader = createServerFn()
 
     const settings = await userScoring.getSettings();
 
-    return { settings };
+    return {
+      settings,
+      canUpdateScoringSettings: user.permissions.canUpdateScoringSettings,
+      canUpdateScoringRulesets: user.permissions.canUpdateScoringRulesets,
+    };
   });
 
 export const Route = createFileRoute('/_app/_builder/user-scoring')({
@@ -29,6 +33,8 @@ export const Route = createFileRoute('/_app/_builder/user-scoring')({
 });
 
 function UserScoringSectionLayout() {
-  const { settings } = Route.useLoaderData();
-  return <ScoringSectionLayout maxRiskLevel={settings?.maxRiskLevel} />;
+  const { settings, canUpdateScoringRulesets } = Route.useLoaderData();
+  return (
+    <ScoringSectionLayout maxRiskLevel={settings?.maxRiskLevel} canUpdateScoringRulesets={canUpdateScoringRulesets} />
+  );
 }

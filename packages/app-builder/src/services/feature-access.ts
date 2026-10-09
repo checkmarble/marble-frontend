@@ -49,6 +49,13 @@ export const isCreateDataModelPivotAvailable = ({ permissions }: CurrentUser) =>
 
 export const isIngestDataAvailable = ({ permissions }: CurrentUser) => permissions.canIngestData;
 
+export const isExportOrgAvailable = ({ permissions }: CurrentUser) => permissions.canExportOrganization;
+
+export const isImportOrgAvailable = ({ permissions }: CurrentUser) => permissions.canImportIntoOrganization;
+
+export const isApplyArchetypeAvailable = ({ permissions }: CurrentUser) =>
+  permissions.canReadOrgArchetypes && permissions.canImportIntoOrganization;
+
 export const isDeleteDataModelTableAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;
 
 export const isDeleteDataModelFieldAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;

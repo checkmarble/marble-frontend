@@ -74,11 +74,12 @@ export const useGetFreeformSearchQuery = (id: string) => {
 
 export const freeformSearchPresetsQueryKey = ['screening', 'freeform-search', 'presets'] as const;
 
-export const useListFreeFormSearchPresetsQuery = () => {
+export const useListFreeFormSearchPresetsQuery = (enabled = true) => {
   const getListFFS = useServerFn(getListFreeFormSearchPresetsFn);
 
   return useQuery({
     queryKey: freeformSearchPresetsQueryKey,
+    enabled,
     queryFn: async () => {
       const result = await getListFFS();
       return result;
@@ -115,7 +116,8 @@ export const useDeleteFreeFormSearchPresetMutation = () => {
     mutationFn: async ({ id }: { id: string }) => {
       return deleteFreeFormSearchPreset({ data: { id } });
     },
-    onSuccess: (_, { id }) => {
+    onSuccess: (result, { id }) => {
+      if (!result.success) return;
       queryClient.setQueryData<SavedFreeformSearchPreset[]>(freeformSearchPresetsQueryKey, (old) =>
         old?.filter((preset) => preset.id !== id),
       );

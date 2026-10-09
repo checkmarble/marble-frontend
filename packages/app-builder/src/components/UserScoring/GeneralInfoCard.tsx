@@ -47,6 +47,8 @@ interface GeneralInfoCardProps {
   settings: ScoringSettings;
   preparationStatus: ScenarioPublicationStatus | null;
   lastDryRun: ScoringDryRun | null;
+  canLaunchDryRun: boolean;
+  canUpdateScoringRulesets: boolean;
 }
 
 function formatDuration(seconds: number, t: (key: string) => string): string | null {
@@ -55,7 +57,14 @@ function formatDuration(seconds: number, t: (key: string) => string): string | n
   return `${value} ${t(`common:duration_unit.${unit}`)}`;
 }
 
-export function GeneralInfoCard({ ruleset, settings, preparationStatus, lastDryRun }: GeneralInfoCardProps) {
+export function GeneralInfoCard({
+  ruleset,
+  settings,
+  preparationStatus,
+  lastDryRun,
+  canLaunchDryRun,
+  canUpdateScoringRulesets,
+}: GeneralInfoCardProps) {
   const { t } = useTranslation(['user-scoring', 'common']);
   const [viewBatchTest, setViewBatchTest] = useState(false);
   const navigate = useAgnosticNavigation();
@@ -82,8 +91,13 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus, lastDryR
   const onLaunchTests = () => {
     setViewBatchTest(true);
     startDryRun.mutate(ruleset.recordType, {
-      onError: () => {
-        toast.error(t('common:errors.unknown'));
+      onSuccess: (result) => {
+        if (!result.error) return;
+        toast.error(result.error);
+        if (lastDryRun == null) setViewBatchTest(false);
+      },
+      onError: (error) => {
+        toast.error(error.message || t('common:errors.unknown'));
         if (lastDryRun == null) setViewBatchTest(false);
       },
     });
@@ -105,9 +119,9 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus, lastDryR
               variant="tag"
               menuClassName="min-w-30"
             />
-            {ruleset.status === 'draft' && (
+            {ruleset.status === 'draft' && canLaunchDryRun ? (
               <BatchTest onLaunchTest={onLaunchTests} isLaunching={startDryRun.isPending} />
-            )}
+            ) : null}
             {preparationStatus ? (
               preparationStatus.status === 'required' ? (
                 <Button
@@ -138,9 +152,11 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus, lastDryR
                 </Button>
               )
             ) : null}
-            <Button variant="secondary" mode="icon" onClick={() => setEditPanelOpen(true)}>
-              <Icon icon="edit" className="size-4" />
-            </Button>
+            {canUpdateScoringRulesets ? (
+              <Button variant="secondary" mode="icon" onClick={() => setEditPanelOpen(true)}>
+                <Icon icon="edit" className="size-4" />
+              </Button>
+            ) : null}
           </div>
         </div>
 
@@ -243,7 +259,11 @@ function EditGeneralSettingsPanel({
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
         try {
-          await updateMutation.mutateAsync(value);
+          const updated = await updateMutation.mutateAsync(value);
+          if (updated && 'error' in updated) {
+            toast.error(updated.error);
+            return;
+          }
           toast.success(t('common:success.save'));
           panelSharp.actions.close();
           await router.invalidate();

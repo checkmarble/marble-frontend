@@ -12,27 +12,33 @@ export function DataPageHeader({
   handleCreateRelations: () => void;
 }) {
   const { t } = useTranslation(['navigation']);
-  const { isCreateDataModelTableAvailable, isGraphExplorationEnabled, isGraphExplorationAvailable } =
-    useDataModelFeatureAccess();
+  const {
+    isCreateDataModelTableAvailable,
+    isExportOrgAvailable,
+    isGraphExplorationEnabled,
+    isGraphExplorationAvailable,
+  } = useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();
 
   return (
     <div className="flex items-center justify-between gap-md">
       <Typo variant="title1">{t('navigation:data')}</Typo>
       <div className="flex gap-sm">
-        <Button
-          variant="secondary"
-          appearance="stroked"
-          onClick={() => exportOrgMutation.mutate()}
-          disabled={exportOrgMutation.isPending}
-        >
-          {exportOrgMutation.isPending ? (
-            <Icon icon="spinner" className="size-5 animate-spin" />
-          ) : (
-            <Icon icon="download" className="size-5" />
-          )}
-          {t('data:export_org.button')}
-        </Button>
+        {isExportOrgAvailable ? (
+          <Button
+            variant="secondary"
+            appearance="stroked"
+            onClick={() => exportOrgMutation.mutate()}
+            disabled={exportOrgMutation.isPending}
+          >
+            {exportOrgMutation.isPending ? (
+              <Icon icon="spinner" className="size-5 animate-spin" />
+            ) : (
+              <Icon icon="download" className="size-5" />
+            )}
+            {t('data:export_org.button')}
+          </Button>
+        ) : null}
         {isCreateDataModelTableAvailable && isGraphExplorationEnabled && isGraphExplorationAvailable ? (
           <Button variant="primary" appearance="stroked" onClick={handleCreateRelations}>
             <Icon icon="filters" className="size-5" />

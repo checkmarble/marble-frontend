@@ -9,7 +9,15 @@ export const Route = createFileRoute('/_app/_builder/user-scoring/overview')({
 });
 
 function UserScoringIndex() {
-  const { settings } = useLoaderData({ from: '/_app/_builder/user-scoring' });
+  const { settings, canUpdateScoringSettings, canUpdateScoringRulesets } = useLoaderData({
+    from: '/_app/_builder/user-scoring',
+  });
 
-  return <ScoringOverviewPage settings={settings} />;
+  return (
+    <ScoringOverviewPage
+      settings={settings}
+      canUpdateScoringSettings={canUpdateScoringSettings}
+      canUpdateScoringRulesets={canUpdateScoringRulesets}
+    />
+  );
 }

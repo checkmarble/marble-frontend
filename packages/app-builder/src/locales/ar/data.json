@@ -133,6 +133,7 @@
   "empty_state.description": "يمكنك استيراد نموذج البيانات الموجود أو إنشاء الجداول يدويًا.",
   "empty_state.import_org.description": "ارفع ملف مؤسسة تم تصديره مسبقًا",
   "empty_state.import_org.title": "تحميل البيانات",
+  "empty_state.no_permission_description": "اطلب من المسؤول إنشاء نموذج البيانات.",
   "empty_state.select_archetype.description": "اختر نموذج بيانات جاهز للبدء بسرعة",
   "empty_state.select_archetype.title": "اختيار نموذج أولي",
   "empty_state.title": "ليس لديك أي جدول تم إنشاؤه في Marble حتى الآن.",
