@@ -105,8 +105,9 @@ function FreeformSearchFormInner({
   const [selectedDatasets, setSelectedDatasets] = useState(defaultDatasets);
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
   const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery(canSavePresets);
+  const presets = canSavePresets ? listFreeFormSearchPresetsQuery.data : undefined;
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(undefined);
-  const selectedPreset = listFreeFormSearchPresetsQuery.data?.find((preset) => preset.id === selectedPresetId);
+  const selectedPreset = presets?.find((preset) => preset.id === selectedPresetId);
   const [savePresetPopoverOpen, setSavePresetPopoverOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [presetNameError, setPresetNameError] = useState<string | undefined>(undefined);
@@ -193,7 +194,7 @@ function FreeformSearchFormInner({
   };
 
   const handlePresetSelect = (id: string) => {
-    const preset = listFreeFormSearchPresetsQuery.data?.find((preset) => preset.id === id);
+    const preset = presets?.find((preset) => preset.id === id);
     if (!preset) return;
     setSelectedPresetId(preset.id);
     applyPreset(preset.config);
@@ -205,7 +206,7 @@ function FreeformSearchFormInner({
       setPresetNameError(t('screenings:freeform_search.preset_name_required'));
       return;
     }
-    if (listFreeFormSearchPresetsQuery.data?.some((preset) => preset.name === trimmedName)) {
+    if (presets?.some((preset) => preset.name === trimmedName)) {
       setPresetNameError(t('screenings:freeform_search.preset_name_already_exists'));
       return;
     }
@@ -286,10 +287,10 @@ function FreeformSearchFormInner({
           </div>
           <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
             <div className="bg-surface-card border-grey-border rounded-lg border p-md space-y-md">
-              {listFreeFormSearchPresetsQuery?.data?.length ? (
+              {presets?.length ? (
                 <div className="w-full [&>div]:w-full">
                   <SelectV2
-                    options={listFreeFormSearchPresetsQuery.data.map((preset) => ({
+                    options={presets.map((preset) => ({
                       label: preset.name,
                       value: preset.id,
                     }))}
