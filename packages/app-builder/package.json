@@ -23,7 +23,7 @@
     "@tanstack/devtools-vite": "^0.8.3",
     "@tanstack/react-devtools": "^0.10.9",
     "@tanstack/react-form-devtools": "^0.2.29",
-    "@tanstack/react-query-devtools": "5.101.4",
+    "@tanstack/react-query-devtools": "5.103.2",
     "@tanstack/react-router-devtools": "1.167.2",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "16.3.3",
