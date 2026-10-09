@@ -5,6 +5,7 @@ import { MAX_FILE_SIZE_MB, useFormDropzone } from '@app-builder/hooks/useFormDro
 import { type FileAnnotation } from '@app-builder/models';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createFileAnnotationSchema } from '@app-builder/schemas/annotations';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
@@ -34,6 +35,8 @@ export function ClientDocumentsPopover({
   const { t } = useTranslation(['cases', 'common']);
   const createAnnotationMutation = useCreateAnnotationMutation();
   const [annotationToDelete, setAnnotationToDelete] = useState<FileAnnotation | null>(null);
+  const { currentUser } = useOrganizationDetails();
+  const canDeleteAnnotation = currentUser.permissions.canDeleteAnnotation;
   const revalidate = useLoaderRevalidator();
 
   const form = useForm({
@@ -154,7 +157,7 @@ export function ClientDocumentsPopover({
                         <Icon icon="attachment" className="text-grey-secondary size-5" />
                         <span className="truncate">{file.filename}</span>
                         <AnnotationFileDownload annotationId={document.id} fileId={file.id} />
-                        {idx === 0 ? (
+                        {idx === 0 && canDeleteAnnotation ? (
                           <button data-delete className="size-5" onClick={() => setAnnotationToDelete(document)}>
                             <Icon icon="delete" className="text-red-primary size-5" />
                           </button>

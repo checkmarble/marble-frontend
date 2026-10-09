@@ -1,4 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { marbleApiErrorMessage } from '@app-builder/models/http-errors';
 import { addConfigurationPayloadSchema, client360SearchPayloadSchema } from '@app-builder/schemas/client360';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -24,8 +25,10 @@ export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
         fields:
           field && !field.semanticType ? [{ op: 'MOD', data: { id: field.id, semantic_type: 'name' } }] : undefined,
       });
-    } catch {
-      throw new Error('Failed to add configuration');
+    } catch (error) {
+      const message = marbleApiErrorMessage(error);
+      if (message) return { error: message };
+      throw error;
     }
   });
 

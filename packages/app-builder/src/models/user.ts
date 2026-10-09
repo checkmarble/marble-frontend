@@ -32,6 +32,15 @@ function NewPermissionsList() {
     canCreateApiKey: 'APIKEY_CREATE',
     canReadSnoozes: 'READ_SNOOZES',
     canCreateSnoozes: 'CREATE_SNOOZE',
+    canUpdateScoringRulesets: 'SCORING_UPDATE_RULESETS',
+    canUpdateScoringSettings: 'SCORING_UPDATE_SETTINGS',
+    canSaveScreeningSearches: 'SCREENING_SAVE_SEARCHES',
+    canExportOrganization: 'ORG_EXPORT',
+    canReadOrgArchetypes: 'ORG_IMPORT_ARCHETYPE_READ',
+    canImportIntoOrganization: 'ORG_IMPORT_INTO_EXISTING',
+    canUpdateOrganization: 'ORGANIZATIONS_UPDATE',
+    canDeleteAnnotation: 'ANNOTATION_DELETE',
+    canWriteRiskTagAnnotation: 'ANNOTATION_RISK_TAG_WRITE',
   } as const;
 }
 

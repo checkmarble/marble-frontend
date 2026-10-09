@@ -13,6 +13,8 @@ interface ScoringRulesetPageProps {
   preparationStatus: ScenarioPublicationStatus | null;
   hasValidLicense?: boolean;
   lastDryRun: ScoringDryRun | null;
+  canLaunchDryRun: boolean;
+  canUpdateScoringRulesets: boolean;
 }
 
 export function ScoringRulesetPage({
@@ -22,6 +24,8 @@ export function ScoringRulesetPage({
   preparationStatus,
   hasValidLicense,
   lastDryRun,
+  canLaunchDryRun,
+  canUpdateScoringRulesets,
 }: ScoringRulesetPageProps) {
   return (
     <div className={cn('flex flex-col', pageLayoutGutter.gap)}>
@@ -30,12 +34,15 @@ export function ScoringRulesetPage({
         settings={settings}
         preparationStatus={preparationStatus}
         lastDryRun={lastDryRun}
+        canLaunchDryRun={canLaunchDryRun}
+        canUpdateScoringRulesets={canUpdateScoringRulesets}
       />
       <RulesTable
         ruleset={ruleset}
         maxRiskLevel={settings.maxRiskLevel}
         customLists={customLists}
         hasValidLicense={hasValidLicense}
+        canUpdateScoringRulesets={canUpdateScoringRulesets}
       />
     </div>
   );

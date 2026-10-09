@@ -71,6 +71,7 @@
   "section.title": "تكوين النقاط",
   "settings.define_scale": "حدد مقياس مخاطر، ثم اختر الكيان الذي تريد إنشاء مجموعة القواعد عليه.",
   "settings.levels": "{{count}} مستويات المخاطر",
+  "settings.no_scale_no_permission": "لم يتم تحديد مقياس المخاطر بعد. اطلب من المسؤول إعداده.",
   "settings.risk_levels_count": "{{count}} مستويات المخاطر:",
   "settings.scale_used": "مقياس المخاطر المستخدم:",
   "settings.validate_scale": "التحقق من مقياس المخاطر",

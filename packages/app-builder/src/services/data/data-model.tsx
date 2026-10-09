@@ -11,6 +11,9 @@ interface DataModelFeatureAccess {
   isCreateDataModelLinkAvailable: boolean;
   isCreateDataModelPivotAvailable: boolean;
   isIngestDataAvailable: boolean;
+  isExportOrgAvailable: boolean;
+  isImportOrgAvailable: boolean;
+  isApplyArchetypeAvailable: boolean;
   isDeleteDataModelTableAvailable: boolean;
   isDeleteDataModelFieldAvailable: boolean;
   isDeleteDataModelLinkAvailable: boolean;

@@ -98,6 +98,7 @@ function DataList() {
 
 function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
   const { t } = useTranslation(['navigation', 'data']);
+  const { isCreateDataModelTableAvailable, isImportOrgAvailable } = useDataModelFeatureAccess();
 
   return (
     <>
@@ -105,32 +106,38 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
         <Typo variant="title1" className="flex-1">
           {t('data:data-model')}
         </Typo>
-        <MenuCommand.Menu>
-          <MenuCommand.Trigger>
-            <Button type="button" size="medium">
-              {t('data:empty_state.create_table.title')}
-              <Icon icon="plus" className=" size-4" />
-            </Button>
-          </MenuCommand.Trigger>
-          <MenuCommand.Content>
-            <MenuCommand.List>
-              <MenuCommand.Item>
-                <ImportOrg>
-                  <div className="flex items-center gap-sm cursor-pointer">
-                    <Icon icon="upload" className="size-4" />
-                    {t('data:create_new_table.from_file')}
-                  </div>
-                </ImportOrg>
-              </MenuCommand.Item>
-              <MenuCommand.Item>
-                <button className="flex items-center gap-sm" onClick={onCreateTable}>
-                  <Icon icon="edit" className="size-4" />
-                  {t('data:create_new_table.manually')}
-                </button>
-              </MenuCommand.Item>
-            </MenuCommand.List>
-          </MenuCommand.Content>
-        </MenuCommand.Menu>
+        {isImportOrgAvailable || isCreateDataModelTableAvailable ? (
+          <MenuCommand.Menu>
+            <MenuCommand.Trigger>
+              <Button type="button" size="medium">
+                {t('data:empty_state.create_table.title')}
+                <Icon icon="plus" className=" size-4" />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content>
+              <MenuCommand.List>
+                {isImportOrgAvailable ? (
+                  <MenuCommand.Item>
+                    <ImportOrg>
+                      <div className="flex items-center gap-sm cursor-pointer">
+                        <Icon icon="upload" className="size-4" />
+                        {t('data:create_new_table.from_file')}
+                      </div>
+                    </ImportOrg>
+                  </MenuCommand.Item>
+                ) : null}
+                {isCreateDataModelTableAvailable ? (
+                  <MenuCommand.Item>
+                    <button className="flex items-center gap-sm" onClick={onCreateTable}>
+                      <Icon icon="edit" className="size-4" />
+                      {t('data:create_new_table.manually')}
+                    </button>
+                  </MenuCommand.Item>
+                ) : null}
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
+        ) : null}
       </div>
     </>
   );
@@ -138,38 +145,51 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
 
 function DataListEmptyState({ onCreateTable }: { onCreateTable: () => void }) {
   const { t } = useTranslation(handle.i18n);
+  const { isApplyArchetypeAvailable, isImportOrgAvailable, isCreateDataModelTableAvailable } =
+    useDataModelFeatureAccess();
+  const hasAnyAction = isApplyArchetypeAvailable || isImportOrgAvailable || isCreateDataModelTableAvailable;
 
   return (
     <section className="px-lg py-2xl grid gap-md">
       <div className="grid py-xl w-full place-items-center gap-lg">
         <header className="text-center">
           <p className="font-semibold">{t('data:empty_state.title')}</p>
-          <p className="text-sm text-grey-secondary">{t('data:empty_state.description')}</p>
+          <p className="text-sm text-grey-secondary">
+            {hasAnyAction ? t('data:empty_state.description') : t('data:empty_state.no_permission_description')}
+          </p>
         </header>
-        <div className="grid grid-cols-3 gap-sm">
-          <SelectArchetype>
-            <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
-              <span>{t('data:empty_state.select_archetype.title')}</span>
-              <Icon icon="category" className="size-4" />
-            </Button>
-          </SelectArchetype>
-          <ImportOrg>
-            <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
-              <span>{t('data:empty_state.import_org.title')}</span>
-              <Icon icon="upload" className="size-4" />
-            </Button>
-          </ImportOrg>
-          <Button
-            type="button"
-            appearance="stroked"
-            size="medium"
-            className="w-full justify-center"
-            onClick={onCreateTable}
-          >
-            {t('data:empty_state.create_table.title')}
-            <Icon icon="plus" className=" size-4" />
-          </Button>
-        </div>
+        {hasAnyAction ? (
+          <div className="grid grid-cols-3 gap-sm">
+            {isApplyArchetypeAvailable ? (
+              <SelectArchetype>
+                <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
+                  <span>{t('data:empty_state.select_archetype.title')}</span>
+                  <Icon icon="category" className="size-4" />
+                </Button>
+              </SelectArchetype>
+            ) : null}
+            {isImportOrgAvailable ? (
+              <ImportOrg>
+                <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
+                  <span>{t('data:empty_state.import_org.title')}</span>
+                  <Icon icon="upload" className="size-4" />
+                </Button>
+              </ImportOrg>
+            ) : null}
+            {isCreateDataModelTableAvailable ? (
+              <Button
+                type="button"
+                appearance="stroked"
+                size="medium"
+                className="w-full justify-center"
+                onClick={onCreateTable}
+              >
+                {t('data:empty_state.create_table.title')}
+                <Icon icon="plus" className=" size-4" />
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </section>
   );

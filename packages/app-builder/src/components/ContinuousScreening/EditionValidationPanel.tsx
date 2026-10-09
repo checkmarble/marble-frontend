@@ -42,7 +42,11 @@ export const EditionValidationPanel = ({
         ...updatedConfig,
         datasets: sanitizeTruthyDatasets(updatedConfig.datasets),
       })
-      .then(() => {
+      .then((result) => {
+        if (result && 'error' in result) {
+          toast.error(result.error);
+          return;
+        }
         toast.success(t('common:success.save'));
         panelSharp.actions.close();
         revalidate();
