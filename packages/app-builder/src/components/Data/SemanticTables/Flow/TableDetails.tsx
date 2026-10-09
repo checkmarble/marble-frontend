@@ -75,7 +75,8 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dataModel = useDataModel();
-  const { isIngestDataAvailable } = useDataModelFeatureAccess();
+  const { isIngestDataAvailable, isEditDataModelInfoAvailable, isDeleteDataModelTableAvailable } =
+    useDataModelFeatureAccess();
   const [isNumberOfFieldsOpen, setIsNumberOfFieldsOpen] = useState(false);
 
   const relationFields = data.tableModel.fields.filter((field) => data.relationFieldNames.includes(field.name));
@@ -227,19 +228,23 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             </MenuCommand.Trigger>
             <MenuCommand.Content align="end" sideOffset={4} size="small">
               <MenuCommand.List>
-                <MenuCommand.Item onSelect={() => setIsEditOpen(true)}>
-                  <div className="flex items-center gap-xs">
-                    <Icon icon="edit-square" className="size-4" />
-                    {t('data:edit_table.menu_label')}
-                  </div>
-                </MenuCommand.Item>
-                <MenuCommand.Item onSelect={() => setIsDeleteOpen(true)}>
-                  <div className="flex items-center gap-xs">
-                    <Icon icon="delete" className="size-4" />
-                    {t('data:delete_table.menu_label')}
-                  </div>
-                </MenuCommand.Item>
-                <MenuCommand.Separator />
+                {isEditDataModelInfoAvailable ? (
+                  <MenuCommand.Item onSelect={() => setIsEditOpen(true)}>
+                    <div className="flex items-center gap-xs">
+                      <Icon icon="edit-square" className="size-4" />
+                      {t('data:edit_table.menu_label')}
+                    </div>
+                  </MenuCommand.Item>
+                ) : null}
+                {isDeleteDataModelTableAvailable ? (
+                  <MenuCommand.Item onSelect={() => setIsDeleteOpen(true)}>
+                    <div className="flex items-center gap-xs">
+                      <Icon icon="delete" className="size-4" />
+                      {t('data:delete_table.menu_label')}
+                    </div>
+                  </MenuCommand.Item>
+                ) : null}
+                {isEditDataModelInfoAvailable || isDeleteDataModelTableAvailable ? <MenuCommand.Separator /> : null}
                 <MenuCommand.Item disabled={!isIngestDataAvailable} onSelect={() => setIsUploadOpen(true)}>
                   <div className="flex items-center gap-xs">
                     <Icon icon="upload" className="size-4" />

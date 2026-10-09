@@ -1,7 +1,7 @@
 import { createContinuousScreeningConfigSchema } from '@app-builder/components/ContinuousScreening/context/CreationStepper';
 import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
+import { isAdmin, marbleApiErrorMessage } from '@app-builder/models';
 import { type ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
@@ -250,9 +250,15 @@ export const updateContinuousScreeningConfigurationFn = createServerFn({ method:
       inboxId = payload.inboxId;
     }
 
-    await context.authInfo.continuousScreening.updateConfiguration(configStableId, {
-      ...payload,
-      inboxId,
-      datasets: sanitizeTruthyDatasets(payload.datasets),
-    });
+    try {
+      await context.authInfo.continuousScreening.updateConfiguration(configStableId, {
+        ...payload,
+        inboxId,
+        datasets: sanitizeTruthyDatasets(payload.datasets),
+      });
+    } catch (error) {
+      const message = marbleApiErrorMessage(error);
+      if (message) return { error: message };
+      throw error;
+    }
   });

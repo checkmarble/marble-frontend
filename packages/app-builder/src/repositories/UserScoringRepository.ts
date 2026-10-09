@@ -1,5 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { adaptNodeDto, isNotFoundHttpError } from '@app-builder/models';
+import { adaptNodeDto, forbiddenApiMessage, isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import {
   adaptScenarioPublicationStatus,
   type ScenarioPublicationStatus,
@@ -19,21 +19,29 @@ import type { ScoringScore } from 'marble-api';
 
 export type ScoreDistributionItem = { risk_level: number; count: number };
 
+export type ScoringDryRunResult = {
+  dryRun: ScoringDryRun | null;
+  error: string | null;
+};
+
 export interface UserScoringRepository {
   getSettings(): Promise<ScoringSettings | null>;
   listRulesets(): Promise<ScoringRuleset[]>;
   listRulesetVersions(recordType: string): Promise<ScoringRuleset[]>;
   getRulesetWithRules(recordType: string, version?: string | number): Promise<ScoringRulesetWithRules>;
   updateScoringSettings(args: { maxRiskLevel: number }): Promise<ScoringSettings>;
-  updateScoringRuleset(recordType: string, payload: UpdateScoringRuleset): Promise<ScoringRulesetWithRules>;
-  getRulesetPreparationStatus(recordType: string): Promise<ScenarioPublicationStatus>;
+  updateScoringRuleset(
+    recordType: string,
+    payload: UpdateScoringRuleset,
+  ): Promise<ScoringRulesetWithRules | { error: string }>;
+  getRulesetPreparationStatus(recordType: string): Promise<ScenarioPublicationStatus | null>;
   prepareScoringRuleset(recordType: string): Promise<void>;
   commitScoringRuleset(recordType: string): Promise<ScoringRuleset>;
   getScoreLatest(recordType: string, recordId: string): Promise<ScoringScore | null>;
   getScoreLatestWithEvaluation(recordType: string, recordId: string): Promise<ScoringScore | null>;
   getScoreDistribution(recordType: string): Promise<ScoreDistributionItem[]>;
-  startScoringDryRun(recordType: string): Promise<ScoringDryRun>;
-  getScoringDryRun(recordType: string): Promise<ScoringDryRun | null>;
+  startScoringDryRun(recordType: string): Promise<ScoringDryRunResult>;
+  getScoringDryRun(recordType: string): Promise<ScoringDryRunResult>;
 }
 
 export function makeGetUserScoringRepository() {
@@ -70,25 +78,38 @@ export function makeGetUserScoringRepository() {
       return adaptScoringSettings(await marbleCoreApiClient.updateScoringSettings({ max_risk_level: maxRiskLevel }));
     },
     async updateScoringRuleset(recordType, payload) {
-      return adaptScoringRulesetWithRules(
-        await marbleCoreApiClient.updateScoringRuleset(recordType, '', {
-          name: payload.name,
-          description: payload.description,
-          thresholds: payload.thresholds,
-          cooldown_seconds: payload.cooldownSeconds,
-          scoring_interval_seconds: payload.scoringIntervalSeconds,
-          rules: payload.rules.map(({ stableId, name, description, riskType, ast }) => ({
-            stable_id: stableId ?? '',
-            name,
-            description,
-            risk_type: riskType,
-            ast: adaptNodeDto(ast),
-          })),
-        }),
-      );
+      try {
+        return adaptScoringRulesetWithRules(
+          await marbleCoreApiClient.updateScoringRuleset(recordType, '', {
+            name: payload.name,
+            description: payload.description,
+            thresholds: payload.thresholds,
+            cooldown_seconds: payload.cooldownSeconds,
+            scoring_interval_seconds: payload.scoringIntervalSeconds,
+            rules: payload.rules.map(({ stableId, name, description, riskType, ast }) => ({
+              stable_id: stableId ?? '',
+              name,
+              description,
+              risk_type: riskType,
+              ast: adaptNodeDto(ast),
+            })),
+          }),
+        );
+      } catch (err) {
+        const error = forbiddenApiMessage(err);
+        if (error) return { error };
+        throw err;
+      }
     },
     async getRulesetPreparationStatus(recordType) {
-      return adaptScenarioPublicationStatus(await marbleCoreApiClient.getScoringRulesetPreparationStatus(recordType));
+      try {
+        return adaptScenarioPublicationStatus(await marbleCoreApiClient.getScoringRulesetPreparationStatus(recordType));
+      } catch (err) {
+        if (isForbiddenHttpError(err)) {
+          return null;
+        }
+        throw err;
+      }
     },
     async prepareScoringRuleset(recordType) {
       await marbleCoreApiClient.prepareScoringDraft(recordType);
@@ -113,15 +134,21 @@ export function makeGetUserScoringRepository() {
       return marbleCoreApiClient.getScoreDistribution(recordType);
     },
     async startScoringDryRun(recordType) {
-      return adaptScoringDryRun(await marbleCoreApiClient.startScoringDryRun(recordType));
+      try {
+        return { dryRun: adaptScoringDryRun(await marbleCoreApiClient.startScoringDryRun(recordType)), error: null };
+      } catch (err) {
+        const error = forbiddenApiMessage(err);
+        if (error) return { dryRun: null, error };
+        throw err;
+      }
     },
     async getScoringDryRun(recordType) {
       try {
-        return adaptScoringDryRun(await marbleCoreApiClient.getScoringDryRun(recordType));
+        return { dryRun: adaptScoringDryRun(await marbleCoreApiClient.getScoringDryRun(recordType)), error: null };
       } catch (err) {
-        if (isNotFoundHttpError(err)) {
-          return null;
-        }
+        if (isNotFoundHttpError(err)) return { dryRun: null, error: null };
+        const error = forbiddenApiMessage(err);
+        if (error) return { dryRun: null, error };
         throw err;
       }
     },

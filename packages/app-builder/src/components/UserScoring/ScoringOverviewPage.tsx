@@ -15,14 +15,22 @@ import { Button } from 'ui-design-system';
 import { CreateRulesetPanelContext } from './ScoringSectionLayout';
 import { ScoringSettings } from './ScoringSettings';
 
-export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsModel | null }) {
+export function ScoringOverviewPage({
+  settings,
+  canUpdateScoringSettings,
+  canUpdateScoringRulesets,
+}: {
+  settings: ScoringSettingsModel | null;
+  canUpdateScoringSettings: boolean;
+  canUpdateScoringRulesets: boolean;
+}) {
   const { t } = useTranslation(['common', 'user-scoring']);
   const { setOpen } = CreateRulesetPanelContext.useValue();
   const rulesetsQuery = useListScoringRulesetsQuery();
 
   return (
     <div className="flex flex-col gap-md">
-      <ScoringSettings settings={settings} />
+      <ScoringSettings settings={settings} canUpdateScoringSettings={canUpdateScoringSettings} />
       {settings
         ? match(rulesetsQuery)
             .with({ isPending: true }, () => (
@@ -52,9 +60,11 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
               return (
                 <div className="bg-surface-card border border-grey-border p-md rounded-md flex flex-col gap-md">
                   <span>{t('user-scoring:overview.no_ruleset')}</span>
-                  <Button appearance="stroked" onClick={() => setOpen(true)}>
-                    {t('user-scoring:overview.configure_score')}
-                  </Button>
+                  {canUpdateScoringRulesets ? (
+                    <Button appearance="stroked" onClick={() => setOpen(true)}>
+                      {t('user-scoring:overview.configure_score')}
+                    </Button>
+                  ) : null}
                 </div>
               );
             })

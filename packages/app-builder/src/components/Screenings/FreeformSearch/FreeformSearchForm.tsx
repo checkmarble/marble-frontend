@@ -97,15 +97,17 @@ function FreeformSearchFormInner({
   listConfig,
 }: { provider: ScreeningProviders } & FreeformSearchFormProps) {
   const { t } = useTranslation(screeningsI18n);
-  const { org } = useOrganizationDetails();
+  const { org, currentUser } = useOrganizationDetails();
+  const canSavePresets = currentUser.permissions.canSaveScreeningSearches;
   const searchMutation = useFreeformSearchMutation();
   const defaultThreshold = org.sanctionThreshold ?? 70;
   const defaultDatasets = useMemo(() => getDefaultManualSearchDatasets(listConfig, provider), [listConfig, provider]);
   const [selectedDatasets, setSelectedDatasets] = useState(defaultDatasets);
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
-  const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery();
+  const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery(canSavePresets);
+  const presets = canSavePresets ? listFreeFormSearchPresetsQuery.data : undefined;
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(undefined);
-  const selectedPreset = listFreeFormSearchPresetsQuery.data?.find((preset) => preset.id === selectedPresetId);
+  const selectedPreset = presets?.find((preset) => preset.id === selectedPresetId);
   const [savePresetPopoverOpen, setSavePresetPopoverOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [presetNameError, setPresetNameError] = useState<string | undefined>(undefined);
@@ -192,7 +194,7 @@ function FreeformSearchFormInner({
   };
 
   const handlePresetSelect = (id: string) => {
-    const preset = listFreeFormSearchPresetsQuery.data?.find((preset) => preset.id === id);
+    const preset = presets?.find((preset) => preset.id === id);
     if (!preset) return;
     setSelectedPresetId(preset.id);
     applyPreset(preset.config);
@@ -204,7 +206,7 @@ function FreeformSearchFormInner({
       setPresetNameError(t('screenings:freeform_search.preset_name_required'));
       return;
     }
-    if (listFreeFormSearchPresetsQuery.data?.some((preset) => preset.name === trimmedName)) {
+    if (presets?.some((preset) => preset.name === trimmedName)) {
       setPresetNameError(t('screenings:freeform_search.preset_name_already_exists'));
       return;
     }
@@ -221,6 +223,8 @@ function FreeformSearchFormInner({
         setPresetNameError(undefined);
       } else if (result.error === 'duplicate_name') {
         setPresetNameError(t('screenings:freeform_search.preset_name_already_exists'));
+      } else {
+        toast.error(result.error);
       }
     } catch {
       toast.error(t('common:errors.unknown'));
@@ -283,10 +287,10 @@ function FreeformSearchFormInner({
           </div>
           <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
             <div className="bg-surface-card border-grey-border rounded-lg border p-md space-y-md">
-              {listFreeFormSearchPresetsQuery?.data?.length ? (
+              {presets?.length ? (
                 <div className="w-full [&>div]:w-full">
                   <SelectV2
-                    options={listFreeFormSearchPresetsQuery.data.map((preset) => ({
+                    options={presets.map((preset) => ({
                       label: preset.name,
                       value: preset.id,
                     }))}
@@ -328,7 +332,7 @@ function FreeformSearchFormInner({
             </div>
           </ListAndTopicDatasetConfiguration.Provider>
           <div className="flex gap-sm justify-end">
-            {selectedPreset ? (
+            {selectedPreset && canSavePresets ? (
               <DeleteFreeformSearchPresetButton
                 key={selectedPreset.id}
                 preset={selectedPreset}
@@ -343,7 +347,7 @@ function FreeformSearchFormInner({
                 <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
-                {isPresetDirty || (hasPresetFilters && !selectedPresetId) ? (
+                {canSavePresets && (isPresetDirty || (hasPresetFilters && !selectedPresetId)) ? (
                   <Popover.Root open={savePresetPopoverOpen} onOpenChange={handleSavePresetPopoverChange}>
                     <Popover.Trigger asChild>
                       <Button variant="primary" appearance="stroked" size="medium">

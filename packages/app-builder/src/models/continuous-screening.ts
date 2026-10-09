@@ -2,6 +2,7 @@ import {
   getCanonicalSelectedKeys,
   sanitizeTruthyDatasets,
 } from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
+import { FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
 import {
   ContinuousScreeningClientDataIndexingDto,
   ContinuousScreeningClientDataIndexingResponseDto,
@@ -277,6 +278,11 @@ export type CreateContinuousScreeningConfig = {
   mappingConfigs: CreateMappingConfig[];
 };
 
+function isAcceptedFtmProperty(ftmEntity: FtmEntity, ftmProperty: string): boolean {
+  const properties: readonly string[] = FTM_ENTITIES_PROPERTIES[ftmEntity];
+  return properties.includes(ftmProperty);
+}
+
 export function adaptCreateContinuousScreeningConfigDto(
   configuration: CreateContinuousScreeningConfig,
 ): CreateContinuousScreeningConfigDto {
@@ -298,7 +304,10 @@ export function adaptCreateContinuousScreeningConfigDto(
         ftm_entity: mc.ftmEntity,
         object_field_mappings: R.pipe(
           Object.entries(mc.fieldMapping),
-          R.filter((fieldMapping): fieldMapping is [string, string] => fieldMapping[1] !== null),
+          R.filter((fieldMapping): fieldMapping is [string, string] => {
+            const ftmProperty = fieldMapping[1];
+            return ftmProperty !== null && isAcceptedFtmProperty(mc.ftmEntity, ftmProperty);
+          }),
           R.map(([objectFieldId, ftmProperty]) => {
             return { object_field_id: objectFieldId, ftm_property: ftmProperty };
           }),

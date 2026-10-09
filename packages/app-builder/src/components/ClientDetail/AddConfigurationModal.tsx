@@ -2,6 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { DataModel } from '@app-builder/models';
 import { useAddConfigurationMutation } from '@app-builder/queries/client360/add-configuration';
 import { addConfigurationPayloadSchema } from '@app-builder/schemas/client360';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { Client360Table } from 'marble-api';
@@ -22,6 +23,8 @@ export const AddConfigurationModal = ({
   disabled: boolean;
 }) => {
   const { t } = useTranslation(['common', 'client360']);
+  const { currentUser } = useOrganizationDetails();
+  const canEditDataModel = currentUser.permissions.canEditDataModel;
   const [open, setOpen] = useState(false);
   const addConfigurationMutation = useAddConfigurationMutation();
   const revalidate = useLoaderRevalidator();
@@ -42,7 +45,11 @@ export const AddConfigurationModal = ({
       if (formApi.state.isValid) {
         addConfigurationMutation
           .mutateAsync(value)
-          .then(() => {
+          .then((result) => {
+            if (result && 'error' in result) {
+              toast.error(result.error);
+              return;
+            }
             toast.success(t('common:success.save'));
             setOpen(false);
             form.reset();
@@ -94,6 +101,8 @@ export const AddConfigurationModal = ({
       }
     }
   }, [selectedTableId]);
+
+  if (!canEditDataModel) return null;
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>

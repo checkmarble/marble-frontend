@@ -133,6 +133,7 @@
   "empty_state.description": "Vous pouvez importer un modèle de données existant ou créer les tables manuellement.",
   "empty_state.import_org.description": "Chargez un fichier d'organisation précédemment exporté",
   "empty_state.import_org.title": "Télécharger des données",
+  "empty_state.no_permission_description": "Demandez à un administrateur de créer le modèle de données.",
   "empty_state.select_archetype.description": "Choisissez un modèle de données prédéfini pour démarrer rapidement",
   "empty_state.select_archetype.title": "Sélectionner un archétype",
   "empty_state.title": "Vous n’avez pas encore créé de table dans Marble.",

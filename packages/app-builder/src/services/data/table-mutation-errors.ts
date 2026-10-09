@@ -1,4 +1,4 @@
-import { isHttpError, isStatusConflictHttpError } from '@app-builder/models';
+import { isHttpError, isStatusConflictHttpError, marbleApiErrorMessage } from '@app-builder/models';
 import type { TFunction } from 'i18next';
 
 interface TableMutationError {
@@ -23,7 +23,7 @@ export function getTableMutationError(
   if (isHttpError(error)) {
     return {
       status: error.status,
-      message: t('common:errors.unknown'),
+      message: marbleApiErrorMessage(error) ?? t('common:errors.unknown'),
     };
   }
 

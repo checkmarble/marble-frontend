@@ -133,6 +133,7 @@
   "empty_state.description": "You can import existing data model or create the tables manually.",
   "empty_state.import_org.description": "Upload a previously exported organization file",
   "empty_state.import_org.title": "Upload data",
+  "empty_state.no_permission_description": "Ask an administrator to create the data model.",
   "empty_state.select_archetype.description": "Choose a pre-built data model template to get started quickly",
   "empty_state.select_archetype.title": "Select an archetype",
   "empty_state.title": "You don't have any table created in Marble yet.",

@@ -51,3 +51,13 @@ export function isMarbleError(error: Oazapfts.HttpError): error is Omit<Oazapfts
   const result = marbleErrorSchema.safeParse(error.data);
   return result.success;
 }
+
+export function marbleApiErrorMessage(error: unknown): string | null {
+  if (!isHttpError(error) || !isMarbleError(error) || !error.data.message) return null;
+  return error.data.message;
+}
+
+export function forbiddenApiMessage(error: unknown): string | null {
+  if (!isForbiddenHttpError(error)) return null;
+  return marbleApiErrorMessage(error) ?? 'Forbidden';
+}

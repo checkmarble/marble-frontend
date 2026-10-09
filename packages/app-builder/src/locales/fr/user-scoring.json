@@ -71,6 +71,7 @@
   "section.title": "Scoring client",
   "settings.define_scale": "Définissez une échelle de risque, puis choisissez l'entité sur laquelle créer le jeu de règles.",
   "settings.levels": "{{count}} niveaux de risque",
+  "settings.no_scale_no_permission": "Aucune échelle de risque n'a encore été définie. Demandez à un administrateur de la configurer.",
   "settings.risk_levels_count": "{{count}} niveaux de risque :",
   "settings.scale_used": "Échelle de risque utilisée :",
   "settings.validate_scale": "Valider l'échelle de risques",

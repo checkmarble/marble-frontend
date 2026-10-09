@@ -31,7 +31,13 @@ export const CreateRulesetPanelContext = createSimpleContext<{ open: boolean; se
   'CreateRulesetPanel',
 );
 
-export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | null | undefined }) {
+export function ScoringSectionLayout({
+  maxRiskLevel,
+  canUpdateScoringRulesets,
+}: {
+  maxRiskLevel: number | null | undefined;
+  canUpdateScoringRulesets: boolean;
+}) {
   const { t } = useTranslation(['user-scoring']);
   const [panelOpen, setPanelOpen] = useState(false);
   const { data, isPending } = useListScoringRulesetsQuery();
@@ -47,7 +53,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
         <Page.Content width="readable">
           <div className="flex items-center justify-between">
             <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
-            {showCreateButton ? (
+            {showCreateButton && canUpdateScoringRulesets ? (
               <Button variant="secondary" onClick={() => setPanelOpen(true)}>
                 {t('user-scoring:section.configure_button')}
               </Button>
@@ -146,7 +152,11 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
         try {
-          let ruleset = await updateScoringRulesetMutation.mutateAsync(value);
+          const ruleset = await updateScoringRulesetMutation.mutateAsync(value);
+          if (ruleset && 'error' in ruleset) {
+            toast.error(ruleset.error);
+            return;
+          }
 
           toast.success(t('common:success.save'));
 

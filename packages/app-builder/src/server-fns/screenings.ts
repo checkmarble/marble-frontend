@@ -1,6 +1,6 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { freeformSearchPresetSchema } from '@app-builder/models/freeform-search-preset';
-import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
+import { isStatusConflictHttpError, marbleApiErrorMessage } from '@app-builder/models/http-errors';
 import { availableFeatures, type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { getServerEnv } from '@app-builder/utils/environment';
@@ -302,6 +302,8 @@ export const createFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
       if (isStatusConflictHttpError(error)) {
         return { success: false as const, error: 'duplicate_name' as const };
       }
+      const message = marbleApiErrorMessage(error);
+      if (message) return { success: false as const, error: message };
       throw error;
     }
   });
@@ -310,6 +312,12 @@ export const deleteFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ id: z.uuid() }))
   .handler(async ({ context, data }) => {
-    await context.authInfo.screening.deleteFreeformSearchPreset(data);
-    return { success: true };
+    try {
+      await context.authInfo.screening.deleteFreeformSearchPreset(data);
+      return { success: true as const };
+    } catch (error) {
+      const message = marbleApiErrorMessage(error);
+      if (message) return { success: false as const, error: message };
+      throw error;
+    }
   });

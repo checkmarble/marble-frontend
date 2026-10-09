@@ -10,9 +10,10 @@ export const useUpdateContinuousScreeningConfigurationMutation = (configStableId
   return useMutation({
     mutationKey: ['continuous-screening', 'update-configuration'],
     mutationFn: async (payload: PrevalidationCreateContinuousScreeningConfig) => {
-      await updateContinuousScreeningConfiguration({ data: { ...payload, configStableId } });
+      return updateContinuousScreeningConfiguration({ data: { ...payload, configStableId } });
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (result && 'error' in result) return;
       queryClient.invalidateQueries({ queryKey: ['continuous-screening', 'configurations'] });
     },
   });

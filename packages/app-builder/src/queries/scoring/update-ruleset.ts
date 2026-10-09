@@ -12,7 +12,8 @@ export const useUpdateScoringRulesetMutation = () => {
     mutationFn: async (payload: UpdateScoringRulesetPayload) => {
       return updateScoringRuleset({ data: payload });
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (result && 'error' in result) return;
       queryClient.invalidateQueries({ queryKey: ['scoring'] });
     },
   });
