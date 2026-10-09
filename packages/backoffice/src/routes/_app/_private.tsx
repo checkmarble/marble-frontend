@@ -35,6 +35,9 @@ export const Route = createFileRoute('/_app/_private')({
   component: RouteComponent,
 });
 
+const navLinkClassName =
+  'flex items-center -mb-px border-y-4 border-transparent hover:text-purple-primary data-[status=active]:border-b-purple-primary data-[status=active]:text-purple-primary';
+
 function RouteComponent() {
   const {
     userPreferences: { theme = 'light' },
@@ -56,20 +59,20 @@ function RouteComponent() {
         <StickySentinel threshold={1} rootMargin="0px" className="absolute top-0 h-0">
           <div className="sticky top-0 h-15 flex items-center px-lg gap-lg border-grey-border border-b stickied:shadow-sticky-top stickied:backdrop-blur-lg">
             <Link to="/dashboard">Marble Backoffice</Link>
-            <nav aria-label="Main navigation" className="flex gap-md items-center">
-              <Link to="/dashboard" className="data-[status=active]:text-purple-65" activeOptions={{ exact: true }}>
+            <nav aria-label="Main navigation" className="flex gap-md self-stretch">
+              <Link to="/dashboard" className={navLinkClassName} activeOptions={{ exact: true }}>
                 Dashboard
               </Link>
-              <Link to="/organizations" className="data-[status=active]:text-purple-65">
+              <Link to="/organizations" className={navLinkClassName}>
                 Organizations
               </Link>
-              <Link to="/licenses" className="data-[status=active]:text-purple-65">
+              <Link to="/licenses" className={navLinkClassName}>
                 Licences Management
               </Link>
-              <Link to="/users" className="data-[status=active]:text-purple-65">
+              <Link to="/users" className={navLinkClassName}>
                 Users
               </Link>
-              <Link to="/tenants" className="data-[status=active]:text-purple-65">
+              <Link to="/tenants" className={navLinkClassName}>
                 Tenants
               </Link>
             </nav>
