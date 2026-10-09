@@ -71,6 +71,7 @@
   "section.title": "Customer Scoring",
   "settings.define_scale": "Define a risk scale, then choose the entity on which you want to create the ruleset.",
   "settings.levels": "{{count}} levels of risk",
+  "settings.no_scale_no_permission": "No risk scale has been defined yet. Ask an administrator to set it up.",
   "settings.risk_levels_count": "{{count}} risk levels:",
   "settings.scale_used": "Risk scale in use:",
   "settings.validate_scale": "Validate risk scale",

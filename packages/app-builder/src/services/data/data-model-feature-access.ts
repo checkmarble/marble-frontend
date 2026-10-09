@@ -2,6 +2,7 @@ import { CurrentUser } from '@app-builder/models';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
 import {
   hasAnyEntitlement,
+  isApplyArchetypeAvailable,
   isCreateDataModelFieldAvailable,
   isCreateDataModelLinkAvailable,
   isCreateDataModelPivotAvailable,
@@ -12,7 +13,9 @@ import {
   isDeleteDataModelTableAvailable,
   isEditDataModelFieldAvailable,
   isEditDataModelInfoAvailable,
+  isExportOrgAvailable,
   isGraphExplorationAvailable,
+  isImportOrgAvailable,
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
 import { getServerEnv, isFlagActive } from '@app-builder/utils/environment';
@@ -26,6 +29,9 @@ export function dataModelFeatureAccessLoader(user: CurrentUser, entitlements: Fe
     isCreateDataModelLinkAvailable: isCreateDataModelLinkAvailable(user),
     isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
     isIngestDataAvailable: isIngestDataAvailable(user),
+    isExportOrgAvailable: isExportOrgAvailable(user),
+    isImportOrgAvailable: isImportOrgAvailable(user),
+    isApplyArchetypeAvailable: isApplyArchetypeAvailable(user),
     isDeleteDataModelTableAvailable: isDeleteDataModelTableAvailable(user),
     isDeleteDataModelFieldAvailable: isDeleteDataModelFieldAvailable(user),
     isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),

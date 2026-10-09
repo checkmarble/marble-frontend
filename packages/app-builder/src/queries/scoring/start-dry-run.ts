@@ -12,6 +12,7 @@ export const useStartScoringDryRunMutation = () => {
       return startScoringDryRun({ data: { recordType } });
     },
     onSuccess: (result, recordType) => {
+      if (!result.dryRun) return;
       queryClient.setQueryData(['scoring', 'dry-run', recordType], result);
     },
   });

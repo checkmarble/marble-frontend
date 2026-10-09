@@ -97,13 +97,14 @@ function FreeformSearchFormInner({
   listConfig,
 }: { provider: ScreeningProviders } & FreeformSearchFormProps) {
   const { t } = useTranslation(screeningsI18n);
-  const { org } = useOrganizationDetails();
+  const { org, currentUser } = useOrganizationDetails();
+  const canSavePresets = currentUser.permissions.canSaveScreeningSearches;
   const searchMutation = useFreeformSearchMutation();
   const defaultThreshold = org.sanctionThreshold ?? 70;
   const defaultDatasets = useMemo(() => getDefaultManualSearchDatasets(listConfig, provider), [listConfig, provider]);
   const [selectedDatasets, setSelectedDatasets] = useState(defaultDatasets);
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
-  const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery();
+  const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery(canSavePresets);
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(undefined);
   const selectedPreset = listFreeFormSearchPresetsQuery.data?.find((preset) => preset.id === selectedPresetId);
   const [savePresetPopoverOpen, setSavePresetPopoverOpen] = useState(false);
@@ -221,6 +222,8 @@ function FreeformSearchFormInner({
         setPresetNameError(undefined);
       } else if (result.error === 'duplicate_name') {
         setPresetNameError(t('screenings:freeform_search.preset_name_already_exists'));
+      } else {
+        toast.error(result.error);
       }
     } catch {
       toast.error(t('common:errors.unknown'));
@@ -328,7 +331,7 @@ function FreeformSearchFormInner({
             </div>
           </ListAndTopicDatasetConfiguration.Provider>
           <div className="flex gap-sm justify-end">
-            {selectedPreset ? (
+            {selectedPreset && canSavePresets ? (
               <DeleteFreeformSearchPresetButton
                 key={selectedPreset.id}
                 preset={selectedPreset}
@@ -343,7 +346,7 @@ function FreeformSearchFormInner({
                 <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
-                {isPresetDirty || (hasPresetFilters && !selectedPresetId) ? (
+                {canSavePresets && (isPresetDirty || (hasPresetFilters && !selectedPresetId)) ? (
                   <Popover.Root open={savePresetPopoverOpen} onOpenChange={handleSavePresetPopoverChange}>
                     <Popover.Trigger asChild>
                       <Button variant="primary" appearance="stroked" size="medium">

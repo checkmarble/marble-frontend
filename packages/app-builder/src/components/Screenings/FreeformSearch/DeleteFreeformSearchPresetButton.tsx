@@ -19,7 +19,11 @@ export function DeleteFreeformSearchPresetButton({ preset, onDeleted }: DeleteFr
 
   const handleDelete = async () => {
     try {
-      await deletePresetMutation.mutateAsync({ id: preset.id });
+      const result = await deletePresetMutation.mutateAsync({ id: preset.id });
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       setOpen(false);
       onDeleted();
       toast.success(t('common:success.deleted'));

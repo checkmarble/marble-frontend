@@ -14,8 +14,24 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 
-export function ScoringSettings({ settings }: { settings: ScoringSettingsModel | null }) {
-  return settings ? <ScoringSettingsDisplay settings={settings} /> : <ScoringSettingsForm />;
+export function ScoringSettings({
+  settings,
+  canUpdateScoringSettings,
+}: {
+  settings: ScoringSettingsModel | null;
+  canUpdateScoringSettings: boolean;
+}) {
+  if (settings) return <ScoringSettingsDisplay settings={settings} />;
+  return canUpdateScoringSettings ? <ScoringSettingsForm /> : <ScoringSettingsPlaceholder />;
+}
+
+function ScoringSettingsPlaceholder() {
+  const { t } = useTranslation(['user-scoring']);
+  return (
+    <div className="bg-surface-card border border-grey-border rounded-md p-md">
+      <span>{t('user-scoring:settings.no_scale_no_permission')}</span>
+    </div>
+  );
 }
 
 function ScoringSettingsDisplay({ settings }: { settings: ScoringSettingsModel }) {

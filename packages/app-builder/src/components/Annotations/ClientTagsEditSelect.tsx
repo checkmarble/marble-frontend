@@ -2,6 +2,7 @@ import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createTagAnnotationSchema, tagAnnotationFormSchema } from '@app-builder/schemas/annotations';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
@@ -31,6 +32,8 @@ export function ClientTagsEditSelect({
 }: ClientTagsEditSelectProps) {
   const { t } = useTranslation(['cases', 'common']);
   const { orgObjectTags } = useOrganizationObjectTags();
+  const { currentUser } = useOrganizationDetails();
+  const canDeleteAnnotation = currentUser.permissions.canDeleteAnnotation;
   const createAnnotationMutation = useCreateAnnotationMutation();
   const tags = annotations.map((annotation) => annotation.payload.tag_id);
   const revalidate = useLoaderRevalidator();
@@ -94,6 +97,7 @@ export function ClientTagsEditSelect({
               <MenuCommand.Item
                 key={tag.id}
                 value={tag.id}
+                disabled={!canDeleteAnnotation && tags.includes(tag.id)}
                 onSelect={() => field.handleChange((prev) => toggle(prev, tag.id))}
               >
                 <TagPreview name={tag.name} />

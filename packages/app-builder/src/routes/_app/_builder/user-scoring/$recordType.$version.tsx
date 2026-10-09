@@ -49,7 +49,7 @@ const scoringRulesetLoader = createServerFn()
     }
 
     const customLists = await customListsRepository.listCustomLists();
-    const lastDryRun = await userScoring.getScoringDryRun(recordType);
+    const dryRunResult = await userScoring.getScoringDryRun(recordType);
 
     let preparationStatus: ScenarioPublicationStatus | null = null;
     if (ruleset.status === 'draft') {
@@ -60,7 +60,8 @@ const scoringRulesetLoader = createServerFn()
       ruleset,
       customLists,
       preparationStatus,
-      lastDryRun: isValidDryRun(lastDryRun?.createdAt) ? lastDryRun : null,
+      lastDryRun: dryRunResult.error || !isValidDryRun(dryRunResult.dryRun?.createdAt) ? null : dryRunResult.dryRun,
+      canLaunchDryRun: dryRunResult.error == null,
       hasValidLicense: hasAnyEntitlement(entitlements),
     };
   });
@@ -77,8 +78,8 @@ function UserScoringRulesetRoute() {
   // During router.invalidate(), loader data can be temporarily undefined
   if (!loaderData || !parentData?.settings) return null;
 
-  const { ruleset, customLists, preparationStatus, hasValidLicense, lastDryRun } = loaderData;
-  const { settings } = parentData;
+  const { ruleset, customLists, preparationStatus, hasValidLicense, lastDryRun, canLaunchDryRun } = loaderData;
+  const { settings, canUpdateScoringRulesets } = parentData;
 
   return (
     <ScoringRulesetPage
@@ -89,6 +90,8 @@ function UserScoringRulesetRoute() {
       preparationStatus={preparationStatus}
       hasValidLicense={hasValidLicense}
       lastDryRun={lastDryRun}
+      canLaunchDryRun={canLaunchDryRun}
+      canUpdateScoringRulesets={canUpdateScoringRulesets}
     />
   );
 }

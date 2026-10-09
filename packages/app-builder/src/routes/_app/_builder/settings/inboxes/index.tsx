@@ -61,6 +61,7 @@ const inboxesLoader = createServerFn()
 
     return {
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
+      canUpdateOrganization: user.permissions.canUpdateOrganization,
       inboxes,
       organizationId: currentOrganization.id,
       isCreateInboxAvailable: isCreateInboxAvailable(user),
@@ -88,6 +89,7 @@ function CaseManagerSettings() {
   const { t } = useTranslation(['common', 'settings']);
   const {
     isAutoAssignmentAvailable,
+    canUpdateOrganization,
     inboxes,
     isCreateInboxAvailable,
     autoAssignQueueLimit,
@@ -155,11 +157,13 @@ function CaseManagerSettings() {
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:inboxes')}</span>
-          <UpdateOrganizationSettings
-            isAutoAssignmentAvailable={isAutoAssignmentAvailable}
-            organizationId={organizationId}
-            autoAssignQueueLimit={autoAssignQueueLimit}
-          />
+          {canUpdateOrganization ? (
+            <UpdateOrganizationSettings
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable}
+              organizationId={organizationId}
+              autoAssignQueueLimit={autoAssignQueueLimit}
+            />
+          ) : null}
           {isCreateInboxAvailable ? <CreateInbox redirectRoutePath="/settings/inboxes/$inboxId" /> : null}
         </CollapsiblePaper.Title>
         <CollapsiblePaper.Content>

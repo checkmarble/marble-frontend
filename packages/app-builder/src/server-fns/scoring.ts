@@ -68,6 +68,7 @@ export const updateScoringRulesetFn = createServerFn({ method: 'POST' })
 
     rulesetPayload.name = `Scores ${recordType}`;
     const updatedRuleset = await context.authInfo.userScoring.updateScoringRuleset(recordType, rulesetPayload);
+    if ('error' in updatedRuleset) return updatedRuleset;
 
     if (!rulesetId) {
       throw redirect({
@@ -144,14 +145,12 @@ export const startScoringDryRunFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
-    const dryRun = await context.authInfo.userScoring.startScoringDryRun(data.recordType);
-    return { dryRun };
+    return context.authInfo.userScoring.startScoringDryRun(data.recordType);
   });
 
 export const getScoringDryRunFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
-    const dryRun = await context.authInfo.userScoring.getScoringDryRun(data.recordType);
-    return { dryRun };
+    return context.authInfo.userScoring.getScoringDryRun(data.recordType);
   });

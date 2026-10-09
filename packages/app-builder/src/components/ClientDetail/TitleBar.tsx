@@ -1,5 +1,6 @@
 import { DataModelObject } from '@app-builder/models';
 import { SCREENING_CATEGORY_COLORS } from '@app-builder/models/screening';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { UseQueryResult, useQueryClient } from '@tanstack/react-query';
 import { Client360Table, GroupedAnnotations } from 'marble-api';
 import { useState } from 'react';
@@ -25,6 +26,8 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [editRiskCateogoriesOpen, setEditRiskCategoriesOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { currentUser } = useOrganizationDetails();
+  const canWriteRiskTags = currentUser.permissions.canWriteRiskTagAnnotation;
   const entityName = metadata?.alias || metadata.name;
 
   return (
@@ -129,28 +132,30 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                     />
                   </span>
                 )}
-                <MenuCommand.Menu
-                  persistOnSelect
-                  open={editRiskCateogoriesOpen}
-                  onOpenChange={setEditRiskCategoriesOpen}
-                >
-                  <MenuCommand.Trigger>
-                    <Button type="button" mode="icon" variant="secondary">
-                      <Icon icon="edit-square" className="size-3.5" />
-                    </Button>
-                  </MenuCommand.Trigger>
-                  <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-[340px]">
-                    <ClientRiskCategoriesEditSelect
-                      tableName={objectType}
-                      objectId={objectId}
-                      annotations={riskTopicsAnnotations}
-                      onAnnotateSuccess={() => {
-                        setEditRiskCategoriesOpen(false);
-                        queryClient.invalidateQueries({ queryKey: ['annotations', objectType, objectId] });
-                      }}
-                    />
-                  </MenuCommand.Content>
-                </MenuCommand.Menu>
+                {canWriteRiskTags ? (
+                  <MenuCommand.Menu
+                    persistOnSelect
+                    open={editRiskCateogoriesOpen}
+                    onOpenChange={setEditRiskCategoriesOpen}
+                  >
+                    <MenuCommand.Trigger>
+                      <Button type="button" mode="icon" variant="secondary">
+                        <Icon icon="edit-square" className="size-3.5" />
+                      </Button>
+                    </MenuCommand.Trigger>
+                    <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-[340px]">
+                      <ClientRiskCategoriesEditSelect
+                        tableName={objectType}
+                        objectId={objectId}
+                        annotations={riskTopicsAnnotations}
+                        onAnnotateSuccess={() => {
+                          setEditRiskCategoriesOpen(false);
+                          queryClient.invalidateQueries({ queryKey: ['annotations', objectType, objectId] });
+                        }}
+                      />
+                    </MenuCommand.Content>
+                  </MenuCommand.Menu>
+                ) : null}
               </>
             );
           })
