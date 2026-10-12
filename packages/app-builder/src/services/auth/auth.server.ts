@@ -416,7 +416,7 @@ export function makeAuthenticationServerService({
     request: Request,
     payload: { csrf: string; newOrganizationId: string; idToken?: string },
   ): Promise<void> {
-    const appConfig = await getAppConfigRepository(marblecoreApi).getAppConfig();
+    const appConfig = await getAppConfigRepository(unauthenticatedMarbleCoreApiClient).getAppConfig();
     if (appConfig.auth.provider === 'firebase') {
       if (!payload.idToken) throw new Error('A Firebase ID token is required to switch organizations');
       return refresh(
