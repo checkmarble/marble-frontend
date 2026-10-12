@@ -73,9 +73,9 @@ async function globalSetup() {
   await setupFixtures(externalDsn, process.env['API_PORT']);
 
   process.on('exit', async () => {
-    await api.stop({ timeout: 1 });
-    await firebase.stop({ timeout: 1 });
-    await db.stop({ timeout: 1 });
+    await api.stop({ timeout: 1_000 });
+    await firebase.stop({ timeout: 1_000 });
+    await db.stop({ timeout: 1_000 });
     await net.stop();
   });
 

@@ -29,6 +29,10 @@ const plugins = [
         nitro({
           config: {
             preset: 'node-server',
+            // Rolldown must retain Nitro's side-effect import that installs SSR fetch routing.
+            moduleSideEffects: ['\0virtual:#nitro-internal-pollyfills'],
+            // Keep the CommonJS debug implementation used by Sentry's instrumentation.
+            alias: { debug: 'debug' },
           },
         }),
         ...(isSentryConfigured
