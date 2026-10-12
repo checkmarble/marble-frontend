@@ -25,7 +25,7 @@ jobs:
             ~/.bun/install/cache
             node_modules
             packages/*/node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('/bun.lock') }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
       - name: Set up Node
@@ -63,3 +63,8 @@ jobs:
 
       - name: Build backoffice
         run: bun run -F backoffice build
+
+      - name: Smoke test production servers (Node and Bun)
+        run: |
+          bun run test:production
+          SMOKE_RUNTIME=bun bun run test:production
