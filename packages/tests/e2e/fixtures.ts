@@ -21,22 +21,41 @@ const TABLES: Table[] = [
 
 export const setupFixtures = async (dsn: string, apiUrl: string) => {
   const sql = knex({ client: 'pg', connection: dsn });
-  const org = await sql<Org>('organizations').select('id').where('name', 'Zorg').first();
-  const apiKey = crypto.randomUUID();
+  try {
+    const org = await sql<Org>('organizations').select('id').where('name', 'Zorg').first();
+    if (!org) throw new Error('Fixture organization Zorg was not found');
 
-  const hash = crypto.createHash('sha256').update(apiKey).digest();
+    const apiKey = crypto.randomUUID();
+    const apiKeyId = crypto.randomUUID();
+    const hash = crypto.createHash('sha256').update(apiKey).digest();
 
-  await sql('api_keys').insert({
-    org_id: org!.id,
-    role: 4,
-    prefix: apiKey.substring(0, 3),
-    key_hash: hash,
-  });
+    await sql.transaction(async (trx) => {
+      await trx('api_keys').insert({
+        id: apiKeyId,
+        org_id: org.id,
+        role: 4,
+        prefix: apiKey.substring(0, 3),
+        key_hash: hash,
+      });
 
-  apiUrl = `http://localhost:${apiUrl}`;
+      // Authorization uses grants; the legacy api_keys.role field is insufficient.
+      await trx('grants').insert({
+        id: crypto.randomUUID(),
+        principal_type: 'api_key',
+        principal_id: apiKeyId,
+        principal_authority: 'marble',
+        organization_id: org.id,
+        role: 'ADMIN',
+      });
+    });
 
-  for (const spec of TABLES) {
-    createTable(apiUrl, apiKey, spec);
+    apiUrl = `http://localhost:${apiUrl}`;
+
+    for (const spec of TABLES) {
+      await createTable(apiUrl, apiKey, spec);
+    }
+  } finally {
+    await sql.destroy();
   }
 };
 
