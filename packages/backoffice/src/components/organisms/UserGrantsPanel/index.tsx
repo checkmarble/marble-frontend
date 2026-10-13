@@ -5,8 +5,14 @@ import {
   useReplaceOrganizationGrantMutationOptions,
   useRevokeOrganizationGrantMutationOptions,
   userGrantsQueryOptions,
+  useUpdateGlobalUserMutationOptions,
 } from '@bo/data/users';
-import { GRANT_FORBIDDEN_ERROR, GRANT_NOT_FOUND_ERROR, type GrantRole } from '@bo/schemas/user';
+import {
+  GRANT_FORBIDDEN_ERROR,
+  GRANT_NOT_FOUND_ERROR,
+  type GrantRole,
+  type UpdateGlobalUserPayload,
+} from '@bo/schemas/user';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FeatureAccessDto } from 'marble-api/generated/backoffice-api';
 import type { UserDto } from 'marble-api/generated/marblecore-api';
@@ -15,12 +21,14 @@ import toast from 'react-hot-toast';
 import { Button, Panel, SelectV2, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
+  canAssignHomeOrganization,
   type GrantEntry,
   type GrantOrganization,
   getAllowedGrantRoles,
   getCustomerServiceGrantsView,
   getGrantRoleOptions,
   getTenantGrantsView,
+  hasHomeOrganization,
   isCustomerServiceUser,
 } from './grants';
 
@@ -93,13 +101,32 @@ const useGrantActions = (user: UserDto) => {
 type GrantActions = ReturnType<typeof useGrantActions>;
 
 export function UserGrantsPanel({ user }: { user: UserDto }) {
-  const grantsQuery = useQuery(userGrantsQueryOptions(user.user_id));
+  const [currentUser, setCurrentUser] = useState(user);
+  const grantsQuery = useQuery(userGrantsQueryOptions(currentUser.user_id));
   const organizationsQuery = useQuery(listOrganizationsQueryOptions());
   const tenantsQuery = useQuery(listTenantsQueryOptions());
-  const actions = useGrantActions(user);
-  const isCustomerService = isCustomerServiceUser(user);
+  const actions = useGrantActions(currentUser);
+  const isCustomerService = isCustomerServiceUser(currentUser);
+  const assignHomeOrganization = canAssignHomeOrganization(currentUser);
 
   const renderBody = () => {
+    if (assignHomeOrganization) {
+      if (organizationsQuery.isError || tenantsQuery.isError) {
+        return <p className="text-grey-secondary text-s">Could not load organizations.</p>;
+      }
+      if (!organizationsQuery.data || !tenantsQuery.data) {
+        return <GrantsSkeleton />;
+      }
+      return (
+        <AssignHomeOrganization
+          user={currentUser}
+          organizations={organizationsQuery.data}
+          tenants={tenantsQuery.data}
+          onAssigned={setCurrentUser}
+        />
+      );
+    }
+
     if (grantsQuery.isError || organizationsQuery.isError || tenantsQuery.isError) {
       return <p className="text-grey-secondary text-s">Could not load the user's grants.</p>;
     }
@@ -116,7 +143,7 @@ export function UserGrantsPanel({ user }: { user: UserDto }) {
       />
     ) : (
       <TenantGrants
-        user={user}
+        user={currentUser}
         grants={grantsQuery.data}
         organizations={organizationsQuery.data}
         tenants={tenantsQuery.data}
@@ -129,7 +156,7 @@ export function UserGrantsPanel({ user }: { user: UserDto }) {
     <>
       <Panel.Header>
         <div className="flex flex-col gap-2xs">
-          <span>Manage grants</span>
+          <span>{assignHomeOrganization ? 'Assign organization' : 'Manage grants'}</span>
           <p className="text-grey-secondary text-small font-normal">
             {user.first_name} {user.last_name} · {user.email}
           </p>
@@ -390,6 +417,84 @@ function AddGrantForm({
         <Button variant="primary" disabled={pending || !organization || !role} onClick={() => void handleAdd()}>
           <Icon icon="plus" className="size-4" />
           Add
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function AssignHomeOrganization({
+  user,
+  organizations,
+  tenants,
+  onAssigned,
+}: {
+  user: UserDto;
+  organizations: GrantOrganization[];
+  tenants: Tenant[];
+  onAssigned: (user: UserDto) => void;
+}) {
+  const updateUserMutation = useMutation(useUpdateGlobalUserMutationOptions());
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const tenantNames = new Map(tenants.map((tenant) => [tenant.id, tenant.name]));
+  const options = organizations
+    .map((organization) => {
+      const tenantName = tenantNames.get(organization.tenant_id);
+      const label =
+        tenantName && tenantName !== organization.name ? `${tenantName} / ${organization.name}` : organization.name;
+      return { label, value: organization.id };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+
+  const handleAssign = async () => {
+    if (!organizationId) return;
+
+    try {
+      const updated = await updateUserMutation.mutateAsync({
+        userId: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: user.role as UpdateGlobalUserPayload['role'],
+        organization_id: organizationId,
+      });
+      if (!hasHomeOrganization(updated)) {
+        toast.error('Something went wrong while assigning the organization');
+        return;
+      }
+      const label = options.find((option) => option.value === organizationId)?.label ?? 'the organization';
+      toast.success(`Home organization set to ${label}`);
+      onAssigned(updated);
+    } catch {
+      toast.error('Something went wrong while assigning the organization');
+    }
+  };
+
+  if (options.length === 0) {
+    return <p className="text-grey-secondary text-s">No organization is available to assign.</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-sm">
+      <p className="text-grey-secondary text-s">
+        This user has no home organization. Assign one before managing grants.
+      </p>
+      <div className="flex flex-wrap items-center gap-sm">
+        <SelectV2<string | null>
+          value={organizationId}
+          onChange={setOrganizationId}
+          placeholder="Organization"
+          aria-label="Home organization"
+          disabled={updateUserMutation.isPending}
+          options={options}
+        />
+        <Button
+          variant="primary"
+          disabled={updateUserMutation.isPending || !organizationId}
+          onClick={() => void handleAssign()}
+        >
+          <Icon icon="plus" className="size-4" />
+          Assign
         </Button>
       </div>
     </div>

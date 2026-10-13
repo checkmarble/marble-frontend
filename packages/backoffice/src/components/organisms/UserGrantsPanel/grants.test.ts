@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canAssignHomeOrganization,
   canManageGrants,
   getAllowedGrantRoles,
   getCustomerServiceGrantsView,
@@ -25,6 +26,17 @@ describe('canManageGrants', () => {
     expect(canManageGrants({ organization_id: home.id, role: 'VIEWER' })).toBe(true);
     expect(canManageGrants({ organization_id: '00000000-0000-0000-0000-000000000000', role: 'VIEWER' })).toBe(false);
     expect(canManageGrants({ organization_id: '', role: 'MARBLE_ADMIN' })).toBe(true);
+  });
+});
+
+describe('canAssignHomeOrganization', () => {
+  it('is only the first assignment for a user who is not customer service', () => {
+    expect(canAssignHomeOrganization({ organization_id: '', role: 'VIEWER' })).toBe(true);
+    expect(canAssignHomeOrganization({ organization_id: '00000000-0000-0000-0000-000000000000', role: 'VIEWER' })).toBe(
+      true,
+    );
+    expect(canAssignHomeOrganization({ organization_id: home.id, role: 'VIEWER' })).toBe(false);
+    expect(canAssignHomeOrganization({ organization_id: '', role: 'MARBLE_ADMIN' })).toBe(false);
   });
 });
 

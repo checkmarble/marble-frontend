@@ -15,7 +15,12 @@ const byUserName = (a: { user: UserDto }, b: { user: UserDto }) =>
 export const groupMembersByOrganization = (users: UserDto[]): MembersByOrganization => {
   const grouped = new Map<string, OrganizationMember[]>();
   const add = (organizationId: string, member: OrganizationMember) => {
-    grouped.set(organizationId, [...(grouped.get(organizationId) ?? []), member]);
+    const members = grouped.get(organizationId);
+    if (members) {
+      members.push(member);
+      return;
+    }
+    grouped.set(organizationId, [member]);
   };
 
   for (const user of users) {

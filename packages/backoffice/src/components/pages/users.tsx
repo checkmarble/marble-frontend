@@ -2,7 +2,7 @@ import { makeQueryErrorComponent } from '@bo/components/common/ErrorComponent';
 import { SuspenseQuery } from '@bo/components/core/SuspenseQuery';
 import { UserGrantsPanel } from '@bo/components/organisms/UserGrantsPanel';
 import {
-  canManageGrants,
+  canAssignHomeOrganization,
   type GrantOrganization,
   getUserOrganizationTags,
 } from '@bo/components/organisms/UserGrantsPanel/grants';
@@ -26,7 +26,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import type { UserDto } from 'marble-api/generated/marblecore-api';
 import { type ReactNode, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Button, cn, ExpandableGroupTagLine, Input, Panel, SelectV2, Tag, Tooltip, Typo } from 'ui-design-system';
+import { Button, cn, ExpandableGroupTagLine, Input, Panel, SelectV2, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const UsersError = makeQueryErrorComponent(<span className="text-grey-secondary text-s">Could not load users.</span>);
@@ -83,9 +83,12 @@ function UsersList({
   const organizationsQuery = useQuery(listOrganizationsQueryOptions());
   const tenantsQuery = useQuery(listTenantsQueryOptions());
   const lookups: OrganizationLookups | null =
-    organizationsQuery.data && tenantsQuery.data
-      ? { organizations: organizationsQuery.data, tenants: tenantsQuery.data }
-      : null;
+    organizationsQuery.isPending && tenantsQuery.isPending
+      ? null
+      : {
+          organizations: organizationsQuery.data ?? [],
+          tenants: tenantsQuery.data ?? [],
+        };
   const filteredUsers = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return users;
@@ -220,22 +223,20 @@ function UserOrganizations({ user, lookups }: { user: UserDto; lookups: Organiza
 }
 
 function ManageGrantsButton({ user, onClick }: { user: UserDto; onClick: () => void }) {
-  const button = (
-    <Button variant="secondary" size="small" disabled={!canManageGrants(user)} onClick={onClick}>
+  if (canAssignHomeOrganization(user)) {
+    return (
+      <Button variant="secondary" size="small" onClick={onClick}>
+        <Icon icon="plus" className="size-4" />
+        Assign organization
+      </Button>
+    );
+  }
+
+  return (
+    <Button variant="secondary" size="small" onClick={onClick}>
       <Icon icon="lock" className="size-4" />
       Manage grants
     </Button>
-  );
-
-  if (canManageGrants(user)) return button;
-
-  // Disabled buttons swallow pointer events, so the tooltip hangs off a wrapper.
-  return (
-    <Tooltip.Provider>
-      <Tooltip.Default content="Assign the user to an organization first">
-        <span tabIndex={0}>{button}</span>
-      </Tooltip.Default>
-    </Tooltip.Provider>
   );
 }
 

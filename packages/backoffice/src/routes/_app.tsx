@@ -15,12 +15,32 @@ export const Route = createFileRoute('/_app')({
   errorComponent: ErrorComponent,
 });
 
+function devErrorDetail(error: unknown): string {
+  if (error instanceof Error) return error.stack ?? error.message;
+  if (typeof error === 'string') return error;
+  if (typeof error === 'number' || typeof error === 'boolean' || typeof error === 'bigint' || error == null) {
+    return String(error);
+  }
+  if (typeof error === 'symbol') return error.toString();
+
+  try {
+    const serialized = JSON.stringify(error, null, 2);
+    if (typeof serialized === 'string') return serialized;
+  } catch {
+    // Circular structures and other values JSON cannot represent.
+  }
+
+  return String(error);
+}
+
 function ErrorComponent({ error }: ErrorComponentProps) {
   return (
     <div className="h-screen w-screen grid place-content-center">
       <div className="bg-surface-card max-w-[80vw] p-lg rounded-xl flex flex-col gap-md items-center">
         <h1 className="text-3xl">An error occured</h1>
-        {import.meta.env.DEV && error instanceof Error ? <div>{error.stack}</div> : null}
+        {import.meta.env.DEV ? (
+          <pre className="max-w-full overflow-auto whitespace-pre-wrap text-xs">{devErrorDetail(error)}</pre>
+        ) : null}
       </div>
     </div>
   );
