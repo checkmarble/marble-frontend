@@ -42,7 +42,7 @@ const PublicEnvVarsSchema = z.object({
     .optional(),
 
   ENABLE_GRAPH_EXPLORATION: z.string().optional(),
-
+  ENABLE_CUSTOMER_AGGREGATES: z.string().optional(),
   AI_RULE_CATALOG_ENABLED: z.string().optional(),
 
   // White-labeling: custom logo URL for sidebar
@@ -101,9 +101,10 @@ interface ServerEnvVars {
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
   ENABLE_GRAPH_EXPLORATION?: string;
+  ENABLE_CUSTOMER_AGGREGATES?: string;
+  AI_RULE_CATALOG_ENABLED?: string;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
-  AI_RULE_CATALOG_ENABLED?: string;
 }
 
 /**
@@ -123,6 +124,7 @@ interface ClientEnvVars {
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
   ENABLE_GRAPH_EXPLORATION?: string;
+  ENABLE_CUSTOMER_AGGREGATES?: string;
   AI_RULE_CATALOG_ENABLED?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
@@ -133,6 +135,7 @@ export function getClientEnvVars(): ClientEnvVars {
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
     ENABLE_GRAPH_EXPLORATION: getServerEnv('ENABLE_GRAPH_EXPLORATION'),
+    ENABLE_CUSTOMER_AGGREGATES: getServerEnv('ENABLE_CUSTOMER_AGGREGATES'),
     AI_RULE_CATALOG_ENABLED: getServerEnv('AI_RULE_CATALOG_ENABLED'),
   };
 }

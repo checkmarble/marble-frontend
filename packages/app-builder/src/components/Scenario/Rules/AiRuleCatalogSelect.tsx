@@ -1,7 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { useRuleCatalogQuery } from '@app-builder/queries/scenarios/rule-catalog';
-import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
-import { getClientEnv, isFlagActive } from '@app-builder/utils/environment';
+import { useIsFlagActive } from '@app-builder/utils/hooks/use-feature-flag';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -21,8 +20,7 @@ interface AiRuleCatalogSelectProps {
 
 export function AiRuleCatalogSelect({ disabled, isGenerating, onSelect }: AiRuleCatalogSelectProps) {
   const { t, i18n } = useTranslation(['scenarios']);
-  const { org } = useOrganizationDetails();
-  const isRuleCatalogEnabled = isFlagActive(getClientEnv('AI_RULE_CATALOG_ENABLED'), org.id);
+  const isRuleCatalogEnabled = useIsFlagActive('AI_RULE_CATALOG_ENABLED');
   const ruleCatalogQuery = useRuleCatalogQuery({ isEnabled: isRuleCatalogEnabled });
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
