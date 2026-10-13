@@ -23,8 +23,8 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const data = dataSharp.select((state) => state.data);
   // Parsing only reads children and namedChildren; ids are irrelevant to the preview.
-  const model = parseValueSwitchAstNode(node as ValueSwitchAstNode);
-  if (!model || !isValueSwitchModelComplete(model)) return null;
+  const model = parseValueSwitchAstNode(node as ValueSwitchAstNode, language);
+  if (!model || !isValueSwitchModelComplete(model, language)) return null;
 
   const [rowDimension, columnDimension] = model.dimensions;
   if (!rowDimension) return null;
@@ -57,6 +57,10 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
   const headerClassName = 'border-grey-border border-b p-sm text-start font-medium break-words';
   const isNumeric = isNumericDimension(rowDimension, rowField);
   const lastRowValue = rows.at(-1);
+
+  function formatScore(score: number) {
+    return formatNumber(score, { language });
+  }
 
   return (
     <div
@@ -118,12 +122,14 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
                 {columnDimension ? (
                   columns.map((columnValue) => (
                     <td key={columnValue} className="p-sm text-center">
-                      <span dir="ltr">{model.thresholds[getValueSwitchCellKey([rowValue, columnValue])]!}</span>
+                      <span dir="ltr">
+                        {formatScore(model.thresholds[getValueSwitchCellKey([rowValue, columnValue], language)]!)}
+                      </span>
                     </td>
                   ))
                 ) : (
                   <td className="p-sm">
-                    <span dir="ltr">{model.thresholds[getValueSwitchCellKey([rowValue])]!}</span>
+                    <span dir="ltr">{formatScore(model.thresholds[getValueSwitchCellKey([rowValue], language)]!)}</span>
                   </td>
                 )}
               </tr>
@@ -140,7 +146,8 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
         {isNumeric && typeof lastRowValue === 'number' ? (
           <span dir="ltr">&nbsp;&gt;&nbsp;{formatNumber(lastRowValue, { language })}</span>
         ) : null}
-        :&nbsp;{model.fallback}
+        :&nbsp;
+        <span dir="ltr">{formatScore(model.fallback)}</span>
       </div>
     </div>
   );
