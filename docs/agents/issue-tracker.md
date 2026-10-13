@@ -2,13 +2,22 @@
 
 Issues and specs live in Linear, in the `MAR` team. Use the
 official Linear MCP server (`https://mcp.linear.app/mcp`). If its
-tools aren't available, stop and ask the user to add it:
+tools aren't available, stop and ask the user to add it.
+
+Claude Code:
 
 ```bash
 claude mcp add --transport http linear https://mcp.linear.app/mcp
 ```
 
 then authenticate with `/mcp`.
+
+Codex:
+
+```bash
+codex mcp add linear --url https://mcp.linear.app/mcp
+codex mcp login linear
+```
 
 ## Operations
 

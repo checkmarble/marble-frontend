@@ -18,6 +18,9 @@ export const isCustomerServiceUser = (user: Pick<UserDto, 'role'>) => user.role 
 
 export const canManageGrants = (user: GrantsUser) => isCustomerServiceUser(user) || hasHomeOrganization(user);
 
+export const canAssignHomeOrganization = (user: GrantsUser) =>
+  !isCustomerServiceUser(user) && !hasHomeOrganization(user);
+
 const byName = (a: { name: string }, b: { name: string }) =>
   a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
 
