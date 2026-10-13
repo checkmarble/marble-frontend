@@ -53,14 +53,20 @@ done
 
 ERRORS=""
 
+# Desktop hook environments may omit Bun's install directory from PATH.
+BUN_COMMAND=$(command -v bun || true)
+if [ -z "$BUN_COMMAND" ]; then
+  BUN_COMMAND="${BUN_INSTALL:-$HOME/.bun}/bin/bun"
+fi
+
 if [ "$CHECK_APP" = true ]; then
-  APP_RESULT=$(cd "$PROJECT_DIR/packages/app-builder" && bun run type-check 2>&1) || {
+  APP_RESULT=$(cd "$PROJECT_DIR/packages/app-builder" && "$BUN_COMMAND" run type-check 2>&1) || {
     ERRORS="$ERRORS\n\n## app-builder type-check errors:\n$(echo "$APP_RESULT" | head -50)"
   }
 fi
 
 if [ "$CHECK_UI" = true ]; then
-  UI_RESULT=$(cd "$PROJECT_DIR/packages/ui-design-system" && bun run type-check 2>&1) || {
+  UI_RESULT=$(cd "$PROJECT_DIR/packages/ui-design-system" && "$BUN_COMMAND" run type-check 2>&1) || {
     ERRORS="$ERRORS\n\n## ui-design-system type-check errors:\n$(echo "$UI_RESULT" | head -50)"
   }
 fi
