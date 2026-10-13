@@ -1,8 +1,9 @@
 import { StickySentinel } from '@bo/contexts/StickyRoots';
 import { useFirebase } from '@bo/hooks/useFirebase';
 import { useInterval } from '@bo/hooks/useInterval';
+import { useUserPreferencesUpdater } from '@bo/hooks/useUserPreferencesUpdater';
 import { getCurrentUserFn, logoutFn, refreshTokenFn } from '@bo/server-fns/auth';
-import { getAppConfigFn, updateUserPreferencesFn } from '@bo/server-fns/core';
+import { getAppConfigFn } from '@bo/server-fns/core';
 import { isMarbleAdmin } from '@bo/utils/credentials';
 import { ClientOnly, createFileRoute, Link, Outlet, redirect, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
@@ -25,6 +26,8 @@ export const Route = createFileRoute('/_app/_private')({
       await logoutFn();
       throw redirect({ to: '/sign-in' });
     }
+
+    return { currentUser };
   },
   loader: async () => {
     const currentUser = await getCurrentUserFn();
@@ -41,11 +44,11 @@ function RouteComponent() {
   } = Route.useRouteContext();
   const callLogoutFn = useServerFn(logoutFn);
   const { currentUser, appConfig } = Route.useLoaderData();
-  const callUpdateUserPreferences = useServerFn(updateUserPreferencesFn);
+  const { updateTheme } = useUserPreferencesUpdater();
   const router = useRouter();
 
   const handleToggleTheme = async () => {
-    await callUpdateUserPreferences({ data: { theme: theme === 'light' ? 'dark' : 'light' } });
+    await updateTheme(theme === 'light' ? 'dark' : 'light');
     router.invalidate();
   };
 
@@ -57,7 +60,10 @@ function RouteComponent() {
           <div className="sticky top-0 h-15 flex items-center px-lg gap-lg border-grey-border border-b stickied:shadow-sticky-top stickied:backdrop-blur-lg">
             <Link to="/dashboard">Marble Backoffice</Link>
             <nav aria-label="Main navigation" className="flex gap-md self-stretch">
-              <Link to="/dashboard" className={navLinkClassName}>
+              <Link to="/dashboard" className={navLinkClassName} activeOptions={{ exact: true }}>
+                Dashboard
+              </Link>
+              <Link to="/organizations" className={navLinkClassName}>
                 Organizations
               </Link>
               <Link to="/licenses" className={navLinkClassName}>
@@ -76,7 +82,7 @@ function RouteComponent() {
               </div>
               <MenuCommand.Menu>
                 <MenuCommand.Trigger>
-                  <Button variant="secondary" mode="icon" appearance="link">
+                  <Button variant="secondary" mode="icon" appearance="link" aria-label="Account menu">
                     <Icon icon="menu-burger" className="size-4" />
                   </Button>
                 </MenuCommand.Trigger>
@@ -94,7 +100,11 @@ function RouteComponent() {
                       <span>Theme</span>
                       <div className="flex gap-xs items-center">
                         <Icon icon="light_mode" className="size-4" />
-                        <Switch checked={theme === 'dark'} onCheckedChange={handleToggleTheme} />
+                        <Switch
+                          checked={theme === 'dark'}
+                          onCheckedChange={handleToggleTheme}
+                          aria-label="Dark theme"
+                        />
                         <Icon icon="dark_mode" className="size-4" />
                       </div>
                     </div>

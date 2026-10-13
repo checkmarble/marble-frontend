@@ -1,15 +1,15 @@
 import { DashboardPage } from '@bo/components/pages/dashboard';
-import { listOrganizationsQueryOptions } from '@bo/data/organization';
-import { noop } from '@tanstack/react-query';
+import { dashboardQueryOptions } from '@bo/data/dashboard';
+import { getDashboardPreferences } from '@bo/utils/dashboard-preferences';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_app/_private/dashboard')({
-  component: RouteComponent,
+  component: DashboardPage,
   loader: ({ context }) => {
-    context.queryClient.query(listOrganizationsQueryOptions()).catch(noop);
+    const { months } = getDashboardPreferences(
+      context.userPreferences.dashboard,
+      context.currentUser.actor_identity.user_id,
+    );
+    context.queryClient.prefetchQuery(dashboardQueryOptions(months));
   },
 });
-
-function RouteComponent() {
-  return <DashboardPage />;
-}

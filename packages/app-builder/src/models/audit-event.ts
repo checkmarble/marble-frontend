@@ -1,7 +1,7 @@
 import { type AuditEventDto } from 'marble-api/generated/marblecore-api';
 
 export interface AuditEventActor {
-  type: 'user' | 'api_key';
+  type: 'user' | 'api_key' | 'system';
   id: string;
   name: string;
 }

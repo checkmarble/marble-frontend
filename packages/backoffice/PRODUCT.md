@@ -79,10 +79,13 @@ manual, multi-system setup into a reviewable, repeatable artifact.
 - Built on the shared Marble frontend monorepo: TanStack Start (SSR),
   TanStack Router (file-based routing), TanStack Query / Form, tRPC, Firebase
   auth, Zod validation, `marble-api`, `ui-design-system`, `ui-icons`, Sentry.
+- **Dashboard** — the operator's landing surface shows organizations, tenants,
+  users and licences totals as selectable tiles; the selected indicator shows its
+  listed population and weekly creations side by side, known-date recent records and
+  a link to management. Historical gaps are explicit; browser preferences remember
+  the shared period and the selected indicator.
 - **In scope now, not yet built** (treat as committed product surfaces to
   design, not scaffolding to ignore):
-  - **Dashboard** — the operator's landing surface; currently renders nothing
-    and needs a real operational overview.
   - **Licences** — a genuine feature (licence management); currently a
     placeholder.
   - **Organization settings** — org-level settings surface; route exists,

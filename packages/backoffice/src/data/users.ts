@@ -1,3 +1,4 @@
+import { dashboardQueryKey } from '@bo/data/dashboard';
 import {
   type CreateGlobalUserPayload,
   type OrganizationGrantTarget,
@@ -41,7 +42,7 @@ export const useCreateGlobalUserMutationOptions = () => {
   return mutationOptions({
     mutationFn: (payload: CreateGlobalUserPayload) => createGlobalUser({ data: payload }),
     meta: {
-      invalidates: () => [['users']],
+      invalidates: () => [['users'], dashboardQueryKey],
     },
   });
 };
@@ -52,7 +53,7 @@ export const useUpdateGlobalUserMutationOptions = () => {
   return mutationOptions({
     mutationFn: (payload: UpdateGlobalUserPayload) => updateGlobalUser({ data: payload }),
     meta: {
-      invalidates: () => [['users']],
+      invalidates: () => [['users'], dashboardQueryKey],
     },
   });
 };

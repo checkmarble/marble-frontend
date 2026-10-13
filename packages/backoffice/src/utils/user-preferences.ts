@@ -1,8 +1,10 @@
 import { env } from '@bo/env';
+import type { StoredDashboardPreferences } from '@bo/utils/dashboard-preferences';
 import { useSession } from '@tanstack/react-start/server';
 
-type UserPreferences = {
+export type UserPreferences = {
   theme: 'dark' | 'light';
+  dashboard?: StoredDashboardPreferences;
 };
 
 export function useUserPreferences() {
