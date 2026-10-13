@@ -163,6 +163,7 @@
   "users.role.builder": "BUILDER",
   "users.role.nudge": "Assign roles and streamline your team's workflow with ease",
   "users.role.publisher": "PUBLISHER",
+  "users.role.tenant_admin": "TENANT ADMIN",
   "users.role.unknown": "UNKNOWN",
   "users.role.viewer": "VIEWER",
   "users.tfa": "Two-factor auth",

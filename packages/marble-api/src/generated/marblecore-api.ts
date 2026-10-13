@@ -64,7 +64,7 @@ export type Token = {
 export type CredentialsDto = {
     credentials: {
         organization_id: string;
-        role: string;
+        roles?: string[];
         actor_identity: {
             user_id?: string;
             email?: string;
