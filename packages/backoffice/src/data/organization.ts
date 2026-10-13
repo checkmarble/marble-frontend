@@ -14,6 +14,7 @@ import {
   importOrganizationFn,
   listOrganizationArchetypesFn,
   patchOrganizationFeaturesFn,
+  updateOrganizationEnvironmentFn,
 } from '@bo/server-fns/organization';
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
@@ -106,6 +107,15 @@ export const createEmptyOrganization = () =>
 export const importOrganization = () =>
   mutationOptions({
     mutationFn: (payload: OrgImportSpec) => importOrganizationFn({ data: payload }),
+    meta: {
+      invalidates: () => [['organizations']],
+    },
+  });
+
+export const updateOrganizationEnvironment = () =>
+  mutationOptions({
+    mutationFn: (payload: { orgId: string; environment: 'production' | 'staging' }) =>
+      updateOrganizationEnvironmentFn({ data: payload }),
     meta: {
       invalidates: () => [['organizations']],
     },

@@ -732,6 +732,7 @@ components:
         name:
           type: string
           minLength: 1
+          pattern: '.*\S.*'
           description: New tenant name. Must not be blank.
     MergeTenantsBodyDto:
       type: object
@@ -750,7 +751,9 @@ components:
             format: uuid
         name:
           type: string
-          description: When set, the target tenant is renamed to this value.
+          minLength: 1
+          pattern: '.*\S.*'
+          description: When set, the target tenant is renamed to this value. Must not be blank.
 
     OrganizationDto:
       type: object
