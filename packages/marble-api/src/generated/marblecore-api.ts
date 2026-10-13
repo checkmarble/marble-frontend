@@ -6152,7 +6152,7 @@ export function mergeTenants(tenantId: string, body: {
     /** Tenants to merge into the target. Must not include the target or a nil id.
      */
     source_tenant_ids: string[];
-    /** When set, the target tenant is renamed to this value. */
+    /** When set, the target tenant is renamed to this value. Must not be blank. */
     name?: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{

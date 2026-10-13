@@ -1,6 +1,11 @@
 import { makeQueryErrorComponent } from '@bo/components/common/ErrorComponent';
 import { SuspenseQuery } from '@bo/components/core/SuspenseQuery';
-import { applyOrganizationArchetype, createEmptyOrganization, listOrganizationArchetypes } from '@bo/data/organization';
+import {
+  applyOrganizationArchetype,
+  createEmptyOrganization,
+  listOrganizationArchetypes,
+  updateOrganizationEnvironment,
+} from '@bo/data/organization';
 import { orgImportSpecSchema } from '@bo/schemas/org-import';
 import { createEmptyOrganizationFnInputSchema } from '@bo/server-fns/organization';
 import { useForm } from '@tanstack/react-form';
@@ -115,7 +120,9 @@ function MethodRow({
 
 function UploadMethod({ onChooseFlow }: { onChooseFlow: (flow: OrganizationCreationFlow) => void }) {
   const [error, setError] = useState<string | null>(null);
-  const [environment, setEnvironment] = useState<CreatableOrganizationEnvironment>('production');
+  // Unset until the operator picks a radio. The import then keeps the environment
+  // from the file; a click is the only thing that replaces it.
+  const [environmentOverride, setEnvironmentOverride] = useState<CreatableOrganizationEnvironment | null>(null);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: async (acceptedFiles, fileRejections) => {
@@ -133,7 +140,9 @@ function UploadMethod({ onChooseFlow }: { onChooseFlow: (flow: OrganizationCreat
         if (parsed.success) {
           onChooseFlow({
             type: 'import',
-            data: { ...parsed.data, org: { ...parsed.data.org, environment } },
+            data: environmentOverride
+              ? { ...parsed.data, org: { ...parsed.data.org, environment: environmentOverride } }
+              : parsed.data,
           });
         } else {
           // Surface the offending paths — a generic message here makes a spec produced by a
@@ -152,7 +161,10 @@ function UploadMethod({ onChooseFlow }: { onChooseFlow: (flow: OrganizationCreat
 
   return (
     <div className="flex flex-col gap-md">
-      <EnvironmentField value={environment} onChange={setEnvironment} />
+      <div className="flex flex-col gap-xs">
+        <EnvironmentField value={environmentOverride} onChange={setEnvironmentOverride} />
+        <span className="text-grey-secondary text-xs">Uses the environment from the file unless you choose one.</span>
+      </div>
       <div
         {...getRootProps()}
         className={cn(
@@ -245,6 +257,8 @@ function ArchetypeStep({
 }) {
   const router = useRouter();
   const applyMutation = useMutation(applyOrganizationArchetype());
+  const updateEnvironmentMutation = useMutation(updateOrganizationEnvironment());
+  const [createdOrgId, setCreatedOrgId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(archetypes[0]?.name ?? null);
 
   const form = useForm({
@@ -259,12 +273,16 @@ function ArchetypeStep({
     },
     onSubmit: async ({ value, formApi }) => {
       if (!selected || !formApi.state.isValid) return;
-      const { orgId } = await applyMutation.mutateAsync({
+      const { orgId, environmentUpdated } = await applyMutation.mutateAsync({
         name: selected,
         org_name: value.org_name,
         environment,
         admins: value.admins,
       });
+      if (!environmentUpdated) {
+        setCreatedOrgId(orgId);
+        return;
+      }
       router.navigate({ to: '/organizations/$orgId', params: { orgId } });
     },
   });
@@ -304,6 +322,17 @@ function ArchetypeStep({
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          if (createdOrgId) {
+            updateEnvironmentMutation.mutate(
+              { orgId: createdOrgId, environment },
+              {
+                onSuccess: () => {
+                  router.navigate({ to: '/organizations/$orgId', params: { orgId: createdOrgId } });
+                },
+              },
+            );
+            return;
+          }
           form.handleSubmit();
         }}
       >
@@ -398,7 +427,16 @@ function ArchetypeStep({
           )}
         </form.Field>
 
-        {applyMutation.isError ? (
+        {createdOrgId ? (
+          <p role="alert" className="text-red-primary flex items-start gap-xs text-s">
+            <Icon icon="warning" className="mt-px size-4 shrink-0" />
+            <span>
+              {updateEnvironmentMutation.isError
+                ? 'Saving the environment failed. Try again.'
+                : 'This organization was created. Its environment was not saved. Retry applies it to this organization.'}
+            </span>
+          </p>
+        ) : applyMutation.isError ? (
           <p role="alert" className="text-red-primary flex items-start gap-xs text-s">
             <Icon icon="warning" className="mt-px size-4 shrink-0" />
             <span>Could not create the organization. Check the details and try again.</span>
@@ -411,11 +449,15 @@ function ArchetypeStep({
               variant="primary"
               size="large"
               type="submit"
-              disabled={!canSubmit || !selected || applyMutation.isPending}
+              disabled={
+                createdOrgId ? updateEnvironmentMutation.isPending : !canSubmit || !selected || applyMutation.isPending
+              }
               className="self-start"
             >
-              {applyMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
-              Create organization
+              {applyMutation.isPending || updateEnvironmentMutation.isPending ? (
+                <Icon icon="spinner" className="size-4 animate-spin" />
+              ) : null}
+              {createdOrgId ? 'Save environment' : 'Create organization'}
             </Button>
           )}
         </form.Subscribe>

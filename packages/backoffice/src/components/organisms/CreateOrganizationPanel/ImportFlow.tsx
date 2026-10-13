@@ -1,4 +1,4 @@
-import { importOrganization } from '@bo/data/organization';
+import { importOrganization, updateOrganizationEnvironment } from '@bo/data/organization';
 import { OrgImportSpec } from '@bo/schemas/org-import';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
@@ -45,6 +45,8 @@ type ImportEditValues = z.infer<typeof importEditSchema>;
 export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
   const panelSharp = PanelSharpFactory.useSharp();
   const importOrgMutation = useMutation(importOrganization());
+  const updateEnvironmentMutation = useMutation(updateOrganizationEnvironment());
+  const [createdOrgId, setCreatedOrgId] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -83,7 +85,11 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
         },
         admins: value.admins,
       };
-      await importOrgMutation.mutateAsync(editedSpec);
+      const result = await importOrgMutation.mutateAsync(editedSpec);
+      if (!result.environmentUpdated) {
+        setCreatedOrgId(result.orgId);
+        return;
+      }
 
       panelSharp.actions.close();
     },
@@ -97,6 +103,13 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
         onSubmit={(event) => {
           event.preventDefault();
           event.stopPropagation();
+          if (createdOrgId) {
+            updateEnvironmentMutation.mutate(
+              { orgId: createdOrgId, environment: form.state.values.org.environment },
+              { onSuccess: () => panelSharp.actions.close() },
+            );
+            return;
+          }
           form.handleSubmit();
         }}
       >
@@ -267,7 +280,16 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
         <DataModelRecap data={data} />
         <SeedingSection lines={seedLines(data.seeds)} />
 
-        {importOrgMutation.isError ? (
+        {createdOrgId ? (
+          <p role="alert" className="text-red-primary flex items-start gap-xs text-s">
+            <Icon icon="warning" className="mt-px size-4 shrink-0" />
+            <span>
+              {updateEnvironmentMutation.isError
+                ? 'Saving the environment failed. Try again.'
+                : 'This organization was created. Its environment was not saved. Retry applies it to this organization.'}
+            </span>
+          </p>
+        ) : importOrgMutation.isError ? (
           <p role="alert" className="text-red-primary flex items-start gap-xs text-s">
             <Icon icon="warning" className="mt-px size-4 shrink-0" />
             <span>Import failed. Check the settings above and try again.</span>
@@ -282,10 +304,10 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
             <Panel.FooterButton
               type="submit"
               form={FORM_ID}
-              label="Import organization"
+              label={createdOrgId ? 'Save environment' : 'Import organization'}
               variant="primary"
-              disabled={!canSubmit || importOrgMutation.isPending}
-              isLoading={importOrgMutation.isPending}
+              disabled={createdOrgId ? updateEnvironmentMutation.isPending : !canSubmit || importOrgMutation.isPending}
+              isLoading={importOrgMutation.isPending || updateEnvironmentMutation.isPending}
             />
           )}
         </form.Subscribe>
