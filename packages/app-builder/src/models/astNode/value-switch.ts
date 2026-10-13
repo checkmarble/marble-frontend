@@ -1,5 +1,5 @@
+import { formatNumber } from '@app-builder/utils/format';
 import { v7 as uuidv7 } from 'uuid';
-
 import { type AstNode, type CheckNodeId, type IdLessAstNode, injectIdToNode, stripIdFromNode } from './ast-node';
 import { NewAndAstNode } from './builder-ast-node';
 import { type ConstantAstNode, isConstant, NewConstantAstNode } from './constant';
@@ -118,8 +118,15 @@ function getDimensionValueKey(value: string | number): string {
   return `${typeof value}:${String(value)}`;
 }
 
-export function getValueSwitchCellKey(values: Array<string | number>): string {
-  return JSON.stringify(values.map((value) => [typeof value, value]));
+export function getValueSwitchCellKey(values: Array<string | number>, language: string): string {
+  return JSON.stringify(
+    values.map((value) => {
+      if (typeof value === 'number') {
+        return ['number', formatNumber(value, { language })];
+      }
+      return [typeof value, value];
+    }),
+  );
 }
 
 export function getValueSwitchCombinations(model: Pick<ValueSwitchModel, 'dimensions'>): Array<Array<string | number>> {
@@ -131,17 +138,32 @@ export function getValueSwitchCombinations(model: Pick<ValueSwitchModel, 'dimens
   );
 }
 
-export function normalizeValueSwitchThresholds(model: ValueSwitchModel): ValueSwitchModel {
+export function normalizeValueSwitchThresholds(model: ValueSwitchModel, language: string): ValueSwitchModel {
   const thresholds = Object.fromEntries(
     getValueSwitchCombinations(model).map((values) => {
-      const key = getValueSwitchCellKey(values);
+      const key = getValueSwitchCellKey(values, language);
       return [key, model.thresholds[key] ?? model.fallback];
     }),
   );
   return { ...model, thresholds };
 }
 
-export function isValueSwitchModelComplete(model: ValueSwitchModel): boolean {
+export function rekeyValueSwitchThresholds(
+  model: ValueSwitchModel,
+  previousLanguage: string,
+  language: string,
+): ValueSwitchModel {
+  if (previousLanguage === language) return model;
+  const thresholds = Object.fromEntries(
+    getValueSwitchCombinations(model).map((values) => [
+      getValueSwitchCellKey(values, language),
+      model.thresholds[getValueSwitchCellKey(values, previousLanguage)] ?? model.fallback,
+    ]),
+  );
+  return { ...model, thresholds };
+}
+
+export function isValueSwitchModelComplete(model: ValueSwitchModel, language: string): boolean {
   if (model.dimensions.length !== model.dimensionCount || !Number.isFinite(model.fallback)) return false;
   if (model.dimensions.some((dimension) => !dimension || dimension.values.length === 0)) return false;
   const dimensions = model.dimensions.filter((dimension): dimension is ValueSwitchDimension => dimension !== null);
@@ -165,7 +187,7 @@ export function isValueSwitchModelComplete(model: ValueSwitchModel): boolean {
   const combinations = getValueSwitchCombinations(model);
   return (
     combinations.length > 0 &&
-    combinations.every((values) => Number.isFinite(model.thresholds[getValueSwitchCellKey(values)]))
+    combinations.every((values) => Number.isFinite(model.thresholds[getValueSwitchCellKey(values, language)]))
   );
 }
 
@@ -185,8 +207,8 @@ function buildAtomicPredicate(dimension: ValueSwitchDimension, value: string | n
   };
 }
 
-export function valueSwitchModelToAst(model: ValueSwitchModel, rootId?: string): ValueSwitchAstNode {
-  const normalized = normalizeValueSwitchThresholds(model);
+export function valueSwitchModelToAst(model: ValueSwitchModel, language: string, rootId?: string): ValueSwitchAstNode {
+  const normalized = normalizeValueSwitchThresholds(model, language);
   const dimensions = normalized.dimensions.filter((dimension): dimension is ValueSwitchDimension => dimension !== null);
   const children = getValueSwitchCombinations(normalized).map((values): ValueSwitchCaseAstNode => {
     const predicates = values.map((value, index) => buildAtomicPredicate(dimensions[index]!, value));
@@ -194,7 +216,10 @@ export function valueSwitchModelToAst(model: ValueSwitchModel, rootId?: string):
     return {
       id: uuidv7(),
       name: valueSwitchCaseAstNodeName,
-      children: [predicate, NewConstantAstNode({ constant: normalized.thresholds[getValueSwitchCellKey(values)]! })],
+      children: [
+        predicate,
+        NewConstantAstNode({ constant: normalized.thresholds[getValueSwitchCellKey(values, language)]! }),
+      ],
       namedChildren: {},
     };
   });
@@ -244,7 +269,7 @@ function parseCasePredicates(node: ValueSwitchCaseAstNode): AtomicPredicate[] | 
   return parsed ? [parsed] : null;
 }
 
-export function parseValueSwitchAstNode(node: ValueSwitchAstNode): ValueSwitchModel | null {
+export function parseValueSwitchAstNode(node: ValueSwitchAstNode, language: string): ValueSwitchModel | null {
   if (node.children.length === 0) return createEmptyValueSwitchModel(node.namedChildren.fallback.constant);
   if (!node.children.every(isValueSwitchCaseAstNode)) return null;
 
@@ -270,7 +295,7 @@ export function parseValueSwitchAstNode(node: ValueSwitchAstNode): ValueSwitchMo
     }
 
     const values = predicates.map((predicate) => predicate.value);
-    const key = getValueSwitchCellKey(values);
+    const key = getValueSwitchCellKey(values, language);
     if (key in thresholds) return null;
     thresholds[key] = child.children[1].constant;
     predicates.forEach((predicate, index) => {
@@ -289,6 +314,6 @@ export function parseValueSwitchAstNode(node: ValueSwitchAstNode): ValueSwitchMo
   };
   const combinations = getValueSwitchCombinations(model);
   if (combinations.length !== node.children.length) return null;
-  if (combinations.some((values) => !(getValueSwitchCellKey(values) in thresholds))) return null;
+  if (combinations.some((values) => !(getValueSwitchCellKey(values, language) in thresholds))) return null;
   return model;
 }

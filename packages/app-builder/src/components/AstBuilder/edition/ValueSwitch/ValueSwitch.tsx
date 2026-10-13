@@ -20,6 +20,7 @@ import {
   isValueSwitchModelComplete,
   normalizeValueSwitchThresholds,
   parseValueSwitchAstNode,
+  rekeyValueSwitchThresholds,
   type ValueSwitchAstNode,
   type ValueSwitchDimension,
   type ValueSwitchDimensionDefinition,
@@ -87,16 +88,20 @@ type EditValueSwitchProps = Omit<OperandEditModalProps, 'node'> & {
 
 function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
   const { t } = useTranslation(['scenarios', 'common', 'user-scoring']);
+  const language = useFormatLanguage();
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((state) => state.node as ValueSwitchAstNode);
   const data = AstBuilderDataSharpFactory.select((state) => state.data);
   const triggerObjectTable = AstBuilderDataSharpFactory.useSharp().computed.triggerObjectTable.value;
   const onCancel = useCallbackRef(props.onCancel);
-  const initialModel = useMemo(
-    () => parseValueSwitchAstNode(node) ?? createEmptyValueSwitchModel(node.namedChildren.fallback.constant),
-    [node],
+  const [model, setModel] = useState(
+    () => parseValueSwitchAstNode(node, language) ?? createEmptyValueSwitchModel(node.namedChildren.fallback.constant),
   );
-  const [model, setModel] = useState(initialModel);
+  const [modelLanguage, setModelLanguage] = useState(language);
+  if (modelLanguage !== language) {
+    setModelLanguage(language);
+    setModel(rekeyValueSwitchThresholds(model, modelLanguage, language));
+  }
 
   useEffect(() => {
     function onKeyDown(event: globalThis.KeyboardEvent) {
@@ -156,13 +161,13 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
   useEffect(() => {
     if (lastDraftModel.current === model) return;
     lastDraftModel.current = model;
-    const nextAst = valueSwitchModelToAst(model, node.id);
+    const nextAst = valueSwitchModelToAst(model, language, node.id);
     Object.assign(nodeSharp.value.node, nextAst);
     onDraftChange?.(nodeSharp.value.node as ValueSwitchAstNode);
-  }, [model, node.id, nodeSharp, onDraftChange]);
+  }, [language, model, node.id, nodeSharp, onDraftChange]);
 
   function updateModel(updater: (current: ValueSwitchModel) => ValueSwitchModel) {
-    setModel((current) => normalizeValueSwitchThresholds(updater(current)));
+    setModel((current) => normalizeValueSwitchThresholds(updater(current), language));
   }
 
   function setDimensionCount(dimensionCount: 1 | 2) {
@@ -218,8 +223,8 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
         if (combination[dimensionIndex] !== previousValue) continue;
         const nextCombination = [...combination];
         nextCombination[dimensionIndex] = value;
-        thresholds[getValueSwitchCellKey(nextCombination)] =
-          current.thresholds[getValueSwitchCellKey(combination)] ?? current.fallback;
+        thresholds[getValueSwitchCellKey(nextCombination, language)] =
+          current.thresholds[getValueSwitchCellKey(combination, language)] ?? current.fallback;
       }
 
       return {
@@ -233,7 +238,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
   function setThreshold(values: Array<string | number>, threshold: number) {
     updateModel((current) => ({
       ...current,
-      thresholds: { ...current.thresholds, [getValueSwitchCellKey(values)]: threshold },
+      thresholds: { ...current.thresholds, [getValueSwitchCellKey(values, language)]: threshold },
     }));
   }
 
@@ -303,7 +308,7 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
         <Button
           variant="primary"
           onClick={() => props.onSave(nodeSharp.value.node as ValueSwitchAstNode)}
-          disabled={!isValueSwitchModelComplete(model)}
+          disabled={!isValueSwitchModelComplete(model, language)}
         >
           {t('common:validate')}
         </Button>
@@ -359,6 +364,7 @@ function OneDimensionEditor({
   onThresholdChange,
 }: OneDimensionEditorProps) {
   const { t, i18n } = useTranslation(['scenarios']);
+  const language = useFormatLanguage();
   const gridRef = useRef<HTMLDivElement>(null);
   const dimension = model.dimensions[0];
   const currentOption = dimension
@@ -459,7 +465,7 @@ function OneDimensionEditor({
                     </div>
                     <div data-value-switch-cell={`${index}:1`} className="min-w-0">
                       <ScoreInput
-                        value={model.thresholds[getValueSwitchCellKey([value])] ?? model.fallback}
+                        value={model.thresholds[getValueSwitchCellKey([value], language)] ?? model.fallback}
                         onChange={(threshold) => onThresholdChange([value], threshold)}
                       />
                     </div>
@@ -611,6 +617,7 @@ function NumericOneDimensionEditor({
   onThresholdChange,
 }: NumericOneDimensionEditorProps) {
   const { i18n } = useTranslation(['scenarios']);
+  const language = useFormatLanguage();
   const gridRef = useRef<HTMLDivElement>(null);
   const bounds = getNumericValues(dimension.values);
 
@@ -638,7 +645,7 @@ function NumericOneDimensionEditor({
           trailing={
             <div data-value-switch-cell={`${index}:1`} className="min-w-0">
               <ScoreInput
-                value={thresholds[getValueSwitchCellKey([bound])] ?? fallback}
+                value={thresholds[getValueSwitchCellKey([bound], language)] ?? fallback}
                 onChange={(value) => onThresholdChange([bound], value)}
               />
             </div>
@@ -712,6 +719,7 @@ function TwoDimensionEditor({
   onFallbackChange,
 }: TwoDimensionEditorProps) {
   const { t, i18n } = useTranslation(['scenarios']);
+  const language = useFormatLanguage();
   const [rowDimension, columnDimension] = model.dimensions;
   const cellRefs = useRef<Array<HTMLInputElement | null>>([]);
   const tableScrollRef = useRef<HTMLDivElement>(null);
@@ -865,7 +873,11 @@ function TwoDimensionEditor({
                   </th>
                   {columnDimension.values.map((columnValue, columnIndex) => (
                     <td
-                      key={numericRows ? `${rowIndex}:${columnIndex}` : getValueSwitchCellKey([rowValue, columnValue])}
+                      key={
+                        numericRows
+                          ? `${rowIndex}:${columnIndex}`
+                          : getValueSwitchCellKey([rowValue, columnValue], language)
+                      }
                       className={cn(hasCompactCells ? 'p-xs' : 'p-sm', numericRows && 'pt-sm align-top')}
                     >
                       <NumberInput
@@ -879,7 +891,9 @@ function TwoDimensionEditor({
                           row: String(rowValue),
                           column: String(columnValue),
                         })}
-                        value={model.thresholds[getValueSwitchCellKey([rowValue, columnValue])] ?? model.fallback}
+                        value={
+                          model.thresholds[getValueSwitchCellKey([rowValue, columnValue], language)] ?? model.fallback
+                        }
                         onChange={(threshold) => onThresholdChange([rowValue, columnValue], threshold)}
                         onKeyDown={(event) => handleCellKeyDown(event, rowIndex, columnIndex)}
                       />
