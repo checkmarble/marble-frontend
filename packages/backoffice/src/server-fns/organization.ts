@@ -10,6 +10,7 @@ import {
   organizationDataModelInputSchema,
 } from '@bo/schemas/screenings';
 import { createUserPayloadSchema, DUPLICATE_EMAIL_ERROR } from '@bo/schemas/user';
+import { completeOrganizationCreation } from '@bo/server-fns/complete-organization-creation';
 import { isRedirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { backofficeApi, marblecoreApi } from 'marble-api';
@@ -169,6 +170,33 @@ export const createOrganizationUserFn = createServerFn({ method: 'POST' })
 
 export const organizationEnvironmentSchema = z.enum(['production', 'staging']);
 
+const updateOrganizationEnvironment = (
+  orgId: string,
+  environment: z.infer<typeof organizationEnvironmentSchema>,
+  authFetch: typeof fetch,
+) =>
+  marblecoreApi.updateOrganization(
+    orgId,
+    { environment },
+    {
+      baseUrl: env.API_BASE_URL,
+      fetch: authFetch,
+    },
+  );
+
+export const updateOrganizationEnvironmentFnInputSchema = z.object({
+  orgId: z.uuid(),
+  environment: organizationEnvironmentSchema,
+});
+
+/** Retry path for a creation whose environment update failed after the organization existed. */
+export const updateOrganizationEnvironmentFn = createServerFn({ method: 'POST' })
+  .middleware([needAuth])
+  .validator(updateOrganizationEnvironmentFnInputSchema)
+  .handler(async ({ context, data }) => {
+    await updateOrganizationEnvironment(data.orgId, data.environment, context.authFetch);
+  });
+
 export const createEmptyOrganizationFnInputSchema = z.object({
   name: z.string().min(1),
   environment: organizationEnvironmentSchema,
@@ -203,16 +231,11 @@ export const importOrganizationFn = createServerFn({ method: 'POST' })
       fetch: context.authFetch,
     });
 
-    if (data.org.environment === 'production' || data.org.environment === 'staging') {
-      await marblecoreApi.updateOrganization(
-        org_id,
-        { environment: data.org.environment },
-        {
-          baseUrl: env.API_BASE_URL,
-          fetch: context.authFetch,
-        },
-      );
-    }
+    return completeOrganizationCreation({
+      orgId: org_id,
+      environment: data.org.environment,
+      updateEnvironment: (orgId, environment) => updateOrganizationEnvironment(orgId, environment, context.authFetch),
+    });
   });
 
 export const archetypeAdminSchema = z.object({
@@ -249,22 +272,18 @@ export const applyOrganizationArchetypeFn = createServerFn({ method: 'POST' })
       },
     );
 
-    await marblecoreApi.updateOrganization(
-      org_id,
-      { environment: data.environment },
-      {
-        baseUrl: env.API_BASE_URL,
-        fetch: context.authFetch,
+    return completeOrganizationCreation({
+      orgId: org_id,
+      environment: data.environment,
+      updateEnvironment: (orgId, environment) => updateOrganizationEnvironment(orgId, environment, context.authFetch),
+      restrictFeatures: async (orgId) => {
+        const allRestrictedFeatures = R.fromEntries(
+          OVERRIDABLE_FEATURES.map((feature) => [feature, 'restricted'] as const),
+        );
+        await backofficeApi.patchOrganizationFeatures(orgId, allRestrictedFeatures, {
+          baseUrl: env.API_BASE_URL,
+          fetch: context.authFetch,
+        });
       },
-    );
-
-    const allRestrictedFeatures = R.fromEntries(
-      OVERRIDABLE_FEATURES.map((feature) => [feature, 'restricted'] as const),
-    );
-    await backofficeApi.patchOrganizationFeatures(org_id, allRestrictedFeatures, {
-      baseUrl: env.API_BASE_URL,
-      fetch: context.authFetch,
     });
-
-    return { orgId: org_id };
   });

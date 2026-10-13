@@ -13,14 +13,14 @@ export function EnvironmentField({
   value,
   onChange,
 }: {
-  value: CreatableOrganizationEnvironment;
+  value: CreatableOrganizationEnvironment | null;
   onChange: (value: CreatableOrganizationEnvironment) => void;
 }) {
   return (
     <div className="flex flex-col gap-xs">
       <span className="text-grey-primary text-s font-medium">Environment</span>
       <RadioGroup
-        value={value}
+        value={value ?? ''}
         onValueChange={(next) => onChange(next as CreatableOrganizationEnvironment)}
         aria-label="Environment"
       >
