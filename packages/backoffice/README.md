@@ -63,7 +63,7 @@ Firebase Google sign-in, exchanged for a Marble token that we keep in an encrypt
 1. `/sign-in` calls `useFirebase().signInWithGoogle()` (`src/hooks/useFirebase.ts`). Firebase is initialized from `appConfig.auth.firebase`, not from env vars.
 2. The resulting Firebase ID token is posted to `signinFn` (`src/server-fns/auth.ts`), which calls `marblecoreApi.postToken` and stores the returned Marble token in the `auth-session` cookie (`src/utils/session.ts`, sealed with `SESSION_SECRET`).
 3. `authMiddleware` (`src/middlewares/auth.ts`) reads that token and exposes `context.authFetch` — a `fetch` that adds the bearer header, and on a `401` clears the session and redirects to `/sign-in`. `needAuth` composes it and redirects immediately when there is no valid token.
-4. `routes/_app/_private.tsx` additionally requires `currentUser.role === 'MARBLE_ADMIN'`, logging the user out otherwise.
+4. `routes/_app/_private.tsx` additionally requires `currentUser.roles` to include `MARBLE_ADMIN`, logging the user out otherwise.
 5. On firebase deployments, `TokenRefresher` in the same file re-mints the Marble token from the Firebase ID token every 20 minutes via `refreshTokenFn`.
 
 Every server function that talks to the backend goes through `needAuth`, so `context.authFetch` is the only way data leaves the server.

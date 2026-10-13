@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_app/_private')({
     }
 
     // TODO: If user is not a MARBLE_ADMIN, logout the user and redirect to /sign-in with an error message
-    if (currentUser.role !== 'MARBLE_ADMIN') {
+    if (!currentUser.roles?.includes('MARBLE_ADMIN')) {
       await logoutFn();
       throw redirect({ to: '/sign-in' });
     }
