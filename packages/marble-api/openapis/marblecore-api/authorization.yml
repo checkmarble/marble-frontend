@@ -83,14 +83,15 @@ components:
           type: object
           required:
             - organization_id
-            - role
             - actor_identity
             - permissions
           properties:
             organization_id:
               type: string
-            role:
-              type: string
+            roles:
+              type: array
+              items:
+                type: string
             actor_identity:
               type: object
               properties:

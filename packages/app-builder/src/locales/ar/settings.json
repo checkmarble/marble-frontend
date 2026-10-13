@@ -164,6 +164,7 @@
   "users.role.builder": "المنشئ",
   "users.role.nudge": "قم بتعيين الأدوار وتبسيط سير عمل فريقك بسهولة",
   "users.role.publisher": "الناشر",
+  "users.role.tenant_admin": "مسؤول المستأجر",
   "users.role.unknown": "مجهول",
   "users.role.viewer": "المشاهد",
   "users.tfa": "المصادقة الثنائية",

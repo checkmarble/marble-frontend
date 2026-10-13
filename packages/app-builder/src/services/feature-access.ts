@@ -1,4 +1,4 @@
-import { type CurrentUser, isAdmin } from '@app-builder/models';
+import { type CurrentUser, isAdmin, isMarbleAdmin } from '@app-builder/models';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -11,9 +11,9 @@ export const isRestricted = (featureAccess: FeatureAccessLevelDto): boolean => f
 export const isAnalyticsAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
   isAccessible(entitlements.analytics) && permissions.canReadAnalytics;
 
-export const isReadUserAvailable = ({ role }: CurrentUser) => role === 'ADMIN' || role === 'MARBLE_ADMIN';
+export const isReadUserAvailable = (user: CurrentUser) => isAdmin(user) || isMarbleAdmin(user);
 
-export const isReadAllInboxesAvailable = ({ role }: CurrentUser) => role === 'ADMIN' || role === 'MARBLE_ADMIN';
+export const isReadAllInboxesAvailable = (user: CurrentUser) => isAdmin(user) || isMarbleAdmin(user);
 
 export const isInboxAdmin = ({ actorIdentity: { userId } }: CurrentUser, inbox: Inbox) =>
   inbox.users.some((inboxUser) => inboxUser.userId === userId && inboxUser.role === 'admin');
@@ -21,7 +21,7 @@ export const isInboxAdmin = ({ actorIdentity: { userId } }: CurrentUser, inbox: 
 export const canAccessInboxesSettings = (user: CurrentUser, inboxes: Inbox[]) =>
   isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
-export const isReadTagAvailable = ({ role }: CurrentUser) => role === 'ADMIN' || role === 'MARBLE_ADMIN';
+export const isReadTagAvailable = (user: CurrentUser) => isAdmin(user) || isMarbleAdmin(user);
 
 export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) => permissions.canReadApiKey;
 

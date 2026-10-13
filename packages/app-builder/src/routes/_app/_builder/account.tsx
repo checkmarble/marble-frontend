@@ -70,7 +70,11 @@ function AccountPage() {
               <Avatar size="xl" firstName={firstName} lastName={lastName} />
               {fullName ? <p className="text-xl font-semibold tracking-tight">{fullName}</p> : null}
               <div className="flex items-center gap-sm">
-                <Tag color="purple">{t(tKeyForUserRole(currentUser.role))}</Tag>
+                {currentUser.roles.map((role) => (
+                  <Tag key={role} color="purple">
+                    {t(tKeyForUserRole(role))}
+                  </Tag>
+                ))}
                 <Tag color="grey">{org.name}</Tag>
               </div>
               {email ? (

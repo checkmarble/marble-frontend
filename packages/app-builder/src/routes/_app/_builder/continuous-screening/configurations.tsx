@@ -28,7 +28,7 @@ const configurationsLoader = createServerFn()
     });
 
     return {
-      canEdit: ['ADMIN', 'PUBLISHER'].includes(user.role),
+      canEdit: user.roles.some((role) => ['ADMIN', 'PUBLISHER'].includes(role)),
       isAdmin: isAdmin(user),
       configurations,
       datasets,

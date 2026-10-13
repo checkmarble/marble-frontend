@@ -4,7 +4,7 @@ import * as R from 'remeda';
 
 export interface CurrentUser {
   organizationId: string;
-  role: string;
+  roles: string[];
   actorIdentity: {
     userId?: string;
     email?: string;
@@ -53,7 +53,7 @@ export function NewPermissions(): UserPermissions {
 export function adaptCurrentUser(credentials: CredentialsDto['credentials']): CurrentUser {
   return {
     organizationId: credentials.organization_id,
-    role: credentials.role,
+    roles: credentials.roles ?? [],
     actorIdentity: {
       userId: credentials.actor_identity.user_id,
       email: credentials.actor_identity.email,
@@ -90,19 +90,21 @@ export function adaptUser(user: UserDto): User {
   };
 }
 
-export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
+export const isAdmin = (user: CurrentUser) => user.roles.includes('ADMIN');
 
-export const isMarbleAdmin = (user: CurrentUser) => user.role === 'MARBLE_ADMIN';
+export const isMarbleAdmin = (user: CurrentUser) => user.roles.includes('MARBLE_ADMIN');
 
-export const isAnalyst = (user: CurrentUser) => user.role === 'ANALYST';
+export const isAnalyst = (user: CurrentUser) => user.roles.includes('ANALYST');
 
 export const isMarbleCoreUser = (user: CurrentUser) =>
-  ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST'].includes(user.role);
+  user.roles.some((role) => ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST'].includes(role));
 
 export function tKeyForUserRole(role: string): ParseKeys<['settings']> {
   switch (role) {
     case 'ADMIN':
       return 'settings:users.role.admin';
+    case 'TENANT_ADMIN':
+      return 'settings:users.role.tenant_admin';
     case 'PUBLISHER':
       return 'settings:users.role.publisher';
     case 'BUILDER':
