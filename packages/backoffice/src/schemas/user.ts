@@ -27,7 +27,10 @@ const globalUserDetailsSchema = z.object({
   role: z.enum(GLOBAL_USER_ROLES),
 });
 
-export const createGlobalUserPayloadSchema = globalUserDetailsSchema;
+// Only Marble admins can exist outside of an organization
+export const createGlobalUserPayloadSchema = globalUserDetailsSchema.extend({
+  role: z.literal('MARBLE_ADMIN'),
+});
 export type CreateGlobalUserPayload = z.infer<typeof createGlobalUserPayloadSchema>;
 
 export const updateGlobalUserPayloadSchema = globalUserDetailsSchema.extend({

@@ -51,7 +51,7 @@ export function UsersPage() {
         </div>
         <Button size="large" variant="primary" onClick={() => setPanel({ mode: 'create' })}>
           <Icon icon="plus" className="size-4" />
-          Create user
+          Create Marble admin
         </Button>
       </div>
 
@@ -261,7 +261,7 @@ function CreateUserPanel({ onClose }: { onClose: () => void }) {
       first_name: '',
       last_name: '',
       email: '',
-      role: 'VIEWER',
+      role: 'MARBLE_ADMIN',
     } as CreateGlobalUserPayload,
     validators: {
       onMount: createGlobalUserPayloadSchema,
@@ -283,7 +283,10 @@ function CreateUserPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <>
-      <PanelHeader title="Create user" description="Create an account without assigning it to an organization." />
+      <PanelHeader
+        title="Create Marble admin"
+        description="Create a MARBLE_ADMIN account, not assigned to any organization. Organization users are created from their organization page."
+      />
       <form
         id="create-global-user-form"
         className="grid grid-cols-1 gap-md sm:grid-cols-2"
@@ -333,18 +336,6 @@ function CreateUserPanel({ onClose }: { onClose: () => void }) {
             </Field>
           )}
         </form.Field>
-        <form.Field name="role">
-          {(field) => (
-            <Field label="Role" className="sm:col-span-full">
-              <SelectV2<CreateGlobalUserPayload['role']>
-                value={field.state.value}
-                onChange={field.handleChange}
-                placeholder="Select a role"
-                options={GLOBAL_USER_ROLES.map((role) => ({ label: role, value: role }))}
-              />
-            </Field>
-          )}
-        </form.Field>
       </form>
       <Panel.Footer>
         <Panel.FooterButton isCloseButton label="Cancel" disabled={createUserMutation.isPending} />
@@ -353,7 +344,7 @@ function CreateUserPanel({ onClose }: { onClose: () => void }) {
             <Panel.FooterButton
               type="submit"
               form="create-global-user-form"
-              label="Create user"
+              label="Create Marble admin"
               variant="primary"
               disabled={!canSubmit || createUserMutation.isPending}
               isLoading={createUserMutation.isPending}
