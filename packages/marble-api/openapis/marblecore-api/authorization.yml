@@ -85,6 +85,7 @@ components:
             - organization_id
             - actor_identity
             - permissions
+            - used_second_factor
           properties:
             organization_id:
               type: string
@@ -104,9 +105,15 @@ components:
                   type: string
                 last_name:
                   type: string
+                api_key_id:
+                  type: string
+                  format: uuid
                 api_key_name:
                   type: string
             permissions:
               type: array
               items:
                 type: string
+            used_second_factor:
+              type: boolean
+              description: Whether the credentials were authenticated with a second factor.

@@ -16,6 +16,288 @@
       "409":
         $ref: "components.yml#/responses/409"
 
+/iam/roles:
+  get:
+    tags: [Admin]
+    summary: List the organization's custom roles
+    operationId: listRoles
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Custom roles of the organization and their permissions
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/RoleDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+  post:
+    tags: [Admin]
+    summary: Create a custom role
+    operationId: createRole
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateRoleBodyDto"
+    responses:
+      "200":
+        description: The created custom role
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "409":
+        $ref: "components.yml#/responses/409"
+/iam/roles/permissions:
+  put:
+    tags: [Admin]
+    summary: Replace the permissions of a custom role
+    operationId: updateRolePermissions
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateRolePermissionsBodyDto"
+    responses:
+      "200":
+        description: The updated role
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+/iam/groups:
+  get:
+    tags: [Admin]
+    summary: List the organization's groups
+    operationId: listGroups
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Groups of the organization, with their role bindings and members
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/GroupDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+  post:
+    tags: [Admin]
+    summary: Create a group
+    operationId: createGroup
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GroupNameBodyDto"
+    responses:
+      "201":
+        description: The created group
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "409":
+        $ref: "components.yml#/responses/409"
+/iam/groups/{groupId}:
+  parameters:
+    - name: groupId
+      description: ID of the group
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags: [Admin]
+    summary: Get a group
+    operationId: getGroup
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: The group, with its role bindings and members
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+  patch:
+    tags: [Admin]
+    summary: Rename a group
+    operationId: renameGroup
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GroupNameBodyDto"
+    responses:
+      "200":
+        description: The renamed group
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+      "409":
+        $ref: "components.yml#/responses/409"
+  delete:
+    tags: [Admin]
+    summary: Delete a group
+    description: Revokes the role bindings of the group and removes its members. Fails if the group is the only source of the caller's ADMIN role.
+    operationId: deleteGroup
+    security:
+      - bearerAuth: []
+    responses:
+      "204":
+        description: The group has been deleted
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+/iam/groups/{groupId}/members:
+  parameters:
+    - name: groupId
+      description: ID of the group
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  put:
+    tags: [Admin]
+    summary: Replace the members of a group
+    description: >
+      Members must be users of the organization's tenant. Adding members grants
+      them every role binding of the group, so it requires being allowed to
+      grant those role bindings. Fails if it removes the caller from the group
+      that is the only source of their ADMIN role.
+    operationId: replaceGroupMembers
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ReplaceGroupMembersBodyDto"
+    responses:
+      "200":
+        description: The updated group
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+/iam/groups/{groupId}/roles:
+  parameters:
+    - name: groupId
+      description: ID of the group
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  put:
+    tags: [Admin]
+    summary: Replace the role bindings of a group
+    description: >
+      Only admins can grant built-in roles, and custom roles can only grant
+      permissions the caller holds. Fails if it removes the ADMIN role from the
+      group that is the only source of the caller's ADMIN role.
+    operationId: replaceGroupRoles
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ReplaceGroupRolesBodyDto"
+    responses:
+      "200":
+        description: The updated group
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /apikeys:
   get:
     tags:
@@ -916,16 +1198,148 @@ components:
           minLength: 1
           pattern: '.*\S.*'
           description: When set, the target tenant is renamed to this value. Must not be blank.
-    OrganizationGrantRole:
-      type: string
-      enum: [VIEWER, BUILDER, PUBLISHER, ADMIN, ANALYST]
-    ReplaceOrganizationGrantBodyDto:
+    RoleBindingConditionsDto:
       type: object
-      required:
-        - role
+      description: Optional restrictions that must all be satisfied for the role binding to be active.
+      properties:
+        not_before:
+          type: string
+          format: date-time
+        not_after:
+          type: string
+          format: date-time
+        day_of_week:
+          type: array
+          description: Weekdays using Go time.Weekday values (Sunday 0 through Saturday 6).
+          items:
+            type: integer
+            minimum: 0
+            maximum: 6
+        time_of_day:
+          type: array
+          description: Inclusive daily start and end times in HHMM form; a start later than the end spans midnight.
+          minItems: 2
+          maxItems: 2
+          items:
+            type: integer
+            minimum: 0
+            maximum: 2359
+        networks:
+          type: array
+          description: Client IP addresses or CIDR networks allowed to use this binding.
+          items:
+            type: string
+        used_second_factor:
+          type: boolean
+          description: Whether authentication must have used a second factor.
+    CustomRoleSlug:
+      type: string
+      pattern: '^org/[a-zA-Z.]+$'
+      description: Slug of a custom role, prefixed with `org/`.
+    RoleDto:
+      type: object
+      required: [slug, name, permissions]
+      properties:
+        slug:
+          $ref: "#/components/schemas/CustomRoleSlug"
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+    CreateRoleBodyDto:
+      type: object
+      required: [slug, name]
+      properties:
+        slug:
+          $ref: "#/components/schemas/CustomRoleSlug"
+        name:
+          type: string
+    UpdateRolePermissionsBodyDto:
+      type: object
+      required: [role]
       properties:
         role:
-          $ref: "#/components/schemas/OrganizationGrantRole"
+          $ref: "#/components/schemas/CustomRoleSlug"
+        permissions:
+          type: array
+          description: Complete set of permissions of the role. Platform permissions cannot be granted.
+          items:
+            type: string
+    RoleBindingDto:
+      type: object
+      required: [role]
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        role:
+          type: string
+          description: Built-in role name (such as `VIEWER` or `ADMIN`), or the slug of a custom role, prefixed with `org/`.
+        conditions:
+          $ref: "#/components/schemas/RoleBindingConditionsDto"
+    ReplaceOrganizationGrantBodyDto:
+      type: object
+      required: [roles]
+      properties:
+        roles:
+          type: array
+          description: Complete set of role bindings for this user on the organization. An empty array removes all bindings.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
+    GroupDto:
+      type: object
+      required: [id, name, roles, members]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        roles:
+          type: array
+          description: Role bindings the group gives its members in the organization.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
+        members:
+          type: array
+          description: IDs of the users in the group.
+          items:
+            type: string
+            format: uuid
+    GroupNameBodyDto:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          pattern: '.*\S.*'
+          description: Name of the group, unique in the organization (case-insensitive). Must not be blank.
+    ReplaceGroupMembersBodyDto:
+      type: object
+      required: [members]
+      properties:
+        members:
+          type: array
+          description: Complete set of users in the group. An empty array removes all members.
+          items:
+            type: string
+            format: uuid
+    ReplaceGroupRolesBodyDto:
+      type: object
+      required: [roles]
+      properties:
+        roles:
+          type: array
+          description: >
+            Complete set of role bindings of the group. Built-in roles must be
+            organization roles (`API_CLIENT`, `MARBLE_ADMIN` and `TENANT_ADMIN`
+            cannot be bound to a group). An empty array removes all bindings.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
     TenantUserDto:
       type: object
       required:
@@ -935,6 +1349,7 @@ components:
         - first_name
         - last_name
         - picture
+        - roles
       properties:
         user_id:
           type: string
@@ -951,15 +1366,17 @@ components:
           type: string
         picture:
           type: string
-        organization_grant_role:
-          type: string
-          description: Role of the user's direct grant on the requested organization, when any
+        roles:
+          type: array
+          description: Role bindings of the user in the requested organization.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
     UserGrantDto:
       type: object
       required:
         - organization_id
         - tenant_id
-        - role
+        - roles
       properties:
         organization_id:
           type: string
@@ -967,8 +1384,11 @@ components:
         tenant_id:
           type: string
           format: uuid
-        role:
-          $ref: "#/components/schemas/OrganizationGrantRole"
+        roles:
+          type: array
+          description: Role bindings assigned to the user in this organization.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
     ListUserGrantsResponseDto:
       type: object
       required:
@@ -1100,7 +1520,7 @@ components:
         - email
         - first_name
         - last_name
-        - role
+        - roles
         - organization_id
       properties:
         user_id:
@@ -1112,8 +1532,10 @@ components:
           type: string
         last_name:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
         organization_id:
           type: string
           format: uuid
@@ -1129,14 +1551,16 @@ components:
       type: object
       required:
         - email
-        - role
+        - roles
         - first_name
         - last_name
       properties:
         email:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
         organization_id:
           type: string
           format: uuid
@@ -1157,16 +1581,14 @@ components:
           type: string
     UpdateUser:
       type: object
-      required:
-        - email
-        - role
-        - first_name
-        - last_name
       properties:
         email:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          description: When provided, replaces all role bindings for this user.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
         organization_id:
           type: string
           format: uuid
@@ -1181,7 +1603,7 @@ components:
         - description
         - organization_id
         - prefix
-        - role
+        - roles
       properties:
         id:
           type: string
@@ -1193,18 +1615,22 @@ components:
         prefix:
           type: string
           description: 3 first characters of the API key
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
     CreateApiKeyBody:
       type: object
       required:
         - description
-        - role
       properties:
         description:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          description: Role bindings assigned to the API key.
+          items:
+            $ref: "#/components/schemas/RoleBindingDto"
     CreatedApiKeyDto:
       allOf:
         - $ref: "#/components/schemas/ApiKeyDto"

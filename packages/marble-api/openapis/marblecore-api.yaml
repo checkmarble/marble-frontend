@@ -75,6 +75,21 @@ paths:
   /credentials:
     $ref: ./marblecore-api/authorization.yml#/~1credentials
 
+  # IAM
+
+  /iam/roles:
+    $ref: ./marblecore-api/admin.yml#/~1iam~1roles
+  /iam/roles/permissions:
+    $ref: ./marblecore-api/admin.yml#/~1iam~1roles~1permissions
+  /iam/groups:
+    $ref: ./marblecore-api/admin.yml#/~1iam~1groups
+  /iam/groups/{groupId}:
+    $ref: ./marblecore-api/admin.yml#/~1iam~1groups~1{groupId}
+  /iam/groups/{groupId}/members:
+    $ref: ./marblecore-api/admin.yml#/~1iam~1groups~1{groupId}~1members
+  /iam/groups/{groupId}/roles:
+    $ref: ./marblecore-api/admin.yml#/~1iam~1groups~1{groupId}~1roles
+
   /me/organizations:
     $ref: ./marblecore-api/users.yml#/~1me~1organizations
 

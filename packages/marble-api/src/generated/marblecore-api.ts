@@ -71,10 +71,49 @@ export type CredentialsDto = {
             email?: string;
             first_name?: string;
             last_name?: string;
+            api_key_id?: string;
             api_key_name?: string;
         };
         permissions: string[];
+        /** Whether the credentials were authenticated with a second factor. */
+        used_second_factor: boolean;
     };
+};
+export type Slug = string;
+export type Schema = {
+    slug: Slug;
+    name: string;
+    permissions: string[];
+};
+export type Items = {
+    id?: string;
+    /** Built-in role name (such as `VIEWER` or `ADMIN`), or the slug of a custom role, prefixed with `org/`. */
+    role: string;
+    /** Optional restrictions that must all be satisfied for the role binding to be active. */
+    conditions?: {
+        not_before?: string;
+        not_after?: string;
+        /** Weekdays using Go time.Weekday values (Sunday 0 through Saturday 6). */
+        day_of_week?: number[];
+        /** Inclusive daily start and end times in HHMM form; a start later than the end spans midnight. */
+        time_of_day?: number[];
+        /** Client IP addresses or CIDR networks allowed to use this binding. */
+        networks?: string[];
+        /** Whether authentication must have used a second factor. */
+        used_second_factor?: boolean;
+    };
+};
+export type Schema2 = {
+    id: string;
+    name: string;
+    /** Role bindings the group gives its members in the organization. */
+    roles: Items[];
+    /** IDs of the users in the group. */
+    members: string[];
+};
+export type Schema3 = {
+    /** Name of the group, unique in the organization (case-insensitive). Must not be blank. */
+    name: string;
 };
 export type OrganizationEnvironmentDto = "production" | "staging" | "demo";
 export type UserOrganizationDto = {
@@ -1285,7 +1324,7 @@ export type OpenSanctionsDatasetFreshnessDto = {
     version: string;
     up_to_date: boolean;
 };
-export type Schema = {
+export type Schema4 = {
     /** One of Thing, Person, Organization, or Vehicle must be provided */
     query: {
         Thing?: {
@@ -1317,12 +1356,12 @@ export type ScreeningSavedSearch = {
     org_id: string;
     name: string;
     provider: string;
-    config: Schema;
+    config: Schema4;
     created_at: string;
 };
 export type SaveScreeningSearchDto = {
     name: string;
-    config: Schema;
+    config: Schema4;
 };
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
@@ -1654,11 +1693,11 @@ export type UpdateTableBodyDto = {
         [key: string]: any;
     } | null;
 };
-export type Items = {
+export type Items2 = {
     id?: string;
     label?: string;
 };
-export type Schema2 = {
+export type Schema5 = {
     performed?: boolean;
     conflicts?: {
         /** Whether a continuous screening config uses the resource */
@@ -1670,9 +1709,9 @@ export type Schema2 = {
         /** Number of analytics settings referring to the resource */
         analytics_settings: number;
         /** Scenarios using the resource as a trigger object */
-        scenarios: Items[];
+        scenarios: Items2[];
         /** List of scenarios that would have no live or draft version after deleting the resource */
-        empty_scenarios: Items[];
+        empty_scenarios: Items2[];
         /** Map of scenario iterations which components refer to the resource */
         scenario_iterations: {
             [key: string]: {
@@ -1680,12 +1719,12 @@ export type Schema2 = {
                 scenario_id?: string;
                 draft?: boolean;
                 trigger_condition?: boolean;
-                rules?: Items[];
-                screenings?: Items[];
+                rules?: Items2[];
+                screenings?: Items2[];
             };
         };
         /** List of scenarios which workflows use the resource */
-        workflows: Items[];
+        workflows: Items2[];
         /** Whether an active test run uses an iteration that would be disabled */
         test_runs: boolean;
     };
@@ -1846,22 +1885,39 @@ export type ApiKeyDto = {
     organization_id: string;
     /** 3 first characters of the API key */
     prefix: string;
-    role: string;
+    roles: Items[];
 };
 export type CreateApiKeyBody = {
     description: string;
-    role: string;
+    /** Role bindings assigned to the API key. */
+    roles?: Items[];
 };
 export type CreatedApiKeyDto = ApiKeyDto & {
     key: string;
 };
-export type Role = "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
 export type UserDto = {
     user_id: string;
     email: string;
     first_name: string;
     last_name: string;
-    role: string;
+    roles: {
+        id?: string;
+        /** Built-in role name (such as `VIEWER` or `ADMIN`), or the slug of a custom role, prefixed with `org/`. */
+        role: string;
+        /** Optional restrictions that must all be satisfied for the role binding to be active. */
+        conditions?: {
+            not_before?: string;
+            not_after?: string;
+            /** Weekdays using Go time.Weekday values (Sunday 0 through Saturday 6). */
+            day_of_week?: number[];
+            /** Inclusive daily start and end times in HHMM form; a start later than the end spans midnight. */
+            time_of_day?: number[];
+            /** Client IP addresses or CIDR networks allowed to use this binding. */
+            networks?: string[];
+            /** Whether authentication must have used a second factor. */
+            used_second_factor?: boolean;
+        };
+    }[];
     organization_id: string;
     /** Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`. */
     tfa_enabled?: boolean;
@@ -1869,27 +1925,30 @@ export type UserDto = {
     grants?: {
         organization_id: string;
         tenant_id: string;
-        role: Role;
+        /** Role bindings assigned to the user in this organization. */
+        roles: Items[];
     }[];
 };
 export type CreateUser = {
     email: string;
-    role: string;
+    roles: Items[];
     organization_id?: string;
     first_name: string;
     last_name: string;
 };
 export type UpdateUser = {
-    email: string;
-    role: string;
+    email?: string;
+    /** When provided, replaces all role bindings for this user. */
+    roles?: Items[];
     organization_id?: string;
-    first_name: string;
-    last_name: string;
+    first_name?: string;
+    last_name?: string;
 };
-export type Items2 = {
+export type Items3 = {
     organization_id: string;
     tenant_id: string;
-    role: Role;
+    /** Role bindings assigned to the user in this organization. */
+    roles: Items[];
 };
 export type OrganizationDto = {
     id: string;
@@ -2571,6 +2630,271 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
     }>("/credentials", {
         ...opts
     }));
+}
+/**
+ * List the organization's custom roles
+ */
+export function listRoles(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/iam/roles", {
+        ...opts
+    }));
+}
+/**
+ * Create a custom role
+ */
+export function createRole(body: {
+    /** Slug of a custom role, prefixed with `org/`. */
+    slug: string;
+    name: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            slug: Slug;
+            name: string;
+            permissions: string[];
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/iam/roles", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Replace the permissions of a custom role
+ */
+export function updateRolePermissions(body: {
+    role: Slug;
+    /** Complete set of permissions of the role. Platform permissions cannot be granted. */
+    permissions?: string[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/iam/roles/permissions", oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
+}
+/**
+ * List the organization's groups
+ */
+export function listGroups(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema2[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/iam/groups", {
+        ...opts
+    }));
+}
+/**
+ * Create a group
+ */
+export function createGroup(body: {
+    /** Name of the group, unique in the organization (case-insensitive). Must not be blank. */
+    name: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: {
+            id: string;
+            name: string;
+            /** Role bindings the group gives its members in the organization. */
+            roles: Items[];
+            /** IDs of the users in the group. */
+            members: string[];
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/iam/groups", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Get a group
+ */
+export function getGroup(groupId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema2;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/iam/groups/${encodeURIComponent(groupId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Rename a group
+ */
+export function renameGroup(groupId: string, schema: Schema3, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema2;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/iam/groups/${encodeURIComponent(groupId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: schema
+    })));
+}
+/**
+ * Delete a group
+ */
+export function deleteGroup(groupId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/iam/groups/${encodeURIComponent(groupId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Replace the members of a group
+ */
+export function replaceGroupMembers(groupId: string, body: {
+    /** Complete set of users in the group. An empty array removes all members. */
+    members: string[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema2;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/iam/groups/${encodeURIComponent(groupId)}/members`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
+}
+/**
+ * Replace the role bindings of a group
+ */
+export function replaceGroupRoles(groupId: string, body: {
+    /** Complete set of role bindings of the group. Built-in roles must be organization roles (`API_CLIENT`, `MARBLE_ADMIN` and `TENANT_ADMIN` cannot be bound to a group). An empty array removes all bindings.
+     */
+    roles: Items[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema2;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/iam/groups/${encodeURIComponent(groupId)}/roles`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
 }
 /**
  * List the current user's organizations
@@ -5405,7 +5729,7 @@ export function patchDataModelTable(tableId: string, updateTableBodyDto: UpdateT
         data: string;
     } | {
         status: 409;
-        data: Schema2;
+        data: Schema5;
     }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
@@ -5420,7 +5744,7 @@ export function deleteDataModelTable(tableId: string, { perform }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema2;
+        data: Schema5;
     } | {
         status: 401;
         data: string;
@@ -5432,7 +5756,7 @@ export function deleteDataModelTable(tableId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema2;
+        data: Schema5;
     }>(`/data-model/tables/${encodeURIComponent(tableId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -5490,7 +5814,7 @@ export function deleteDataModelField(fieldId: string, { perform }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema2;
+        data: Schema5;
     } | {
         status: 401;
         data: string;
@@ -5502,7 +5826,7 @@ export function deleteDataModelField(fieldId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema2;
+        data: Schema5;
     }>(`/data-model/fields/${encodeURIComponent(fieldId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -5551,9 +5875,9 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                 /** Number of analytics settings referring to the resource */
                 analytics_settings: number;
                 /** Scenarios using the resource as a trigger object */
-                scenarios: Items[];
+                scenarios: Items2[];
                 /** List of scenarios that would have no live or draft version after deleting the resource */
-                empty_scenarios: Items[];
+                empty_scenarios: Items2[];
                 /** Map of scenario iterations which components refer to the resource */
                 scenario_iterations: {
                     [key: string]: {
@@ -5561,12 +5885,12 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                         scenario_id?: string;
                         draft?: boolean;
                         trigger_condition?: boolean;
-                        rules?: Items[];
-                        screenings?: Items[];
+                        rules?: Items2[];
+                        screenings?: Items2[];
                     };
                 };
                 /** List of scenarios which workflows use the resource */
-                workflows: Items[];
+                workflows: Items2[];
                 /** Whether an active test run uses an iteration that would be disabled */
                 test_runs: boolean;
             };
@@ -5586,7 +5910,7 @@ export function deleteDataModelLink(linkId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema2;
+        data: Schema5;
     }>(`/data-model/links/${encodeURIComponent(linkId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -5680,7 +6004,7 @@ export function deleteDataModelPivot(pivotId: string, { perform }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema2;
+        data: Schema5;
     } | {
         status: 401;
         data: string;
@@ -5692,7 +6016,7 @@ export function deleteDataModelPivot(pivotId: string, { perform }: {
         data: string;
     } | {
         status: 409;
-        data: Schema2;
+        data: Schema5;
     }>(`/data-model/pivots/${encodeURIComponent(pivotId)}${QS.query(QS.explode({
         perform
     }))}`, {
@@ -6022,8 +6346,8 @@ export function listUsers({ organizationId, withTfa, withGrants, tenantAccess }:
                 first_name: string;
                 last_name: string;
                 picture: string;
-                /** Role of the user's direct grant on the requested organization, when any */
-                organization_grant_role?: string;
+                /** Role bindings of the user in the requested organization. */
+                roles: Items[];
             }[];
         };
     } | {
@@ -6141,7 +6465,7 @@ export function listUserGrants(userId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            grants: Items2[];
+            grants: Items3[];
         };
     } | {
         status: 400;
@@ -6243,7 +6567,8 @@ export function mergeTenants(tenantId: string, body: {
  * Grant a user a role on an organization of the tenant
  */
 export function replaceOrganizationGrant(tenantId: string, userId: string, body: {
-    role: "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
+    /** Complete set of role bindings for this user on the organization. An empty array removes all bindings. */
+    roles: Items[];
 }, { organizationId }: {
     organizationId?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
