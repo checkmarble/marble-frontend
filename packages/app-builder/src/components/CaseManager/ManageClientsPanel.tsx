@@ -268,37 +268,41 @@ function ObjectItem({
   const { t } = useTranslation('cases');
 
   return (
-    <Card className={cn('p-md flex items-center gap-sm justify-between', kind === 'deleted' && 'opacity-60')}>
-      <div className="flex items-center gap-sm">
-        <Icon
-          icon={subEntityIcon({
-            semanticType: typeHelpers.getSemanticType(tableName),
-            subEntity: typeHelpers.getPersonSubEntity(tableName),
-          })}
-          className="size-4 shrink-0 text-purple-primary"
-        />
-        {getObjectName(dataModel, tableName, data, objectId)}
-        <Tag color="white" size="small" appearance="monospace">
-          {objectId}
-        </Tag>
-        {showRiskLevel ? <ObjectRiskLevel objectType={tableName} objectId={objectId} /> : null}
-        {kind === 'entity' && (
-          <Tag color="grey" size="xs">
-            {t('cases:case_manager.added_entity')}
-          </Tag>
-        )}
-        {kind === 'new' && (
-          <Tag color="purple" size="xs">
-            {t('cases:case_manager.new_entity')}
-          </Tag>
-        )}
-        {kind === 'deleted' && (
-          <Tag color="red" size="xs">
-            {t('cases:case_manager.removed_entity')}
-          </Tag>
-        )}
+    <Card className={cn('p-md', kind === 'deleted' && 'opacity-60')}>
+      <div className="flex items-center gap-sm justify-between">
+        <div className="flex items-center gap-sm">
+          <Icon
+            icon={subEntityIcon({
+              semanticType: typeHelpers.getSemanticType(tableName),
+              subEntity: typeHelpers.getPersonSubEntity(tableName),
+            })}
+            className="size-4 shrink-0 text-purple-primary"
+          />
+          {getObjectName(dataModel, tableName, data, objectId)}
+
+          {showRiskLevel ? <ObjectRiskLevel objectType={tableName} objectId={objectId} /> : null}
+          {kind === 'entity' && (
+            <Tag color="grey" size="xs">
+              {t('cases:case_manager.added_entity')}
+            </Tag>
+          )}
+          {kind === 'new' && (
+            <Tag color="purple" size="xs">
+              {t('cases:case_manager.new_entity')}
+            </Tag>
+          )}
+          {kind === 'deleted' && (
+            <Tag color="red" size="xs">
+              {t('cases:case_manager.removed_entity')}
+            </Tag>
+          )}
+        </div>
+        {action}
       </div>
-      {action}
+
+      <Tag color="white" size="small" appearance="monospace">
+        {objectId}
+      </Tag>
     </Card>
   );
 }
