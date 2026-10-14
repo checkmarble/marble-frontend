@@ -112,12 +112,13 @@ function ScenarioHome() {
 
   const scenarioToWatch = liveScenarioIteration ?? lastScenarioIteration;
   const scenarioToEdit = liveScenarioIteration ?? lastScenarioIteration;
+  const canEditScenario = featureAccess.isEditScenarioAvailable;
 
   return (
     <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-xs">
-          <ScenarioHeader isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} scenario={currentScenario} />
+          <ScenarioHeader isEditScenarioAvailable={canEditScenario} scenario={currentScenario} />
         </div>
       </Page.Header>
       <Page.Content width="readable">
@@ -127,12 +128,9 @@ function ScenarioHome() {
           </Callout>
         ) : null}
         <section className="flex flex-row gap-lg items-center">
-          {currentScenario.description || featureAccess.isEditScenarioAvailable ? (
+          {currentScenario.description || canEditScenario ? (
             <Page.Description withIcon={false} className="flex-1">
-              <ScenarioDescriptionEditable
-                isEditScenarioAvailable={featureAccess.isEditScenarioAvailable}
-                scenario={currentScenario}
-              />
+              <ScenarioDescriptionEditable isEditScenarioAvailable={canEditScenario} scenario={currentScenario} />
             </Page.Description>
           ) : null}
           <div className="flex flex-row gap-md">
@@ -149,7 +147,7 @@ function ScenarioHome() {
                 {liveScenarioIteration ? t('scenarios:home.live_version') : t('scenarios:home.last_version')}
               </Link>
             ) : null}
-            {draftScenario && featureAccess.isEditScenarioAvailable ? (
+            {canEditScenario && draftScenario ? (
               <Link
                 to="/detection/scenarios/$scenarioId/i/$iterationId"
                 params={{
@@ -161,7 +159,8 @@ function ScenarioHome() {
                 <Icon icon="edit" className="size-4" />
                 {t('scenarios:update_scenario.title')}
               </Link>
-            ) : !draftScenario && scenarioToEdit?.id ? (
+            ) : null}
+            {canEditScenario && !draftScenario && scenarioToEdit ? (
               <CreateDraftIteration
                 iterationId={scenarioToEdit.id}
                 scenarioId={currentScenario.id}
