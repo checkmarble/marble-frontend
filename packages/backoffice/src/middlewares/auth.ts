@@ -22,7 +22,7 @@ export const authMiddleware = createMiddleware()
         const response = await fetchWithToken(authToken.access_token, input, init);
 
         if (response.status === 401) {
-          if (context.appConfig.auth.provider === 'oidc') {
+          if (context.appConfig.auth.providers.includes('oidc')) {
             // TODO: Manage OIDC refresh token
           }
 

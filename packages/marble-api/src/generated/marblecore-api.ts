@@ -1789,7 +1789,7 @@ export type AppConfigDto = {
         blobs: string[];
     };
     auth: {
-        provider: "firebase" | "oidc";
+        providers: ("firebase" | "oidc")[];
         firebase: {
             is_emulator: boolean;
             emulator_host: string;

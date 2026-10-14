@@ -42,7 +42,7 @@ function AccountPage() {
   const { theme, setTheme } = useTheme();
   const appConfig = AppConfigContext.useValue();
   const { versions } = appConfig;
-  const isFirebaseAuth = appConfig.auth.provider === 'firebase';
+  const isFirebaseAuth = appConfig.auth.providers.includes('firebase');
   const layoutData = useBuilderLayoutData();
   const isAutoAssignmentAvailable = layoutData?.featuresAccess.isAutoAssignmentAvailable ?? false;
 

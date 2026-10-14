@@ -18,7 +18,7 @@ export const Route = createFileRoute('/oidc/auth')({
         const { appConfigRepository } = initServerServices(request);
         const appConfig = await appConfigRepository.getAppConfig();
 
-        if (appConfig.auth.provider !== 'oidc') {
+        if (!appConfig.auth.providers.includes('oidc')) {
           return Response.redirect(new URL('/sign-in', request.url).toString(), 302);
         }
 

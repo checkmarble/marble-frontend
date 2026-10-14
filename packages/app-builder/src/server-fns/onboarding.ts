@@ -13,7 +13,7 @@ export const createInitialOrgFn = createServerFn({ method: 'POST' })
 
     // OIDC instances delegate credentials to the identity provider, so the
     // password is dropped there and mandatory everywhere else.
-    const requiresPassword = context.appConfig?.auth.provider !== 'oidc';
+    const requiresPassword = context.appConfig?.auth.providers.includes('firebase') ?? true;
 
     if (requiresPassword && (!password || password.length < MIN_PASSWORD_LENGTH)) {
       throw new Error(`A password of at least ${MIN_PASSWORD_LENGTH} characters is required`);

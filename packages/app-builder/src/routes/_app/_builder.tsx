@@ -32,7 +32,7 @@ import { Icon } from 'ui-icons';
 const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async function appBuilderLayout({ context }) {
-    const { user, inbox, organization, entitlements } = context.authInfo;
+    const { user, inbox, organization, entitlements, provider } = context.authInfo;
     const [organizationDetail, organizations, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
       organization.getCurrentOrganization(),
       organization.listMyOrganizations(),
@@ -63,7 +63,8 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
         isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
         userScoring: isAnalyst(user) ? ('restricted' as const) : entitlements.userScoring,
       },
-      authProvider: context.appConfig.auth.provider,
+      authProviders: context.appConfig.auth.providers,
+      authProvider: provider,
       sentryReplayEnabled: organizationDetail.sentryReplayEnabled,
     };
   });
@@ -119,6 +120,7 @@ function Builder() {
         currentOrganization={organization}
         organizations={organizations}
         currentUserEmail={user.actorIdentity.email}
+        authProvider={authProvider}
       >
         <OrganizationDetailsContextProvider org={organization} currentUser={user} organizations={organizations}>
           <OrganizationUsersContextProvider orgUsers={orgUsers}>
