@@ -16,6 +16,8 @@ import { AstBuilderDataSharpFactory } from './Provider';
 import { ValueSwitchValueTag } from './ValueSwitchValueTag';
 
 const MAX_PREVIEW_VALUES = 6;
+// Intl's default of 3 fraction digits rounds scores such as 0.0004 to 0.
+const SCORE_MAXIMUM_FRACTION_DIGITS = 10;
 
 export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwitchAstNode> }) {
   const { t } = useTranslation('scenarios');
@@ -23,8 +25,8 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const data = dataSharp.select((state) => state.data);
   // Parsing only reads children and namedChildren; ids are irrelevant to the preview.
-  const model = parseValueSwitchAstNode(node as ValueSwitchAstNode, language);
-  if (!model || !isValueSwitchModelComplete(model, language)) return null;
+  const model = parseValueSwitchAstNode(node as ValueSwitchAstNode);
+  if (!model || !isValueSwitchModelComplete(model)) return null;
 
   const [rowDimension, columnDimension] = model.dimensions;
   if (!rowDimension) return null;
@@ -59,7 +61,7 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
   const lastRowValue = rows.at(-1);
 
   function formatScore(score: number) {
-    return formatNumber(score, { language });
+    return formatNumber(score, { language, maximumFractionDigits: SCORE_MAXIMUM_FRACTION_DIGITS });
   }
 
   return (
@@ -123,13 +125,13 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
                   columns.map((columnValue) => (
                     <td key={columnValue} className="p-sm text-center">
                       <span dir="ltr">
-                        {formatScore(model.thresholds[getValueSwitchCellKey([rowValue, columnValue], language)]!)}
+                        {formatScore(model.thresholds[getValueSwitchCellKey([rowValue, columnValue])]!)}
                       </span>
                     </td>
                   ))
                 ) : (
                   <td className="p-sm">
-                    <span dir="ltr">{formatScore(model.thresholds[getValueSwitchCellKey([rowValue], language)]!)}</span>
+                    <span dir="ltr">{formatScore(model.thresholds[getValueSwitchCellKey([rowValue])]!)}</span>
                   </td>
                 )}
               </tr>
