@@ -200,12 +200,14 @@ function DetectionScenariosPage() {
       <Page.Content width="table">
         <DetectionNavigationTabs
           actions={
-            <CreateScenario>
-              <Button size="medium">
-                <Icon icon="plus" className="size-6" aria-hidden />
-                {t('scenarios:create_scenario.title')}
-              </Button>
-            </CreateScenario>
+            isEditScenarioAvailable ? (
+              <CreateScenario>
+                <Button size="medium">
+                  <Icon icon="plus" className="size-6" aria-hidden />
+                  {t('scenarios:create_scenario.title')}
+                </Button>
+              </CreateScenario>
+            ) : null
           }
         />
         <Callout variant="outlined">{t('scenarios:list.callout')}</Callout>
