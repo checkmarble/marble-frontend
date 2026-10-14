@@ -149,7 +149,7 @@ function ScenarioHome() {
                 {liveScenarioIteration ? t('scenarios:home.live_version') : t('scenarios:home.last_version')}
               </Link>
             ) : null}
-            {draftScenario ? (
+            {draftScenario && featureAccess.isEditScenarioAvailable ? (
               <Link
                 to="/detection/scenarios/$scenarioId/i/$iterationId"
                 params={{
@@ -161,7 +161,7 @@ function ScenarioHome() {
                 <Icon icon="edit" className="size-4" />
                 {t('scenarios:update_scenario.title')}
               </Link>
-            ) : scenarioToEdit?.id ? (
+            ) : !draftScenario && scenarioToEdit?.id ? (
               <CreateDraftIteration
                 iterationId={scenarioToEdit.id}
                 scenarioId={currentScenario.id}
