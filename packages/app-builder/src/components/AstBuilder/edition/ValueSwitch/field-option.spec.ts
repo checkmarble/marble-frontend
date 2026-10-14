@@ -6,9 +6,6 @@ import {
 } from '@app-builder/models/astNode/value-switch';
 import type { DataModelField } from '@app-builder/models/data-model';
 import { expect, it } from 'vitest';
-
-const language = 'en';
-
 import { getValueSwitchFieldOption, isNumericDimension } from './field-option';
 
 const field: DataModelField = {
@@ -58,10 +55,10 @@ it.each([1, 2] as const)(
       { type: 'field' as const, field: accessor, values: ['ok', 'stale'] },
       ...(dimensionCount === 2 ? [{ type: 'risk-level' as const, values: [1] }] : []),
     ];
-    const thresholds = { [getValueSwitchCellKey(dimensionCount === 2 ? ['stale', 1] : ['stale'], language)]: 42 };
-    const ast = valueSwitchModelToAst({ dimensionCount, dimensions, thresholds, fallback: 9 }, language);
+    const thresholds = { [getValueSwitchCellKey(dimensionCount === 2 ? ['stale', 1] : ['stale'])]: 42 };
+    const ast = valueSwitchModelToAst({ dimensionCount, dimensions, thresholds, fallback: 9 });
     expect(ast.namedChildren.fallback.constant).toBe(9);
-    expect(parseValueSwitchAstNode(ast, language)).toMatchObject({
+    expect(parseValueSwitchAstNode(ast)).toMatchObject({
       dimensions: [{ values: ['ok', 'stale'] }, ...(dimensionCount === 2 ? [{ values: [1] }] : [])],
       fallback: 9,
     });

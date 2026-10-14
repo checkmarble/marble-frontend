@@ -166,7 +166,7 @@ function getValueSwitchDisplayName(
   context: AstNodeStringifierContext,
 ): string {
   // Display name only needs children/namedChildren; ids are irrelevant.
-  const model = parseValueSwitchAstNode(astNode as ValueSwitchAstNode, context.language);
+  const model = parseValueSwitchAstNode(astNode as ValueSwitchAstNode);
   if (!model?.dimensions[0]) {
     return context.t('scenarios:value_switch.menu_label');
   }
