@@ -5,12 +5,16 @@ import {
   type AggregationAstNode,
   aggregationFilterOperators,
   aggregationFiltersWithTypes,
+  type FuzzyMatchFilterAstNode,
   isBinaryAggregationFilter,
   isComplexAggregationFilter,
   isFuzzyMatchFilterOptionsAstNode,
   isUnaryAggregationFilter,
+  NewAggregatorFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
+import { NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { getResolvedEnumValues } from '@app-builder/models/enum-values';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import {
@@ -36,21 +40,28 @@ import { useTranslation } from 'react-i18next';
 import { clone } from 'remeda';
 import { Button, Input, Popover, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { InlineFilterValue, isComplexInlineFilter } from '../AstBuilder/edition/AggregationFilters/InlineFilterValue';
+import { TimestampExtractTimezoneLink } from '../AstBuilder/edition/AggregationFilters/TimestampExtractTimezoneLink';
 import { EditionAstBuilderOperand } from '../AstBuilder/edition/EditionOperand';
 import { OperandEditModal } from '../AstBuilder/edition/EditModal/EditModal';
+import {
+  type AggregationFilterEditModel,
+  createStandardFilterEditModel,
+  createTimestampExtractEditModel,
+  hasEmptyTimestampExtractFilter,
+  hasTimestampExtractFilterForField,
+  toAggregationFilterEditModel,
+  toAggregationFilters,
+} from '../AstBuilder/edition/EditModal/modals/Aggregation/edit-model';
 import { AstBuilderNodeSharpFactory } from '../AstBuilder/edition/node-store';
 import { OperatorSelect } from '../AstBuilder/edition/OperatorSelect';
 import { ListValueInput } from '../UserScoring/SwitchNode/ListValueInput';
 import {
-  addCustomerKpiFilter,
   createCustomerKpiAggregation,
   getCustomerKpiAggregation,
   getCustomerKpiFilterValue,
   getCustomerKpiNavigationOption,
   isCustomerKpiAggregationComplete,
-  removeCustomerKpiFilter,
-  setCustomerKpiFilterField,
-  setCustomerKpiFilterOperator,
   setCustomerKpiFilterValue,
   setCustomerKpiNavigationOption,
 } from './customer-kpis-ast';
@@ -166,6 +177,9 @@ function CustomerKpisConfigurationForm({
   const customLists = AstBuilderDataSharpFactory.select((state) => state.data.customLists);
   const [timeSlice, setTimeSlice] = useState(aggregate?.time_slice ?? 'P1M');
   const [editedFilterIndex, setEditedFilterIndex] = useState<number | null>(null);
+  const [userFilterModels, setUserFilterModels] = useState<AggregationFilterEditModel[]>(() =>
+    toAggregationFilterEditModel(node.namedChildren.filters.children.slice(3)),
+  );
   const language = useFormatLanguage();
 
   const tableName = node.namedChildren.tableName.constant;
@@ -175,7 +189,6 @@ function CustomerKpisConfigurationForm({
     typeof tableName === 'string' ? dataModel.find((dataModelTable) => dataModelTable.name === tableName) : null;
   const tableFields = table?.fields ?? [];
   const currentNavigationOption = getCustomerKpiNavigationOption(node, objectType, dataModel);
-  const userFilters = node.namedChildren.filters.children.slice(3);
 
   const availableOperators = aggregatorOperators.filter((operator) => {
     const supportedTypeInfos = supportedAggregatorsOperatorsTypes[operator];
@@ -187,7 +200,9 @@ function CustomerKpisConfigurationForm({
           supportedAggregatorsOperatorsTypes[functionName].includes(field.dataType as PrimitiveTypes),
         )
       : [];
-  const canSubmit = isCustomerKpiAggregationComplete(node, objectType, dataModel) && !!timeSlice;
+  const hasEmptyTimestampFilter = hasEmptyTimestampExtractFilter(userFilterModels);
+  const canSubmit =
+    isCustomerKpiAggregationComplete(node, objectType, dataModel) && !!timeSlice && !hasEmptyTimestampFilter;
 
   function updateNode(update: (currentNode: AggregationAstNode) => void) {
     nodeSharp.update(() => {
@@ -196,17 +211,40 @@ function CustomerKpisConfigurationForm({
     void nodeSharp.actions.validate();
   }
 
+  function updateUserFilters(filters: AggregationFilterEditModel[]) {
+    setUserFilterModels(filters);
+    updateNode((currentNode) => {
+      currentNode.namedChildren.filters.children = [
+        ...currentNode.namedChildren.filters.children.slice(0, 3),
+        ...toAggregationFilters(filters),
+      ];
+    });
+  }
+
+  function updateUserFilterTableName(tableName: string) {
+    updateUserFilters(
+      userFilterModels.map((filter) => {
+        if (filter.type === 'timestampExtract') return { ...filter, tableName };
+
+        const updatedFilter = clone(filter.filter);
+        updatedFilter.namedChildren.tableName.constant = tableName;
+        return { type: 'standard', filter: updatedFilter };
+      }),
+    );
+  }
+
   function clearConfiguration() {
     nodeSharp.actions.setNodeAtPath('root', createCustomerKpiAggregation());
     setTimeSlice('P1M');
     setEditedFilterIndex(null);
+    setUserFilterModels([]);
     void nodeSharp.actions.validate();
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const expression = nodeSharp.value.node as AggregationAstNode;
-    if (!isCustomerKpiAggregationComplete(expression, objectType, dataModel)) return;
+    if (!isCustomerKpiAggregationComplete(expression, objectType, dataModel) || hasEmptyTimestampFilter) return;
 
     try {
       const payload = {
@@ -264,6 +302,7 @@ function CustomerKpisConfigurationForm({
                 navigationOption={currentNavigationOption}
                 onChange={(navigationOption) => {
                   updateNode((currentNode) => setCustomerKpiNavigationOption(currentNode, navigationOption));
+                  updateUserFilterTableName(navigationOption.targetTableName);
                 }}
               />
             </div>
@@ -350,21 +389,57 @@ function CustomerKpisConfigurationForm({
                   />
                 </div>
               </div>
-              {userFilters.map((filter, index) => {
-                const selectedFieldName = filter.namedChildren.fieldName.constant;
-                const selectedOperator = filter.namedChildren.operator.constant;
+              {userFilterModels.map((filterModel, index) => {
+                const filter =
+                  filterModel.type === 'standard'
+                    ? filterModel.filter
+                    : (filterModel.sourceFilters[0] ?? filterModel.seed);
+                if (!filter) return null;
+
+                const selectedFieldName =
+                  filterModel.type === 'timestampExtract'
+                    ? filterModel.fieldName
+                    : filter.namedChildren.fieldName.constant;
+                const selectedOperator =
+                  filterModel.type === 'timestampExtract' ? 'TimestampExtract' : filter.namedChildren.operator.constant;
                 const selectedField = tableFields.find((field) => field.name === selectedFieldName);
-                const binaryFilter = isBinaryAggregationFilter(filter);
-                const complexFilter = isComplexAggregationFilter(filter);
-                const filterValue = getCustomerKpiFilterValue(filter);
+                const availableFilterFields =
+                  filterModel.type === 'timestampExtract'
+                    ? tableFields.filter(
+                        (field) =>
+                          !hasTimestampExtractFilterForField(
+                            userFilterModels,
+                            filterModel.tableName,
+                            field.name,
+                            index,
+                          ),
+                      )
+                    : tableFields;
+                const binaryFilter =
+                  filterModel.type === 'standard' && isBinaryAggregationFilter(filterModel.filter)
+                    ? filterModel.filter
+                    : undefined;
+                const fuzzyMatchFilter =
+                  filterModel.type === 'standard' &&
+                  isComplexAggregationFilter(filterModel.filter) &&
+                  isFuzzyMatchFilterOptionsAstNode(filterModel.filter.namedChildren.value)
+                    ? (filterModel.filter as FuzzyMatchFilterAstNode)
+                    : undefined;
+                const inlineFilter = isComplexInlineFilter(filterModel) ? filterModel : undefined;
+                const filterValue =
+                  filterModel.type === 'standard'
+                    ? getCustomerKpiFilterValue(filterModel.filter)
+                    : { type: 'stringList' as const, values: [] };
                 const isListFilter = selectedOperator === 'IsInList' || selectedOperator === 'IsNotInList';
                 const enumValues =
-                  typeof selectedFieldName === 'string' && ['=', '!='].includes(selectedOperator ?? '')
+                  filterModel.type === 'standard' &&
+                  typeof selectedFieldName === 'string' &&
+                  ['=', '!='].includes(selectedOperator ?? '')
                     ? getResolvedEnumValues(dataModel, tableName, selectedFieldName)
                     : undefined;
                 const displayName =
-                  complexFilter && !isUndefinedAstNode(filter.namedChildren.value.namedChildren.value)
-                    ? getAstNodeDisplayName(filter.namedChildren.value, {
+                  fuzzyMatchFilter && !isUndefinedAstNode(fuzzyMatchFilter.namedChildren.value.namedChildren.value)
+                    ? getAstNodeDisplayName(fuzzyMatchFilter.namedChildren.value, {
                         t: stringifyContextT,
                         language,
                         customLists,
@@ -373,97 +448,148 @@ function CustomerKpisConfigurationForm({
 
                 return (
                   <div key={filter.id} className="grid grid-cols-subgrid col-span-full items-center">
-                    <span className="text-right">{t('client360:customer_kpis.form.where')}</span>
-                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_24px] gap-sm items-center">
-                      <FieldSelect
-                        value={typeof selectedFieldName === 'string' ? selectedFieldName : ''}
-                        fields={tableFields}
-                        onChange={(value) => {
-                          updateNode((currentNode) => {
-                            setCustomerKpiFilterField(currentNode, index, value);
-                          });
-                        }}
-                      />
-                      <OperatorSelect
-                        operator={typeof selectedOperator === 'string' ? selectedOperator : ''}
-                        options={aggregationFilterOperators.filter(
-                          (operator) =>
-                            !!selectedField &&
-                            (aggregationFiltersWithTypes[operator]?.includes(
-                              selectedField.dataType as PrimitiveTypes,
-                            ) ??
-                              false),
-                        )}
-                        onOperatorChange={(operator) => {
-                          if (!operator) return;
-                          updateNode(() => setCustomerKpiFilterOperator(filter, operator));
-                        }}
-                      />
-                      {isUnaryAggregationFilter(filter) ? (
-                        <span />
-                      ) : binaryFilter && isListFilter ? (
-                        <ListValueInput
-                          value={typeof filterValue === 'string' ? { type: 'stringList', values: [] } : filterValue}
-                          customLists={customLists}
-                          onChange={(value) => {
-                            updateNode(() => setCustomerKpiFilterValue(filter, value));
-                          }}
-                        />
-                      ) : binaryFilter && selectedOperator ? (
-                        <EditionAstBuilderOperand
-                          node={filter.namedChildren.value}
-                          onChange={(value) => {
-                            if (!isKnownOperandAstNode(value)) return;
-                            updateNode(() => {
-                              filter.namedChildren.value = value;
-                            });
-                          }}
-                          optionsDataType={(option) => {
-                            return option.operandType !== 'Modeling' && option.dataType === selectedField?.dataType;
-                          }}
-                          enumValues={enumValues}
-                        />
-                      ) : complexFilter && selectedOperator ? (
-                        <>
-                          <Button
-                            size="large"
-                            type="button"
-                            variant="secondary"
-                            onClick={() => setEditedFilterIndex(index)}
-                          >
-                            {displayName}
-                          </Button>
-                          {editedFilterIndex === index ? (
-                            <OperandEditModal
-                              node={clone(filter.namedChildren.value)}
-                              onSave={(astNode) => {
-                                if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
-                                  updateNode(() => {
-                                    filter.namedChildren.value = astNode;
-                                  });
-                                }
-                                setEditedFilterIndex(null);
-                              }}
-                              onCancel={() => {
-                                setEditedFilterIndex(null);
-                              }}
-                            />
-                          ) : null}
-                        </>
-                      ) : (
-                        <span />
-                      )}
-                      <Button
-                        type="button"
-                        mode="icon"
-                        variant="secondary"
-                        appearance="link"
-                        onClick={() => {
-                          updateNode((currentNode) => removeCustomerKpiFilter(currentNode, index));
-                        }}
+                    <span className="text-right self-start pt-sm">{t('client360:customer_kpis.form.where')}</span>
+                    <div className="flex min-w-0 flex-col gap-sm">
+                      <div
+                        className={
+                          filterModel.type === 'timestampExtract'
+                            ? 'grid grid-cols-[minmax(0,1fr)_auto_auto_24px] items-center gap-sm'
+                            : 'grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_24px] items-center gap-sm'
+                        }
                       >
-                        <Icon icon="delete" className="size-4" />
-                      </Button>
+                        <FieldSelect
+                          value={typeof selectedFieldName === 'string' ? selectedFieldName : ''}
+                          fields={availableFilterFields}
+                          onChange={(value) => {
+                            const nextFilter: AggregationFilterEditModel =
+                              filterModel.type === 'timestampExtract'
+                                ? { ...filterModel, fieldName: value }
+                                : {
+                                    type: 'standard',
+                                    filter: NewAggregatorFilterAstNode({
+                                      namedChildren: {
+                                        tableName: filterModel.filter.namedChildren.tableName,
+                                        fieldName: NewConstantAstNode({ constant: value }),
+                                        operator: NewConstantAstNode({ constant: null }),
+                                        value: NewUndefinedAstNode(),
+                                      },
+                                    }),
+                                  };
+                            updateUserFilters(userFilterModels.with(index, nextFilter));
+                          }}
+                        />
+                        <OperatorSelect
+                          isFilter
+                          operator={typeof selectedOperator === 'string' ? selectedOperator : ''}
+                          options={aggregationFilterOperators.filter(
+                            (operator) =>
+                              !!selectedField &&
+                              (aggregationFiltersWithTypes[operator]?.includes(
+                                selectedField.dataType as PrimitiveTypes,
+                              ) ??
+                                false) &&
+                              (operator !== 'TimestampExtract' ||
+                                !hasTimestampExtractFilterForField(
+                                  userFilterModels,
+                                  tableName,
+                                  selectedFieldName,
+                                  index,
+                                )),
+                          )}
+                          onOperatorChange={(operator) => {
+                            if (!operator) return;
+                            const sourceFilter = clone(filter);
+                            if (filterModel.type === 'timestampExtract') {
+                              sourceFilter.namedChildren.tableName.constant = filterModel.tableName;
+                              sourceFilter.namedChildren.fieldName.constant = filterModel.fieldName;
+                            }
+                            const nextFilter =
+                              operator === 'TimestampExtract'
+                                ? createTimestampExtractEditModel(sourceFilter)
+                                : createStandardFilterEditModel(sourceFilter, operator);
+                            updateUserFilters(userFilterModels.with(index, nextFilter));
+                          }}
+                        />
+                        {filterModel.type === 'timestampExtract' ? (
+                          <TimestampExtractTimezoneLink />
+                        ) : isUnaryAggregationFilter(filter) ? (
+                          <span />
+                        ) : binaryFilter && isListFilter ? (
+                          <ListValueInput
+                            value={typeof filterValue === 'string' ? { type: 'stringList', values: [] } : filterValue}
+                            customLists={customLists}
+                            onChange={(value) => {
+                              const updatedFilter = clone(binaryFilter);
+                              setCustomerKpiFilterValue(updatedFilter, value);
+                              updateUserFilters(
+                                userFilterModels.with(index, { type: 'standard', filter: updatedFilter }),
+                              );
+                            }}
+                          />
+                        ) : binaryFilter && selectedOperator ? (
+                          <EditionAstBuilderOperand
+                            node={binaryFilter.namedChildren.value}
+                            onChange={(value) => {
+                              if (!isKnownOperandAstNode(value)) return;
+                              const updatedFilter = clone(binaryFilter);
+                              updatedFilter.namedChildren.value = value;
+                              updateUserFilters(
+                                userFilterModels.with(index, { type: 'standard', filter: updatedFilter }),
+                              );
+                            }}
+                            optionsDataType={(option) => {
+                              return option.operandType !== 'Modeling' && option.dataType === selectedField?.dataType;
+                            }}
+                            enumValues={enumValues}
+                          />
+                        ) : fuzzyMatchFilter && selectedOperator ? (
+                          <>
+                            <Button
+                              size="large"
+                              type="button"
+                              variant="secondary"
+                              onClick={() => setEditedFilterIndex(index)}
+                            >
+                              {displayName}
+                            </Button>
+                            {editedFilterIndex === index ? (
+                              <OperandEditModal
+                                node={clone(fuzzyMatchFilter.namedChildren.value)}
+                                onSave={(astNode) => {
+                                  if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
+                                    const updatedFilter = clone(fuzzyMatchFilter);
+                                    updatedFilter.namedChildren.value = astNode;
+                                    updateUserFilters(
+                                      userFilterModels.with(index, { type: 'standard', filter: updatedFilter }),
+                                    );
+                                  }
+                                  setEditedFilterIndex(null);
+                                }}
+                                onCancel={() => {
+                                  setEditedFilterIndex(null);
+                                }}
+                              />
+                            ) : null}
+                          </>
+                        ) : (
+                          <span />
+                        )}
+                        <Button
+                          type="button"
+                          mode="icon"
+                          variant="secondary"
+                          appearance="link"
+                          onClick={() => updateUserFilters(userFilterModels.toSpliced(index, 1))}
+                        >
+                          <Icon icon="delete" className="size-4" />
+                        </Button>
+                      </div>
+                      {inlineFilter ? (
+                        <InlineFilterValue
+                          filter={inlineFilter}
+                          onChange={(nextFilter) => updateUserFilters(userFilterModels.with(index, nextFilter))}
+                        />
+                      ) : null}
                     </div>
                   </div>
                 );
@@ -473,7 +599,21 @@ function CustomerKpisConfigurationForm({
                 size="small"
                 variant="secondary"
                 onClick={() => {
-                  updateNode(addCustomerKpiFilter);
+                  if (typeof tableName !== 'string') return;
+                  updateUserFilters([
+                    ...userFilterModels,
+                    {
+                      type: 'standard',
+                      filter: NewAggregatorFilterAstNode({
+                        namedChildren: {
+                          tableName: NewConstantAstNode({ constant: tableName }),
+                          fieldName: NewConstantAstNode({ constant: '' }),
+                          operator: NewConstantAstNode({ constant: null }),
+                          value: NewUndefinedAstNode(),
+                        },
+                      }),
+                    },
+                  ]);
                 }}
               >
                 {t('client360:customer_kpis.form.add_filter')}
@@ -512,6 +652,7 @@ function FieldSelect({ value, fields, onChange }: FieldSelectProps) {
   return (
     <SelectV2
       placeholder={t('client360:customer_kpis.form.select_field')}
+      aria-label={t('client360:customer_kpis.form.select_field')}
       value={value}
       options={fields.map((field) => ({
         label: () => {

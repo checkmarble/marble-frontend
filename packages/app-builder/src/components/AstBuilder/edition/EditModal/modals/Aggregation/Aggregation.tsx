@@ -13,6 +13,7 @@ import {
 } from '@app-builder/models/modale-operators';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { computed } from '@preact/signals-react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Modal, Tooltip } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
@@ -23,13 +24,26 @@ import { OperandEditModalContainer } from '../../Container';
 import { type OperandEditModalProps } from '../../EditModal';
 import { type DataModelFieldOption, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
+import {
+  type AggregationFilterEditModel,
+  hasEmptyTimestampExtractFilter,
+  toAggregationFilterEditModel,
+  toAggregationFilters,
+} from './edit-model';
 
-export function AggregationEditContent({ onChange }: { onChange?: () => void } = {}) {
+export function AggregationEditContent({
+  onChange,
+  onFiltersChange,
+}: {
+  onChange?: () => void;
+  onFiltersChange?: (filters: AggregationFilterEditModel[]) => void;
+} = {}) {
   const { t } = useTranslation(['scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
   const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as AggregationAstNode);
+  const [filters, setFilters] = useState(() => toAggregationFilterEditModel(node.namedChildren.filters.children));
 
   const currentAggregator = node.namedChildren.aggregator.constant;
   const isCurrentRestricted = isRestrictedAggregator(currentAggregator);
@@ -162,7 +176,21 @@ export function AggregationEditContent({ onChange }: { onChange?: () => void } =
           </Callout>
         ) : null}
       </div>
-      <EditFilters aggregatedField={aggregatedField.value} dataModel={dataModel} onChange={onChange} />
+      <EditFilters
+        aggregatedField={aggregatedField.value}
+        dataModel={dataModel}
+        filters={filters}
+        onChange={(nextFilters) => {
+          setFilters(nextFilters);
+          onFiltersChange?.(nextFilters);
+          nodeSharp.update(() => {
+            (nodeSharp.value.node as AggregationAstNode).namedChildren.filters.children =
+              toAggregationFilters(nextFilters);
+          });
+          nodeSharp.actions.validate();
+          onChange?.();
+        }}
+      />
     </>
   );
 }
@@ -173,11 +201,12 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const node = nodeSharp.select((s) => s.node as AggregationAstNode);
   const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
   const isCurrentRestricted = isRestrictedAggregator(node.namedChildren.aggregator.constant);
+  const [hasEmptyTimestampFilter, setHasEmptyTimestampFilter] = useState(false);
 
   return (
     <OperandEditModalContainer
       {...props}
-      saveDisabled={isCurrentRestricted && !hasValidLicense}
+      saveDisabled={(isCurrentRestricted && !hasValidLicense) || hasEmptyTimestampFilter}
       title={
         <div className="flex flex-row items-center justify-center gap-md">
           {t('scenarios:edit_aggregation.title')}
@@ -201,7 +230,9 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
           />
         </Modal.Description>
       </Callout>
-      <AggregationEditContent />
+      <AggregationEditContent
+        onFiltersChange={(filters) => setHasEmptyTimestampFilter(hasEmptyTimestampExtractFilter(filters))}
+      />
     </OperandEditModalContainer>
   );
 }

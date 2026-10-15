@@ -6,17 +6,20 @@ import {
   aggregationFiltersWithTypes,
   type BinaryAggregationFilterAstNode,
   type BinaryAggregationFilterOperator,
+  type FuzzyMatchFilterAstNode,
   isAggregation,
   isAggregationFilterOperator,
   isBinaryAggregationFilter,
   isBinaryAggregationFilterOperator,
   isComplexAggregationFilter,
   isFuzzyMatchFilterOptionsAstNode,
+  isTimestampExtractFilterOptionsAstNode,
   isUnaryAggregationFilter,
   isUnaryAggregationFilterOperator,
   NewAggregatorAstNode,
   NewAggregatorFilterAstNode,
   NewFuzzyMatchFilterOptionsAstNode,
+  NewTimestampExtractFilterOptionsAstNode,
   type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import { adaptAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
@@ -241,11 +244,27 @@ export function setCustomerKpiFilterOperator(filter: AggregationFilterAstNode, o
         value,
       } satisfies BinaryAggregationFilterAstNode['namedChildren'];
     })
-    .otherwise((op) => {
+    .with('IsMultipleOf', () => {
       filter.namedChildren = {
         tableName: filter.namedChildren.tableName,
         fieldName: filter.namedChildren.fieldName,
-        operator: NewConstantAstNode({ constant: op }),
+        operator: NewConstantAstNode({ constant: 'IsMultipleOf' }),
+        value: NewConstantAstNode({ constant: 10 }),
+      };
+    })
+    .with('TimestampExtract', () => {
+      filter.namedChildren = {
+        tableName: filter.namedChildren.tableName,
+        fieldName: filter.namedChildren.fieldName,
+        operator: NewConstantAstNode({ constant: 'TimestampExtract' }),
+        value: NewTimestampExtractFilterOptionsAstNode({ part: 'month', ranges: [[1, 1]] }),
+      };
+    })
+    .otherwise((op) => {
+      (filter as FuzzyMatchFilterAstNode).namedChildren = {
+        tableName: filter.namedChildren.tableName,
+        fieldName: filter.namedChildren.fieldName,
+        operator: NewConstantAstNode({ constant: 'FuzzyMatch' }),
         value: NewFuzzyMatchFilterOptionsAstNode({ value }),
       };
     });
@@ -304,6 +323,20 @@ export function isCustomerKpiAggregationComplete(node: AggregationAstNode, objec
       return false;
     }
     if (isUnaryAggregationFilter(filter)) return true;
+    if (operator === 'IsMultipleOf') {
+      return isConstant(filter.namedChildren.value) && typeof filter.namedChildren.value.constant === 'number';
+    }
+    if (operator === 'TimestampExtract') {
+      const options = filter.namedChildren.value;
+      return (
+        isTimestampExtractFilterOptionsAstNode(options) &&
+        typeof options.namedChildren.part.constant === 'string' &&
+        options.namedChildren.ranges.constant.length > 0 &&
+        options.namedChildren.ranges.constant.every(
+          (range) => Array.isArray(range) && range.length === 2 && range.every((value) => typeof value === 'number'),
+        )
+      );
+    }
 
     const value = getFilterOperand(filter);
     return value.name !== 'Undefined' && isCompleteFilterValue(value as KnownOperandAstNode);

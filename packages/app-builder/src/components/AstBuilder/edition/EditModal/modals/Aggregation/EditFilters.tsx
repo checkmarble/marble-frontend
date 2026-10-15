@@ -4,18 +4,13 @@ import { RemoveButton } from '@app-builder/components/AstBuilder/styles/RemoveBu
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { type DataModel, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
-  type AggregationAstNode,
   aggregationFilterOperators,
   type BinaryAggregationFilterAstNode,
-  type ComplexAggregationFilterAstNode,
+  FuzzyMatchFilterAstNode,
   isBinaryAggregationFilter,
-  isBinaryAggregationFilterOperator,
   isComplexAggregationFilter,
   isFuzzyMatchFilterOptionsAstNode,
-  isUnaryAggregationFilterOperator,
   NewAggregatorFilterAstNode,
-  NewFuzzyMatchFilterOptionsAstNode,
-  type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
@@ -25,10 +20,10 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+import { InlineFilterValue, isComplexInlineFilter } from '../../../AggregationFilters/InlineFilterValue';
+import { TimestampExtractTimezoneLink } from '../../../AggregationFilters/TimestampExtractTimezoneLink';
 import { EditionAstBuilderOperand } from '../../../EditionOperand';
 import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { getErrorsForNode } from '../../../helpers';
@@ -36,19 +31,25 @@ import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperatorSelect } from '../../../OperatorSelect';
 import { OperandEditModal } from '../../EditModal';
 import { type DataModelFieldOption, EditDataModelFieldTableMenu } from './EditDataModelField';
+import {
+  type AggregationFilterEditModel,
+  createStandardFilterEditModel,
+  createTimestampExtractEditModel,
+  hasTimestampExtractFilterForField,
+} from './edit-model';
 
 type EditFiltersProps = {
   aggregatedField: DataModelFieldOption | null;
   dataModel: DataModel;
-  onChange?: () => void;
+  filters: AggregationFilterEditModel[];
+  onChange: (filters: AggregationFilterEditModel[]) => void;
 };
-export function EditFilters({ aggregatedField, dataModel, onChange }: EditFiltersProps) {
+export function EditFilters({ aggregatedField, dataModel, filters, onChange }: EditFiltersProps) {
   const { t } = useTranslation(scenarioI18n);
   const { t: stringifyContextT } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
   const customLists = AstBuilderDataSharpFactory.select((s) => s.data.customLists);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-  const filters = nodeSharp.select((s) => (s.node as AggregationAstNode).namedChildren.filters.children);
   const evaluation = nodeSharp.select((s) => s.validation);
   const [filterEditedIndex, setEditedFilterIndex] = useState<number | null>(null);
 
@@ -70,20 +71,34 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
       </div>
       {filters.length > 0 ? (
         <div className="flex flex-col gap-sm">
-          {filters.map((filter, filterIndex) => {
-            const binaryFilter = isBinaryAggregationFilter(filter);
-            const complexFilter = isComplexAggregationFilter(filter);
+          {filters.map((editFilter, filterIndex) => {
+            const filter =
+              editFilter.type === 'standard' ? editFilter.filter : (editFilter.sourceFilters[0] ?? editFilter.seed);
+            const binaryFilter =
+              editFilter.type === 'standard' && isBinaryAggregationFilter(editFilter.filter)
+                ? editFilter.filter
+                : undefined;
+            const inlineFilter = isComplexInlineFilter(editFilter) ? editFilter : undefined;
+            const fuzzyFilter =
+              editFilter.type === 'standard' && isComplexAggregationFilter(editFilter.filter)
+                ? isFuzzyMatchFilterOptionsAstNode(editFilter.filter.namedChildren.value)
+                  ? (editFilter.filter as FuzzyMatchFilterAstNode)
+                  : undefined
+                : undefined;
+            const complexFilter = !!inlineFilter || !!fuzzyFilter;
             const isLastFilter = filterIndex === filters.length - 1;
             const filteredFieldErrors = getErrorsForNode(evaluation, [
-              filter.namedChildren.fieldName.id,
-              filter.namedChildren.tableName.id,
+              filter?.namedChildren.fieldName.id ?? '',
+              filter?.namedChildren.tableName.id ?? '',
             ]);
-            const operatorErrors = getErrorsForNode(evaluation, filter.namedChildren.operator.id);
-            const valueErrors = binaryFilter ? getErrorsForNode(evaluation, filter.namedChildren.value.id, true) : [];
+            const operatorErrors = getErrorsForNode(evaluation, filter?.namedChildren.operator.id ?? '');
+            const valueErrors = binaryFilter
+              ? getErrorsForNode(evaluation, binaryFilter.namedChildren.value.id, true)
+              : [];
 
             const displayName =
-              complexFilter && !isUndefinedAstNode(filter.namedChildren.value.namedChildren.value)
-                ? getAstNodeDisplayName(filter.namedChildren.value, {
+              fuzzyFilter && !isUndefinedAstNode(fuzzyFilter.namedChildren.value)
+                ? getAstNodeDisplayName(fuzzyFilter.namedChildren.value, {
                     t: stringifyContextT,
                     language,
                     customLists,
@@ -91,160 +106,173 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
                 : '...';
 
             const enumValues =
-              filter.namedChildren.tableName.constant && filter.namedChildren.fieldName.constant
+              editFilter.type === 'standard' &&
+              editFilter.filter.namedChildren.tableName.constant &&
+              editFilter.filter.namedChildren.fieldName.constant
                 ? getResolvedEnumValues(
                     dataModel,
-                    filter.namedChildren.tableName.constant,
-                    filter.namedChildren.fieldName.constant,
+                    editFilter.filter.namedChildren.tableName.constant,
+                    editFilter.filter.namedChildren.fieldName.constant,
                   )
                 : [];
+
+            const tableName =
+              editFilter.type === 'timestampExtract'
+                ? editFilter.tableName
+                : editFilter.filter.namedChildren.tableName.constant;
+            const fieldName =
+              editFilter.type === 'timestampExtract'
+                ? editFilter.fieldName
+                : editFilter.filter.namedChildren.fieldName.constant;
+            const operator =
+              editFilter.type === 'timestampExtract'
+                ? 'TimestampExtract'
+                : editFilter.filter.namedChildren.operator.constant;
+            const availableFieldOptions =
+              editFilter.type === 'timestampExtract'
+                ? options?.filter(
+                    (option) =>
+                      !hasTimestampExtractFilterForField(filters, option.tableName, option.fieldName, filterIndex),
+                  )
+                : options;
+            const availableOperators = aggregationFilterOperators.filter(
+              (candidate) =>
+                candidate !== 'TimestampExtract' ||
+                !hasTimestampExtractFilterForField(filters, tableName, fieldName, filterIndex),
+            );
 
             return (
               <Fragment key={filterIndex}>
                 <div className="border-grey-border flex flex-col gap-md rounded-md border-[0.5px] p-md">
                   <div className="flex items-center justify-between">
                     <div className="text-grey-secondary flex items-center gap-sm ps-sm text-xs">
-                      <span>{t('scenarios:edit_aggregation.filter_field_label')}</span>
-                      <FieldSelect
-                        tableName={tableName}
-                        options={options}
-                        trigger={
-                          <button
-                            type="button"
-                            className={cn(
-                              'text-s bg-surface-card aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-xs',
-                              filteredFieldErrors.length > 0 ? 'border-red-primary' : 'border-grey-border',
-                            )}
-                          >
-                            {filter.namedChildren.fieldName.constant}
-                            <Icon icon="arrow-2-down" className="size-5" />
-                          </button>
-                        }
-                        onChange={(filteredField) => {
-                          nodeSharp.update(() => {
-                            filter.namedChildren.tableName.constant = filteredField.tableName;
-                            filter.namedChildren.fieldName.constant = filteredField.fieldName;
-                          });
-                          nodeSharp.actions.validate();
-                          onChange?.();
-                        }}
-                      />
-                      <span>{t('scenarios:edit_aggregation.filter_operator_label')}</span>
-                      <OperatorSelect
-                        isFilter
-                        options={aggregationFilterOperators}
-                        operator={filter.namedChildren.operator.constant}
-                        onOperatorChange={(operator) => {
-                          nodeSharp.update(() => {
-                            if (isUnaryAggregationFilterOperator(operator)) {
-                              (filter as UnaryAggregationFilterAstNode).namedChildren = {
-                                tableName: filter.namedChildren.tableName,
-                                fieldName: filter.namedChildren.fieldName,
-                                operator: NewConstantAstNode({ constant: operator }),
-                              };
-                              return;
+                      <span className="h-10 flex items-center self-start">
+                        {t('scenarios:edit_aggregation.filter_field_label')}
+                      </span>
+                      <div className="flex flex-col gap-sm">
+                        <div className="flex items-center gap-sm">
+                          <FieldSelect
+                            tableName={tableName ?? undefined}
+                            options={availableFieldOptions}
+                            trigger={
+                              <button
+                                type="button"
+                                className={cn(
+                                  'text-s bg-surface-card aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-xs',
+                                  filteredFieldErrors.length > 0 ? 'border-red-primary' : 'border-grey-border',
+                                )}
+                              >
+                                {fieldName}
+                                <Icon icon="arrow-2-down" className="size-5" />
+                              </button>
                             }
-
-                            if (isBinaryAggregationFilterOperator(operator)) {
-                              const valueNode = match(filter)
-                                .when(
-                                  isBinaryAggregationFilter,
-                                  (binFilter: BinaryAggregationFilterAstNode) => binFilter.namedChildren.value,
-                                )
-                                .when(
-                                  isComplexAggregationFilter,
-                                  (compFilter: ComplexAggregationFilterAstNode) =>
-                                    compFilter.namedChildren.value.namedChildren.value,
-                                )
-                                .otherwise(() => NewUndefinedAstNode());
-
-                              (filter as BinaryAggregationFilterAstNode).namedChildren = {
-                                tableName: filter.namedChildren.tableName,
-                                fieldName: filter.namedChildren.fieldName,
-                                operator: NewConstantAstNode({ constant: operator }),
-                                value: valueNode,
-                              };
-                              return;
-                            }
-
-                            const valueNode = match(filter)
-                              .when(
-                                isBinaryAggregationFilter,
-                                (binFilter: BinaryAggregationFilterAstNode) => binFilter.namedChildren.value,
-                              )
-                              .when(
-                                isComplexAggregationFilter,
-                                (compFilter: ComplexAggregationFilterAstNode) =>
-                                  compFilter.namedChildren.value.namedChildren.value,
-                              )
-                              .otherwise(() => NewUndefinedAstNode());
-
-                            (filter as ComplexAggregationFilterAstNode).namedChildren = {
-                              tableName: filter.namedChildren.tableName,
-                              fieldName: filter.namedChildren.fieldName,
-                              operator: NewConstantAstNode({ constant: operator }),
-                              value: NewFuzzyMatchFilterOptionsAstNode({ value: valueNode }),
-                            };
-
-                            // TODO: Manage complex operator change
-                          });
-                          nodeSharp.actions.validate();
-                          onChange?.();
-                        }}
-                        validationStatus={operatorErrors.length > 0 ? 'error' : 'valid'}
-                      />
-                      {binaryFilter && filter.namedChildren.operator.constant ? (
-                        <>
-                          <span>{t('scenarios:edit_aggregation.filter_value_label')}</span>
-                          <EditionAstBuilderOperand
-                            node={filter.namedChildren.value as KnownOperandAstNode}
-                            onChange={(node) => {
-                              if (isKnownOperandAstNode(node)) {
-                                filter.namedChildren.value = node;
-                                nodeSharp.actions.validate();
-                                onChange?.();
+                            onChange={(filteredField) => {
+                              if (editFilter.type === 'timestampExtract') {
+                                onChange(
+                                  filters.with(filterIndex, {
+                                    ...editFilter,
+                                    tableName: filteredField.tableName,
+                                    fieldName: filteredField.fieldName,
+                                  }),
+                                );
+                                return;
                               }
+
+                              const updatedFilter = R.clone(editFilter.filter);
+                              updatedFilter.namedChildren.tableName.constant = filteredField.tableName;
+                              updatedFilter.namedChildren.fieldName.constant = filteredField.fieldName;
+                              onChange(filters.with(filterIndex, { type: 'standard', filter: updatedFilter }));
                             }}
-                            optionsDataType={(opt) => opt.operandType !== 'Modeling'}
-                            validationStatus={valueErrors.length > 0 ? 'error' : 'valid'}
-                            enumValues={
-                              ['=', '!='].includes(filter.namedChildren.operator.constant) ? enumValues : undefined
-                            }
                           />
-                        </>
-                      ) : null}
-                      {complexFilter && filter.namedChildren.operator.constant ? (
-                        <>
-                          <Button variant="secondary" onClick={() => setEditedFilterIndex(filterIndex)}>
-                            {displayName}
-                          </Button>
-                          {filter.namedChildren.value && filterEditedIndex === filterIndex ? (
-                            <OperandEditModal
-                              node={R.clone(filter.namedChildren.value)}
-                              onSave={(astNode) => {
-                                if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
-                                  filter.namedChildren.value = astNode;
-                                  nodeSharp.actions.validate();
-                                  onChange?.();
+                          <span>{t('scenarios:edit_aggregation.filter_operator_label')}</span>
+                          <OperatorSelect
+                            isFilter
+                            options={availableOperators}
+                            operator={operator}
+                            onOperatorChange={(operator) => {
+                              const source = R.clone(editFilter.type === 'standard' ? editFilter.filter : filter);
+                              if (!source) return;
+                              if (editFilter.type === 'timestampExtract') {
+                                source.namedChildren.tableName.constant = editFilter.tableName;
+                                source.namedChildren.fieldName.constant = editFilter.fieldName;
+                              }
+                              onChange(
+                                filters.with(
+                                  filterIndex,
+                                  operator === 'TimestampExtract'
+                                    ? createTimestampExtractEditModel(source)
+                                    : createStandardFilterEditModel(source, operator),
+                                ),
+                              );
+                            }}
+                            validationStatus={operatorErrors.length > 0 ? 'error' : 'valid'}
+                          />
+                          {editFilter.type === 'timestampExtract' ? <TimestampExtractTimezoneLink /> : null}
+                          {binaryFilter && binaryFilter.namedChildren.operator.constant ? (
+                            <>
+                              <span>{t('scenarios:edit_aggregation.filter_value_label')}</span>
+                              <EditionAstBuilderOperand
+                                node={binaryFilter.namedChildren.value as KnownOperandAstNode}
+                                onChange={(node) => {
+                                  if (isKnownOperandAstNode(node)) {
+                                    const updatedFilter = R.clone(binaryFilter) as BinaryAggregationFilterAstNode;
+                                    updatedFilter.namedChildren.value = node;
+                                    onChange(filters.with(filterIndex, { type: 'standard', filter: updatedFilter }));
+                                  }
+                                }}
+                                optionsDataType={(opt) => opt.operandType !== 'Modeling'}
+                                validationStatus={valueErrors.length > 0 ? 'error' : 'valid'}
+                                enumValues={
+                                  ['=', '!='].includes(binaryFilter.namedChildren.operator.constant)
+                                    ? enumValues
+                                    : undefined
                                 }
-                                setEditedFilterIndex(null);
-                              }}
-                              onCancel={() => {
-                                setEditedFilterIndex(null);
-                              }}
-                            />
+                              />
+                            </>
                           ) : null}
-                        </>
-                      ) : null}
+                          {complexFilter ? (
+                            inlineFilter ? null : (
+                              <>
+                                <Button variant="secondary" onClick={() => setEditedFilterIndex(filterIndex)}>
+                                  {displayName}
+                                </Button>
+                                {fuzzyFilter && filterEditedIndex === filterIndex ? (
+                                  <OperandEditModal
+                                    node={R.clone(fuzzyFilter.namedChildren.value)}
+                                    onSave={(astNode) => {
+                                      if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
+                                        const updatedFilter = R.clone(fuzzyFilter) as FuzzyMatchFilterAstNode;
+                                        updatedFilter.namedChildren.value = astNode;
+                                        onChange(
+                                          filters.with(filterIndex, { type: 'standard', filter: updatedFilter }),
+                                        );
+                                      }
+                                      setEditedFilterIndex(null);
+                                    }}
+                                    onCancel={() => {
+                                      setEditedFilterIndex(null);
+                                    }}
+                                  />
+                                ) : null}
+                              </>
+                            )
+                          ) : null}
+                        </div>
+                        {inlineFilter ? (
+                          <InlineFilterValue
+                            filter={inlineFilter}
+                            onChange={(updatedFilter) => onChange(filters.with(filterIndex, updatedFilter))}
+                          />
+                        ) : null}
+                      </div>
                     </div>
                     <RemoveButton
                       onClick={() => {
-                        filters.splice(filterIndex, 1);
-                        onChange?.();
+                        onChange(filters.toSpliced(filterIndex, 1));
                       }}
                     />
                   </div>
-                  <EditionEvaluationErrors id={filter.id} />
+                  {filter ? <EditionEvaluationErrors id={filter.id} /> : null}
                 </div>
                 {!isLastFilter ? (
                   <div className="text-grey-secondary text-xs">{t('scenarios:logical_operator.and')}</div>
@@ -265,9 +293,11 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
             </Button>
           }
           onChange={(filteredField) => {
-            nodeSharp.update(() => {
-              filters.push(
-                NewAggregatorFilterAstNode({
+            onChange([
+              ...filters,
+              {
+                type: 'standard',
+                filter: NewAggregatorFilterAstNode({
                   namedChildren: {
                     fieldName: NewConstantAstNode({ constant: filteredField.fieldName }),
                     tableName: NewConstantAstNode({ constant: filteredField.tableName }),
@@ -275,10 +305,8 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
                     value: NewUndefinedAstNode(),
                   },
                 }),
-              );
-            });
-            nodeSharp.actions.validate();
-            onChange?.();
+              },
+            ]);
           }}
         />
         {filters.length === 0 ? <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout> : null}

@@ -53,6 +53,7 @@ const dataModel = [
     fields: [
       { name: 'id', dataType: 'Int' },
       { name: 'status', dataType: 'String' },
+      { name: 'occurred_at', dataType: 'Timestamp' },
     ],
   },
 ] as DataModel;
@@ -146,5 +147,29 @@ describe('customer KPI aggregation AST', () => {
     setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
 
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
+  });
+
+  it('accepts complete multiple-of and timestamp-extract filters', () => {
+    const aggregation = createCustomerKpiAggregation();
+    aggregation.namedChildren.label.constant = 'Transaction count';
+    setCustomerKpiNavigationOption(aggregation, navigationOption);
+    aggregation.namedChildren.fieldName.constant = 'id';
+
+    addCustomerKpiFilter(aggregation);
+    const multipleOfFilter = aggregation.namedChildren.filters.children[3];
+    if (!multipleOfFilter) throw new Error('Expected a user filter');
+    multipleOfFilter.namedChildren.fieldName.constant = 'id';
+    setCustomerKpiFilterOperator(multipleOfFilter, 'IsMultipleOf');
+
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
+
+    aggregation.namedChildren.filters.children.splice(3, 1);
+    addCustomerKpiFilter(aggregation);
+    const timestampExtractFilter = aggregation.namedChildren.filters.children[3];
+    if (!timestampExtractFilter) throw new Error('Expected a user filter');
+    timestampExtractFilter.namedChildren.fieldName.constant = 'occurred_at';
+    setCustomerKpiFilterOperator(timestampExtractFilter, 'TimestampExtract');
+
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
   });
 });
