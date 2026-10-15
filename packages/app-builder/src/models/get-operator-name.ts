@@ -98,6 +98,10 @@ export function getOperatorName(
         return t('scenarios:ip_flag.cloud_provider');
       case undefinedAstNodeName:
         return '...';
+      case 'IsMultipleOf':
+        return t('scenarios:operator.filter_is_multiple_of');
+      case 'TimestampExtract':
+        return t('scenarios:operator.filter_timestamp_extract');
       default:
         assertNever('Untranslated operator', operatorName);
     }

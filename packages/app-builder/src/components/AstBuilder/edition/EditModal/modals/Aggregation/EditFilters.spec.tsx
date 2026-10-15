@@ -9,13 +9,19 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import i18next from 'i18next';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
+import { EditAggregation } from './Aggregation';
 import { EditFilters } from './EditFilters';
+import { type AggregationFilterEditModel } from './edit-model';
+
+vi.mock('../../../AggregationFilters/TimestampExtractTimezoneLink', () => ({
+  TimestampExtractTimezoneLink: () => <span>UTC</span>,
+}));
 
 mockResizeObserver();
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -53,7 +59,9 @@ function table(name: string, fields: DataModelField[]): TableModel {
 
 const amount = field('amount', 'Float');
 const status = field('status', 'String');
-const dataModel: DataModel = [table('transactions', [amount, status])];
+const occurredAt = field('occurred_at', 'Timestamp');
+const processedAt = field('processed_at', 'Timestamp');
+const dataModel: DataModel = [table('transactions', [amount, status, occurredAt, processedAt])];
 
 function aggregationNode(): AggregationAstNode {
   const node = NewAggregatorAstNode('COUNT');
@@ -93,14 +101,35 @@ function Harness({ children }: { children: ReactNode }) {
   );
 }
 
+function ControlledEditFilters() {
+  const [filters, setFilters] = useState<AggregationFilterEditModel[]>([]);
+
+  return (
+    <>
+      <EditFilters
+        aggregatedField={{ tableName: 'transactions', fieldName: 'amount', field: amount }}
+        dataModel={dataModel}
+        filters={filters}
+        onChange={setFilters}
+      />
+      <output data-testid="filters">
+        {filters
+          .map((filter) => {
+            if (filter.type === 'timestampExtract') return `timestamp:${filter.fieldName}`;
+
+            return `${filter.filter.namedChildren.operator.constant}:${filter.filter.namedChildren.fieldName.constant}`;
+          })
+          .join(',')}
+      </output>
+    </>
+  );
+}
+
 describe('EditFilters FieldSelect', () => {
   it('opens the add-filter menu and adds a filter when a field is picked', async () => {
     render(
       <Harness>
-        <EditFilters
-          aggregatedField={{ tableName: 'transactions', fieldName: 'amount', field: amount }}
-          dataModel={dataModel}
-        />
+        <ControlledEditFilters />
       </Harness>,
     );
 
@@ -112,5 +141,63 @@ describe('EditFilters FieldSelect', () => {
 
     expect(await screen.findByText('status')).toBeTruthy();
     expect(screen.getByRole('button', { name: /new filter/i })).toBeTruthy();
+  });
+
+  it('preserves the selected TimestampExtract field when changing to a standard operator', async () => {
+    render(
+      <Harness>
+        <ControlledEditFilters />
+      </Harness>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /new filter/i }));
+    await userEvent.click(await screen.findByRole('option', { name: 'occurred_at' }));
+    await userEvent.click(screen.getByRole('button', { name: '...' }));
+    await userEvent.click(await screen.findByRole('option', { name: 'filters by day parts' }));
+
+    await userEvent.click(screen.getByRole('button', { name: 'occurred_at' }));
+    await userEvent.click(await screen.findByRole('option', { name: 'processed_at' }));
+    await userEvent.click(screen.getByRole('button', { name: 'filters by day parts' }));
+    await userEvent.click(await screen.findByRole('option', { name: 'equal to' }));
+
+    expect(screen.getByTestId('filters').textContent).toBe('=:processed_at');
+  });
+
+  it('does not offer TimestampExtract for a field that already has one', async () => {
+    render(
+      <Harness>
+        <ControlledEditFilters />
+      </Harness>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /new filter/i }));
+    await userEvent.click(await screen.findByRole('option', { name: 'occurred_at' }));
+    await userEvent.click(screen.getByRole('button', { name: '...' }));
+    await userEvent.click(await screen.findByRole('option', { name: 'filters by day parts' }));
+
+    await userEvent.click(screen.getByRole('button', { name: /new filter/i }));
+    await userEvent.click(await screen.findByRole('option', { name: 'occurred_at' }));
+    await userEvent.click(screen.getByRole('button', { name: '...' }));
+
+    expect(screen.queryByRole('option', { name: 'filters by day parts' })).toBeNull();
+  });
+
+  it('disables save until a TimestampExtract range is selected', async () => {
+    render(
+      <Harness>
+        <EditAggregation onCancel={vi.fn()} onSave={vi.fn()} />
+      </Harness>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /new filter/i }));
+    await userEvent.click(await screen.findByRole('option', { name: 'occurred_at' }));
+    await userEvent.click(screen.getByRole('button', { name: '...' }));
+    await userEvent.click(await screen.findByRole('option', { name: 'filters by day parts' }));
+
+    expect(screen.getByRole('button', { name: /save/i }).hasAttribute('disabled')).toBe(true);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Jan' }));
+
+    expect(screen.getByRole('button', { name: /save/i }).hasAttribute('disabled')).toBe(false);
   });
 });

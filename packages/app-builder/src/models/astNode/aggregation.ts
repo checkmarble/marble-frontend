@@ -24,7 +24,7 @@ export const binaryAggregationFilterOperators = [
 ] as const;
 export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOperators)[number];
 
-export const complexAggregationFilterOperators = ['FuzzyMatch'] as const;
+export const complexAggregationFilterOperators = ['FuzzyMatch', 'IsMultipleOf', 'TimestampExtract'] as const;
 
 export type ComplexAggregationFilterOperator = (typeof complexAggregationFilterOperators)[number];
 
@@ -44,11 +44,13 @@ export const aggregationFiltersWithTypes: Record<AggregationFilterOperator, Prim
   '<=': ['Int', 'Float', 'Timestamp'],
   '>': ['Int', 'Float', 'Timestamp'],
   '>=': ['Int', 'Float', 'Timestamp'],
+  IsMultipleOf: ['Int'],
   FuzzyMatch: ['String'],
   IsInList: ['String'],
   IsNotInList: ['String'],
   StringEndsWith: ['String'],
   StringStartsWith: ['String'],
+  TimestampExtract: ['Timestamp'],
 };
 
 export const aggregationFilterAstNodeName = 'Filter';
@@ -114,7 +116,7 @@ export function NewFuzzyMatchFilterOptionsAstNode({
   };
 }
 
-export type ComplexAggregationFilterAstNode = {
+export type FuzzyMatchFilterAstNode = {
   id: string;
   name: typeof aggregationFilterAstNodeName;
   constant?: undefined;
@@ -126,6 +128,72 @@ export type ComplexAggregationFilterAstNode = {
     value: FuzzyMatchFilterOptionsAstNode;
   };
 };
+
+export type IsMultipleOfFilterAstNode = {
+  id: string;
+  name: typeof aggregationFilterAstNodeName;
+  constant?: undefined;
+  children: never[];
+  namedChildren: {
+    tableName: ConstantAstNode<string | null>;
+    fieldName: ConstantAstNode<string | null>;
+    operator: ConstantAstNode<'IsMultipleOf'>;
+    value: ConstantAstNode<number>;
+  };
+};
+
+export type TimestampExtractFilterAstNode = {
+  id: string;
+  name: typeof aggregationFilterAstNodeName;
+  constant?: undefined;
+  children: never[];
+  namedChildren: {
+    tableName: ConstantAstNode<string | null>;
+    fieldName: ConstantAstNode<string | null>;
+    operator: ConstantAstNode<'TimestampExtract'>;
+    value: {
+      id: string;
+      name: 'TimestampExtractOptions';
+      children: never[];
+      constant?: undefined;
+      namedChildren: {
+        part: ConstantAstNode<string>;
+        ranges: ConstantAstNode<[number, number][]>;
+      };
+    };
+  };
+};
+
+export type TimestampExtractFilterOptionsAstNode = TimestampExtractFilterAstNode['namedChildren']['value'];
+
+export function isTimestampExtractFilterOptionsAstNode(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<TimestampExtractFilterOptionsAstNode, typeof node> {
+  return node.name === 'TimestampExtractOptions';
+}
+
+export function NewTimestampExtractFilterOptionsAstNode({
+  part,
+  ranges,
+}: {
+  part: string;
+  ranges: [number, number][];
+}): TimestampExtractFilterOptionsAstNode {
+  return {
+    id: uuidv7(),
+    name: 'TimestampExtractOptions',
+    children: [],
+    namedChildren: {
+      part: NewConstantAstNode({ constant: part }),
+      ranges: NewConstantAstNode({ constant: ranges }),
+    },
+  };
+}
+
+export type ComplexAggregationFilterAstNode =
+  | FuzzyMatchFilterAstNode
+  | IsMultipleOfFilterAstNode
+  | TimestampExtractFilterAstNode;
 
 export type AggregationFilterAstNode =
   | UnaryAggregationFilterAstNode

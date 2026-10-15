@@ -9,7 +9,9 @@ import {
 import {
   type AggregationAstNode,
   isAggregation,
-  isUnaryAggregationFilter,
+  isBinaryAggregationFilter,
+  isComplexAggregationFilter,
+  isFuzzyMatchFilterOptionsAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import { type CustomListAccessAstNode, isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
@@ -222,7 +224,9 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
               */}
               <p className="bg-grey-background-light whitespace-nowrap p-sm text-end">{fieldName.constant ?? '...'}</p>
               <ViewingOperator operator={operator.constant} isFilter />
-              {!isUnaryAggregationFilter(filter) ? (
+              {isBinaryAggregationFilter(filter) ? (
+                <ViewingAstBuilderOperand node={filter.namedChildren.value} />
+              ) : isComplexAggregationFilter(filter) && isFuzzyMatchFilterOptionsAstNode(filter.namedChildren.value) ? (
                 <ViewingAstBuilderOperand node={filter.namedChildren.value} />
               ) : null}
             </div>
