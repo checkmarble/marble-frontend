@@ -10,7 +10,7 @@
     "generate-api": "bunx swagger-cli validate openapis/marblecore-api.yaml && bun scripts/generate.ts"
   },
   "devDependencies": {
-    "@types/node": "25.6.2",
+    "@types/node": "26.6.4",
     "oazapfts": "^7.5.0",
     "ora": "^9.4.1",
     "swagger-cli": "^4.0.4",
