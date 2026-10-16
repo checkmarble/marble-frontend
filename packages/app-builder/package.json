@@ -38,9 +38,9 @@
     "jsdom-testing-mocks": "^1.13.1",
     "tailwindcss": "4.3.3",
     "tsx": "^4.22.4",
-    "vite": "8.3.1",
+    "vite": "8.3.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.2"
+    "vitest": "5.0.3"
   },
   "dependencies": {
     "@dagrejs/dagre": "^3.0.0",
@@ -76,9 +76,9 @@
     "@swan-io/boxed": "^3.2.0",
     "@tanstack/react-form": "^1.29.3",
     "@tanstack/react-query": "^5.103.0",
-    "@tanstack/react-router": "1.170.39",
+    "@tanstack/react-router": "1.170.41",
     "@tanstack/react-router-ssr-query": "1.167.3",
-    "@tanstack/react-start": "1.168.58",
+    "@tanstack/react-start": "1.168.60",
     "@tanstack/react-table": "^9.1.2",
     "@tanstack/react-virtual": "3.14.13",
     "@vis.gl/react-maplibre": "^8.1.3",
