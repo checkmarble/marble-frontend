@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@marble/shared": "workspace:*",
-    "@sentry/tanstackstart-react": "^10.52.0",
+    "@sentry/tanstackstart-react": "^11.4.0",
     "@t3-oss/env-core": "^0.13.8",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-devtools": "^0.10.9",
