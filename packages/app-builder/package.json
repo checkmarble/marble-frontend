@@ -108,7 +108,7 @@
     "maplibre-gl": "^6.6.0",
     "marble-api": "workspace:*",
     "match-sorter": "^8.0.0",
-    "nanoid": "^5.1.11",
+    "nanoid": "^6.0.1",
     "nitro": "^3.0.0",
     "object-to-formdata": "^5.0.0",
     "pino": "^10.3.1",
