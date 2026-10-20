@@ -39,6 +39,35 @@
           application/json:
             schema:
               $ref: "#/components/schemas/AppConfigDto"
+/config/usage-tracking:
+  patch:
+    tags:
+      - Application config
+    summary: Enable or disable backend usage tracking for the instance
+    description: Requires organization update permissions. Only available on self-hosted Marble instances. The effective tracking status is returned by GET /config in features.segment.
+    operationId: updateUsageTracking
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - enabled
+            properties:
+              enabled:
+                type: boolean
+    responses:
+      "204":
+        description: Usage tracking preference saved
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 components:
   schemas:
     LegacyAnalyticsDto:

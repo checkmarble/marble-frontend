@@ -6,6 +6,29 @@
 
 @config '../tailwind.config.ts';
 
+/* Probo renders in a shadow root, so pass the current Marble design tokens through
+   its documented host custom properties. The semantic surface/text colors update
+   automatically when ThemeProvider toggles the `dark` class on <html>. */
+probo-cookie-banner {
+  --probo-bg: var(--color-surface-card);
+  --probo-text: var(--color-grey-primary);
+  --probo-text-secondary: var(--color-grey-secondary);
+  --probo-border: var(--color-grey-border);
+  --probo-accent: var(--color-purple-primary);
+  --probo-accent-text: var(--color-grey-white);
+  --probo-radius: var(--radius-lg);
+  --probo-btn-radius: var(--radius-md);
+  --probo-font-size: var(--text-s);
+  --probo-font-family: var(--font-sans);
+  --probo-shadow: 0 0 0 1px var(--probo-border), 0 10px 15px -3px rgb(0 0 0 / 10%),
+    0 4px 6px -4px rgb(0 0 0 / 10%);
+}
+
+/* Marble's filled primary actions use primary text on the lighter dark-mode accent. */
+.dark probo-cookie-banner {
+  --probo-accent-text: var(--color-grey-primary);
+}
+
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still

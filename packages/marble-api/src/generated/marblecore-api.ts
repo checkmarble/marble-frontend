@@ -5797,6 +5797,29 @@ export function getAppConfig(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Enable or disable backend usage tracking for the instance
+ */
+export function updateUsageTracking(body: {
+    enabled: boolean;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/config/usage-tracking", oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body
+    })));
+}
+/**
  * Export an organization's data as JSON file
  */
 export function exportOrganization(opts?: Oazapfts.RequestOpts) {

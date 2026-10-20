@@ -2,7 +2,7 @@ import { type DetailedHTMLProps, type HTMLAttributes } from 'react';
 
 type ProboElementProps = DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
 
-declare global {
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
       /**

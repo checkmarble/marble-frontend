@@ -31,5 +31,9 @@
   "organization_name": "Nom",
   "profile": "Infos compte",
   "theme.dark": "Sombre",
-  "theme.light": "Clair"
+  "theme.light": "Clair",
+  "usage_tracking.description": "Autoriser Marble à collecter des données de télémétrie côté serveur. Ce paramètre s'applique à tous les utilisateurs et organisations de cette instance.",
+  "usage_tracking.enabled": "Télémétrie côté serveur",
+  "usage_tracking.privacy_policy": "Politique de confidentialité",
+  "usage_tracking.title": "Télémétrie"
 }
