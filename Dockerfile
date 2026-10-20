@@ -117,6 +117,9 @@ ARG SEGMENT_WRITE_KEY_OPENSOURCE=""
 ARG SEGMENT_WRITE_KEY=""
 ENV SEGMENT_WRITE_KEY=${SEGMENT_WRITE_KEY_OPENSOURCE:-""}
 
+ARG PROBO_BANNER_ID=""
+ENV PROBO_BANNER_ID=${PROBO_BANNER_ID}
+
 # Copy build output
 COPY --from=build /usr/src/app/packages/app-builder/.output ./.output
 

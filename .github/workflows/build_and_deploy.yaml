@@ -91,6 +91,7 @@ jobs:
             SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
             APP_VERSION=${{ steps.version.outputs.MARBLE_VERSION }}
             SEGMENT_WRITE_KEY_OPENSOURCE=${{ secrets.SEGMENT_WRITE_KEY_OPENSOURCE }}
+            PROBO_BANNER_ID=${{ vars.PROBO_BANNER_ID }}
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 

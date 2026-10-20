@@ -46,7 +46,11 @@ const PublicEnvVarsSchema = z.object({
 
   // Probo cookie consent banner. When both are set, the banner is rendered and
   // Segment only loads after the visitor grants the "analytics" category.
-  PROBO_BANNER_ID: z.string().trim().min(1).optional(),
+  // An unset CI build arg becomes an empty Docker ENV value; normalize it to unset.
+  PROBO_BANNER_ID: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+    z.string().trim().min(1).optional(),
+  ),
   // Empty means unset; the banner fetches in the browser, so only HTTPS endpoints are valid.
   PROBO_BANNER_BASE_URL: z.preprocess(
     (val) => (val === '' ? undefined : val),
