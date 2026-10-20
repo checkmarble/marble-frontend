@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
+import { BackendUsageTrackingSettings } from '@app-builder/components/Settings/BackendUsageTrackingSettings';
 import { TwoFactorAuthSettings } from '@app-builder/components/Settings/TwoFactorAuth/TwoFactorAuthSettings';
 import { UserAvailabilityStatus } from '@app-builder/components/Settings/UserAvailabilityStatus';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
@@ -102,17 +103,15 @@ function AccountPage() {
                   </Radio.Item>
                 </Radio.Root>
               </div>
-              {isProboBannerReady ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="fixed bottom-md end-md z-30 shadow-md sm:bottom-lg sm:end-lg"
-                  onClick={toggleProboPreferences}
-                >
-                  <Icon icon="settings" className="size-4" />
-                  {t('account:cookie_settings')}
-                </Button>
-              ) : null}
+              <div className="fixed bottom-md end-md z-30 flex flex-wrap justify-end gap-sm sm:bottom-lg sm:end-lg">
+                <BackendUsageTrackingSettings />
+                {isProboBannerReady ? (
+                  <Button type="button" variant="secondary" className="shadow-md" onClick={toggleProboPreferences}>
+                    <Icon icon="settings" className="size-4" />
+                    {t('account:cookie_settings')}
+                  </Button>
+                ) : null}
+              </div>
               <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
             </div>
 

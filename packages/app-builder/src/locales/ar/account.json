@@ -31,5 +31,9 @@
   "organization_name": "الاسم",
   "profile": "معلومات الحساب",
   "theme.dark": "داكن",
-  "theme.light": "فاتح"
+  "theme.light": "فاتح",
+  "usage_tracking.description": "السماح لـ Marble بجمع بيانات القياس عن بُعد من جهة الخادم. ينطبق هذا الإعداد على جميع المستخدمين والمؤسسات في هذا التثبيت. أوقفه لإلغاء الاشتراك.",
+  "usage_tracking.enabled": "القياس عن بُعد من جهة الخادم",
+  "usage_tracking.privacy_policy": "سياسة الخصوصية",
+  "usage_tracking.title": "القياس عن بُعد"
 }

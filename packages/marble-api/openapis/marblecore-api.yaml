@@ -347,6 +347,8 @@ paths:
     $ref: ./marblecore-api/misc.yml#/~1analytics
   /config:
     $ref: ./marblecore-api/misc.yml#/~1config
+  /config/usage-tracking:
+    $ref: ./marblecore-api/misc.yml#/~1config~1usage-tracking
 
   # ORG IMPORT
 

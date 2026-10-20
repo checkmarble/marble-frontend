@@ -95,7 +95,7 @@ export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig
       segment: dto.features.segment,
       webhookSecretRotation: dto.features.webhook_secret_rotation,
     },
-    isManagedMarble: process.env['NODE_ENV'] === 'development' ? true : dto.is_managed_marble,
+    isManagedMarble: dto.is_managed_marble,
     outdated: {
       isOutdated: dto.outdated.outdated,
       latestVersion: dto.outdated.latest_version,
