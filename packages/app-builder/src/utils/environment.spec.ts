@@ -25,6 +25,12 @@ describe('checkEnv', () => {
     expect(checkEnv).toThrow('PROBO_BANNER_ID and PROBO_BANNER_BASE_URL must be configured together');
   });
 
+  it('treats an empty baked-in banner ID as unset', () => {
+    process.env['PROBO_BANNER_ID'] = '';
+
+    expect(checkEnv).not.toThrow();
+  });
+
   it('requires a secure browser endpoint for Probo', () => {
     process.env['PROBO_BANNER_ID'] = 'banner-id';
     process.env['PROBO_BANNER_BASE_URL'] = 'http://probo.example.test/api/cookie-banner/v1/';
