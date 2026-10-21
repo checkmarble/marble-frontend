@@ -25,8 +25,9 @@ describe('checkEnv', () => {
     expect(checkEnv).toThrow('PROBO_BANNER_ID and PROBO_BANNER_BASE_URL must be configured together');
   });
 
-  it('treats an empty baked-in banner ID as unset', () => {
+  it('treats empty baked-in banner settings as unset', () => {
     process.env['PROBO_BANNER_ID'] = '';
+    process.env['PROBO_BANNER_BASE_URL'] = '';
 
     expect(checkEnv).not.toThrow();
   });
