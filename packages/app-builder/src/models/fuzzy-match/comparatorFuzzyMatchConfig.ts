@@ -8,9 +8,9 @@ import { type ComparatorFuzzyMatchAlgorithms, createBaseFuzzyMatchConfig } from 
  * @type {BaseFuzzyMatchConfig}
  */
 export const ComparatorFuzzyMatchConfig = createBaseFuzzyMatchConfig<ComparatorFuzzyMatchAlgorithms>({
-  algorithms: new Set(['ratio', 'token_set_ratio', 'bag_of_words_similarity']),
+  algorithms: new Set(['ratio', 'token_set_ratio', 'bag_of_words_similarity', 'phrase_match']),
   defaultAlgorithm: 'ratio',
-  editablesAlgorithms: new Set(['ratio', 'token_set_ratio']),
+  editablesAlgorithms: new Set(['ratio', 'token_set_ratio', 'phrase_match']),
   defaultEditableAlgorithm: 'token_set_ratio',
 
   thresholds: {

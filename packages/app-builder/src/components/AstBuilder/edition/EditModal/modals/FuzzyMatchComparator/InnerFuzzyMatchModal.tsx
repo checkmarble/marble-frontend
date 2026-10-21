@@ -1,4 +1,4 @@
-import { Callout } from '@app-builder/components/Callout';
+import { Callout, CalloutV2 } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type AstNode, type DataType } from '@app-builder/models';
 import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
@@ -93,6 +93,11 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
         </div>
         <Examples config={props.fuzzMatchConfig} algorithm={props.algorithm} threshold={props.threshold.value} />
       </div>
+      {props.algorithm === 'phrase_match' ? (
+        <CalloutV2>
+          <p>{t('scenarios:edit_fuzzy_match.algorithm.direction.phrase_match')}</p>
+        </CalloutV2>
+      ) : null}
       <div className="flex flex-col gap-sm">
         <p id="level" className="text-m text-grey-primary font-normal">
           {t('scenarios:edit_fuzzy_match.operands.label')}

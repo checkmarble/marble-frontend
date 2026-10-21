@@ -1,7 +1,7 @@
 import { type TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
-export type ComparatorFuzzyMatchAlgorithms = 'ratio' | 'token_set_ratio' | 'bag_of_words_similarity';
+export type ComparatorFuzzyMatchAlgorithms = 'ratio' | 'token_set_ratio' | 'bag_of_words_similarity' | 'phrase_match';
 
 export type AggregationFuzzyMatchAlgorithms = 'bag_of_words_similarity_db' | 'direct_string_similarity_db';
 
@@ -83,6 +83,8 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
           return t('scenarios:edit_fuzzy_match.algorithm.bag_of_words_similarity_db');
         case 'direct_string_similarity_db':
           return t('scenarios:edit_fuzzy_match.algorithm.direct_string_similarity_db');
+        case 'phrase_match':
+          return t('scenarios:edit_fuzzy_match.algorithm.phrase_match');
         default:
           return assertNever('Untranslated fuzzy match algorithm', fuzzyMatchAlgorithm);
       }

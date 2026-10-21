@@ -14,7 +14,12 @@ export function Examples({
   threshold: number;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
-  if (!config.isEditableAlgorithm(algorithm)) return null;
+  if (
+    !config.isEditableAlgorithm(algorithm) ||
+    !config.examples.some(({ resultsScores }) => algorithm in resultsScores)
+  ) {
+    return null;
+  }
 
   return (
     <table className="border-grey-border table-auto border-collapse border">
