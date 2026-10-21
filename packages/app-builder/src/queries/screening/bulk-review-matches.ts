@@ -6,8 +6,8 @@ export const useBulkReviewMatchesMutation = () => {
   const setAllMatchesToNoHit = useServerFn(setAllMatchesToNoHitFn);
 
   return useMutation({
-    mutationFn: async (matchIds: string[]) => {
-      return setAllMatchesToNoHit({ data: { matchIds } });
+    mutationFn: async (payload: { matchIds: string[]; whitelist?: boolean; comment?: string }) => {
+      return setAllMatchesToNoHit({ data: payload });
     },
   });
 };

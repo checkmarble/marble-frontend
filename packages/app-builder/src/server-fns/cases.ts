@@ -348,11 +348,24 @@ export const reviewScreeningMatchFn = createServerFn({ method: 'POST' })
 
 export const setAllMatchesToNoHitFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .validator(z.object({ matchIds: protectArray(z.string().array()) }))
+  .validator(
+    z.object({
+      matchIds: protectArray(z.string().array()),
+      whitelist: z.boolean().optional(),
+      comment: z.string().optional(),
+    }),
+  )
   .handler(async ({ context, data }) => {
     try {
       await Promise.all(
-        data.matchIds.map((matchId) => context.authInfo.screening.updateMatchStatus({ matchId, status: 'no_hit' })),
+        data.matchIds.map((matchId) =>
+          context.authInfo.screening.updateMatchStatus({
+            matchId,
+            status: 'no_hit',
+            whitelist: data.whitelist,
+            comment: data.comment,
+          }),
+        ),
       );
     } catch {
       throw new Error('Failed to review screening match');
