@@ -4,7 +4,6 @@ import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
 import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { useInvalidateCaseDecisions } from '@app-builder/queries/cases/list-decisions';
-import { useBulkReviewMatchesMutation } from '@app-builder/queries/screening/bulk-review-matches';
 import {
   useInvalidateScreeningAiSuggestions,
   useScreeningAiSuggestionsQuery,
@@ -16,7 +15,6 @@ import {
 import { useRefineScreeningMutation } from '@app-builder/queries/screening/refine-screening';
 import { type RefineSearchInput } from '@app-builder/server-fns/screenings';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
 import { match } from 'ts-pattern';
@@ -25,6 +23,7 @@ import { Icon } from 'ui-icons';
 import { Spinner } from '../../Spinner';
 import { MatchCard } from '../MatchCard';
 import { sortScreeningMatchesByTopics } from '../match-sorting';
+import { ReviewMatchPopover } from '../ReviewMatchPopover';
 import { ScreeningStatusTag } from '../ScreeningStatusTag';
 import { screeningsI18n } from '../screenings-i18n';
 import { PanelSearchDetails } from './PanelSearchDetails';
@@ -67,7 +66,8 @@ export function ScreeningHitsPanel({
   const screeningQuery = useScreeningDetailQuery(decisionId, currentScreeningId, open);
   const aiSuggestionsQuery = useScreeningAiSuggestionsQuery(currentScreeningId, open);
   const invalidateAiSuggestions = useInvalidateScreeningAiSuggestions();
-  const bulkReviewMutation = useBulkReviewMatchesMutation();
+  const [bulkReviewOpen, setBulkReviewOpen] = useState(false);
+  const [dismissReviewOpen, setDismissReviewOpen] = useState(false);
 
   // Selection state (lifted here so header buttons can access it)
   const [selectedMatchIds, setSelectedMatchIds] = useState<string[]>([]);
@@ -145,20 +145,6 @@ export function ScreeningHitsPanel({
   const showDismissButton = !isInPreview && probableFalsePositiveMatchIds.length >= 1;
   const showBulkButton = !isInPreview && selectedMatchIds.length >= 2;
 
-  const handleDismissFalsePositives = useCallback(() => {
-    bulkReviewMutation.mutate(probableFalsePositiveMatchIds, {
-      onSuccess: revalidateAfterBulk,
-      onError: () => toast.error(t('common:errors.unknown')),
-    });
-  }, [bulkReviewMutation, probableFalsePositiveMatchIds, revalidateAfterBulk, t]);
-
-  const handleBulkMarkFalsePositive = useCallback(() => {
-    bulkReviewMutation.mutate(selectedMatchIds, {
-      onSuccess: revalidateAfterBulk,
-      onError: () => toast.error(t('common:errors.unknown')),
-    });
-  }, [bulkReviewMutation, selectedMatchIds, revalidateAfterBulk, t]);
-
   return (
     <Panel.Root open={open} onOpenChange={handleOpenChange}>
       <Panel.Container size="large">
@@ -173,30 +159,39 @@ export function ScreeningHitsPanel({
                   pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}
                 />
               </div>
-              <div className="flex items-center gap-sm shrink-0">
-                {showBulkButton ? (
-                  <Button
-                    variant="primary"
-                    size="small"
-                    onClick={handleBulkMarkFalsePositive}
-                    disabled={bulkReviewMutation.isPending}
-                  >
-                    {t('screenings:panel.mark_all_false_positive')}
-                  </Button>
-                ) : null}
-                {showDismissButton ? (
-                  <Button
-                    variant="secondary"
-                    appearance="stroked"
-                    size="small"
-                    onClick={handleDismissFalsePositives}
-                    disabled={bulkReviewMutation.isPending}
-                  >
-                    <Icon icon="wand" className="size-4" />
-                    {t('screenings:panel.dismiss_false_positives')}
-                  </Button>
-                ) : null}
-              </div>
+              <LoaderRevalidatorContext.Provider value={revalidateAfterBulk}>
+                <div className="flex items-center gap-sm shrink-0">
+                  {showBulkButton && screening ? (
+                    <ReviewMatchPopover
+                      screening={screening}
+                      matchIds={selectedMatchIds}
+                      bulk
+                      open={bulkReviewOpen}
+                      onOpenChange={setBulkReviewOpen}
+                      trigger={
+                        <Button variant="primary" size="small">
+                          {t('screenings:panel.mark_all_false_positive')}
+                        </Button>
+                      }
+                    />
+                  ) : null}
+                  {showDismissButton && screening ? (
+                    <ReviewMatchPopover
+                      screening={screening}
+                      matchIds={probableFalsePositiveMatchIds}
+                      bulk
+                      open={dismissReviewOpen}
+                      onOpenChange={setDismissReviewOpen}
+                      trigger={
+                        <Button variant="secondary" appearance="stroked" size="small">
+                          <Icon icon="wand" className="size-4" />
+                          {t('screenings:panel.dismiss_false_positives')}
+                        </Button>
+                      }
+                    />
+                  ) : null}
+                </div>
+              </LoaderRevalidatorContext.Provider>
             </div>
           </Panel.Header>
 

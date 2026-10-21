@@ -1,5 +1,6 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { Screening, type ScreeningMatch } from '@app-builder/models/screening';
+import { type Screening } from '@app-builder/models/screening';
+import { useBulkReviewMatchesMutation } from '@app-builder/queries/screening/bulk-review-matches';
 import {
   type ReviewScreeningMatchPayload,
   reviewScreeningMatchPayloadSchema,
@@ -7,6 +8,7 @@ import {
 } from '@app-builder/queries/screening/review-screening-match';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
+import { type ReactElement, useId } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal, Radio, Switch, TextArea } from 'ui-design-system';
@@ -15,29 +17,40 @@ import { screeningsI18n } from './screenings-i18n';
 
 export function ReviewMatchPopover({
   screening,
-  screeningMatch,
+  matchIds,
+  bulk = false,
+  trigger,
   open,
   onOpenChange,
 }: {
   screening: Screening;
-  screeningMatch: ScreeningMatch;
+  matchIds: string[];
+  bulk?: boolean;
+  trigger?: ReactElement;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', ...screeningsI18n]);
   const reviewScreeningMatchMutation = useReviewScreeningMatchMutation();
   const revalidate = useLoaderRevalidator();
+  const bulkReviewMutation = useBulkReviewMatchesMutation();
+  const formId = useId();
+  const isPending = reviewScreeningMatchMutation.isPending || bulkReviewMutation.isPending;
 
   const form = useForm({
     defaultValues: {
-      matchId: screeningMatch.id,
+      matchId: matchIds[0] ?? '',
       status: 'no_hit',
       comment: '',
       whitelist: true,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
       try {
-        await reviewScreeningMatchMutation.mutateAsync(value);
+        if (bulk) {
+          await bulkReviewMutation.mutateAsync({ matchIds, comment: value.comment, whitelist: value.whitelist });
+        } else {
+          await reviewScreeningMatchMutation.mutateAsync(value);
+        }
         onOpenChange(false);
         revalidate();
       } catch {
@@ -52,49 +65,59 @@ export function ReviewMatchPopover({
   const currentStatus = useStore(form.store, (state) => state.values.status);
 
   return (
-    <MenuCommand.Menu open={open} onOpenChange={onOpenChange} persistOnSelect>
+    <MenuCommand.Menu
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (isPending) return;
+        if (nextOpen) form.reset();
+        onOpenChange(nextOpen);
+      }}
+      persistOnSelect
+    >
       <MenuCommand.Trigger>
-        <Button
-          variant="primary"
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          {t('screenings:start_reviewing')}
-          <Icon icon="caret-down" className="size-4" />
-        </Button>
+        {trigger ?? (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {t('screenings:start_reviewing')}
+            <Icon icon="caret-down" className="size-4" />
+          </Button>
+        )}
       </MenuCommand.Trigger>
       <MenuCommand.Content align="end" sideOffset={4} className="w-[420px]">
-        <form
-          id={`match_review_form_${screeningMatch.id}`}
-          className="flex flex-col gap-sm p-md"
-          onSubmit={handleSubmit(form)}
-        >
+        <form id={formId} className="flex flex-col gap-sm p-md" onSubmit={handleSubmit(form)}>
           <span className="text-s font-medium">{t('screenings:review_modal.status_label')}</span>
 
-          <form.Field name="status">
-            {(field) => (
-              <Radio.Root
-                value={field.state.value}
-                onValueChange={(value) => field.handleChange(value as 'confirmed_hit' | 'no_hit')}
-                className="flex flex-col gap-sm"
-              >
-                <Radio.Item
-                  value="confirmed_hit"
-                  className="text-grey-secondary data-[state=checked]:text-purple-primary rounded-sm transition-colors"
+          {bulk ? (
+            <span className="text-xs">{t('screenings:match.status.no_hit')}</span>
+          ) : (
+            <form.Field name="status">
+              {(field) => (
+                <Radio.Root
+                  value={field.state.value}
+                  onValueChange={(value) => field.handleChange(value as 'confirmed_hit' | 'no_hit')}
+                  className="flex flex-col gap-sm"
                 >
-                  <span className="text-xs">{t('screenings:match.status.confirmed_hit')}</span>
-                </Radio.Item>
-                <Radio.Item
-                  value="no_hit"
-                  className="text-grey-secondary data-[state=checked]:text-purple-primary rounded-sm transition-colors"
-                >
-                  <span className="text-xs">{t('screenings:match.status.no_hit')}</span>
-                </Radio.Item>
-              </Radio.Root>
-            )}
-          </form.Field>
+                  <Radio.Item
+                    value="confirmed_hit"
+                    className="text-grey-secondary data-[state=checked]:text-purple-primary rounded-sm transition-colors"
+                  >
+                    <span className="text-xs">{t('screenings:match.status.confirmed_hit')}</span>
+                  </Radio.Item>
+                  <Radio.Item
+                    value="no_hit"
+                    className="text-grey-secondary data-[state=checked]:text-purple-primary rounded-sm transition-colors"
+                  >
+                    <span className="text-xs">{t('screenings:match.status.no_hit')}</span>
+                  </Radio.Item>
+                </Radio.Root>
+              )}
+            </form.Field>
+          )}
 
           <form.Field name="comment">
             {(field) => (
@@ -114,7 +137,12 @@ export function ReviewMatchPopover({
                 return (
                   <div className="flex flex-col gap-sm">
                     <span className="flex items-center gap-sm">
-                      <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />
+                      <Switch
+                        name={field.name}
+                        aria-label={t('screenings:review_modal.whitelist_label')}
+                        checked={field.state.value}
+                        onCheckedChange={field.handleChange}
+                      />
                       &nbsp;
                       {t('screenings:review_modal.whitelist_label')}
                     </span>
@@ -130,12 +158,17 @@ export function ReviewMatchPopover({
         </form>
 
         <Modal.Footer>
-          <Modal.FooterButton variant="secondary" label={t('common:cancel')} onClick={() => onOpenChange(false)} />
+          <Modal.FooterButton
+            variant="secondary"
+            label={t('common:cancel')}
+            disabled={isPending}
+            onClick={() => onOpenChange(false)}
+          />
           <Modal.FooterButton
             type="submit"
-            form={`match_review_form_${screeningMatch.id}`}
+            form={formId}
             label={t('common:save')}
-            disabled={!currentStatus || reviewScreeningMatchMutation.isPending}
+            disabled={!currentStatus || isPending || matchIds.length === 0}
           />
         </Modal.Footer>
       </MenuCommand.Content>

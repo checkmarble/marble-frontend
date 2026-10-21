@@ -71,7 +71,7 @@ export const MatchCard = ({
                   ) : canReview ? (
                     <ReviewMatchPopover
                       screening={screening}
-                      screeningMatch={match}
+                      matchIds={[match.id]}
                       open={isPopoverOpen}
                       onOpenChange={setIsPopoverOpen}
                     />
