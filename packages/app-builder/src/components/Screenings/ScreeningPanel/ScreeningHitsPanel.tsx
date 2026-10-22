@@ -1,5 +1,4 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
-import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
 import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
@@ -159,39 +158,39 @@ export function ScreeningHitsPanel({
                   pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}
                 />
               </div>
-              <LoaderRevalidatorContext.Provider value={revalidateAfterBulk}>
-                <div className="flex items-center gap-sm shrink-0">
-                  {showBulkButton && screening ? (
-                    <ReviewMatchPopover
-                      screening={screening}
-                      matchIds={selectedMatchIds}
-                      bulk
-                      open={bulkReviewOpen}
-                      onOpenChange={setBulkReviewOpen}
-                      trigger={
-                        <Button variant="primary" size="small">
-                          {t('screenings:panel.mark_all_false_positive')}
-                        </Button>
-                      }
-                    />
-                  ) : null}
-                  {showDismissButton && screening ? (
-                    <ReviewMatchPopover
-                      screening={screening}
-                      matchIds={probableFalsePositiveMatchIds}
-                      bulk
-                      open={dismissReviewOpen}
-                      onOpenChange={setDismissReviewOpen}
-                      trigger={
-                        <Button variant="secondary" appearance="stroked" size="small">
-                          <Icon icon="wand" className="size-4" />
-                          {t('screenings:panel.dismiss_false_positives')}
-                        </Button>
-                      }
-                    />
-                  ) : null}
-                </div>
-              </LoaderRevalidatorContext.Provider>
+              <div className="flex items-center gap-sm shrink-0">
+                {showBulkButton && screening ? (
+                  <ReviewMatchPopover
+                    screening={screening}
+                    matchIds={selectedMatchIds}
+                    bulk
+                    open={bulkReviewOpen}
+                    onOpenChange={setBulkReviewOpen}
+                    onReviewSuccess={revalidateAfterBulk}
+                    trigger={
+                      <Button variant="primary" size="small">
+                        {t('screenings:panel.mark_all_false_positive')}
+                      </Button>
+                    }
+                  />
+                ) : null}
+                {showDismissButton && screening ? (
+                  <ReviewMatchPopover
+                    screening={screening}
+                    matchIds={probableFalsePositiveMatchIds}
+                    bulk
+                    open={dismissReviewOpen}
+                    onOpenChange={setDismissReviewOpen}
+                    onReviewSuccess={revalidateAfterBulk}
+                    trigger={
+                      <Button variant="secondary" appearance="stroked" size="small">
+                        <Icon icon="wand" className="size-4" />
+                        {t('screenings:panel.dismiss_false_positives')}
+                      </Button>
+                    }
+                  />
+                ) : null}
+              </div>
             </div>
           </Panel.Header>
 
@@ -212,31 +211,30 @@ export function ScreeningHitsPanel({
               }
 
               return (
-                <LoaderRevalidatorContext.Provider value={revalidate}>
-                  <div className="flex h-full items-start">
-                    {/* Left: Match cards (or preview results) */}
-                    <PanelMatchList
-                      screening={screeningData}
-                      previewResults={previewResults}
-                      onValidate={handleValidate}
-                      onCancel={handleCancelPreview}
-                      aiSuggestionsByMatchId={aiSuggestionsByMatchId}
-                      selectedMatchIds={selectedMatchIds}
-                      setSelectedMatchIds={setSelectedMatchIds}
-                      isInPreview={isInPreview}
-                    />
+                <div className="flex h-full items-start">
+                  {/* Left: Match cards (or preview results) */}
+                  <PanelMatchList
+                    screening={screeningData}
+                    previewResults={previewResults}
+                    onValidate={handleValidate}
+                    onCancel={handleCancelPreview}
+                    aiSuggestionsByMatchId={aiSuggestionsByMatchId}
+                    selectedMatchIds={selectedMatchIds}
+                    setSelectedMatchIds={setSelectedMatchIds}
+                    isInPreview={isInPreview}
+                    onReviewSuccess={revalidate}
+                  />
 
-                    {/* Separator */}
-                    <div className="shrink-0 border-l border-grey-border self-stretch" />
+                  {/* Separator */}
+                  <div className="shrink-0 border-l border-grey-border self-stretch" />
 
-                    {/* Right: Search details sidebar */}
-                    <PanelSearchDetails
-                      screening={screeningData}
-                      onRefineSuccess={handleRefineSuccess}
-                      onSearchComplete={handleSearchComplete}
-                    />
-                  </div>
-                </LoaderRevalidatorContext.Provider>
+                  {/* Right: Search details sidebar */}
+                  <PanelSearchDetails
+                    screening={screeningData}
+                    onRefineSuccess={handleRefineSuccess}
+                    onSearchComplete={handleSearchComplete}
+                  />
+                </div>
               );
             })}
         </Panel.Content>
@@ -254,6 +252,7 @@ function PanelMatchList({
   selectedMatchIds,
   setSelectedMatchIds,
   isInPreview,
+  onReviewSuccess,
 }: {
   screening: Screening;
   previewResults: ScreeningMatchPayload[] | null;
@@ -263,6 +262,7 @@ function PanelMatchList({
   selectedMatchIds: string[];
   setSelectedMatchIds: React.Dispatch<React.SetStateAction<string[]>>;
   isInPreview: boolean;
+  onReviewSuccess: () => void;
 }) {
   const { t } = useTranslation(screeningsI18n);
 
@@ -375,6 +375,7 @@ function PanelMatchList({
                 <MatchCard
                   screening={screening}
                   match={screeningMatch}
+                  onReviewSuccess={onReviewSuccess}
                   defaultOpen={matches.length === 1}
                   hideEnrich
                   hideReview={!!previewMatches}
