@@ -47,7 +47,11 @@ export function ReviewMatchPopover({
     onSubmit: async ({ value }) => {
       try {
         if (bulk) {
-          await bulkReviewMutation.mutateAsync({ matchIds, comment: value.comment, whitelist: value.whitelist });
+          await bulkReviewMutation.mutateAsync({
+            matchIds,
+            comment: value.comment,
+            whitelist: screening.uniqueCounterpartyIdentifier ? value.whitelist : false,
+          });
         } else {
           await reviewScreeningMatchMutation.mutateAsync(value);
         }

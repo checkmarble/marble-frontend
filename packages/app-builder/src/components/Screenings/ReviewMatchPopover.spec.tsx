@@ -81,9 +81,15 @@ describe('batch false-positive review', () => {
     expect(revalidate).not.toHaveBeenCalled();
   });
 
-  it('hides whitelisting when no counterparty identifier is available', () => {
+  it('does not whitelist when no counterparty identifier is available', async () => {
     renderReview('');
     expect(screen.queryByRole('switch')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'common:save' }));
+    await waitFor(() =>
+      expect(setAllMatchesToNoHitFn).toHaveBeenCalledWith({
+        data: { matchIds: ['match-1', 'match-2'], whitelist: false, comment: '' },
+      }),
+    );
   });
 });
 
