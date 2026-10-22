@@ -15,7 +15,6 @@ import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { useIsFlagActive } from '@app-builder/utils/hooks/use-feature-flag';
 import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
@@ -67,7 +66,6 @@ export function CaseManagerPrincipalPage({
   const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
     page?.decisions?.some((d) => d.rules?.some((r) => r.outcome === 'hit')),
   );
-  const isCustomerAggregatesEnabled = useIsFlagActive('ENABLE_CUSTOMER_AGGREGATES');
 
   const rootRef = useRef<HTMLDivElement>(null);
   const editTagsMutation = useEditTagsMutation();
@@ -88,7 +86,7 @@ export function CaseManagerPrincipalPage({
         client360Tables={client360Tables}
         userScoringAccess={userScoringAccess}
       />
-      {isCustomerAggregatesEnabled && client.objectId ? (
+      {client.objectId ? (
         <CustomerKpis currentUser={currentUser} objectId={client.objectId} objectType={client.tableName} />
       ) : null}
     </div>

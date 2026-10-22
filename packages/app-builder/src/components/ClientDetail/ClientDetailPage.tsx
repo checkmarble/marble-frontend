@@ -16,7 +16,6 @@ import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-late
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getGraphExplorationDisplay, isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
-import { useIsFlagActive } from '@app-builder/utils/hooks/use-feature-flag';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Client360Table, type ScoringScore } from 'marble-api';
@@ -87,7 +86,6 @@ export const ClientDetailPage = ({
   // Prefer client-fetched score (includes evaluations), same source as UserScoreBadge
   const scoreLatestQuery = useScoreLatestQuery(objectType, objectId);
   const scoreForPanel = scoreLatestQuery.data?.score ?? activeScore;
-  const isCustomerAggregatesEnabled = useIsFlagActive('ENABLE_CUSTOMER_AGGREGATES');
 
   const caseObject = {
     objectType,
@@ -193,9 +191,7 @@ export const ClientDetailPage = ({
                 </div>
               </div>
               <div className="flex flex-col gap-md">
-                {isCustomerAggregatesEnabled ? (
-                  <CustomerKpis currentUser={currentUser} objectType={objectType} objectId={objectId} />
-                ) : null}
+                <CustomerKpis currentUser={currentUser} objectType={objectType} objectId={objectId} />
                 {graphDisplay === 'graph' ? (
                   <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
                     <div className="flex shrink-0 justify-between items-center">
