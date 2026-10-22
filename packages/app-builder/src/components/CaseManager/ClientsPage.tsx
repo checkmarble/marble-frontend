@@ -10,7 +10,6 @@ import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotation
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getGraphExplorationDisplay } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
-import { useIsFlagActive } from '@app-builder/utils/hooks/use-feature-flag';
 import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -59,8 +58,6 @@ export function CaseManagerClientsPage({
   const annotationsQuery = useGetAnnotationsQuery(client.tableName, client.objectId!, true);
   const [isEditingDocuments, setIsEditingDocuments] = useState(false);
   const [explorationOpen, setExplorationOpen] = useState(false);
-
-  const isCustomerAggregatesEnabled = useIsFlagActive('ENABLE_CUSTOMER_AGGREGATES');
 
   const ingestedInfo =
     client.isIngested && client.objectId ? { objectId: client.objectId, objectType: client.tableName } : null;
@@ -120,9 +117,7 @@ export function CaseManagerClientsPage({
             ) : null}
           </div>
         </Card>
-        {isCustomerAggregatesEnabled && ingestedInfo ? (
-          <CustomerKpis currentUser={currentUser} {...ingestedInfo} />
-        ) : null}
+        {ingestedInfo ? <CustomerKpis currentUser={currentUser} {...ingestedInfo} /> : null}
         {showMainLinks && ingestedInfo ? (
           <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
             <div className="flex shrink-0 justify-between items-center">
