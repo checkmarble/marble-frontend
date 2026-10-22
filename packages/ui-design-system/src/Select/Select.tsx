@@ -22,6 +22,7 @@ import clsx from 'clsx';
 import { isValidElement, ReactNode, useRef, useState } from 'react';
 import { isNullish } from 'remeda';
 import { Icon, IconName } from 'ui-icons';
+import { ExpandableGroupTagLine } from '../ExpandableGroupTagLine/ExpandableGroupTagLine';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
 import Tag from '../Tag/Tag';
 import { cn } from '../utils';
@@ -327,13 +328,15 @@ export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(
   const renderTriggerContent = () => {
     if (props.multiple && selectedOptions && selectedOptions.length > 0) {
       return (
-        <span className="flex flex-wrap gap-xs">
-          {selectedOptions.map((opt, i) => (
-            <Tag key={i} color="grey" size="small">
+        <ExpandableGroupTagLine
+          classname="gap-xs"
+          overflowBehavior="popover"
+          items={selectedOptions.map((opt, i) => (
+            <Tag key={i} color="grey" size="small" className="max-w-full">
               {renderOptionLabel(opt, displayedValue)}
             </Tag>
           ))}
-        </span>
+        />
       );
     }
     return <span>{singleValueLabel ?? placeholder}</span>;
@@ -361,7 +364,7 @@ export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(
             ref={ref}
             disabled={disabled}
             readOnly={readOnly}
-            className={className}
+            className={cn(props.multiple && 'min-w-0 overflow-hidden', className)}
             {...(isPlaceholderShown ? { 'data-placeholder-shown': true } : {})}
           >
             {renderTriggerContent()}
