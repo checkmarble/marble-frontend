@@ -11,6 +11,26 @@ mockResizeObserver();
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
 
 describe('Select', () => {
+  it('shows overflowing selections in a popover without opening the options', async () => {
+    render(
+      <SelectV2
+        multiple
+        placeholder="Select tags"
+        value={['apple', 'banana', 'blueberry']}
+        onChange={vi.fn()}
+        options={fruits.map((fruit) => ({ label: fruit, value: fruit }))}
+      />,
+    );
+
+    const combobox = screen.getByRole('combobox', { name: 'apple, banana, blueberry' });
+    await userEvent.click(within(combobox).getByText('+2'));
+
+    const overflow = screen.getByRole('dialog');
+    expect(within(overflow).getByText('banana')).toBeVisible();
+    expect(within(overflow).getByText('blueberry')).toBeVisible();
+    expect(screen.queryByRole('option')).not.toBeInTheDocument();
+  });
+
   it('should render successfully', async () => {
     const mockedOnValueChanged = vi.fn();
     function TestSelect() {
