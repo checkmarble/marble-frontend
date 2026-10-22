@@ -7,7 +7,7 @@ const authRedirectLoader = createServerFn()
   .middleware([servicesMiddleware])
   .handler(async function authRedirectLoader({ context }) {
     const request = getRequest();
-    if (context.appConfig.auth.provider !== 'firebase') {
+    if (!context.appConfig.auth.providers.includes('firebase')) {
       throw redirect({ to: '/sign-in' });
     }
 

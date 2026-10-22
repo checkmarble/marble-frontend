@@ -51,7 +51,7 @@ const signInLoader = createServerFn()
       throw redirect({ to: '/onboarding' });
     }
 
-    const authProvider = (appConfig && appConfig.auth.provider) ?? 'firebase';
+    const authProviders = appConfig?.auth.providers ?? ['firebase'];
     const isSsoEnabled = appConfig && appConfig.features.sso;
     // Handle email parameter manually to preserve literal '+' characters
     const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
@@ -79,7 +79,7 @@ const signInLoader = createServerFn()
       isSignupReady: appConfig
         ? appConfig.status.migrations && appConfig.status.hasOrg && appConfig.status.hasUser
         : false,
-      authProvider,
+      authProviders,
       didMigrationsRun: appConfig?.status.migrations ?? false,
       authError: authError ?? (!appConfig ? ('BackendUnavailable' as AuthErrors) : undefined),
       isManagedMarble: appConfig?.isManagedMarble ?? false,
@@ -101,7 +101,7 @@ export const Route = createFileRoute('/_app/_auth/sign-in')({
 
 function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
+  const { isSignupReady, authProviders, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
     Route.useLoaderData();
 
   const signInMutation = useMutation({
@@ -151,23 +151,21 @@ function Login() {
         </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <div className="flex flex-col gap-sm">
-          {authProvider == 'oidc' ? (
-            <>
-              <button
-                className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
-                onClick={() => {
-                  window.location.href = '/oidc/auth';
-                }}
-                disabled={loading}
-              >
-                <span className="text-s text-grey-white w-full whitespace-nowrap text-center align-middle font-medium">
-                  Sign in with OpenID Connect
-                </span>
-                <span className="absolute end-0 mx-sm size-4">{loading ? <Spinner className="size-4" /> : null}</span>
-              </button>
-              <AuthError error={authError as AuthErrors} className="mt-xl" />
-            </>
-          ) : (
+          {authProviders.includes('oidc') ? (
+            <button
+              className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
+              onClick={() => {
+                window.location.href = '/oidc/auth';
+              }}
+              disabled={loading}
+            >
+              <span className="text-s text-grey-white w-full whitespace-nowrap text-center align-middle font-medium">
+                Sign in with OpenID Connect
+              </span>
+              <span className="absolute end-0 mx-sm size-4">{loading ? <Spinner className="size-4" /> : null}</span>
+            </button>
+          ) : null}
+          {authProviders.includes('firebase') ? (
             <>
               <SignInWithGoogle
                 signIn={signIn}
@@ -192,10 +190,11 @@ function Login() {
                 {t('auth:sign_in.with_email')}
               </Link>
             </>
-          )}
+          ) : null}
+          <AuthError error={authError as AuthErrors} className="mt-xl" />
         </div>
       </div>
-      {authProvider == 'firebase' ? (
+      {authProviders.includes('firebase') ? (
         <>
           <div className="flex items-center gap-md self-stretch">
             <div className="h-px bg-grey-border grow" />

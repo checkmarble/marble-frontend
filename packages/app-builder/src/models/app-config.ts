@@ -17,7 +17,7 @@ export type AppConfig = {
     blobs: string[];
   };
   auth: {
-    provider: string;
+    providers: Array<'firebase' | 'oidc'>;
     firebase: {
       projectId?: string;
       apiKey?: string;
@@ -74,7 +74,7 @@ export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig
       blobs: dto.urls.blobs,
     },
     auth: {
-      provider: dto.auth.provider,
+      providers: dto.auth.providers,
       firebase: {
         isEmulator: dto.auth.firebase.is_emulator,
         emulatorUrl,

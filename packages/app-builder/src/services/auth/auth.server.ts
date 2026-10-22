@@ -31,7 +31,7 @@ import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { type UserScoringRepository } from '@app-builder/repositories/UserScoringRepository';
 import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
 import { Tokens } from '@app-builder/routes/oidc/auth';
-import { AuthSessionData, useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { type AuthSessionData, useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { setToast } from '@app-builder/services/toast.server';
 import { CsrfError, validateCsrf } from '@app-builder/utils/csrf.server';
 import { getServerEnv } from '@app-builder/utils/environment';
@@ -49,6 +49,7 @@ function redirect(url: string, init?: { status?: number; headers?: HeadersInit }
 }
 
 interface AuthenticatedInfo {
+  provider: AuthSessionData['provider'];
   /**
    * @deprecated Use repositories directly
    */
@@ -228,7 +229,7 @@ export function makeAuthenticationServerService({
       return { status: false, marbleToken: null, refreshToken: null };
     }
 
-    if (appConfig.auth.provider == 'oidc') {
+    if (authSession.data.provider === 'oidc') {
       const oidc = await makeOidcService(appConfig);
       const response = await oidc.refreshToken(storedRefreshToken);
 
@@ -245,7 +246,7 @@ export function makeAuthenticationServerService({
       };
     }
 
-    if (appConfig.auth.provider == 'firebase') {
+    if (authSession.data.provider === 'firebase') {
       const { idToken, refreshToken } = await refreshFirebaseIdToken(appConfig, storedRefreshToken);
 
       const marbleToken = await getToken({ idToken, organizationId });
@@ -303,6 +304,7 @@ export function makeAuthenticationServerService({
 
       await authSession.update({
         authToken: marbleToken,
+        provider: 'firebase',
         authError: undefined,
         // Persist the Firebase refresh token so the server can refresh the Marble
         // token during SSR without a browser (fixes logout after inactivity).
@@ -346,6 +348,7 @@ export function makeAuthenticationServerService({
 
       await authSession.update({
         authToken: marbleToken,
+        provider: 'oidc',
         authError: undefined,
         ...(refreshToken ? { refreshToken } : {}),
       });
@@ -379,8 +382,7 @@ export function makeAuthenticationServerService({
       // OIDC has no Firebase client user. Exchange the refresh token stored at
       // sign-in for credentials scoped to the requested organization.
       if (!payload.idToken) {
-        const appConfig = await getAppConfigRepository(unauthenticatedMarbleCoreApiClient).getAppConfig();
-        if (appConfig.auth.provider !== 'oidc') {
+        if (authSession.data.provider !== 'oidc') {
           throw new Error('Missing id token');
         }
 
@@ -416,8 +418,8 @@ export function makeAuthenticationServerService({
     request: Request,
     payload: { csrf: string; newOrganizationId: string; idToken?: string },
   ): Promise<void> {
-    const appConfig = await getAppConfigRepository(unauthenticatedMarbleCoreApiClient).getAppConfig();
-    if (appConfig.auth.provider === 'firebase') {
+    const authSession = await useAuthSession();
+    if (authSession.data.provider === 'firebase') {
       if (!payload.idToken) throw new Error('A Firebase ID token is required to switch organizations');
       return refresh(
         request,
@@ -429,10 +431,10 @@ export function makeAuthenticationServerService({
       );
     }
 
-    if (appConfig.auth.provider !== 'oidc') throw new Error('Unsupported authentication provider');
+    if (authSession.data.provider !== 'oidc') throw new Error('Unsupported authentication provider');
     await validateCsrf(request, payload.csrf);
-    const authSession = await useAuthSession();
     if (!authSession.data.refreshToken) throw new Error('No OIDC refresh token is available to switch organizations');
+    const appConfig = await getAppConfigRepository(unauthenticatedMarbleCoreApiClient).getAppConfig();
     const oidc = await makeOidcService(appConfig);
     const response = await oidc.refreshToken(authSession.data.refreshToken);
     // Rotation may invalidate the old refresh token even if the target
@@ -546,6 +548,7 @@ export function makeAuthenticationServerService({
     if (options.successRedirect) throw redirect(options.successRedirect);
 
     return {
+      provider: authSession.data.provider,
       tokenService,
       apiClient: marbleCoreApiClient,
 

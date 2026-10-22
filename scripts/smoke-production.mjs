@@ -11,7 +11,7 @@ const config = {
   status: { migrations: false, has_org: true, has_user: true },
   urls: { marble: 'http://localhost', metabase: '', blobs: [] },
   auth: {
-    provider: 'firebase',
+    providers: ['firebase'],
     firebase: {
       is_emulator: true,
       emulator_host: 'localhost:9099',
