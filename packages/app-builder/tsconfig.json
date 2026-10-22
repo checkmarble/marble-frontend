@@ -3,7 +3,7 @@
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["src/routeTree.gen.ts"],
   "compilerOptions": {
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals", "dom-chromium-ai"],
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "module": "ESNext",
