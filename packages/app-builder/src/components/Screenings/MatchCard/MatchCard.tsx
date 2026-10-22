@@ -17,6 +17,7 @@ import { EntityDatasetsList } from './match-card-entity-components';
 type MatchCardProps = {
   screening: Screening;
   match: ScreeningMatch;
+  onReviewSuccess: () => void;
   readonly?: boolean;
   unreviewable?: boolean;
   defaultOpen?: boolean;
@@ -28,6 +29,7 @@ type MatchCardProps = {
 export const MatchCard = ({
   screening,
   match,
+  onReviewSuccess,
   readonly,
   unreviewable,
   defaultOpen,
@@ -74,6 +76,7 @@ export const MatchCard = ({
                       matchIds={[match.id]}
                       open={isPopoverOpen}
                       onOpenChange={setIsPopoverOpen}
+                      onReviewSuccess={onReviewSuccess}
                     />
                   ) : (
                     <StatusTag status={match.status} disabled />

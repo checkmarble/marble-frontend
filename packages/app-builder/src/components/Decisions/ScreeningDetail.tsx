@@ -2,6 +2,7 @@ import { decisionsI18n } from '@app-builder/components';
 import { DataModelField, SemanticTypeField, TableModel } from '@app-builder/models';
 import { DataType } from '@app-builder/models/data-model';
 import { isScreeningError, type Screening } from '@app-builder/models/screening';
+import { useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
@@ -16,6 +17,7 @@ import { ScreeningErrors } from '../Screenings/ScreeningErrors';
 import { ScreeningStatusTag } from '../Screenings/ScreeningStatusTag';
 
 export function ScreeningDetail({ screening, table }: { screening: Screening; table?: TableModel }) {
+  const router = useRouter();
   const hasError = isScreeningError(screening);
 
   return (
@@ -42,6 +44,7 @@ export function ScreeningDetail({ screening, table }: { screening: Screening; ta
                 screening={screening}
                 unreviewable={hasError || screening.partial}
                 match={match}
+                onReviewSuccess={() => router.invalidate()}
               />
             ))}
           </div>

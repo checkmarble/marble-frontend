@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Screening } from '@app-builder/models/screening';
 import { useBulkReviewMatchesMutation } from '@app-builder/queries/screening/bulk-review-matches';
 import {
@@ -22,6 +21,7 @@ export function ReviewMatchPopover({
   trigger,
   open,
   onOpenChange,
+  onReviewSuccess,
 }: {
   screening: Screening;
   matchIds: string[];
@@ -29,10 +29,10 @@ export function ReviewMatchPopover({
   trigger?: ReactElement;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onReviewSuccess: () => void;
 }) {
   const { t } = useTranslation(['common', ...screeningsI18n]);
   const reviewScreeningMatchMutation = useReviewScreeningMatchMutation();
-  const revalidate = useLoaderRevalidator();
   const bulkReviewMutation = useBulkReviewMatchesMutation();
   const formId = useId();
   const isPending = reviewScreeningMatchMutation.isPending || bulkReviewMutation.isPending;
@@ -51,8 +51,8 @@ export function ReviewMatchPopover({
         } else {
           await reviewScreeningMatchMutation.mutateAsync(value);
         }
+        onReviewSuccess();
         onOpenChange(false);
-        revalidate();
       } catch {
         toast.error(t('common:errors.unknown'));
       }

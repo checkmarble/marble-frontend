@@ -1,4 +1,3 @@
-import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening } from '@app-builder/models/screening';
 import { reviewScreeningMatchFn, setAllMatchesToNoHitFn } from '@app-builder/server-fns/cases';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -39,15 +38,14 @@ function renderReview(identifier: string | undefined = 'customer-123', bulk = tr
   const revalidate = vi.fn();
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { mutations: { retry: false } } })}>
-      <LoaderRevalidatorContext.Provider value={revalidate}>
-        <ReviewMatchPopover
-          screening={{ ...screening, uniqueCounterpartyIdentifier: identifier }}
-          matchIds={bulk ? ['match-1', 'match-2'] : ['match-1']}
-          bulk={bulk}
-          open
-          onOpenChange={onOpenChange}
-        />
-      </LoaderRevalidatorContext.Provider>
+      <ReviewMatchPopover
+        screening={{ ...screening, uniqueCounterpartyIdentifier: identifier }}
+        matchIds={bulk ? ['match-1', 'match-2'] : ['match-1']}
+        bulk={bulk}
+        open
+        onOpenChange={onOpenChange}
+        onReviewSuccess={revalidate}
+      />
     </QueryClientProvider>,
   );
   return { onOpenChange, revalidate };
@@ -70,15 +68,17 @@ describe('batch false-positive review', () => {
         }),
       );
       await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
-      expect(revalidate).toHaveBeenCalled();
+      expect(revalidate).toHaveBeenCalledOnce();
+      expect(revalidate.mock.invocationCallOrder[0]).toBeLessThan(onOpenChange.mock.invocationCallOrder[0]!);
     },
   );
 
   it('cancels without reviewing any matches', () => {
-    const { onOpenChange } = renderReview();
+    const { onOpenChange, revalidate } = renderReview();
     fireEvent.click(screen.getByRole('button', { name: 'common:cancel' }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
     expect(setAllMatchesToNoHitFn).not.toHaveBeenCalled();
+    expect(revalidate).not.toHaveBeenCalled();
   });
 
   it('hides whitelisting when no counterparty identifier is available', () => {
@@ -101,5 +101,18 @@ describe('single match review', () => {
       }),
     );
     expect(setAllMatchesToNoHitFn).not.toHaveBeenCalled();
+  });
+});
+
+describe('review success callback', () => {
+  it.each([true, false])('does not refresh or close after a failed review (bulk=%s)', async (bulk) => {
+    vi.mocked(bulk ? setAllMatchesToNoHitFn : reviewScreeningMatchFn).mockRejectedValueOnce(new Error('Review failed'));
+    const { onOpenChange, revalidate } = renderReview('customer-123', bulk);
+    const saveButton = screen.getByRole('button', { name: 'common:save' }) as HTMLButtonElement;
+    fireEvent.click(saveButton);
+    await waitFor(() => expect(bulk ? setAllMatchesToNoHitFn : reviewScreeningMatchFn).toHaveBeenCalledOnce());
+    await waitFor(() => expect(saveButton.disabled).toBe(false));
+    expect(revalidate).not.toHaveBeenCalled();
+    expect(onOpenChange).not.toHaveBeenCalled();
   });
 });

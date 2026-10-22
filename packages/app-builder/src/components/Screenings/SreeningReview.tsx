@@ -5,6 +5,7 @@ import {
   type Screening,
   ScreeningSuccess,
 } from '@app-builder/models/screening';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
@@ -23,6 +24,7 @@ export type ScreeningReviewSectionProps = {
 
 export function ScreeningReviewSection({ screening, onRefineSuccess }: ScreeningReviewSectionProps) {
   const { t } = useTranslation(screeningsI18n);
+  const router = useRouter();
   const [isRefining, setIsRefining] = useState(false);
   const matchesToReviewCount = filter(screening.matches, (m) => m.status === 'pending').length;
   const hasError = isScreeningError(screening);
@@ -71,6 +73,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
             key={screeningMatch.id}
             screening={screening}
             match={screeningMatch}
+            onReviewSuccess={() => router.invalidate()}
             unreviewable={hasError}
             defaultOpen={screening.matches.length === 1}
           />
