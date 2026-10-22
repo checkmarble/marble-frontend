@@ -1,6 +1,7 @@
-import { CurrentUser, DataModel, isAdmin, TableModel } from '@app-builder/models';
+import { CurrentUser, DataModel, isAdmin, NavigationOption, TableModel } from '@app-builder/models';
 import { CaseClient } from '@app-builder/models/cases';
 import { Fragment, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -17,6 +18,7 @@ export type NavigationOptionsProps = {
 };
 
 export function NavigationOptions({ currentUser, client, table, dataModel, onExplore }: NavigationOptionsProps) {
+  const { t } = useTranslation(['cases']);
   const linksToTable = useMemo(() => {
     return R.pipe(
       dataModel,
@@ -40,6 +42,7 @@ export function NavigationOptions({ currentUser, client, table, dataModel, onExp
       {linksToTable.map((linkToTable, idx) => {
         const navOptions =
           table.navigationOptions?.filter((no) => no.targetTableName === linkToTable.childTableName) ?? [];
+        const hasTimestampOrderingNavigationOption = hasTimestampOrderingOption(dataModel, navOptions);
 
         return navOptions.length > 0 ? (
           <Fragment key={`${linkToTable.childTableName}-${idx}`}>
@@ -75,6 +78,18 @@ export function NavigationOptions({ currentUser, client, table, dataModel, onExp
                 )}
               </Button>
             ))}
+            {isAdmin(currentUser) && !hasTimestampOrderingNavigationOption ? (
+              <CreateNavigationOptionModal dataModel={dataModel} link={linkToTable}>
+                <Button
+                  aria-label={t('cases:case_detail.pivot_panel.create_navigation_option')}
+                  variant="primary"
+                  appearance="link"
+                  mode="icon"
+                >
+                  <Icon icon="plus" className="size-4" />
+                </Button>
+              </CreateNavigationOptionModal>
+            ) : null}
           </Fragment>
         ) : isAdmin(currentUser) ? (
           <CreateNavigationOptionModal key={linkToTable.childTableName} dataModel={dataModel} link={linkToTable}>
@@ -86,6 +101,14 @@ export function NavigationOptions({ currentUser, client, table, dataModel, onExp
         ) : null;
       })}
     </div>
+  );
+}
+
+export function hasTimestampOrderingOption(dataModel: DataModel, navigationOptions: NavigationOption[]) {
+  return navigationOptions.some((navigationOption) =>
+    dataModel
+      .find((table) => table.id === navigationOption.targetTableId)
+      ?.fields.some((field) => field.id === navigationOption.orderingFieldId && field.dataType === 'Timestamp'),
   );
 }
 
