@@ -25,6 +25,10 @@ export function CreateNavigationOptionModal({ dataModel, link, children }: Creat
   const targetTable = dataModel.find((table) => {
     return table.name === link.childTableName;
   });
+  const targetFields =
+    targetTable?.fields.filter(
+      (tableField) => tableField.id !== link.childFieldId && tableField.dataType === 'Timestamp',
+    ) ?? [];
   const [open, setOpen] = useState(false);
   const createNavigationOptionMutation = useCreateNavigationOptionMutation(link.parentTableId);
   const revalidate = useLoaderRevalidator();
@@ -41,7 +45,7 @@ export function CreateNavigationOptionModal({ dataModel, link, children }: Creat
       sourceFieldId: link.parentFieldId,
       targetTableId: link.childTableId,
       filterFieldId: link.childFieldId,
-      orderingFieldId: '',
+      orderingFieldId: targetFields.length === 1 ? (targetFields[0]?.id ?? '') : '',
     },
     validators: {
       onChange: createNavigationOptionSchema,
@@ -105,7 +109,6 @@ export function CreateNavigationOptionModal({ dataModel, link, children }: Creat
               {(formField) => {
                 const selectedField = targetTable.fields.find((tableField) => tableField.id === formField.state.value);
                 const fieldErrors = formField.state.meta.errors;
-                const targetFields = targetTable.fields.filter((tableField) => tableField.id !== link.childFieldId);
 
                 return (
                   <>

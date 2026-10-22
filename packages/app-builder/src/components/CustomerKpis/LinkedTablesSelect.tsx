@@ -1,5 +1,5 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
-import { type NavigationOption } from '@app-builder/models';
+import { type DataModel, type NavigationOption } from '@app-builder/models';
 import { useTranslation } from 'react-i18next';
 import { SelectV2 } from 'ui-design-system';
 
@@ -9,9 +9,7 @@ type LinkedTablesSelectProps = {
   onChange: (navigationOption: NavigationOption) => void;
 };
 
-export function LinkedTablesSelect({ objectType, navigationOption, onChange }: LinkedTablesSelectProps) {
-  const { t } = useTranslation(['client360']);
-  const dataModel = AstBuilderDataSharpFactory.select((state) => state.data.dataModel);
+export function getCustomerKpiNavigationOptions(dataModel: DataModel, objectType: string) {
   const navigationOptions = dataModel.find((table) => table.name === objectType)?.navigationOptions ?? [];
   const linkedTableNames = [
     ...new Set(
@@ -21,17 +19,29 @@ export function LinkedTablesSelect({ objectType, navigationOption, onChange }: L
         .map((link) => link.childTableName),
     ),
   ];
-  const options = navigationOptions
-    .filter((option) => linkedTableNames.includes(option.targetTableName))
-    .map((option) => {
-      const hasMultipleOptions =
-        navigationOptions.filter((candidate) => candidate.targetTableName === option.targetTableName).length > 1;
 
-      return {
-        label: hasMultipleOptions ? `${option.targetTableName} (${option.orderingFieldName})` : option.targetTableName,
-        value: option.id,
-      };
-    });
+  return navigationOptions.filter((option) => {
+    const orderingField = dataModel
+      .find((table) => table.id === option.targetTableId)
+      ?.fields.find((field) => field.id === option.orderingFieldId);
+
+    return linkedTableNames.includes(option.targetTableName) && orderingField?.dataType === 'Timestamp';
+  });
+}
+
+export function LinkedTablesSelect({ objectType, navigationOption, onChange }: LinkedTablesSelectProps) {
+  const { t } = useTranslation(['client360']);
+  const dataModel = AstBuilderDataSharpFactory.select((state) => state.data.dataModel);
+  const navigationOptions = getCustomerKpiNavigationOptions(dataModel, objectType);
+  const options = navigationOptions.map((option) => {
+    const hasMultipleOptions =
+      navigationOptions.filter((candidate) => candidate.targetTableName === option.targetTableName).length > 1;
+
+    return {
+      label: hasMultipleOptions ? `${option.targetTableName} (${option.orderingFieldName})` : option.targetTableName,
+      value: option.id,
+    };
+  });
 
   return (
     <SelectV2<string | undefined>
