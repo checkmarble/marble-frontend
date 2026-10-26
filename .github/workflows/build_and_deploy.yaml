@@ -27,6 +27,11 @@ on:
         type: string
         description: Dockerfile target stage to build
         required: true
+      deploy:
+        type: boolean
+        description: "Deploy the pushed image to Cloud Run"
+        required: false
+        default: true
     secrets:
       SENTRY_AUTH_TOKEN:
         required: true
@@ -95,11 +100,13 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: "Set up Cloud SDK"
+        if: ${{ inputs.deploy }}
         uses: "google-github-actions/setup-gcloud@v3"
         with:
           install_components: beta
 
       - name: Deploy server
+        if: ${{ inputs.deploy }}
         run: |
           gcloud run deploy ${{ inputs.gcloud-service }} \
             --quiet \
