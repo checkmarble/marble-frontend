@@ -44,6 +44,17 @@ async function initSentry() {
       }
       return event;
     },
+    // Sentry v11 collects cookies, headers and bodies by default; keep the v10 (sendDefaultPii off) baseline.
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: {
+        request: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+        response: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+      },
+      httpBodies: [],
+      urlQueryParams: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+    },
     tracesSampleRate: 0.2,
     tracePropagationTargets: marbleUrl ? [marbleUrl] : undefined,
     replaysSessionSampleRate: 0,

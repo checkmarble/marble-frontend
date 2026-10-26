@@ -26,7 +26,6 @@ export const getRouter = () => {
       dsn: import.meta.env['VITE_SENTRY_DSN'],
       integrations: [],
       tracesSampleRate: 1.0,
-      sendDefaultPii: true,
     });
   }
 
