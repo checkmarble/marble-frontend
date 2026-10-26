@@ -5,6 +5,8 @@ on:
     tags:
       - "v[0-9]+\\.[0-9]+\\.[0-9]+" # stable
       - "v[0-9]+\\.[0-9]+\\.[0-9]+-rc\\.[0-9]+" # release candidate (e.g. v1.2.0-rc.1)
+      - "v[0-9]+\\.[0-9]+\\.[0-9]+\\+backport" # backport, built but not deployed (e.g. v1.2.3+backport)
+      - "v[0-9]+\\.[0-9]+\\.[0-9]+\\+backport\\.[0-9a-f]+" # backport of a given commit (e.g. v1.2.3+backport.3f2a9c1)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -17,8 +19,19 @@ jobs:
       actions: read
     uses: ./.github/workflows/check.yaml
 
+  # Backport tags carry semver build metadata (`+backport[.<sha>]`): their image is pushed under the
+  # bare version, since Docker tags cannot contain `+`, and is never deployed.
+  release:
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - id: version
+        run: echo "version=${GITHUB_REF_NAME%%+*}" >> "$GITHUB_OUTPUT"
+
   build_and_deploy_app_builder:
-    needs: check
+    needs: [check, release]
     permissions:
       contents: read
       actions: read
@@ -29,14 +42,15 @@ jobs:
       dockerfile: ./Dockerfile
       dockerfile-target-stage: app-builder
       environment: production
-      version: ${{ github.ref_name }}
-      SENTRY_RELEASE: ${{ github.ref_name }}
+      version: ${{ needs.release.outputs.version }}
+      SENTRY_RELEASE: ${{ needs.release.outputs.version }}
+      deploy: ${{ !contains(github.ref_name, '+backport') }}
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SEGMENT_WRITE_KEY_OPENSOURCE: ${{ secrets.SEGMENT_WRITE_KEY_OPENSOURCE }}
 
   build_and_deploy_backoffice:
-    needs: check
+    needs: [check, release]
     permissions:
       contents: read
       actions: read
@@ -47,8 +61,9 @@ jobs:
       dockerfile: ./Dockerfile.backoffice
       dockerfile-target-stage: backoffice
       environment: production
-      version: ${{ github.ref_name }}
-      SENTRY_RELEASE: ${{ github.ref_name }}
+      version: ${{ needs.release.outputs.version }}
+      SENTRY_RELEASE: ${{ needs.release.outputs.version }}
+      deploy: ${{ !contains(github.ref_name, '+backport') }}
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SEGMENT_WRITE_KEY_OPENSOURCE: ${{ secrets.SEGMENT_WRITE_KEY_OPENSOURCE }}
