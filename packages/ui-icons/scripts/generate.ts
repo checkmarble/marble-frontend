@@ -1,6 +1,5 @@
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import type { Stream } from 'node:stream';
 
 import ora from 'ora';
 import SVGSpriter from 'svg-sprite';
@@ -65,7 +64,7 @@ async function buildIconSvgSprite(svgFileNames: string[]) {
   }
 
   const { result } = (await spriter.compileAsync()) as {
-    result: { symbol: { sprite: { contents: Stream } } };
+    result: { symbol: { sprite: { contents: Buffer } } };
   };
   const contents = result.symbol.sprite.contents;
 
@@ -142,7 +141,7 @@ async function buildLogoSvgSprite(svgFileNames: string[]) {
   }
 
   const { result } = (await spriter.compileAsync()) as {
-    result: { symbol: { sprite: { contents: Stream } } };
+    result: { symbol: { sprite: { contents: Buffer } } };
   };
   const contents = result.symbol.sprite.contents;
 
