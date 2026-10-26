@@ -1,5 +1,5 @@
-ARG BUN_IMAGE=oven/bun:1.3.14
-ARG RUNTIME_IMAGE=oven/bun:1.3.14-distroless
+ARG BUN_IMAGE=oven/bun:1.4.4
+ARG RUNTIME_IMAGE=oven/bun:1.4.4-distroless
 # ---- Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-dev
 WORKDIR /usr/src/app
