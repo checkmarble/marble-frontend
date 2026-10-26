@@ -1,5 +1,5 @@
-ARG BUN_IMAGE=oven/bun:1.3.10
-ARG RUNTIME_IMAGE=oven/bun:1.3.10-distroless
+ARG BUN_IMAGE=oven/bun:1.4.4
+ARG RUNTIME_IMAGE=oven/bun:1.4.4-distroless
 # ---- Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-dev
 WORKDIR /usr/src/app
@@ -19,20 +19,20 @@ COPY packages/tests/package.json ./packages/tests/
 
 # Install WITH dev dependencies (needed for build stage)
 RUN --mount=type=cache,target=/root/.bun \
-    bun ci
+  bun ci
 
 # Bun hoists fully-satisfied deps to the root node_modules, so some workspaces
 # get no local node_modules dir. Ensure one exists for each so the per-package
 # COPY steps in the build stage always have a source.
 RUN mkdir -p \
-    packages/app-builder/node_modules \
-    packages/backoffice/node_modules \
-    packages/marble-api/node_modules \
-    packages/shared/node_modules \
-    packages/tailwind-preset/node_modules \
-    packages/typescript-utils/node_modules \
-    packages/ui-design-system/node_modules \
-    packages/ui-icons/node_modules
+  packages/app-builder/node_modules \
+  packages/backoffice/node_modules \
+  packages/marble-api/node_modules \
+  packages/shared/node_modules \
+  packages/tailwind-preset/node_modules \
+  packages/typescript-utils/node_modules \
+  packages/ui-design-system/node_modules \
+  packages/ui-icons/node_modules
 
 # ---- Build stage ---- (uses dev deps from above)
 FROM ${BUN_IMAGE} AS build
@@ -42,8 +42,8 @@ WORKDIR /usr/src/app
 # it to verify TLS when uploading releases/source maps, otherwise it fails with
 # "unable to get local issuer certificate".
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+  && apt-get install -y --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy full source AFTER deps to leverage layer caching
 COPY . .
@@ -68,13 +68,13 @@ ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
 # Use BuildKit secret for SENTRY token if available
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
-    export VITE_CJS_IGNORE_WARNING=1; \
-    if [ -f /run/secrets/SENTRY_AUTH_TOKEN ]; then export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN); fi; \
-    bun run -F app-builder build
-    
+  export VITE_CJS_IGNORE_WARNING=1; \
+  if [ -f /run/secrets/SENTRY_AUTH_TOKEN ]; then export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN); fi; \
+  bun run -F app-builder build
+
 # Collect build artifacts and dependencies for runtime
 RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/.output /prod/app-builder/.output
+  cp -R packages/app-builder/.output /prod/app-builder/.output
 
 # ---- Production Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-prod
@@ -95,7 +95,7 @@ COPY packages/tests/package.json ./packages/tests/
 
 # Install ONLY production dependencies
 RUN --mount=type=cache,target=/root/.bun \
-    bun install --production --frozen-lockfile
+  bun install --production --frozen-lockfile
 
 RUN \
   rm -rf /usr/src/app/node_modules/.bun && \
