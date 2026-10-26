@@ -26,16 +26,14 @@ export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
   );
 }
 
-const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser; onSuccess: () => void }) => {
+export const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser; onSuccess: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxUserMutation = useDeleteInboxUserMutation();
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteInboxUser = () => {
-    deleteInboxUserMutation.mutateAsync({ inboxId: inboxUser.inboxId, inboxUserId: inboxUser.id }).then((res) => {
-      if (!res) {
-        onSuccess();
-      }
+    deleteInboxUserMutation.mutateAsync({ inboxId: inboxUser.inboxId, inboxUserId: inboxUser.id }).then(() => {
+      onSuccess();
       revalidate();
     });
   };

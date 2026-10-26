@@ -1,6 +1,5 @@
 import { FormError } from '@app-builder/components/Form/Tanstack/FormError';
 import { Page } from '@app-builder/components/Page';
-import { CollapsiblePaper } from '@app-builder/components/Paper';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   updateAllowedNetworksPayloadSchema,
@@ -11,8 +10,9 @@ import { useForm, useStore } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Input } from 'ui-design-system';
+import { Button, Card, Input, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { SettingCard } from '../settingCard';
 import { ConfirmSaveModal } from './ConfirmSaveModal';
 
 export const IpWhitelistingSettingsPage = ({
@@ -58,32 +58,43 @@ export const IpWhitelistingSettingsPage = ({
 
   return (
     <Page.Content width="readable">
-      <CollapsiblePaper.Container>
-        <CollapsiblePaper.Title>
-          <span className="flex-1">{t('settings:ip_whitelisting')}</span>
-          <Button
-            variant="secondary"
-            appearance="stroked"
-            onClick={(e) => {
-              e.stopPropagation();
-              form.reset();
-            }}
-          >
-            {t('settings:ip_whitelisting.reset')}
-          </Button>
-          {removedNetworks.length > 0 ? (
-            <ConfirmSaveModal onConfirm={() => form.handleSubmit()}>
-              <Button variant="primary" onClick={(e) => e.stopPropagation()}>
+      <SettingCard
+        title={
+          <div className="flex items-center gap-sm">
+            <Typo variant="title2" className="flex-1">
+              {t('settings:ip_whitelisting')}
+            </Typo>
+            <Button
+              variant="secondary"
+              appearance="stroked"
+              onClick={(e) => {
+                e.stopPropagation();
+                form.reset();
+              }}
+            >
+              {t('settings:ip_whitelisting.reset')}
+            </Button>
+            {removedNetworks.length > 0 ? (
+              <ConfirmSaveModal onConfirm={() => form.handleSubmit()}>
+                <Button variant="primary" appearance="stroked" onClick={(e) => e.stopPropagation()}>
+                  {t('settings:ip_whitelisting.save')}
+                </Button>
+              </ConfirmSaveModal>
+            ) : (
+              <Button
+                variant="primary"
+                appearance="stroked"
+                type="submit"
+                form="ip-whitelisting-form"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {t('settings:ip_whitelisting.save')}
               </Button>
-            </ConfirmSaveModal>
-          ) : (
-            <Button variant="primary" type="submit" form="ip-whitelisting-form" onClick={(e) => e.stopPropagation()}>
-              {t('settings:ip_whitelisting.save')}
-            </Button>
-          )}
-        </CollapsiblePaper.Title>
-        <CollapsiblePaper.Content>
+            )}
+          </div>
+        }
+      >
+        <Card className="p-md">
           <form
             onSubmit={handleSubmit(form)}
             className="grid grid-cols-[300px_1fr] gap-sm items-center"
@@ -125,7 +136,7 @@ export const IpWhitelistingSettingsPage = ({
                     </form.Field>
                   ))}
                   <div className="flex gap-md items-center col-span-full">
-                    <Button variant="primary" className="w-fit" onClick={() => networksField.pushValue('')}>
+                    <Button variant="primary" appearance="stroked" onClick={() => networksField.pushValue('')}>
                       <Icon icon="plus" className="size-3.5 shrink-0 cursor-pointer" />
                       {t('settings:ip_whitelisting.add_new')}
                     </Button>
@@ -135,8 +146,8 @@ export const IpWhitelistingSettingsPage = ({
               )}
             </form.Field>
           </form>
-        </CollapsiblePaper.Content>
-      </CollapsiblePaper.Container>
+        </Card>
+      </SettingCard>
     </Page.Content>
   );
 };

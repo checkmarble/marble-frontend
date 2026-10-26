@@ -25,9 +25,9 @@ export function CreateApiKey() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
-        <Button type="button">
-          <Icon icon="plus" className="size-5" />
-          {t('settings:api_keys.new_api_key')}
+        <Button type="button" appearance="stroked">
+          <Icon icon="plus" className="size-4" />
+          {t('settings:api_keys.add_api_key')}
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>

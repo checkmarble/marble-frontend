@@ -28,7 +28,7 @@ export function CreateTag() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button onClick={(e) => e.stopPropagation()}>
+        <Button variant="primary" appearance="stroked" onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-5" />
           {t('settings:tags.new_tag')}
         </Button>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { ThresholdRange } from 'ui-design-system';
+import { ThresholdDirection, ThresholdRange } from 'ui-design-system';
 
 type ScreeningThresholdProps = {
   threshold: number | undefined;
@@ -7,8 +7,16 @@ type ScreeningThresholdProps = {
   title?: string;
   disabled?: boolean;
   className?: string;
+  direction?: ThresholdDirection;
 };
-export const ScreeningThreshold = ({ threshold, onChange, title, disabled, className }: ScreeningThresholdProps) => {
+export const ScreeningThreshold = ({
+  threshold,
+  onChange,
+  title,
+  disabled,
+  className,
+  direction = 'column',
+}: ScreeningThresholdProps) => {
   const { t } = useTranslation(['common', 'scenarios']);
 
   const values = [
@@ -43,6 +51,7 @@ export const ScreeningThreshold = ({ threshold, onChange, title, disabled, class
       disabled={disabled}
       learnMoreUrl="https://docs.checkmarble.com/docs/search-scoring-algorithm"
       className={className}
+      direction={direction}
     />
   );
 };

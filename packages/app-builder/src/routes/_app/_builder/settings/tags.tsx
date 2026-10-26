@@ -1,4 +1,5 @@
-import { CollapsiblePaper, Page } from '@app-builder/components';
+import { Page } from '@app-builder/components';
+import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { CreateTag } from '@app-builder/components/Settings/Tags/CreateTag';
 import { DeleteTag } from '@app-builder/components/Settings/Tags/DeleteTag';
 import { UpdateTag } from '@app-builder/components/Settings/Tags/UpdateTag';
@@ -18,7 +19,7 @@ import { type Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Table, useTable } from 'ui-design-system';
+import { useTable } from 'ui-design-system';
 
 const tagsLoader = createServerFn()
   .middleware([authMiddleware])
@@ -111,7 +112,7 @@ function Tags() {
     ];
   }, [isDeleteTagAvailable, isEditTagAvailable, t]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useTable({
+  const table = useTable({
     data: tags,
     columns,
     columnResizeMode: 'onChange',
@@ -121,22 +122,7 @@ function Tags() {
 
   return (
     <Page.Content width="readable">
-      <CollapsiblePaper.Container>
-        <CollapsiblePaper.Title>
-          <span className="flex-1">{t('settings:tags')}</span>
-          {isCreateTagAvailable ? <CreateTag /> : null}
-        </CollapsiblePaper.Title>
-        <CollapsiblePaper.Content>
-          <Table.Container {...getContainerProps()} className="max-h-96">
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
-              })}
-            </Table.Body>
-          </Table.Container>
-        </CollapsiblePaper.Content>
-      </CollapsiblePaper.Container>
+      <SettingCard title={t('settings:tags')} table={table} addButton={isCreateTagAvailable ? <CreateTag /> : null} />
     </Page.Content>
   );
 }

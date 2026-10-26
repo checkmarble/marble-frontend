@@ -9,6 +9,8 @@ export type ThresholdRangeStep = {
   color: string;
 };
 
+export type ThresholdDirection = 'row' | 'column';
+
 export type ThresholdRangeProps = {
   title?: string;
   defaultDescription?: string;
@@ -23,6 +25,7 @@ export type ThresholdRangeProps = {
   disabled?: boolean;
   className?: string;
   learnMoreUrl?: string;
+  direction?: ThresholdDirection;
 };
 
 const RAIL_HEIGHT = 4;
@@ -97,6 +100,7 @@ export function ThresholdRange({
   disabled = false,
   className,
   learnMoreUrl,
+  direction = 'column',
 }: ThresholdRangeProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const hasDraggedRef = useRef(false);
@@ -233,7 +237,7 @@ export function ThresholdRange({
     <div className={cn('flex flex-col gap-md', className)}>
       {name ? <input type="hidden" name={name} value={value ?? ''} /> : null}
 
-      <div className="flex flex-col gap-md">
+      <div className={cn('grid gap-md', direction === 'row' && 'grid-cols-2')}>
         {title ? (
           <div className="flex items-center gap-xs">
             <span className="text-grey-primary text-s font-medium">{title}</span>
@@ -250,139 +254,141 @@ export function ThresholdRange({
           </div>
         ) : null}
 
-        <div
-          role="slider"
-          tabIndex={disabled ? -1 : 0}
-          aria-disabled={disabled}
-          aria-valuemin={firstStep.value}
-          aria-valuemax={lastStep.value}
-          aria-valuenow={value}
-          aria-valuetext={activeStep?.value.toString() ?? ''}
-          className={cn(
-            'rounded-lg px-xs pb-sm pt-md focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-purple-primary',
-            disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-            isDragging && 'select-none',
-          )}
-          onKeyDown={handleKeyDown}
-          onBlur={onBlur}
-        >
-          <div className="px-md pb-sm">
-            <div className="relative w-full">
-              <div
-                ref={railRef}
-                data-testid="threshold-range-rail"
-                className="bg-grey-border relative w-full rounded-full before:absolute before:inset-x-0 before:-top-5 before:-bottom-5 before:content-['']"
-                style={{ height: `${RAIL_HEIGHT}px` }}
-                onClick={(event) => {
-                  if (hasDraggedRef.current) {
-                    hasDraggedRef.current = false;
-                    return;
-                  }
-                  selectNearestStep(event.clientX, event.currentTarget);
-                }}
-                onPointerMove={handleRailPointerMove}
-                onPointerUp={endThumbDrag}
-                onPointerCancel={endThumbDrag}
-              >
-                {segments.map((segment) => {
-                  const start = (segment.startValue / normalizedMax) * 100;
-                  const end = (segment.endValue / normalizedMax) * 100;
-                  const width = end - start;
-                  const isCompleted = activeIndex >= segment.completedStepIndex;
-                  return (
-                    <div
-                      key={segment.key}
-                      aria-hidden="true"
-                      className={cn('absolute rounded-full', isCompleted ? 'rtl:-scale-x-100' : 'bg-grey-border')}
-                      style={{
-                        insetInlineStart: `${start}%`,
-                        width: `${width}%`,
-                        height: `${RAIL_HEIGHT}px`,
-                        background: isCompleted
-                          ? `linear-gradient(to right, ${segment.fromColor} 0%, ${segment.toColor} 100%)`
-                          : undefined,
-                      }}
-                    />
-                  );
-                })}
+        <div className="grid gap-md">
+          <div
+            role="slider"
+            tabIndex={disabled ? -1 : 0}
+            aria-disabled={disabled}
+            aria-valuemin={firstStep.value}
+            aria-valuemax={lastStep.value}
+            aria-valuenow={value}
+            aria-valuetext={activeStep?.value.toString() ?? ''}
+            className={cn(
+              'rounded-lg px-xs pb-sm pt-md focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-purple-primary w-full',
+              disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+              isDragging && 'select-none',
+            )}
+            onKeyDown={handleKeyDown}
+            onBlur={onBlur}
+          >
+            <div className="px-md pb-sm">
+              <div className="relative w-full">
+                <div
+                  ref={railRef}
+                  data-testid="threshold-range-rail"
+                  className="bg-grey-border relative w-full rounded-full before:absolute before:inset-x-0 before:-top-5 before:-bottom-5 before:content-['']"
+                  style={{ height: `${RAIL_HEIGHT}px` }}
+                  onClick={(event) => {
+                    if (hasDraggedRef.current) {
+                      hasDraggedRef.current = false;
+                      return;
+                    }
+                    selectNearestStep(event.clientX, event.currentTarget);
+                  }}
+                  onPointerMove={handleRailPointerMove}
+                  onPointerUp={endThumbDrag}
+                  onPointerCancel={endThumbDrag}
+                >
+                  {segments.map((segment) => {
+                    const start = (segment.startValue / normalizedMax) * 100;
+                    const end = (segment.endValue / normalizedMax) * 100;
+                    const width = end - start;
+                    const isCompleted = activeIndex >= segment.completedStepIndex;
+                    return (
+                      <div
+                        key={segment.key}
+                        aria-hidden="true"
+                        className={cn('absolute rounded-full', isCompleted ? 'rtl:-scale-x-100' : 'bg-grey-border')}
+                        style={{
+                          insetInlineStart: `${start}%`,
+                          width: `${width}%`,
+                          height: `${RAIL_HEIGHT}px`,
+                          background: isCompleted
+                            ? `linear-gradient(to right, ${segment.fromColor} 0%, ${segment.toColor} 100%)`
+                            : undefined,
+                        }}
+                      />
+                    );
+                  })}
 
-                {steps.map((step, index) => {
-                  const position = (step.value / normalizedMax) * 100;
-                  const isActive = index === activeIndex;
-                  const isCompleted = activeIndex >= index;
-                  const size = isActive ? ACTIVE_DOT_SIZE : INACTIVE_DOT_SIZE;
-                  const backgroundColor = isCompleted ? step.color : 'var(--color-grey-border)';
+                  {steps.map((step, index) => {
+                    const position = (step.value / normalizedMax) * 100;
+                    const isActive = index === activeIndex;
+                    const isCompleted = activeIndex >= index;
+                    const size = isActive ? ACTIVE_DOT_SIZE : INACTIVE_DOT_SIZE;
+                    const backgroundColor = isCompleted ? step.color : 'var(--color-grey-border)';
 
-                  return (
-                    <button
-                      key={step.value}
-                      type="button"
-                      tabIndex={-1}
-                      aria-label={`${title} ${step.value.toString()}`}
-                      disabled={disabled}
-                      data-testid={isActive ? 'threshold-range-thumb-active' : undefined}
-                      className={cn(
-                        'absolute top-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
-                        disabled
-                          ? 'cursor-not-allowed'
-                          : isActive
-                            ? isDragging
-                              ? 'cursor-grabbing'
-                              : 'cursor-grab'
-                            : 'cursor-pointer',
-                      )}
-                      style={{
-                        insetInlineStart: `${position}%`,
-                        marginInlineStart: `-${size / 2}px`,
-                        width: `${size}px`,
-                        height: `${size}px`,
-                        backgroundColor,
-                      }}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        if (hasDraggedRef.current) {
-                          hasDraggedRef.current = false;
-                          return;
-                        }
-                        selectStepAtIndex(index);
-                      }}
-                      onPointerDown={isActive ? handleActiveThumbPointerDown : undefined}
-                    />
-                  );
-                })}
+                    return (
+                      <button
+                        key={step.value}
+                        type="button"
+                        tabIndex={-1}
+                        aria-label={`${title} ${step.value.toString()}`}
+                        disabled={disabled}
+                        data-testid={isActive ? 'threshold-range-thumb-active' : undefined}
+                        className={cn(
+                          'absolute top-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
+                          disabled
+                            ? 'cursor-not-allowed'
+                            : isActive
+                              ? isDragging
+                                ? 'cursor-grabbing'
+                                : 'cursor-grab'
+                              : 'cursor-pointer',
+                        )}
+                        style={{
+                          insetInlineStart: `${position}%`,
+                          marginInlineStart: `-${size / 2}px`,
+                          width: `${size}px`,
+                          height: `${size}px`,
+                          backgroundColor,
+                        }}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          if (hasDraggedRef.current) {
+                            hasDraggedRef.current = false;
+                            return;
+                          }
+                          selectStepAtIndex(index);
+                        }}
+                        onPointerDown={isActive ? handleActiveThumbPointerDown : undefined}
+                      />
+                    );
+                  })}
+                </div>
+
+                {activeStep ? (
+                  <div
+                    className="absolute text-s leading-none font-medium pointer-events-none -translate-x-1/2 rtl:translate-x-1/2"
+                    style={{
+                      top: `${LABEL_TOP_OFFSET}px`,
+                      insetInlineStart: `${(activeStep.value / normalizedMax) * 100}%`,
+                      color: activeStep.color,
+                    }}
+                  >
+                    {activeStep.value.toString()}
+                  </div>
+                ) : null}
+
+                {activeStep?.value !== lastStep.value ? (
+                  <div
+                    className="text-grey-placeholder absolute text-s leading-none font-medium pointer-events-none -translate-x-1/2 rtl:translate-x-1/2"
+                    style={{
+                      top: `${LABEL_TOP_OFFSET}px`,
+                      insetInlineStart: `${(lastStep.value / normalizedMax) * 100}%`,
+                    }}
+                  >
+                    {lastStep.value.toString()}
+                  </div>
+                ) : null}
               </div>
-
-              {activeStep ? (
-                <div
-                  className="absolute text-s leading-none font-medium pointer-events-none -translate-x-1/2 rtl:translate-x-1/2"
-                  style={{
-                    top: `${LABEL_TOP_OFFSET}px`,
-                    insetInlineStart: `${(activeStep.value / normalizedMax) * 100}%`,
-                    color: activeStep.color,
-                  }}
-                >
-                  {activeStep.value.toString()}
-                </div>
-              ) : null}
-
-              {activeStep?.value !== lastStep.value ? (
-                <div
-                  className="text-grey-placeholder absolute text-s leading-none font-medium pointer-events-none -translate-x-1/2 rtl:translate-x-1/2"
-                  style={{
-                    top: `${LABEL_TOP_OFFSET}px`,
-                    insetInlineStart: `${(lastStep.value / normalizedMax) * 100}%`,
-                  }}
-                >
-                  {lastStep.value.toString()}
-                </div>
-              ) : null}
             </div>
           </div>
-        </div>
 
-        {activeStep?.label || defaultDescription ? (
-          <p className="text-grey-placeholder text-xs leading-tight">{activeStep?.label ?? defaultDescription}</p>
-        ) : null}
+          {activeStep?.label || defaultDescription ? (
+            <p className="text-grey-placeholder text-xs leading-tight">{activeStep?.label ?? defaultDescription}</p>
+          ) : null}
+        </div>
       </div>
     </div>
   );

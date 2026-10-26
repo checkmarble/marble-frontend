@@ -34,7 +34,7 @@ export function CreateInbox({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
-        <Button className={cn('whitespace-nowrap', className)} variant="secondary" appearance="stroked" size={size}>
+        <Button className={cn('whitespace-nowrap', className)} variant="primary" appearance="stroked" size={size}>
           <Icon icon="new-inbox" className="size-5 shrink-0" />
           {t('settings:inboxes.new_inbox.create')}
         </Button>
