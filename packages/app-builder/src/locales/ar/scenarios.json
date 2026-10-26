@@ -582,6 +582,7 @@
   "trigger.trigger_object.add_trigger": "إضافة شرط مُشغِّل",
   "trigger.trigger_object.callout": "يحدّد ما إذا كان السيناريو ذا صلة بكل كائن مُشغِّل (<DocLink>معرفة المزيد</DocLink>)",
   "trigger.trigger_object.delete_trigger": "حذف شرط المُشغِّل",
+  "trigger.trigger_object.invalid": "يرجى تصحيح أخطاء شرط المُشغِّل قبل الحفظ",
   "trigger.trigger_object.no_trigger": "سيتم فحص جميع <strong>{{objectType}}</strong>",
   "trigger.trigger_object.title": "شروط المُشغِّل",
   "unarchive_scenario.button": "إلغاء الأرشفة",

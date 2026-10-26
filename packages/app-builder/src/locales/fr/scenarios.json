@@ -582,6 +582,7 @@
   "trigger.trigger_object.add_trigger": "Ajouter une condition de déclenchement",
   "trigger.trigger_object.callout": "Détermine si le scénario est pertinent pour chaque objet déclencheur (<DocLink>en savoir plus</DocLink>)",
   "trigger.trigger_object.delete_trigger": "Supprimer la condition de déclenchement",
+  "trigger.trigger_object.invalid": "Corrigez les erreurs de la condition de déclenchement avant d'enregistrer",
   "trigger.trigger_object.no_trigger": "Toutes les entités de type <strong>{{objectType}}</strong> seront vérifiées",
   "trigger.trigger_object.title": "Objet déclencheur",
   "unarchive_scenario.button": "Désarchiver",

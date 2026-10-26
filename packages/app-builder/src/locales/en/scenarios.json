@@ -582,6 +582,7 @@
   "trigger.trigger_object.add_trigger": "Add trigger condition",
   "trigger.trigger_object.callout": "Determines whether the scenario is relevant for each trigger object (<DocLink>learn more</DocLink>)",
   "trigger.trigger_object.delete_trigger": "Delete trigger condition",
+  "trigger.trigger_object.invalid": "Fix the trigger condition errors before saving",
   "trigger.trigger_object.no_trigger": "All <strong>{{objectType}}</strong> will be checked",
   "trigger.trigger_object.title": "Trigger conditions",
   "unarchive_scenario.button": "Unarchive",
