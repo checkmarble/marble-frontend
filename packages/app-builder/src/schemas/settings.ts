@@ -24,6 +24,8 @@ export const createInboxRedirectRouteOptions = ['/cases/inboxes/$inboxId', '/set
 
 export const createInboxPayloadSchema = z.object({
   name: z.string().min(1),
+  escalationInboxId: z.union([z.uuid(), z.null()]).optional(),
+  autoAssignEnabled: z.boolean().optional(),
   redirectRoute: z.enum(createInboxRedirectRouteOptions).optional(),
 });
 export type CreateInboxPayload = z.infer<typeof createInboxPayloadSchema>;
@@ -38,7 +40,7 @@ export const updateInboxPayloadSchema = z.object({
   name: z.string().min(1),
   escalationInboxId: z.union([z.uuid(), z.null()]),
   autoAssignEnabled: z.boolean(),
-  redirectRoute: z.enum(createInboxRedirectRouteOptions),
+  redirectRoute: z.enum(createInboxRedirectRouteOptions).optional(),
 });
 export type UpdateInboxPayload = z.infer<typeof updateInboxPayloadSchema>;
 

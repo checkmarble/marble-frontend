@@ -42,7 +42,7 @@ export function CreateUser({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button onClick={(e) => e.stopPropagation()}>
+        <Button appearance="stroked" variant="primary" onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-5" />
           {t('settings:users.new_user')}
         </Button>

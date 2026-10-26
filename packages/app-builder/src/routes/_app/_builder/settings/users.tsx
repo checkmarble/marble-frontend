@@ -1,4 +1,5 @@
-import { CollapsiblePaper, Page } from '@app-builder/components';
+import { Page } from '@app-builder/components';
+import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
 import { DeleteUser } from '@app-builder/components/Settings/Users/DeleteUser';
 import { UpdateUser } from '@app-builder/components/Settings/Users/UpdateUser';
@@ -22,7 +23,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Table, Tag, useTable } from 'ui-design-system';
+import { Tag, useTable } from 'ui-design-system';
 
 const usersLoader = createServerFn()
   .middleware([authMiddleware])
@@ -171,7 +172,7 @@ function Users() {
     tfaQuery.isPending,
   ]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useTable({
+  const table = useTable({
     data: orgUsers,
     columns,
     columnResizeMode: 'onChange',
@@ -181,24 +182,14 @@ function Users() {
 
   return (
     <Page.Content width="readable">
-      <CollapsiblePaper.Container>
-        <CollapsiblePaper.Title>
-          <span className="flex-1">{t('settings:users')}</span>
-          {isCreateUserAvailable ? (
+      <SettingCard
+        table={table}
+        addButton={
+          isCreateUserAvailable ? (
             <CreateUser orgId={user.organizationId} access={entitlements.userRoles} userRoles={userRoles} />
-          ) : null}
-        </CollapsiblePaper.Title>
-        <CollapsiblePaper.Content>
-          <Table.Container {...getContainerProps()} className="max-h-96">
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
-              })}
-            </Table.Body>
-          </Table.Container>
-        </CollapsiblePaper.Content>
-      </CollapsiblePaper.Container>
+          ) : null
+        }
+      />
     </Page.Content>
   );
 }

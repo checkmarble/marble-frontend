@@ -1,6 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
 import { Page } from '@app-builder/components/Page';
-import { CollapsiblePaper } from '@app-builder/components/Paper';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Organization, type ScreeningProvider } from '@app-builder/models/organization';
 import {
@@ -12,7 +11,8 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, type SelectOption, SelectV2 } from 'ui-design-system';
+import { Button, Card, type SelectOption, SelectV2, Typo } from 'ui-design-system';
+import { SettingCard } from '../settingCard';
 
 const SCREENING_FEATURES = [
   { name: 'manualSearch', labelKey: 'settings:screening_providers.manual_search' },
@@ -75,31 +75,35 @@ export const ScreeningProvidersSettingsPage = ({
 
   return (
     <Page.Content width="readable">
-      <CollapsiblePaper.Container>
-        <CollapsiblePaper.Title>
-          <span className="flex-1">{t('settings:screening_providers')}</span>
-          <Button
-            variant="secondary"
-            appearance="stroked"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSubmitError(null);
-              form.reset();
-            }}
-          >
-            {t('settings:screening_providers.reset')}
-          </Button>
-          <Button variant="primary" type="submit" form="screening-providers-form" onClick={(e) => e.stopPropagation()}>
-            {t('settings:screening_providers.save')}
-          </Button>
-        </CollapsiblePaper.Title>
-        <CollapsiblePaper.Content>
-          <Callout color="red" icon="error" iconColor="red" className="mb-md">
-            {submitError}
-          </Callout>
+      <SettingCard
+        title={
+          <div className="flex items-center gap-sm">
+            <Typo variant="title2" className="flex-1">
+              {t('settings:screening_providers')}
+            </Typo>
+            <Button
+              variant="secondary"
+              appearance="stroked"
+              onClick={(e) => {
+                setSubmitError(null);
+                form.reset();
+              }}
+            >
+              {t('settings:screening_providers.reset')}
+            </Button>
+            <Button variant="primary" type="submit" appearance="stroked" form="screening-providers-form">
+              {t('settings:screening_providers.save')}
+            </Button>
+          </div>
+        }
+      >
+        <Callout color="red" icon="error" iconColor="red" className="mb-md">
+          {submitError}
+        </Callout>
+        <Card className="p-md">
           <form
             onSubmit={handleSubmit(form)}
-            className="grid grid-cols-[300px_1fr] gap-sm items-center"
+            className="grid grid-cols-2 gap-sm items-center lg:w-1/2"
             id="screening-providers-form"
           >
             {SCREENING_FEATURES.map((feature) => (
@@ -112,15 +116,14 @@ export const ScreeningProvidersSettingsPage = ({
                       onChange={field.handleChange}
                       options={providerOptions}
                       placeholder={t('settings:screening_providers.provider.opensanctions')}
-                      className="w-fit"
                     />
                   </>
                 )}
               </form.Field>
             ))}
           </form>
-        </CollapsiblePaper.Content>
-      </CollapsiblePaper.Container>
+        </Card>
+      </SettingCard>
     </Page.Content>
   );
 };

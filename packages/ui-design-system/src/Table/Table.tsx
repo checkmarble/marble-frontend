@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
-import { cloneElement, createContext, type JSX, useContext, useMemo, useRef } from 'react';
+import { cloneElement, createContext, type JSX, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
 import type { MarbleTableFeatures } from './features';
@@ -45,12 +45,13 @@ function TableTH<TData extends RowData, TValue>({
   header,
   children,
   className,
+  style,
   ...props
 }: React.ComponentProps<'th'> & { header: Header<MarbleTableFeatures, TData, TValue> }) {
   return (
     <th
       colSpan={header.colSpan}
-      style={{ width: header.getSize() }}
+      style={{ width: header.getSize(), ...style }}
       className={clsx(
         'border-grey-border bg-surface-card relative h-12 w-full border-b border-r px-md last:border-r-0',
         {
@@ -69,13 +70,34 @@ function TableTH<TData extends RowData, TValue>({
 const internalRowLink = '__internal-row-link';
 
 // biome-ignore lint/suspicious/noRedeclare: <TBD>
-function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderGroup<MarbleTableFeatures, TData>[] }) {
+function Header<TData extends RowData>({
+  headerGroups,
+  actions,
+}: {
+  headerGroups: HeaderGroup<MarbleTableFeatures, TData>[];
+  /** Rendered at the end of the last header cell, which grows so they never overflow */
+  actions?: React.ReactNode;
+}) {
+  const [actionsMinWidth, setActionsMinWidth] = useState(0);
+  const measureActions = useCallback((actionsElement: HTMLDivElement | null) => {
+    if (!actionsElement) return;
+    const th = actionsElement.closest('th');
+    const observer = new ResizeObserver(() => {
+      const thStyle = th ? getComputedStyle(th) : null;
+      const thPadding = thStyle ? parseFloat(thStyle.paddingInlineStart) + parseFloat(thStyle.paddingInlineEnd) : 0;
+      setActionsMinWidth(actionsElement.offsetWidth + thPadding);
+    });
+    observer.observe(actionsElement);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <thead className="sticky top-0 z-10">
-      {headerGroups.map((headerGroup) => (
+      {headerGroups.map((headerGroup, groupIndex) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header, index) => {
             const context = header.getContext();
+            const isLastHeader = groupIndex === headerGroups.length - 1 && index === headerGroup.headers.length - 1;
             if (header.id === internalRowLink) {
               return (
                 <th
@@ -86,7 +108,11 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
               );
             }
             return (
-              <Table.TH header={header} key={header.id}>
+              <Table.TH
+                header={header}
+                key={header.id}
+                style={isLastHeader && actions ? { width: Math.max(header.getSize(), actionsMinWidth) } : undefined}
+              >
                 {header.isPlaceholder ? null : (
                   <div className="text-s text-grey-primary flex flex-row items-center font-semibold">
                     <div className="flex flex-1">{flexRender(header.column.columnDef.header, context)}</div>
@@ -94,6 +120,11 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
                       asc: <Icon icon="arrow-2-up" className="size-6" />,
                       desc: <Icon icon="arrow-2-down" className="size-6" />,
                     }[header.column.getIsSorted() as string] ?? null}
+                    {isLastHeader && actions ? (
+                      <div ref={measureActions} className="flex shrink-0 items-center gap-sm whitespace-nowrap">
+                        {actions}
+                      </div>
+                    ) : null}
                     {header.column.getCanResize() ? (
                       <div
                         className={clsx(

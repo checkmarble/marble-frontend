@@ -1,9 +1,9 @@
-import { CalloutV2, CollapsiblePaper, Page } from '@app-builder/components';
+import { Callout, Page } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { FormSelectTimezone } from '@app-builder/components/Settings/FormSelectTimezone';
+import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
@@ -20,7 +20,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Card, NumberInput } from 'ui-design-system';
 
 const scenariosLoader = createServerFn()
   .middleware([authMiddleware])
@@ -91,19 +91,18 @@ function Scenarios() {
         }}
       >
         <div className="flex items-center justify-between">
-          <CalloutV2>{t('settings:scenario_sanction_callout')}</CalloutV2>
-          <Button type="submit" variant="primary">
-            {t('common:save')}
+          <Callout variant="outlined" iconColor="purple">
+            {t('settings:scenario_sanction_callout')}
+          </Callout>
+          <Button type="submit" variant="primary" appearance="stroked">
+            {t('settings:save-settings')}
           </Button>
         </div>
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:scenenario_execution')}</span>
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
+        <SettingCard title={t('settings:scenenario_execution')}>
+          <Card className="p-md">
             <form.Field name="defaultScenarioTimezone">
               {(field) => (
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full lg:w-1/2 items-center justify-between">
                   <FormLabel name={field.name}>{t('settings:scenario_default_timezone.label')}</FormLabel>
                   <FormSelectTimezone
                     name={field.name}
@@ -116,49 +115,54 @@ function Scenarios() {
                 </div>
               )}
             </form.Field>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
+          </Card>
+        </SettingCard>
+
         {entitlements.sanctions !== 'restricted' ? (
-          <CollapsiblePaper.Container>
-            <CollapsiblePaper.Title>
-              <span className="flex-1">{t('settings:scenario_sanction_settings')}</span>
-            </CollapsiblePaper.Title>
-            <CollapsiblePaper.Content>
-              <div className="flex flex-col gap-lg lg:gap-xl">
+          <SettingCard title={t('settings:scenario_sanction_settings')}>
+            <Card className="p-md">
+              <div className="flex flex-col gap-lg lg:gap-xl w-full lg:w-1/2">
                 <form.Field name="sanctionLimit">
                   {(field) => (
-                    <div className="flex flex-col gap-md">
-                      <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
-                        {t('settings:scenario_sanction_limit')}
-                      </FormLabel>
-                      <FormInput
-                        defaultValue={field.state.value}
-                        type="number"
-                        name={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                        placeholder={t('settings:scenario_sanction_limit_placeholder')}
-                        valid={field.state.meta.errors.length === 0}
-                      />
+                    <div>
+                      <div className="flex items-center justify-between gap-lg">
+                        <label htmlFor={field.name} className="text-s text-grey-secondary">
+                          {t('settings:scenario_sanction_limit')}
+                        </label>
+                        <NumberInput
+                          id={field.name}
+                          type="number"
+                          name={field.name}
+                          value={field.state.value ?? 0}
+                          onChange={(value) => field.handleChange(value)}
+                          onBlur={field.handleBlur}
+                          placeholder={t('settings:scenario_sanction_limit_placeholder')}
+                          borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                        />
+                      </div>
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
                 <form.Field name="sanctionThreshold">
                   {(field) => (
-                    <div className="flex flex-col gap-md">
-                      <ScreeningThreshold
-                        threshold={field.state.value}
-                        onChange={(value) => form.setFieldValue(field.name, value)}
-                        title={t('settings:scenario_sanction_threshold')}
-                      />
+                    <div>
+                      <div className="flex gap-md">
+                        <ScreeningThreshold
+                          threshold={field.state.value}
+                          onChange={(value) => form.setFieldValue(field.name, value)}
+                          title={t('settings:scenario_sanction_threshold')}
+                          direction="row"
+                          className="w-full"
+                        />
+                      </div>
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
               </div>
-            </CollapsiblePaper.Content>
-          </CollapsiblePaper.Container>
+            </Card>
+          </SettingCard>
         ) : null}
       </form>
     </Page.Content>

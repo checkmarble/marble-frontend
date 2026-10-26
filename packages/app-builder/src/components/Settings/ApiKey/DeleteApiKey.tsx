@@ -3,7 +3,7 @@ import { type ApiKey } from '@app-builder/models/api-keys';
 import { useDeleteApiKeyMutation } from '@app-builder/queries/settings/api-keys/delete-api-key';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteApiKey({ apiKey }: { apiKey: ApiKey }) {
@@ -12,8 +12,10 @@ export function DeleteApiKey({ apiKey }: { apiKey: ApiKey }) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger>
-        <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:api_keys.delete')} />
+      <Modal.Trigger asChild>
+        <Button variant="secondary" appearance="stroked" mode="icon" aria-label={t('settings:api_keys.delete')}>
+          <Icon icon="delete" className="size-4 shrink-0" />
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <DeleteApiKeyContent apiKey={apiKey} onSuccess={() => setOpen(false)} />

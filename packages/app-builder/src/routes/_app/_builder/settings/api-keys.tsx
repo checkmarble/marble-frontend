@@ -1,8 +1,9 @@
-import { Callout, CollapsiblePaper, CopyToClipboardButton, Page } from '@app-builder/components';
+import { Callout, CopyToClipboardButton, Page } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { Nudge } from '@app-builder/components/Nudge';
 import { CreateApiKey } from '@app-builder/components/Settings/ApiKey/CreateApiKey';
 import { DeleteApiKey } from '@app-builder/components/Settings/ApiKey/DeleteApiKey';
+import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { CreateWebhook } from '@app-builder/components/Settings/Webhooks/CreateWebhook';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -23,12 +24,13 @@ import { downloadFile } from '@app-builder/utils/download-file';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
+import { type OpenApiSpec } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, Table, Typo, useTable } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const apiKeysLoader = createServerFn()
@@ -102,7 +104,7 @@ function ApiKeys() {
       apiKeyColumnHelper.accessor((row) => row.prefix, {
         id: 'prefix',
         header: t('settings:api_keys.value'),
-        size: 100,
+        size: 150,
         cell: ({ getValue }) => {
           return <span>{`${getValue()}*************`}</span>;
         },
@@ -110,7 +112,7 @@ function ApiKeys() {
       apiKeyColumnHelper.accessor((row) => row.description, {
         id: 'description',
         header: t('settings:api_keys.description'),
-        size: 300,
+        size: 250,
       }),
       apiKeyColumnHelper.accessor((row) => row.role, {
         id: 'role',
@@ -118,21 +120,18 @@ function ApiKeys() {
         size: 150,
         cell: ({ getValue }) => t(tKeyForApiKeyRole(getValue())),
       }),
-      ...(isDeleteApiKeyAvailable
-        ? [
-            apiKeyColumnHelper.display({
-              id: 'actions',
-              size: 100,
-              cell: ({ cell }) => {
-                return (
-                  <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
-                    <DeleteApiKey apiKey={cell.row.original} />
-                  </div>
-                );
-              },
-            }),
-          ]
-        : []),
+      apiKeyColumnHelper.display({
+        id: 'actions',
+        size: 300,
+        cell: ({ cell }) => {
+          if (!isDeleteApiKeyAvailable) return null;
+          return (
+            <div className="flex justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+              <DeleteApiKey apiKey={cell.row.original} />
+            </div>
+          );
+        },
+      }),
     ];
   }, [isDeleteApiKeyAvailable, t]);
 
@@ -144,42 +143,15 @@ function ApiKeys() {
 
   return (
     <Page.Content width="readable">
-      <div className="flex flex-col items-start gap-sm">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            try {
-              const blob = new Blob([JSON.stringify(openapiV1)], {
-                type: 'application/json;charset=utf-8,',
-              });
-              const url = URL.createObjectURL(blob);
-              void downloadFile(url, 'openapi-v1.json');
-            } catch (_error) {
-              toast.error(t('common:errors.unknown'));
-            }
-          }}
-        >
-          <Icon icon="download" className="me-sm size-5" />
-          {t('api:download_openapi_spec_v1')}
-        </Button>
-      </div>
       {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
-      <CollapsiblePaper.Container>
-        <CollapsiblePaper.Title>
-          <span className="flex-1">{t('settings:api_keys')}</span>
-          {isCreateApiKeyAvailable ? <CreateApiKey /> : null}
-        </CollapsiblePaper.Title>
-        <CollapsiblePaper.Content>
-          <Table.Container {...apiKeyTable.getContainerProps()} className="max-h-96">
-            <Table.Header headerGroups={apiKeyTable.table.getHeaderGroups()} />
-            <Table.Body {...apiKeyTable.getBodyProps()}>
-              {apiKeyTable.rows.map((row) => {
-                return <Table.Row key={row.id} className="hover:bg-purple-background-light group" row={row} />;
-              })}
-            </Table.Body>
-          </Table.Container>
-        </CollapsiblePaper.Content>
-      </CollapsiblePaper.Container>
+
+      <SettingCard
+        title={t('settings:api_keys')}
+        table={apiKeyTable}
+        addButton={isCreateApiKeyAvailable ? <CreateApiKey /> : null}
+        additionalButtons={<DownloadOpenApiSpecButton openapiV1={openapiV1} />}
+      />
+
       {canReadWebhooks ? (
         <WebhooksSection
           webhooks={webhooks}
@@ -189,6 +161,31 @@ function ApiKeys() {
         />
       ) : null}
     </Page.Content>
+  );
+}
+
+function DownloadOpenApiSpecButton({ openapiV1 }: { openapiV1: OpenApiSpec }) {
+  const { t } = useTranslation(['common', 'api']);
+
+  return (
+    <Button
+      variant="secondary"
+      appearance="stroked"
+      onClick={() => {
+        try {
+          const blob = new Blob([JSON.stringify(openapiV1)], {
+            type: 'application/json;charset=utf-8,',
+          });
+          const url = URL.createObjectURL(blob);
+          void downloadFile(url, 'openapi-v1.json');
+        } catch (_error) {
+          toast.error(t('common:errors.unknown'));
+        }
+      }}
+    >
+      <Icon icon="download" className="size-4" />
+      {t('api:download_openapi_spec_v1')}
+    </Button>
   );
 }
 
@@ -242,7 +239,7 @@ function WebhooksSection({
     ];
   }, [t]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useTable({
+  const table = useTable({
     data: webhooks,
     columns,
     columnResizeMode: 'onChange',
@@ -252,82 +249,72 @@ function WebhooksSection({
   });
 
   const webhooksTitleContent = (
-    <span className="flex flex-1 items-center gap-sm">
+    <Typo variant="title2" className="flex flex-1 items-center gap-sm">
       {t('settings:webhooks')}
       {webhooksStatus !== 'allowed' && !isAccessible(webhooksStatus) ? (
         <Nudge content="" kind={webhooksStatus} className="size-5" />
       ) : null}
-    </span>
+    </Typo>
   );
 
   if (webhooksError || !isAccessible(webhooksStatus)) {
     return (
-      <CollapsiblePaper.Container defaultOpen={false}>
-        <CollapsiblePaper.Title>
-          {webhooksTitleContent}
-          <Button variant="primary" disabled>
+      <SettingCard
+        title={webhooksTitleContent}
+        table={table}
+        addButton={
+          <span className={CtaV2ClassName({ appearance: 'stroked', variant: 'primary' })} aria-disabled={true}>
             <Icon icon="plus" className="size-5" />
             {t('settings:webhooks.new_webhook')}
-          </Button>
-        </CollapsiblePaper.Title>
-        <CollapsiblePaper.Content>
-          <div className="flex flex-col items-center gap-md py-xl">
-            <Typo variant="title2" className="text-grey-primary">
-              {t('settings:webhooks.configuration_error')}
-            </Typo>
-            <Callout variant="outlined">
-              <p className="whitespace-pre-wrap">
-                <Trans
-                  t={t}
-                  i18nKey="settings:webhooks.convoy_error"
-                  components={{
-                    DocLink: <ExternalLink href={webhooksSetupDocHref} />,
-                  }}
-                />
-              </p>
-            </Callout>
-          </div>
-        </CollapsiblePaper.Content>
-      </CollapsiblePaper.Container>
+          </span>
+        }
+      >
+        <Card className="flex flex-col items-center gap-md p-md">
+          <Typo variant="title2" className="text-grey-primary">
+            {t('settings:webhooks.configuration_error')}
+          </Typo>
+          <Callout variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="settings:webhooks.convoy_error"
+                components={{
+                  DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+        </Card>
+      </SettingCard>
     );
   }
 
   return (
-    <CollapsiblePaper.Container>
-      <CollapsiblePaper.Title>
-        {webhooksTitleContent}
-        {isCreateWebhookAvailable ? (
-          <span onClick={(e) => e.stopPropagation()}>
-            <CreateWebhook webhookStatus={webhooksStatus}>
-              <Button variant="primary">
-                <Icon icon="plus" className="size-5" />
-                {t('settings:webhooks.new_webhook')}
-              </Button>
-            </CreateWebhook>
-          </span>
-        ) : null}
-      </CollapsiblePaper.Title>
-      <CollapsiblePaper.Content>
-        <Callout className="mb-md lg:mb-lg" variant="outlined">
-          <p className="whitespace-pre-wrap">
-            <Trans
-              t={t}
-              i18nKey="settings:webhooks.setup_documentation"
-              components={{
-                DocLink: <ExternalLink href={webhooksSetupDocHref} />,
-              }}
-            />
-          </p>
-        </Callout>
-        <Table.Container {...getContainerProps()} className="max-h-96">
-          <Table.Header headerGroups={table.getHeaderGroups()} />
-          <Table.Body {...getBodyProps()}>
-            {rows.map((row) => {
-              return <Table.Row key={row.id} row={row} />;
-            })}
-          </Table.Body>
-        </Table.Container>
-      </CollapsiblePaper.Content>
-    </CollapsiblePaper.Container>
+    <SettingCard
+      title={webhooksTitleContent}
+      table={table}
+      addButton={
+        isCreateWebhookAvailable ? (
+          <CreateWebhook webhookStatus={webhooksStatus}>
+            <Button variant="primary" appearance="stroked">
+              <Icon icon="plus" className="size-5" />
+              {t('settings:webhooks.new_webhook')}
+            </Button>
+          </CreateWebhook>
+        ) : null
+      }
+    >
+      <Callout variant="outlined">
+        <p className="whitespace-pre-wrap">
+          <Trans
+            t={t}
+            i18nKey="settings:webhooks.setup_documentation"
+            components={{
+              DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+            }}
+          />
+        </p>
+      </Callout>
+    </SettingCard>
   );
 }

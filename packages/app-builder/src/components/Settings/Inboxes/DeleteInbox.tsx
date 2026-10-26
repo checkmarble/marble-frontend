@@ -28,7 +28,7 @@ export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: bool
   );
 }
 
-const DeleteInboxContent = ({ inboxId, onSettled }: { inboxId: string; onSettled: () => void }) => {
+export const DeleteInboxContent = ({ inboxId, onSettled }: { inboxId: string; onSettled: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxMutation = useDeleteInboxMutation();
   const revalidate = useLoaderRevalidator();

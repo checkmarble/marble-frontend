@@ -216,7 +216,14 @@ export const createInboxFn = createServerFn({ method: 'POST' })
   .validator(createInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const createdInbox = await context.authInfo.inbox.createInbox(data);
+      const createdInbox = await context.authInfo.inbox.createInbox({ name: data.name });
+
+      if (data.escalationInboxId || data.autoAssignEnabled) {
+        await context.authInfo.inbox.updateInbox(
+          createdInbox.id,
+          pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
+        );
+      }
 
       if (data.redirectRoute) {
         throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(createdInbox.id) } });
@@ -251,7 +258,11 @@ export const updateInboxFn = createServerFn({ method: 'POST' })
         data.id,
         pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
       );
-      throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(updatedInbox.id) } });
+      if (data.redirectRoute) {
+        throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(updatedInbox.id) } });
+      }
+
+      return { inboxId: updatedInbox.id };
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
       throw new Error('Failed to update inbox');
@@ -264,12 +275,7 @@ export const createInboxUserFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.createInboxUser(data.inboxId, R.omit(data, ['inboxId']));
-      throw redirect({
-        to: '/settings/inboxes/$inboxId',
-        params: { inboxId: fromUUIDtoSUUID(data.inboxId) },
-      });
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
+    } catch {
       throw new Error('Failed to create inbox user');
     }
   });
@@ -280,12 +286,7 @@ export const deleteInboxUserFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.deleteInboxUser(data.inboxUserId);
-      throw redirect({
-        to: '/settings/inboxes/$inboxId',
-        params: { inboxId: fromUUIDtoSUUID(data.inboxId) },
-      });
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
+    } catch {
       throw new Error('Failed to delete inbox user');
     }
   });
@@ -303,12 +304,7 @@ export const updateInboxUserFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.updateInboxUser(data.id, pick(data, ['role', 'autoAssignable']));
-      throw redirect({
-        to: '/settings/inboxes/$inboxId',
-        params: { inboxId: fromUUIDtoSUUID(data.inboxId) },
-      });
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
+    } catch {
       throw new Error('Failed to update inbox user');
     }
   });

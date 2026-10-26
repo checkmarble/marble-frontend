@@ -89,8 +89,6 @@ import { Route as AppBuilderDetectionListsListIdRouteImport } from './routes/_ap
 import { Route as AppBuilderDetectionScenariosIndexRouteImport } from './routes/_app/_builder/detection/scenarios/index'
 import { Route as AppBuilderDetectionScenariosScenarioIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId'
 import { Route as AppBuilderSettingsAnalyticsFiltersRouteImport } from './routes/_app/_builder/settings/analytics/filters'
-import { Route as AppBuilderSettingsInboxesIndexRouteImport } from './routes/_app/_builder/settings/inboxes/index'
-import { Route as AppBuilderSettingsInboxesInboxIdRouteImport } from './routes/_app/_builder/settings/inboxes/$inboxId'
 import { Route as AppBuilderSettingsWebhooksWebhookIdRouteImport } from './routes/_app/_builder/settings/webhooks_.$webhookId'
 import { Route as AppBuilderUserScoringRecordTypeVersionRouteImport } from './routes/_app/_builder/user-scoring/$recordType.$version'
 import { Route as RessourcesAnnotationsDownloadFileAnnotationIdFileIdRouteImport } from './routes/ressources/annotations/download-file.$annotationId.$fileId'
@@ -567,18 +565,6 @@ const AppBuilderSettingsAnalyticsFiltersRoute =
     path: '/filters',
     getParentRoute: () => AppBuilderSettingsAnalyticsRoute,
   } as any)
-const AppBuilderSettingsInboxesIndexRoute =
-  AppBuilderSettingsInboxesIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AppBuilderSettingsInboxesRoute,
-  } as any)
-const AppBuilderSettingsInboxesInboxIdRoute =
-  AppBuilderSettingsInboxesInboxIdRouteImport.update({
-    id: '/$inboxId',
-    path: '/$inboxId',
-    getParentRoute: () => AppBuilderSettingsInboxesRoute,
-  } as any)
 const AppBuilderSettingsWebhooksWebhookIdRoute =
   AppBuilderSettingsWebhooksWebhookIdRouteImport.update({
     id: '/webhooks_/$webhookId',
@@ -841,7 +827,7 @@ export interface FileRoutesByFullPath {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
-  '/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
+  '/settings/inboxes': typeof AppBuilderSettingsInboxesRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
@@ -871,7 +857,6 @@ export interface FileRoutesByFullPath {
   '/detection/lists/$listId': typeof AppBuilderDetectionListsListIdRoute
   '/detection/scenarios/$scenarioId': typeof AppBuilderDetectionScenariosScenarioIdRouteWithChildren
   '/settings/analytics/filters': typeof AppBuilderSettingsAnalyticsFiltersRoute
-  '/settings/inboxes/$inboxId': typeof AppBuilderSettingsInboxesInboxIdRoute
   '/settings/webhooks/$webhookId': typeof AppBuilderSettingsWebhooksWebhookIdRoute
   '/user-scoring/$recordType/$version': typeof AppBuilderUserScoringRecordTypeVersionRoute
   '/ressources/annotations/download-file/$annotationId/$fileId': typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute
@@ -883,7 +868,6 @@ export interface FileRoutesByFullPath {
   '/detection/decisions/': typeof AppBuilderDetectionDecisionsIndexRoute
   '/detection/lists/': typeof AppBuilderDetectionListsIndexRoute
   '/detection/scenarios/': typeof AppBuilderDetectionScenariosIndexRoute
-  '/settings/inboxes/': typeof AppBuilderSettingsInboxesIndexRoute
   '/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdRouteWithChildren
   '/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
@@ -941,6 +925,7 @@ export interface FileRoutesByTo {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
+  '/settings/inboxes': typeof AppBuilderSettingsInboxesRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
@@ -968,7 +953,6 @@ export interface FileRoutesByTo {
   '/detection/decisions/$decisionId': typeof AppBuilderDetectionDecisionsDecisionIdRoute
   '/detection/lists/$listId': typeof AppBuilderDetectionListsListIdRoute
   '/settings/analytics/filters': typeof AppBuilderSettingsAnalyticsFiltersRoute
-  '/settings/inboxes/$inboxId': typeof AppBuilderSettingsInboxesInboxIdRoute
   '/settings/webhooks/$webhookId': typeof AppBuilderSettingsWebhooksWebhookIdRoute
   '/user-scoring/$recordType/$version': typeof AppBuilderUserScoringRecordTypeVersionRoute
   '/ressources/annotations/download-file/$annotationId/$fileId': typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute
@@ -980,7 +964,6 @@ export interface FileRoutesByTo {
   '/detection/decisions': typeof AppBuilderDetectionDecisionsIndexRoute
   '/detection/lists': typeof AppBuilderDetectionListsIndexRoute
   '/detection/scenarios': typeof AppBuilderDetectionScenariosIndexRoute
-  '/settings/inboxes': typeof AppBuilderSettingsInboxesIndexRoute
   '/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
   '/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
@@ -1050,7 +1033,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/_app/_builder/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/_app/_builder/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
-  '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
+  '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRoute
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/_app/_builder/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
@@ -1080,7 +1063,6 @@ export interface FileRoutesById {
   '/_app/_builder/detection/lists/$listId': typeof AppBuilderDetectionListsListIdRoute
   '/_app/_builder/detection/scenarios/$scenarioId': typeof AppBuilderDetectionScenariosScenarioIdRouteWithChildren
   '/_app/_builder/settings/analytics/filters': typeof AppBuilderSettingsAnalyticsFiltersRoute
-  '/_app/_builder/settings/inboxes/$inboxId': typeof AppBuilderSettingsInboxesInboxIdRoute
   '/_app/_builder/settings/webhooks_/$webhookId': typeof AppBuilderSettingsWebhooksWebhookIdRoute
   '/_app/_builder/user-scoring/$recordType/$version': typeof AppBuilderUserScoringRecordTypeVersionRoute
   '/ressources/annotations/download-file/$annotationId/$fileId': typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute
@@ -1092,7 +1074,6 @@ export interface FileRoutesById {
   '/_app/_builder/detection/decisions/': typeof AppBuilderDetectionDecisionsIndexRoute
   '/_app/_builder/detection/lists/': typeof AppBuilderDetectionListsIndexRoute
   '/_app/_builder/detection/scenarios/': typeof AppBuilderDetectionScenariosIndexRoute
-  '/_app/_builder/settings/inboxes/': typeof AppBuilderSettingsInboxesIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId': typeof AppBuilderCasesDetailSCaseIdRouteWithChildren
   '/_app/_builder/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
@@ -1196,7 +1177,6 @@ export interface FileRouteTypes {
     | '/detection/lists/$listId'
     | '/detection/scenarios/$scenarioId'
     | '/settings/analytics/filters'
-    | '/settings/inboxes/$inboxId'
     | '/settings/webhooks/$webhookId'
     | '/user-scoring/$recordType/$version'
     | '/ressources/annotations/download-file/$annotationId/$fileId'
@@ -1208,7 +1188,6 @@ export interface FileRouteTypes {
     | '/detection/decisions/'
     | '/detection/lists/'
     | '/detection/scenarios/'
-    | '/settings/inboxes/'
     | '/cases/$caseId/d/$decisionId'
     | '/cases/s/$caseId'
     | '/detection/scenarios/$scenarioId/home'
@@ -1266,6 +1245,7 @@ export interface FileRouteTypes {
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
+    | '/settings/inboxes'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
     | '/settings/screening-providers'
@@ -1293,7 +1273,6 @@ export interface FileRouteTypes {
     | '/detection/decisions/$decisionId'
     | '/detection/lists/$listId'
     | '/settings/analytics/filters'
-    | '/settings/inboxes/$inboxId'
     | '/settings/webhooks/$webhookId'
     | '/user-scoring/$recordType/$version'
     | '/ressources/annotations/download-file/$annotationId/$fileId'
@@ -1305,7 +1284,6 @@ export interface FileRouteTypes {
     | '/detection/decisions'
     | '/detection/lists'
     | '/detection/scenarios'
-    | '/settings/inboxes'
     | '/cases/$caseId/d/$decisionId'
     | '/detection/scenarios/$scenarioId/home'
     | '/detection/scenarios/$scenarioId/scheduled-executions'
@@ -1404,7 +1382,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/lists/$listId'
     | '/_app/_builder/detection/scenarios/$scenarioId'
     | '/_app/_builder/settings/analytics/filters'
-    | '/_app/_builder/settings/inboxes/$inboxId'
     | '/_app/_builder/settings/webhooks_/$webhookId'
     | '/_app/_builder/user-scoring/$recordType/$version'
     | '/ressources/annotations/download-file/$annotationId/$fileId'
@@ -1416,7 +1393,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/decisions/'
     | '/_app/_builder/detection/lists/'
     | '/_app/_builder/detection/scenarios/'
-    | '/_app/_builder/settings/inboxes/'
     | '/_app/_builder/cases/$caseId/d/$decisionId'
     | '/_app/_builder/cases/_detail/s/$caseId'
     | '/_app/_builder/detection/scenarios/$scenarioId/home'
@@ -2030,20 +2006,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/analytics/filters'
       preLoaderRoute: typeof AppBuilderSettingsAnalyticsFiltersRouteImport
       parentRoute: typeof AppBuilderSettingsAnalyticsRoute
-    }
-    '/_app/_builder/settings/inboxes/': {
-      id: '/_app/_builder/settings/inboxes/'
-      path: '/'
-      fullPath: '/settings/inboxes/'
-      preLoaderRoute: typeof AppBuilderSettingsInboxesIndexRouteImport
-      parentRoute: typeof AppBuilderSettingsInboxesRoute
-    }
-    '/_app/_builder/settings/inboxes/$inboxId': {
-      id: '/_app/_builder/settings/inboxes/$inboxId'
-      path: '/$inboxId'
-      fullPath: '/settings/inboxes/$inboxId'
-      preLoaderRoute: typeof AppBuilderSettingsInboxesInboxIdRouteImport
-      parentRoute: typeof AppBuilderSettingsInboxesRoute
     }
     '/_app/_builder/settings/webhooks_/$webhookId': {
       id: '/_app/_builder/settings/webhooks_/$webhookId'
@@ -2747,28 +2709,11 @@ const AppBuilderSettingsAnalyticsRouteWithChildren =
     AppBuilderSettingsAnalyticsRouteChildren,
   )
 
-interface AppBuilderSettingsInboxesRouteChildren {
-  AppBuilderSettingsInboxesInboxIdRoute: typeof AppBuilderSettingsInboxesInboxIdRoute
-  AppBuilderSettingsInboxesIndexRoute: typeof AppBuilderSettingsInboxesIndexRoute
-}
-
-const AppBuilderSettingsInboxesRouteChildren: AppBuilderSettingsInboxesRouteChildren =
-  {
-    AppBuilderSettingsInboxesInboxIdRoute:
-      AppBuilderSettingsInboxesInboxIdRoute,
-    AppBuilderSettingsInboxesIndexRoute: AppBuilderSettingsInboxesIndexRoute,
-  }
-
-const AppBuilderSettingsInboxesRouteWithChildren =
-  AppBuilderSettingsInboxesRoute._addFileChildren(
-    AppBuilderSettingsInboxesRouteChildren,
-  )
-
 interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsAnalyticsRoute: typeof AppBuilderSettingsAnalyticsRouteWithChildren
   AppBuilderSettingsApiKeysRoute: typeof AppBuilderSettingsApiKeysRoute
   AppBuilderSettingsAuditLogsRoute: typeof AppBuilderSettingsAuditLogsRoute
-  AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRouteWithChildren
+  AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRoute
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
   AppBuilderSettingsScreeningProvidersRoute: typeof AppBuilderSettingsScreeningProvidersRoute
@@ -2784,7 +2729,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
     AppBuilderSettingsAnalyticsRouteWithChildren,
   AppBuilderSettingsApiKeysRoute: AppBuilderSettingsApiKeysRoute,
   AppBuilderSettingsAuditLogsRoute: AppBuilderSettingsAuditLogsRoute,
-  AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRouteWithChildren,
+  AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRoute,
   AppBuilderSettingsIpWhitelistingRoute: AppBuilderSettingsIpWhitelistingRoute,
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,
   AppBuilderSettingsScreeningProvidersRoute:
