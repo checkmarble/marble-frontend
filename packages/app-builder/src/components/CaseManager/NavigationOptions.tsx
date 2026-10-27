@@ -40,8 +40,11 @@ export function NavigationOptions({ currentUser, client, table, dataModel, onExp
   return (
     <div className="flex gap-sm flex-wrap">
       {linksToTable.map((linkToTable, idx) => {
-        const navOptions =
-          table.navigationOptions?.filter((no) => no.targetTableName === linkToTable.childTableName) ?? [];
+        const navOptions = (table.navigationOptions ?? []).filter(
+          (option, index, options) =>
+            option.targetTableName === linkToTable.childTableName &&
+            options.findIndex((candidate) => R.isDeepEqual(candidate, option)) === index,
+        );
         const hasTimestampOrderingNavigationOption = hasTimestampOrderingOption(dataModel, navOptions);
 
         return navOptions.length > 0 ? (

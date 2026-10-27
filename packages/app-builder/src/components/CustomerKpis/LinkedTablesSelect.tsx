@@ -1,6 +1,7 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { type DataModel, type NavigationOption } from '@app-builder/models';
 import { useTranslation } from 'react-i18next';
+import { isDeepEqual } from 'remeda';
 import { SelectV2 } from 'ui-design-system';
 
 type LinkedTablesSelectProps = {
@@ -20,12 +21,16 @@ export function getCustomerKpiNavigationOptions(dataModel: DataModel, objectType
     ),
   ];
 
-  return navigationOptions.filter((option) => {
+  return navigationOptions.filter((option, index) => {
     const orderingField = dataModel
       .find((table) => table.id === option.targetTableId)
       ?.fields.find((field) => field.id === option.orderingFieldId);
 
-    return linkedTableNames.includes(option.targetTableName) && orderingField?.dataType === 'Timestamp';
+    return (
+      linkedTableNames.includes(option.targetTableName) &&
+      orderingField?.dataType === 'Timestamp' &&
+      navigationOptions.findIndex((candidate) => isDeepEqual(candidate, option)) === index
+    );
   });
 }
 

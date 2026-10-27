@@ -74,4 +74,28 @@ describe('getCustomerKpiNavigationOptions', () => {
 
     expect(getCustomerKpiNavigationOptions(dataModel, 'customers')).toEqual([]);
   });
+
+  it('deduplicates deeply equal options while retaining distinct options in order', () => {
+    const distinctOption = { ...timestampNavigationOption, id: 'another-option' };
+    const dataModel = [
+      {
+        id: 'customers',
+        name: 'customers',
+        navigationOptions: [timestampNavigationOption, { ...timestampNavigationOption }, distinctOption],
+        linksToSingle: [{ parentTableName: 'customers', childTableName: 'transactions' }],
+        fields: [],
+      },
+      {
+        id: 'transactions',
+        name: 'transactions',
+        fields: [{ id: 'transaction-created-at', name: 'created_at', dataType: 'Timestamp' }],
+        linksToSingle: [],
+      },
+    ] as unknown as DataModel;
+
+    expect(getCustomerKpiNavigationOptions(dataModel, 'customers')).toEqual([
+      timestampNavigationOption,
+      distinctOption,
+    ]);
+  });
 });
