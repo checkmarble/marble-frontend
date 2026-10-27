@@ -358,7 +358,7 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
 
 export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media' | 'custom' | 'global';
 
-export type RiskTagCategory = Exclude<ScreeningCategory, 'global'>;
+export type RiskTagCategory = Exclude<ScreeningCategory, 'global' | 'custom' | 'third-parties'>;
 
 export const SCREENING_CATEGORY_COLORS = {
   sanctions: 'red',
@@ -670,13 +670,7 @@ export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> 
   global: 'global',
 };
 
-export const SCREENING_CATEGORIES: RiskTagCategory[] = [
-  'sanctions',
-  'peps',
-  'third-parties',
-  'adverse-media',
-  'custom',
-];
+export const RISK_TAG_CATEGORIES: RiskTagCategory[] = ['sanctions', 'peps', 'adverse-media'];
 
 /**
  * Convert topic filters from the API back to categories for UI display.
@@ -690,7 +684,7 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
   const categories = new Set<ScreeningCategory>();
   for (const value of topicFilters) {
     // Check if it's already a category
-    if (SCREENING_CATEGORIES.includes(value as RiskTagCategory)) {
+    if (RISK_TAG_CATEGORIES.includes(value as RiskTagCategory)) {
       categories.add(value as ScreeningCategory);
     } else {
       // Legacy: look up individual topic in the map

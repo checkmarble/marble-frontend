@@ -5,7 +5,7 @@ import {
   type TagsSwitch,
 } from '@app-builder/models/scoring';
 import {
-  SCREENING_CATEGORIES,
+  RISK_TAG_CATEGORIES,
   SCREENING_CATEGORY_I18N_KEY_MAP,
   topicsToCategories,
 } from '@app-builder/models/screening';
@@ -35,7 +35,7 @@ export function TagsRuleEdit({ model, maxRiskLevel, onModelChange }: TagsRuleEdi
 
   const tagOptions: SelectOption<string>[] = match(model)
     .with({ type: 'screening_tags' }, () =>
-      SCREENING_CATEGORIES.map((cat) => ({
+      RISK_TAG_CATEGORIES.map((cat) => ({
         value: cat,
         label: t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[cat]}`),
       })),

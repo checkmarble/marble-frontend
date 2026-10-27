@@ -1,4 +1,4 @@
-import { SCREENING_CATEGORIES } from '@app-builder/models/screening';
+import { RISK_TAG_CATEGORIES } from '@app-builder/models/screening';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
@@ -54,7 +54,7 @@ export const createRiskAnnotationSchema = z.intersection(
   z.object({
     type: z.literal('risk_tag'),
     payload: z.object({
-      addedCategories: protectArray(z.array(z.enum(SCREENING_CATEGORIES))).optional(),
+      addedCategories: protectArray(z.array(z.enum(RISK_TAG_CATEGORIES))).optional(),
       removedAnnotations: protectArray(z.array(z.uuid())).optional(),
     }),
   }),
@@ -65,7 +65,7 @@ export const riskAnnotationFormSchema = z.intersection(
   z.object({
     type: z.literal('risk_tag'),
     payload: z.object({
-      categories: protectArray(z.array(z.enum(SCREENING_CATEGORIES))),
+      categories: protectArray(z.array(z.enum(RISK_TAG_CATEGORIES))),
     }),
   }),
 );
