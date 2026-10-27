@@ -20,7 +20,7 @@ export type DeleteApiKeyPayload = z.infer<typeof deleteApiKeyPayloadSchema>;
 
 // ---- Inboxes ----
 
-export const createInboxRedirectRouteOptions = ['/cases/inboxes/$inboxId', '/settings/inboxes/$inboxId'] as const;
+export const createInboxRedirectRouteOptions = ['/cases/inboxes/$inboxId', '/settings/inboxes'] as const;
 
 export const createInboxPayloadSchema = z.object({
   name: z.string().min(1),

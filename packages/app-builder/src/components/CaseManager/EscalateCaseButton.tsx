@@ -76,8 +76,8 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
           </div>
           {!canEscalate && isAdminUser ? (
             <Link
-              to="/settings/inboxes/$inboxId"
-              params={{ inboxId: fromUUIDtoSUUID(inboxId) }}
+              to="/settings/inboxes"
+              search={{ inboxId: fromUUIDtoSUUID(inboxId) }}
               className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
             >
               {t('cases:case.inbox_settings_link')}
