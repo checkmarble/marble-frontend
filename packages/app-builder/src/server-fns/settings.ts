@@ -218,10 +218,15 @@ export const createInboxFn = createServerFn({ method: 'POST' })
       const createdInbox = await context.authInfo.inbox.createInbox({ name: data.name });
 
       if (data.escalationInboxId || data.autoAssignEnabled) {
-        await context.authInfo.inbox.updateInbox(
-          createdInbox.id,
-          pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
-        );
+        try {
+          await context.authInfo.inbox.updateInbox(
+            createdInbox.id,
+            pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
+          );
+        } catch (error) {
+          await context.authInfo.inbox.deleteInbox(createdInbox.id).catch(() => undefined);
+          throw error;
+        }
       }
 
       return { inboxId: createdInbox.id };

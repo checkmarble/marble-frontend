@@ -1,6 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxUser } from '@app-builder/models/inbox';
 import { useDeleteInboxUserMutation } from '@app-builder/queries/settings/inboxes/delete-inbox-user';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 
@@ -10,10 +11,15 @@ export const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: In
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteInboxUser = () => {
-    deleteInboxUserMutation.mutateAsync({ inboxUserId: inboxUser.id }).then(() => {
-      onSuccess();
-      revalidate();
-    });
+    deleteInboxUserMutation
+      .mutateAsync({ inboxUserId: inboxUser.id })
+      .then(() => {
+        onSuccess();
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (
