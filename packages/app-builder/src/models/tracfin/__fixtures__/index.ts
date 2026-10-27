@@ -8,6 +8,7 @@ import type {
 } from '../index';
 import { catalogProfileFixture } from './catalog.fixture';
 import configurationJson from './configuration.fixture.json';
+import { tracfinDataModelFixture } from './data-model.fixture';
 import draftJson from './draft.fixture.json';
 import exportJson from './export.fixture.json';
 import prefillJson from './prefill.fixture.json';
@@ -49,3 +50,6 @@ export const tracfinValidationFixture = validationJson as TracfinValidation;
 
 /** The export of draft revision 3, whose validation carries `"diagnostics": null`. */
 export const tracfinExportFixture = exportJson as TracfinExport;
+
+/** The organisation data model the configuration fixture refers to (tables `users`, `companies`, `accounts`, `cards`). */
+export { tracfinDataModelFixture };

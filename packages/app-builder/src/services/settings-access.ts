@@ -6,6 +6,7 @@ import {
   isReadApiKeyAvailable,
   isReadTagAvailable,
   isReadUserAvailable,
+  isTracfinConfigurationAvailable,
 } from '@app-builder/services/feature-access';
 import { type IconName } from 'ui-icons';
 
@@ -27,6 +28,7 @@ export type Sections = {
   audit: Section;
   ip_whitelisting: Section;
   screening_providers: Section;
+  tracfin: Section;
 };
 
 export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inboxes: Inbox[]): Sections {
@@ -73,6 +75,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
     screening_providers: {
       icon: 'search',
       settings: [...(isAdmin(user) ? [{ title: 'screening_providers', to: '/settings/screening-providers' }] : [])],
+    },
+    tracfin: {
+      icon: 'report',
+      settings: [...(isTracfinConfigurationAvailable(user) ? [{ title: 'tracfin', to: '/settings/tracfin' }] : [])],
     },
   };
 

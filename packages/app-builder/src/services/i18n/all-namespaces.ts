@@ -21,6 +21,7 @@ export const ALL_NAMESPACES = [
   'screeningTopics',
   'screenings',
   'settings',
+  'tracfin',
   'upload',
   'user-scoring',
   'workflows',

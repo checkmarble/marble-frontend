@@ -14,13 +14,23 @@ describe('fieldsOf', () => {
     expect(address.attributes).toEqual([]);
     expect(ids(address.fields)).toEqual([
       '/ds/organisme/adresse/type',
+      '/ds/organisme/adresse/typeVoie',
+      '/ds/organisme/adresse/numero',
+      '/ds/organisme/adresse/complementNumero',
       '/ds/organisme/adresse/nomVoie',
+      '/ds/organisme/adresse/batiment',
       '/ds/organisme/adresse/codePostal',
       '/ds/organisme/adresse/ville',
       '/ds/organisme/adresse/pays',
+      '/ds/organisme/adresse/tel',
+      '/ds/organisme/adresse/fax',
+      '/ds/organisme/adresse/courriel',
     ]);
+    // `/ds/operationstdf` is excluded and never listed.
     expect(ids(index.fieldsOf('/ds').blocks)).toEqual([
       '/ds/organisme',
+      '/ds/declarant',
+      '/ds/contact',
       '/ds/personnes',
       '/ds/operations',
       '/ds/pieceJointe',

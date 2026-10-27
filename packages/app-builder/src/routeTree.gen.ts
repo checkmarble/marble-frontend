@@ -64,6 +64,7 @@ import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
 import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
+import { Route as AppBuilderSettingsTracfinRouteImport } from './routes/_app/_builder/settings/tracfin'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
 import { Route as AppBuilderTestGraphIndexRouteImport } from './routes/_app/_builder/test-graph/index'
@@ -418,6 +419,12 @@ const AppBuilderSettingsTagsRoute = AppBuilderSettingsTagsRouteImport.update({
   path: '/tags',
   getParentRoute: () => AppBuilderSettingsRoute,
 } as any)
+const AppBuilderSettingsTracfinRoute =
+  AppBuilderSettingsTracfinRouteImport.update({
+    id: '/tracfin',
+    path: '/tracfin',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
 const AppBuilderSettingsUsersRoute = AppBuilderSettingsUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -839,6 +846,7 @@ export interface FileRoutesByFullPath {
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
+  '/settings/tracfin': typeof AppBuilderSettingsTracfinRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
@@ -938,6 +946,7 @@ export interface FileRoutesByTo {
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
+  '/settings/tracfin': typeof AppBuilderSettingsTracfinRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
@@ -1047,6 +1056,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/_app/_builder/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
+  '/_app/_builder/settings/tracfin': typeof AppBuilderSettingsTracfinRoute
   '/_app/_builder/settings/users': typeof AppBuilderSettingsUsersRoute
   '/_app/_builder/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
   '/_app/_builder/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
@@ -1162,6 +1172,7 @@ export interface FileRouteTypes {
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
+    | '/settings/tracfin'
     | '/settings/users'
     | '/settings/webhooks'
     | '/upload/$objectType'
@@ -1261,6 +1272,7 @@ export interface FileRouteTypes {
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
+    | '/settings/tracfin'
     | '/settings/users'
     | '/settings/webhooks'
     | '/upload/$objectType'
@@ -1369,6 +1381,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/scenarios'
     | '/_app/_builder/settings/screening-providers'
     | '/_app/_builder/settings/tags'
+    | '/_app/_builder/settings/tracfin'
     | '/_app/_builder/settings/users'
     | '/_app/_builder/settings/webhooks'
     | '/_app/_builder/upload/$objectType'
@@ -1844,6 +1857,13 @@ declare module '@tanstack/react-router' {
       path: '/tags'
       fullPath: '/settings/tags'
       preLoaderRoute: typeof AppBuilderSettingsTagsRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/tracfin': {
+      id: '/_app/_builder/settings/tracfin'
+      path: '/tracfin'
+      fullPath: '/settings/tracfin'
+      preLoaderRoute: typeof AppBuilderSettingsTracfinRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
     '/_app/_builder/settings/users': {
@@ -2739,6 +2759,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
   AppBuilderSettingsScreeningProvidersRoute: typeof AppBuilderSettingsScreeningProvidersRoute
   AppBuilderSettingsTagsRoute: typeof AppBuilderSettingsTagsRoute
+  AppBuilderSettingsTracfinRoute: typeof AppBuilderSettingsTracfinRoute
   AppBuilderSettingsUsersRoute: typeof AppBuilderSettingsUsersRoute
   AppBuilderSettingsWebhooksRoute: typeof AppBuilderSettingsWebhooksRoute
   AppBuilderSettingsIndexRoute: typeof AppBuilderSettingsIndexRoute
@@ -2756,6 +2777,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
   AppBuilderSettingsScreeningProvidersRoute:
     AppBuilderSettingsScreeningProvidersRoute,
   AppBuilderSettingsTagsRoute: AppBuilderSettingsTagsRoute,
+  AppBuilderSettingsTracfinRoute: AppBuilderSettingsTracfinRoute,
   AppBuilderSettingsUsersRoute: AppBuilderSettingsUsersRoute,
   AppBuilderSettingsWebhooksRoute: AppBuilderSettingsWebhooksRoute,
   AppBuilderSettingsIndexRoute: AppBuilderSettingsIndexRoute,
