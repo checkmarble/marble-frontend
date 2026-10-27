@@ -1,0 +1,46 @@
+{
+  "profile_version": "tracfin-financier-1.4.0-poc-3",
+  "layers": {
+    "internal_structure": {
+      "status": "failed"
+    },
+    "references": {
+      "status": "incomplete",
+      "reason": "Some registered source rules have not been implemented and tested; see coverage.json"
+    },
+    "business": {
+      "status": "incomplete",
+      "reason": "Some registered source rules have not been implemented and tested; see coverage.json"
+    },
+    "xml_syntax": {
+      "status": "unavailable",
+      "reason": "Draft validation does not read exported XML bytes"
+    },
+    "official_xsd": {
+      "status": "unavailable",
+      "reason": "No compatible official XSD engine is integrated; internal checks are not certification"
+    }
+  },
+  "diagnostics": [
+    {
+      "code": "MISSING_REQUIRED_VALUE",
+      "layer": "internal_structure",
+      "severity": "error",
+      "message": "Required profile value is absent",
+      "field": {
+        "block_id": "d6506c9b-94ef-5e7e-b9cd-7311e6587dcb",
+        "field_id": "/ds/personnes/pp/etatCivil/prenom"
+      }
+    },
+    {
+      "code": "UNRESOLVED_CONFLICT_NOT_EXPORTED",
+      "layer": "business",
+      "severity": "error",
+      "message": "Unresolved conflicting value is omitted",
+      "field": {
+        "block_id": "408d2336-5199-5b90-8509-627e45c58e45",
+        "field_id": "/ds/personnes/pp/activite/denominationSociale"
+      }
+    }
+  ]
+}
