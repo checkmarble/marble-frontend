@@ -57,7 +57,7 @@
   "customer_kpis.actions.create": "Create indicator",
   "customer_kpis.card.add_description": "You can add an indicator to better analyse your client",
   "customer_kpis.card.empty_description": "You haven't configured any key indicators yet",
-  "customer_kpis.configuration.customer_scope.label": "For {{objectType}} = <code>{{objectId}}</code>",
+  "customer_kpis.configuration.customer_scope.label": "For {{objectType}} = <code/>",
   "customer_kpis.configuration.customer_scope.tooltip": "Metric computed on this customer's data",
   "customer_kpis.configuration.title": "Configuration",
   "customer_kpis.form.aggregation.label": "compute the",

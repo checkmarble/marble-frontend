@@ -57,7 +57,7 @@
   "customer_kpis.actions.create": "Créer un indicateur",
   "customer_kpis.card.add_description": "Ajoutez un indicateur pour mieux suivre l'activité de ce client",
   "customer_kpis.card.empty_description": "Aucun indicateur n'est encore configuré",
-  "customer_kpis.configuration.customer_scope.label": "Pour {{objectType}} = <code>{{objectId}}</code>",
+  "customer_kpis.configuration.customer_scope.label": "Pour {{objectType}} = <code/>",
   "customer_kpis.configuration.customer_scope.tooltip": "Indicateur calculé à partir des données de ce client",
   "customer_kpis.configuration.title": "Configuration",
   "customer_kpis.form.aggregation.label": "calcule",
