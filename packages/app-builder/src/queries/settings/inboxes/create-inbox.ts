@@ -1,13 +1,9 @@
-import {
-  type CreateInboxPayload,
-  createInboxPayloadSchema,
-  createInboxRedirectRouteOptions,
-} from '@app-builder/schemas/settings';
+import { type CreateInboxPayload, createInboxPayloadSchema } from '@app-builder/schemas/settings';
 import { createInboxFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { type CreateInboxPayload, createInboxPayloadSchema, createInboxRedirectRouteOptions };
+export { type CreateInboxPayload, createInboxPayloadSchema };
 
 export const useCreateInboxMutation = () => {
   const createInbox = useServerFn(createInboxFn);

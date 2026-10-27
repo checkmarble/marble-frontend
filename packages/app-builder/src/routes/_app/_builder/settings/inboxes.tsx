@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { InboxPanel, type InboxPanelTarget } from '@app-builder/components/Settings/Inboxes/InboxPanel';
+import { UpdateOrganizationSettings } from '@app-builder/components/Settings/Organization/UpdateOrganization';
 import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { CreateTag } from '@app-builder/components/Settings/Tags/CreateTag';
 import { DeleteTag } from '@app-builder/components/Settings/Tags/DeleteTag';
@@ -39,9 +40,10 @@ const inboxesLoader = createServerFn()
   .handler(async function inboxesLoader({ context }) {
     const { entitlements, inbox, user, organization } = context.authInfo;
 
-    const [allInboxes, escalationInboxes] = await Promise.all([
+    const [allInboxes, escalationInboxes, currentOrganization] = await Promise.all([
       inbox.listInboxesWithCaseCount(),
       inbox.listInboxesMetadata(),
+      organization.getCurrentOrganization(),
     ]);
 
     const inboxes = allInboxes.filter((inbox) => isAdmin(user) || isInboxAdmin(user, inbox));
@@ -72,6 +74,9 @@ const inboxesLoader = createServerFn()
       inboxUserRoles: getInboxUserRoles(entitlements),
       userRolesAccess: entitlements.userRoles,
       isCreateInboxAvailable: isCreateInboxAvailable(user),
+      canUpdateOrganization: user.permissions.canUpdateOrganization,
+      organizationId: currentOrganization.id,
+      autoAssignQueueLimit: currentOrganization.autoAssignQueueLimit ?? 0,
       canReadTags,
       tags,
       isCreateTagAvailable: canReadTags && isCreateTagAvailable(user),
@@ -103,6 +108,9 @@ function CaseManagerSettings() {
     inboxUserRoles,
     userRolesAccess,
     isCreateInboxAvailable,
+    canUpdateOrganization,
+    organizationId,
+    autoAssignQueueLimit,
     canReadTags,
     tags,
     isCreateTagAvailable,
@@ -188,6 +196,15 @@ function CaseManagerSettings() {
         table={inboxTable}
         onRowClick={(inbox) => openEditPanel(inbox.id)}
         isRowClickable={(inbox) => editableInboxIds.includes(inbox.id)}
+        additionalButtons={
+          canUpdateOrganization ? (
+            <UpdateOrganizationSettings
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable}
+              organizationId={organizationId}
+              autoAssignQueueLimit={autoAssignQueueLimit}
+            />
+          ) : null
+        }
         addButton={
           isCreateInboxAvailable ? (
             <Button

@@ -162,7 +162,6 @@ function InboxUserRoleSelect({
     updateInboxUserMutation
       .mutateAsync({
         id: inboxUser.id,
-        inboxId: inboxUser.inboxId,
         role: newRole,
         autoAssignable: inboxUser.autoAssignable,
       })

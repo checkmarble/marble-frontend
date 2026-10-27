@@ -31,9 +31,9 @@ export function UpdateOrganizationSettings({
   if (!isAutoAssignmentAvailable) {
     return (
       <div className="relative">
-        <Button className="w-fit whitespace-nowrap" disabled>
-          <Icon icon="edit-square" className="size-5" />
-          {t('common:edit')}
+        <Button variant="secondary" appearance="stroked" className="w-fit whitespace-nowrap" disabled>
+          <Icon icon="settings" className="size-4" />
+          {t('settings:global_settings.title')}
         </Button>
         <Nudge
           className="absolute -top-1 -end-xs size-4"
@@ -50,9 +50,9 @@ export function UpdateOrganizationSettings({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <Button className="w-fit whitespace-nowrap">
-          <Icon icon="edit-square" className="size-5" />
-          {t('common:edit')}
+        <Button variant="secondary" appearance="stroked" className="w-fit whitespace-nowrap">
+          <Icon icon="settings" className="size-4" />
+          {t('settings:global_settings.title')}
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>

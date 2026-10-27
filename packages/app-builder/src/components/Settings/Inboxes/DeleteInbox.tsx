@@ -1,32 +1,8 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type Inbox } from '@app-builder/models/inbox';
 import { useDeleteInboxMutation } from '@app-builder/queries/settings/inboxes/delete-inbox';
-import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: boolean }) {
-  const { t } = useTranslation(['common', 'settings']);
-  const [open, setOpen] = useState(false);
-
-  const handleOnSettled = () => setOpen(false);
-
-  return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
-        <Button variant="destructive" name="delete" disabled={disabled} className="w-fit">
-          <Icon icon="delete" className="size-5" aria-label={t('settings:inboxes.delete_inbox')} />
-          {t('settings:inboxes.delete_inbox')}
-        </Button>
-      </Modal.Trigger>
-      <Modal.Content>
-        <DeleteInboxContent inboxId={inbox.id} onSettled={handleOnSettled} />
-      </Modal.Content>
-    </Modal.Root>
-  );
-}
+import { Modal } from 'ui-design-system';
 
 export const DeleteInboxContent = ({ inboxId, onSettled }: { inboxId: string; onSettled: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
@@ -49,7 +25,6 @@ export const DeleteInboxContent = ({ inboxId, onSettled }: { inboxId: string; on
       <Modal.Title>{t('settings:inboxes.delete_inbox')}</Modal.Title>
       <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <div className="text-s flex flex-1 flex-col gap-md">
-          <input name="inboxId" value={inboxId} type="hidden" />
           <p className="text-center">{t('settings:inboxes.delete_inbox.content')}</p>
         </div>
       </div>
