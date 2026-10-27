@@ -1,5 +1,5 @@
 import {
-  SCREENING_CATEGORIES,
+  RISK_TAG_CATEGORIES,
   SCREENING_CATEGORY_I18N_KEY_MAP,
   type ScreeningCategory,
 } from '@app-builder/models/screening';
@@ -65,7 +65,7 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
           </MenuCommand.Trigger>
           <MenuCommand.Content className="min-w-[250px]">
             <div className="flex flex-col gap-xs p-sm">
-              {SCREENING_CATEGORIES.map((topic) => (
+              {RISK_TAG_CATEGORIES.map((topic) => (
                 <label
                   key={topic}
                   className="flex cursor-pointer items-center gap-sm rounded p-sm hover:bg-grey-02"

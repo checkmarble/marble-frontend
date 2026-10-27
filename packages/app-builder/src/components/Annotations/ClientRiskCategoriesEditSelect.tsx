@@ -1,5 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { SCREENING_CATEGORIES, SCREENING_CATEGORY_COLORS } from '@app-builder/models/screening';
+import { RISK_TAG_CATEGORIES, SCREENING_CATEGORY_COLORS } from '@app-builder/models/screening';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createRiskAnnotationSchema, riskAnnotationFormSchema } from '@app-builder/schemas/annotations';
 import { handleSubmit } from '@app-builder/utils/form';
@@ -84,7 +84,7 @@ export function ClientRiskCategoriesEditSelect({
       <form.Field name="payload.categories">
         {(field) => (
           <MenuCommand.List>
-            {SCREENING_CATEGORIES.map((cat) => (
+            {RISK_TAG_CATEGORIES.map((cat) => (
               <MenuCommand.Item key={cat} value={cat} onSelect={() => field.handleChange((prev) => toggle(prev, cat))}>
                 <Tag color={SCREENING_CATEGORY_COLORS[cat]}>{cat}</Tag>
                 {field.state.value.includes(cat) ? <Icon icon="tick" className="text-purple-primary size-5" /> : null}
