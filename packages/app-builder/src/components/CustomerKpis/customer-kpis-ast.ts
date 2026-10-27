@@ -178,7 +178,7 @@ export function setCustomerKpiNavigationOption(node: AggregationAstNode, navigat
   const tableName = navigationOption.targetTableName;
 
   node.namedChildren.tableName.constant = tableName;
-  node.namedChildren.fieldName.constant = '';
+  node.namedChildren.fieldName.constant = node.namedChildren.aggregator.constant === 'COUNT' ? 'object_id' : '';
   node.namedChildren.filters.children = [
     createPayloadFilter(tableName, navigationOption.filterFieldName, '=', 'customer_id'),
     createPayloadFilter(tableName, navigationOption.orderingFieldName, '>=', 'start_time'),
