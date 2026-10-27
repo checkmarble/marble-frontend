@@ -28,7 +28,9 @@ export type StructuralOp =
   | { type: 'refresh_configuration' }
   | { type: 'set_selection'; block: OpBlock; selection: TracfinSelection }
   | { type: 'set_field'; block: OpBlock; fieldId: string; input: TracfinFieldInput; valueId?: string }
-  | { type: 'set_relation'; block: OpBlock; fieldId: string; relation: TracfinReference; valueId?: string };
+  | { type: 'set_relation'; block: OpBlock; fieldId: string; relation: TracfinReference; valueId?: string }
+  /** A prefill choice: the server recomputes the proposals and refuses a stale or forged `proposal_id` / `candidate_id`. */
+  | { type: 'apply_prefill'; proposalId: string; candidateId: string; mappingVersion: string };
 
 type AddedBlock = { alias: string; parent: string; catalogId: string };
 
@@ -155,6 +157,15 @@ export function planPatch({
         changes.push({ action: 'set_relation', field, relation: op.relation });
         break;
       }
+      case 'apply_prefill':
+        // Only the keys the action needs: the server finds the field through the proposal.
+        changes.push({
+          action: 'apply_prefill',
+          proposal_id: op.proposalId,
+          candidate_id: op.candidateId,
+          mapping_version: op.mappingVersion,
+        });
+        break;
     }
   }
 

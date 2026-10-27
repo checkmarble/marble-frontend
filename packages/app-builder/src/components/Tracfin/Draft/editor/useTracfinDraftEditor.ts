@@ -40,6 +40,16 @@ export type TracfinComparison =
   | { status: 'failed' }
   | { status: 'ready'; server: TracfinDraft; items: ConflictItem[] };
 
+export type ApplyStructuralOptions = {
+  /**
+   * The caller handles a refusal of the server itself (400 / 409, for instance a prefill choice that
+   * went stale): the editor does not enter its `failed` / `conflict` state, keeps nothing for
+   * `retry()`, and re-reads the draft so that its revision is current. Other failures (timeout, 5xx,
+   * network) go through the normal path, whose outcome is uncertain.
+   */
+  quiet?: boolean;
+};
+
 export type TracfinDraftEditor = {
   caseId: string;
   /** The draft as the server last returned it (unsaved edits are not applied to it). */
@@ -99,8 +109,12 @@ export type TracfinDraftEditor = {
    * Several structural changes in ONE PATCH, after the pending field edits. A change can name a
    * block that an earlier `add_block` of the list creates (`ref` / `blockRef`), for instance a new
    * person, its civil status block and the selection on it. Queued like every other save.
+   * `options.quiet`: see {@link ApplyStructuralOptions}.
    */
-  applyStructural: (ops: readonly StructuralOp[]) => Promise<TracfinResult<TracfinDraft>>;
+  applyStructural: (
+    ops: readonly StructuralOp[],
+    options?: ApplyStructuralOptions,
+  ) => Promise<TracfinResult<TracfinDraft>>;
   /** `set_selection` on a block (a virtual address creates the block first). The server drops the bindings below a changed one. */
   setSelection: (block: TracfinBlockAddress, selection: TracfinSelection) => Promise<TracfinResult<TracfinDraft>>;
   refreshConfiguration: () => Promise<TracfinResult<TracfinDraft>>;
@@ -284,7 +298,11 @@ export function useTracfinDraftEditor(
     return { ok: false, error: api };
   };
 
-  const run = async (structural: StructuralOp[], auto: boolean): Promise<TracfinResult<TracfinDraft>> => {
+  const run = async (
+    structural: StructuralOp[],
+    auto: boolean,
+    quiet: boolean,
+  ): Promise<TracfinResult<TracfinDraft>> => {
     if (statusRef.current === 'conflict') return { ok: false, error: conflictError };
     // An automatic save does not repeat a request that just failed: the analyst decides (retry, discard).
     if (auto && statusRef.current === 'failed') return ok(latest());
@@ -302,14 +320,28 @@ export function useTracfinDraftEditor(
       setStatus('idle');
       return ok(after);
     } catch (error) {
+      if (quiet) {
+        const api = toApiError(error);
+        if (api.kind === 'bad_request' || api.kind === 'conflict') {
+          failedStructural.current = [];
+          setFailure(null);
+          setStatus('idle');
+          try {
+            await refetchRef.current();
+          } catch {
+            // The caller re-reads what it needs; the draft query reports its own failure.
+          }
+          return { ok: false, error: api };
+        }
+      }
       failedStructural.current = structural;
       return fail(error, expected);
     }
   };
 
   /** One PATCH at a time: a call waits for the one in flight and then looks at what is pending. */
-  const enqueue = (structural: StructuralOp[], auto = false): Promise<TracfinResult<TracfinDraft>> => {
-    const result = tail.current.then(() => run(structural, auto));
+  const enqueue = (structural: StructuralOp[], auto = false, quiet = false): Promise<TracfinResult<TracfinDraft>> => {
+    const result = tail.current.then(() => run(structural, auto, quiet));
     tail.current = result.catch(() => undefined);
     return result;
   };
@@ -383,7 +415,7 @@ export function useTracfinDraftEditor(
 
     addBlock: (parent, catalogId) => enqueue([{ type: 'add_block', parent, catalogId }]),
     removeBlock: (blockId) => enqueue([{ type: 'remove_block', blockId }]),
-    applyStructural: (ops) => enqueue([...ops]),
+    applyStructural: (ops, options) => enqueue([...ops], false, options?.quiet ?? false),
     setSelection: (block, selection) => enqueue([{ type: 'set_selection', block, selection }]),
     refreshConfiguration: () => enqueue([{ type: 'refresh_configuration' }]),
 

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
 import { useBlockDiagnostics } from '../fields/block-diagnostics';
@@ -55,6 +55,11 @@ export function BlockSelectionPanel({ address, catalogId }: TracfinBlockExtrasPr
         <div key={`${diagnostic.code}-${index}`} role="alert" className="flex flex-col gap-xs">
           <p className="text-s text-orange-primary">
             {t(`tracfin:draft.persons.diagnostics.${diagnostic.code}`, { defaultValue: diagnostic.message })}
+            {diagnostic.stale ? (
+              <Tag size="xs" color="grey" className="ms-xs">
+                {t('tracfin:draft.prefill.stale_tag')}
+              </Tag>
+            ) : null}
           </p>
           <div className="flex flex-wrap gap-sm">
             <Button variant="secondary" appearance="stroked" size="small" onClick={() => setEditing(true)}>

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Typo } from 'ui-design-system';
 import { useTracfinDraftEditorContext } from './editor/TracfinDraftEditorContext';
+import { PrefillButton } from './prefill/PrefillButton';
 
 function SaveState() {
   const { t } = useTranslation(['tracfin']);
@@ -46,6 +47,7 @@ export function DraftHeader() {
       </div>
       <div className="flex items-center gap-sm">
         <SaveState />
+        <PrefillButton />
         <Button
           variant="primary"
           disabled={editor.status === 'saving' || editor.status === 'conflict' || editor.pendingCount === 0}

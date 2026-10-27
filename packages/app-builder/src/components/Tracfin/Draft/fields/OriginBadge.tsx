@@ -22,7 +22,7 @@ export function originKindOf(occurrence: FieldOccurrence): OriginKind | null {
   return occurrence.origin?.source ?? null;
 }
 
-function SourceLine({ source }: { source: TracfinSourceRef }) {
+export function SourceLine({ source }: { source: TracfinSourceRef }) {
   const { t } = useTranslation(['tracfin']);
   const parts: [string, string | undefined][] = [
     [t('tracfin:draft.origin.source.kind'), source.kind],

@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   getDraft: vi.fn(),
   createDraft: vi.fn(),
   patchDraft: vi.fn(),
+  prefill: vi.fn(),
 }));
 
 vi.mock('@app-builder/server-fns/tracfin', () => ({
@@ -18,6 +19,7 @@ vi.mock('@app-builder/server-fns/tracfin', () => ({
   getTracfinDraftFn: mocks.getDraft,
   createTracfinDraftFn: mocks.createDraft,
   patchTracfinDraftFn: mocks.patchDraft,
+  prefillTracfinDraftFn: mocks.prefill,
 }));
 vi.mock('@app-builder/server-fns/data', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
@@ -523,5 +525,27 @@ describe('conflicts (c)', () => {
     await screen.findByText('Saved · revision 4');
     // Already there: nothing was sent a second time.
     expect(backend.bodies).toHaveLength(1);
+  });
+});
+
+describe('prefill entry points', () => {
+  it('« Proposer des valeurs » is in the header and above each section, and the section one is scoped', async () => {
+    const backend = new FakeDraftBackend(cloneDraft());
+    connectBackend(mocks, backend);
+    mocks.prefill.mockResolvedValue(
+      ok({ draft_revision: backend.draft.revision, mapping_version: 'v', proposals: null, diagnostics: null }),
+    );
+    const { user } = await renderDraftPage({ initialSection: 'context' });
+
+    const buttons = screen.getAllByRole('button', { name: 'Propose values' });
+    expect(buttons).toHaveLength(2);
+    await user.click(buttons[1]!);
+
+    const dialog = within(await screen.findByRole('dialog'));
+    expect(await dialog.findByText('Proposals of the “Context and analysis” section.')).toBeTruthy();
+    expect(mocks.prefill).toHaveBeenCalledWith({
+      data: { caseId: CASE_ID, body: { expected_revision: backend.draft.revision } },
+    });
+    expect(backend.bodies).toHaveLength(0); // prefill never writes
   });
 });

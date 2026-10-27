@@ -5,6 +5,7 @@ import type {
   TracfinDraft,
   TracfinDraftInput,
   TracfinPathStep,
+  TracfinPrefillResult,
   TracfinResult,
   TracfinSelection,
   TracfinValue,
@@ -62,6 +63,8 @@ function applySelection(block: TracfinBlock, next: TracfinSelection): void {
   block.selection = next;
 }
 
+const STALE_MAPPING = 'stale-mapping-version';
+
 /**
  * A stand-in for the PATCH endpoint, with the semantics of the backend `applyChange` that the editor
  * relies on: aliases are replaced by server ids, `set_field` without `value_id` appends, an attribute
@@ -72,6 +75,8 @@ export class FakeDraftBackend {
   readonly bodies: TracfinDraftInput[] = [];
   /** Answers the next PATCH(es) with this result instead of applying them. */
   failures: TracfinApiError[] = [];
+  /** The prefill the server would compute for a draft; `apply_prefill` recomputes it, like the backend. */
+  prefill: ((draft: TracfinDraft) => TracfinPrefillResult) | null = null;
   private counter = 0;
 
   constructor(draft: TracfinDraft) {
@@ -106,6 +111,7 @@ export class FakeDraftBackend {
     const resolve = (id: string | undefined) => (id ? (aliases.get(id) ?? id) : '');
     for (const change of body.changes) {
       const error = this.apply(next, change, aliases, resolve);
+      if (error === STALE_MAPPING) return fail({ kind: 'conflict', status: 409, message: 'stale mapping version' });
       if (error) return fail({ kind: 'bad_request', status: 400, message: error });
     }
     next.revision += 1;
@@ -191,6 +197,29 @@ export class FakeDraftBackend {
             block.fields[id] = attributes.filter((attribute) => attribute.parent_value_id !== value.id);
           }
         }
+        return null;
+      }
+      case 'apply_prefill': {
+        // The server recomputes the proposals on the draft as it stands and refuses a stale or forged choice.
+        const result = this.prefill?.(draft);
+        if (!result) return 'no prefill';
+        if (!change.mapping_version || change.mapping_version !== result.mapping_version) return STALE_MAPPING;
+        const proposal = (result.proposals ?? []).find((entry) => entry.id === change.proposal_id);
+        const candidate = proposal?.candidates.find((entry) => entry.id === change.candidate_id);
+        if (!proposal || !candidate) return 'prefill candidate is stale or unknown';
+        const block = find(root, proposal.field.block_id);
+        if (!block) return 'field is not editable in this block';
+        const values = (block.fields ??= {})[proposal.field.field_id] ?? [];
+        const existing = proposal.field.value_id ? values.find((value) => value.id === proposal.field.value_id) : null;
+        const value: TracfinValue = {
+          ...candidate,
+          id: existing?.id ?? this.id(),
+          origin: { ...candidate.origin!, resolution: 'resolved' },
+        };
+        if (candidate.needs_review) value.needs_review = true;
+        if (existing) values[values.indexOf(existing)] = value;
+        else values.push(value);
+        block.fields[proposal.field.field_id] = values;
         return null;
       }
       default:

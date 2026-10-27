@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
 import type { TracfinBlockAddress } from '../model/block-address';
+import { BlockDiagnostics } from './BlockDiagnostics';
 import { useTracfinBlockExtras } from './block-extras';
 import { ChildBlocks } from './ChildBlocks';
 import { ChoiceGroupEditor } from './ChoiceGroupEditor';
@@ -44,6 +45,7 @@ export function TracfinBlockEditor({ address, catalogId, include, showTitle = fa
     <div className="flex min-w-0 flex-col gap-md">
       {showTitle && catalogBlock ? <h3 className="text-default font-semibold">{blockLabel(t, catalogBlock)}</h3> : null}
       {Extras ? <Extras address={address} catalogId={catalogId} /> : null}
+      <BlockDiagnostics blockId={address.kind === 'block' ? address.id : null} />
       {fields.map(({ field }) => (
         <FieldEditor key={field.id} address={address} field={field} />
       ))}

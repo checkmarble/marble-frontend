@@ -13,6 +13,9 @@ import { DraftNotices } from './DraftNotices';
 import { TracfinDraftEditorProvider, useTracfinDraftEditorContext } from './editor/TracfinDraftEditorContext';
 import { LeaveGuard } from './LeaveGuard';
 import type { TracfinSectionId } from './model/sections';
+import { SectionPrefillBar } from './prefill/PrefillButton';
+import { PrefillPanel } from './prefill/PrefillPanel';
+import { TracfinPrefillProvider } from './prefill/TracfinPrefillContext';
 import { SectionNav } from './SectionNav';
 import { tracfinSectionComponents } from './sections/section-components';
 
@@ -76,7 +79,10 @@ export function TracfinDraftPage({ caseId, section, onSectionChange }: TracfinDr
 
   return (
     <TracfinDraftEditorProvider caseId={caseId} draft={draftQuery.data} catalogIndex={catalogIndex}>
-      <TracfinDraftShell section={section} onSectionChange={onSectionChange} />
+      <TracfinPrefillProvider>
+        <TracfinDraftShell section={section} onSectionChange={onSectionChange} />
+        <PrefillPanel />
+      </TracfinPrefillProvider>
     </TracfinDraftEditorProvider>
   );
 }
@@ -102,6 +108,7 @@ function TracfinDraftShell({ section, onSectionChange }: Pick<TracfinDraftPagePr
           />
         </div>
         <div className="min-w-0 flex-1">
+          {section === 'review' ? null : <SectionPrefillBar section={section} />}
           <Section />
         </div>
       </div>

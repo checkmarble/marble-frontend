@@ -7,6 +7,7 @@ import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContex
 import type { TracfinBlockAddress } from '../model/block-address';
 import { type FieldOccurrence, hasContent } from '../model/field-values';
 import { valueRefKey } from '../model/pending-edits';
+import { BlockDiagnostics } from './BlockDiagnostics';
 import { fieldLabel } from './labels';
 import { OriginBadge } from './OriginBadge';
 import { resolveFieldRenderer, useTracfinFieldRenderers } from './registry';
@@ -19,6 +20,8 @@ type FieldEditorProps = {
   /** The owner of an attribute is not saved yet: the attribute is shown, disabled. */
   ownerUnsaved?: boolean;
   nested?: boolean;
+  /** Prefill diagnostics under the label; a panel that already lists them turns this off. */
+  showDiagnostics?: boolean;
 };
 
 /**
@@ -32,6 +35,7 @@ export function FieldEditor({
   parentValueId = null,
   ownerUnsaved = false,
   nested = false,
+  showDiagnostics = true,
 }: FieldEditorProps) {
   const { t } = useTranslation(['tracfin']);
   const editor = useTracfinDraftEditorContext();
@@ -75,6 +79,10 @@ export function FieldEditor({
           </span>
         ) : null}
       </div>
+
+      {showDiagnostics ? (
+        <BlockDiagnostics blockId={address.kind === 'block' ? address.id : null} fieldId={field.id} />
+      ) : null}
 
       {codes === 'unavailable' ? (
         <p className="text-grey-secondary text-xs">{t('tracfin:draft.codes_unavailable')}</p>
