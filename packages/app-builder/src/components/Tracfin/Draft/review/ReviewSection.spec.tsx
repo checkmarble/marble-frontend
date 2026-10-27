@@ -184,6 +184,36 @@ describe('(a) a diagnostic leads to its field', () => {
     expect(within(card).getByText('server wording of SOMETHING_NEW')).toBeTruthy();
   });
 
+  it('lists a value the backend reports twice (XML check, profile check) once, and counts it once', async () => {
+    mocks.validate.mockResolvedValue(
+      ok({
+        ...tracfinValidationFixture,
+        diagnostics: [
+          {
+            ...diagnostic('MISSING_REQUIRED_VALUE', '', '/ds/organisme/libelle'),
+            message: 'Required XML element or attribute is absent',
+          },
+          {
+            ...diagnostic('MISSING_REQUIRED_VALUE', ORGANISME, '/ds/organisme/libelle'),
+            message: 'Required profile value is absent',
+          },
+          {
+            ...diagnostic('MISSING_REQUIRED_VALUE', '', '/ds/context/general/refInterne'),
+            message: 'Required XML element or attribute is absent',
+          },
+        ],
+      }),
+    );
+    const { user } = await openReview();
+    await user.click(checkButton());
+    const card = validationCard();
+    await within(card).findByTestId('diagnostic-counts');
+    // Two problems: the located value (once) and the one that only the XML check named.
+    expect(within(card).getByTestId('diagnostic-counts').textContent).toBe('Errors: 2 · Warnings: 0');
+    expect(within(card).getAllByRole('button', { name: /^Go to field “Organisation name”/ })).toHaveLength(1);
+    expect(within(card).getAllByRole('button', { name: /^Go to field “Internal reference”/ })).toHaveLength(1);
+  });
+
   it('flags the result « to redo » once the draft moved past the revision it ran on', async () => {
     mocks.validate.mockResolvedValue(
       ok({
@@ -386,6 +416,27 @@ describe('(d) a truncated download', () => {
     const link = within(alert).getByRole('link', { name: 'Sign in again (new tab)' });
     expect(link.getAttribute('href')).toBe('/sign-in');
     expect(link.getAttribute('target')).toBe('_blank');
+  });
+});
+
+describe('the report of the last export', () => {
+  it('does not list the unlocated copy of a located diagnostic, nor count it', async () => {
+    const draft = cloneDraft();
+    draft.last_export = exportOf({
+      validation: {
+        ...tracfinValidationFixture,
+        diagnostics: [
+          { ...diagnostic('MISSING_REQUIRED_VALUE', '', '/ds/organisme/libelle'), layer: 'internal_structure' },
+          { ...diagnostic('MISSING_REQUIRED_VALUE', ORGANISME, '/ds/organisme/libelle'), layer: 'internal_structure' },
+        ],
+      },
+    });
+    await openReview(draft);
+    const card = lastExport();
+    expect(within(card).getByTestId('diagnostic-counts').textContent).toBe('Errors: 1 · Warnings: 0');
+    expect(within(card).getAllByRole('button', { name: /^Go to field “Organisation name”/ })).toHaveLength(1);
+    // The statement of the internal checks counts the same single error.
+    expect(within(card).getByText(/\(1 error\(s\)\)/)).toBeTruthy();
   });
 });
 

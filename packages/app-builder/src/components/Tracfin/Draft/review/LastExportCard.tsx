@@ -6,7 +6,7 @@ import { Button } from 'ui-design-system';
 import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
 import { fileSizeParts } from '../pieces/pieces-model';
 import { DiagnosticsList } from './DiagnosticsList';
-import { diagnosticTarget, isAttachmentDiagnosticCode } from './diagnostic-model';
+import { diagnosticTarget, dropUnlocatedTwins, isAttachmentDiagnosticCode } from './diagnostic-model';
 import { useReviewDiagnosticText } from './diagnostic-text';
 import { ExportDownload } from './ExportDownload';
 import { ExportStatements } from './ExportStatements';
@@ -33,7 +33,7 @@ function OmittedPieces({ tracfinExport }: { tracfinExport: TracfinExport }) {
   const { draft } = useTracfinDraftEditorContext();
   const { goTo } = useTracfinFocus();
   const text = useReviewDiagnosticText();
-  const omitted = (tracfinExport.validation.diagnostics ?? []).filter((diagnostic) =>
+  const omitted = dropUnlocatedTwins(tracfinExport.validation.diagnostics ?? []).filter((diagnostic) =>
     isAttachmentDiagnosticCode(diagnostic.code),
   );
   if (omitted.length === 0) return null;
@@ -94,7 +94,7 @@ export function LastExportCard() {
   }
 
   const relation = lastExportRelation(tracfinExport, draft.revision);
-  const reportDiagnostics = (tracfinExport.validation.diagnostics ?? []).filter(
+  const reportDiagnostics = dropUnlocatedTwins(tracfinExport.validation.diagnostics ?? []).filter(
     (diagnostic) => !isAttachmentDiagnosticCode(diagnostic.code),
   );
 

@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Radio } from 'ui-design-system';
 import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
-import type { TracfinBlockAddress } from '../model/block-address';
+import { findBlock, type TracfinBlockAddress } from '../model/block-address';
 import { hasContent } from '../model/field-values';
+import { useRevealOnFocus } from '../review/TracfinFocusContext';
 import { ChildBlocks } from './ChildBlocks';
 import { FieldEditor } from './FieldEditor';
 import { blockLabel, fieldLabel } from './labels';
@@ -22,6 +23,16 @@ export function ChoiceGroupEditor({ address, group }: { address: TracfinBlockAdd
 
   const members = group.members.filter((entry) => !entry.calculated);
   const ids = members.map(({ field }) => field.id);
+  // A diagnostic of the review that points into an alternative that is not shown switches to it.
+  useRevealOnFocus(({ blockId, fieldId }) => {
+    if (!blockId || !block) return;
+    const target = members.find(({ field }) =>
+      field.kind === 'block'
+        ? block.children?.some((child) => child.catalog_id === field.id && findBlock(child, blockId))
+        : block.id === blockId && fieldId !== null && (fieldId === field.id || fieldId.startsWith(`${field.id}/`)),
+    );
+    if (target) setPicked(target.field.id);
+  });
   const hasData = (memberId: string): boolean => {
     const member = members.find(({ field }) => field.id === memberId)?.field;
     if (!member) return false;

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { TracfinBlockEditor } from '../fields/TracfinBlockEditor';
-import { blockAddress } from '../model/block-address';
+import { blockAddress, findBlock } from '../model/block-address';
+import { useRevealOnFocus } from '../review/TracfinFocusContext';
 import { personDisplayName } from './display-name';
 import { personRoot } from './document';
 import { PersonKindBadge } from './PersonKindBadge';
@@ -33,6 +34,10 @@ export function PersonCard({
   const shownName = name ?? t('tracfin:draft.persons.unnamed');
   // A person that was just added has nothing to read yet: it opens on its fields.
   const [open, setOpen] = useState(name === null);
+  // A diagnostic of the review that points inside the card opens it (the field is not in the DOM while it is collapsed).
+  useRevealOnFocus(({ blockId }) => {
+    if (blockId && findBlock(person, blockId)) setOpen(true);
+  });
   const root = personRoot(person);
 
   const catalogId = personCatalogId(kind);

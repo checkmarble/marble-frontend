@@ -182,9 +182,14 @@ export function PrefillPanel() {
         </div>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('tracfin:draft.prefill.close')} />
-          {prefill.availability === 'available' ? (
+          {/* Nothing to apply at all: no button (« Appliquer la proposition » would read as one proposal). */}
+          {prefill.availability === 'available' && (visible?.counts.clean ?? 0) > 0 ? (
             <Modal.FooterButton
-              label={t('tracfin:draft.prefill.apply_clean', { count: choices.length })}
+              label={
+                choices.length === 0
+                  ? t('tracfin:draft.prefill.apply_clean_none')
+                  : t('tracfin:draft.prefill.apply_clean', { count: choices.length })
+              }
               disabled={!canApply}
               isLoading={prefill.status === 'applying'}
               onClick={() => void prefill.apply(choices)}

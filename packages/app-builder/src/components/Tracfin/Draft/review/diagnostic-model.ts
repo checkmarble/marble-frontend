@@ -153,6 +153,25 @@ export type ReviewGroups = {
   counts: { errors: number; warnings: number };
 };
 
+/**
+ * The real backend reports a missing value twice: the XML check names it with no block
+ * (`block_id: ""`), the profile check names the same field in its block. The unlocated copy is
+ * dropped when a located diagnostic of the same `code` and `field_id` exists in the same list;
+ * an unlocated diagnostic with no located twin stays (it goes to the general group).
+ */
+export function dropUnlocatedTwins<T extends TracfinDiagnostic>(diagnostics: readonly T[]): T[] {
+  const located = new Set<string>();
+  for (const diagnostic of diagnostics) {
+    const fieldId = nonEmpty(diagnostic.field?.field_id);
+    if (fieldId && nonEmpty(diagnostic.field?.block_id)) located.add(`${diagnostic.code}|${fieldId}`);
+  }
+  return diagnostics.filter((diagnostic) => {
+    const fieldId = nonEmpty(diagnostic.field?.field_id);
+    if (!fieldId || nonEmpty(diagnostic.field?.block_id)) return true;
+    return !located.has(`${diagnostic.code}|${fieldId}`);
+  });
+}
+
 function diagnosticKey(diagnostic: TracfinDiagnostic): string {
   const ref = diagnostic.field;
   return [
@@ -172,7 +191,8 @@ const bySeverity = (a: ReviewItem, b: ReviewItem) =>
 /**
  * Diagnostics by section, then by block (in document order), errors first; those that name no block
  * or no section are the general group. The same diagnostic reported twice (by the validation and by
- * the draft) appears once.
+ * the draft) appears once, and so does a value the backend reports both unlocated and located
+ * (see {@link dropUnlocatedTwins}); the counts are those of the list that is shown.
  */
 export function groupDiagnostics({
   diagnostics,
@@ -190,7 +210,7 @@ export function groupDiagnostics({
   let errors = 0;
   let warnings = 0;
 
-  for (const diagnostic of diagnostics) {
+  for (const diagnostic of dropUnlocatedTwins(diagnostics)) {
     const key = diagnosticKey(diagnostic);
     if (seen.has(key)) continue;
     seen.add(key);

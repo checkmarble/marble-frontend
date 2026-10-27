@@ -1,6 +1,7 @@
 import type { TracfinExport } from '@app-builder/models/tracfin';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
+import { dropUnlocatedTwins } from './diagnostic-model';
 import { internalChecksStatus } from './review-layers';
 
 /**
@@ -14,7 +15,9 @@ export function ExportStatements({ tracfinExport }: { tracfinExport: TracfinExpo
   const formatDateTime = useFormatDateTime();
   const validation = tracfinExport.validation;
   const status = internalChecksStatus(validation);
-  const errors = (validation.diagnostics ?? []).filter((diagnostic) => diagnostic.severity === 'error').length;
+  const errors = dropUnlocatedTwins(validation.diagnostics ?? []).filter(
+    (diagnostic) => diagnostic.severity === 'error',
+  ).length;
 
   return (
     <ul className="text-s flex flex-col gap-xs" aria-label={t('tracfin:draft.review.statements.label')}>

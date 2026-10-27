@@ -235,6 +235,21 @@ describe('batch apply (a)', () => {
     await waitFor(() => expect(mocks.prefill).toHaveBeenCalledTimes(2));
     expect(mocks.prefill.mock.calls[1]![0].data.body.expected_revision).toBe(4);
     expect(await dialog.findByText('0 proposals without conflict')).toBeTruthy();
+    // Nothing is left to apply: no button that would read « Apply the proposal » for zero.
+    expect(dialog.queryByRole('button', { name: /^Apply/ })).toBeNull();
+  });
+
+  it('keeps a disabled button saying so when every proposal is unchecked', async () => {
+    const { user, backend } = await setup();
+    const dialog = within(await propose(user));
+    await dialog.findByText('2 proposals without conflict');
+
+    await user.click(dialog.getByRole('checkbox', { name: 'Apply the proposal for Date of birth' }));
+    await user.click(dialog.getByRole('checkbox', { name: 'Apply the proposal for Birth name' }));
+
+    const button = dialog.getByRole('button', { name: 'No proposal selected' }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(backend.bodies).toHaveLength(0);
   });
 
   it('applies only the proposals that stay checked', async () => {

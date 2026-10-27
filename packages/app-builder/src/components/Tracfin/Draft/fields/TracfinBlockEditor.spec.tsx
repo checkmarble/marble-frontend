@@ -2,6 +2,7 @@ import type { TracfinBlock, TracfinDraftInput } from '@app-builder/models/tracfi
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TracfinFocusProvider, useTracfinFocus } from '../review/TracfinFocusContext';
 import { topLevelAddress } from '../sections/section-addresses';
 import { cloneDraft, draftTestCatalog, draftWithout, findByCatalogId } from '../test-utils/draft-test-data';
 import { FakeDraftBackend } from '../test-utils/fake-backend';
@@ -284,6 +285,63 @@ describe('field controls', () => {
     await user.click(within(group).getByRole('radio', { name: /^Executive \(legal entity\)/ }));
     expect(screen.getByText(/data of the other alternative is kept, but it will not be exported/)).toBeTruthy();
     expect(screen.getByText(/exported as soon as a value is entered in it/)).toBeTruthy();
+  });
+});
+
+describe('a « go to » request into an alternative that is not shown', () => {
+  it('switches to that alternative so that the block can be reached', async () => {
+    const draft = cloneDraft();
+    const personnes = findByCatalogId(draft.document.root, '/ds/personnes')!;
+    personnes.children!.push({
+      id: 'pm-1',
+      catalog_id: '/ds/personnes/pm',
+      children: [
+        {
+          id: 'dir-1',
+          catalog_id: '/ds/personnes/pm/dirigeant',
+          active_branches: { '/ds/personnes/pm/dirigeant#identity': '/ds/personnes/pm/dirigeant/autreDirigeantP' },
+          children: [
+            { id: 'dir-p', catalog_id: '/ds/personnes/pm/dirigeant/autreDirigeantP' },
+            { id: 'dir-m', catalog_id: '/ds/personnes/pm/dirigeant/autreDirigeantM' },
+          ],
+        },
+      ],
+    } as TracfinBlock);
+    connectBackend(mocks, new FakeDraftBackend(draft));
+
+    function GoTo() {
+      const { goTo } = useTracfinFocus();
+      return (
+        <button
+          type="button"
+          onClick={() =>
+            goTo({ section: 'persons', blockId: 'dir-m', fieldId: null, valueId: null, parentValueId: null })
+          }
+        >
+          go to the legal entity executive
+        </button>
+      );
+    }
+    const { user } = await renderWithEditor((current) => (
+      <TracfinFocusProvider section="persons" onSectionChange={() => undefined}>
+        <GoTo />
+        {editorFor('/ds/personnes')(current)}
+      </TracfinFocusProvider>
+    ));
+    expect(document.querySelector('[data-tracfin-block="dir-m"]')).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'go to the legal entity executive' }));
+
+    await waitFor(() => {
+      const target = document.querySelector('[data-tracfin-block="dir-m"]');
+      expect(target?.getAttribute('data-tracfin-highlight')).toBe('true');
+    });
+    const group = screen.getByRole('radiogroup', { name: 'Only one alternative is exported' });
+    expect(
+      within(group)
+        .getByRole('radio', { name: /^Executive \(legal entity\)/ })
+        .getAttribute('aria-checked'),
+    ).toBe('true');
   });
 });
 

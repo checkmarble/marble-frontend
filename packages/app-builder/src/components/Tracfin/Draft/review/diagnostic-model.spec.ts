@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { cloneDraft } from '../test-utils/draft-test-data';
 import {
   diagnosticTarget,
+  dropUnlocatedTwins,
   groupDiagnostics,
   isReviewDiagnosticCode,
   refusalTarget,
@@ -162,7 +163,58 @@ describe('unitOfBlock', () => {
   });
 });
 
+/** The backend reports a missing value twice: the XML check (no block) and the profile check (the block). */
+const xmlTwin = (fieldId: string) =>
+  diagnostic(
+    'MISSING_REQUIRED_VALUE',
+    { block_id: '', field_id: fieldId },
+    { layer: 'internal_structure', message: 'Required XML element or attribute is absent' },
+  );
+const profileTwin = (blockId: string, fieldId: string) =>
+  diagnostic(
+    'MISSING_REQUIRED_VALUE',
+    { block_id: blockId, field_id: fieldId },
+    { layer: 'internal_structure', message: 'Required profile value is absent' },
+  );
+
+describe('dropUnlocatedTwins', () => {
+  it('drops the unlocated copy of a diagnostic that has a located one with the same code and field', () => {
+    const located = profileTwin(ORGANISME, '/ds/organisme/libelle');
+    expect(dropUnlocatedTwins([xmlTwin('/ds/organisme/libelle'), located])).toEqual([located]);
+    // Whatever the order they were reported in.
+    expect(dropUnlocatedTwins([located, xmlTwin('/ds/organisme/libelle')])).toEqual([located]);
+  });
+
+  it('keeps an unlocated diagnostic with no located twin (other field, other code, no field)', () => {
+    const lone = xmlTwin('/ds/declarant/coordonnees/nom');
+    const otherCode = diagnostic('INVALID_DATE', { block_id: '', field_id: '/ds/organisme/libelle' });
+    const noField = diagnostic('INCOMPATIBLE_PROFILE', { block_id: '', field_id: '' });
+    const located = profileTwin(ORGANISME, '/ds/organisme/libelle');
+    const kept = [lone, otherCode, noField, located];
+    expect(dropUnlocatedTwins(kept)).toEqual(kept);
+  });
+});
+
 describe('groupDiagnostics', () => {
+  it('counts and groups the deduplicated list: 11 problems reported twice are 11 errors, not 22', () => {
+    const fields = ['/ds/organisme/libelle', '/ds/organisme/adresse/ville'];
+    const groups = groupDiagnostics({
+      root: root(),
+      diagnostics: [
+        xmlTwin(fields[0]!),
+        xmlTwin(fields[1]!),
+        xmlTwin('/ds/declarant/coordonnees/nom'),
+        profileTwin(ORGANISME, fields[0]!),
+        profileTwin(ADDRESS, fields[1]!),
+      ],
+    });
+    expect(groups.counts).toEqual({ errors: 3, warnings: 0 });
+    // The unlocated copies of located diagnostics are gone; the lone one stays, apart (no block).
+    const blocks = groups.sections.flatMap((entry) => entry.blocks);
+    expect(blocks.map((block) => block.blockId)).toEqual([ORGANISME, ADDRESS, null]);
+    expect(blocks.map((block) => block.items.length)).toEqual([1, 1, 1]);
+  });
+
   it('groups by section in navigation order, then by block in document order, errors first', () => {
     const groups = groupDiagnostics({
       root: root(),
