@@ -158,6 +158,28 @@ describe('loading', () => {
     expect(screen.queryByRole('button', { name: 'Add a mapping' })).toBeNull();
   });
 
+  it('shows an error with a retry when a refetch fails over cached data, instead of loading forever', async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(['tracfin', 'configuration'], tracfinConfigurationFixture);
+    // A 4xx is not retried, so the refetch fails at once.
+    mocks.getConfiguration.mockResolvedValue(failure({ kind: 'bad_request', status: 400, message: 'boom' }));
+    render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18next}>
+          <TracfinSettingsPage />
+        </I18nextProvider>
+      </QueryClientProvider>,
+    );
+
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('The TRACFIN configuration could not be loaded.');
+    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull();
+
+    mocks.getConfiguration.mockResolvedValue(ok(tracfinConfigurationFixture));
+    await userEvent.click(within(alert).getByRole('button', { name: 'Retry' }));
+    await screen.findByRole('heading', { name: 'TRACFIN configuration', level: 1 });
+  });
+
   it('starts an empty form when the organization has no configuration yet, and creates it at revision 0', async () => {
     mocks.getConfiguration.mockResolvedValue(NOT_FOUND);
     const user = await renderPage();
@@ -223,6 +245,17 @@ describe('organisation and contact settings', () => {
     expect(sent).not.toContain('/ds/organisme/adresse/pays');
     expect(sent).not.toContain('/ds/organisme/adresse/pays/@type');
     expect(sent).toContain('/ds/organisme/adresse/ville');
+  });
+
+  it('keeps a typed leading space instead of clearing the input', async () => {
+    mocks.getConfiguration.mockResolvedValue(NOT_FOUND);
+    const user = await renderPage();
+
+    const input = screen.getByLabelText('Organisation name') as HTMLInputElement;
+    await user.type(input, ' ');
+    expect(input.value).toBe(' ');
+    await user.type(input, 'Banque');
+    expect(input.value).toBe(' Banque');
   });
 
   it('keeps an attribute disabled until its owner has a value', async () => {
@@ -358,6 +391,22 @@ describe('(b) path steps of an ingested mapping', () => {
   });
 });
 
+describe('re-picking the hop already in place', () => {
+  it('keeps the path, the step id and the source field', async () => {
+    const user = await renderPage();
+
+    await openMapping(user, 'map-employer-name');
+    await user.click(screen.getByRole('button', { name: 'Link of step 1' }));
+    await user.click(await screen.findByRole('option', { name: /^employer → companies/ }));
+    await editPostalCode(user, '75008');
+    await user.click(saveButton());
+
+    await waitFor(() => expect(mocks.putConfiguration).toHaveBeenCalled());
+    const stored = tracfinConfigurationFixture.mappings?.find(({ id }) => id === 'map-employer-name');
+    expect(lastPutBody().mappings.find(({ id }) => id === 'map-employer-name')).toEqual(stored);
+  });
+});
+
 describe('(c) code correspondences', () => {
   it('saves a configured correspondence next to the stored ones', async () => {
     const user = await renderPage();
@@ -374,6 +423,19 @@ describe('(c) code correspondences', () => {
       { source: 'F', target: 'SEX2' },
       { source: 'X', target: 'SEX3' },
     ]);
+  });
+
+  it('keeps each correspondence input in place when an earlier row is removed', async () => {
+    const user = await renderPage();
+
+    await openMapping(user, 'map-user-gender');
+    const second = screen.getByLabelText('Source value of row 2') as HTMLInputElement;
+    expect(second.value).toBe('F');
+    await user.click(screen.getByRole('button', { name: 'Remove row 1' }));
+
+    const moved = screen.getByLabelText('Source value of row 1') as HTMLInputElement;
+    expect(moved.value).toBe('F');
+    expect(moved).toBe(second);
   });
 
   it('does not offer a code the referential excludes', async () => {
@@ -473,6 +535,23 @@ describe('(d) a 400 listing codes', () => {
     expect(general.textContent).toContain('The TRACFIN profile version of the configuration does not match the server');
   });
 
+  it('lists in the page-level list an error on a setting the form does not show', async () => {
+    mocks.putConfiguration.mockResolvedValue(
+      failure({
+        kind: 'bad_request',
+        status: 400,
+        message: 'invalid TRACFIN configuration: SOMETHING_NEW /ds/organisme/hidden',
+      }),
+    );
+    const user = await renderPage();
+    await editPostalCode(user, '99999');
+    await user.click(saveButton());
+
+    const general = await screen.findByRole('list', { name: 'Errors without a specific field' });
+    expect(general.textContent).toContain('SOMETHING_NEW');
+    expect(general.textContent).toContain('/ds/organisme/hidden');
+  });
+
   it('shows the raw message of a bare 400, as invalid settings name nothing, and keeps the form', async () => {
     mocks.putConfiguration.mockResolvedValue(failure({ kind: 'bad_request', status: 400, message: 'bad parameter' }));
     const user = await renderPage();
@@ -563,6 +642,35 @@ describe('(e) a 409 revision conflict', () => {
       field: { field_id: '/ds/organisme/adresse/codePostal' },
       value: { kind: 'text', text: '99999' },
     });
+  });
+
+  it('resets to the server version after a conflict, so the next save is not refused again', async () => {
+    const user = await renderPage();
+    await editPostalCode(user, '99999');
+    await user.click(saveButton());
+    await screen.findByRole('button', { name: 'Reload the server version' });
+
+    mocks.getConfiguration.mockResolvedValue(ok(serverVersion));
+    await user.click(screen.getByRole('button', { name: 'Discard changes' }));
+
+    await waitFor(() => expect(screen.getByText('Saved revision 4')).toBeTruthy());
+    expect((screen.getByLabelText('Postal code') as HTMLInputElement).value).toBe('75002');
+    expect(screen.queryByText('Unsaved changes')).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('closes a comparison that a new save makes stale', async () => {
+    const user = await renderPage();
+    await editPostalCode(user, '99999');
+    await user.click(saveButton());
+    mocks.getConfiguration.mockResolvedValue(ok(serverVersion));
+    await user.click(await screen.findByRole('button', { name: 'Reload the server version' }));
+    await screen.findByRole('region', { name: 'Server version (revision 4)' });
+
+    await user.click(saveButton());
+
+    await waitFor(() => expect(mocks.putConfiguration).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.queryByRole('region', { name: 'Server version (revision 4)' })).toBeNull());
   });
 
   it('can give up the edits for the server version', async () => {

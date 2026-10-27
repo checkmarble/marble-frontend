@@ -178,7 +178,13 @@ export function setPathHop({
 }): TracfinMapping[] {
   return mappings.map((mapping) => {
     if (mapping.id !== mappingId) return mapping;
-    const kept = (mapping.source.path ?? []).slice(0, index);
+    const path = mapping.source.path ?? [];
+    const current = path[index];
+    // Re-picking the hop already in place changes nothing: step ids are persisted identity.
+    if (current && current.link === hop.link && current.direction === hop.direction && current.table === hop.table) {
+      return mapping;
+    }
+    const kept = path.slice(0, index);
     if (kept.length >= TRACFIN_MAX_PATH_STEPS) return mapping;
     const step = buildPathStep({ mappings, mappingId, rootTable: mapping.source.table ?? '', kept, hop });
     return withPath(mapping, [...kept, step]);

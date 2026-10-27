@@ -95,7 +95,8 @@ export function setSettingText(
   value: string,
 ): Record<string, TracfinFieldInput> {
   const { [fieldId]: _previous, ...others } = settings;
-  if (value.trim() === '') return others;
+  // Only an empty input removes the setting: a typed space is not an emptied field (the PUT body omits blanks).
+  if (value === '') return others;
   return { ...others, [fieldId]: kind === 'decimal' ? { kind, decimal: value } : { kind, text: value } };
 }
 

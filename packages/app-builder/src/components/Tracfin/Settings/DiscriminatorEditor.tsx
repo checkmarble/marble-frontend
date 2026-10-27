@@ -10,6 +10,7 @@ import {
   setDiscriminatorField,
   updateDiscriminatorValue,
 } from './mapping-edits';
+import { useRowKeys } from './use-row-keys';
 
 type DiscriminatorEditorProps = {
   mapping: TracfinMapping;
@@ -26,6 +27,7 @@ export function DiscriminatorEditor({ mapping, fieldSuggestions, onChange }: Dis
   const { t } = useTranslation(['tracfin']);
   const listId = useId();
   const { discriminator } = mapping;
+  const valueKeys = useRowKeys(discriminator?.values.length ?? 0);
 
   return (
     <Collapsible.Container defaultOpen={discriminator !== undefined}>
@@ -38,7 +40,10 @@ export function DiscriminatorEditor({ mapping, fieldSuggestions, onChange }: Dis
               variant="secondary"
               appearance="stroked"
               className="self-start"
-              onClick={() => onChange(addDiscriminatorValue(setDiscriminatorField(mapping, '')))}
+              onClick={() => {
+                valueKeys.add();
+                onChange(addDiscriminatorValue(setDiscriminatorField(mapping, '')));
+              }}
             >
               <Icon icon="plus" className="size-4" />
               {t('tracfin:settings.mapping.discriminator.add')}
@@ -63,7 +68,7 @@ export function DiscriminatorEditor({ mapping, fieldSuggestions, onChange }: Dis
               <div className="flex flex-col gap-xs">
                 <span className="text-s">{t('tracfin:settings.mapping.discriminator.values')}</span>
                 {discriminator.values.map((value, index) => (
-                  <div key={index} className="flex items-center gap-xs">
+                  <div key={valueKeys.keys[index]} className="flex items-center gap-xs">
                     <Input
                       size="medium"
                       className="flex-1"
@@ -78,7 +83,10 @@ export function DiscriminatorEditor({ mapping, fieldSuggestions, onChange }: Dis
                       appearance="link"
                       mode="icon"
                       aria-label={t('tracfin:settings.mapping.discriminator.remove_value_aria', { number: index + 1 })}
-                      onClick={() => onChange(removeDiscriminatorValue(mapping, index))}
+                      onClick={() => {
+                        valueKeys.remove(index);
+                        onChange(removeDiscriminatorValue(mapping, index));
+                      }}
                     >
                       <Icon icon="delete" className="size-4" />
                     </Button>
@@ -88,7 +96,10 @@ export function DiscriminatorEditor({ mapping, fieldSuggestions, onChange }: Dis
                   <Button
                     variant="secondary"
                     appearance="stroked"
-                    onClick={() => onChange(addDiscriminatorValue(mapping))}
+                    onClick={() => {
+                      valueKeys.add();
+                      onChange(addDiscriminatorValue(mapping));
+                    }}
                   >
                     <Icon icon="plus" className="size-4" />
                     {t('tracfin:settings.mapping.discriminator.add_value')}

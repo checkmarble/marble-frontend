@@ -6,6 +6,7 @@ import { Icon } from 'ui-icons';
 import { toCodeOptions } from './code-options';
 import { addCode, removeCode, updateCode } from './mapping-edits';
 import { OptionPicker } from './OptionPicker';
+import { useRowKeys } from './use-row-keys';
 
 type CodesTableProps = {
   mapping: TracfinMapping;
@@ -21,6 +22,7 @@ type CodesTableProps = {
 export function CodesTable({ mapping, codes, onChange }: CodesTableProps) {
   const { t } = useTranslation(['tracfin']);
   const rows = mapping.codes ?? [];
+  const rowKeys = useRowKeys(rows.length);
   const options = codes === 'unavailable' ? [] : toCodeOptions(codes);
 
   return (
@@ -54,7 +56,7 @@ export function CodesTable({ mapping, codes, onChange }: CodesTableProps) {
               const unknownTarget =
                 row.target !== '' && codes !== 'unavailable' && !options.some((option) => option.value === row.target);
               return (
-                <tr key={index}>
+                <tr key={rowKeys.keys[index]}>
                   <td className="pe-xs align-top">
                     <Input
                       size="medium"
@@ -94,7 +96,10 @@ export function CodesTable({ mapping, codes, onChange }: CodesTableProps) {
                       appearance="link"
                       mode="icon"
                       aria-label={t('tracfin:settings.mapping.codes.remove_aria', { number: index + 1 })}
-                      onClick={() => onChange(removeCode(mapping, index))}
+                      onClick={() => {
+                        rowKeys.remove(index);
+                        onChange(removeCode(mapping, index));
+                      }}
                     >
                       <Icon icon="delete" className="size-4" />
                     </Button>
@@ -111,7 +116,10 @@ export function CodesTable({ mapping, codes, onChange }: CodesTableProps) {
           variant="secondary"
           appearance="stroked"
           className="self-start"
-          onClick={() => onChange(addCode(mapping))}
+          onClick={() => {
+            rowKeys.add();
+            onChange(addCode(mapping));
+          }}
         >
           <Icon icon="plus" className="size-4" />
           {t('tracfin:settings.mapping.codes.add')}

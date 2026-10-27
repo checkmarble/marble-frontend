@@ -35,7 +35,8 @@ export function TracfinSettingsPage() {
   );
 
   const failedQuery = [configurationQuery, catalogQuery, dataModelQuery].find(
-    (query) => query.isError && query.data === undefined,
+    // Until the editor is mounted, a failed (re)load is a failure even when older data is cached.
+    (query) => query.isError && (loaded === null || query.data === undefined),
   );
   if (failedQuery) {
     const forbidden = isTracfinRequestError(failedQuery.error) && failedQuery.error.error.kind === 'forbidden';

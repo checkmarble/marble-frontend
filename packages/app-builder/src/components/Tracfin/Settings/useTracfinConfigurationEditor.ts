@@ -56,9 +56,9 @@ export function useTracfinConfigurationEditor({
       placeConfigurationErrors({
         errors: failure?.kind === 'invalid' ? failure.errors : [],
         mappings: state.mappings,
-        settingFieldIds: new Set([...listSettingsFieldIds(settingsLayout), ...Object.keys(state.settings)]),
+        settingFieldIds: new Set(listSettingsFieldIds(settingsLayout)),
       }),
-    [failure, state.mappings, state.settings, settingsLayout],
+    [failure, state.mappings, settingsLayout],
   );
 
   const adopt = (configuration: TracfinConfiguration | null) => {
@@ -131,6 +131,8 @@ export function useTracfinConfigurationEditor({
     /** Resolves to `true` when the server accepted the configuration. The form is kept on any failure. */
     save: async (): Promise<boolean> => {
       setFailure(null);
+      // A comparison made before this save would be stale whatever its outcome.
+      setComparison(null);
       try {
         const configuration = await putConfiguration.mutateAsync(
           buildConfigurationInput({ state, expectedRevision: revision, catalogIndex }),
@@ -143,11 +145,25 @@ export function useTracfinConfigurationEditor({
       }
     },
 
-    /** Drops the unsaved edits. */
-    reset: () => {
-      setState(baseline);
-      setFailure(null);
-      setComparison(null);
+    /**
+     * Drops the unsaved edits. After a conflict the baseline is at a revision the server has left, so
+     * the server version is fetched and adopted with its revision; if that fails the form is kept.
+     */
+    reset: async () => {
+      if (failure?.kind !== 'conflict' && comparison === null) {
+        setState(baseline);
+        setFailure(null);
+        return;
+      }
+      setIsReloading(true);
+      setReloadFailed(false);
+      try {
+        adopt(await reloadConfiguration());
+      } catch {
+        setReloadFailed(true);
+      } finally {
+        setIsReloading(false);
+      }
     },
 
     /** After a 409: fetches the server version and compares it with the edits. Nothing is overwritten. */
