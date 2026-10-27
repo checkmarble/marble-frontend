@@ -36,9 +36,9 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { type CustomerAggregateDto } from 'marble-api';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { clone } from 'remeda';
-import { Button, Input, Popover, SelectV2 } from 'ui-design-system';
+import { Button, Input, Popover, SelectV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { InlineFilterValue, isComplexInlineFilter } from '../AstBuilder/edition/AggregationFilters/InlineFilterValue';
 import { TimestampExtractTimezoneLink } from '../AstBuilder/edition/AggregationFilters/TimestampExtractTimezoneLink';
@@ -271,11 +271,32 @@ function CustomerKpisConfigurationForm({
         <div className="flex items-center justify-between gap-sm">
           <div className="flex min-w-0 items-center gap-sm">
             <span className="text-default font-medium">{t('client360:customer_kpis.configuration')}</span>
+            <span aria-hidden="true" className="text-grey-secondary">
+              ·
+            </span>
             <div className="flex items-center gap-xs">
-              <span className="rounded-sm border border-grey-border bg-surface-card p-xs font-mono text-2xs">
-                {t('client360:customer_kpis.client_filter', { objectId, objectType })}
+              <span className="text-small">
+                <Trans
+                  t={t}
+                  i18nKey="client360:customer_kpis.client_filter"
+                  values={{ objectId, objectType }}
+                  components={{
+                    Scope: <bdi dir="ltr" />,
+                    code: (
+                      <code className="rounded-sm border border-grey-border bg-surface-card p-xs font-mono text-2xs" />
+                    ),
+                  }}
+                />
               </span>
-              <Icon aria-hidden="true" icon="tip" className="text-grey-secondary size-4" />
+              <Tooltip.Default content={t('client360:customer_kpis.client_filter.tooltip')}>
+                <button
+                  type="button"
+                  aria-label={t('client360:customer_kpis.client_filter.tooltip')}
+                  className="text-grey-secondary inline-flex shrink-0"
+                >
+                  <Icon aria-hidden="true" icon="tip" className="size-4" />
+                </button>
+              </Tooltip.Default>
             </div>
           </div>
           <Button type="button" mode="icon" variant="secondary" appearance="link" onClick={clearConfiguration}>
@@ -322,6 +343,11 @@ function CustomerKpisConfigurationForm({
                     if (!isAggregatorOperator(operator)) return;
                     updateNode((currentNode) => {
                       currentNode.namedChildren.aggregator.constant = operator;
+                      if (operator === 'COUNT') {
+                        // The API still requires a valid field, even though COUNT counts rows.
+                        currentNode.namedChildren.fieldName.constant = 'object_id';
+                        return;
+                      }
                       const selectedField = tableFields.find(
                         (field) => field.name === currentNode.namedChildren.fieldName.constant,
                       );
@@ -342,7 +368,7 @@ function CustomerKpisConfigurationForm({
                     </div>
                   )}
                 />
-                {functionName ? (
+                {functionName && functionName !== 'COUNT' ? (
                   <>
                     <span className="text-center">{t('client360:customer_kpis.form.of')}</span>
                     <FieldSelect

@@ -66,8 +66,17 @@ function table(name: string, fields: DataModelField[], navigationOptions?: Navig
 
 const dataModel: DataModel = [
   table('customers', [field('id', 'String')], [navigationOption]),
-  table('transactions', [field('id', 'Int'), field('status', 'String'), field('occurred_at', 'Timestamp')]),
+  table('transactions', [
+    field('object_id', 'String'),
+    field('id', 'Int'),
+    field('status', 'String'),
+    field('occurred_at', 'Timestamp'),
+  ]),
 ];
+
+const { updateCustomerAggregate } = vi.hoisted(() => ({
+  updateCustomerAggregate: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock('@app-builder/queries/data/get-data-model', () => ({
   useDataModelQuery: () => ({ data: { dataModel }, isPending: false, isError: false, refetch: vi.fn() }),
@@ -77,7 +86,7 @@ vi.mock('@app-builder/queries/customer-aggregates/create-customer-aggregate', ()
   useCreateCustomerAggregateMutation: () => ({ isPending: false, mutateAsync: vi.fn() }),
 }));
 vi.mock('@app-builder/queries/customer-aggregates/update-customer-aggregate', () => ({
-  useUpdateCustomerAggregateMutation: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  useUpdateCustomerAggregateMutation: () => ({ isPending: false, mutateAsync: updateCustomerAggregate }),
 }));
 vi.mock('@app-builder/services/organization/organization-detail', () => ({
   useOrganizationDetails: () => ({ org: { defaultScenarioTimezone: 'UTC' } }),
@@ -101,6 +110,65 @@ beforeAll(() => {
 });
 
 describe('CustomerKpisConfigurationPopover', () => {
+  it('saves Count without a field selection and restores the field selector for other functions', async () => {
+    const aggregation = createCustomerKpiAggregation();
+    setCustomerKpiNavigationOption(aggregation, navigationOption);
+    aggregation.namedChildren.label.constant = 'Transaction count';
+    const onClose = vi.fn();
+
+    render(
+      <I18nextProvider i18n={i18next}>
+        <FormatContext.Provider value={{ locale: 'en', timezone: 'UTC' }}>
+          <Tooltip.Provider delayDuration={0}>
+            <CustomerKpisConfigurationPopover
+              objectId="customer-1"
+              objectType="customers"
+              aggregate={{
+                id: 'aggregate-1',
+                name: 'Transaction count',
+                type: 'period',
+                expression: adaptNodeDto(aggregation),
+                time_slice: 'P1M',
+              }}
+              onClose={onClose}
+            />
+          </Tooltip.Provider>
+        </FormatContext.Provider>
+      </I18nextProvider>,
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('combobox', { name: i18next.t('scenarios:aggregator.average') }));
+    await user.click(await screen.findByRole('option', { name: i18next.t('scenarios:aggregator.count') }));
+
+    expect(screen.queryByRole('combobox', { name: /select.*field/i })).toBeNull();
+    expect(screen.getByRole('button', { name: /add filter/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Validate' }).hasAttribute('disabled')).toBe(false);
+
+    await user.click(screen.getByRole('combobox', { name: i18next.t('scenarios:aggregator.count') }));
+    await user.click(await screen.findByRole('option', { name: i18next.t('scenarios:aggregator.average') }));
+
+    expect(screen.getByRole('combobox', { name: /select.*field/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Validate' }).hasAttribute('disabled')).toBe(true);
+
+    await user.click(screen.getByRole('combobox', { name: i18next.t('scenarios:aggregator.average') }));
+    await user.click(await screen.findByRole('option', { name: i18next.t('scenarios:aggregator.count') }));
+    await user.click(screen.getByRole('button', { name: 'Validate' }));
+
+    expect(updateCustomerAggregate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        aggregateId: 'aggregate-1',
+        expression: expect.objectContaining({
+          namedChildren: expect.objectContaining({
+            aggregator: expect.objectContaining({ constant: 'COUNT' }),
+            fieldName: expect.objectContaining({ constant: 'object_id' }),
+          }),
+        }),
+      }),
+    );
+    expect(onClose).toHaveBeenCalled();
+  });
+
   it('keeps a TimestampExtract filter visible after selecting its operator', async () => {
     const aggregation = createCustomerKpiAggregation();
     setCustomerKpiNavigationOption(aggregation, navigationOption);
