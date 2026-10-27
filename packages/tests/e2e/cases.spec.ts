@@ -2,18 +2,19 @@ import { expect, test } from '@playwright/test';
 import crypto from 'crypto';
 import { waitForHydration, waitForThen } from 'tests/common/utils';
 
-// Creates an inbox via settings UI and returns the inbox ID (SUUID from URL).
+// Creates an inbox via settings UI and returns the inbox ID (SUUID from the `inboxId` search param).
 async function setupInbox(page: import('@playwright/test').Page): Promise<{ inboxId: string; inboxName: string }> {
   const inboxName = crypto.randomUUID();
   await page.goto('/settings/inboxes');
   await waitForHydration(page);
   await waitForThen(page, page.getByRole('button', { name: 'Create new inbox' }), async (btn) => await btn.click());
-  const dialog = page.getByRole('dialog');
-  await dialog.waitFor();
-  await dialog.getByRole('textbox').and(dialog.locator('[name="name"]')).fill(inboxName);
-  await dialog.getByRole('button', { name: 'Create new inbox' }).click();
-  await page.waitForURL(/\/settings\/inboxes\/[^/]+$/);
-  const inboxId = page.url().split('/').at(-1) as string;
+  // The inbox panel is an unnamed dialog; the inbox name field identifies it.
+  const panel = page.getByRole('dialog').filter({ has: page.locator('[name="name"]') });
+  await panel.waitFor();
+  await panel.locator('[name="name"]').fill(inboxName);
+  await panel.getByRole('button', { name: 'Create new inbox' }).click();
+  await page.waitForURL(/\/settings\/inboxes\?inboxId=[^&]+$/);
+  const inboxId = new URL(page.url()).searchParams.get('inboxId') as string;
   return { inboxId, inboxName };
 }
 

@@ -52,6 +52,7 @@ export function InboxPanel({
             key={inbox?.id ?? 'create'}
             inbox={inbox}
             onUpdated={onClose}
+            onDeleted={onClose}
             onCreated={onInboxCreated}
             {...props}
           />
@@ -69,10 +70,12 @@ function InboxPanelContent({
   inboxUserRoles,
   userRolesAccess,
   onUpdated,
+  onDeleted,
   onCreated,
 }: Omit<InboxPanelProps, 'inboxes'> & {
   inbox?: InboxWithCasesCount;
   onUpdated: () => void;
+  onDeleted: () => void;
   onCreated: (inboxId: string) => void;
 }) {
   const { t } = useTranslation(['common', 'settings']);
@@ -117,7 +120,7 @@ function InboxPanelContent({
               </Tag>
             ) : null}
           </div>
-          {inbox && isDeleteInboxAvailable ? <DeleteInboxButton inbox={inbox} /> : null}
+          {inbox && isDeleteInboxAvailable ? <DeleteInboxButton inbox={inbox} onDeleted={onDeleted} /> : null}
         </div>
       </Panel.Header>
       <div className="flex flex-col gap-2xl">
@@ -159,7 +162,7 @@ function InboxPanelContent({
   );
 }
 
-function DeleteInboxButton({ inbox }: { inbox: InboxWithCasesCount }) {
+function DeleteInboxButton({ inbox, onDeleted }: { inbox: InboxWithCasesCount; onDeleted: () => void }) {
   const { t } = useTranslation(['settings']);
   const [open, setOpen] = useState(false);
 
@@ -183,7 +186,7 @@ function DeleteInboxButton({ inbox }: { inbox: InboxWithCasesCount }) {
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <DeleteInboxContent inboxId={inbox.id} onSettled={() => setOpen(false)} />
+        <DeleteInboxContent inboxId={inbox.id} onDeleted={onDeleted} onSettled={() => setOpen(false)} />
       </Modal.Content>
     </Modal.Root>
   );

@@ -8,7 +8,7 @@ test('Create and revoke an API key', async ({ page }) => {
 
   const description = crypto.randomUUID();
 
-  await waitForThen(page, page.getByRole('button', { name: 'New API Key' }), async (button) => await button.click());
+  await waitForThen(page, page.getByRole('button', { name: 'Add API key' }), async (button) => await button.click());
 
   const dialog = page.getByRole('dialog');
   await dialog.waitFor();

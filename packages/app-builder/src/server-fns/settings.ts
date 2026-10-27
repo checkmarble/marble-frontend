@@ -236,9 +236,7 @@ export const deleteInboxFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.deleteInbox(data.inboxId);
-      throw redirect({ to: '/settings/inboxes' });
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
+    } catch {
       throw new Error('Failed to delete inbox');
     }
   });

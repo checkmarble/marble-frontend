@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { waitForHydration, waitForThen } from 'tests/common/utils';
 
 // FIXME: the testcontainers backend image does not configure Convoy (webhook delivery service),
-// so listing webhooks returns 500 and the "New webhook" button is rendered disabled by
+// so listing webhooks returns 500 and the "Create webhook" button is rendered disabled by
 // api-keys.tsx:270-273. Re-enable once the test backend ships v1.0.0 internal webhooks or
 // gets CONVOY_* env vars wired through setup.ts.
 test.fixme('Create a webhook', async ({ page }) => {
@@ -12,7 +12,7 @@ test.fixme('Create a webhook', async ({ page }) => {
 
   const webhookUrl = `https://example.com/${crypto.randomUUID()}`;
 
-  await waitForThen(page, page.getByRole('button', { name: 'New webhook' }), async (button) => await button.click());
+  await waitForThen(page, page.getByRole('button', { name: 'Create webhook' }), async (button) => await button.click());
 
   const dialog = page.getByRole('dialog');
   await dialog.waitFor();
