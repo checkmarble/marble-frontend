@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { cloneDraft, draftWithout, findByCatalogId } from '../test-utils/draft-test-data';
 import { FakeDraftBackend } from '../test-utils/fake-backend';
 import { blockAddress, virtualAddress } from './block-address';
-import { planPatch, reconcilePatch } from './build-patch';
+import { blockRef, planPatch, reconcilePatch } from './build-patch';
 import { type EditTarget, type PendingEdit, planEdit } from './pending-edits';
 
 function set(target: EditTarget, text: string, uid = 1): PendingEdit {
@@ -201,5 +201,123 @@ describe('reconcilePatch', () => {
     ]!;
     expect(values.slice(-2).map((value) => value.text)).toEqual(['a', 'b']);
     expect([...valueIds.values()]).toEqual(values.slice(-2).map((value) => value.id));
+  });
+});
+
+describe('planPatch: several structural changes in one PATCH', () => {
+  const selection = { mapping_id: 'map-user-last-name', root: { id: 'root', table: 'users', record_id: 'user_1' } };
+
+  it('lets a change name a block that an earlier add_block of the list creates', () => {
+    const draft = draftWithout('/ds/personnes');
+    const root = draft.document.root.id;
+    const plan = planPatch({
+      draft,
+      pending: [],
+      structural: [
+        {
+          type: 'add_block',
+          parent: virtualAddress(root, ['/ds/personnes']),
+          catalogId: '/ds/personnes/pp',
+          ref: 'person',
+        },
+        { type: 'add_block', parent: blockRef('person'), catalogId: '/ds/personnes/pp/etatCivil', ref: 'identity' },
+        { type: 'set_selection', block: blockRef('identity'), selection },
+      ],
+    })!;
+
+    const [personnes, person, identity, setSelection] = plan.changes;
+    expect(personnes).toMatchObject({ action: 'add_block', parent_block_id: root, catalog_id: '/ds/personnes' });
+    expect(person).toMatchObject({
+      action: 'add_block',
+      parent_block_id: personnes!.block_id,
+      catalog_id: '/ds/personnes/pp',
+    });
+    expect(identity).toMatchObject({ action: 'add_block', parent_block_id: person!.block_id });
+    expect(setSelection).toEqual({ action: 'set_selection', block_id: identity!.block_id, selection });
+    expect(plan.added.map((added) => added.catalogId)).toEqual([
+      '/ds/personnes',
+      '/ds/personnes/pp',
+      '/ds/personnes/pp/etatCivil',
+    ]);
+  });
+
+  it('sends set_field and set_relation on a block created by the same PATCH, with the keys the action needs', () => {
+    const draft = cloneDraft();
+    const parent = findByCatalogId(draft.document.root, '/ds/personnes/pp')!.id;
+    const plan = planPatch({
+      draft,
+      pending: [],
+      structural: [
+        { type: 'add_block', parent: blockAddress(parent), catalogId: '/ds/personnes/pp/lienAutrePm', ref: 'link' },
+        { type: 'set_field', block: blockRef('link'), fieldId: '/x/a', input: { kind: 'text', text: 'T' } },
+        { type: 'set_relation', block: blockRef('link'), fieldId: '/x/id', relation: { block_id: 'owner-1' } },
+      ],
+    })!;
+    const alias = plan.changes[0]!.block_id;
+    expect(plan.changes[1]).toEqual({
+      action: 'set_field',
+      field: { block_id: alias, field_id: '/x/a' },
+      value: { kind: 'text', text: 'T' },
+    });
+    expect(plan.changes[2]).toEqual({
+      action: 'set_relation',
+      field: { block_id: alias, field_id: '/x/id' },
+      relation: { block_id: 'owner-1' },
+    });
+  });
+
+  it('skips a change that names a ref nothing created, instead of sending a dangling block id', () => {
+    const plan = planPatch({
+      draft: cloneDraft(),
+      pending: [],
+      structural: [
+        { type: 'set_selection', block: blockRef('nowhere'), selection },
+        { type: 'remove_block', blockId: 'x' },
+      ],
+    })!;
+    expect(plan.changes).toEqual([{ action: 'remove_block', block_id: 'x' }]);
+  });
+
+  it('keeps the pending field edits first, then the structural changes in the order given', () => {
+    const draft = cloneDraft();
+    const libelle = targetIn(draft, '/ds/organisme', '/ds/organisme/libelle', { valueId: 'v-1', newKey: null });
+    const plan = planPatch({
+      draft,
+      pending: [set(libelle, 'A')],
+      structural: [
+        { type: 'remove_block', blockId: 'b-1' },
+        {
+          type: 'set_selection',
+          block: blockAddress(findByCatalogId(draft.document.root, '/ds/organisme')!.id),
+          selection,
+        },
+      ],
+    })!;
+    expect(plan.changes.map((change) => change.action)).toEqual(['set_field', 'remove_block', 'set_selection']);
+  });
+
+  it('is applied by the backend and the aliases are found again in the answer', () => {
+    const draft = draftWithout('/ds/personnes');
+    const backend = new FakeDraftBackend(draft);
+    const plan = planPatch({
+      draft,
+      pending: [],
+      structural: [
+        {
+          type: 'add_block',
+          parent: virtualAddress(draft.document.root.id, ['/ds/personnes']),
+          catalogId: '/ds/personnes/pp',
+          ref: 'person',
+        },
+        { type: 'add_block', parent: blockRef('person'), catalogId: '/ds/personnes/pp/etatCivil', ref: 'identity' },
+        { type: 'set_selection', block: blockRef('identity'), selection },
+      ],
+    })!;
+    const result = backend.patch({ expected_revision: draft.revision, changes: plan.changes });
+    if (!result.ok) throw new Error('unexpected');
+    const identity = findByCatalogId(result.data.document.root, '/ds/personnes/pp/etatCivil')!;
+    expect(identity.selection).toEqual(selection);
+    const { blockIds } = reconcilePatch({ before: draft, after: result.data, plan });
+    expect(blockIds.get(plan.added[2]!.alias)).toBe(identity.id);
   });
 });

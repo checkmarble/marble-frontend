@@ -4,7 +4,9 @@ import type {
   TracfinChangeInput,
   TracfinDraft,
   TracfinDraftInput,
+  TracfinPathStep,
   TracfinResult,
+  TracfinSelection,
   TracfinValue,
 } from '@app-builder/models/tracfin';
 
@@ -17,6 +19,47 @@ function find(block: TracfinBlock, id: string): TracfinBlock | null {
     if (found) return found;
   }
   return null;
+}
+
+/**
+ * `set_selection` of the backend (`draft.go`): a changed selection flags the whole block « à revoir »,
+ * and a binding below a changed one is dropped when it is the same as before.
+ */
+function applySelection(block: TracfinBlock, next: TracfinSelection): void {
+  const previous = block.selection;
+  if (previous && JSON.stringify(previous) !== JSON.stringify(next)) {
+    const changed = new Set<string>();
+    if (
+      JSON.stringify(previous.root) !== JSON.stringify(next.root) ||
+      previous.mapping_id !== next.mapping_id ||
+      previous.decision_id !== next.decision_id
+    ) {
+      changed.add('root');
+    }
+    const old = new Map((previous.bindings ?? []).map((step) => [step.id, step]));
+    const kept: TracfinPathStep[] = [];
+    for (const step of next.bindings ?? []) {
+      const before = old.get(step.id);
+      if (before && changed.has(step.parent_id ?? '') && JSON.stringify(before) === JSON.stringify(step)) {
+        changed.add(step.id);
+        continue;
+      }
+      if (!before || JSON.stringify(before) !== JSON.stringify(step)) changed.add(step.id);
+      kept.push(step);
+    }
+    next.bindings = kept;
+    const review = (target: TracfinBlock) => {
+      for (const values of Object.values(target.fields ?? {})) {
+        for (const value of values) {
+          value.needs_review = true;
+          if (value.origin && value.origin.source !== 'manual') value.origin.resolution = 'needs_review';
+        }
+      }
+      target.children?.forEach(review);
+    };
+    review(block);
+  }
+  block.selection = next;
 }
 
 /**
@@ -104,7 +147,14 @@ export class FakeDraftBackend {
         review(root);
         return null;
       }
+      case 'set_selection': {
+        const block = find(root, resolve(change.block_id));
+        if (!block || !change.selection) return 'selection requires a block and selection';
+        applySelection(block, structuredClone(change.selection));
+        return null;
+      }
       case 'set_field':
+      case 'set_relation':
       case 'clear_field': {
         const block = find(root, resolve(change.field?.block_id));
         const fieldId = change.field?.field_id;
@@ -121,12 +171,14 @@ export class FakeDraftBackend {
         ) {
           return 'attribute requires its scalar owner';
         }
+        const input =
+          change.action === 'set_relation' ? { kind: 'reference' as const, reference: change.relation } : change.value;
         const value: TracfinValue =
           change.action === 'clear_field'
             ? { id: existing?.id ?? this.id(), kind: 'cleared', origin: { source: 'manual', resolution: 'cleared' } }
             : {
                 id: existing?.id ?? this.id(),
-                ...change.value!,
+                ...input!,
                 origin: { source: 'manual', resolution: 'resolved' },
               };
         if (parentValueId) value.parent_value_id = parentValueId;

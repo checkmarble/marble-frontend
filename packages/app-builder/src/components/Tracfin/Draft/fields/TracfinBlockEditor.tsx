@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
 import type { TracfinBlockAddress } from '../model/block-address';
+import { useTracfinBlockExtras } from './block-extras';
 import { ChildBlocks } from './ChildBlocks';
 import { ChoiceGroupEditor } from './ChoiceGroupEditor';
 import { FieldEditor } from './FieldEditor';
@@ -27,6 +28,7 @@ export function TracfinBlockEditor({ address, catalogId, include, showTitle = fa
   const { t } = useTranslation(['tracfin']);
   const editor = useTracfinDraftEditorContext();
   const { catalogIndex } = editor;
+  const Extras = useTracfinBlockExtras();
   const contents = catalogIndex.fieldsOf(catalogId);
   const groups = catalogIndex.choiceGroups(catalogId);
   const inChoice = new Set(groups.flatMap((group) => group.members.map(({ field }) => field.id)));
@@ -41,6 +43,7 @@ export function TracfinBlockEditor({ address, catalogId, include, showTitle = fa
   return (
     <div className="flex min-w-0 flex-col gap-md">
       {showTitle && catalogBlock ? <h3 className="text-default font-semibold">{blockLabel(t, catalogBlock)}</h3> : null}
+      {Extras ? <Extras address={address} catalogId={catalogId} /> : null}
       {fields.map(({ field }) => (
         <FieldEditor key={field.id} address={address} field={field} />
       ))}

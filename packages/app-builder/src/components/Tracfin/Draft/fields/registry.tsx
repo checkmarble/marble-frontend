@@ -1,6 +1,7 @@
 import type { TracfinCatalogField } from '@app-builder/models/tracfin';
 import type { TracfinFieldCodes } from '@app-builder/models/tracfin/catalog-index';
 import { createContext, useContext } from 'react';
+import { ReferenceFieldRenderer, TextOrReferenceFieldRenderer } from '../persons/pickers/ReferenceFieldRenderer';
 import { BooleanControl } from './BooleanControl';
 import { CodeControl } from './CodeControl';
 import { DecimalControl } from './DecimalControl';
@@ -22,9 +23,21 @@ export type TracfinFieldRendererRegistry = {
   readonly byKind: Readonly<Partial<Record<TracfinCatalogField['value_kind'], TracfinFieldRenderer>>>;
 };
 
-export const defaultTracfinFieldRenderers: TracfinFieldRendererRegistry = {
+/** No renderer of its own: every field gets the generic control of its value kind. */
+export const genericTracfinFieldRenderers: TracfinFieldRendererRegistry = {
   byField: {},
   byKind: {},
+};
+
+/**
+ * The renderers the draft screen ships with. References are not typed in: a reference field gets
+ * the picker of what it points to (a declared person, a piece, a support of a person), and the four
+ * `text_or_reference` fields of an operation get that picker or free text. A section that needs
+ * another renderer for one field adds it to `byField`.
+ */
+export const defaultTracfinFieldRenderers: TracfinFieldRendererRegistry = {
+  byField: {},
+  byKind: { reference: ReferenceFieldRenderer, text_or_reference: TextOrReferenceFieldRenderer },
 };
 
 export const TracfinFieldRenderersContext = createContext<TracfinFieldRendererRegistry>(defaultTracfinFieldRenderers);

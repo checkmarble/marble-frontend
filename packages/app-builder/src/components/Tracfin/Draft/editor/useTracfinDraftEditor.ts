@@ -4,6 +4,7 @@ import type {
   TracfinDraft,
   TracfinFieldInput,
   TracfinResult,
+  TracfinSelection,
 } from '@app-builder/models/tracfin';
 import type { TracfinCatalogIndex } from '@app-builder/models/tracfin/catalog-index';
 import { useTracfinDraftQuery } from '@app-builder/queries/tracfin/get-draft';
@@ -94,6 +95,14 @@ export type TracfinDraftEditor = {
   // ---- structural changes (saved at once, with the pending edits) -------------------------------
   addBlock: (parent: TracfinBlockAddress, catalogId: string) => Promise<TracfinResult<TracfinDraft>>;
   removeBlock: (blockId: string) => Promise<TracfinResult<TracfinDraft>>;
+  /**
+   * Several structural changes in ONE PATCH, after the pending field edits. A change can name a
+   * block that an earlier `add_block` of the list creates (`ref` / `blockRef`), for instance a new
+   * person, its civil status block and the selection on it. Queued like every other save.
+   */
+  applyStructural: (ops: readonly StructuralOp[]) => Promise<TracfinResult<TracfinDraft>>;
+  /** `set_selection` on a block (a virtual address creates the block first). The server drops the bindings below a changed one. */
+  setSelection: (block: TracfinBlockAddress, selection: TracfinSelection) => Promise<TracfinResult<TracfinDraft>>;
   refreshConfiguration: () => Promise<TracfinResult<TracfinDraft>>;
 
   // ---- conflicts --------------------------------------------------------------------------------
@@ -374,6 +383,8 @@ export function useTracfinDraftEditor(
 
     addBlock: (parent, catalogId) => enqueue([{ type: 'add_block', parent, catalogId }]),
     removeBlock: (blockId) => enqueue([{ type: 'remove_block', blockId }]),
+    applyStructural: (ops) => enqueue([...ops]),
+    setSelection: (block, selection) => enqueue([{ type: 'set_selection', block, selection }]),
     refreshConfiguration: () => enqueue([{ type: 'refresh_configuration' }]),
 
     reloadAndCompare: compare,

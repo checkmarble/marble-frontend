@@ -1,4 +1,5 @@
 import type { TracfinDraft, TracfinDraftInput, TracfinResult } from '@app-builder/models/tracfin';
+import type { TracfinCatalogIndex } from '@app-builder/models/tracfin/catalog-index';
 import { useTracfinDraftQuery } from '@app-builder/queries/tracfin/get-draft';
 import '@app-builder/tests/setup/i18next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -81,7 +82,8 @@ export async function renderWithEditor(
   ui: (draft: TracfinDraft) => ReactNode,
   {
     queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } }),
-  } = {},
+    catalogIndex = draftTestIndex,
+  }: { queryClient?: QueryClient; catalogIndex?: TracfinCatalogIndex } = {},
 ) {
   const user = userEvent.setup();
 
@@ -89,7 +91,7 @@ export async function renderWithEditor(
     const draftQuery = useTracfinDraftQuery(CASE_ID);
     if (!draftQuery.data) return <p>loading</p>;
     return (
-      <TracfinDraftEditorProvider caseId={CASE_ID} draft={draftQuery.data} catalogIndex={draftTestIndex}>
+      <TracfinDraftEditorProvider caseId={CASE_ID} draft={draftQuery.data} catalogIndex={catalogIndex}>
         <h1>editor</h1>
         {ui(draftQuery.data)}
       </TracfinDraftEditorProvider>

@@ -3,7 +3,7 @@ import { tracfinCatalogFixture, tracfinDraftFixture } from '@app-builder/models/
 import { getTracfinCatalogIndex } from '@app-builder/models/tracfin/catalog-index';
 
 let order = 100;
-function entry(
+export function entry(
   id: string,
   parent: string,
   kind: 'block' | 'field',

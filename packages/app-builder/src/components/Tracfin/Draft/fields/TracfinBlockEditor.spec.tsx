@@ -6,7 +6,7 @@ import { topLevelAddress } from '../sections/section-addresses';
 import { cloneDraft, draftTestCatalog, draftWithout, findByCatalogId } from '../test-utils/draft-test-data';
 import { FakeDraftBackend } from '../test-utils/fake-backend';
 import { connectBackend, renderWithEditor } from '../test-utils/render-page';
-import { defaultTracfinFieldRenderers, TracfinFieldRenderersContext } from './registry';
+import { defaultTracfinFieldRenderers, genericTracfinFieldRenderers, TracfinFieldRenderersContext } from './registry';
 import { TracfinBlockEditor } from './TracfinBlockEditor';
 
 const mocks = vi.hoisted(() => ({
@@ -22,6 +22,7 @@ vi.mock('@app-builder/server-fns/tracfin', () => ({
   createTracfinDraftFn: mocks.createDraft,
   patchTracfinDraftFn: mocks.patchDraft,
 }));
+vi.mock('@app-builder/server-fns/data', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 
 mockResizeObserver();
@@ -329,10 +330,14 @@ describe('origin, references and the renderer registry', () => {
     expect(screen.getAllByText('Settings').length).toBeGreaterThan(0);
   });
 
-  it('shows the current reference and where it is defined, with the default renderer', async () => {
+  it('shows the current reference and where it is defined, with the generic renderer', async () => {
     const backend = new FakeDraftBackend(withPmDirector());
     connectBackend(mocks, backend);
-    await renderWithEditor(editorFor('/ds/personnes'));
+    await renderWithEditor((draft) => (
+      <TracfinFieldRenderersContext.Provider value={genericTracfinFieldRenderers}>
+        <TracfinBlockEditor address={topLevelAddress(draft, '/ds/personnes')} catalogId="/ds/personnes" />
+      </TracfinFieldRenderersContext.Provider>
+    ));
 
     expect(screen.getByText(/Defined in the « Persons » section/)).toBeTruthy();
     expect(screen.getByText(/Natural person · /)).toBeTruthy();

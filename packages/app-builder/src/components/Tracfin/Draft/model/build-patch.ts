@@ -1,12 +1,34 @@
-import type { TracfinBlock, TracfinChangeInput, TracfinDraft } from '@app-builder/models/tracfin';
+import type {
+  TracfinBlock,
+  TracfinChangeInput,
+  TracfinDraft,
+  TracfinFieldInput,
+  TracfinReference,
+  TracfinSelection,
+} from '@app-builder/models/tracfin';
 import { collectBlockIds, findBlock, normalizeAddress, type TracfinBlockAddress } from './block-address';
 import { isSendable, type PendingEdit } from './pending-edits';
 
-/** A structural change, sent at once together with the field edits that were pending. */
+/** A block that an earlier `add_block` of the same list creates, designated by the `ref` it was given. */
+export type BlockRef = { readonly kind: 'ref'; readonly ref: string };
+
+/** A block named by a structural change: an address (virtual ones are created first), or a `BlockRef`. */
+export type OpBlock = TracfinBlockAddress | BlockRef;
+
+export const blockRef = (ref: string): BlockRef => ({ kind: 'ref', ref });
+
+/**
+ * A structural change, sent at once together with the field edits that were pending. A list of them
+ * is one PATCH: a later change can name a block that an earlier `add_block` creates (`ref`), the
+ * server replaces the temporary alias of the PATCH with a real id.
+ */
 export type StructuralOp =
-  | { type: 'add_block'; parent: TracfinBlockAddress; catalogId: string }
+  | { type: 'add_block'; parent: OpBlock; catalogId: string; ref?: string }
   | { type: 'remove_block'; blockId: string }
-  | { type: 'refresh_configuration' };
+  | { type: 'refresh_configuration' }
+  | { type: 'set_selection'; block: OpBlock; selection: TracfinSelection }
+  | { type: 'set_field'; block: OpBlock; fieldId: string; input: TracfinFieldInput; valueId?: string }
+  | { type: 'set_relation'; block: OpBlock; fieldId: string; relation: TracfinReference; valueId?: string };
 
 type AddedBlock = { alias: string; parent: string; catalogId: string };
 
@@ -93,17 +115,46 @@ export function planPatch({
     sent.push(edit);
   }
 
+  const refs = new Map<string, string>();
+  const resolve = (block: OpBlock): string | null =>
+    block.kind === 'ref' ? (refs.get(block.ref) ?? null) : materialize(block);
+
   for (const op of structural) {
-    if (op.type === 'refresh_configuration') {
-      changes.push({ action: 'refresh_configuration' });
-    } else if (op.type === 'remove_block') {
-      changes.push({ action: 'remove_block', block_id: op.blockId });
-    } else {
-      const parent = materialize(op.parent);
-      if (parent === null) continue;
-      const alias = newAlias();
-      added.push({ alias, parent, catalogId: op.catalogId });
-      changes.push({ action: 'add_block', parent_block_id: parent, catalog_id: op.catalogId, block_id: alias });
+    switch (op.type) {
+      case 'refresh_configuration':
+        changes.push({ action: 'refresh_configuration' });
+        break;
+      case 'remove_block':
+        changes.push({ action: 'remove_block', block_id: op.blockId });
+        break;
+      case 'add_block': {
+        const parent = resolve(op.parent);
+        if (parent === null) break;
+        const alias = newAlias();
+        added.push({ alias, parent, catalogId: op.catalogId });
+        if (op.ref) refs.set(op.ref, alias);
+        changes.push({ action: 'add_block', parent_block_id: parent, catalog_id: op.catalogId, block_id: alias });
+        break;
+      }
+      case 'set_selection': {
+        const blockId = resolve(op.block);
+        if (blockId !== null) changes.push({ action: 'set_selection', block_id: blockId, selection: op.selection });
+        break;
+      }
+      case 'set_field': {
+        const blockId = resolve(op.block);
+        if (blockId === null) break;
+        const field = { block_id: blockId, field_id: op.fieldId, ...(op.valueId ? { value_id: op.valueId } : {}) };
+        changes.push({ action: 'set_field', field, value: op.input });
+        break;
+      }
+      case 'set_relation': {
+        const blockId = resolve(op.block);
+        if (blockId === null) break;
+        const field = { block_id: blockId, field_id: op.fieldId, ...(op.valueId ? { value_id: op.valueId } : {}) };
+        changes.push({ action: 'set_relation', field, relation: op.relation });
+        break;
+      }
     }
   }
 

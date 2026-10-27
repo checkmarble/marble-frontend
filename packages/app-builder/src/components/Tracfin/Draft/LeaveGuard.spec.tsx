@@ -27,6 +27,7 @@ vi.mock('@app-builder/server-fns/tracfin', () => ({
   createTracfinDraftFn: mocks.createDraft,
   patchTracfinDraftFn: mocks.patchDraft,
 }));
+vi.mock('@app-builder/server-fns/data', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
