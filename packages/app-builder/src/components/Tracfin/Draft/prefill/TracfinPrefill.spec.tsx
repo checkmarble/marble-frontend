@@ -1,12 +1,15 @@
-import type { TracfinDiagnostic, TracfinDraft } from '@app-builder/models/tracfin';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import type { TracfinDiagnostic, TracfinDraft, TracfinValue } from '@app-builder/models/tracfin';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import type { UserEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
+import type { TracfinDraftEditor } from '../editor/useTracfinDraftEditor';
 import { TracfinBlockExtrasContext } from '../fields/block-extras';
 import { TracfinBlockEditor } from '../fields/TracfinBlockEditor';
 import { blockAddress } from '../model/block-address';
 import { BlockSelectionPanel } from '../persons/BlockSelectionPanel';
+import { findByCatalogId } from '../test-utils/draft-test-data';
 import { FakeDraftBackend } from '../test-utils/fake-backend';
 import { MAPPING_VERSION, type ScriptedProposal, scriptedPrefill } from '../test-utils/fake-prefill';
 import { connectPersons, type PersonsMocks } from '../test-utils/persons-harness';
@@ -116,11 +119,24 @@ const ExtrasWrapper = ({ children }: { children: React.ReactNode }) => (
   <TracfinBlockExtrasContext.Provider value={BlockSelectionPanel}>{children}</TracfinBlockExtrasContext.Provider>
 );
 
+let editor!: TracfinDraftEditor;
+
+/** Exposes the editor to the tests, and what it says about itself. */
+function Capture() {
+  editor = useTracfinDraftEditorContext();
+  return (
+    <p data-testid="editor-state">
+      {`status:${editor.status} pending:${editor.pendingCount} failure:${editor.failure?.kind ?? 'none'}`}
+    </p>
+  );
+}
+
 function Harness({ withExtras = false }: { withExtras?: boolean }) {
   const Wrapper = withExtras ? ExtrasWrapper : PlainWrapper;
   return (
     <Wrapper>
       <TracfinPrefillProvider>
+        <Capture />
         <PrefillButton />
         <PrefillPanel />
         <TracfinBlockEditor address={blockAddress(IDS.civil)} catalogId={CIVIL} include={(id) => civilFields.has(id)} />
@@ -557,6 +573,163 @@ describe('selection diagnostics on a block that shows the selection panel', () =
     await user.type(screen.getByRole('textbox', { name: 'First name' }), 'x');
     await user.tab();
     expect(await screen.findByText('To recompute')).toBeTruthy();
+  });
+});
+
+const editorState = () => screen.getByTestId('editor-state').textContent;
+
+describe('a refused apply is the caller’s to handle (quiet applyStructural)', () => {
+  const bogus = (mappingVersion = MAPPING_VERSION) => [
+    { type: 'apply_prefill' as const, proposalId: 'unknown', candidateId: 'unknown', mappingVersion },
+  ];
+
+  it('keeps an earlier failure and its retry when the apply is refused', async () => {
+    const { user, backend } = await setup();
+    // A structural change fails (5xx): banner state and retry are on offer.
+    backend.failures = [{ kind: 'server', status: 500, message: 'boom' }];
+    await act(async () => {
+      await editor.addBlock(blockAddress(backend.draft.document.root.id), '/ds/context');
+    });
+    expect(editorState()).toBe('status:failed pending:0 failure:unavailable');
+
+    // The prefill runs, then the choices are refused (the sources changed under the proposals).
+    const dialog = within(await propose(user));
+    await dialog.findByText('2 proposals without conflict');
+    backend.prefill = scriptedPrefill([]);
+    await user.click(dialog.getByRole('button', { name: 'Apply the 2 proposals' }));
+    expect(await dialog.findByText(/The server refused these choices/)).toBeTruthy();
+
+    // The earlier failure was not cleared by someone else's refusal ...
+    expect(editorState()).toBe('status:failed pending:0 failure:unavailable');
+    // ... and its retry still works.
+    const sent = backend.bodies.length;
+    await act(async () => {
+      await editor.retry();
+    });
+    expect(backend.bodies).toHaveLength(sent + 1);
+    expect(backend.lastBody.changes).toEqual([
+      expect.objectContaining({ action: 'add_block', catalog_id: '/ds/context' }),
+    ]);
+    expect(editorState()).toBe('status:idle pending:0 failure:none');
+  });
+
+  it('a stale mapping version (409) is returned to the caller: no conflict state, nothing kept', async () => {
+    const { backend } = await setup();
+    let result: Awaited<ReturnType<typeof editor.applyStructural>> | undefined;
+    await act(async () => {
+      result = await editor.applyStructural(bogus('another-mapping-version'), { quiet: true });
+    });
+    expect(result).toMatchObject({ ok: false, error: { kind: 'conflict', status: 409 } });
+    expect(editorState()).toBe('status:idle pending:0 failure:none');
+    // Nothing is held for a retry: the next save is a plain one.
+    const sent = backend.bodies.length;
+    await act(async () => {
+      await editor.retry();
+    });
+    expect(backend.bodies).toHaveLength(sent);
+  });
+
+  it('a pending edit riding in the same PATCH as a refused apply stays pending and is sent later', async () => {
+    const { backend } = await setup();
+    backend.prefill = scriptedPrefill([]);
+    act(() => {
+      editor.setField(
+        { block: blockAddress(IDS.civil), fieldId: BIRTH_NAME, parentValueId: null, valueId: null, newKey: null },
+        { kind: 'text', text: 'Dupont' },
+      );
+    });
+    expect(editorState()).toBe('status:idle pending:1 failure:none');
+
+    let result: Awaited<ReturnType<typeof editor.applyStructural>> | undefined;
+    await act(async () => {
+      result = await editor.applyStructural(bogus(), { quiet: true });
+    });
+    // The edit and the apply travelled together; the server refused the lot (400).
+    expect(backend.bodies).toHaveLength(1);
+    expect(backend.lastBody.changes.map((change) => change.action)).toEqual(['set_field', 'apply_prefill']);
+    expect(result).toMatchObject({ ok: false, error: { kind: 'bad_request' } });
+    // Nothing lost: the edit is still pending, the editor is not in a failed state.
+    expect(editorState()).toBe('status:idle pending:1 failure:none');
+    expect(valuesOf(backend, IDS.civil, BIRTH_NAME)).toEqual([]);
+
+    await act(async () => {
+      await editor.flush();
+    });
+    expect(backend.lastBody.changes.map((change) => change.action)).toEqual(['set_field']);
+    expect(valuesOf(backend, IDS.civil, BIRTH_NAME)[0]).toMatchObject({ text: 'Dupont' });
+    expect(editorState()).toBe('status:idle pending:0 failure:none');
+  });
+});
+
+describe('UNKNOWN_CODE on an attribute of simple content (M2)', () => {
+  const COUNTRY = '/ds/organisme/adresse/pays';
+  const COUNTRY_TYPE = `${COUNTRY}/@type`;
+
+  function addressDraft(mutate: (fields: Record<string, TracfinValue[]>) => void) {
+    const draft = prefillDraft();
+    const address = findByCatalogId(draft.document.root, '/ds/organisme/adresse')!;
+    delete address.fields![COUNTRY_TYPE];
+    mutate(address.fields!);
+    return { draft, addressId: address.id };
+  }
+
+  it('attaches the manual code to the single owner occurrence (parent_value_id)', async () => {
+    const { draft, addressId } = addressDraft(() => undefined);
+    const ownerId = findByCatalogId(draft.document.root, '/ds/organisme/adresse')!.fields![COUNTRY]![0]!.id;
+    const { user, backend } = await setup({
+      draft,
+      script: [],
+      diagnostics: [diagnostic('UNKNOWN_CODE', addressId, COUNTRY_TYPE)],
+    });
+    const dialog = within(await propose(user));
+    await user.click(await dialog.findByRole('button', { name: /Choose the code for this draft/ }));
+    await user.click(dialog.getByRole('button', { name: 'Country code type' }));
+    await user.click(await screen.findByRole('option', { name: 'code' }));
+
+    await waitFor(() => expect(backend.bodies).toHaveLength(1));
+    expect(backend.lastBody.changes).toEqual([
+      {
+        action: 'set_field',
+        field: { block_id: addressId, field_id: COUNTRY_TYPE },
+        value: { kind: 'text', text: 'code', parent_value_id: ownerId },
+      },
+    ]);
+  });
+
+  it('asks for the owner first when there is none, and sends nothing', async () => {
+    const { draft, addressId } = addressDraft((fields) => {
+      delete fields[COUNTRY];
+    });
+    const { user, backend } = await setup({
+      draft,
+      script: [],
+      diagnostics: [diagnostic('UNKNOWN_CODE', addressId, COUNTRY_TYPE)],
+    });
+    const dialog = within(await propose(user));
+    await user.click(await dialog.findByRole('button', { name: /Choose the code for this draft/ }));
+
+    expect(dialog.getByText(/“Country” field must first be filled in and saved/)).toBeTruthy();
+    expect(dialog.queryByRole('button', { name: 'Country code type' })).toBeNull();
+    expect(backend.bodies).toHaveLength(0);
+  });
+
+  it('asks for the owner first when it has several occurrences', async () => {
+    const { draft, addressId } = addressDraft((fields) => {
+      fields[COUNTRY] = [
+        { id: 'c1', kind: 'text', text: 'FR', origin: { source: 'manual', resolution: 'resolved' } },
+        { id: 'c2', kind: 'text', text: 'BE', origin: { source: 'manual', resolution: 'resolved' } },
+      ];
+    });
+    const { user } = await setup({
+      draft,
+      script: [],
+      diagnostics: [diagnostic('UNKNOWN_CODE', addressId, COUNTRY_TYPE)],
+    });
+    const dialog = within(await propose(user));
+    await user.click(await dialog.findByRole('button', { name: /Choose the code for this draft/ }));
+
+    expect(dialog.getByText(/must first be filled in and saved, with a single value/)).toBeTruthy();
+    expect(dialog.queryByRole('button', { name: 'Country code type' })).toBeNull();
   });
 });
 

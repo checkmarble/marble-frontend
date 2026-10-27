@@ -21,12 +21,25 @@ export function useDiagnosticText() {
 /** Opens the field of a diagnostic in the generic editor: a manual `set_field` on this draft only. */
 function FixField({ diagnostic }: { diagnostic: TracfinDiagnostic }) {
   const { t } = useTranslation(['tracfin']);
-  const { catalogIndex } = useTracfinDraftEditorContext();
+  const editor = useTracfinDraftEditorContext();
+  const { catalogIndex } = editor;
   const [open, setOpen] = useState(false);
   const fix = diagnosticFixOf(diagnostic.code);
   const field = diagnostic.field;
   const catalogField = field ? catalogIndex.field(field.field_id) : undefined;
   if (!fix || !field || !catalogField) return null;
+
+  // An attribute of simple content belongs to ONE occurrence of its owner field: without exactly one
+  // saved owner there is nothing to attach the manual value to, and none is sent.
+  const owner = catalogIndex.field(catalogField.parent);
+  const ownerOccurrences =
+    owner?.kind === 'field'
+      ? (editor.blockAt(blockAddress(field.block_id))?.fields?.[owner.id] ?? []).filter(
+          (value) => value.kind !== 'cleared',
+        )
+      : null;
+  const parentValueId = ownerOccurrences?.length === 1 ? ownerOccurrences[0]!.id : null;
+  const ownerMissing = ownerOccurrences !== null && parentValueId === null;
 
   return (
     <div className="flex flex-col gap-xs">
@@ -50,7 +63,18 @@ function FixField({ diagnostic }: { diagnostic: TracfinDiagnostic }) {
           {fix === 'choose_code' ? (
             <p className="text-grey-secondary text-xs">{t('tracfin:draft.prefill.fix.choose_code_note')}</p>
           ) : null}
-          <FieldEditor address={blockAddress(field.block_id)} field={catalogField} showDiagnostics={false} />
+          {ownerMissing && owner ? (
+            <p className="text-grey-secondary text-xs">
+              {t('tracfin:draft.prefill.fix.owner_required', { owner: fieldLabel(t, owner) })}
+            </p>
+          ) : (
+            <FieldEditor
+              address={blockAddress(field.block_id)}
+              field={catalogField}
+              parentValueId={parentValueId}
+              showDiagnostics={false}
+            />
+          )}
         </div>
       ) : null}
     </div>

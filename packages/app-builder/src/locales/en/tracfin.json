@@ -594,6 +594,7 @@
   "draft.prefill.fix.choose_code": "Choose the code for this draft ({{field}})",
   "draft.prefill.fix.choose_code_note": "The chosen code only concerns this draft: the organization configuration is not changed.",
   "draft.prefill.fix.choose_object": "Choose the declared object ({{field}})",
+  "draft.prefill.fix.owner_required": "The “{{owner}}” field must first be filled in and saved, with a single value: this attribute depends on it.",
   "draft.prefill.general": "General diagnostics",
   "draft.prefill.include": "Apply the proposal for {{field}}",
   "draft.prefill.intro": "Proposals come from the customer base, decisions and settings. Nothing is written until you apply a proposal.",

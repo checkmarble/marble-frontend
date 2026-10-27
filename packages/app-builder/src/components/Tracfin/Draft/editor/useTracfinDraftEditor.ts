@@ -159,6 +159,8 @@ export function useTracfinDraftEditor(
   const [status, setStatusState] = useState<TracfinSaveStatus>('idle');
   const statusRef = useRef<TracfinSaveStatus>('idle');
   const [failure, setFailure] = useState<TracfinSaveFailure | null>(null);
+  const failureRef = useRef<TracfinSaveFailure | null>(null);
+  failureRef.current = failure;
   const [comparison, setComparison] = useState<TracfinComparison | null>(null);
   const failedStructural = useRef<StructuralOp[]>([]);
   const tail = useRef<Promise<unknown>>(Promise.resolve());
@@ -311,6 +313,8 @@ export function useTracfinDraftEditor(
     const plan = planPatch({ draft: before, pending: store.list().filter(isSendable), structural });
     if (!plan) return ok(before);
     const expected = store.baseRevision ?? before.revision;
+    // What a quiet refusal gives back: an earlier failure (banner, retry) is not this request's to clear.
+    const previous = { status: statusRef.current, failure: failureRef.current, structural: failedStructural.current };
     setStatus('saving');
     try {
       const after = await patch.mutateAsync({ expected_revision: expected, changes: plan.changes });
@@ -323,9 +327,9 @@ export function useTracfinDraftEditor(
       if (quiet) {
         const api = toApiError(error);
         if (api.kind === 'bad_request' || api.kind === 'conflict') {
-          failedStructural.current = [];
-          setFailure(null);
-          setStatus('idle');
+          failedStructural.current = previous.structural;
+          setFailure(previous.failure);
+          setStatus(previous.status);
           try {
             await refetchRef.current();
           } catch {

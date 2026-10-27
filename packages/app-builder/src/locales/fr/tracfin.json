@@ -594,6 +594,7 @@
   "draft.prefill.fix.choose_code": "Choisir le code pour ce brouillon ({{field}})",
   "draft.prefill.fix.choose_code_note": "Le code choisi ne concerne que ce brouillon : la configuration de l'organisation n'est pas modifiée.",
   "draft.prefill.fix.choose_object": "Choisir l'objet déclaré ({{field}})",
+  "draft.prefill.fix.owner_required": "Le champ « {{owner}} » doit d'abord être renseigné et enregistré, avec une seule valeur : cet attribut en dépend.",
   "draft.prefill.general": "Diagnostics généraux",
   "draft.prefill.include": "Appliquer la proposition pour {{field}}",
   "draft.prefill.intro": "Les propositions viennent de la base client, des décisions et des paramètres. Rien n'est écrit tant que vous n'appliquez pas une proposition.",
