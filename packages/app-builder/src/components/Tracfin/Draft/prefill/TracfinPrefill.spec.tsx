@@ -41,6 +41,7 @@ vi.mock('@app-builder/server-fns/data', () => ({
   getDataModelFn: mocks.getDataModel,
   getObjectDetailsFn: mocks.getObjectDetails,
 }));
+vi.mock('@app-builder/server-fns/cases', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 
 mockResizeObserver();
@@ -396,7 +397,7 @@ describe('the partial period (e)', () => {
     await closePanel(user);
 
     // On the field: the value, its origin, « à revoir » and the diagnostic.
-    expect((screen.getByRole('textbox', { name: 'Date debut' }) as HTMLInputElement).value).toBe('03/02/2026');
+    expect((screen.getByRole('textbox', { name: 'Start of the period' }) as HTMLInputElement).value).toBe('03/02/2026');
     expect(screen.getByText('To review')).toBeTruthy();
     expect(screen.getAllByText(/Some selected operations have no usable date/).length).toBeGreaterThan(0);
 

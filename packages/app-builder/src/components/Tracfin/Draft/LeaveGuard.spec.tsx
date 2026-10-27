@@ -38,6 +38,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
       : { status: 'idle', proceed: undefined, reset: undefined };
   },
 }));
+vi.mock('@app-builder/server-fns/cases', () => ({}));
 
 mockResizeObserver();
 beforeAll(() => {

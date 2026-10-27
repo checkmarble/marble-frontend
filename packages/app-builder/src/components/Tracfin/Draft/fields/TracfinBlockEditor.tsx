@@ -17,6 +17,8 @@ type TracfinBlockEditorProps = {
   include?: (catalogId: string) => boolean;
   /** Show the block title above its fields. */
   showTitle?: boolean;
+  /** Show the prefill diagnostics that name no field at the top of the block; a caller that renders them itself turns this off. */
+  showDiagnostics?: boolean;
 };
 
 /**
@@ -25,7 +27,13 @@ type TracfinBlockEditorProps = {
  * `calculated` and `excluded` nodes are never rendered. What is expected by TRACFIN is flagged,
  * never enforced.
  */
-export function TracfinBlockEditor({ address, catalogId, include, showTitle = false }: TracfinBlockEditorProps) {
+export function TracfinBlockEditor({
+  address,
+  catalogId,
+  include,
+  showTitle = false,
+  showDiagnostics = true,
+}: TracfinBlockEditorProps) {
   const { t } = useTranslation(['tracfin']);
   const editor = useTracfinDraftEditorContext();
   const { catalogIndex } = editor;
@@ -45,7 +53,7 @@ export function TracfinBlockEditor({ address, catalogId, include, showTitle = fa
     <div className="flex min-w-0 flex-col gap-md">
       {showTitle && catalogBlock ? <h3 className="text-default font-semibold">{blockLabel(t, catalogBlock)}</h3> : null}
       {Extras ? <Extras address={address} catalogId={catalogId} /> : null}
-      <BlockDiagnostics blockId={address.kind === 'block' ? address.id : null} />
+      {showDiagnostics ? <BlockDiagnostics blockId={address.kind === 'block' ? address.id : null} /> : null}
       {fields.map(({ field }) => (
         <FieldEditor key={field.id} address={address} field={field} />
       ))}

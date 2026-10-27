@@ -23,6 +23,7 @@ vi.mock('@app-builder/server-fns/tracfin', () => ({
   patchTracfinDraftFn: mocks.patchDraft,
 }));
 vi.mock('@app-builder/server-fns/data', () => ({}));
+vi.mock('@app-builder/server-fns/cases', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 
 mockResizeObserver();
@@ -130,7 +131,7 @@ describe('field controls', () => {
     connectBackend(mocks, backend);
     const { user } = await renderWithEditor(editorFor('/ds/operations'));
 
-    const total = screen.getAllByLabelText('Montant total')[0]!;
+    const total = screen.getAllByLabelText('Global suspicion amount — entered, never computed')[0]!;
     await user.type(total, '12,5');
     expect(screen.getByText(/Enter a decimal number with a dot/)).toBeTruthy();
     await user.tab();
@@ -152,7 +153,7 @@ describe('field controls', () => {
     const backend = new FakeDraftBackend(cloneDraft());
     connectBackend(mocks, backend);
     const { user } = await renderWithEditor(editorFor('/ds/operations'));
-    const total = screen.getAllByLabelText('Montant total')[0]!;
+    const total = screen.getAllByLabelText('Global suspicion amount — entered, never computed')[0]!;
     await user.type(total, 'abc');
     await user.tab();
     expect((total as HTMLInputElement).value).toBe('abc');

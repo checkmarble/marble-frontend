@@ -38,6 +38,7 @@ vi.mock('@app-builder/server-fns/data', () => ({
   getDataModelFn: mocks.getDataModel,
   getObjectDetailsFn: mocks.getObjectDetails,
 }));
+vi.mock('@app-builder/server-fns/cases', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 
 mockResizeObserver();

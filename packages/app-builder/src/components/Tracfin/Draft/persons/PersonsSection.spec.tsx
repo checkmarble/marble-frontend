@@ -33,6 +33,7 @@ vi.mock('@app-builder/server-fns/data', () => ({
   getDataModelFn: mocks.getDataModel,
   getObjectDetailsFn: mocks.getObjectDetails,
 }));
+vi.mock('@app-builder/server-fns/cases', () => ({}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 
 mockResizeObserver();
@@ -480,7 +481,7 @@ describe('reference pickers', () => {
 
   it('picks a declared person for the issuer of an operation, with its type badge, or accepts free text', async () => {
     const { user, backend } = await renderOperation(withOperation());
-    await user.click(screen.getByRole('button', { name: 'Emetteur type emetteur' }));
+    await user.click(screen.getByRole('button', { name: 'Issuer' }));
     const options = await screen.findAllByRole('option');
     expect(options.map((option) => option.textContent)).toEqual(['NPJeanne Martin', 'NCTémoin']);
     await user.click(options[1]!);
@@ -496,7 +497,7 @@ describe('reference pickers', () => {
     const { user, backend } = await renderOperation(
       withOperation({ '/ds/operations/operation/emetteurTypeEmetteur': [reference('em', 'pnc-1')] }),
     );
-    await user.click(screen.getByRole('button', { name: 'Ref financiere emission' }));
+    await user.click(screen.getByRole('button', { name: 'Financial reference of the issuance' }));
     const options = await screen.findAllByRole('option');
     expect(options.map((option) => option.textContent)).toEqual(['IBAN · FR76-PNC']);
     await user.click(options[0]!);
@@ -510,7 +511,9 @@ describe('reference pickers', () => {
   it('asks for the person first when the operation names none', async () => {
     await renderOperation(withOperation());
     expect(screen.getAllByText(/Choose the person first/).length).toBeGreaterThan(0);
-    expect(screen.getByRole('button', { name: 'Ref financiere emission' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Financial reference of the issuance' }).hasAttribute('disabled')).toBe(
+      true,
+    );
   });
 
   async function renderCivilStatus(draft: TracfinDraft) {

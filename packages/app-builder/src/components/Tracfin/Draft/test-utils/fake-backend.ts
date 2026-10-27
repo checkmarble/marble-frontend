@@ -130,6 +130,13 @@ export class FakeDraftBackend {
       case 'add_block': {
         const parent = find(root, resolve(change.parent_block_id));
         if (!parent || !change.catalog_id) return 'invalid block parent or catalogue';
+        // `maximum 30 principal operations` (draft.go): the 31st operation is a 400.
+        if (
+          change.catalog_id === '/ds/operations/operation' &&
+          (parent.children ?? []).filter((child) => child.catalog_id === change.catalog_id).length >= 30
+        ) {
+          return 'maximum 30 principal operations';
+        }
         const id = this.id();
         if (change.block_id) aliases.set(change.block_id, id);
         parent.children = [...(parent.children ?? []), { id, catalog_id: change.catalog_id }];
@@ -156,6 +163,23 @@ export class FakeDraftBackend {
       case 'set_selection': {
         const block = find(root, resolve(change.block_id));
         if (!block || !change.selection) return 'selection requires a block and selection';
+        // `decision already selected` (draft.go): one decision, one principal operation line.
+        const decisionId = change.selection.decision_id;
+        if (block.catalog_id === '/ds/operations/operation' && decisionId) {
+          let duplicate = false;
+          const visit = (other: TracfinBlock) => {
+            if (
+              other.id !== block.id &&
+              other.catalog_id === block.catalog_id &&
+              other.selection?.decision_id === decisionId
+            ) {
+              duplicate = true;
+            }
+            other.children?.forEach(visit);
+          };
+          visit(root);
+          if (duplicate) return 'decision already selected';
+        }
         applySelection(block, structuredClone(change.selection));
         return null;
       }

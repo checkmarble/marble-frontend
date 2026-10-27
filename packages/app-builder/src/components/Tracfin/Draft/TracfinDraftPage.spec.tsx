@@ -22,6 +22,7 @@ vi.mock('@app-builder/server-fns/tracfin', () => ({
   prefillTracfinDraftFn: mocks.prefill,
 }));
 vi.mock('@app-builder/server-fns/data', () => ({}));
+vi.mock('@app-builder/server-fns/cases', () => ({ listCaseDecisionsFn: vi.fn() }));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>();
@@ -344,8 +345,11 @@ describe('shell', () => {
     const backend = new FakeDraftBackend(cloneDraft());
     connectBackend(mocks, backend);
     const { user, section } = await renderDraftPage();
+    // The operations section is built (see operations/OperationsSection.spec.tsx).
+    await user.click(nav(/^Operations/));
+    expect(section()).toBe('operations');
+    expect(screen.getByRole('heading', { name: 'Principal operations' })).toBeTruthy();
     for (const [name, expected] of [
-      [/^Operations/, 'operations'],
       [/^Attachments/, 'pieces'],
       [/^Review and export/, 'review'],
     ] as const) {
