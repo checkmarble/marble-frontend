@@ -36,7 +36,10 @@ export function CustomerKpis({ currentUser, objectId, objectType }: CustomerKpis
 
   return match(customerAggregatesQuery)
     .with({ isPending: true }, () => (
-      <Card aria-label={t('client360:customer_kpis.loading')} className="min-h-23.5 animate-pulse bg-grey-background" />
+      <Card
+        aria-label={t('client360:customer_kpis.status.loading')}
+        className="min-h-23.5 animate-pulse bg-grey-background"
+      />
     ))
     .with({ isError: true }, () => (
       <Card className="flex min-h-23.5 flex-col items-center justify-center gap-sm text-center">
@@ -138,7 +141,7 @@ function CustomerKpiCard({ currentUser, aggregate, language, onEdit }: CustomerK
             <CustomerKpiChange percentageChange={metrics.percentageChange} language={language} />
           </>
         ) : (
-          <span className="text-small text-grey-secondary">{t('client360:customer_kpis.unavailable')}</span>
+          <span className="text-small text-grey-secondary">{t('client360:customer_kpis.status.unavailable')}</span>
         )}
       </div>
     </Card>
@@ -172,16 +175,16 @@ function CustomerKpisConfigurationCard({ variant, onOpen }: CustomerKpisConfigur
     <Card className="flex min-h-36 flex-col items-center justify-center gap-sm text-center">
       <span className="text-small text-grey-secondary">
         {match(variant)
-          .with('empty', () => t('client360:customer_kpis.empty_state'))
-          .with('add', () => t('client360:customer_kpis.add_state'))
+          .with('empty', () => t('client360:customer_kpis.card.empty_description'))
+          .with('add', () => t('client360:customer_kpis.card.add_description'))
           .exhaustive()}
       </span>
       <Popover.Trigger asChild>
         {match(variant)
-          .with('empty', () => <Button onClick={onOpen}>{t('client360:customer_kpis.configure')}</Button>)
+          .with('empty', () => <Button onClick={onOpen}>{t('client360:customer_kpis.actions.configure')}</Button>)
           .with('add', () => (
             <Button variant="primary" appearance="stroked" onClick={onOpen}>
-              {t('client360:customer_kpis.create')}
+              {t('client360:customer_kpis.actions.create')}
             </Button>
           ))
           .exhaustive()}
