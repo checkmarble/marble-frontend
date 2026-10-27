@@ -193,6 +193,36 @@ describe('relations show their direction and can be reversed (f)', () => {
     });
   });
 
+  it('cannot be reversed while the link has an unsaved edit, which would be lost with the removed link', async () => {
+    const backend = new FakeDraftBackend(withSeveralRoles());
+    connect(backend);
+    const { user } = await renderSection();
+    await user.click(within(person('Témoin')).getByRole('button', { name: 'Open' }));
+    const card = person('Link with an already declared person no. 1');
+    const reverse = () => within(card).getByRole('button', { name: 'Reverse the direction' }) as HTMLButtonElement;
+    expect(reverse().disabled).toBe(false);
+
+    // Typed, not left yet: the edit is pending.
+    await user.type(within(card).getByRole('textbox', { name: 'Precisions' }), 'Cousin');
+    expect(reverse().disabled).toBe(true);
+    expect(within(card).getByTestId('relation-invert-hint').textContent).toContain(
+      'Save your changes to this link first',
+    );
+    expect(backend.bodies).toHaveLength(0);
+
+    // Once saved, the plan is read from the saved values and the button is back.
+    await user.tab();
+    await waitFor(() => expect(backend.bodies).toHaveLength(1));
+    await waitFor(() => expect(reverse().disabled).toBe(false));
+    await user.click(reverse());
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Reverse' }));
+    await waitFor(() => expect(backend.bodies).toHaveLength(2));
+    // The saved precision travelled with the recreated link.
+    expect(
+      backend.lastBody.changes.some((change) => change.action === 'set_field' && change.value?.text === 'Cousin'),
+    ).toBe(true);
+  });
+
   it('offers the declared people but the owner itself for the other end of a link', async () => {
     connect(new FakeDraftBackend(withSeveralRoles()));
     const { user } = await renderSection();

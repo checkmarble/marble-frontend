@@ -6,7 +6,7 @@ import { duplicatePeerPositions } from './duplicates';
 import { operationCapacity, principalOperations, selectedDecisionIds } from './operations-model';
 import { planAddOperations } from './plan-add-operations';
 import { buildSnapshotSelection, snapshotMappingFor } from './snapshot-selection';
-import { effectiveMode, switchNeedsClear } from './text-reference-mode';
+import { effectiveMode, modeOfState } from './text-reference-mode';
 
 const manyLines = (count: number) =>
   Array.from({ length: count }, (_, index) =>
@@ -116,21 +116,40 @@ describe('planAddOperations', () => {
 });
 
 describe('text or reference mode', () => {
-  it('lets a saved value decide, numeric text included', () => {
-    expect(effectiveMode({ kind: 'text', text: '12345' }, 'reference')).toBe('text');
-    expect(effectiveMode({ kind: 'reference', reference: { block_id: 'p' } }, 'text')).toBe('reference');
+  const ref = { kind: 'reference', reference: { block_id: 'p' } } as const;
+
+  it('lets the value shown decide, numeric text included', () => {
+    expect(effectiveMode({ state: { kind: 'text', text: '12345' }, saved: null })).toBe('text');
+    expect(effectiveMode({ state: ref, saved: null })).toBe('reference');
   });
 
-  it('follows the analyst choice when the field holds nothing', () => {
-    expect(effectiveMode({ kind: 'empty' }, 'reference')).toBe('reference');
-    expect(effectiveMode({ kind: 'cleared' }, 'text')).toBe('text');
+  it('starts from the saved value: a reference whose picker was just emptied stays in reference mode', () => {
+    expect(effectiveMode({ state: { kind: 'cleared' }, saved: ref })).toBe('reference');
+    expect(effectiveMode({ state: { kind: 'empty' }, saved: { kind: 'text', text: '99' } })).toBe('text');
+    expect(effectiveMode({ state: { kind: 'cleared' }, saved: null })).toBe('text');
   });
 
-  it('clears only when the other representation is stored', () => {
-    expect(switchNeedsClear({ kind: 'text', text: 'x' }, 'reference')).toBe(true);
-    expect(switchNeedsClear({ kind: 'reference', reference: { block_id: 'p' } }, 'text')).toBe(true);
-    expect(switchNeedsClear({ kind: 'empty' }, 'reference')).toBe(false);
-    expect(switchNeedsClear({ kind: 'cleared' }, 'text')).toBe(false);
+  it('keeps the mode the field was last seen in once its value is gone', () => {
+    expect(effectiveMode({ state: { kind: 'cleared' }, saved: { kind: 'cleared' }, remembered: 'reference' })).toBe(
+      'reference',
+    );
+    // ... but a value shown wins over what was remembered.
+    expect(effectiveMode({ state: { kind: 'text', text: 'x' }, saved: null, remembered: 'reference' })).toBe('text');
+  });
+
+  it('follows the analyst choice over the stored value', () => {
+    const stored = { kind: 'text', text: 'x' } as const;
+    expect(effectiveMode({ state: stored, saved: stored, chosen: 'reference' })).toBe('reference');
+    expect(effectiveMode({ state: ref, saved: ref, chosen: 'text' })).toBe('text');
+    expect(effectiveMode({ state: { kind: 'empty' }, saved: null, chosen: 'reference' })).toBe('reference');
+  });
+
+  it('reads the representation of a value, nothing for an empty one', () => {
+    expect(modeOfState(ref)).toBe('reference');
+    expect(modeOfState({ kind: 'text', text: 'x' })).toBe('text');
+    expect(modeOfState({ kind: 'text', text: '' })).toBeNull();
+    expect(modeOfState({ kind: 'cleared' })).toBeNull();
+    expect(modeOfState(null)).toBeNull();
   });
 });
 

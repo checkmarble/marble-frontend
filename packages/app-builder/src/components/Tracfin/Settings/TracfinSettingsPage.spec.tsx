@@ -622,8 +622,16 @@ describe('(e) a 409 revision conflict', () => {
 
     const panel = await screen.findByRole('region', { name: 'Server version (revision 4)' });
     expect(within(panel).getByText('map-added-elsewhere')).toBeTruthy();
-    expect(within(panel).getByText('map-user-first-name')).toBeTruthy();
     expect(within(panel).getByText('/ds/organisme/adresse/codePostal')).toBeTruthy();
+    // A mapping someone else deleted is labelled as such, not as « only in your changes », and the panel
+    // says that re-applying recreates it.
+    const deleted = within(panel).getByText('Deleted on the server by someone else').parentElement!;
+    expect(within(deleted).getByText('map-user-first-name')).toBeTruthy();
+    const onlyHere = within(panel).queryByText('Only in your changes');
+    expect(onlyHere?.parentElement?.textContent ?? '').not.toContain('map-user-first-name');
+    expect(within(panel).getByText(/is recreated if you re-apply your changes/)).toBeTruthy();
+    const added = within(panel).getByText('Only on the server').parentElement!;
+    expect(within(added).getByText('map-added-elsewhere')).toBeTruthy();
     // Looking at the differences writes nothing.
     expect(mocks.putConfiguration).toHaveBeenCalledTimes(1);
     expect((screen.getByLabelText('Postal code') as HTMLInputElement).value).toBe('99999');

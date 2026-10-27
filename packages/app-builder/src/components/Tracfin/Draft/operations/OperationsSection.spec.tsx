@@ -1,6 +1,6 @@
 import { FormatContext } from '@app-builder/contexts/FormatContext';
 import type { DetailedCaseDecision } from '@app-builder/models/cases';
-import type { TracfinDiagnostic, TracfinDraft } from '@app-builder/models/tracfin';
+import type { TracfinBlock, TracfinDiagnostic, TracfinDraft } from '@app-builder/models/tracfin';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -83,6 +83,12 @@ async function renderSection(draft: TracfinDraft, pages: DetailedCaseDecision[][
   );
   return { ...rendered, backend };
 }
+
+const storedValueOf = (backend: FakeDraftBackend, blockId: string, fieldId: string) => {
+  const find = (block: TracfinBlock): TracfinBlock | null =>
+    block.id === blockId ? block : ((block.children ?? []).map(find).find(Boolean) ?? null);
+  return find(backend.draft.document.root)?.fields?.[fieldId]?.[0];
+};
 
 const addFromDecisions = () => screen.getByRole('button', { name: 'Add from decisions' });
 const selectBox = (objectId: string, type: string) =>
@@ -360,23 +366,22 @@ describe('text or reference fields', () => {
     expect(backend.lastBody.changes[0]!.value).toEqual({ kind: 'text', text: '00123456' });
   });
 
-  it('empties the free text explicitly before a person is picked, then sets the reference on the same value', async () => {
+  it('switching to a person sends nothing; the reference replaces the stored text when it is picked', async () => {
     const { user, backend } = await renderSection(
       operationsDraft({ lines: [line('op-1', undefined, 'Transfer', { [ISSUER]: [text('em-1', '99')] })] }),
     );
     await user.click(mode('Issuer', 'Declared person'));
-
-    await waitFor(() => expect(backend.bodies).toHaveLength(1));
-    expect(backend.bodies[0]!.changes).toEqual([
-      { action: 'clear_field', field: { block_id: 'op-1', field_id: ISSUER, value_id: 'em-1' } },
-    ]);
+    expect(mode('Issuer', 'Declared person').getAttribute('aria-checked')).toBe('true');
+    // The radio is a view change: the stored text is neither cleared nor saved.
+    expect(backend.bodies).toHaveLength(0);
+    expect(screen.getByText('The saved value is kept until you enter a new one.')).toBeTruthy();
 
     await user.click(await screen.findByRole('button', { name: 'Issuer' }));
     const option = (await screen.findAllByRole('option')).find((entry) =>
       entry.textContent?.includes('Jeanne Martin'),
     )!;
     await user.click(option);
-    await waitFor(() => expect(backend.bodies).toHaveLength(2));
+    await waitFor(() => expect(backend.bodies).toHaveLength(1));
     expect(backend.lastBody.changes).toEqual([
       {
         action: 'set_field',
@@ -384,27 +389,41 @@ describe('text or reference fields', () => {
         value: { kind: 'reference', reference: { block_id: 'pp-1' } },
       },
     ]);
+    // The same occurrence now holds the reference, not the text.
+    expect(storedValueOf(backend, 'op-1', ISSUER)).toMatchObject({ id: 'em-1', kind: 'reference' });
   });
 
-  it('empties the reference before free text, and keeps free text a text', async () => {
+  it('switching to free text keeps the stored reference until text is typed, and keeps free text a text', async () => {
     const { user, backend } = await renderSection(
       operationsDraft({ lines: [line('op-1', undefined, 'Transfer', { [BENEFICIARY]: [reference('b-1', 'pp-1')] })] }),
     );
     expect(mode('Beneficiary', 'Declared person').getAttribute('aria-checked')).toBe('true');
     await user.click(mode('Beneficiary', 'Free text'));
-    await waitFor(() => expect(backend.bodies).toHaveLength(1));
-    expect(backend.bodies[0]!.changes).toEqual([
-      { action: 'clear_field', field: { block_id: 'op-1', field_id: BENEFICIARY, value_id: 'b-1' } },
-    ]);
+    expect(mode('Beneficiary', 'Free text').getAttribute('aria-checked')).toBe('true');
+    expect(backend.bodies).toHaveLength(0);
 
     await user.type(await screen.findByRole('textbox', { name: 'Beneficiary (free text)' }), '12345');
     await user.tab();
-    await waitFor(() => expect(backend.bodies).toHaveLength(2));
+    await waitFor(() => expect(backend.bodies).toHaveLength(1));
+    expect(backend.lastBody.changes).toHaveLength(1);
     expect(backend.lastBody.changes[0]).toMatchObject({
       action: 'set_field',
       field: { block_id: 'op-1', field_id: BENEFICIARY, value_id: 'b-1' },
       value: { kind: 'text', text: '12345' },
     });
+    expect(storedValueOf(backend, 'op-1', BENEFICIARY)).toMatchObject({ id: 'b-1', kind: 'text', text: '12345' });
+  });
+
+  it('a stored reference keeps reference mode when its picker is emptied', async () => {
+    const { user, backend } = await renderSection(
+      operationsDraft({ lines: [line('op-1', undefined, 'Transfer', { [BENEFICIARY]: [reference('b-1', 'pp-1')] })] }),
+    );
+    expect(mode('Beneficiary', 'Declared person').getAttribute('aria-checked')).toBe('true');
+    // Emptying the choice must not flip the radio to free text.
+    await user.click(screen.getByRole('button', { name: 'Clear Beneficiary' }));
+    expect(mode('Beneficiary', 'Declared person').getAttribute('aria-checked')).toBe('true');
+    expect(mode('Beneficiary', 'Free text').getAttribute('aria-checked')).toBe('false');
+    expect(backend.bodies.flatMap((body) => body.changes).every((change) => change.action !== 'set_field')).toBe(true);
   });
 
   it('sends a support reference with the person it belongs to', async () => {

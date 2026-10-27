@@ -7,13 +7,16 @@ import { adaptTracfinApiError, isTracfinRequestError, type TracfinApiError } fro
  * - `too_large` (413): the technical size limit of a request.
  * - `unavailable` (408, 5xx, network): the outcome is uncertain; read the draft again.
  * - `rejected`: anything else (403, 404, 422): the message is shown.
+ * - `unresolved`: no request was made (see `PatchPlan.unresolved`).
  */
 export type TracfinSaveFailure =
   | { kind: 'conflict' }
   | { kind: 'invalid'; message: string | null }
   | { kind: 'too_large' }
   | { kind: 'unavailable'; message: string | null }
-  | { kind: 'rejected'; message: string | null };
+  | { kind: 'rejected'; message: string | null }
+  /** Client side, nothing was sent: a structural change named a block that is not in the draft any more. */
+  | { kind: 'unresolved'; count: number };
 
 export function toApiError(error: unknown): TracfinApiError {
   return isTracfinRequestError(error) ? error.error : adaptTracfinApiError(error);

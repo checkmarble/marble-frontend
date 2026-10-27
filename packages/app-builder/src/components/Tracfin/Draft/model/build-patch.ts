@@ -42,6 +42,12 @@ export type PatchPlan = {
   added: AddedBlock[];
   /** Blocks removed by the PATCH (with their descendants): pending edits on them are dropped. */
   removed: Set<string>;
+  /**
+   * Structural changes whose block could not be resolved (a person that vanished, a `ref` whose
+   * `add_block` was skipped). A plan with any of them must not be sent: the PATCH would apply a partial
+   * plan (a `remove_block` without the `add_block` that was to recreate it).
+   */
+  unresolved: StructuralOp[];
 };
 
 const ALIAS_PREFIX = 'tracfin-new-block-';
@@ -117,6 +123,7 @@ export function planPatch({
     sent.push(edit);
   }
 
+  const unresolved: StructuralOp[] = [];
   const refs = new Map<string, string>();
   const resolve = (block: OpBlock): string | null =>
     block.kind === 'ref' ? (refs.get(block.ref) ?? null) : materialize(block);
@@ -131,7 +138,10 @@ export function planPatch({
         break;
       case 'add_block': {
         const parent = resolve(op.parent);
-        if (parent === null) break;
+        if (parent === null) {
+          unresolved.push(op);
+          break;
+        }
         const alias = newAlias();
         added.push({ alias, parent, catalogId: op.catalogId });
         if (op.ref) refs.set(op.ref, alias);
@@ -148,19 +158,26 @@ export function planPatch({
       }
       case 'set_selection': {
         const blockId = resolve(op.block);
-        if (blockId !== null) changes.push({ action: 'set_selection', block_id: blockId, selection: op.selection });
+        if (blockId === null) unresolved.push(op);
+        else changes.push({ action: 'set_selection', block_id: blockId, selection: op.selection });
         break;
       }
       case 'set_field': {
         const blockId = resolve(op.block);
-        if (blockId === null) break;
+        if (blockId === null) {
+          unresolved.push(op);
+          break;
+        }
         const field = { block_id: blockId, field_id: op.fieldId, ...(op.valueId ? { value_id: op.valueId } : {}) };
         changes.push({ action: 'set_field', field, value: op.input });
         break;
       }
       case 'set_relation': {
         const blockId = resolve(op.block);
-        if (blockId === null) break;
+        if (blockId === null) {
+          unresolved.push(op);
+          break;
+        }
         const field = { block_id: blockId, field_id: op.fieldId, ...(op.valueId ? { value_id: op.valueId } : {}) };
         changes.push({ action: 'set_relation', field, relation: op.relation });
         break;
@@ -177,7 +194,7 @@ export function planPatch({
     }
   }
 
-  return changes.length === 0 ? null : { changes, sent, added, removed };
+  return changes.length === 0 && unresolved.length === 0 ? null : { changes, sent, added, removed, unresolved };
 }
 
 /**

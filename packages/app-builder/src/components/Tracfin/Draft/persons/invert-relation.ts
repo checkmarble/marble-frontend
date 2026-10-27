@@ -1,8 +1,8 @@
 import type { TracfinBlock } from '@app-builder/models/tracfin';
 import type { TracfinCatalogIndex } from '@app-builder/models/tracfin/catalog-index';
-import { blockAddress, childrenOfCatalogId, findBlock } from '../model/block-address';
+import { blockAddress, childrenOfCatalogId, collectBlockIds, findBlock } from '../model/block-address';
 import { blockRef, type StructuralOp } from '../model/build-patch';
-import { inputOfValue } from '../model/pending-edits';
+import { inputOfValue, type PendingEdit } from '../model/pending-edits';
 import { personKindOf, relationCatalogId } from './person-kinds';
 
 export type InvertRelationPlan =
@@ -18,6 +18,16 @@ export function relationTargetId(link: TracfinBlock): string | null {
     for (const value of values) if (value.kind === 'reference' && value.reference) return value.reference.block_id;
   }
   return null;
+}
+
+/**
+ * Whether an unsaved edit targets the link or a block below it. « Inverser » is planned from the saved
+ * values and removes the link: an edit that is still pending (or in flight, it stays pending until its
+ * PATCH is answered) would be discarded with it, and the copy would carry the old value.
+ */
+export function hasPendingEditsOnLink(link: TracfinBlock, pending: readonly PendingEdit[]): boolean {
+  const ids = collectBlockIds(link);
+  return pending.some((edit) => ids.has(edit.block.kind === 'block' ? edit.block.id : edit.block.anchorId));
 }
 
 /**

@@ -93,12 +93,16 @@ async function messageOf(response: Response): Promise<string | null> {
   return null;
 }
 
-/** Counts every byte it reads. A stream that breaks half way is a truncated body, with what was received. */
+/**
+ * Counts every byte it reads. A stream that breaks half way is a truncated body, with what was received.
+ * The chunks are kept as they arrive: the caller builds the Blob from them, so the body is never copied
+ * into a second full-size buffer (an export can be tens of MiB).
+ */
 async function readBody(
   response: Response,
   expected: number,
-): Promise<{ bytes: Uint8Array<ArrayBuffer>; received: number }> {
-  const chunks: Uint8Array[] = [];
+): Promise<{ chunks: Uint8Array<ArrayBuffer>[]; received: number }> {
+  const chunks: Uint8Array<ArrayBuffer>[] = [];
   let received = 0;
   if (response.body) {
     const reader = response.body.getReader();
@@ -106,24 +110,19 @@ async function readBody(
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        chunks.push(value);
+        chunks.push(value as Uint8Array<ArrayBuffer>);
         received += value.byteLength;
       }
     } catch {
       throw new TracfinDownloadError({ kind: 'truncated', received, expected });
     }
   }
-  const bytes = new Uint8Array(received);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return { bytes, received };
+  return { chunks, received };
 }
 
-async function sha256Hex(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', bytes);
+async function sha256Hex(blob: Blob): Promise<string> {
+  // The only contiguous copy of the body, alive for the duration of the digest.
+  const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
@@ -170,7 +169,7 @@ export async function downloadTracfinExport(
   }
 
   const announced = declaredLength(response);
-  const { bytes, received } = await readBody(response, announced ?? tracfinExport.size);
+  const { chunks, received } = await readBody(response, announced ?? tracfinExport.size);
   if (announced !== null && received !== announced) {
     throw new TracfinDownloadError({ kind: 'truncated', received, expected: announced });
   }
@@ -178,18 +177,18 @@ export async function downloadTracfinExport(
     throw new TracfinDownloadError({ kind: 'truncated', received, expected: tracfinExport.size });
   }
 
+  const blob = new Blob(chunks, { type: response.headers.get('content-type') ?? 'application/xml' });
+
   // `crypto.subtle` only exists in secure contexts: without it the size checks are all there is.
   let sha256Verified = false;
   if (tracfinExport.sha256 && typeof crypto !== 'undefined' && crypto.subtle) {
-    if ((await sha256Hex(bytes)) !== tracfinExport.sha256.toLowerCase()) {
+    if ((await sha256Hex(blob)) !== tracfinExport.sha256.toLowerCase()) {
       throw new TracfinDownloadError({ kind: 'hash_mismatch' });
     }
     sha256Verified = true;
   }
 
-  const objectUrl = URL.createObjectURL(
-    new Blob([bytes], { type: response.headers.get('content-type') ?? 'application/xml' }),
-  );
+  const objectUrl = URL.createObjectURL(blob);
   try {
     await downloadFile(objectUrl, filenameOf(response, tracfinExport));
   } catch (error) {

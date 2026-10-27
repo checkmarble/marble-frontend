@@ -35,16 +35,34 @@ describe('layerRows', () => {
   });
 });
 
+const allPassed = {
+  internal_structure: 'passed',
+  references: 'passed',
+  business: 'passed',
+  xml_syntax: 'passed',
+} as const;
+
 describe('internalChecksStatus', () => {
   it('takes the worst status of the internal layers and ignores the official XSD one', () => {
-    expect(internalChecksStatus(layers({ internal_structure: 'passed', business: 'failed' }))).toBe('failed');
-    expect(internalChecksStatus(layers({ internal_structure: 'passed', business: 'incomplete' }))).toBe('incomplete');
-    expect(internalChecksStatus(layers({ internal_structure: 'passed', xml_syntax: 'unavailable' }))).toBe(
-      'unavailable',
-    );
-    expect(internalChecksStatus(layers({ internal_structure: 'passed', business: 'passed' }))).toBe('passed');
+    expect(internalChecksStatus(layers({ ...allPassed, business: 'failed' }))).toBe('failed');
+    expect(internalChecksStatus(layers({ ...allPassed, business: 'incomplete' }))).toBe('incomplete');
+    expect(internalChecksStatus(layers({ ...allPassed, xml_syntax: 'unavailable' }))).toBe('unavailable');
+    expect(internalChecksStatus(layers(allPassed))).toBe('passed');
     // official_xsd is always unavailable: it never degrades (nor improves) the internal verdict.
-    expect(internalChecksStatus(layers({ internal_structure: 'passed', official_xsd: 'unavailable' }))).toBe('passed');
+    expect(internalChecksStatus(layers({ ...allPassed, official_xsd: 'unavailable' }))).toBe('passed');
+  });
+
+  it('is passed only when all four internal layers are reported and passed', () => {
+    // A layer the report does not mention was not seen to pass.
+    expect(internalChecksStatus(layers({ internal_structure: 'passed', business: 'passed' }))).toBe('incomplete');
+    const { xml_syntax: _omitted, ...threeOfFour } = allPassed;
+    expect(internalChecksStatus(layers(threeOfFour))).toBe('incomplete');
+    // Nor a status this version does not know.
+    const unknown = layers(allPassed);
+    unknown.layers['references'] = { status: 'skipped' as never };
+    expect(internalChecksStatus(unknown)).toBe('incomplete');
+    // Any other layer the server adds weighs in too.
+    expect(internalChecksStatus(layers({ ...allPassed, extra: 'failed' }))).toBe('failed');
   });
 
   it('reads the export fixture as incomplete: the server rules are not all implemented', () => {

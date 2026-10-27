@@ -62,7 +62,7 @@ export type TracfinDraftEditor = {
   // ---- save model -------------------------------------------------------------------------------
   /** Unsaved edits, including invalid and orphaned ones; open blank slots are not edits. */
   pendingEdits: readonly PendingEdit[];
-  /** Number of unsaved edits (what the header shows). */
+  /** Number of unsaved changes: field edits plus failed structural changes (what the header shows). */
   pendingCount: number;
   hasPendingChanges: boolean;
   /**
@@ -70,6 +70,15 @@ export type TracfinDraftEditor = {
    * `await flush()` the component may not have re-rendered yet, and an export must not trust the stale value.
    */
   hasUnsavedEdits: () => boolean;
+  /**
+   * Structural changes (« ajouter des opérations », « ajouter une personne », « inverser »...) that were
+   * sent and failed, and still wait: they count as unsaved changes (header, leave guard, export). A
+   * successful save forgets only the ones it actually sent. After a conflict they are NOT re-applied
+   * by `reapply()` (the draft they were made on has moved): they stay listed until the analyst retries
+   * (`retry()`) or gives them up (`discardFailedChanges()`).
+   */
+  failedChanges: readonly StructuralOp[];
+  discardFailedChanges: () => void;
   status: TracfinSaveStatus;
   failure: TracfinSaveFailure | null;
   comparison: TracfinComparison | null;
@@ -78,11 +87,14 @@ export type TracfinDraftEditor = {
    * with the current draft when there is nothing to send, and with the error when the save failed
    * (the edits are kept). Edits that cannot be sent (an invalid decimal) stay pending: check
    * `hasPendingChanges` afterwards. Refused with a `conflict` error while a conflict is unresolved.
+   * The structural changes that failed earlier are RESENT first, in the same PATCH (the explicit
+   * save of the analyst, « Contrôler », « Exporter »...): it only resolves `ok` once they are saved too,
+   * so no check or export runs on a draft that is missing a change the analyst made.
    */
   flush: () => Promise<TracfinResult<TracfinDraft>>;
   /** `flush` for blur and section changes: does nothing while a conflict or an error is displayed. */
   autoFlush: () => Promise<TracfinResult<TracfinDraft>>;
-  /** Sends the pending edits again, together with the structural change that failed, if any. */
+  /** Sends the pending edits again, together with the structural changes that failed, if any. */
   retry: () => Promise<TracfinResult<TracfinDraft>>;
 
   // ---- reading ----------------------------------------------------------------------------------
@@ -117,7 +129,10 @@ export type TracfinDraftEditor = {
    * Several structural changes in ONE PATCH, after the pending field edits. A change can name a
    * block that an earlier `add_block` of the list creates (`ref` / `blockRef`), for instance a new
    * person, its civil status block and the selection on it. Queued like every other save.
-   * `options.quiet`: see {@link ApplyStructuralOptions}.
+   * `options.quiet`: see {@link ApplyStructuralOptions}. A non-quiet call also resends the structural
+   * changes that failed earlier (see `flush`). When a change names a block that is not in the draft
+   * any more, NOTHING is sent: the call resolves with a `bad_request` error and, unless quiet, the
+   * `unresolved` failure is shown.
    */
   applyStructural: (
     ops: readonly StructuralOp[],
@@ -137,6 +152,22 @@ export type TracfinDraftEditor = {
 };
 
 const conflictError: TracfinApiError = { kind: 'conflict', status: 409, message: null };
+
+/**
+ * - `save`: an explicit save: the structural changes that failed earlier are sent first.
+ * - `auto`: a save on blur or section change; nothing is sent again after a failure.
+ * - `quiet`: the caller handles a refusal itself ({@link ApplyStructuralOptions}); earlier failed
+ *   changes are left alone.
+ * - `edits`: the field edits only, after « Réappliquer » (the failed changes were made on a draft that has moved).
+ */
+type SaveMode = 'save' | 'auto' | 'quiet' | 'edits';
+
+/** `earlier` then `later`, each change once (a change is the object that was queued, not its content). */
+function mergeOps(earlier: readonly StructuralOp[], later: readonly StructuralOp[]): StructuralOp[] {
+  const merged = [...earlier];
+  for (const op of later) if (!merged.includes(op)) merged.push(op);
+  return merged;
+}
 
 const ok = (data: TracfinDraft): TracfinResult<TracfinDraft> => ({ ok: true, data });
 
@@ -166,16 +197,29 @@ export function useTracfinDraftEditor(
 
   const [status, setStatusState] = useState<TracfinSaveStatus>('idle');
   const statusRef = useRef<TracfinSaveStatus>('idle');
-  const [failure, setFailure] = useState<TracfinSaveFailure | null>(null);
+  const [failure, setFailureState] = useState<TracfinSaveFailure | null>(null);
   const failureRef = useRef<TracfinSaveFailure | null>(null);
-  failureRef.current = failure;
   const [comparison, setComparison] = useState<TracfinComparison | null>(null);
-  const failedStructural = useRef<StructuralOp[]>([]);
+  const [failedChanges, setFailedChangesState] = useState<readonly StructuralOp[]>([]);
+  const failedStructural = useRef<readonly StructuralOp[]>([]);
+  /** Keys of the pending edits the PATCH in flight carries (an edit of one of them is a change after it). */
+  const inFlight = useRef<ReadonlySet<string>>(new Set());
   const tail = useRef<Promise<unknown>>(Promise.resolve());
 
   const setStatus = useCallback((next: TracfinSaveStatus) => {
     statusRef.current = next;
     setStatusState(next);
+  }, []);
+
+  // The refs are written with the state, never during render: the quiet branch reads them to restore.
+  const setFailure = useCallback((next: TracfinSaveFailure | null) => {
+    failureRef.current = next;
+    setFailureState(next);
+  }, []);
+
+  const setFailedChanges = useCallback((next: readonly StructuralOp[]) => {
+    failedStructural.current = next;
+    setFailedChangesState(next);
   }, []);
 
   /** The freshest draft the cache holds (a save just finished may not have re-rendered us yet). */
@@ -206,7 +250,10 @@ export function useTracfinDraftEditor(
     const serverValue = resolved.valueId
       ? ((serverBlock?.fields?.[resolved.fieldId] ?? []).find((value) => value.id === resolved.valueId) ?? null)
       : null;
-    const planned = planEdit({ target: resolved, op, serverValue, ...options });
+    // An edit of an occurrence the PATCH in flight carries is not a no-op even when it gives the saved
+    // value back or empties a new occurrence: the server is about to hold the other value.
+    const keep = inFlight.current.has(pendingKey(resolved));
+    const planned = planEdit({ target: resolved, op, serverValue, keep, ...options });
     if (planned) store.upsert(planned);
     else store.remove(pendingKey(resolved));
     // Emptying an owner drops the attribute edits that depended on it: the server deletes its attributes.
@@ -219,6 +266,14 @@ export function useTracfinDraftEditor(
     store.remove(key);
     markBase();
     if (!store.hasUnsaved() && statusRef.current === 'failed' && failedStructural.current.length === 0) {
+      setStatus('idle');
+      setFailure(null);
+    }
+  };
+
+  const discardFailedChanges = () => {
+    setFailedChanges([]);
+    if (!store.hasUnsaved() && statusRef.current === 'failed') {
       setStatus('idle');
       setFailure(null);
     }
@@ -308,36 +363,55 @@ export function useTracfinDraftEditor(
     return { ok: false, error: api };
   };
 
-  const run = async (
-    structural: StructuralOp[],
-    auto: boolean,
-    quiet: boolean,
-  ): Promise<TracfinResult<TracfinDraft>> => {
+  const run = async (given: readonly StructuralOp[], mode: SaveMode): Promise<TracfinResult<TracfinDraft>> => {
+    const auto = mode === 'auto';
+    const quiet = mode === 'quiet';
     if (statusRef.current === 'conflict') return { ok: false, error: conflictError };
     // An automatic save does not repeat a request that just failed: the analyst decides (retry, discard).
     if (auto && statusRef.current === 'failed') return ok(latest());
     const before = latest();
     store.rebase(before.document.root);
+    const structural = mode === 'save' ? mergeOps(failedStructural.current, given) : [...given];
     const plan = planPatch({ draft: before, pending: store.list().filter(isSendable), structural });
-    if (!plan) return ok(before);
+    if (!plan) {
+      // Nothing to send: a stale failure with nothing left behind it is over, one with changes waiting stays.
+      if (!auto && !quiet) {
+        if (failedStructural.current.length > 0) setStatus('failed');
+        else if (statusRef.current === 'failed' && !store.hasUnsaved()) {
+          setStatus('idle');
+          setFailure(null);
+        }
+      }
+      return ok(before);
+    }
+    if (plan.unresolved.length > 0) return refuseUnresolved(plan.unresolved, quiet);
     const expected = store.baseRevision ?? before.revision;
     // What a quiet refusal gives back: an earlier failure (banner, retry) is not this request's to clear.
-    const previous = { status: statusRef.current, failure: failureRef.current, structural: failedStructural.current };
+    const previous = { status: statusRef.current, failure: failureRef.current };
     setStatus('saving');
+    inFlight.current = new Set(plan.sent.map((edit) => edit.key));
     try {
       const after = await patch.mutateAsync({ expected_revision: expected, changes: plan.changes });
       settle(before, after, plan);
-      failedStructural.current = [];
-      setFailure(null);
-      setStatus('idle');
+      // Only what this PATCH carried is saved: a change that failed earlier and was not part of it still waits.
+      const sent = new Set(structural);
+      const waiting = failedStructural.current.filter((op) => !sent.has(op));
+      setFailedChanges(waiting);
+      if (waiting.length > 0) {
+        setFailure(previous.failure?.kind === 'conflict' ? null : previous.failure);
+        setStatus('failed');
+      } else {
+        setFailure(null);
+        setStatus('idle');
+      }
       return ok(after);
     } catch (error) {
+      dropUnsavedClears();
       if (quiet) {
         const api = toApiError(error);
         const refused = api.kind === 'bad_request' || api.kind === 'conflict';
         const appliedNothing = api.kind === 'forbidden' || api.kind === 'not_found' || api.kind === 'too_large';
         if (refused || appliedNothing) {
-          failedStructural.current = previous.structural;
           setFailure(previous.failure);
           setStatus(previous.status);
           if (refused) {
@@ -350,20 +424,51 @@ export function useTracfinDraftEditor(
           return { ok: false, error: api };
         }
       }
-      failedStructural.current = structural;
+      // Never replace an earlier failed list: both wait (a change that is already in the list is not added twice).
+      setFailedChanges(mergeOps(failedStructural.current, structural));
       return fail(error, expected);
+    } finally {
+      inFlight.current = new Set();
     }
   };
 
+  /**
+   * Nothing is sent when a structural change names a block that is gone (a person removed elsewhere, a
+   * `ref` whose `add_block` was skipped): the rest of the plan would be applied without it, for
+   * instance a link removed and never recreated. The unresolvable changes are reported and given up;
+   * what could be resolved stays waiting.
+   */
+  const refuseUnresolved = (unresolved: readonly StructuralOp[], quiet: boolean): TracfinResult<TracfinDraft> => {
+    const error: TracfinApiError = { kind: 'bad_request', status: null, message: 'unresolved_change' };
+    if (quiet) return { ok: false, error };
+    const gone = new Set(unresolved);
+    setFailedChanges(failedStructural.current.filter((op) => !gone.has(op)));
+    setFailure({ kind: 'unresolved', count: unresolved.length });
+    setStatus(failedStructural.current.length > 0 || statusRef.current === 'failed' ? 'failed' : 'idle');
+    return { ok: false, error };
+  };
+
+  /**
+   * A new occurrence emptied while its PATCH was in flight is only worth something if that PATCH lands
+   * (`settle` re-addresses it to the created occurrence). After a failure there is nothing to clear.
+   */
+  const dropUnsavedClears = () => {
+    store.removeWhere((edit) => edit.op.type === 'clear' && !edit.valueId && inFlight.current.has(edit.key));
+    markBase();
+  };
+
   /** One PATCH at a time: a call waits for the one in flight and then looks at what is pending. */
-  const enqueue = (structural: StructuralOp[], auto = false, quiet = false): Promise<TracfinResult<TracfinDraft>> => {
-    const result = tail.current.then(() => run(structural, auto, quiet));
+  const enqueue = (
+    structural: readonly StructuralOp[],
+    mode: SaveMode = 'save',
+  ): Promise<TracfinResult<TracfinDraft>> => {
+    const result = tail.current.then(() => run(structural, mode));
     tail.current = result.catch(() => undefined);
     return result;
   };
 
   const flush = () => enqueue([]);
-  const autoFlush = () => enqueue([], true);
+  const autoFlush = () => enqueue([], 'auto');
 
   // ---- reading -----------------------------------------------------------------------------------
 
@@ -379,15 +484,17 @@ export function useTracfinDraftEditor(
     draft: currentDraft,
     catalogIndex,
     pendingEdits: unsavedEdits,
-    pendingCount: unsavedEdits.length,
-    hasPendingChanges: unsavedEdits.length > 0,
-    hasUnsavedEdits: () => store.hasUnsaved(),
+    pendingCount: unsavedEdits.length + failedChanges.length,
+    hasPendingChanges: unsavedEdits.length > 0 || failedChanges.length > 0,
+    hasUnsavedEdits: () => store.hasUnsaved() || failedStructural.current.length > 0,
+    failedChanges,
+    discardFailedChanges,
     status,
     failure,
     comparison,
     flush,
     autoFlush,
-    retry: () => enqueue(failedStructural.current),
+    retry: () => enqueue([]),
 
     blockAt: (address) => resolveAddress(currentDraft.document.root, address),
     occurrences: ({ address, fieldId, parentValueId = null, single }) => {
@@ -432,7 +539,7 @@ export function useTracfinDraftEditor(
 
     addBlock: (parent, catalogId) => enqueue([{ type: 'add_block', parent, catalogId }]),
     removeBlock: (blockId) => enqueue([{ type: 'remove_block', blockId }]),
-    applyStructural: (ops, options) => enqueue([...ops], false, options?.quiet ?? false),
+    applyStructural: (ops, options) => enqueue([...ops], options?.quiet ? 'quiet' : 'save'),
     setSelection: (block, selection) => enqueue([{ type: 'set_selection', block, selection }]),
     refreshConfiguration: () => enqueue([{ type: 'refresh_configuration' }]),
 
@@ -449,15 +556,16 @@ export function useTracfinDraftEditor(
       }
       store.replaceAll(next);
       store.rebase(server.document.root);
-      store.baseRevision = server.revision;
+      store.baseRevision = store.hasUnsaved() ? server.revision : null;
       setComparison(null);
       setFailure(null);
       setStatus('idle');
-      return flush();
+      // The field edits only: the failed structural changes were made on a draft that has moved; they stay listed.
+      return enqueue([], 'edits');
     },
     discardAll: () => {
       store.clear();
-      failedStructural.current = [];
+      setFailedChanges([]);
       setComparison(null);
       setFailure(null);
       setStatus('idle');

@@ -584,23 +584,24 @@ describe('a refused apply is the caller’s to handle (quiet applyStructural)', 
   ];
 
   it('keeps an earlier failure and its retry when the apply is refused', async () => {
-    const { user, backend } = await setup();
+    const { backend } = await setup();
     // A structural change fails (5xx): banner state and retry are on offer.
     backend.failures = [{ kind: 'server', status: 500, message: 'boom' }];
     await act(async () => {
       await editor.addBlock(blockAddress(backend.draft.document.root.id), '/ds/context');
     });
-    expect(editorState()).toBe('status:failed pending:0 failure:unavailable');
+    // The failed change counts as unsaved.
+    expect(editorState()).toBe('status:failed pending:1 failure:unavailable');
 
-    // The prefill runs, then the choices are refused (the sources changed under the proposals).
-    const dialog = within(await propose(user));
-    await dialog.findByText('2 proposals without conflict');
-    backend.prefill = scriptedPrefill([]);
-    await user.click(dialog.getByRole('button', { name: 'Apply the 2 proposals' }));
-    expect(await dialog.findByText(/The server refused these choices/)).toBeTruthy();
-
-    // The earlier failure was not cleared by someone else's refusal ...
-    expect(editorState()).toBe('status:failed pending:0 failure:unavailable');
+    // The choices are refused (the sources changed under the proposals). A quiet apply sends only its
+    // own changes: the failed one is neither resent with it nor cleared by its refusal.
+    let result: Awaited<ReturnType<typeof editor.applyStructural>> | undefined;
+    await act(async () => {
+      result = await editor.applyStructural(bogus(), { quiet: true });
+    });
+    expect(result).toMatchObject({ ok: false, error: { kind: 'bad_request' } });
+    expect(backend.lastBody.changes.map((change) => change.action)).toEqual(['apply_prefill']);
+    expect(editorState()).toBe('status:failed pending:1 failure:unavailable');
     // ... and its retry still works.
     const sent = backend.bodies.length;
     await act(async () => {

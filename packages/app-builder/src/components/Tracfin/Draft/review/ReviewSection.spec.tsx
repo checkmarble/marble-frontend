@@ -493,6 +493,32 @@ describe('(f) an export whose answer is lost', () => {
   });
 });
 
+describe('after a lost answer that could not be judged', () => {
+  const timeout: TracfinApiError = { kind: 'timeout', status: 408, message: 'request timed out' };
+
+  it('judges again when the draft is read again, and keeps the doubt until it can', async () => {
+    const { user, backend } = await openReview();
+    mocks.exportDraft.mockResolvedValue(failure(timeout));
+    mocks.getDraft.mockResolvedValue(failure({ kind: 'forbidden', status: 403, message: 'no access' }));
+    await user.click(exportButton());
+    const notice = await alertWith('could not be read again');
+
+    // Still unreadable: the notice stays, nothing is retried, nothing is claimed.
+    await user.click(within(notice).getByRole('button', { name: 'Read the draft again' }));
+    const still = await alertWith('could not be read again');
+    expect(still.textContent).toContain('It is not known whether the export happened');
+    expect(mocks.exportDraft).toHaveBeenCalledTimes(1);
+
+    // Readable again, and the draft shows the export of the revision that was asked for.
+    const exported = exportOf({ id: 'export-late', draft_revision: backend.draft.revision });
+    mocks.getDraft.mockImplementation(async () => ok({ ...structuredClone(backend.draft), last_export: exported }));
+    await user.click(within(still).getByRole('button', { name: 'Read the draft again' }));
+    expect(await screen.findByText(/the draft does hold an export of revision/)).toBeTruthy();
+    expect(screen.queryByText('It is not known whether the export happened')).toBeNull();
+    expect(mocks.exportDraft).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('other export outcomes', () => {
   it('on a 409 says the revision changed and nothing was exported', async () => {
     const { user } = await openReview();

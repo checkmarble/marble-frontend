@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { isDiffEmpty } from './configuration-diff';
+import { isDiffEmpty, type TracfinConfigurationKeyDiff } from './configuration-diff';
 import type { TracfinConflictComparison } from './useTracfinConfigurationEditor';
 
 type ConflictPanelProps = {
@@ -20,6 +20,19 @@ function IdList({ title, ids }: { title: string; ids: string[] }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+function KeyDiffLists({ diff }: { diff: TracfinConfigurationKeyDiff }) {
+  const { t } = useTranslation(['tracfin']);
+  return (
+    <>
+      <IdList title={t('tracfin:settings.conflict.changed')} ids={diff.changed} />
+      <IdList title={t('tracfin:settings.conflict.local_only')} ids={diff.localOnly} />
+      <IdList title={t('tracfin:settings.conflict.server_only')} ids={diff.serverOnly} />
+      <IdList title={t('tracfin:settings.conflict.deleted_on_server')} ids={diff.deletedOnServer} />
+      <IdList title={t('tracfin:settings.conflict.deleted_locally')} ids={diff.deletedLocally} />
+    </>
   );
 }
 
@@ -49,15 +62,11 @@ export function ConflictPanel({ comparison, onKeepLocalEdits, onTakeServerVersio
         <div className="grid gap-md md:grid-cols-2">
           <div className="flex flex-col gap-sm">
             <p className="text-s font-semibold">{t('tracfin:settings.conflict.mappings')}</p>
-            <IdList title={t('tracfin:settings.conflict.changed')} ids={diff.mappings.changed} />
-            <IdList title={t('tracfin:settings.conflict.local_only')} ids={diff.mappings.localOnly} />
-            <IdList title={t('tracfin:settings.conflict.server_only')} ids={diff.mappings.serverOnly} />
+            <KeyDiffLists diff={diff.mappings} />
           </div>
           <div className="flex flex-col gap-sm">
             <p className="text-s font-semibold">{t('tracfin:settings.conflict.settings')}</p>
-            <IdList title={t('tracfin:settings.conflict.changed')} ids={diff.settings.changed} />
-            <IdList title={t('tracfin:settings.conflict.local_only')} ids={diff.settings.localOnly} />
-            <IdList title={t('tracfin:settings.conflict.server_only')} ids={diff.settings.serverOnly} />
+            <KeyDiffLists diff={diff.settings} />
           </div>
         </div>
       )}
@@ -71,6 +80,9 @@ export function ConflictPanel({ comparison, onKeepLocalEdits, onTakeServerVersio
         </Button>
       </div>
       <p className="text-grey-secondary text-xs">{t('tracfin:settings.conflict.keep_local_help')}</p>
+      {diff.mappings.deletedOnServer.length > 0 || diff.settings.deletedOnServer.length > 0 ? (
+        <p className="text-grey-secondary text-xs">{t('tracfin:settings.conflict.recreate_help')}</p>
+      ) : null}
     </section>
   );
 }

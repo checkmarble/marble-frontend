@@ -4,6 +4,7 @@ import { Button } from 'ui-design-system';
 import { ErrorBanner } from '../Settings/ErrorBanner';
 import { useTracfinDraftEditorContext } from './editor/TracfinDraftEditorContext';
 import { fieldLabel } from './fields/labels';
+import type { StructuralOp } from './model/build-patch';
 import { type ConflictItem, localStateOfEdit } from './model/conflict';
 import { type PendingEdit } from './model/pending-edits';
 import { sectionOfCatalogId } from './model/sections';
@@ -49,6 +50,62 @@ function EditList({ edits, actionLabel }: { edits: readonly PendingEdit[]; actio
         );
       })}
     </ul>
+  );
+}
+
+/** « Ajout d'un bloc (Personne physique) »...: what a structural change would do, in words. */
+function useOpLabel() {
+  const { t } = useTranslation(['tracfin']);
+  const { catalogIndex } = useTracfinDraftEditorContext();
+  return (op: StructuralOp): string => {
+    if (op.type === 'add_block') {
+      const field = catalogIndex.field(op.catalogId);
+      return t('tracfin:draft.failed_changes.op.add_block', { block: field ? fieldLabel(t, field) : op.catalogId });
+    }
+    return t(`tracfin:draft.failed_changes.op.${op.type}`);
+  };
+}
+
+function FailedChangesList({ changes }: { changes: readonly StructuralOp[] }) {
+  const { t } = useTranslation(['tracfin']);
+  const label = useOpLabel();
+  return (
+    <ul className="flex flex-col gap-xs" aria-label={t('tracfin:draft.failed_changes.list')}>
+      {changes.map((op, index) => (
+        <li key={index}>{label(op)}</li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Structural changes that failed and still wait. After a conflict they are listed with the comparison
+ * (they will not be re-applied); otherwise « Réessayer » sends them again. The analyst can give them up.
+ */
+function FailedChangesNotice({ withRetry }: { withRetry: boolean }) {
+  const { t } = useTranslation(['tracfin']);
+  const editor = useTracfinDraftEditorContext();
+  if (editor.failedChanges.length === 0) return null;
+  return (
+    <ErrorBanner>
+      <p className="font-semibold">{t('tracfin:draft.failed_changes.title', { count: editor.failedChanges.length })}</p>
+      <p>
+        {editor.status === 'conflict'
+          ? t('tracfin:draft.failed_changes.description_conflict')
+          : t('tracfin:draft.failed_changes.description')}
+      </p>
+      <FailedChangesList changes={editor.failedChanges} />
+      <div className="flex flex-wrap gap-sm">
+        {withRetry ? (
+          <Button variant="secondary" appearance="stroked" onClick={() => void editor.retry()}>
+            {t('tracfin:draft.errors.retry')}
+          </Button>
+        ) : null}
+        <Button variant="secondary" appearance="link" onClick={editor.discardFailedChanges}>
+          {t('tracfin:draft.failed_changes.discard')}
+        </Button>
+      </div>
+    </ErrorBanner>
   );
 }
 
@@ -151,6 +208,16 @@ export function DraftNotices() {
   return (
     <>
       {failure?.kind === 'conflict' ? <ConflictNotice /> : null}
+
+      {/* Their own banner carries « Réessayer » when no other banner does. */}
+      <FailedChangesNotice withRetry={failure === null || failure.kind === 'unresolved'} />
+
+      {failure?.kind === 'unresolved' ? (
+        <ErrorBanner>
+          <p className="font-semibold">{t('tracfin:draft.errors.unresolved.title')}</p>
+          <p>{t('tracfin:draft.errors.unresolved.description', { count: failure.count })}</p>
+        </ErrorBanner>
+      ) : null}
 
       {failure?.kind === 'invalid' ? (
         <ErrorBanner>

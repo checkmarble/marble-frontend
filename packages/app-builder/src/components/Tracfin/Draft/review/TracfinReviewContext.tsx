@@ -33,6 +33,8 @@ export type TracfinReview = {
   /** Saves the unsent edits, then exports the saved revision (never retried blindly after a lost answer). */
   exportDraft: () => Promise<void>;
   dismissExportOutcome: () => void;
+  /** After an `unknown` outcome: reads the draft again and judges the lost answer; the outcome stays `unknown` until it can. */
+  recheckExport: () => Promise<void>;
   /** Whether either of the two is running: the actions wait for each other. */
   busy: boolean;
 };
@@ -120,7 +122,7 @@ export function TracfinReviewProvider({ children }: { children: ReactNode }) {
       setExportStatus('checking');
       try {
         const reread = await refetchRef.current();
-        if (reread.isError || !reread.data) return { kind: 'unknown', cause };
+        if (reread.isError || !reread.data) return { kind: 'unknown', cause, revision, before };
         const verdict = judgeUncertainExport({ requestedRevision: revision, before, after: reread.data });
         switch (verdict.kind) {
           case 'exported':
@@ -133,7 +135,7 @@ export function TracfinReviewProvider({ children }: { children: ReactNode }) {
             return { kind: 'not_confirmed', cause, previous: reread.data.last_export ?? null };
         }
       } catch {
-        return { kind: 'unknown', cause };
+        return { kind: 'unknown', cause, revision, before };
       }
     },
     [],
@@ -183,6 +185,20 @@ export function TracfinReviewProvider({ children }: { children: ReactNode }) {
     }
   }, [exportMutation, invalidateDraft, settleUncertain]);
 
+  const outcomeRef = useRef(exportOutcome);
+  outcomeRef.current = exportOutcome;
+  const recheckExport = useCallback(async () => {
+    const current = outcomeRef.current;
+    if (running.current || current?.kind !== 'unknown') return;
+    running.current = true;
+    try {
+      setExportOutcome(await settleUncertain(current.cause, current.revision, current.before));
+    } finally {
+      running.current = false;
+      setExportStatus('idle');
+    }
+  }, [settleUncertain]);
+
   const revision = editor.draft.revision;
   const diagnostics = useMemo<readonly BlockDiagnostic[]>(
     () => [...outer, ...tagValidationDiagnostics(validation, revision)],
@@ -199,6 +215,7 @@ export function TracfinReviewProvider({ children }: { children: ReactNode }) {
     exportOutcome,
     exportDraft,
     dismissExportOutcome: () => setExportOutcome(null),
+    recheckExport,
     busy: validating || exportStatus !== 'idle',
   };
 

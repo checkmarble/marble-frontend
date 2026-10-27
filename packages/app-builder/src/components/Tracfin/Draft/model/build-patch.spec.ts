@@ -266,16 +266,39 @@ describe('planPatch: several structural changes in one PATCH', () => {
     });
   });
 
-  it('skips a change that names a ref nothing created, instead of sending a dangling block id', () => {
+  it('never sends a dangling block id: a change that names a ref nothing created is reported as unresolved', () => {
+    const orphan = { type: 'set_selection' as const, block: blockRef('nowhere'), selection };
     const plan = planPatch({
       draft: cloneDraft(),
       pending: [],
-      structural: [
-        { type: 'set_selection', block: blockRef('nowhere'), selection },
-        { type: 'remove_block', blockId: 'x' },
-      ],
+      structural: [orphan, { type: 'remove_block', blockId: 'x' }],
     })!;
     expect(plan.changes).toEqual([{ action: 'remove_block', block_id: 'x' }]);
+    // The caller must not send a plan with a hole in it.
+    expect(plan.unresolved).toEqual([orphan]);
+  });
+
+  it('reports the recreation of a link on a person that is gone, so the removal is not sent alone', () => {
+    const draft = cloneDraft();
+    const ops = [
+      { type: 'remove_block' as const, blockId: 'link-1' },
+      { type: 'add_block' as const, parent: blockAddress('person-gone'), catalogId: '/x/link', ref: 'link' },
+      { type: 'set_relation' as const, block: blockRef('link'), fieldId: '/x/id', relation: { block_id: 'owner-1' } },
+    ];
+    const plan = planPatch({ draft, pending: [], structural: ops })!;
+    // The add_block cannot be resolved, and neither can what hangs on it.
+    expect(plan.unresolved).toEqual([ops[1], ops[2]]);
+  });
+
+  it('has nothing unresolved when every block is found', () => {
+    const draft = cloneDraft();
+    const root = draft.document.root.id;
+    const plan = planPatch({
+      draft,
+      pending: [],
+      structural: [{ type: 'add_block', parent: blockAddress(root), catalogId: '/x/c', ref: 'c' }],
+    })!;
+    expect(plan.unresolved).toEqual([]);
   });
 
   it('keeps the pending field edits first, then the structural changes in the order given', () => {

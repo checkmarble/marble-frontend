@@ -51,8 +51,13 @@ export function pendingKey(target: EditTarget): string {
   return [addressKey(target.block), target.fieldId, target.parentValueId ?? '', valueRefKey(target)].join('|');
 }
 
-/** Sent by the next PATCH. */
-export const isSendable = (edit: PendingEdit): boolean => edit.op.type !== 'blank' && !edit.invalid && !edit.orphaned;
+/**
+ * Sent by the next PATCH. Emptying an occurrence that was never saved has nothing to clear on the
+ * server (`clear_field` without a `value_id` would be ambiguous): such an entry only lives while the
+ * PATCH that creates the occurrence is in flight, and `settle` re-addresses it to the created one.
+ */
+export const isSendable = (edit: PendingEdit): boolean =>
+  edit.op.type !== 'blank' && !edit.invalid && !edit.orphaned && !(edit.op.type === 'clear' && !edit.valueId);
 
 /** An unsaved change of the analyst: an open blank slot is not one. */
 export const isUnsaved = (edit: PendingEdit): boolean => edit.op.type !== 'blank';
@@ -101,12 +106,18 @@ export function planEdit({
   serverValue,
   invalid = false,
   confirm = false,
+  keep = false,
 }: {
   target: EditTarget;
   op: PendingOp;
   serverValue: TracfinValue | null;
   invalid?: boolean;
   confirm?: boolean;
+  /**
+   * The occurrence is part of the PATCH in flight, whose answer is not known yet: giving the saved value
+   * back (or emptying a new occurrence) is then a real change to send after it, not a no-op.
+   */
+  keep?: boolean;
 }): PendingEdit | null {
   const effectiveOp: PendingOp =
     op.type === 'set' && op.input.kind === 'text' && op.input.text === '' ? { type: 'clear' } : op;
@@ -124,11 +135,12 @@ export function planEdit({
     case 'blank':
       return target.valueId ? null : edit;
     case 'clear':
+      if (keep) return edit;
       if (!target.valueId) return null;
       if (serverValue?.kind === 'cleared' && !confirm) return null;
       return edit;
     case 'set':
-      if (!invalid && !confirm && serverValue && sameInput(serverValue, effectiveOp.input)) return null;
+      if (!keep && !invalid && !confirm && serverValue && sameInput(serverValue, effectiveOp.input)) return null;
       return edit;
   }
 }

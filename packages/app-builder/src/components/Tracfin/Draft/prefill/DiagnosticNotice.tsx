@@ -7,20 +7,8 @@ import type { BlockDiagnostic } from '../fields/block-diagnostics';
 import { FieldEditor } from '../fields/FieldEditor';
 import { fieldLabel } from '../fields/labels';
 import { blockAddress } from '../model/block-address';
-import { diagnosticTextKey } from '../review/diagnostic-text';
+import { useReviewDiagnosticText } from '../review/diagnostic-text';
 import { diagnosticFixOf } from './diagnostic-codes';
-
-/** The French explanation of a diagnostic code; an unknown code gets the generic sentence, never the raw message. */
-export function useDiagnosticText() {
-  const { t } = useTranslation(['tracfin']);
-  return (diagnostic: TracfinDiagnostic): string => {
-    // The prefill codes, and (Task 8) the validation codes a block shows inline: one text per code and layer.
-    const key = diagnosticTextKey(diagnostic);
-    return key
-      ? t(`tracfin:${key}`)
-      : t('tracfin:draft.prefill.diagnostics.UNKNOWN_DIAGNOSTIC', { code: diagnostic.code });
-  };
-}
 
 /** Opens the field of a diagnostic in the generic editor: a manual `set_field` on this draft only. */
 function FixField({ diagnostic }: { diagnostic: TracfinDiagnostic }) {
@@ -101,7 +89,8 @@ export function DiagnosticNotice({
 }) {
   const { t } = useTranslation(['tracfin']);
   const { catalogIndex } = useTracfinDraftEditorContext();
-  const text = useDiagnosticText()(diagnostic);
+  // A code with no French text shows the server's own message (see `useReviewDiagnosticText`).
+  const text = useReviewDiagnosticText()(diagnostic);
   const catalogField = diagnostic.field?.field_id ? catalogIndex.field(diagnostic.field.field_id) : undefined;
   return (
     <div role="note" data-diagnostic-code={diagnostic.code} className="flex min-w-0 flex-col gap-xs">

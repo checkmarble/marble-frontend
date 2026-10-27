@@ -8,7 +8,7 @@ import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContex
 import { TracfinBlockEditor } from '../fields/TracfinBlockEditor';
 import { blockAddress, childrenOfCatalogId } from '../model/block-address';
 import { firstText } from './document';
-import { planInvertRelation, relationTargetId } from './invert-relation';
+import { hasPendingEditsOnLink, planInvertRelation, relationTargetId } from './invert-relation';
 import { type PersonKind, type RelationBlockName, relationBlockNames, relationCatalogId } from './person-kinds';
 import { RemoveBlockButton } from './RemoveBlockButton';
 import { usePersonNameOf } from './usePersonNames';
@@ -64,6 +64,9 @@ function DeclaredRelationCard({
         catalogIndex: editor.catalogIndex,
       })
     : null;
+  // The plan is read from the saved values: it waits for the edits of the link to be saved first.
+  const unsaved = hasPendingEditsOnLink(link, editor.pendingEdits);
+  const saving = editor.status === 'saving';
 
   return (
     <section
@@ -77,7 +80,7 @@ function DeclaredRelationCard({
             variant="secondary"
             appearance="stroked"
             size="small"
-            disabled={!plan?.ok}
+            disabled={!plan?.ok || unsaved || saving}
             onClick={() => setInverting(true)}
           >
             {t('tracfin:draft.persons.relations.invert')}
@@ -85,6 +88,11 @@ function DeclaredRelationCard({
           <RemoveBlockButton blockId={link.id} title={title} />
         </div>
       </header>
+      {unsaved && plan?.ok ? (
+        <p className="text-grey-secondary text-xs" data-testid="relation-invert-hint">
+          {t('tracfin:draft.persons.relations.invert_save_first')}
+        </p>
+      ) : null}
       <TracfinBlockEditor address={blockAddress(link.id)} catalogId={link.catalog_id} />
       <ConfirmDialog
         open={inverting}

@@ -40,19 +40,25 @@ export function layerRows(validation: Pick<TracfinValidation, 'layers'> | null):
 }
 
 /**
- * The state of the internal checks as a whole: every layer but the official XSD one (which is never
- * run), the worst status wins. `passed` therefore means that nothing internal was left undone; it
+ * The state of the internal checks as a whole: the four internal layers (every layer but the official
+ * XSD one, which is never run) and any other layer the server reports; the worst status wins. A layer
+ * that is missing, or whose status this version does not know, was not seen to pass: it counts as
+ * `incomplete`. `passed` therefore means that all four internal layers were reported and passed; it
  * never says anything about the official validation or about ERMES.
  */
 export function internalChecksStatus(validation: Pick<TracfinValidation, 'layers'>): LayerStatus {
-  const statuses = Object.entries(validation.layers ?? {})
-    .filter(([id]) => id !== OFFICIAL_XSD_LAYER)
-    .map(([, layer]) => layer.status)
-    .filter(isLayerStatus);
+  const layers = validation.layers ?? {};
+  if (Object.keys(layers).length === 0) return 'unavailable';
+  const internal = REVIEW_LAYER_IDS.filter((id) => id !== OFFICIAL_XSD_LAYER);
+  const ids = new Set<string>([...internal, ...Object.keys(layers).filter((id) => id !== OFFICIAL_XSD_LAYER)]);
+  const statuses = [...ids].map((id): LayerStatus => {
+    const status = layers[id]?.status;
+    return status !== undefined && isLayerStatus(status) ? status : 'incomplete';
+  });
   for (const worst of ['failed', 'incomplete', 'unavailable'] as const) {
     if (statuses.includes(worst)) return worst;
   }
-  return statuses.length === 0 ? 'unavailable' : 'passed';
+  return 'passed';
 }
 
 /** The server reasons this screen knows how to say in French; the key is under `draft.review.layers.reasons`. */

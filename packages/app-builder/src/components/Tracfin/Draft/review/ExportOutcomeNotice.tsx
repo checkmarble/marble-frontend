@@ -1,7 +1,5 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
 import type { TracfinApiError } from '@app-builder/models/tracfin';
-import { tracfinKeys } from '@app-builder/queries/tracfin/keys';
-import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { ErrorBanner } from '../../Settings/ErrorBanner';
@@ -57,8 +55,6 @@ function RefusalNotice({ refusal, message }: { refusal: ExportRefusal | null; me
 export function ExportOutcomeNotice() {
   const { t } = useTranslation(['tracfin']);
   const review = useTracfinReview();
-  const editor = useTracfinDraftEditorContext();
-  const queryClient = useQueryClient();
   const causeText = useCauseText();
   const saveFailureText = useSaveFailureText();
   const outcome = review.exportOutcome;
@@ -136,10 +132,8 @@ export function ExportOutcomeNotice() {
             appearance="stroked"
             size="small"
             className="self-start"
-            onClick={() => {
-              review.dismissExportOutcome();
-              void queryClient.invalidateQueries({ queryKey: tracfinKeys.draft(editor.caseId) });
-            }}
+            disabled={review.busy}
+            onClick={() => void review.recheckExport()}
           >
             {t('tracfin:draft.review.outcome.reread')}
           </Button>

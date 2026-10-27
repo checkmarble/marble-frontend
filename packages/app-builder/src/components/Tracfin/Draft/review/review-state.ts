@@ -38,8 +38,12 @@ export type ExportOutcome =
   | { kind: 'not_confirmed'; cause: TracfinApiError; previous: TracfinExport | null }
   /** The answer was lost and the draft moved to another revision since. */
   | { kind: 'moved'; cause: TracfinApiError; revision: number }
-  /** The answer was lost and the draft could not be read either: nothing is known. */
-  | { kind: 'unknown'; cause: TracfinApiError }
+  /**
+   * The answer was lost and the draft could not be read either: nothing is known. It keeps what the
+   * judgement needs (the revision that was exported, `last_export` before) so that « Relire le
+   * brouillon » can judge again, and stays until a verdict exists.
+   */
+  | { kind: 'unknown'; cause: TracfinApiError; revision: number; before: TracfinExport | null }
   /** 422: the draft holds text XML cannot carry. */
   | { kind: 'refused'; refusal: ExportRefusal | null; message: string | null }
   /** 409: the revision changed under the export. */

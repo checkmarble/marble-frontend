@@ -172,7 +172,7 @@ export function useTracfinConfigurationEditor({
       setReloadFailed(false);
       try {
         const server = await reloadConfiguration();
-        setComparison({ server, diff: diffConfigurationStates(state, configurationToFormState(server)) });
+        setComparison({ server, diff: diffConfigurationStates(state, configurationToFormState(server), baseline) });
       } catch {
         setReloadFailed(true);
       } finally {
