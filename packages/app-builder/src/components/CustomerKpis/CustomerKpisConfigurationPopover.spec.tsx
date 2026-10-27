@@ -110,6 +110,32 @@ beforeAll(() => {
 });
 
 describe('CustomerKpisConfigurationPopover', () => {
+  it.each(['en', 'fr', 'ar'] as const)('renders the object ID as literal code text in %s', (locale) => {
+    const objectId = '<strong>customer & "1"</strong>';
+    const { container } = render(
+      <I18nextProvider i18n={i18next.cloneInstance({ lng: locale })}>
+        <FormatContext.Provider value={{ locale, timezone: 'UTC' }}>
+          <Tooltip.Provider>
+            <CustomerKpisConfigurationPopover
+              objectId={objectId}
+              objectType="customers"
+              aggregate={null}
+              onClose={vi.fn()}
+            />
+          </Tooltip.Provider>
+        </FormatContext.Provider>
+      </I18nextProvider>,
+    );
+
+    const code = container.querySelector('code');
+    expect(code?.textContent).toBe(objectId);
+    expect(code?.childElementCount).toBe(0);
+    expect(code?.parentElement?.textContent).toContain(`customers = ${objectId}`);
+    if (locale === 'ar') {
+      expect(code?.closest('bdi')?.getAttribute('dir')).toBe('ltr');
+    }
+  });
+
   it('saves Count without a field selection and restores the field selector for other functions', async () => {
     const aggregation = createCustomerKpiAggregation();
     setCustomerKpiNavigationOption(aggregation, navigationOption);

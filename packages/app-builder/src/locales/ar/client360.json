@@ -57,7 +57,7 @@
   "customer_kpis.actions.create": "إنشاء مؤشر",
   "customer_kpis.card.add_description": "أضف مؤشرًا لمتابعة نشاط هذا العميل بشكل أفضل",
   "customer_kpis.card.empty_description": "لم يتم إعداد أي مؤشرات بعد",
-  "customer_kpis.configuration.customer_scope.label": "لـ <Scope>{{objectType}} = <code>{{objectId}}</code></Scope>",
+  "customer_kpis.configuration.customer_scope.label": "لـ <Scope>{{objectType}} = <code/></Scope>",
   "customer_kpis.configuration.customer_scope.tooltip": "يُحسب المؤشر باستخدام بيانات هذا العميل",
   "customer_kpis.configuration.title": "إعداد المؤشر",
   "customer_kpis.form.aggregation.label": "احسب",

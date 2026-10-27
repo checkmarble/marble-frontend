@@ -279,11 +279,13 @@ function CustomerKpisConfigurationForm({
                 <Trans
                   t={t}
                   i18nKey="client360:customer_kpis.configuration.customer_scope.label"
-                  values={{ objectId, objectType }}
+                  values={{ objectType }}
                   components={{
                     Scope: <bdi dir="ltr" />,
                     code: (
-                      <code className="rounded-sm border border-grey-border bg-surface-card p-xs font-mono text-2xs" />
+                      <code className="rounded-sm border border-grey-border bg-surface-card p-xs font-mono text-2xs">
+                        {objectId}
+                      </code>
                     ),
                   }}
                 />
