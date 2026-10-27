@@ -3,6 +3,7 @@ import { isTracfinRequestError, unwrapTracfinResult } from '@app-builder/models/
 import { exportTracfinDraftFn } from '@app-builder/server-fns/tracfin';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+import { cancelTracfinDraftReads } from './draft-cache';
 import { tracfinKeys } from './keys';
 
 /**
@@ -19,6 +20,7 @@ export const useTracfinExportMutation = (caseId: string) => {
     mutationKey: ['tracfin', 'case', caseId, 'export'],
     mutationFn: async (body: TracfinRevisionInput) =>
       unwrapTracfinResult(await exportDraft({ data: { caseId, body } })),
+    onMutate: () => cancelTracfinDraftReads(queryClient, caseId),
     onSuccess: (tracfinExport) => {
       queryClient.setQueryData<TracfinDraft | null>(tracfinKeys.draft(caseId), (draft) =>
         draft ? { ...draft, last_export: tracfinExport } : draft,

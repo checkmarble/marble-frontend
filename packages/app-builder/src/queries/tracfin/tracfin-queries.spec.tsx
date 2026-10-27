@@ -1,6 +1,8 @@
+import { getContext as getAppQueryContext } from '@app-builder/integrations/tanstack-query/root-provider';
 import {
   type TracfinApiError,
   type TracfinDraft,
+  TracfinRequestError,
   type TracfinResult,
   type TracfinSelection,
 } from '@app-builder/models/tracfin';
@@ -15,17 +17,21 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTracfinCreateDraftMutation } from './create-draft';
+import { newerTracfinDraft } from './draft-cache';
 import { useTracfinExportMutation } from './export-draft';
 import { useTracfinCatalogQuery } from './get-catalog';
 import { useTracfinConfigurationQuery } from './get-configuration';
+import { useTracfinContextQuery } from './get-context';
 import { useTracfinDraftQuery } from './get-draft';
 import { tracfinKeys } from './keys';
 import { useTracfinNavigationQuery } from './navigate';
 import { useTracfinPatchDraftMutation } from './patch-draft';
+import { shouldRetryTracfinQuery } from './retry';
 
 const mocks = vi.hoisted(() => ({
   getCatalog: vi.fn(),
   getConfiguration: vi.fn(),
+  getContext: vi.fn(),
   getDraft: vi.fn(),
   createDraft: vi.fn(),
   patchDraft: vi.fn(),
@@ -36,6 +42,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@app-builder/server-fns/tracfin', () => ({
   getTracfinCatalogFn: mocks.getCatalog,
   getTracfinConfigurationFn: mocks.getConfiguration,
+  getTracfinContextFn: mocks.getContext,
   getTracfinDraftFn: mocks.getDraft,
   createTracfinDraftFn: mocks.createDraft,
   patchTracfinDraftFn: mocks.patchDraft,
@@ -270,5 +277,192 @@ describe('useTracfinNavigationQuery', () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toMatchObject({ error: { kind: 'unprocessable' } });
+  });
+});
+
+describe('retry policy', () => {
+  const selection: TracfinSelection = { mapping_id: 'm', root: { id: 'root', table: 'users', record_id: 'u1' } };
+  const queries = [
+    ['catalog', mocks.getCatalog, () => useTracfinCatalogQuery()],
+    ['configuration', mocks.getConfiguration, () => useTracfinConfigurationQuery()],
+    ['context', mocks.getContext, () => useTracfinContextQuery(caseId)],
+    ['draft', mocks.getDraft, () => useTracfinDraftQuery(caseId)],
+    ['navigation', mocks.navigate, () => useTracfinNavigationQuery(caseId, selection, 'employer')],
+  ] as const;
+
+  describe.each(queries)('%s query', (_name, serverFn, useQueryUnderTest) => {
+    // The application default client (3 retries, 1 s backoff), not a test client with retries disabled.
+    beforeEach(() => {
+      queryClient = getAppQueryContext().queryClient;
+    });
+
+    it.each([
+      ['bad_request', 400],
+      ['forbidden', 403],
+      ['unprocessable', 422],
+      ['too_large', 413],
+    ] as const)('does not retry a %s (%i): it surfaces after one call', async (kind, status) => {
+      serverFn.mockResolvedValue(failed({ kind, status, message: 'refused' }));
+      const { result } = renderHook(() => useQueryUnderTest(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(serverFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not retry an error that is not a TRACFIN request error', async () => {
+      serverFn.mockRejectedValue(new Error('unexpected'));
+      const { result } = renderHook(() => useQueryUnderTest(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(serverFn).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('transient failures', () => {
+    beforeEach(() => {
+      // Same default retry policy as the application, without its one second backoff.
+      queryClient = new QueryClient({ defaultOptions: { queries: { retryDelay: 0 } } });
+    });
+
+    it.each(['timeout', 'server', 'network'] as const)('retries a %s and recovers', async (kind) => {
+      mocks.getDraft
+        .mockResolvedValueOnce(failed({ kind, status: kind === 'network' ? null : 503 }))
+        .mockResolvedValueOnce(ok(tracfinDraftFixture));
+      const { result } = renderHook(() => useTracfinDraftQuery(caseId), { wrapper });
+
+      await waitFor(() => expect(result.current.data).toEqual(tracfinDraftFixture));
+      expect(mocks.getDraft).toHaveBeenCalledTimes(2);
+    });
+
+    it('gives up after two retries', async () => {
+      mocks.getDraft.mockResolvedValue(failed({ kind: 'server', status: 500 }));
+      const { result } = renderHook(() => useTracfinDraftQuery(caseId), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(mocks.getDraft).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  it('shouldRetryTracfinQuery retries only transient kinds, at most twice', () => {
+    const error = (kind: TracfinApiError['kind']) => new TracfinRequestError({ kind, status: null, message: null });
+    for (const kind of ['timeout', 'server', 'network'] as const) {
+      expect(shouldRetryTracfinQuery(0, error(kind))).toBe(true);
+      expect(shouldRetryTracfinQuery(1, error(kind))).toBe(true);
+      expect(shouldRetryTracfinQuery(2, error(kind))).toBe(false);
+    }
+    for (const kind of ['bad_request', 'forbidden', 'not_found', 'conflict', 'too_large', 'unprocessable'] as const) {
+      expect(shouldRetryTracfinQuery(0, error(kind))).toBe(false);
+    }
+    expect(shouldRetryTracfinQuery(0, new Error('boom'))).toBe(false);
+  });
+});
+
+describe('a stale read cannot overwrite a newer draft', () => {
+  const draftAt = (revision: number): TracfinDraft => ({ ...tracfinDraftFixture, revision });
+  const deferred = <T,>() => {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((r) => {
+      resolve = r;
+    });
+    return { promise, resolve };
+  };
+  const flush = () => act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+  const patchBody = {
+    expected_revision: 3,
+    changes: [{ action: 'refresh_configuration' as const }],
+  };
+
+  it('does not write the result of a patch that is older than the cached draft', async () => {
+    queryClient.setQueryData(tracfinKeys.draft(caseId), draftAt(5));
+    mocks.patchDraft.mockResolvedValue(ok(draftAt(4)));
+    const { result } = renderHook(() => useTracfinPatchDraftMutation(caseId), { wrapper });
+
+    const returned = await act(() => result.current.mutateAsync(patchBody));
+
+    expect(returned.revision).toBe(4);
+    expect(queryClient.getQueryData<TracfinDraft>(tracfinKeys.draft(caseId))?.revision).toBe(5);
+  });
+
+  it('cancels a draft read in flight when a patch starts', async () => {
+    const read = deferred<TracfinResult<TracfinDraft>>();
+    mocks.getDraft.mockReturnValue(read.promise);
+    renderHook(() => useTracfinDraftQuery(caseId), { wrapper });
+    await waitFor(() => expect(mocks.getDraft).toHaveBeenCalledTimes(1));
+    mocks.patchDraft.mockResolvedValue(ok(draftAt(4)));
+    const { result } = renderHook(() => useTracfinPatchDraftMutation(caseId), { wrapper });
+
+    await act(() => result.current.mutateAsync(patchBody));
+    // The read was stopped by the patch, not merely outvoted later.
+    expect(queryClient.isFetching({ queryKey: tracfinKeys.draft(caseId) })).toBe(0);
+    read.resolve(ok(draftAt(3)));
+    await flush();
+
+    expect(queryClient.getQueryData<TracfinDraft>(tracfinKeys.draft(caseId))?.revision).toBe(4);
+  });
+
+  it('keeps the patch result when a read that started during the patch answers with the older draft', async () => {
+    queryClient.setQueryData(tracfinKeys.draft(caseId), draftAt(3));
+    const patch = deferred<TracfinResult<TracfinDraft>>();
+    const read = deferred<TracfinResult<TracfinDraft>>();
+    mocks.patchDraft.mockReturnValue(patch.promise);
+    mocks.getDraft.mockReturnValue(read.promise);
+    renderHook(() => useTracfinDraftQuery(caseId), { wrapper });
+    const { result } = renderHook(() => useTracfinPatchDraftMutation(caseId), { wrapper });
+
+    let saved!: Promise<TracfinDraft>;
+    act(() => {
+      saved = result.current.mutateAsync(patchBody);
+    });
+    await waitFor(() => expect(result.current.isPending).toBe(true));
+    // A refetch (window focus, for instance) starts while the patch is running, then the patch answers first.
+    act(() => {
+      void queryClient.refetchQueries({ queryKey: tracfinKeys.draft(caseId) });
+    });
+    await waitFor(() => expect(mocks.getDraft).toHaveBeenCalled());
+    patch.resolve(ok(draftAt(4)));
+    await act(() => saved);
+    read.resolve(ok(draftAt(3)));
+    await flush();
+
+    expect(queryClient.getQueryData<TracfinDraft>(tracfinKeys.draft(caseId))?.revision).toBe(4);
+  });
+
+  it('keeps a draft that is being created when a read of "no draft" is still in flight', async () => {
+    const read = deferred<TracfinResult<TracfinDraft>>();
+    mocks.getDraft.mockReturnValue(read.promise);
+    renderHook(() => useTracfinDraftQuery(caseId), { wrapper });
+    await waitFor(() => expect(mocks.getDraft).toHaveBeenCalledTimes(1));
+    mocks.createDraft.mockResolvedValue(ok(draftAt(1)));
+    const { result } = renderHook(() => useTracfinCreateDraftMutation(caseId), { wrapper });
+
+    await act(() => result.current.mutateAsync({ declarant_is_actor: true }));
+    read.resolve(failed({ kind: 'not_found', status: 404 }));
+    await flush();
+
+    expect(queryClient.getQueryData<TracfinDraft>(tracfinKeys.draft(caseId))?.revision).toBe(1);
+  });
+
+  it('newerTracfinDraft keeps the cached draft unless the fetched one is not behind it', () => {
+    const withExport = (at: string): TracfinDraft => ({
+      ...draftAt(3),
+      last_export: { ...tracfinExportFixture, created_at: at },
+    });
+    expect(newerTracfinDraft(draftAt(4), draftAt(3))?.revision).toBe(4);
+    expect(newerTracfinDraft(draftAt(3), draftAt(4))?.revision).toBe(4);
+    expect(newerTracfinDraft(draftAt(3), draftAt(3))?.revision).toBe(3);
+    expect(newerTracfinDraft(null, draftAt(1))?.revision).toBe(1);
+    expect(newerTracfinDraft(null, null)).toBeNull();
+    expect(newerTracfinDraft(null, undefined)).toBeNull();
+    expect(newerTracfinDraft(draftAt(1), undefined)?.revision).toBe(1);
+    // Same revision: only a later export is newer.
+    expect(newerTracfinDraft(draftAt(3), withExport('2026-10-27T10:00:00Z'))?.last_export).toBeDefined();
+    expect(
+      newerTracfinDraft(withExport('2026-10-27T09:00:00Z'), withExport('2026-10-27T10:00:00Z'))?.last_export
+        ?.created_at,
+    ).toBe('2026-10-27T10:00:00Z');
+    expect(
+      newerTracfinDraft(withExport('2026-10-27T11:00:00Z'), withExport('2026-10-27T10:00:00Z'))?.last_export
+        ?.created_at,
+    ).toBe('2026-10-27T11:00:00Z');
   });
 });

@@ -3,7 +3,7 @@ import { unwrapTracfinResult } from '@app-builder/models/tracfin';
 import { createTracfinDraftFn } from '@app-builder/server-fns/tracfin';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-import { tracfinKeys } from './keys';
+import { cancelTracfinDraftReads, writeTracfinDraft } from './draft-cache';
 
 export const useTracfinCreateDraftMutation = (caseId: string) => {
   const createDraft = useServerFn(createTracfinDraftFn);
@@ -13,8 +13,8 @@ export const useTracfinCreateDraftMutation = (caseId: string) => {
     mutationKey: ['tracfin', 'case', caseId, 'create-draft'],
     mutationFn: async (body: TracfinCreateDraftInput) =>
       unwrapTracfinResult(await createDraft({ data: { caseId, body } })),
-    onSuccess: (draft) => {
-      queryClient.setQueryData(tracfinKeys.draft(caseId), draft);
-    },
+    // A read of "no draft yet" still in flight must not erase the draft that is being created.
+    onMutate: () => cancelTracfinDraftReads(queryClient, caseId),
+    onSuccess: (draft) => writeTracfinDraft(queryClient, caseId, draft),
   });
 };

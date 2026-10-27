@@ -4,6 +4,7 @@ import { navigateTracfinFn } from '@app-builder/server-fns/tracfin';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { tracfinKeys } from './keys';
+import { shouldRetryTracfinQuery } from './retry';
 
 /**
  * Candidate records for one step of a selection, a page at a time. `data.pages` keeps the pages as
@@ -45,5 +46,6 @@ export const useTracfinNavigationQuery = (
     // Cursors belong to the sequence of pages that produced them.
     refetchOnWindowFocus: false,
     enabled: options?.enabled ?? true,
+    retry: shouldRetryTracfinQuery,
   });
 };
