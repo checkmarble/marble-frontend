@@ -44,7 +44,7 @@ export const aggregationFiltersWithTypes: Record<AggregationFilterOperator, Prim
   '<=': ['Int', 'Float', 'Timestamp'],
   '>': ['Int', 'Float', 'Timestamp'],
   '>=': ['Int', 'Float', 'Timestamp'],
-  IsMultipleOf: ['Int'],
+  IsMultipleOf: ['Int', 'Float'],
   FuzzyMatch: ['String'],
   IsInList: ['String'],
   IsNotInList: ['String'],

@@ -18,7 +18,7 @@ import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { getResolvedEnumValues } from '@app-builder/models/enum-values';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import {
-  aggregatorOperators,
+  type AggregatorOperator,
   isAggregatorOperator,
   supportedAggregatorsOperatorsTypes,
 } from '@app-builder/models/modale-operators';
@@ -66,6 +66,8 @@ import {
   setCustomerKpiNavigationOption,
 } from './customer-kpis-ast';
 import { LinkedTablesSelect } from './LinkedTablesSelect';
+
+const customerKpiOperators: AggregatorOperator[] = ['SUM', 'AVG', 'COUNT', 'COUNT_DISTINCT', 'MAX'];
 
 type CustomerKpisConfigurationPopoverProps = {
   objectId: string;
@@ -190,7 +192,7 @@ function CustomerKpisConfigurationForm({
   const tableFields = table?.fields ?? [];
   const currentNavigationOption = getCustomerKpiNavigationOption(node, objectType, dataModel);
 
-  const availableOperators = aggregatorOperators.filter((operator) => {
+  const availableOperators = customerKpiOperators.filter((operator) => {
     const supportedTypeInfos = supportedAggregatorsOperatorsTypes[operator];
     return tableFields.some((field) => supportedTypeInfos.includes(field.dataType as PrimitiveTypes));
   });
@@ -202,7 +204,12 @@ function CustomerKpisConfigurationForm({
       : [];
   const hasEmptyTimestampFilter = hasEmptyTimestampExtractFilter(userFilterModels);
   const canSubmit =
-    isCustomerKpiAggregationComplete(node, objectType, dataModel) && !!timeSlice && !hasEmptyTimestampFilter;
+    isCustomerKpiAggregationComplete(node, objectType, dataModel) &&
+    typeof functionName === 'string' &&
+    isAggregatorOperator(functionName) &&
+    customerKpiOperators.includes(functionName) &&
+    !!timeSlice &&
+    !hasEmptyTimestampFilter;
 
   function updateNode(update: (currentNode: AggregationAstNode) => void) {
     nodeSharp.update(() => {
@@ -244,7 +251,7 @@ function CustomerKpisConfigurationForm({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const expression = nodeSharp.value.node as AggregationAstNode;
-    if (!isCustomerKpiAggregationComplete(expression, objectType, dataModel) || hasEmptyTimestampFilter) return;
+    if (!canSubmit) return;
 
     try {
       const payload = {
@@ -319,7 +326,7 @@ function CustomerKpisConfigurationForm({
                     value: operator,
                   }))}
                   onChange={(operator) => {
-                    if (!isAggregatorOperator(operator)) return;
+                    if (!isAggregatorOperator(operator) || !customerKpiOperators.includes(operator)) return;
                     updateNode((currentNode) => {
                       currentNode.namedChildren.aggregator.constant = operator;
                       const selectedField = tableFields.find(
@@ -461,20 +468,20 @@ function CustomerKpisConfigurationForm({
                           value={typeof selectedFieldName === 'string' ? selectedFieldName : ''}
                           fields={availableFilterFields}
                           onChange={(value) => {
-                            const nextFilter: AggregationFilterEditModel =
-                              filterModel.type === 'timestampExtract'
-                                ? { ...filterModel, fieldName: value }
-                                : {
-                                    type: 'standard',
-                                    filter: NewAggregatorFilterAstNode({
-                                      namedChildren: {
-                                        tableName: filterModel.filter.namedChildren.tableName,
-                                        fieldName: NewConstantAstNode({ constant: value }),
-                                        operator: NewConstantAstNode({ constant: null }),
-                                        value: NewUndefinedAstNode(),
-                                      },
-                                    }),
-                                  };
+                            const nextFilter: AggregationFilterEditModel = {
+                              type: 'standard',
+                              filter: NewAggregatorFilterAstNode({
+                                namedChildren: {
+                                  tableName:
+                                    filterModel.type === 'timestampExtract'
+                                      ? NewConstantAstNode({ constant: filterModel.tableName })
+                                      : filterModel.filter.namedChildren.tableName,
+                                  fieldName: NewConstantAstNode({ constant: value }),
+                                  operator: NewConstantAstNode({ constant: null }),
+                                  value: NewUndefinedAstNode(),
+                                },
+                              }),
+                            };
                             updateUserFilters(userFilterModels.with(index, nextFilter));
                           }}
                         />

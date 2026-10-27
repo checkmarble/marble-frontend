@@ -22,7 +22,7 @@ import {
   NewTimestampExtractFilterOptionsAstNode,
   type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
-import { adaptAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
+import { type AstNode, adaptAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
 import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { isConstant, NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess, NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
@@ -84,14 +84,28 @@ function createFilterValue(tableName: string, value: CustomerKpiFilterValue): Kn
 
 function isCompleteFilterValue(node: KnownOperandAstNode) {
   if (isDatabaseAccess(node)) {
-    return node.namedChildren.path.constant.length === 0 && !!node.namedChildren.fieldName.constant;
+    return !!node.namedChildren.fieldName.constant && !!node.namedChildren.tableName.constant;
   }
 
   if (isCustomListAccess(node)) {
     return !!node.namedChildren.customListId.constant;
   }
 
-  return isConstant(node) && Array.isArray(node.constant) && node.constant.length > 0;
+  if (isPayload(node)) return !!node.children[0]?.constant;
+
+  if (isConstant(node)) {
+    return node.constant !== null && (!Array.isArray(node.constant) || node.constant.length > 0);
+  }
+
+  return !containsUndefinedOperand(node);
+}
+
+function containsUndefinedOperand(node: AstNode): boolean {
+  return (
+    node.name === 'Undefined' ||
+    node.children.some(containsUndefinedOperand) ||
+    Object.values(node.namedChildren).some(containsUndefinedOperand)
+  );
 }
 
 function getFilterValue(node: KnownOperandAstNode): CustomerKpiFilterValue {

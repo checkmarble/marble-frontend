@@ -5,6 +5,9 @@ import {
   isFuzzyMatchFilterOptionsAstNode,
   isUnaryAggregationFilter,
 } from '@app-builder/models/astNode/aggregation';
+import { NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { describe, expect, it } from 'vitest';
 import {
   addCustomerKpiFilter,
@@ -147,6 +150,38 @@ describe('customer KPI aggregation AST', () => {
     setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
 
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
+  });
+
+  it('validates ordinary filter operands, including scalar constants and payload fields', () => {
+    const aggregation = createCustomerKpiAggregation();
+    aggregation.namedChildren.label.constant = 'Transactions';
+    setCustomerKpiNavigationOption(aggregation, navigationOption);
+    aggregation.namedChildren.fieldName.constant = 'id';
+    addCustomerKpiFilter(aggregation);
+    const filter = aggregation.namedChildren.filters.children[3];
+    if (!filter) throw new Error('Expected a user filter');
+    filter.namedChildren.fieldName.constant = 'status';
+    setCustomerKpiFilterOperator(filter, '=');
+    if (!isBinaryAggregationFilter(filter)) throw new Error('Expected a binary filter');
+
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
+    for (const value of ['completed', 0, false]) {
+      filter.namedChildren.value = NewConstantAstNode({ constant: value });
+      expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
+    }
+    filter.namedChildren.value = NewPayloadAstNode('status');
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
+    filter.namedChildren.value = NewConstantAstNode({ constant: [] });
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
+    filter.namedChildren.value = NewUndefinedAstNode();
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
+
+    setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
+    if (!isComplexAggregationFilter(filter) || !isFuzzyMatchFilterOptionsAstNode(filter.namedChildren.value)) {
+      throw new Error('Expected a fuzzy-match filter');
+    }
+    filter.namedChildren.value.namedChildren.value = NewConstantAstNode({ constant: 'completed' });
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
   });
 
   it('accepts complete multiple-of and timestamp-extract filters', () => {
