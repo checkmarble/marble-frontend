@@ -19,50 +19,7 @@ import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-export function CreateInboxUser({
-  inboxId,
-  users,
-  inboxUserRoles,
-  access,
-  isAutoAssignmentAvailable = false,
-}: {
-  inboxId: string;
-  users: User[];
-  inboxUserRoles: ReturnType<typeof getInboxUserRoles>;
-  access: FeatureAccessLevelDto;
-  isAutoAssignmentAvailable: boolean;
-}) {
-  const { t } = useTranslation(['common', 'settings']);
-  const [open, setOpen] = useState(false);
-
-  const handleOnSuccess = () => {
-    setOpen(false);
-  };
-
-  return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <Button>
-          <Icon icon="plus" className="size-5" />
-          {t('settings:inboxes.inbox_details.add_member')}
-        </Button>
-      </Modal.Trigger>
-      <Modal.Content onClick={(e) => e.stopPropagation()} aria-describedby={undefined}>
-        <CreateInboxUserContent
-          currentInboxId={inboxId}
-          users={users}
-          inboxUserRoles={inboxUserRoles}
-          access={access}
-          isAutoAssignmentAvailable={isAutoAssignmentAvailable}
-          onSuccess={handleOnSuccess}
-        />
-      </Modal.Content>
-    </Modal.Root>
-  );
-}
+import { MenuCommand, Modal, Switch } from 'ui-design-system';
 
 export function CreateInboxUserContent({
   currentInboxId,

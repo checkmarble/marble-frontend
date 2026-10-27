@@ -13,7 +13,6 @@ import {
   auditEventsPaginationSchema,
   createApiKeyPayloadSchema,
   createInboxPayloadSchema,
-  createInboxRedirectRouteOptions,
   createInboxUserPayloadSchema,
   createTagPayloadSchema,
   createUserPayloadSchema,
@@ -42,7 +41,6 @@ import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { isReadUserAvailable } from '@app-builder/services/feature-access';
 
 import { FORBIDDEN, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -212,14 +210,6 @@ export const updateExportedFieldFn = createServerFn({ method: 'POST' })
 
 // ---- Inboxes ----
 
-function getInboxRedirect(route: (typeof createInboxRedirectRouteOptions)[number], inboxId: string) {
-  const shortInboxId = fromUUIDtoSUUID(inboxId);
-  if (route === '/settings/inboxes') {
-    return redirect({ to: route, search: { inboxId: shortInboxId } });
-  }
-  return redirect({ to: route, params: { inboxId: shortInboxId } });
-}
-
 export const createInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createInboxPayloadSchema)
@@ -234,13 +224,8 @@ export const createInboxFn = createServerFn({ method: 'POST' })
         );
       }
 
-      if (data.redirectRoute) {
-        throw getInboxRedirect(data.redirectRoute, createdInbox.id);
-      }
-
       return { inboxId: createdInbox.id };
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
+    } catch {
       throw new Error('Failed to create inbox');
     }
   });
@@ -267,13 +252,8 @@ export const updateInboxFn = createServerFn({ method: 'POST' })
         data.id,
         pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
       );
-      if (data.redirectRoute) {
-        throw getInboxRedirect(data.redirectRoute, updatedInbox.id);
-      }
-
       return { inboxId: updatedInbox.id };
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
+    } catch {
       throw new Error('Failed to update inbox');
     }
   });

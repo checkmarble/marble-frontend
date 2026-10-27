@@ -1,30 +1,8 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxUser } from '@app-builder/models/inbox';
 import { useDeleteInboxUserMutation } from '@app-builder/queries/settings/inboxes/delete-inbox-user';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
-  const { t } = useTranslation(['common', 'settings']);
-  const [open, setOpen] = useState(false);
-
-  const handleOnSuccess = () => {
-    setOpen(false);
-  };
-
-  return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger className="cursor-pointer block hover:text-red-primary">
-        <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:inboxes.inbox_user.delete')} />
-      </Modal.Trigger>
-      <Modal.Content>
-        <DeleteInboxUserContent inboxUser={inboxUser} onSuccess={handleOnSuccess} />
-      </Modal.Content>
-    </Modal.Root>
-  );
-}
 
 export const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser; onSuccess: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
@@ -32,7 +10,7 @@ export const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: In
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteInboxUser = () => {
-    deleteInboxUserMutation.mutateAsync({ inboxId: inboxUser.inboxId, inboxUserId: inboxUser.id }).then(() => {
+    deleteInboxUserMutation.mutateAsync({ inboxUserId: inboxUser.id }).then(() => {
       onSuccess();
       revalidate();
     });
@@ -43,8 +21,6 @@ export const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: In
       <Modal.Title>{t('settings:inboxes.inbox_user.delete')}</Modal.Title>
       <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <div className="text-s flex flex-1 flex-col gap-md">
-          <input name="inboxUserId" value={inboxUser.id} type="hidden" />
-          <input name="inboxId" value={inboxUser.inboxId} type="hidden" />
           <p className="text-center">{t('settings:inboxes.inbox_user.delete.content')}</p>
         </div>
       </div>

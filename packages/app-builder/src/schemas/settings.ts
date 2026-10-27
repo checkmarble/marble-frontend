@@ -20,13 +20,10 @@ export type DeleteApiKeyPayload = z.infer<typeof deleteApiKeyPayloadSchema>;
 
 // ---- Inboxes ----
 
-export const createInboxRedirectRouteOptions = ['/cases/inboxes/$inboxId', '/settings/inboxes'] as const;
-
 export const createInboxPayloadSchema = z.object({
   name: z.string().min(1),
   escalationInboxId: z.union([z.uuid(), z.null()]).optional(),
   autoAssignEnabled: z.boolean().optional(),
-  redirectRoute: z.enum(createInboxRedirectRouteOptions).optional(),
 });
 export type CreateInboxPayload = z.infer<typeof createInboxPayloadSchema>;
 
@@ -40,7 +37,6 @@ export const updateInboxPayloadSchema = z.object({
   name: z.string().min(1),
   escalationInboxId: z.union([z.uuid(), z.null()]),
   autoAssignEnabled: z.boolean(),
-  redirectRoute: z.enum(createInboxRedirectRouteOptions).optional(),
 });
 export type UpdateInboxPayload = z.infer<typeof updateInboxPayloadSchema>;
 
@@ -53,7 +49,6 @@ export const createInboxUserPayloadSchema = z.object({
 export type CreateInboxUserPayload = z.infer<typeof createInboxUserPayloadSchema>;
 
 export const deleteInboxUserPayloadSchema = z.object({
-  inboxId: z.uuid(),
   inboxUserId: z.uuid(),
 });
 export type DeleteInboxUserPayload = z.infer<typeof deleteInboxUserPayloadSchema>;
@@ -66,7 +61,6 @@ export type EditInboxUserAutoAssignPayload = z.infer<typeof editInboxUserAutoAss
 
 export const updateInboxUserPayloadSchema = z.object({
   id: z.uuid(),
-  inboxId: z.uuid(),
   role: z.enum(['admin', 'member']),
   autoAssignable: z.boolean(),
 });

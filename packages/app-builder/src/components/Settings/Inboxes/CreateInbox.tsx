@@ -5,7 +5,6 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import {
   CreateInboxPayload,
   createInboxPayloadSchema,
-  createInboxRedirectRouteOptions,
   useCreateInboxMutation,
 } from '@app-builder/queries/settings/inboxes/create-inbox';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -14,16 +13,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, type ButtonV2Props, cn, HiddenInputs, Modal } from 'ui-design-system';
+import { Button, type ButtonV2Props, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
-  redirectRoutePath,
   onInboxCreated,
   className,
   size,
 }: {
-  redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
   onInboxCreated?: (inboxId: string) => void;
   className?: string;
   size?: ButtonV2Props['size'];
@@ -40,18 +37,16 @@ export function CreateInbox({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} onInboxCreated={onInboxCreated} />
+        <CreateInboxContent setOpen={setOpen} onInboxCreated={onInboxCreated} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
 export function CreateInboxContent({
-  redirectRoutePath,
   setOpen,
   onInboxCreated,
 }: {
-  redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
   setOpen: (open: boolean) => void;
   onInboxCreated?: (inboxId: string) => void;
 }) {
@@ -61,7 +56,7 @@ export function CreateInboxContent({
   const queryClient = useQueryClient();
 
   const form = useForm({
-    defaultValues: { name: '', redirectRoute: redirectRoutePath } as CreateInboxPayload,
+    defaultValues: { name: '' } as CreateInboxPayload,
     validators: {
       onSubmit: createInboxPayloadSchema,
     },
@@ -95,7 +90,6 @@ export function CreateInboxContent({
     >
       <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
       <div className="flex flex-col gap-lg p-lg">
-        <HiddenInputs redirectRoute={redirectRoutePath} />
         <form.Field name="name">
           {(field) => (
             <div className="group flex flex-col gap-sm">
