@@ -109,6 +109,7 @@ import { Route as AppBuilderCasesDetailSCaseIdIndexRouteImport } from './routes/
 import { Route as AppBuilderCasesDetailSCaseIdClientsRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients'
 import { Route as AppBuilderCasesDetailSCaseIdLinksRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/links'
 import { Route as AppBuilderCasesDetailSCaseIdPrincipalRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/principal'
+import { Route as AppBuilderCasesDetailSCaseIdTracfinRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/tracfin'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
@@ -687,6 +688,12 @@ const AppBuilderCasesDetailSCaseIdPrincipalRoute =
     path: '/principal',
     getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
   } as any)
+const AppBuilderCasesDetailSCaseIdTracfinRoute =
+  AppBuilderCasesDetailSCaseIdTracfinRouteImport.update({
+    id: '/tracfin',
+    path: '/tracfin',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
+  } as any)
 const AppBuilderDetectionScenariosScenarioIdIIterationIdRoute =
   AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport.update({
     id: '/i/$iterationId',
@@ -896,6 +903,7 @@ export interface FileRoutesByFullPath {
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
   '/cases/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  '/cases/s/$caseId/tracfin': typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
   '/cases/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/cases/s/$caseId/': typeof AppBuilderCasesDetailSCaseIdIndexRoute
@@ -990,6 +998,7 @@ export interface FileRoutesByTo {
   '/detection/scenarios/$scenarioId': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  '/cases/s/$caseId/tracfin': typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
   '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdIndexRoute
@@ -1106,6 +1115,7 @@ export interface FileRoutesById {
   '/_app/_builder/cases/_detail/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  '/_app/_builder/cases/_detail/s/$caseId/tracfin': typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
   '/_app/_builder/cases/_detail/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/_app/_builder/cases/_detail/s/$caseId/': typeof AppBuilderCasesDetailSCaseIdIndexRoute
@@ -1222,6 +1232,7 @@ export interface FileRouteTypes {
     | '/cases/s/$caseId/clients'
     | '/cases/s/$caseId/links'
     | '/cases/s/$caseId/principal'
+    | '/cases/s/$caseId/tracfin'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
     | '/cases/m/$caseId/'
     | '/cases/s/$caseId/'
@@ -1316,6 +1327,7 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId'
     | '/cases/$caseId/d/$decisionId/screenings'
     | '/cases/s/$caseId/principal'
+    | '/cases/s/$caseId/tracfin'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
     | '/cases/m/$caseId'
     | '/cases/s/$caseId'
@@ -1431,6 +1443,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/cases/_detail/s/$caseId/clients'
     | '/_app/_builder/cases/_detail/s/$caseId/links'
     | '/_app/_builder/cases/_detail/s/$caseId/principal'
+    | '/_app/_builder/cases/_detail/s/$caseId/tracfin'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
     | '/_app/_builder/cases/_detail/m/$caseId/'
     | '/_app/_builder/cases/_detail/s/$caseId/'
@@ -2174,6 +2187,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
     }
+    '/_app/_builder/cases/_detail/s/$caseId/tracfin': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/tracfin'
+      path: '/tracfin'
+      fullPath: '/cases/s/$caseId/tracfin'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdTracfinRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
+    }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': {
       id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
       path: '/i/$iterationId'
@@ -2429,6 +2449,7 @@ interface AppBuilderCasesDetailSCaseIdRouteChildren {
   AppBuilderCasesDetailSCaseIdClientsRoute: typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
   AppBuilderCasesDetailSCaseIdLinksRoute: typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   AppBuilderCasesDetailSCaseIdPrincipalRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  AppBuilderCasesDetailSCaseIdTracfinRoute: typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   AppBuilderCasesDetailSCaseIdIndexRoute: typeof AppBuilderCasesDetailSCaseIdIndexRoute
 }
 
@@ -2440,6 +2461,8 @@ const AppBuilderCasesDetailSCaseIdRouteChildren: AppBuilderCasesDetailSCaseIdRou
       AppBuilderCasesDetailSCaseIdLinksRouteWithChildren,
     AppBuilderCasesDetailSCaseIdPrincipalRoute:
       AppBuilderCasesDetailSCaseIdPrincipalRoute,
+    AppBuilderCasesDetailSCaseIdTracfinRoute:
+      AppBuilderCasesDetailSCaseIdTracfinRoute,
     AppBuilderCasesDetailSCaseIdIndexRoute:
       AppBuilderCasesDetailSCaseIdIndexRoute,
   }
