@@ -349,10 +349,13 @@ describe('shell', () => {
     await user.click(nav(/^Operations/));
     expect(section()).toBe('operations');
     expect(screen.getByRole('heading', { name: 'Principal operations' })).toBeTruthy();
-    for (const [name, expected] of [
-      [/^Attachments/, 'pieces'],
-      [/^Review and export/, 'review'],
-    ] as const) {
+    // The attachments section is built too (see pieces/PiecesSection.spec.tsx); without the case files
+    // provided by the route it says the list is not available.
+    await user.click(nav(/^Attachments/));
+    expect(section()).toBe('pieces');
+    expect(screen.getByRole('heading', { name: 'Attachments' })).toBeTruthy();
+    expect(screen.getByText('The list of case files is not available on this screen.')).toBeTruthy();
+    for (const [name, expected] of [[/^Review and export/, 'review']] as const) {
       await user.click(nav(name));
       expect(section()).toBe(expected);
       expect(screen.getByText(/section is not available yet/)).toBeTruthy();

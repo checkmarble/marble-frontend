@@ -321,3 +321,40 @@ describe('planPatch: several structural changes in one PATCH', () => {
     expect(blockIds.get(plan.added[2]!.alias)).toBe(identity.id);
   });
 });
+
+describe('planPatch: add_block with a case file', () => {
+  const FILE_ID = '0a1b2c3d-1111-4111-8111-000000000001';
+
+  it('sends source_file_id on the add_block that carries it, and no key on the others', () => {
+    const draft = draftWithout('/ds/pieceJointe');
+    const root = draft.document.root.id;
+    const plan = planPatch({
+      draft,
+      pending: [],
+      structural: [
+        {
+          type: 'add_block',
+          parent: virtualAddress(root, ['/ds/pieceJointe']),
+          catalogId: '/ds/pieceJointe/piece',
+          sourceFileId: FILE_ID,
+        },
+      ],
+    })!;
+    const [container, piece] = plan.changes;
+    // The container is created first (alias), the piece hangs under that alias.
+    expect(container).toEqual({
+      action: 'add_block',
+      parent_block_id: root,
+      catalog_id: '/ds/pieceJointe',
+      block_id: container!.block_id,
+    });
+    expect(piece).toEqual({
+      action: 'add_block',
+      parent_block_id: container!.block_id,
+      catalog_id: '/ds/pieceJointe/piece',
+      block_id: piece!.block_id,
+      source_file_id: FILE_ID,
+    });
+    expect(piece!.block_id).not.toBe(container!.block_id);
+  });
+});

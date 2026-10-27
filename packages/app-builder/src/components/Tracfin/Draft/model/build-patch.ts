@@ -23,7 +23,7 @@ export const blockRef = (ref: string): BlockRef => ({ kind: 'ref', ref });
  * server replaces the temporary alias of the PATCH with a real id.
  */
 export type StructuralOp =
-  | { type: 'add_block'; parent: OpBlock; catalogId: string; ref?: string }
+  | { type: 'add_block'; parent: OpBlock; catalogId: string; ref?: string; sourceFileId?: string }
   | { type: 'remove_block'; blockId: string }
   | { type: 'refresh_configuration' }
   | { type: 'set_selection'; block: OpBlock; selection: TracfinSelection }
@@ -135,7 +135,15 @@ export function planPatch({
         const alias = newAlias();
         added.push({ alias, parent, catalogId: op.catalogId });
         if (op.ref) refs.set(op.ref, alias);
-        changes.push({ action: 'add_block', parent_block_id: parent, catalog_id: op.catalogId, block_id: alias });
+        changes.push({
+          action: 'add_block',
+          parent_block_id: parent,
+          catalog_id: op.catalogId,
+          block_id: alias,
+          // A document piece: the server checks that the file belongs to the case and hashes it. The id is
+          // sent exactly as the case listing gave it.
+          ...(op.sourceFileId ? { source_file_id: op.sourceFileId } : {}),
+        });
         break;
       }
       case 'set_selection': {

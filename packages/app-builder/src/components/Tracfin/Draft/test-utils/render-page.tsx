@@ -1,3 +1,4 @@
+import { FormatContext } from '@app-builder/contexts/FormatContext';
 import type { TracfinDraft, TracfinDraftInput, TracfinResult } from '@app-builder/models/tracfin';
 import type { TracfinCatalogIndex } from '@app-builder/models/tracfin/catalog-index';
 import { useTracfinDraftQuery } from '@app-builder/queries/tracfin/get-draft';
@@ -68,7 +69,10 @@ export async function renderDraftPage({
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18next}>
         <Tooltip.Provider delayDuration={0}>
-          <Harness />
+          {/* The app provides the format context; the Pieces section formats dates. */}
+          <FormatContext.Provider value={{ locale: 'en', timezone: 'UTC' }}>
+            <Harness />
+          </FormatContext.Provider>
         </Tooltip.Provider>
       </I18nextProvider>
     </QueryClientProvider>,

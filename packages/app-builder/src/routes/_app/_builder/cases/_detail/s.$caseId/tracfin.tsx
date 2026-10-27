@@ -4,7 +4,9 @@ import {
   isTracfinSectionId,
   type TracfinSectionId,
 } from '@app-builder/components/Tracfin/Draft/model/sections';
+import { TracfinCaseFilesProvider } from '@app-builder/components/Tracfin/Draft/pieces/case-files-context';
 import { TracfinDraftPage } from '@app-builder/components/Tracfin/Draft/TracfinDraftPage';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
@@ -38,13 +40,17 @@ function RouteComponent() {
   const { caseDetail } = Route.useRouteContext();
   const search = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
+  const revalidate = useLoaderRevalidator();
   const section: TracfinSectionId = isTracfinSectionId(search.section) ? search.section : DEFAULT_TRACFIN_SECTION;
 
   return (
-    <TracfinDraftPage
-      caseId={caseDetail.id}
-      section={section}
-      onSectionChange={(next) => void navigate({ search: { section: next }, replace: true })}
-    />
+    // The Pieces section picks its files from the case detail this route already loaded.
+    <TracfinCaseFilesProvider files={caseDetail.files} refresh={revalidate}>
+      <TracfinDraftPage
+        caseId={caseDetail.id}
+        section={section}
+        onSectionChange={(next) => void navigate({ search: { section: next }, replace: true })}
+      />
+    </TracfinCaseFilesProvider>
   );
 }

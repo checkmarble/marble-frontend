@@ -46,6 +46,9 @@ export type ApplyStructuralOptions = {
    * went stale): the editor does not enter its `failed` / `conflict` state, keeps nothing for
    * `retry()`, and re-reads the draft so that its revision is current. Other failures (timeout, 5xx,
    * network) go through the normal path, whose outcome is uncertain.
+   * 403 / 404 / 413 count as refusals too (a file that is not the case's, or is gone, or too big): the
+   * transaction applied nothing, the pending edits that rode with the request stay pending, the draft
+   * is not re-read (it did not change) and the error is returned for the caller to explain.
    */
   quiet?: boolean;
 };
@@ -326,14 +329,18 @@ export function useTracfinDraftEditor(
     } catch (error) {
       if (quiet) {
         const api = toApiError(error);
-        if (api.kind === 'bad_request' || api.kind === 'conflict') {
+        const refused = api.kind === 'bad_request' || api.kind === 'conflict';
+        const appliedNothing = api.kind === 'forbidden' || api.kind === 'not_found' || api.kind === 'too_large';
+        if (refused || appliedNothing) {
           failedStructural.current = previous.structural;
           setFailure(previous.failure);
           setStatus(previous.status);
-          try {
-            await refetchRef.current();
-          } catch {
-            // The caller re-reads what it needs; the draft query reports its own failure.
+          if (refused) {
+            try {
+              await refetchRef.current();
+            } catch {
+              // The caller re-reads what it needs; the draft query reports its own failure.
+            }
           }
           return { ok: false, error: api };
         }

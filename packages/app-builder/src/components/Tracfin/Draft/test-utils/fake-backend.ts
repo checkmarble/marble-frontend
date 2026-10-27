@@ -64,6 +64,7 @@ function applySelection(block: TracfinBlock, next: TracfinSelection): void {
 }
 
 const STALE_MAPPING = 'stale-mapping-version';
+const PIECE_CATALOG_ID = '/ds/pieceJointe/piece';
 
 /**
  * A stand-in for the PATCH endpoint, with the semantics of the backend `applyChange` that the editor
@@ -77,6 +78,10 @@ export class FakeDraftBackend {
   failures: TracfinApiError[] = [];
   /** The prefill the server would compute for a draft; `apply_prefill` recomputes it, like the backend. */
   prefill: ((draft: TracfinDraft) => TracfinPrefillResult) | null = null;
+  /** Files of this case, as `selectTracfinAttachment` would hash them. */
+  readonly caseFiles = new Map<string, { sha256: string; size: number }>();
+  /** Files that exist but belong to another case: `source_file_id` is a 403 (`caseFile`, ForbiddenError). */
+  readonly foreignFiles = new Set<string>();
   private counter = 0;
 
   constructor(draft: TracfinDraft) {
@@ -110,6 +115,8 @@ export class FakeDraftBackend {
     const aliases = new Map<string, string>();
     const resolve = (id: string | undefined) => (id ? (aliases.get(id) ?? id) : '');
     for (const change of body.changes) {
+      const fileError = this.checkFile(change);
+      if (fileError) return fail(fileError);
       const error = this.apply(next, change, aliases, resolve);
       if (error === STALE_MAPPING) return fail({ kind: 'conflict', status: 409, message: 'stale mapping version' });
       if (error) return fail({ kind: 'bad_request', status: 400, message: error });
@@ -117,6 +124,21 @@ export class FakeDraftBackend {
     next.revision += 1;
     this.draft = next;
     return { ok: true, data: structuredClone(next) };
+  }
+
+  /** `UpdateDraft` before `ApplyChanges`: a file is only taken for an `add_block` of a piece, and must be this case's. */
+  private checkFile(change: TracfinChangeInput): TracfinApiError | null {
+    if (change.source_file_id === undefined) return null;
+    if (change.action !== 'add_block' || change.catalog_id !== PIECE_CATALOG_ID) {
+      return { kind: 'bad_request', status: 400, message: 'bad parameter' };
+    }
+    if (this.foreignFiles.has(change.source_file_id)) {
+      return { kind: 'forbidden', status: 403, message: 'TRACFIN file scope cannot be verified' };
+    }
+    if (!this.caseFiles.has(change.source_file_id)) {
+      return { kind: 'not_found', status: 404, message: 'not found' };
+    }
+    return null;
   }
 
   private apply(
@@ -137,9 +159,20 @@ export class FakeDraftBackend {
         ) {
           return 'maximum 30 principal operations';
         }
+        // `block cardinality exceeded` (draft.go): at most 15 pieces under `/ds/pieceJointe`.
+        if (
+          change.catalog_id === PIECE_CATALOG_ID &&
+          (parent.children ?? []).filter((child) => child.catalog_id === change.catalog_id).length >= 15
+        ) {
+          return 'block cardinality exceeded';
+        }
         const id = this.id();
         if (change.block_id) aliases.set(change.block_id, id);
-        parent.children = [...(parent.children ?? []), { id, catalog_id: change.catalog_id }];
+        const created: TracfinBlock = { id, catalog_id: change.catalog_id };
+        const file = change.source_file_id ? this.caseFiles.get(change.source_file_id) : undefined;
+        // The response block carries the proof of the file, never the storage location.
+        if (file) created.attachment = { source_file_id: change.source_file_id!, ...file };
+        parent.children = [...(parent.children ?? []), created];
         return null;
       }
       case 'remove_block': {
