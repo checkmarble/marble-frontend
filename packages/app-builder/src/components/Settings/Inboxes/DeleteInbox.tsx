@@ -4,20 +4,28 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 
-export const DeleteInboxContent = ({ inboxId, onSettled }: { inboxId: string; onSettled: () => void }) => {
+export const DeleteInboxContent = ({
+  inboxId,
+  onDeleted,
+  onSettled,
+}: {
+  inboxId: string;
+  onDeleted: () => void;
+  onSettled: () => void;
+}) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxMutation = useDeleteInboxMutation();
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteInbox = () => {
-    deleteInboxMutation.mutateAsync(
-      { inboxId },
-      {
-        onError: (error) => toast.error(error.message),
-        onSuccess: () => revalidate(),
-        onSettled: () => onSettled(),
-      },
-    );
+    deleteInboxMutation
+      .mutateAsync({ inboxId })
+      .then(() => {
+        onDeleted();
+        revalidate();
+      })
+      .catch((error: Error) => toast.error(error.message))
+      .finally(onSettled);
   };
 
   return (
