@@ -16,6 +16,8 @@ import type { TracfinSectionId } from './model/sections';
 import { SectionPrefillBar } from './prefill/PrefillButton';
 import { PrefillPanel } from './prefill/PrefillPanel';
 import { TracfinPrefillProvider } from './prefill/TracfinPrefillContext';
+import { TracfinFocusProvider } from './review/TracfinFocusContext';
+import { TracfinReviewProvider } from './review/TracfinReviewContext';
 import { SectionNav } from './SectionNav';
 import { tracfinSectionComponents } from './sections/section-components';
 
@@ -90,29 +92,33 @@ export function TracfinDraftPage({ caseId, section, onSectionChange }: TracfinDr
 function TracfinDraftShell({ section, onSectionChange }: Pick<TracfinDraftPageProps, 'section' | 'onSectionChange'>) {
   const editor = useTracfinDraftEditorContext();
   const Section = tracfinSectionComponents[section];
+  const changeSection = (next: TracfinSectionId) => {
+    // Leaving a section saves what was edited in it; the edits stay in the editor either way.
+    void editor.autoFlush();
+    onSectionChange(next);
+  };
 
   return (
-    <div className="flex min-w-0 flex-col gap-lg">
-      <DraftHeader />
-      <DraftNotices />
-      <ConfigurationCard />
-      <div className="flex min-w-0 flex-col gap-lg lg:flex-row lg:items-start">
-        <div className="lg:w-60 lg:shrink-0">
-          <SectionNav
-            section={section}
-            onSectionChange={(next) => {
-              // Leaving a section saves what was edited in it; the edits stay in the editor either way.
-              void editor.autoFlush();
-              onSectionChange(next);
-            }}
-          />
+    // The focus provider lets a diagnostic of the review open a section and land on its field; the
+    // review provider keeps the validation and the export above the sections.
+    <TracfinFocusProvider section={section} onSectionChange={changeSection}>
+      <TracfinReviewProvider>
+        <div className="flex min-w-0 flex-col gap-lg">
+          <DraftHeader />
+          <DraftNotices />
+          <ConfigurationCard />
+          <div className="flex min-w-0 flex-col gap-lg lg:flex-row lg:items-start">
+            <div className="lg:w-60 lg:shrink-0">
+              <SectionNav section={section} onSectionChange={changeSection} />
+            </div>
+            <div className="min-w-0 flex-1">
+              {section === 'review' ? null : <SectionPrefillBar section={section} />}
+              <Section />
+            </div>
+          </div>
+          <LeaveGuard />
         </div>
-        <div className="min-w-0 flex-1">
-          {section === 'review' ? null : <SectionPrefillBar section={section} />}
-          <Section />
-        </div>
-      </div>
-      <LeaveGuard />
-    </div>
+      </TracfinReviewProvider>
+    </TracfinFocusProvider>
   );
 }

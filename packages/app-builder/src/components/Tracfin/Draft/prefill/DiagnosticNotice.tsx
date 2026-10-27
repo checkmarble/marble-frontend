@@ -7,15 +7,19 @@ import type { BlockDiagnostic } from '../fields/block-diagnostics';
 import { FieldEditor } from '../fields/FieldEditor';
 import { fieldLabel } from '../fields/labels';
 import { blockAddress } from '../model/block-address';
-import { diagnosticFixOf, isKnownPrefillDiagnosticCode } from './diagnostic-codes';
+import { diagnosticTextKey } from '../review/diagnostic-text';
+import { diagnosticFixOf } from './diagnostic-codes';
 
 /** The French explanation of a diagnostic code; an unknown code gets the generic sentence, never the raw message. */
 export function useDiagnosticText() {
   const { t } = useTranslation(['tracfin']);
-  return (diagnostic: TracfinDiagnostic): string =>
-    isKnownPrefillDiagnosticCode(diagnostic.code)
-      ? t(`tracfin:draft.prefill.diagnostics.${diagnostic.code}`)
+  return (diagnostic: TracfinDiagnostic): string => {
+    // The prefill codes, and (Task 8) the validation codes a block shows inline: one text per code and layer.
+    const key = diagnosticTextKey(diagnostic);
+    return key
+      ? t(`tracfin:${key}`)
       : t('tracfin:draft.prefill.diagnostics.UNKNOWN_DIAGNOSTIC', { code: diagnostic.code });
+  };
 }
 
 /** Opens the field of a diagnostic in the generic editor: a manual `set_field` on this draft only. */

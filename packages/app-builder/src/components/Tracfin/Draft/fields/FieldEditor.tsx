@@ -7,6 +7,7 @@ import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContex
 import type { TracfinBlockAddress } from '../model/block-address';
 import { type FieldOccurrence, hasContent } from '../model/field-values';
 import { valueRefKey } from '../model/pending-edits';
+import { focusAttributes } from '../review/focus-target';
 import { BlockDiagnostics } from './BlockDiagnostics';
 import { fieldLabel } from './labels';
 import { OriginBadge } from './OriginBadge';
@@ -58,7 +59,19 @@ export function FieldEditor({
   const canAdd = !single && !ownerUnsaved && (cardinality.max === null || occurrences.length < cardinality.max);
 
   return (
-    <div className={cn('flex min-w-0 flex-col gap-xs', nested && 'border-grey-border ms-md border-s ps-md')}>
+    <div
+      // Where a diagnostic of the review lands: the field, and below it each occurrence (see `review/focus-target`).
+      {...{
+        [focusAttributes.fieldBlock]: address.kind === 'block' ? address.id : undefined,
+        [focusAttributes.field]: field.id,
+        [focusAttributes.parentValue]: parentValueId ?? undefined,
+      }}
+      className={cn(
+        'flex min-w-0 flex-col gap-xs rounded-md transition-shadow',
+        'data-[tracfin-highlight=true]:ring-purple-primary data-[tracfin-highlight=true]:ring-2 data-[tracfin-highlight=true]:ring-offset-2',
+        nested && 'border-grey-border ms-md border-s ps-md',
+      )}
+    >
       <div className="flex flex-wrap items-center gap-xs">
         <span className="text-s font-medium">{label}</span>
         {cardinality.min >= 1 ? (
@@ -94,7 +107,11 @@ export function FieldEditor({
           const inputId = `${baseId}-${key}`;
           const ownerReady = occurrence.target.valueId !== null && hasContent(occurrence.state);
           return (
-            <li key={key} className="flex min-w-0 flex-col gap-xs">
+            <li
+              key={key}
+              {...{ [focusAttributes.value]: occurrence.target.valueId ?? undefined }}
+              className="data-[tracfin-highlight=true]:ring-purple-primary flex min-w-0 flex-col gap-xs rounded-md data-[tracfin-highlight=true]:ring-2 data-[tracfin-highlight=true]:ring-offset-2"
+            >
               <div className="flex min-w-0 items-start gap-xs">
                 <div className="min-w-0 flex-1">
                   <Control

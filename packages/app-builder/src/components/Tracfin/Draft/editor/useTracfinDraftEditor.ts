@@ -65,6 +65,11 @@ export type TracfinDraftEditor = {
   /** Number of unsaved edits (what the header shows). */
   pendingCount: number;
   hasPendingChanges: boolean;
+  /**
+   * `hasPendingChanges` read from the store at this very moment, not from the last render: after
+   * `await flush()` the component may not have re-rendered yet, and an export must not trust the stale value.
+   */
+  hasUnsavedEdits: () => boolean;
   status: TracfinSaveStatus;
   failure: TracfinSaveFailure | null;
   comparison: TracfinComparison | null;
@@ -376,6 +381,7 @@ export function useTracfinDraftEditor(
     pendingEdits: unsavedEdits,
     pendingCount: unsavedEdits.length,
     hasPendingChanges: unsavedEdits.length > 0,
+    hasUnsavedEdits: () => store.hasUnsaved(),
     status,
     failure,
     comparison,

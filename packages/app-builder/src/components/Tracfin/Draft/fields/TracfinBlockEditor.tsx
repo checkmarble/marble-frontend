@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTracfinDraftEditorContext } from '../editor/TracfinDraftEditorContext';
 import type { TracfinBlockAddress } from '../model/block-address';
+import { focusAttributes } from '../review/focus-target';
 import { BlockDiagnostics } from './BlockDiagnostics';
 import { useTracfinBlockExtras } from './block-extras';
 import { ChildBlocks } from './ChildBlocks';
@@ -50,7 +51,11 @@ export function TracfinBlockEditor({
   const catalogBlock = catalogIndex.field(catalogId);
 
   return (
-    <div className="flex min-w-0 flex-col gap-md">
+    <div
+      // Where a diagnostic of the review lands when it names the block and no field (see `review/focus-target`).
+      {...{ [focusAttributes.block]: address.kind === 'block' ? address.id : undefined }}
+      className="data-[tracfin-highlight=true]:ring-purple-primary flex min-w-0 flex-col gap-md rounded-md data-[tracfin-highlight=true]:ring-2 data-[tracfin-highlight=true]:ring-offset-2"
+    >
       {showTitle && catalogBlock ? <h3 className="text-default font-semibold">{blockLabel(t, catalogBlock)}</h3> : null}
       {Extras ? <Extras address={address} catalogId={catalogId} /> : null}
       {showDiagnostics ? <BlockDiagnostics blockId={address.kind === 'block' ? address.id : null} /> : null}

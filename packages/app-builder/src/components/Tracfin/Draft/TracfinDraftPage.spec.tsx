@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
   createDraft: vi.fn(),
   patchDraft: vi.fn(),
   prefill: vi.fn(),
+  validate: vi.fn(),
+  exportDraft: vi.fn(),
 }));
 
 vi.mock('@app-builder/server-fns/tracfin', () => ({
@@ -20,6 +22,8 @@ vi.mock('@app-builder/server-fns/tracfin', () => ({
   createTracfinDraftFn: mocks.createDraft,
   patchTracfinDraftFn: mocks.patchDraft,
   prefillTracfinDraftFn: mocks.prefill,
+  validateTracfinDraftFn: mocks.validate,
+  exportTracfinDraftFn: mocks.exportDraft,
 }));
 vi.mock('@app-builder/server-fns/data', () => ({}));
 vi.mock('@app-builder/server-fns/cases', () => ({ listCaseDecisionsFn: vi.fn() }));
@@ -341,7 +345,7 @@ describe('shell', () => {
     expect(badge(/^Context and analysis/)?.textContent).toBe('2');
   });
 
-  it('keeps the section in the page state and shows the placeholder of a section built later', async () => {
+  it('keeps the section in the page state across the built sections', async () => {
     const backend = new FakeDraftBackend(cloneDraft());
     connectBackend(mocks, backend);
     const { user, section } = await renderDraftPage();
@@ -355,11 +359,11 @@ describe('shell', () => {
     expect(section()).toBe('pieces');
     expect(screen.getByRole('heading', { name: 'Attachments' })).toBeTruthy();
     expect(screen.getByText('The list of case files is not available on this screen.')).toBeTruthy();
-    for (const [name, expected] of [[/^Review and export/, 'review']] as const) {
-      await user.click(nav(name));
-      expect(section()).toBe(expected);
-      expect(screen.getByText(/section is not available yet/)).toBeTruthy();
-    }
+    // So is the review (see review/ReviewSection.spec.tsx): no section is a placeholder any more.
+    await user.click(nav(/^Review and export/));
+    expect(section()).toBe('review');
+    expect(screen.getByRole('heading', { name: 'Review and export', level: 2 })).toBeTruthy();
+    expect(screen.queryByText(/section is not available yet/)).toBeNull();
   });
 
   it('refreshes from the configuration only after a confirmation that says every value becomes « to review »', async () => {
