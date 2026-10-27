@@ -1,5 +1,6 @@
 import { HttpError } from '@oazapfts/runtime';
 import { describe, expect, it } from 'vitest';
+import { tracfinDraftFixture } from './__fixtures__';
 import { catalogProfileFixture } from './__fixtures__/catalog.fixture';
 import { getTracfinCatalogIndex } from './catalog-index';
 import {
@@ -10,8 +11,10 @@ import {
   TRACFIN_MAX_PIECES,
   TRACFIN_MAX_PRINCIPAL_OPERATIONS,
   TRACFIN_TEXT_OR_REFERENCE_FIELDS,
+  type TracfinBlock,
   TracfinRequestError,
   type TracfinResult,
+  type TracfinValue,
   toTracfinResult,
   unwrapTracfinResult,
   unwrapTracfinResultOrNull,
@@ -160,9 +163,9 @@ describe('profile constants', () => {
     expect([...TRACFIN_TEXT_OR_REFERENCE_FIELDS].sort()).toEqual(fromCatalog.sort());
   });
 
-  it('matches the cardinalities declared by the catalog', () => {
+  it('match the cardinalities declared by the catalog', () => {
     expect(index.cardinality('/ds/pieceJointe/piece')?.max).toBe(TRACFIN_MAX_PIECES);
-    expect(TRACFIN_MAX_PRINCIPAL_OPERATIONS).toBe(30);
+    expect(index.cardinality('/ds/operations/operation')?.max).toBe(TRACFIN_MAX_PRINCIPAL_OPERATIONS);
   });
 });
 
@@ -228,5 +231,26 @@ describe('toTracfinResult', () => {
         throw redirect;
       }),
     ).rejects.toBe(redirect);
+  });
+});
+
+describe('draft fixture', () => {
+  const valuesOf = (block: TracfinBlock): TracfinValue[] => [
+    ...Object.values(block.fields ?? {}).flat(),
+    ...(block.children ?? []).flatMap(valuesOf),
+  ];
+
+  it('carries a value the backend moved to needs_review, flagged for review', () => {
+    const flagged = valuesOf(tracfinDraftFixture.document.root).filter(
+      (value) => value.origin?.resolution === 'needs_review',
+    );
+    expect(flagged).toHaveLength(1);
+    expect(flagged[0]).toMatchObject({ needs_review: true, origin: { source: 'ingested' } });
+  });
+
+  it('only moves non-manual values to needs_review', () => {
+    for (const value of valuesOf(tracfinDraftFixture.document.root)) {
+      if (value.origin?.resolution === 'needs_review') expect(value.origin.source).not.toBe('manual');
+    }
   });
 });

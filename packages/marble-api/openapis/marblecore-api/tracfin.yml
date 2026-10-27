@@ -560,7 +560,8 @@ components:
             $ref: '#/components/schemas/TracfinSourceRefDto'
         resolution:
           type: string
-          enum: ['resolved', 'conflict', 'unavailable', 'cleared', 'partial']
+          description: needs_review is written on a non-manual value whose parent changed or whose referenced block was removed (the value then also carries needs_review true); conflict only appears on prefill candidates.
+          enum: ['resolved', 'conflict', 'unavailable', 'cleared', 'partial', 'needs_review']
 
     TracfinValueDto:
       type: object

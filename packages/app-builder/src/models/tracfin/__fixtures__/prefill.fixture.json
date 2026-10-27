@@ -56,8 +56,8 @@
             "sources": [
               {
                 "kind": "ingested",
-                "table": "users",
-                "record_id": "user_8841",
+                "table": "companies",
+                "record_id": "company_302",
                 "field": "name",
                 "path": [
                   {

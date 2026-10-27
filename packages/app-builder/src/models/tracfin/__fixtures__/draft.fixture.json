@@ -295,7 +295,64 @@
                 },
                 {
                   "id": "6ebc3d50-03bb-5338-8fa1-9b39a8761514",
-                  "catalog_id": "/ds/personnes/pp/lienAutrePm"
+                  "catalog_id": "/ds/personnes/pp/lienAutrePm",
+                  "selection": {
+                    "mapping_id": "map-affiliated-name",
+                    "root": {
+                      "id": "root",
+                      "table": "users",
+                      "record_id": "user_8841"
+                    },
+                    "bindings": [
+                      {
+                        "id": "affiliated",
+                        "parent_id": "root",
+                        "link": "affiliated_company",
+                        "direction": "forward",
+                        "table": "companies",
+                        "record_id": "company_511"
+                      }
+                    ]
+                  },
+                  "fields": {
+                    "/ds/personnes/pp/lienAutrePm/numIdentPro": [
+                      {
+                        "id": "48540431-f009-5c17-b4c4-b983028c5aad",
+                        "kind": "text",
+                        "text": "552100554",
+                        "origin": {
+                          "source_fingerprint": "20f70292fe97e827ecfebc7e3e599a2d045d122397cb9f98d4d7d21bf74ca3db",
+                          "source": "ingested",
+                          "mapping_version": "38e4e75e1e7516bf0ec17fc36ed3903837da29e56f120022705bb807b1999eab",
+                          "sources": [
+                            {
+                              "kind": "ingested",
+                              "table": "companies",
+                              "record_id": "company_511",
+                              "field": "registration_number",
+                              "path": [
+                                {
+                                  "id": "root",
+                                  "table": "users",
+                                  "record_id": "user_8841"
+                                },
+                                {
+                                  "id": "affiliated",
+                                  "parent_id": "root",
+                                  "link": "affiliated_company",
+                                  "direction": "forward",
+                                  "table": "companies",
+                                  "record_id": "company_511"
+                                }
+                              ]
+                            }
+                          ],
+                          "resolution": "needs_review"
+                        },
+                        "needs_review": true
+                      }
+                    ]
+                  }
                 }
               ]
             }

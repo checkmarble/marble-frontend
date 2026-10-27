@@ -46,15 +46,20 @@ export type TracfinCatalogIndex = {
 };
 
 const UNBOUNDED = 'unbounded';
+const NON_NEGATIVE_INTEGER = /^\d+$/;
 
-function parseBound(value: string): number | null {
-  if (value === UNBOUNDED) return null;
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
-}
-
-function toCardinality(bounds: { min: string; max: string }): TracfinCardinality {
-  return { min: parseBound(bounds.min) ?? 0, max: parseBound(bounds.max) };
+/**
+ * Only the literal `unbounded` means "no maximum". Anything else that is not a non-negative integer
+ * is a corrupt catalog: it is refused rather than read as unbounded (or as 0), which would silently
+ * lift or drop a limit.
+ */
+function parseCardinality(id: string, bounds: { min: string; max: string }): TracfinCardinality {
+  if (!NON_NEGATIVE_INTEGER.test(bounds.min) || !(bounds.max === UNBOUNDED || NON_NEGATIVE_INTEGER.test(bounds.max))) {
+    throw new Error(
+      `Invalid TRACFIN catalog cardinality for ${id}: min ${JSON.stringify(bounds.min)}, max ${JSON.stringify(bounds.max)} (expected non-negative integers, max may be "${UNBOUNDED}")`,
+    );
+  }
+  return { min: Number(bounds.min), max: bounds.max === UNBOUNDED ? null : Number(bounds.max) };
 }
 
 function toEntry(field: TracfinCatalogField): TracfinCatalogEntry {
@@ -104,6 +109,11 @@ export function createTracfinCatalogIndex(profile: TracfinProfile): TracfinCatal
     else choicesByBlock.set(choice.parent, [choice]);
   }
 
+  // Every bound is read once, here: a malformed catalog fails when the index is built, not when a limit is used.
+  const cardinalities = new Map<string, TracfinCardinality>();
+  for (const field of Object.values(fields)) cardinalities.set(field.id, parseCardinality(field.id, field));
+  for (const choice of profile.choices) cardinalities.set(choice.id, parseCardinality(choice.id, choice));
+
   const codesCache = new Map<string, TracfinFieldCodes>();
 
   function computeCodes(field: TracfinCatalogField): TracfinFieldCodes {
@@ -151,14 +161,11 @@ export function createTracfinCatalogIndex(profile: TracfinProfile): TracfinCatal
       if (!codesCache.has(fieldId)) codesCache.set(fieldId, computeCodes(field));
       return codesCache.get(fieldId) ?? null;
     },
-    cardinality: (id) => {
-      const bounds = own(fields, id) ?? profile.choices.find((choice) => choice.id === id);
-      return bounds ? toCardinality(bounds) : null;
-    },
+    cardinality: (id) => cardinalities.get(id) ?? null,
     choiceGroups: (blockCatalogId) =>
       (choicesByBlock.get(blockCatalogId) ?? []).map((choice) => ({
         id: choice.id,
-        cardinality: toCardinality(choice),
+        cardinality: parseCardinality(choice.id, choice),
         members: (childrenByParent.get(blockCatalogId) ?? [])
           .filter((child) => child.choice === choice.id)
           .map(toEntry),

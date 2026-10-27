@@ -190,6 +190,57 @@ describe('cardinality', () => {
 
   it('is null for an unknown id', () => {
     expect(index.cardinality('/ds/unknown')).toBeNull();
+    expect(index.cardinality('constructor')).toBeNull();
+  });
+
+  describe('a malformed bound', () => {
+    const pieceId = '/ds/pieceJointe/piece';
+    const piece = catalogProfileFixture.fields[pieceId];
+    if (!piece) throw new Error('fixture field missing');
+    const withBounds = (bounds: { min?: string; max?: string }): TracfinProfile => ({
+      ...catalogProfileFixture,
+      hash: 'malformed',
+      fields: { ...catalogProfileFixture.fields, [pieceId]: { ...piece, ...bounds } },
+    });
+
+    it.each([
+      ['a non numeric maximum', { max: 'many' }],
+      ['an empty maximum', { max: '' }],
+      ['a negative maximum', { max: '-1' }],
+      ['a decimal maximum', { max: '1.5' }],
+      ['unbounded with another case', { max: 'Unbounded' }],
+      ['an unparsable minimum', { min: 'one' }],
+      ['an empty minimum', { min: '' }],
+      ['an unbounded minimum', { min: 'unbounded' }],
+    ])('is refused when the catalog has %s, and the message names the field', (_label, bounds) => {
+      expect(() => createTracfinCatalogIndex(withBounds(bounds))).toThrow(
+        /Invalid TRACFIN catalog cardinality for \/ds\/pieceJointe\/piece/,
+      );
+    });
+
+    it('is refused on a choice group too', () => {
+      const choice = catalogProfileFixture.choices[0];
+      if (!choice) throw new Error('fixture choice missing');
+      const profile: TracfinProfile = {
+        ...catalogProfileFixture,
+        hash: 'malformed-choice',
+        choices: [{ ...choice, max: 'x' }],
+      };
+      expect(() => createTracfinCatalogIndex(profile)).toThrow(
+        /Invalid TRACFIN catalog cardinality for \/ds\/personnes\/pm\/dirigeant#identity/,
+      );
+    });
+
+    it('does not take a malformed bound for "unbounded" or for 0', () => {
+      expect(createTracfinCatalogIndex(withBounds({ max: 'unbounded' })).cardinality(pieceId)).toEqual({
+        min: 1,
+        max: null,
+      });
+      expect(createTracfinCatalogIndex(withBounds({ min: '0', max: '0' })).cardinality(pieceId)).toEqual({
+        min: 0,
+        max: 0,
+      });
+    });
   });
 });
 

@@ -2462,7 +2462,8 @@ export type TracfinOriginDto = {
     source: "ingested" | "decision_snapshot" | "settings" | "manual" | "calculated";
     mapping_version?: string;
     sources?: TracfinSourceRefDto[];
-    resolution: "resolved" | "conflict" | "unavailable" | "cleared" | "partial";
+    /** needs_review is written on a non-manual value whose parent changed or whose referenced block was removed (the value then also carries needs_review true); conflict only appears on prefill candidates. */
+    resolution: "resolved" | "conflict" | "unavailable" | "cleared" | "partial" | "needs_review";
 };
 export type TracfinValueDto = {
     parent_value_id?: string;
