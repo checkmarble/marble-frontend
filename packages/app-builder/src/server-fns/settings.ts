@@ -13,6 +13,7 @@ import {
   auditEventsPaginationSchema,
   createApiKeyPayloadSchema,
   createInboxPayloadSchema,
+  createInboxRedirectRouteOptions,
   createInboxUserPayloadSchema,
   createTagPayloadSchema,
   createUserPayloadSchema,
@@ -211,6 +212,14 @@ export const updateExportedFieldFn = createServerFn({ method: 'POST' })
 
 // ---- Inboxes ----
 
+function getInboxRedirect(route: (typeof createInboxRedirectRouteOptions)[number], inboxId: string) {
+  const shortInboxId = fromUUIDtoSUUID(inboxId);
+  if (route === '/settings/inboxes') {
+    return redirect({ to: route, search: { inboxId: shortInboxId } });
+  }
+  return redirect({ to: route, params: { inboxId: shortInboxId } });
+}
+
 export const createInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createInboxPayloadSchema)
@@ -226,7 +235,7 @@ export const createInboxFn = createServerFn({ method: 'POST' })
       }
 
       if (data.redirectRoute) {
-        throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(createdInbox.id) } });
+        throw getInboxRedirect(data.redirectRoute, createdInbox.id);
       }
 
       return { inboxId: createdInbox.id };
@@ -259,7 +268,7 @@ export const updateInboxFn = createServerFn({ method: 'POST' })
         pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
       );
       if (data.redirectRoute) {
-        throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(updatedInbox.id) } });
+        throw getInboxRedirect(data.redirectRoute, updatedInbox.id);
       }
 
       return { inboxId: updatedInbox.id };

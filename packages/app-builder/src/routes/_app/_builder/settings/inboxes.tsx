@@ -21,6 +21,7 @@ import {
   isInboxAdmin,
   isReadTagAvailable,
 } from '@app-builder/services/feature-access';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -31,6 +32,7 @@ import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
 
 const inboxesLoader = createServerFn()
   .middleware([authMiddleware])
@@ -79,6 +81,7 @@ const inboxesLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/settings/inboxes')({
+  validateSearch: z.object({ inboxId: z.string().optional() }),
   loader: () => inboxesLoader(),
   component: CaseManagerSettings,
 });
@@ -106,7 +109,27 @@ function CaseManagerSettings() {
     isEditTagAvailable,
     isDeleteTagAvailable,
   } = Route.useLoaderData();
-  const [inboxPanelTarget, setInboxPanelTarget] = useState<InboxPanelTarget | null>(null);
+  const { inboxId: shortInboxId } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const [isCreatingInbox, setIsCreatingInbox] = useState(false);
+
+  const editedInbox = shortInboxId
+    ? inboxes.find((inbox) => fromUUIDtoSUUID(inbox.id) === shortInboxId && editableInboxIds.includes(inbox.id))
+    : undefined;
+  const inboxPanelTarget: InboxPanelTarget | null = isCreatingInbox
+    ? { mode: 'create' }
+    : editedInbox
+      ? { mode: 'edit', inboxId: editedInbox.id }
+      : null;
+
+  const openEditPanel = (inboxId: string) => {
+    setIsCreatingInbox(false);
+    navigate({ search: { inboxId: fromUUIDtoSUUID(inboxId) }, resetScroll: false });
+  };
+  const closePanel = () => {
+    setIsCreatingInbox(false);
+    if (shortInboxId) navigate({ search: {}, resetScroll: false });
+  };
 
   const inboxColumns = useMemo(() => {
     return [
@@ -163,7 +186,7 @@ function CaseManagerSettings() {
       <SettingCard
         title={t('settings:inboxes')}
         table={inboxTable}
-        onRowClick={(inbox) => setInboxPanelTarget({ mode: 'edit', inboxId: inbox.id })}
+        onRowClick={(inbox) => openEditPanel(inbox.id)}
         isRowClickable={(inbox) => editableInboxIds.includes(inbox.id)}
         addButton={
           isCreateInboxAvailable ? (
@@ -171,7 +194,7 @@ function CaseManagerSettings() {
               className="whitespace-nowrap"
               variant="primary"
               appearance="stroked"
-              onClick={() => setInboxPanelTarget({ mode: 'create' })}
+              onClick={() => setIsCreatingInbox(true)}
             >
               <Icon icon="new-inbox" className="size-5 shrink-0" />
               {t('settings:inboxes.new_inbox.create')}
@@ -181,8 +204,8 @@ function CaseManagerSettings() {
       />
       <InboxPanel
         target={inboxPanelTarget}
-        onClose={() => setInboxPanelTarget(null)}
-        onInboxCreated={(inboxId) => setInboxPanelTarget({ mode: 'edit', inboxId })}
+        onClose={closePanel}
+        onInboxCreated={openEditPanel}
         inboxes={inboxes}
         escalationInboxes={escalationInboxes}
         isAutoAssignmentAvailable={isAutoAssignmentAvailable}
