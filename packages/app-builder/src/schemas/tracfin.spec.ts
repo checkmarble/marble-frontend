@@ -1,5 +1,9 @@
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { parseTracfinConfigurationErrors, type TracfinMapping, toTracfinResult } from '@app-builder/models/tracfin';
 import { tracfinConfigurationFixture, tracfinDraftFixture } from '@app-builder/models/tracfin/__fixtures__';
-import { describe, expect, it } from 'vitest';
+import { makeGetTracfinRepository } from '@app-builder/repositories/TracfinRepository';
+import { HttpError } from '@oazapfts/runtime';
+import { describe, expect, it, vi } from 'vitest';
 import {
   tracfinCaseInputSchema,
   tracfinChangeInputSchema,
@@ -236,5 +240,61 @@ describe('fixtures', () => {
     expect(
       tracfinNavigateInputSchema.safeParse({ caseId, body: { selection: stored, step_id: 'employer' } }).success,
     ).toBe(true);
+  });
+});
+
+describe('an unfinished mapping path step', () => {
+  const unfinishedStep = { id: '', parent_id: 'root', link: '', direction: 'forward' as const, table: '' };
+  const mapping: TracfinMapping = {
+    id: 'map-card-number',
+    target_field: '/ds/personnes/pp/referencesFinancieres/referenceFinanciereNumeroCarteBancaire/@numeroCarteBancaire',
+    source: { kind: 'ingested', entity_type: 'Person', table: 'users', field: 'number', path: [unfinishedStep] },
+  };
+  const body = { expected_revision: 3, settings: [], mappings: [mapping] };
+
+  it('passes the validator, so that the backend answers INVALID_MAPPING_PATH', () => {
+    const parsed = tracfinConfigurationInputSchema.safeParse(body);
+    expect(parsed.error?.issues).toBeUndefined();
+    expect(parsed.data?.mappings[0]?.source.path).toEqual([unfinishedStep]);
+  });
+
+  it('still has a strict shape', () => {
+    const withStep = (step: object) =>
+      tracfinConfigurationInputSchema.safeParse({
+        ...body,
+        mappings: [{ ...mapping, source: { ...mapping.source, path: [step] } }],
+      }).success;
+    expect(withStep({ ...unfinishedStep, extra: true })).toBe(false);
+    expect(withStep({ ...unfinishedStep, direction: 'sideways' })).toBe(false);
+    expect(withStep({ parent_id: 'root', table: 'cards' })).toBe(false);
+  });
+
+  it('is the only place that is relaxed: the steps of a selection must be complete', () => {
+    const navigate = (rootStep: object) =>
+      tracfinNavigateInputSchema.safeParse({
+        caseId,
+        body: { selection: { mapping_id: 'm', root: rootStep }, step_id: 'cards' },
+      }).success;
+    expect(navigate({ id: 'root', table: 'users', record_id: 'u1' })).toBe(true);
+    expect(navigate({ id: '', table: 'users' })).toBe(false);
+    expect(navigate({ id: 'root', table: '' })).toBe(false);
+  });
+
+  it('reaches the repository, and the 400 it earns comes back as a diagnostic of that field', async () => {
+    const message = `invalid TRACFIN configuration: INVALID_MAPPING_PATH ${mapping.target_field}: bad parameter`;
+    const tracfinPutConfiguration = vi
+      .fn()
+      .mockRejectedValue(new HttpError(400, { message, error_code: '' }, new Headers()));
+    const repository = makeGetTracfinRepository()({ tracfinPutConfiguration } as unknown as MarbleCoreApi);
+
+    const parsed = tracfinConfigurationInputSchema.parse(body);
+    const result = await toTracfinResult(() => repository.putConfiguration({ organizationId: 'org-1', body: parsed }));
+
+    expect(tracfinPutConfiguration).toHaveBeenCalledWith('org-1', body);
+    if (result.ok) throw new Error('expected a failure');
+    expect(result.error).toMatchObject({ kind: 'bad_request', status: 400, message });
+    expect(parseTracfinConfigurationErrors(result.error.message ?? '')).toEqual([
+      { code: 'INVALID_MAPPING_PATH', fieldId: mapping.target_field },
+    ]);
   });
 });

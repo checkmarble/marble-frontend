@@ -124,6 +124,7 @@ describe('proxyTracfinExport', () => {
       async () => new Response(xml, { status: 200, headers: { 'Content-Type': 'application/xml; charset=utf-8' } }),
     );
     const response = await proxy(fetchBackend);
+    expect(response.headers.get('content-length')).toBeNull();
     expect(await readAll(response)).toEqual(xml);
   });
 

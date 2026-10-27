@@ -224,6 +224,101 @@ describe('downloadTracfinExport', () => {
     expect(failure).toEqual({ kind: 'http', status: 502, message: null });
   });
 
+  describe('an expired session', () => {
+    const signInPage = '<!doctype html><html><body>Sign in</body></html>';
+    const redirectedTo = (response: Response, url: string) => {
+      Object.defineProperty(response, 'redirected', { value: true });
+      Object.defineProperty(response, 'url', { value: url });
+      return response;
+    };
+
+    it('is reported as an auth failure when fetch followed a redirect to the sign-in page, not as a truncation', async () => {
+      const fetchImpl = vi.fn(async () =>
+        redirectedTo(
+          new Response(signInPage, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } }),
+          'https://marble.example.test/sign-in',
+        ),
+      );
+
+      const failure = await failureOf(downloadTracfinExport(tracfinExportFixture, caseId, { fetchImpl }));
+
+      expect(failure).toEqual({ kind: 'auth' });
+      expect(downloadFile).not.toHaveBeenCalled();
+      expect(saved).toHaveLength(0);
+    });
+
+    it('is reported as an auth failure even when the redirect target is not recognisable', async () => {
+      const fetchImpl = vi.fn(async () =>
+        redirectedTo(artifactResponse(xml, { 'Content-Length': String(xml.byteLength) }), 'https://idp.example.test/'),
+      );
+      expect(await failureOf(downloadTracfinExport(exportOf(xml, 'a'.repeat(64)), caseId, { fetchImpl }))).toEqual({
+        kind: 'auth',
+      });
+    });
+
+    it('is reported as an auth failure when an HTML page answers 200 without a visible redirect', async () => {
+      const fetchImpl = vi.fn(
+        async () => new Response(signInPage, { status: 200, headers: { 'Content-Type': 'text/html' } }),
+      );
+      expect(await failureOf(downloadTracfinExport(tracfinExportFixture, caseId, { fetchImpl }))).toEqual({
+        kind: 'auth',
+      });
+      expect(downloadFile).not.toHaveBeenCalled();
+    });
+
+    it('is reported as an auth failure on a 401', async () => {
+      const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ message: 'expired' }), { status: 401 }));
+      expect(await failureOf(downloadTracfinExport(tracfinExportFixture, caseId, { fetchImpl }))).toEqual({
+        kind: 'auth',
+      });
+    });
+
+    it('does not turn a 403 into an auth failure: signing in again would not help', async () => {
+      const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ message: 'forbidden' }), { status: 403 }));
+      expect(await failureOf(downloadTracfinExport(tracfinExportFixture, caseId, { fetchImpl }))).toEqual({
+        kind: 'http',
+        status: 403,
+        message: 'forbidden',
+      });
+    });
+  });
+
+  describe('a 200 that is not the XML artifact', () => {
+    it.each([
+      ['JSON', 'application/json'],
+      ['plain text', 'text/plain'],
+      ['binary', 'application/octet-stream'],
+    ])('is refused when it is %s, with its content type', async (_label, contentType) => {
+      const fetchImpl = vi.fn(
+        async () => new Response('{}', { status: 200, headers: { 'Content-Type': contentType } }),
+      );
+      expect(await failureOf(downloadTracfinExport(tracfinExportFixture, caseId, { fetchImpl }))).toEqual({
+        kind: 'unexpected_content',
+        contentType,
+      });
+      expect(downloadFile).not.toHaveBeenCalled();
+    });
+
+    it('is refused when it has no content type', async () => {
+      const fetchImpl = vi.fn(async () => new Response(xml, { status: 200 }));
+      expect(await failureOf(downloadTracfinExport(exportOf(xml, 'a'.repeat(64)), caseId, { fetchImpl }))).toEqual({
+        kind: 'unexpected_content',
+        contentType: null,
+      });
+    });
+
+    it.each(['text/xml', 'application/xml', 'application/xml; charset=utf-8', 'application/atom+xml'])(
+      'accepts %s as XML',
+      async (contentType) => {
+        const fetchImpl = vi.fn(async () =>
+          artifactResponse(xml, { 'Content-Length': String(xml.byteLength), 'Content-Type': contentType }),
+        );
+        const result = await downloadTracfinExport(exportOf(xml, await sha256Hex(xml)), caseId, { fetchImpl });
+        expect(result.received).toBe(xml.byteLength);
+      },
+    );
+  });
+
   it('reports a request that failed before any response', async () => {
     const fetchImpl = vi.fn(async () => {
       throw new TypeError('Failed to fetch');

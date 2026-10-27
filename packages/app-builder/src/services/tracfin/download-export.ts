@@ -4,8 +4,12 @@ import { downloadFile } from '@app-builder/utils/download-file';
 export type TracfinDownloadFailure =
   /** `download_url` is not `/cases/<case id>/tracfin/exports/<export id>` for this case and export. */
   | { kind: 'invalid_download_url' }
+  /** The session is gone: the response is a redirect to the sign-in page, a 401, or an HTML page. The user must sign in again; retrying cannot help. */
+  | { kind: 'auth' }
   /** The server answered with an error status. */
   | { kind: 'http'; status: number; message: string | null }
+  /** A 200 that is not the XML artifact (another content type). Nothing is saved. */
+  | { kind: 'unexpected_content'; contentType: string | null }
   /** The request failed before any response. */
   | { kind: 'network'; message: string | null }
   /** The body does not have the size announced by `Content-Length` or published as `export.size`. Nothing is saved. */
@@ -42,6 +46,27 @@ function resourceRouteOf(tracfinExport: TracfinExport, caseId: string): string |
   const match = DOWNLOAD_URL.exec(tracfinExport.download_url);
   if (!match || match[1] !== caseId || match[2] !== tracfinExport.id) return null;
   return `/ressources/cases/tracfin/download/${caseId}/${tracfinExport.id}`;
+}
+
+type ContentClass = 'xml' | 'html' | 'other';
+
+function classifyContent(response: Response): { kind: ContentClass; contentType: string | null } {
+  const contentType = response.headers.get('content-type');
+  const mediaType = contentType?.split(';')[0]?.trim().toLowerCase() ?? '';
+  if (mediaType === 'text/html' || mediaType === 'application/xhtml+xml') return { kind: 'html', contentType };
+  if (mediaType === 'application/xml' || mediaType === 'text/xml' || mediaType.endsWith('+xml')) {
+    return { kind: 'xml', contentType };
+  }
+  return { kind: 'other', contentType };
+}
+
+/** Nothing of a rejected body is wanted: release the connection. */
+async function discardBody(response: Response) {
+  try {
+    await response.body?.cancel();
+  } catch {
+    // Already closed.
+  }
 }
 
 function declaredLength(response: Response): number | null {
@@ -107,7 +132,8 @@ async function sha256Hex(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
  *
  * The body is read with a stream reader that counts bytes; it must equal `Content-Length` (when
  * announced) and the published `export.size`. When the browser offers `crypto.subtle`, the SHA-256
- * must equal `export.sha256` too. A failure rejects with a `TracfinDownloadError` and saves nothing:
+ * must equal `export.sha256` too. A response that is not the XML artifact (a redirect to the sign-in page,
+ * an HTML page) is an `auth` failure, not a truncation. A failure rejects with a `TracfinDownloadError` and saves nothing:
  * a partial 200 response is not a file. Retrying is calling this again with the same export.
  */
 export async function downloadTracfinExport(
@@ -124,8 +150,23 @@ export async function downloadTracfinExport(
   } catch (error) {
     throw new TracfinDownloadError({ kind: 'network', message: error instanceof Error ? error.message : null });
   }
+  if (response.status === 401) {
+    await discardBody(response);
+    throw new TracfinDownloadError({ kind: 'auth' });
+  }
   if (!response.ok) {
     throw new TracfinDownloadError({ kind: 'http', status: response.status, message: await messageOf(response) });
+  }
+  // With an expired session the resource route redirects to the sign-in page, which fetch follows and
+  // which answers 200 with HTML: that is not an incomplete download, and retrying it cannot succeed.
+  const content = classifyContent(response);
+  if (response.redirected || content.kind === 'html') {
+    await discardBody(response);
+    throw new TracfinDownloadError({ kind: 'auth' });
+  }
+  if (content.kind === 'other') {
+    await discardBody(response);
+    throw new TracfinDownloadError({ kind: 'unexpected_content', contentType: content.contentType });
   }
 
   const announced = declaredLength(response);

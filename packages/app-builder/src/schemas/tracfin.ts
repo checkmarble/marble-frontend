@@ -81,6 +81,17 @@ export const tracfinChangeInputSchema = z.strictObject({
 
 // The configuration screen submits what the administrator typed, blanks included: the backend owns
 // the diagnostics (INVALID_MAPPING_ID, MISSING_SOURCE_CODE, ...), so strings are not constrained here.
+// A path step the administrator has not finished (blank id, table or link) must reach the backend,
+// which answers INVALID_MAPPING_PATH: only its shape is checked here, unlike the steps of a selection.
+const tracfinMappingPathStepSchema = z.strictObject({
+  id: z.string(),
+  parent_id: z.string().optional(),
+  link: z.string().optional(),
+  direction: z.enum(['forward', 'inverse']).optional(),
+  table: z.string(),
+  record_id: z.string().optional(),
+});
+
 const tracfinMappingSourceSchema = z.strictObject({
   unit_operation: z.boolean().optional(),
   kind: z.enum(['ingested', 'decision_snapshot', 'settings']),
@@ -88,7 +99,7 @@ const tracfinMappingSourceSchema = z.strictObject({
   table: z.string().optional(),
   field: z.string().optional(),
   historical_type: z.string().optional(),
-  path: z.array(tracfinPathStepSchema).optional(),
+  path: z.array(tracfinMappingPathStepSchema).optional(),
 });
 
 export const tracfinMappingSchema = z.strictObject({
