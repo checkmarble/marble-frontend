@@ -1,0 +1,235 @@
+/tenants/{tenantId}/oidc-configuration:
+  parameters:
+    - $ref: '#/components/parameters/TenantId'
+  get:
+    tags: [Admin]
+    summary: Get a tenant OIDC configuration
+    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    operationId: getTenantOidcConfiguration
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Tenant OIDC configuration without the client secret
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantOidcConfiguration'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  put:
+    tags: [Admin]
+    summary: Save a tenant OIDC configuration
+    description: Requires tenant update permission and an SSO license. Available when tenant OIDC is configured.
+    operationId: putTenantOidcConfiguration
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TenantOidcConfigurationInput'
+    responses:
+      '204':
+        description: Configuration saved
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  delete:
+    tags: [Admin]
+    summary: Delete a tenant OIDC configuration
+    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    operationId: deleteTenantOidcConfiguration
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Configuration deleted
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/tenants/{tenantId}/domains:
+  parameters:
+    - $ref: '#/components/parameters/TenantId'
+  get:
+    tags: [Admin]
+    summary: List a tenant's OIDC domains
+    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    operationId: listTenantOidcDomains
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Tenant domains
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TenantDomain'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags: [Admin]
+    summary: Add a tenant OIDC domain
+    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    operationId: createTenantOidcDomain
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [domain]
+            properties:
+              domain:
+                type: string
+    responses:
+      '201':
+        description: Created domain
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantDomain'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        $ref: 'components.yml#/responses/409'
+/tenants/{tenantId}/domains/{domainId}:
+  parameters:
+    - $ref: '#/components/parameters/TenantId'
+    - name: domainId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    tags: [Admin]
+    summary: Delete a tenant OIDC domain
+    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    operationId: deleteTenantOidcDomain
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Domain deleted
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+components:
+  parameters:
+    TenantId:
+      name: tenantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    TenantOidcConfigurationInput:
+      type: object
+      required: [issuer, client_id]
+      properties:
+        issuer:
+          type: string
+          format: uri
+        client_id:
+          type: string
+        client_secret:
+          type: string
+          nullable: true
+          description: Required for a new configuration; omit or pass null to retain the existing secret.
+        scopes:
+          type: array
+          description: Defaults to openid, profile and email when omitted or empty.
+          items:
+            type: string
+        extra_params:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: string
+        email_claim:
+          type: string
+        sso_enabled:
+          type: boolean
+          default: true
+    TenantOidcConfiguration:
+      type: object
+      required: [tenant_id, issuer, client_id, client_secret_set, scopes, extra_params, email_claim, sso_enabled]
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        issuer:
+          type: string
+        client_id:
+          type: string
+        client_secret_set:
+          type: boolean
+        scopes:
+          type: array
+          items:
+            type: string
+        extra_params:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: string
+        email_claim:
+          type: string
+        sso_enabled:
+          type: boolean
+    TenantDomain:
+      type: object
+      required: [id, tenant_id, domain, verified_at, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        domain:
+          type: string
+        verified_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
