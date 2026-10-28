@@ -7,10 +7,21 @@ export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSe
 
 export type RateLimiter = (key: string) => RateLimitResult;
 
+// User id, otherwise email. Undefined when both are absent.
+export function perUserRateLimitKey(actorIdentity: { userId?: string; email?: string }): string | undefined {
+  return actorIdentity.userId ?? actorIdentity.email;
+}
+
 // Fixed-window, in-memory limiter. Each limiter owns its own store, so two routes with
 // separate limiters never share a budget. Counts are per process: with N instances the
-// effective limit is N * max.
-export function createRateLimiter({ max, windowMs }: RateLimitOptions, now: () => number = Date.now): RateLimiter {
+// effective limit is N * max. The default clock is monotonic (`performance.now`, called
+// with its receiver) so a wall-clock step backward cannot stretch resetAt or Retry-After.
+export function createRateLimiter(
+  { max, windowMs }: RateLimitOptions,
+  now: () => number = () => performance.now(),
+): RateLimiter {
+  if (!(windowMs > 0)) throw new RangeError(`windowMs must be a positive number, got ${windowMs}`);
+  if (!(max >= 1)) throw new RangeError(`max must be at least 1, got ${max}`);
   const hits = new Map<string, { count: number; resetAt: number }>();
   let nextSweepAt = now() + windowMs;
 
