@@ -1,4 +1,4 @@
-import { createRateLimiter, type RateLimitOptions } from '@app-builder/utils/rate-limiter.server';
+import { createRateLimiter, perUserRateLimitKey, type RateLimitOptions } from '@app-builder/utils/rate-limiter.server';
 import { createMiddleware } from '@tanstack/react-start';
 import { getRequest, setResponseStatus } from '@tanstack/react-start/server';
 import { authMiddleware } from './auth-middleware';
@@ -33,6 +33,7 @@ interface RateLimitFunctionOptions extends RateLimitOptions {
 // Function middleware keyed by the authenticated user or organization, for server functions:
 //   createServerFn({ method: 'POST' }).middleware([authMiddleware, rateLimitFunctionMiddleware({ max: 30, windowMs: 60_000 })])
 // Pulls in `authMiddleware` itself; TanStack dedupes it when the server function lists it too.
+// Per-user keys are the user id, otherwise the email. A request with neither is rejected and not counted.
 export function rateLimitFunctionMiddleware({ scope = 'user', ...options }: RateLimitFunctionOptions) {
   const check = createRateLimiter(options);
 
@@ -40,10 +41,11 @@ export function rateLimitFunctionMiddleware({ scope = 'user', ...options }: Rate
     .middleware([authMiddleware])
     .server(async ({ next, context }) => {
       const { user } = context.authInfo;
-      const key =
-        scope === 'organization'
-          ? user.organizationId
-          : (user.actorIdentity.userId ?? user.actorIdentity.email ?? getClientIp(getRequest()));
+      const key = scope === 'organization' ? user.organizationId : perUserRateLimitKey(user.actorIdentity);
+      if (key === undefined) {
+        setResponseStatus(401);
+        throw new Error('Missing user identity');
+      }
 
       const result = check(key);
       if (!result.allowed) {
