@@ -1,8 +1,8 @@
 {
-  "aggregator.average": "متوسط",
+  "aggregator.average": "المتوسط",
   "aggregator.average.tooltip": "يحسب القيمة المتوسطة لحقل رقمي.\n\nيتطلب: حقل رقمي\n\nالسلوك عند عدم وجود تطابق: يُرجع قيمة فارغة (null)",
-  "aggregator.count": "عدد",
-  "aggregator.count_distinct": "عدد القيم المميزة",
+  "aggregator.count": "عدد السجلات",
+  "aggregator.count_distinct": "عدد القيم الفريدة",
   "aggregator.count_distinct.tooltip": "يحسب عدد القيم الفريدة (المميزة) في الحقل.\n\nيقبل: أي نوع من الحقول\n\nالسلوك عند عدم وجود تطابق: يُرجع 0",
   "aggregator.count.tooltip": "يحسب العدد الإجمالي للسجلات التي تطابق الفلاتر.\n\nيقبل: أي نوع من الحقول (ويعطي نفس النتيجة بغض النظر عن الحقل المستخدم من الكيان).\n\nالسلوك عند عدم وجود تطابق: يُرجع 0",
   "aggregator.max": "الحد الأقصى",

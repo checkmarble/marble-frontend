@@ -36,9 +36,9 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { type CustomerAggregateDto } from 'marble-api';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { clone } from 'remeda';
-import { Button, Input, Popover, SelectV2 } from 'ui-design-system';
+import { Button, Input, Popover, SelectV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { InlineFilterValue, isComplexInlineFilter } from '../AstBuilder/edition/AggregationFilters/InlineFilterValue';
 import { TimestampExtractTimezoneLink } from '../AstBuilder/edition/AggregationFilters/TimestampExtractTimezoneLink';
@@ -145,7 +145,7 @@ function CustomerKpisConfigurationEditor({
 function CustomerKpisConfigurationLoading() {
   const { t } = useTranslation(['client360']);
 
-  return <div className="p-md text-small text-grey-secondary">{t('client360:customer_kpis.loading')}</div>;
+  return <div className="p-md text-small text-grey-secondary">{t('client360:customer_kpis.status.loading')}</div>;
 }
 
 function CustomerKpisConfigurationError({ onRetry }: { onRetry: () => void }) {
@@ -270,12 +270,35 @@ function CustomerKpisConfigurationForm({
       <div className="flex flex-col gap-md p-md">
         <div className="flex items-center justify-between gap-sm">
           <div className="flex min-w-0 items-center gap-sm">
-            <span className="text-default font-medium">{t('client360:customer_kpis.configuration')}</span>
+            <span className="text-default font-medium">{t('client360:customer_kpis.configuration.title')}</span>
+            <span aria-hidden="true" className="text-grey-secondary">
+              ·
+            </span>
             <div className="flex items-center gap-xs">
-              <span className="rounded-sm border border-grey-border bg-surface-card p-xs font-mono text-2xs">
-                {t('client360:customer_kpis.client_filter', { objectId, objectType })}
+              <span className="text-small">
+                <Trans
+                  t={t}
+                  i18nKey="client360:customer_kpis.configuration.customer_scope.label"
+                  values={{ objectType }}
+                  components={{
+                    Scope: <bdi dir="ltr" />,
+                    code: (
+                      <code className="rounded-sm border border-grey-border bg-surface-card p-xs font-mono text-2xs">
+                        {objectId}
+                      </code>
+                    ),
+                  }}
+                />
               </span>
-              <Icon aria-hidden="true" icon="tip" className="text-grey-secondary size-4" />
+              <Tooltip.Default content={t('client360:customer_kpis.configuration.customer_scope.tooltip')}>
+                <button
+                  type="button"
+                  aria-label={t('client360:customer_kpis.configuration.customer_scope.tooltip')}
+                  className="text-grey-secondary inline-flex shrink-0"
+                >
+                  <Icon aria-hidden="true" icon="tip" className="size-4" />
+                </button>
+              </Tooltip.Default>
             </div>
           </div>
           <Button type="button" mode="icon" variant="secondary" appearance="link" onClick={clearConfiguration}>
@@ -284,7 +307,7 @@ function CustomerKpisConfigurationForm({
         </div>
         <div className="grid grid-cols-[--spacing(30)_1fr] gap-x-sm gap-y-md">
           <div className="grid grid-cols-subgrid col-span-full items-center">
-            <span className="text-right">{t('client360:customer_kpis.form.indicator_named')}</span>
+            <span className="text-right">{t('client360:customer_kpis.form.name.label')}</span>
             <Input
               value={typeof node.namedChildren.label.constant === 'string' ? node.namedChildren.label.constant : ''}
               onChange={(event) => {
@@ -295,7 +318,7 @@ function CustomerKpisConfigurationForm({
             />
           </div>
           <div className="grid grid-cols-subgrid col-span-full items-center">
-            <span className="text-right">{t('client360:customer_kpis.form.based_on')}</span>
+            <span className="text-right">{t('client360:customer_kpis.form.source_table.label')}</span>
             <div className="max-w-75">
               <LinkedTablesSelect
                 objectType={objectType}
@@ -309,10 +332,10 @@ function CustomerKpisConfigurationForm({
           </div>
           {tableName ? (
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-right">{t('client360:customer_kpis.form.looking_for')}</span>
+              <span className="text-right">{t('client360:customer_kpis.form.aggregation.label')}</span>
               <div className="grid grid-cols-[1fr_auto_1fr] gap-sm items-center">
                 <SelectV2
-                  placeholder={t('client360:customer_kpis.form.select_function')}
+                  placeholder={t('client360:customer_kpis.form.aggregation.placeholder')}
                   value={typeof functionName === 'string' ? functionName : ''}
                   options={availableOperators.map((operator) => ({
                     label: getOperatorName(t, operator, false),
@@ -322,6 +345,11 @@ function CustomerKpisConfigurationForm({
                     if (!isAggregatorOperator(operator)) return;
                     updateNode((currentNode) => {
                       currentNode.namedChildren.aggregator.constant = operator;
+                      if (operator === 'COUNT') {
+                        // The API still requires a valid field, even though COUNT counts rows.
+                        currentNode.namedChildren.fieldName.constant = 'object_id';
+                        return;
+                      }
                       const selectedField = tableFields.find(
                         (field) => field.name === currentNode.namedChildren.fieldName.constant,
                       );
@@ -342,9 +370,9 @@ function CustomerKpisConfigurationForm({
                     </div>
                   )}
                 />
-                {functionName ? (
+                {functionName && functionName !== 'COUNT' ? (
                   <>
-                    <span className="text-center">{t('client360:customer_kpis.form.of')}</span>
+                    <span className="text-center">{t('client360:customer_kpis.form.field.prefix')}</span>
                     <FieldSelect
                       value={typeof fieldName === 'string' ? fieldName : ''}
                       fields={availableFields}
@@ -362,18 +390,18 @@ function CustomerKpisConfigurationForm({
           {functionName && fieldName ? (
             <>
               <div className="grid grid-cols-subgrid col-span-full items-center">
-                <span className="text-right">{t('client360:customer_kpis.form.date_range')}</span>
+                <span className="text-right">{t('client360:customer_kpis.form.time_window.label')}</span>
                 <div className="max-w-75">
                   <SelectV2
-                    placeholder={t('client360:customer_kpis.form.select_date_range')}
+                    placeholder={t('client360:customer_kpis.form.time_window.placeholder')}
                     value={timeSlice}
                     options={[
-                      { label: t('client360:customer_kpis.form.date_range.last_24_hours'), value: 'P1D' },
-                      { label: t('client360:customer_kpis.form.date_range.last_week'), value: 'P1W' },
-                      { label: t('client360:customer_kpis.form.date_range.last_month'), value: 'P1M' },
-                      { label: t('client360:customer_kpis.form.date_range.last_2_months'), value: 'P2M' },
-                      { label: t('client360:customer_kpis.form.date_range.last_6_months'), value: 'P6M' },
-                      { label: t('client360:customer_kpis.form.date_range.last_year'), value: 'P1Y' },
+                      { label: t('client360:customer_kpis.form.time_window.options.last_24_hours'), value: 'P1D' },
+                      { label: t('client360:customer_kpis.form.time_window.options.last_week'), value: 'P1W' },
+                      { label: t('client360:customer_kpis.form.time_window.options.last_month'), value: 'P1M' },
+                      { label: t('client360:customer_kpis.form.time_window.options.last_2_months'), value: 'P2M' },
+                      { label: t('client360:customer_kpis.form.time_window.options.last_6_months'), value: 'P6M' },
+                      { label: t('client360:customer_kpis.form.time_window.options.last_year'), value: 'P1Y' },
                     ]}
                     onChange={setTimeSlice}
                     displayedValue={(option) => (
@@ -448,7 +476,9 @@ function CustomerKpisConfigurationForm({
 
                 return (
                   <div key={filter.id} className="grid grid-cols-subgrid col-span-full items-center">
-                    <span className="text-right self-start pt-sm">{t('client360:customer_kpis.form.where')}</span>
+                    <span className="text-right self-start pt-sm">
+                      {t('client360:customer_kpis.form.filters.label')}
+                    </span>
                     <div className="flex min-w-0 flex-col gap-sm">
                       <div
                         className={
@@ -616,7 +646,7 @@ function CustomerKpisConfigurationForm({
                   ]);
                 }}
               >
-                {t('client360:customer_kpis.form.add_filter')}
+                {t('client360:customer_kpis.form.filters.add')}
               </Button>
             </>
           ) : null}
@@ -651,8 +681,8 @@ function FieldSelect({ value, fields, onChange }: FieldSelectProps) {
 
   return (
     <SelectV2
-      placeholder={t('client360:customer_kpis.form.select_field')}
-      aria-label={t('client360:customer_kpis.form.select_field')}
+      placeholder={t('client360:customer_kpis.form.field.placeholder')}
+      aria-label={t('client360:customer_kpis.form.field.placeholder')}
       value={value}
       options={fields.map((field) => ({
         label: () => {

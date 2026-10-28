@@ -50,7 +50,7 @@ export function LinkedTablesSelect({ objectType, navigationOption, onChange }: L
 
   return (
     <SelectV2<string | undefined>
-      placeholder={t('client360:customer_kpis.form.select_table')}
+      placeholder={t('client360:customer_kpis.form.source_table.placeholder')}
       options={options}
       value={navigationOption?.id}
       onChange={(selectedNavigationOptionId) => {

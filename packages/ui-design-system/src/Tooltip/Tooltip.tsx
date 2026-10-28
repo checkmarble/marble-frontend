@@ -31,9 +31,27 @@ export function DefaultTooltip({
     >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Portal>
-        <TooltipPrimitive.Content side="top" align="center" className="z-50 drop-shadow-sm" {...props}>
-          <div className={cn('bg-surface-card max-h-40 overflow-y-auto rounded-sm p-sm', className)}>{content}</div>
-          {arrow ? <TooltipPrimitive.Arrow width={11} height={5} className="fill-grey-white" /> : null}
+        <TooltipPrimitive.Content
+          side="top"
+          align="center"
+          className="z-50 drop-shadow-lg dark:drop-shadow-[#000]/30"
+          {...props}
+        >
+          <div
+            className={cn(
+              'bg-surface-elevated border-grey-border text-grey-primary max-h-40 overflow-y-auto rounded-sm border p-sm',
+              className,
+            )}
+          >
+            {content}
+          </div>
+          {arrow ? (
+            <TooltipPrimitive.Arrow asChild width={11} height={5}>
+              <svg viewBox="0 0 11 5" className="fill-surface-elevated stroke-grey-border" aria-hidden="true">
+                <path d="M0 0 L5.5 5 L11 0" />
+              </svg>
+            </TooltipPrimitive.Arrow>
+          ) : null}
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Portal>
     </TooltipPrimitive.Root>
@@ -58,7 +76,7 @@ const TooltipContent = ({
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'border-grey-border bg-surface-card text-grey-primary animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-radix-tooltip overflow-hidden rounded-sm border p-xs text-xs',
+        'border-grey-border bg-surface-elevated text-grey-primary animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-radix-tooltip overflow-hidden rounded-sm border p-xs text-xs shadow-lg dark:shadow-[#000]/30',
         className,
       )}
       {...props}

@@ -51,6 +51,7 @@ const dataModel = [
   {
     name: 'transactions',
     fields: [
+      { name: 'object_id', dataType: 'String' },
       { name: 'id', dataType: 'Int' },
       { name: 'status', dataType: 'String' },
       { name: 'occurred_at', dataType: 'Timestamp' },
@@ -82,6 +83,20 @@ describe('customer KPI aggregation AST', () => {
     setCustomerKpiNavigationOption(aggregation, alternativeNavigationOption);
 
     expect(getCustomerKpiNavigationOption(aggregation, 'customers', dataModel)).toEqual(alternativeNavigationOption);
+  });
+
+  it('keeps Count complete when changing the navigation option without selecting a field', () => {
+    const aggregation = createCustomerKpiAggregation();
+    aggregation.namedChildren.aggregator.constant = 'COUNT';
+    aggregation.namedChildren.label.constant = 'Transaction count';
+    setCustomerKpiNavigationOption(aggregation, navigationOption);
+
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
+
+    setCustomerKpiNavigationOption(aggregation, alternativeNavigationOption);
+
+    expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
+    expect(aggregation.namedChildren.fieldName.constant).toBe('object_id');
   });
 
   it('preserves operand transitions for unary, binary, list, and fuzzy-match filters', () => {
