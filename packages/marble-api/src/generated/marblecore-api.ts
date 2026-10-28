@@ -64,6 +64,7 @@ export type Token = {
 export type CredentialsDto = {
     credentials: {
         organization_id: string;
+        auth_tenant_id?: string;
         /** Roles bound to the principal. Omitted when the principal has none. */
         roles?: string[];
         actor_identity: {
@@ -1891,6 +1892,13 @@ export type Items2 = {
     tenant_id: string;
     role: Role;
 };
+export type Schema3 = {
+    id: string;
+    tenant_id: string;
+    domain: string;
+    verified_at: string;
+    created_at: string;
+};
 export type OrganizationDto = {
     id: string;
     /** ID of the tenant grouping this organization with the other organizations of the same customer */
@@ -2531,10 +2539,11 @@ export function listCustomerAggregates(recordType: string, customerId: string, o
 /**
  * Get an access token
  */
-export function postToken({ xApiKey, authorization, xOidcAccessToken, organizationId }: {
+export function postToken({ xApiKey, authorization, xOidcAccessToken, xMarbleTenantId, organizationId }: {
     xApiKey?: string;
     authorization?: string;
     xOidcAccessToken?: string;
+    xMarbleTenantId?: string;
     organizationId?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -2551,7 +2560,8 @@ export function postToken({ xApiKey, authorization, xOidcAccessToken, organizati
         headers: oazapfts.mergeHeaders(opts?.headers, {
             "X-API-Key": xApiKey,
             Authorization: authorization,
-            "x-oidc-access-token": xOidcAccessToken
+            "x-oidc-access-token": xOidcAccessToken,
+            "x-marble-tenant-id": xMarbleTenantId
         })
     }));
 }
@@ -2571,6 +2581,75 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
     }>("/credentials", {
         ...opts
     }));
+}
+/**
+ * Discover the OIDC configuration for a domain
+ */
+export function discoverTenantOidc(body: {
+    domain: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            tenant_id: string;
+            issuer: string;
+            client_id: string;
+            redirect_uri: string;
+            scopes: string[];
+            extra_params: {
+                [key: string]: string;
+            } | null;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/auth/discovery", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Exchange an authorization code or refresh token for OIDC tokens
+ */
+export function exchangeOidcToken(body: {
+    grant_type: "authorization_code" | "refresh_token";
+    code?: string;
+    code_verifier?: string;
+    refresh_token?: string;
+}, { xMarbleTenantId }: {
+    xMarbleTenantId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            token_type: string;
+            access_token: string;
+            refresh_token: string;
+            id_token: string;
+            expiry: string;
+            expires_in: number;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/oidc/token", oazapfts.form({
+        ...opts,
+        method: "POST",
+        body,
+        headers: oazapfts.mergeHeaders(opts?.headers, {
+            "x-marble-tenant-id": xMarbleTenantId
+        })
+    })));
 }
 /**
  * List the current user's organizations
@@ -6261,6 +6340,178 @@ export function mergeTenants(tenantId: string, body: {
         method: "POST",
         body
     })));
+}
+/**
+ * Get a tenant OIDC configuration
+ */
+export function getTenantOidcConfiguration(tenantId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            tenant_id: string;
+            issuer: string;
+            client_id: string;
+            client_secret_set: boolean;
+            scopes: string[];
+            extra_params: {
+                [key: string]: string;
+            } | null;
+            email_claim: string;
+            sso_enabled: boolean;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/oidc-configuration`, {
+        ...opts
+    }));
+}
+/**
+ * Save a tenant OIDC configuration
+ */
+export function putTenantOidcConfiguration(tenantId: string, body: {
+    issuer: string;
+    client_id: string;
+    /** Required for a new configuration; omit or pass null to retain the existing secret. */
+    client_secret?: string | null;
+    /** Defaults to openid, profile and email when omitted or empty. */
+    scopes?: string[];
+    extra_params?: {
+        [key: string]: string;
+    } | null;
+    email_claim?: string;
+    sso_enabled?: boolean;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/oidc-configuration`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
+}
+/**
+ * Delete a tenant OIDC configuration
+ */
+export function deleteTenantOidcConfiguration(tenantId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/oidc-configuration`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * List a tenant's OIDC domains
+ */
+export function listTenantOidcDomains(tenantId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema3[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/domains`, {
+        ...opts
+    }));
+}
+/**
+ * Add a tenant OIDC domain
+ */
+export function createTenantOidcDomain(tenantId: string, body: {
+    domain: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: {
+            id: string;
+            tenant_id: string;
+            domain: string;
+            verified_at: string;
+            created_at: string;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/domains`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Delete a tenant OIDC domain
+ */
+export function deleteTenantOidcDomain(tenantId: string, domainId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/domains/${encodeURIComponent(domainId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * Grant a user a role on an organization of the tenant

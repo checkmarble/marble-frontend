@@ -4,6 +4,7 @@
       - Users
       - Organizations
     summary: List the current user's organizations
+    description: When authenticated through a tenant OIDC provider, only organizations belonging to that tenant are returned.
     operationId: listMyOrganizations
     security:
       - bearerAuth: []
