@@ -880,12 +880,18 @@ components:
       required:
         - id
         - name
+        - oidc_configuration
       properties:
         id:
           type: string
           format: uuid
         name:
           type: string
+        oidc_configuration:
+          description: The tenant OIDC configuration, without the client secret. Null when none is configured.
+          nullable: true
+          allOf:
+            - $ref: "tenant-oidc.yml#/components/schemas/TenantOidcConfiguration"
     UpdateTenantBodyDto:
       type: object
       required:
