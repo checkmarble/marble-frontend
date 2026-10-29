@@ -1,7 +1,7 @@
-import { type CredentialsDto } from 'marble-api';
+import { type CredentialsDto, type UserDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
 
-import { adaptCurrentUser, isAdmin, isAnalyst, isMarbleAdmin, isMarbleCoreUser } from './user';
+import { adaptCurrentUser, adaptUser, isAdmin, isAnalyst, isMarbleAdmin, isMarbleCoreUser } from './user';
 
 const credentials: CredentialsDto['credentials'] = {
   organization_id: 'organization-id',
@@ -44,5 +44,19 @@ describe('current user access', () => {
     expect(user.roles).toEqual([]);
     expect(isAdmin(user)).toBe(false);
     expect(isMarbleCoreUser(user)).toBe(false);
+  });
+});
+
+describe('adaptUser', () => {
+  it('preserves all role bindings and their IDs', () => {
+    const dto: UserDto = {
+      user_id: 'user-id',
+      email: 'user@example.com',
+      first_name: 'First',
+      last_name: 'Last',
+      organization_id: 'org-id',
+      roles: [{ id: 'binding-id', role: 'ADMIN' }, { role: 'ANALYST' }],
+    };
+    expect(adaptUser(dto).roles).toEqual(dto.roles);
   });
 });

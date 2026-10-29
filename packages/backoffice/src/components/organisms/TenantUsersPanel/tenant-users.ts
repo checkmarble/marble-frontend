@@ -11,7 +11,7 @@ const byUserName = (a: { user: UserDto }, b: { user: UserDto }) =>
   });
 
 // Users of each organization: home members first take their home grant role (falling back on
-// the legacy `user.role`, like the grants panel), then users reaching it through a direct grant.
+// their role bindings, like the grants panel), then users reaching it through a direct grant.
 export const groupMembersByOrganization = (users: UserDto[]): MembersByOrganization => {
   const grouped = new Map<string, OrganizationMember[]>();
   const add = (organizationId: string, member: OrganizationMember) => {
@@ -27,7 +27,7 @@ export const groupMembersByOrganization = (users: UserDto[]): MembersByOrganizat
     const grants = user.grants ?? [];
     if (hasHomeOrganization(user)) {
       const homeGrant = grants.find((grant) => grant.organization_id === user.organization_id);
-      add(user.organization_id, { user, role: homeGrant?.role ?? user.role });
+      add(user.organization_id, { user, role: homeGrant?.role ?? user.roles.map(({ role }) => role).join(', ') });
     }
     for (const grant of grants) {
       if (grant.organization_id === user.organization_id) continue;

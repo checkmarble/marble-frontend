@@ -129,7 +129,7 @@ export const createUserPayloadSchema = z.object({
   firstName: z.string().nonempty(),
   lastName: z.string().nonempty(),
   email: z.email().nonempty(),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
+  roles: z.array(z.object({ id: z.string().optional(), role: z.string().min(1) })).length(1),
   organizationId: z.uuid().nonempty(),
 });
 export type CreateUserPayload = z.infer<typeof createUserPayloadSchema>;
@@ -144,7 +144,7 @@ export const updateUserPayloadSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
+  roles: z.array(z.object({ id: z.string().optional(), role: z.string().min(1) })).length(1),
   organizationId: z.uuid(),
 });
 export type UpdateUserPayload = z.infer<typeof updateUserPayloadSchema>;

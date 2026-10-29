@@ -462,7 +462,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
         first_name: data.firstName,
         last_name: data.lastName,
         email: data.email,
-        role: data.role,
+        roles: data.roles,
         organization_id: data.organizationId,
       });
     } catch (error) {
@@ -492,7 +492,7 @@ export const updateUserFn = createServerFn({ method: 'POST' })
       first_name: data.firstName,
       last_name: data.lastName,
       email: data.email,
-      role: data.role,
+      roles: data.roles,
       organization_id: data.organizationId,
     });
   });

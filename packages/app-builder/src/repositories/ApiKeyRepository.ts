@@ -17,7 +17,7 @@ export function makeGetApiKeyRepository() {
     createApiKey: async ({ description, role }) => {
       const { api_key } = await marbleCoreApiClient.createApiKey({
         description,
-        role,
+        roles: [{ role }],
       });
 
       return adaptCreatedApiKey(api_key);

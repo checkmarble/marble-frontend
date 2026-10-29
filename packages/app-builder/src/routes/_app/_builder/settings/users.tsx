@@ -97,11 +97,14 @@ function Users() {
         size: 150,
         cell: ({ getValue }) => <div className="overflow-hidden text-ellipsis">{getValue()}</div>,
       }),
-      columnHelper.accessor((row) => row.role, {
+      columnHelper.accessor((row) => row.roles, {
         id: 'role',
         header: t('settings:users.role'),
         size: 150,
-        cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
+        cell: ({ getValue }) =>
+          getValue()
+            .map(({ role }) => t(tKeyForUserRole(role)))
+            .join(', '),
       }),
       columnHelper.accessor((row) => row.userId, {
         id: 'tfa',

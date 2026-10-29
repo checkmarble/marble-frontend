@@ -51,10 +51,14 @@ export const createGlobalUserFn = createServerFn({ method: 'POST' })
   .validator(createGlobalUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const { user } = await marblecoreApi.createUser(data, {
-        baseUrl: env.API_BASE_URL,
-        fetch: context.authFetch,
-      });
+      const { role, ...details } = data;
+      const { user } = await marblecoreApi.createUser(
+        { ...details, roles: [{ role }] },
+        {
+          baseUrl: env.API_BASE_URL,
+          fetch: context.authFetch,
+        },
+      );
 
       return user;
     } catch (error) {

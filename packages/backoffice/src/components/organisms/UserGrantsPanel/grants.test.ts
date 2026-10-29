@@ -23,25 +23,30 @@ const tenants = [
 
 describe('canManageGrants', () => {
   it('needs a home organization unless the user is customer service', () => {
-    expect(canManageGrants({ organization_id: home.id, role: 'VIEWER' })).toBe(true);
-    expect(canManageGrants({ organization_id: '00000000-0000-0000-0000-000000000000', role: 'VIEWER' })).toBe(false);
-    expect(canManageGrants({ organization_id: '', role: 'MARBLE_ADMIN' })).toBe(true);
+    expect(canManageGrants({ organization_id: home.id, roles: [{ role: 'VIEWER' }] })).toBe(true);
+    expect(
+      canManageGrants({ organization_id: '00000000-0000-0000-0000-000000000000', roles: [{ role: 'VIEWER' }] }),
+    ).toBe(false);
+    expect(canManageGrants({ organization_id: '', roles: [{ role: 'VIEWER' }, { role: 'MARBLE_ADMIN' }] })).toBe(true);
   });
 });
 
 describe('canAssignHomeOrganization', () => {
   it('is only the first assignment for a user who is not customer service', () => {
-    expect(canAssignHomeOrganization({ organization_id: '', role: 'VIEWER' })).toBe(true);
-    expect(canAssignHomeOrganization({ organization_id: '00000000-0000-0000-0000-000000000000', role: 'VIEWER' })).toBe(
-      true,
-    );
-    expect(canAssignHomeOrganization({ organization_id: home.id, role: 'VIEWER' })).toBe(false);
-    expect(canAssignHomeOrganization({ organization_id: '', role: 'MARBLE_ADMIN' })).toBe(false);
+    expect(canAssignHomeOrganization({ organization_id: '', roles: [{ role: 'VIEWER' }] })).toBe(true);
+    expect(
+      canAssignHomeOrganization({
+        organization_id: '00000000-0000-0000-0000-000000000000',
+        roles: [{ role: 'VIEWER' }],
+      }),
+    ).toBe(true);
+    expect(canAssignHomeOrganization({ organization_id: home.id, roles: [{ role: 'VIEWER' }] })).toBe(false);
+    expect(canAssignHomeOrganization({ organization_id: '', roles: [{ role: 'MARBLE_ADMIN' }] })).toBe(false);
   });
 });
 
 describe('getTenantGrantsView', () => {
-  const user = { organization_id: home.id, role: 'ADMIN' };
+  const user = { organization_id: home.id, roles: [{ role: 'ADMIN' }] };
 
   it('splits the home grant from the others and offers the rest of the tenant', () => {
     const view = getTenantGrantsView({
@@ -128,7 +133,7 @@ describe('getUserOrganizationTags', () => {
       tenants,
       user: {
         organization_id: home.id,
-        role: 'VIEWER',
+        roles: [{ role: 'VIEWER' }],
         grants: [
           { organization_id: zeta.id, tenant_id: TENANT_A, role: 'VIEWER' },
           { organization_id: home.id, tenant_id: TENANT_A, role: 'VIEWER' },
@@ -150,7 +155,7 @@ describe('getUserOrganizationTags', () => {
       tenants,
       user: {
         organization_id: '00000000-0000-0000-0000-000000000000',
-        role: 'MARBLE_ADMIN',
+        roles: [{ role: 'MARBLE_ADMIN' }],
         grants: [
           { organization_id: other.id, tenant_id: TENANT_B, role: 'ADMIN' },
           { organization_id: zeta.id, tenant_id: TENANT_A, role: 'VIEWER' },
@@ -162,8 +167,8 @@ describe('getUserOrganizationTags', () => {
   });
 
   it('is empty for an unassigned user without grants', () => {
-    expect(getUserOrganizationTags({ organizations, tenants, user: { organization_id: '', role: 'VIEWER' } })).toEqual(
-      [],
-    );
+    expect(
+      getUserOrganizationTags({ organizations, tenants, user: { organization_id: '', roles: [{ role: 'VIEWER' }] } }),
+    ).toEqual([]);
   });
 });
