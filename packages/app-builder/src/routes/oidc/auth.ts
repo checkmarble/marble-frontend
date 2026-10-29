@@ -1,7 +1,7 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { createFileRoute } from '@tanstack/react-router';
-import { getOauth2Cookie, makeOidcService } from '../../services/auth/oidc.server';
+import { getOauth2Cookie, makeOidcService, type OAuth2CookieData } from '../../services/auth/oidc.server';
 
 export interface Tokens {
   sub: string;
@@ -22,8 +22,9 @@ export const Route = createFileRoute('/oidc/auth')({
           return Response.redirect(new URL('/sign-in', request.url).toString(), 302);
         }
 
-        const oidc = await makeOidcService(appConfig);
+        const oidc = await makeOidcService(appConfig.auth.oidc);
         const { url, state, codeVerifier } = await oidc.buildAuthorizationUrl();
+        const cookieData: OAuth2CookieData = { state, codeVerifier };
 
         const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol;
         const oauth2Cookie = getOauth2Cookie({
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/oidc/auth')({
           secure: proto === 'https:',
         });
 
-        const cookieHeader = await oauth2Cookie.serialize(JSON.stringify({ state, codeVerifier }));
+        const cookieHeader = await oauth2Cookie.serialize(JSON.stringify(cookieData));
 
         return new Response(null, {
           status: 302,

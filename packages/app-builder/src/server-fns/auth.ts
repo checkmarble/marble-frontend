@@ -1,5 +1,8 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { discoverTenantOidc, makeOidcService, setOauth2Cookie } from '@app-builder/services/auth/oidc.server';
+import { captureUnexpectedError } from '@app-builder/services/monitoring';
+import { preserveSignedOut } from '@app-builder/utils/cross-tab-session';
 import { safeRedirect } from '@app-builder/utils/safe-redirect';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -37,6 +40,50 @@ export const signInEmailFn = createServerFn({ method: 'POST' })
       { idToken: data.idToken, refreshToken: data.refreshToken, csrf: data.csrf },
       { successRedirect, failureRedirect: '/sign-in-email' },
     );
+  });
+
+export type DiscoverSignInResult =
+  | { type: 'redirect'; href: string }
+  | { type: 'error'; error: 'unknown_domain' | 'discovery_failed' };
+
+export const discoverSignInFn = createServerFn({ method: 'POST' })
+  .middleware([servicesMiddleware])
+  .validator(z.object({ email: z.email(), redirectTo: z.string().optional(), signedOut: z.boolean() }))
+  .handler(async ({ context, data }): Promise<DiscoverSignInResult> => {
+    const request = getRequest();
+    const domain = data.email.slice(data.email.lastIndexOf('@') + 1).toLowerCase();
+
+    try {
+      const discovery = await discoverTenantOidc(domain);
+
+      if (!discovery) {
+        if (!context.appConfig.auth.providers.includes('firebase')) {
+          return { type: 'error', error: 'unknown_domain' };
+        }
+        let href = `/sign-in-email?email=${encodeURIComponent(data.email)}`;
+        if (data.redirectTo) href += `&redirectTo=${encodeURIComponent(data.redirectTo)}`;
+        return { type: 'redirect', href: preserveSignedOut(href, data.signedOut) };
+      }
+
+      const oidc = await makeOidcService({
+        issuer: discovery.issuer,
+        client_id: discovery.client_id,
+        redirect_uri: discovery.redirect_uri,
+        scopes: discovery.scopes,
+        extra_params: discovery.extra_params ?? {},
+      });
+      const { url, state, codeVerifier } = await oidc.buildAuthorizationUrl({ loginHint: data.email });
+      setOauth2Cookie(request, {
+        state,
+        codeVerifier,
+        tenantId: discovery.tenant_id,
+        redirectTo: data.redirectTo ? safeRedirect(data.redirectTo, '/app-router') : undefined,
+      });
+      return { type: 'redirect', href: url };
+    } catch (error) {
+      captureUnexpectedError(error, 'server-fns/auth@discoverSignInFn', request);
+      return { type: 'error', error: 'discovery_failed' };
+    }
   });
 
 export const logoutFn = createServerFn({ method: 'POST' })

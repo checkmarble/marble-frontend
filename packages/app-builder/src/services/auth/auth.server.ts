@@ -40,7 +40,7 @@ import { BackendGlobalError, marblecoreApi, type Token, TokenService, TokenServi
 import * as z from 'zod/v4';
 import { captureUnexpectedError } from '../monitoring';
 import { refreshFirebaseIdToken } from './firebase.server';
-import { makeOidcService } from './oidc.server';
+import { type makeOidcService, type OidcClientConfig, refreshTenantOidcToken } from './oidc.server';
 
 function redirect(url: string, init?: { status?: number; headers?: HeadersInit }): Response {
   const headers = new Headers(init?.headers);
@@ -170,7 +170,7 @@ interface MakeAuthenticationServerServiceArgs {
   getClient360TablesRepository: (marbleCoreApiClient: MarbleCoreApi) => Client360Repository;
   getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
   getUserScoringRepository: (marbleCoreApiClient: MarbleCoreApi) => UserScoringRepository;
-  makeOidcService: (appConfig: AppConfig) => ReturnType<typeof makeOidcService>;
+  makeOidcService: (config: OidcClientConfig) => ReturnType<typeof makeOidcService>;
 }
 
 function expectedErrors(error: unknown) {
@@ -209,6 +209,25 @@ export function makeAuthenticationServerService({
   getUserScoringRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
+  async function refreshOidcTokens(
+    appConfig: AppConfig,
+    refreshToken: string,
+    tenantId: string | undefined,
+  ): Promise<{ idToken: string; accessToken: string; refreshToken: string | null }> {
+    if (tenantId) {
+      const tokens = await refreshTenantOidcToken(tenantId, refreshToken);
+      return { idToken: tokens.idToken, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken || null };
+    }
+
+    const oidc = await makeOidcService(appConfig.auth.oidc);
+    const response = await oidc.refreshToken(refreshToken);
+    return {
+      idToken: response.idToken(),
+      accessToken: response.accessToken(),
+      refreshToken: response.hasRefreshToken() ? response.refreshToken() : null,
+    };
+  }
+
   /**
    * Exchange the provider refresh token (Firebase or OIDC) stored in the session
    * for a fresh Marble token. Returns a `status: false` update when no refresh is
@@ -230,20 +249,17 @@ export function makeAuthenticationServerService({
     }
 
     if (authSession.data.provider === 'oidc') {
-      const oidc = await makeOidcService(appConfig);
-      const response = await oidc.refreshToken(storedRefreshToken);
+      const tenantId = authSession.data.oidcTenantId;
+      const response = await refreshOidcTokens(appConfig, storedRefreshToken, tenantId);
 
       const marbleToken = await getToken({
-        idToken: response.idToken(),
-        oldToken: response.accessToken(),
+        idToken: response.idToken,
+        oldToken: response.accessToken,
         organizationId,
+        tenantId,
       });
 
-      return {
-        status: true,
-        marbleToken,
-        refreshToken: response.hasRefreshToken() ? response.refreshToken() : null,
-      };
+      return { status: true, marbleToken, refreshToken: response.refreshToken };
     }
 
     if (authSession.data.provider === 'firebase') {
@@ -305,6 +321,7 @@ export function makeAuthenticationServerService({
       await authSession.update({
         authToken: marbleToken,
         provider: 'firebase',
+        oidcTenantId: undefined,
         authError: undefined,
         // Persist the Firebase refresh token so the server can refresh the Marble
         // token during SSR without a browser (fixes logout after inactivity).
@@ -335,6 +352,7 @@ export function makeAuthenticationServerService({
     options: {
       successRedirect: string;
       failureRedirect: string;
+      tenantId?: string;
     },
   ): Promise<never> {
     const authSession = await useAuthSession();
@@ -343,12 +361,14 @@ export function makeAuthenticationServerService({
 
     try {
       const { idToken, accessToken, refreshToken } = tokens;
+      const { tenantId } = options;
 
-      const marbleToken = await getToken({ idToken, oldToken: accessToken, preferredOrganizationId });
+      const marbleToken = await getToken({ idToken, oldToken: accessToken, preferredOrganizationId, tenantId });
 
       await authSession.update({
         authToken: marbleToken,
         provider: 'oidc',
+        oidcTenantId: tenantId,
         authError: undefined,
         ...(refreshToken ? { refreshToken } : {}),
       });
@@ -435,17 +455,18 @@ export function makeAuthenticationServerService({
     await validateCsrf(request, payload.csrf);
     if (!authSession.data.refreshToken) throw new Error('No OIDC refresh token is available to switch organizations');
     const appConfig = await getAppConfigRepository(unauthenticatedMarbleCoreApiClient).getAppConfig();
-    const oidc = await makeOidcService(appConfig);
-    const response = await oidc.refreshToken(authSession.data.refreshToken);
+    const tenantId = authSession.data.oidcTenantId;
+    const response = await refreshOidcTokens(appConfig, authSession.data.refreshToken, tenantId);
     // Rotation may invalidate the old refresh token even if the target
     // organization exchange fails. Keep the active Marble token until success.
-    if (response.hasRefreshToken()) {
-      await authSession.update({ refreshToken: response.refreshToken() });
+    if (response.refreshToken) {
+      await authSession.update({ refreshToken: response.refreshToken });
     }
     const marbleToken = await getToken({
-      idToken: response.idToken(),
-      oldToken: response.accessToken(),
+      idToken: response.idToken,
+      oldToken: response.accessToken,
       organizationId: payload.newOrganizationId,
+      tenantId,
     });
     await authSession.update({ authToken: marbleToken });
   }
@@ -602,11 +623,13 @@ async function getToken({
   oldToken,
   organizationId,
   preferredOrganizationId,
+  tenantId,
 }: {
   idToken: string;
   oldToken?: string;
   organizationId?: string;
   preferredOrganizationId?: string;
+  tenantId?: string;
 }) {
   // Refreshes and switches use an explicit organization. Sign-in first resolves
   // memberships for the incoming account before reusing a session preference.
@@ -614,6 +637,7 @@ async function getToken({
     {
       authorization: `Bearer ${idToken}`,
       xOidcAccessToken: oldToken,
+      xMarbleTenantId: tenantId,
       organizationId: organizationId,
     },
     { baseUrl: getServerEnv('MARBLE_API_URL') },
@@ -634,6 +658,7 @@ async function getToken({
     {
       authorization: `Bearer ${idToken}`,
       xOidcAccessToken: oldToken,
+      xMarbleTenantId: tenantId,
       organizationId: selectedOrganization.id,
     },
     { baseUrl: getServerEnv('MARBLE_API_URL') },

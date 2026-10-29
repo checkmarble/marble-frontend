@@ -7,6 +7,8 @@ import { type Token } from 'marble-api';
 export type AuthSessionData = {
   authToken?: Token;
   provider?: 'firebase' | 'oidc';
+  /** Set when the OIDC session was opened through a tenant IdP found by email discovery. */
+  oidcTenantId?: string;
   /** Provider refresh token (OIDC or Firebase) used to refresh the Marble token server-side during SSR. */
   refreshToken?: string;
   /** Epoch ms of the last authenticated request, used to enforce the sliding idle timeout. */
