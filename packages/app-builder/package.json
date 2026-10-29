@@ -29,6 +29,7 @@
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "^14.6.7",
     "@types/autosuggest-highlight": "^3.2.3",
+    "@types/dom-chromium-ai": "^0.0.17",
     "@types/js-cookie": "^3.0.6",
     "@types/qs": "^6.15.1",
     "@types/react": "19.3.0",
