@@ -114,11 +114,14 @@ function ApiKeys() {
         header: t('settings:api_keys.description'),
         size: 250,
       }),
-      apiKeyColumnHelper.accessor((row) => row.role, {
+      apiKeyColumnHelper.accessor((row) => row.roles, {
         id: 'role',
         header: t('settings:api_keys.role'),
         size: 150,
-        cell: ({ getValue }) => t(tKeyForApiKeyRole(getValue())),
+        cell: ({ getValue }) =>
+          getValue()
+            .map(({ role }) => t(tKeyForApiKeyRole(role)))
+            .join(', '),
       }),
       apiKeyColumnHelper.display({
         id: 'actions',
