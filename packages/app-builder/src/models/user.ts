@@ -1,5 +1,5 @@
 import { type ParseKeys } from 'i18next';
-import { type CredentialsDto, type UserDto } from 'marble-api';
+import { type CredentialsDto, type RoleBinding, type UserDto } from 'marble-api';
 import * as R from 'remeda';
 
 export interface CurrentUser {
@@ -72,7 +72,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  roles: RoleBinding[];
   organizationId: string;
   // Only populated when users are fetched with the `withTfa` option; undefined otherwise.
   tfaEnabled?: boolean;
@@ -84,7 +84,7 @@ export function adaptUser(user: UserDto): User {
     email: user.email,
     firstName: user.first_name,
     lastName: user.last_name,
-    role: user.role,
+    roles: user.roles ?? [],
     organizationId: user.organization_id,
     tfaEnabled: user.tfa_enabled,
   };

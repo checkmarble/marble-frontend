@@ -33,8 +33,9 @@ export const createGlobalUserPayloadSchema = globalUserDetailsSchema.extend({
 });
 export type CreateGlobalUserPayload = z.infer<typeof createGlobalUserPayloadSchema>;
 
-export const updateGlobalUserPayloadSchema = globalUserDetailsSchema.extend({
+export const updateGlobalUserPayloadSchema = globalUserDetailsSchema.omit({ role: true }).extend({
   userId: z.uuid(),
+  roles: z.array(z.object({ id: z.string().optional(), role: z.string().min(1) })).length(1),
   organization_id: z.uuid().optional(),
 });
 export type UpdateGlobalUserPayload = z.infer<typeof updateGlobalUserPayloadSchema>;
@@ -61,7 +62,7 @@ export const organizationGrantTargetSchema = z.object({
 export type OrganizationGrantTarget = z.infer<typeof organizationGrantTargetSchema>;
 
 export const replaceOrganizationGrantPayloadSchema = organizationGrantTargetSchema.extend({
-  role: z.enum(GRANT_ROLES),
+  roles: z.array(z.object({ id: z.string().optional(), role: z.string().min(1) })).length(1),
 });
 export type ReplaceOrganizationGrantPayload = z.infer<typeof replaceOrganizationGrantPayloadSchema>;
 

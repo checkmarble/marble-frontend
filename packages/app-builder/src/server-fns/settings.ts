@@ -465,7 +465,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
         first_name: data.firstName,
         last_name: data.lastName,
         email: data.email,
-        role: data.role,
+        roles: data.roles,
         organization_id: data.organizationId,
       });
     } catch (error) {
@@ -506,7 +506,7 @@ export const grantOrganizationAccessFn = createServerFn({ method: 'POST' })
     assertNotOwnAccess(user, data.userId);
     const { tenantId } = await organization.getCurrentOrganization();
 
-    await organization.grantAccess({ tenantId, userId: data.userId, role: data.role });
+    await organization.grantAccess({ tenantId, userId: data.userId, roles: data.roles });
   });
 
 // Updates the user's name and the role they hold on the current organization.
@@ -516,7 +516,14 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
   .validator(updateOrganizationUserPayloadSchema)
   .handler(async ({ context, data }) => {
     const { user, organization } = context.authInfo;
-    if (data.role) assertNotOwnAccess(user, data.userId);
+    if (data.roles) {
+      assertNotOwnAccess(user, data.userId);
+      const users = await organization.listUsers();
+      const target = users.find((candidate) => candidate.userId.toLowerCase() === data.userId.toLowerCase());
+      if (!target || target.roles.length !== 1) {
+        throw new Error('Cannot replace multiple or missing role bindings');
+      }
+    }
 
     if (data.firstName !== undefined || data.lastName !== undefined) {
       try {
@@ -527,9 +534,9 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
       }
     }
 
-    if (data.role) {
+    if (data.roles) {
       const { tenantId } = await organization.getCurrentOrganization();
-      await organization.grantAccess({ tenantId, userId: data.userId, role: data.role });
+      await organization.grantAccess({ tenantId, userId: data.userId, roles: data.roles });
     }
   });
 
