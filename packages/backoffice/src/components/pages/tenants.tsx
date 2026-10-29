@@ -2,12 +2,14 @@ import { makeQueryErrorComponent } from '@bo/components/common/ErrorComponent';
 import { SuspenseQuery } from '@bo/components/core/SuspenseQuery';
 import { MergeTenantsModal } from '@bo/components/organisms/MergeTenantsModal';
 import { RenameTenantModal } from '@bo/components/organisms/RenameTenantModal';
+import { TenantOidcPanel } from '@bo/components/organisms/TenantOidcPanel';
 import { TenantUsersPanel } from '@bo/components/organisms/TenantUsersPanel';
 import {
   countTenantUsers,
   groupMembersByOrganization,
   type MembersByOrganization,
 } from '@bo/components/organisms/TenantUsersPanel/tenant-users';
+import { AppConfigContext } from '@bo/contexts/AppConfig';
 import { listOrganizationsQueryOptions } from '@bo/data/organization';
 import {
   groupOrganizationsByTenant,
@@ -28,7 +30,7 @@ const TenantsError = makeQueryErrorComponent(
 const MIN_TENANTS_TO_MERGE = 2;
 
 // Header and rows are subgrids of the table, so the `auto` columns line up across rows.
-const TENANT_TABLE_COLUMNS = 'grid grid-cols-[auto_minmax(0,1fr)_auto_auto] gap-x-md';
+const TENANT_TABLE_COLUMNS = 'grid grid-cols-[auto_minmax(0,1fr)_auto_auto_auto] gap-x-md';
 const TENANT_TABLE_ROW = 'col-span-full grid grid-cols-subgrid';
 
 type TenantFilter = 'all' | 'merged';
@@ -61,6 +63,9 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [renamingTenant, setRenamingTenant] = useState<Tenant | null>(null);
   const [usersTenant, setUsersTenant] = useState<Tenant | null>(null);
+  // Tracked by id so the panel follows the refetched tenant once its configuration changes.
+  const [oidcTenantId, setOidcTenantId] = useState<string | null>(null);
+  const oidcTenant = tenants.find((tenant) => tenant.id === oidcTenantId) ?? null;
   const [isMerging, setIsMerging] = useState(false);
 
   const organizationsByTenant = useMemo(() => groupOrganizationsByTenant(organizations), [organizations]);
@@ -152,6 +157,7 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
             </span>
             <span>Tenant and organizations</span>
             <span>Users</span>
+            <span>SSO</span>
             <span>
               <span className="sr-only">Actions</span>
             </span>
@@ -168,6 +174,7 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
                 isUsersError={usersQuery.isError}
                 onRename={() => setRenamingTenant(tenant)}
                 onShowUsers={() => setUsersTenant(tenant)}
+                onShowOidc={() => setOidcTenantId(tenant.id)}
               />
             ))}
           </ul>
@@ -188,6 +195,7 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
         membersByOrganization={membersByOrganization ?? new Map()}
         onOpenChange={(open) => (open ? undefined : setUsersTenant(null))}
       />
+      <TenantOidcPanel tenant={oidcTenant} onOpenChange={(open) => (open ? undefined : setOidcTenantId(null))} />
       <MergeTenantsModal
         tenants={selectedTenants}
         organizationsByTenant={organizationsByTenant}
@@ -208,6 +216,7 @@ function TenantRow({
   isUsersError,
   onRename,
   onShowUsers,
+  onShowOidc,
 }: {
   tenant: Tenant;
   organizations: TenantOrganization[];
@@ -217,6 +226,7 @@ function TenantRow({
   isUsersError: boolean;
   onRename: () => void;
   onShowUsers: () => void;
+  onShowOidc: () => void;
 }) {
   const checkboxName = `select-tenant-${tenant.id}`;
 
@@ -248,6 +258,7 @@ function TenantRow({
         isError={isUsersError}
         onClick={onShowUsers}
       />
+      <OidcConfigurationButton tenant={tenant} onClick={onShowOidc} />
       <Button variant="secondary" size="small" onClick={onRename}>
         <Icon icon="edit-square" className="size-4" />
         Rename
@@ -309,6 +320,38 @@ function UsersCountButton({
     >
       <Icon icon="users" className="size-4" />
       {count}
+    </Button>
+  );
+}
+
+function OidcConfigurationButton({ tenant, onClick }: { tenant: Tenant; onClick: () => void }) {
+  const { features } = AppConfigContext.useValue();
+
+  if (tenant.oidc_configuration) {
+    return (
+      <Button variant="secondary" size="small" onClick={onClick} title={tenant.oidc_configuration.issuer}>
+        <Icon icon="lock" className="size-4" />
+        OIDC configuration
+        {tenant.oidc_configuration.sso_enabled ? null : (
+          <Tag color="grey" size="xs">
+            Off
+          </Tag>
+        )}
+      </Button>
+    );
+  }
+
+  // The backend refuses to save a configuration without an SSO license.
+  return (
+    <Button
+      variant="secondary"
+      size="small"
+      onClick={onClick}
+      disabled={!features.sso}
+      title={features.sso ? undefined : 'Requires an SSO license'}
+    >
+      <Icon icon="plus" className="size-4" />
+      Create OIDC configuration
     </Button>
   );
 }

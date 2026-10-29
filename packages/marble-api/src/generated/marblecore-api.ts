@@ -1892,6 +1892,24 @@ export type Items2 = {
     tenant_id: string;
     role: Role;
 };
+export type TenantOidcConfiguration = {
+    tenant_id: string;
+    issuer: string;
+    client_id: string;
+    client_secret_set: boolean;
+    scopes: string[];
+    extra_params: {
+        [key: string]: string;
+    } | null;
+    email_claim: string;
+    sso_enabled: boolean;
+};
+export type TenantDto = {
+    id: string;
+    name: string;
+    /** The tenant OIDC configuration, without the client secret. Null when none is configured. */
+    oidc_configuration: (TenantOidcConfiguration) | null;
+};
 export type Schema3 = {
     id: string;
     tenant_id: string;
@@ -6267,10 +6285,7 @@ export function listUserGrants(userId: string, opts?: Oazapfts.RequestOpts) {
 export function listTenants(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: {
-            id: string;
-            name: string;
-        }[];
+        data: TenantDto[];
     } | {
         status: 401;
         data: string;
@@ -6347,18 +6362,7 @@ export function mergeTenants(tenantId: string, body: {
 export function getTenantOidcConfiguration(tenantId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: {
-            tenant_id: string;
-            issuer: string;
-            client_id: string;
-            client_secret_set: boolean;
-            scopes: string[];
-            extra_params: {
-                [key: string]: string;
-            } | null;
-            email_claim: string;
-            sso_enabled: boolean;
-        };
+        data: TenantOidcConfiguration;
     } | {
         status: 400;
         data: string;

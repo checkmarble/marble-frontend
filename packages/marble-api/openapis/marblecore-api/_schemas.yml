@@ -445,6 +445,10 @@ CreateInitialOrgBody:
   $ref: admin.yml#/components/schemas/CreateInitialOrgBody
 OrganizationDto:
   $ref: admin.yml#/components/schemas/OrganizationDto
+TenantDto:
+  $ref: admin.yml#/components/schemas/TenantDto
+TenantOidcConfiguration:
+  $ref: tenant-oidc.yml#/components/schemas/TenantOidcConfiguration
 CreateOrganizationBodyDto:
   $ref: admin.yml#/components/schemas/CreateOrganizationBodyDto
 UpdateOrganizationBodyDto:
