@@ -7,14 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
 
 interface UserRoleFieldProps {
-  value: OrganizationGrantRole | null;
+  value: string | null;
   onChange: (role: OrganizationGrantRole) => void;
   userRoles: readonly [string, ...string[]];
   access: FeatureAccessLevelDto;
+  disabled?: boolean;
 }
 
 // Role granted to a user on the organization. Locked when the organization cannot assign roles.
-export function UserRoleField({ value, onChange, userRoles, access }: UserRoleFieldProps) {
+export function UserRoleField({ value, onChange, userRoles, access, disabled = false }: UserRoleFieldProps) {
   const { t } = useTranslation(['settings']);
 
   return (
@@ -25,12 +26,12 @@ export function UserRoleField({ value, onChange, userRoles, access }: UserRoleFi
           <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
         )}
       </span>
-      <SelectV2<OrganizationGrantRole | null>
+      <SelectV2<string | null>
         value={value}
         onChange={(role) => {
-          if (role) onChange(role);
+          if (role) onChange(role as OrganizationGrantRole);
         }}
-        disabled={!isAccessible(access)}
+        disabled={disabled || !isAccessible(access)}
         placeholder={t('settings:users.role')}
         aria-label={t('settings:users.role')}
         options={userRoles.map((userRole) => ({

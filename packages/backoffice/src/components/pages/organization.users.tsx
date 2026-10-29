@@ -64,7 +64,7 @@ export const OrganizationUsersPage = ({ orgId }: { orgId: string }) => {
                   </div>
                   <div className="p-md">{user.user_id}</div>
                   <div className="p-md">{user.email}</div>
-                  <div className="p-md">{user.role}</div>
+                  <div className="p-md">{user.roles.map(({ role }) => role).join(', ')}</div>
                   <div className="p-md"></div>
                 </div>
               ))}
