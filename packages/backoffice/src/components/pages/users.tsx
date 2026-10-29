@@ -177,7 +177,7 @@ function UserRow({
       <div className="flex items-center gap-sm lg:block">
         <span className="text-grey-secondary text-xs font-medium lg:sr-only">Role</span>
         <Tag color="grey" size="small">
-          {user.role}
+          {user.roles.map(({ role }) => role).join(', ')}
         </Tag>
       </div>
       <div className="flex min-w-0 flex-col gap-2xs">
@@ -364,7 +364,7 @@ function EditUserPanel({ user, onClose }: { user: UserDto; onClose: () => void }
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      role: user.role as UpdateGlobalUserPayload['role'],
+      roles: user.roles.slice(0, 1),
       organization_id: user.organization_id,
     } as UpdateGlobalUserPayload,
     validators: {
@@ -444,14 +444,19 @@ function EditUserPanel({ user, onClose }: { user: UserDto; onClose: () => void }
             </Field>
           )}
         </form.Field>
-        <form.Field name="role">
+        <form.Field name="roles">
           {(field) => (
             <Field label="Role" className="sm:col-span-full">
-              <SelectV2<UpdateGlobalUserPayload['role']>
-                value={field.state.value}
-                onChange={field.handleChange}
+              <SelectV2
+                value={field.state.value[0]?.role ?? ''}
+                onChange={(role) => {
+                  const selected = field.state.value[0];
+                  field.handleChange([selected?.role === role ? selected : { role }]);
+                }}
                 placeholder="Select a role"
-                options={GLOBAL_USER_ROLES.map((role) => ({ label: role, value: role }))}
+                options={[...new Set([...GLOBAL_USER_ROLES, ...field.state.value.map(({ role }) => role)])].map(
+                  (role) => ({ label: role, value: role }),
+                )}
               />
             </Field>
           )}
