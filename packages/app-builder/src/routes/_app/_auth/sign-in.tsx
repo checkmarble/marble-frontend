@@ -2,6 +2,7 @@ import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { MfaChallenge } from '@app-builder/components/Auth/MfaChallenge';
 import { SignInFirstConnection } from '@app-builder/components/Auth/SignInFirstConnection';
+import { SignInWithEmailDiscovery } from '@app-builder/components/Auth/SignInWithEmailDiscovery';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
@@ -52,12 +53,14 @@ const signInLoader = createServerFn()
     }
 
     const authProviders = appConfig?.auth.providers ?? ['firebase'];
-    const isSsoEnabled = appConfig && appConfig.features.sso;
+    const isSsoEnabled = appConfig?.features.sso ?? false;
+    const isEmailDiscoveryEnabled = isSsoEnabled && authProviders.includes('oidc');
     // Handle email parameter manually to preserve literal '+' characters
     const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
     const prefilledEmail = emailParam ? decodeURIComponent(emailParam.replace(/\+/g, '%2B')) : '';
 
-    if (!isSsoEnabled || prefilledEmail) {
+    // `/sign-in-email` redirects back here without Firebase, so only send Firebase deployments there.
+    if (!isEmailDiscoveryEnabled && authProviders.includes('firebase') && (!isSsoEnabled || prefilledEmail)) {
       throw redirect({
         href: preserveSignedOut(`/sign-in-email?email=${encodeURIComponent(prefilledEmail)}`, signedOut),
       });
@@ -80,6 +83,8 @@ const signInLoader = createServerFn()
         ? appConfig.status.migrations && appConfig.status.hasOrg && appConfig.status.hasUser
         : false,
       authProviders,
+      isEmailDiscoveryEnabled,
+      prefilledEmail,
       didMigrationsRun: appConfig?.status.migrations ?? false,
       authError: authError ?? (!appConfig ? ('BackendUnavailable' as AuthErrors) : undefined),
       isManagedMarble: appConfig?.isManagedMarble ?? false,
@@ -101,8 +106,17 @@ export const Route = createFileRoute('/_app/_auth/sign-in')({
 
 function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProviders, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
-    Route.useLoaderData();
+  const {
+    isSignupReady,
+    authProviders,
+    isEmailDiscoveryEnabled,
+    prefilledEmail,
+    didMigrationsRun,
+    isManagedMarble,
+    authError,
+    redirectTo,
+    signedOut,
+  } = Route.useLoaderData();
 
   const signInMutation = useMutation({
     mutationFn: async (authPayload: AuthPayload) =>
@@ -128,6 +142,16 @@ function Login() {
     resolver: MultiFactorResolver;
     type: AuthPayload['type'];
   } | null>(null);
+
+  if (isEmailDiscoveryEnabled) {
+    return (
+      <div className="flex flex-col gap-xl w-full">
+        {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
+        <SignInWithEmailDiscovery prefilledEmail={prefilledEmail} redirectTo={redirectTo} signedOut={signedOut} />
+        <AuthError error={authError as AuthErrors} />
+      </div>
+    );
+  }
 
   if (mfaChallenge) {
     return (
