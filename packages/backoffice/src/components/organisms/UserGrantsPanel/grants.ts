@@ -8,13 +8,14 @@ const NIL_UUID = '00000000-0000-0000-0000-000000000000';
 
 export type GrantOrganization = Pick<OrganizationDto, 'id' | 'name' | 'tenant_id'>;
 export type GrantEntry = { organization: GrantOrganization; role: string };
-type GrantsUser = Pick<UserDto, 'organization_id' | 'role'>;
+type GrantsUser = Pick<UserDto, 'organization_id' | 'roles'>;
 
 export const hasHomeOrganization = (user: Pick<UserDto, 'organization_id'>) =>
   !!user.organization_id && user.organization_id !== NIL_UUID;
 
 // MARBLE_ADMIN: the backend lets them hold grants in any tenant.
-export const isCustomerServiceUser = (user: Pick<UserDto, 'role'>) => user.role === 'MARBLE_ADMIN';
+export const isCustomerServiceUser = (user: Pick<UserDto, 'roles'>) =>
+  user.roles.some(({ role }) => role === 'MARBLE_ADMIN');
 
 export const canManageGrants = (user: GrantsUser) => isCustomerServiceUser(user) || hasHomeOrganization(user);
 
@@ -40,7 +41,7 @@ const toEntries = (grants: UserGrant[], organizations: GrantOrganization[]): Gra
 
 export type TenantGrantsView = {
   tenantId: string | undefined;
-  // The home grant is written by "Edit user"; without one, the backend still relies on the legacy `user.role`.
+  // Show the user's role bindings when no explicit home grant exists.
   home: { organization: GrantOrganization; role: string; isLegacy: boolean } | null;
   grants: GrantEntry[];
   addable: GrantOrganization[];
@@ -63,7 +64,11 @@ export const getTenantGrantsView = ({
   return {
     tenantId,
     home: homeOrganization
-      ? { organization: homeOrganization, role: homeGrant?.role ?? user.role, isLegacy: !homeGrant }
+      ? {
+          organization: homeOrganization,
+          role: homeGrant?.role ?? user.roles.map(({ role }) => role).join(', '),
+          isLegacy: !homeGrant,
+        }
       : null,
     grants: toEntries(
       grants.filter((grant) => grant.organization_id !== user.organization_id),

@@ -7,12 +7,7 @@ import {
   userGrantsQueryOptions,
   useUpdateGlobalUserMutationOptions,
 } from '@bo/data/users';
-import {
-  GRANT_FORBIDDEN_ERROR,
-  GRANT_NOT_FOUND_ERROR,
-  type GrantRole,
-  type UpdateGlobalUserPayload,
-} from '@bo/schemas/user';
+import { GRANT_FORBIDDEN_ERROR, GRANT_NOT_FOUND_ERROR, type GrantRole, USER_ROLES } from '@bo/schemas/user';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FeatureAccessDto } from 'marble-api/generated/backoffice-api';
 import type { UserDto } from 'marble-api/generated/marblecore-api';
@@ -436,6 +431,7 @@ function AssignHomeOrganization({
 }) {
   const updateUserMutation = useMutation(useUpdateGlobalUserMutationOptions());
   const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState(user.roles[0]);
   const tenantNames = new Map(tenants.map((tenant) => [tenant.id, tenant.name]));
   const options = organizations
     .map((organization) => {
@@ -447,7 +443,7 @@ function AssignHomeOrganization({
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 
   const handleAssign = async () => {
-    if (!organizationId) return;
+    if (!organizationId || !selectedRole) return;
 
     try {
       const updated = await updateUserMutation.mutateAsync({
@@ -455,7 +451,7 @@ function AssignHomeOrganization({
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        role: user.role as UpdateGlobalUserPayload['role'],
+        roles: [selectedRole],
         organization_id: organizationId,
       });
       if (!hasHomeOrganization(updated)) {
@@ -480,6 +476,16 @@ function AssignHomeOrganization({
         This user has no home organization. Assign one before managing grants.
       </p>
       <div className="flex flex-wrap items-center gap-sm">
+        {!user.roles.length && (
+          <SelectV2
+            value={selectedRole?.role ?? ''}
+            onChange={(role) => setSelectedRole({ role })}
+            placeholder="Select a role"
+            aria-label="Role"
+            disabled={updateUserMutation.isPending}
+            options={USER_ROLES.map((role) => ({ label: role, value: role }))}
+          />
+        )}
         <SelectV2<string | null>
           value={organizationId}
           onChange={setOrganizationId}
@@ -490,7 +496,7 @@ function AssignHomeOrganization({
         />
         <Button
           variant="primary"
-          disabled={updateUserMutation.isPending || !organizationId}
+          disabled={updateUserMutation.isPending || !organizationId || !selectedRole}
           onClick={() => void handleAssign()}
         >
           <Icon icon="plus" className="size-4" />

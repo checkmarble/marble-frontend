@@ -453,6 +453,8 @@ OrganizationSubnetsDto:
   $ref: admin.yml#/components/schemas/OrganizationSubnetsDto
 UserDto:
   $ref: admin.yml#/components/schemas/UserDto
+RoleBinding:
+  $ref: admin.yml#/components/schemas/RoleBinding
 CreateUser:
   $ref: admin.yml#/components/schemas/CreateUser
 CreateNewOrgAdmin:

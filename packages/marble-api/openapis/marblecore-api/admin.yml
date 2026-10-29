@@ -1093,6 +1093,15 @@ components:
           type: array
           items:
             type: string
+    RoleBinding:
+      type: object
+      required:
+        - role
+      properties:
+        id:
+          type: string
+        role:
+          type: string
     UserDto:
       type: object
       required:
@@ -1100,7 +1109,7 @@ components:
         - email
         - first_name
         - last_name
-        - role
+        - roles
         - organization_id
       properties:
         user_id:
@@ -1112,8 +1121,10 @@ components:
           type: string
         last_name:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBinding"
         organization_id:
           type: string
           format: uuid
@@ -1129,14 +1140,16 @@ components:
       type: object
       required:
         - email
-        - role
+        - roles
         - first_name
         - last_name
       properties:
         email:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBinding"
         organization_id:
           type: string
           format: uuid
@@ -1159,14 +1172,16 @@ components:
       type: object
       required:
         - email
-        - role
+        - roles
         - first_name
         - last_name
       properties:
         email:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBinding"
         organization_id:
           type: string
           format: uuid
@@ -1181,7 +1196,7 @@ components:
         - description
         - organization_id
         - prefix
-        - role
+        - roles
       properties:
         id:
           type: string
@@ -1193,18 +1208,22 @@ components:
         prefix:
           type: string
           description: 3 first characters of the API key
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBinding"
     CreateApiKeyBody:
       type: object
       required:
         - description
-        - role
+        - roles
       properties:
         description:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleBinding"
     CreatedApiKeyDto:
       allOf:
         - $ref: "#/components/schemas/ApiKeyDto"
