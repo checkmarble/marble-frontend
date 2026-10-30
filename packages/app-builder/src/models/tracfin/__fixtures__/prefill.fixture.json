@@ -1,0 +1,149 @@
+{
+  "draft_revision": 3,
+  "mapping_version": "38e4e75e1e7516bf0ec17fc36ed3903837da29e56f120022705bb807b1999eab",
+  "proposals": [
+    {
+      "id": "a0f721db6255369b7b8380ea1425d44b2eb8ee20362b13e28abd6dcb9128e882",
+      "field": {
+        "block_id": "d6506c9b-94ef-5e7e-b9cd-7311e6587dcb",
+        "field_id": "/ds/personnes/pp/etatCivil/nomNaissance"
+      },
+      "candidates": [
+        {
+          "id": "59df6485caced9d69d8fcb84e4ba5ffad29bf7f17abd6e364d0facaf15150a9d",
+          "kind": "text",
+          "text": "Martin",
+          "origin": {
+            "source_fingerprint": "644cbeed655931fe31edda5e0ab7ab8108cbf04dbd6adefe2b5cb41b12509b92",
+            "source": "ingested",
+            "mapping_version": "38e4e75e1e7516bf0ec17fc36ed3903837da29e56f120022705bb807b1999eab",
+            "sources": [
+              {
+                "kind": "ingested",
+                "table": "users",
+                "record_id": "user_8841",
+                "field": "last_name",
+                "path": [
+                  {
+                    "id": "root",
+                    "table": "users",
+                    "record_id": "user_8841"
+                  }
+                ]
+              }
+            ],
+            "resolution": "resolved"
+          }
+        }
+      ],
+      "resolution": "resolved"
+    },
+    {
+      "id": "c947e397530ba09d811c2bdbacfeeb332cb48681e977584009a64eb9856c23a0",
+      "field": {
+        "block_id": "408d2336-5199-5b90-8509-627e45c58e45",
+        "field_id": "/ds/personnes/pp/activite/denominationSociale"
+      },
+      "candidates": [
+        {
+          "id": "edeaf0b34055bf00f8a6f9910a60358869e88cd9f17f93ebc8c08ad1fb40fad5",
+          "kind": "text",
+          "text": "ACME Holding SAS",
+          "origin": {
+            "source_fingerprint": "2a599f0eca679c0fc5d4fcdd3067124f6c0b0bcd5e43e4a6f762d1c33ac3f794",
+            "source": "ingested",
+            "mapping_version": "38e4e75e1e7516bf0ec17fc36ed3903837da29e56f120022705bb807b1999eab",
+            "sources": [
+              {
+                "kind": "ingested",
+                "table": "companies",
+                "record_id": "company_302",
+                "field": "name",
+                "path": [
+                  {
+                    "id": "root",
+                    "table": "users",
+                    "record_id": "user_8841"
+                  },
+                  {
+                    "id": "employer",
+                    "parent_id": "root",
+                    "link": "employer",
+                    "direction": "forward",
+                    "table": "companies",
+                    "record_id": "company_302"
+                  }
+                ]
+              }
+            ],
+            "resolution": "conflict"
+          }
+        },
+        {
+          "id": "437c0841e5aab417ff5fc905481b396d28397d4ba58b10869bdca0d40b5889c5",
+          "kind": "text",
+          "text": "ACME SAS",
+          "origin": {
+            "source_fingerprint": "2a599f0eca679c0fc5d4fcdd3067124f6c0b0bcd5e43e4a6f762d1c33ac3f794",
+            "source": "ingested",
+            "mapping_version": "38e4e75e1e7516bf0ec17fc36ed3903837da29e56f120022705bb807b1999eab",
+            "sources": [
+              {
+                "kind": "ingested",
+                "table": "users",
+                "record_id": "user_8841",
+                "field": "employer_name",
+                "path": [
+                  {
+                    "id": "root",
+                    "table": "users",
+                    "record_id": "user_8841"
+                  }
+                ]
+              }
+            ],
+            "resolution": "conflict"
+          }
+        }
+      ],
+      "resolution": "conflict"
+    }
+  ],
+  "diagnostics": [
+    {
+      "sources": [
+        {
+          "kind": "ingested",
+          "table": "users",
+          "record_id": "user_8841",
+          "field": "gender",
+          "path": [
+            {
+              "id": "root",
+              "table": "users",
+              "record_id": "user_8841"
+            }
+          ]
+        }
+      ],
+      "code": "UNKNOWN_CODE",
+      "layer": "sources",
+      "severity": "warning",
+      "message": "UNKNOWN_CODE",
+      "field": {
+        "block_id": "d6506c9b-94ef-5e7e-b9cd-7311e6587dcb",
+        "field_id": "/ds/personnes/pp/etatCivil/sexe"
+      }
+    },
+    {
+      "code": "SOURCE_UNAVAILABLE",
+      "layer": "sources",
+      "severity": "warning",
+      "message": "SOURCE_UNAVAILABLE",
+      "field": {
+        "block_id": "6ebc3d50-03bb-5338-8fa1-9b39a8761514",
+        "field_id": "/ds/personnes/pp/lienAutrePm/denominationSociale"
+      }
+    }
+  ]
+}

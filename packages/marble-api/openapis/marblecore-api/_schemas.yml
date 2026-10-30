@@ -701,3 +701,96 @@ GraphNode:
   $ref: graph.yml#/components/schemas/GraphNode
 GraphEdge:
   $ref: graph.yml#/components/schemas/GraphEdge
+
+# TRACFIN
+
+TracfinFieldRefDto:
+  $ref: tracfin.yml#/components/schemas/TracfinFieldRefDto
+TracfinReferenceDto:
+  $ref: tracfin.yml#/components/schemas/TracfinReferenceDto
+TracfinPathStepDto:
+  $ref: tracfin.yml#/components/schemas/TracfinPathStepDto
+TracfinSourceRefDto:
+  $ref: tracfin.yml#/components/schemas/TracfinSourceRefDto
+TracfinOriginDto:
+  $ref: tracfin.yml#/components/schemas/TracfinOriginDto
+TracfinValueDto:
+  $ref: tracfin.yml#/components/schemas/TracfinValueDto
+TracfinAttachmentDto:
+  $ref: tracfin.yml#/components/schemas/TracfinAttachmentDto
+TracfinSelectionDto:
+  $ref: tracfin.yml#/components/schemas/TracfinSelectionDto
+TracfinBlockDto:
+  $ref: tracfin.yml#/components/schemas/TracfinBlockDto
+TracfinDocumentDto:
+  $ref: tracfin.yml#/components/schemas/TracfinDocumentDto
+TracfinDiagnosticDto:
+  $ref: tracfin.yml#/components/schemas/TracfinDiagnosticDto
+TracfinDiscriminatorDto:
+  $ref: tracfin.yml#/components/schemas/TracfinDiscriminatorDto
+TracfinMappingSourceDto:
+  $ref: tracfin.yml#/components/schemas/TracfinMappingSourceDto
+TracfinCodeMappingDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCodeMappingDto
+TracfinCurrencyEvidenceDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCurrencyEvidenceDto
+TracfinMappingDto:
+  $ref: tracfin.yml#/components/schemas/TracfinMappingDto
+TracfinConfigurationDto:
+  $ref: tracfin.yml#/components/schemas/TracfinConfigurationDto
+TracfinFieldInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinFieldInputDto
+TracfinSettingFieldRefDto:
+  $ref: tracfin.yml#/components/schemas/TracfinSettingFieldRefDto
+TracfinSettingInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinSettingInputDto
+TracfinConfigurationInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinConfigurationInputDto
+TracfinValidationLayerDto:
+  $ref: tracfin.yml#/components/schemas/TracfinValidationLayerDto
+TracfinValidationDto:
+  $ref: tracfin.yml#/components/schemas/TracfinValidationDto
+TracfinExportDto:
+  $ref: tracfin.yml#/components/schemas/TracfinExportDto
+TracfinDraftDto:
+  $ref: tracfin.yml#/components/schemas/TracfinDraftDto
+TracfinCreateDraftInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCreateDraftInputDto
+TracfinChangeInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinChangeInputDto
+TracfinDraftInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinDraftInputDto
+TracfinRevisionInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinRevisionInputDto
+TracfinContextRootDto:
+  $ref: tracfin.yml#/components/schemas/TracfinContextRootDto
+TracfinContextDto:
+  $ref: tracfin.yml#/components/schemas/TracfinContextDto
+TracfinNavigateInputDto:
+  $ref: tracfin.yml#/components/schemas/TracfinNavigateInputDto
+TracfinNavigationObjectDto:
+  $ref: tracfin.yml#/components/schemas/TracfinNavigationObjectDto
+TracfinNavigationPageDto:
+  $ref: tracfin.yml#/components/schemas/TracfinNavigationPageDto
+TracfinPrefillProposalDto:
+  $ref: tracfin.yml#/components/schemas/TracfinPrefillProposalDto
+TracfinPrefillResultDto:
+  $ref: tracfin.yml#/components/schemas/TracfinPrefillResultDto
+TracfinCatalogConstraintDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogConstraintDto
+TracfinCatalogFieldDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogFieldDto
+TracfinCatalogChoiceDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogChoiceDto
+TracfinCatalogCodeDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogCodeDto
+TracfinCatalogSourceDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogSourceDto
+TracfinCatalogRuleDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogRuleDto
+TracfinProfileDto:
+  $ref: tracfin.yml#/components/schemas/TracfinProfileDto
+TracfinLimitsDto:
+  $ref: tracfin.yml#/components/schemas/TracfinLimitsDto
+TracfinCatalogDto:
+  $ref: tracfin.yml#/components/schemas/TracfinCatalogDto

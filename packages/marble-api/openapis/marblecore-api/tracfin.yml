@@ -1,0 +1,1497 @@
+# TRACFIN declaration (financier profile) endpoints.
+#
+# Wire contract notes:
+# - Bodies are direct JSON objects (no `data` envelope), snake_case, at most 1 MiB.
+# - The server refuses unknown JSON members, even nested ones: request schemas list the
+#   contract members only (`additionalProperties: false`).
+# - Go emits `null` for empty slices that are not `omitempty` (validation diagnostics, context
+#   roots, navigation diagnostics, prefill proposals, configuration mappings): those arrays are
+#   `nullable` here and must be read with a fallback.
+# - Error bodies are `{ message: string, error_code?: string }`.
+# - The binary export download (GET /cases/{caseId}/tracfin/exports/{exportId}) is deliberately
+#   not part of the generated client: it streams raw XML and is proxied by a resource route.
+
+/tracfin/catalog:
+  get:
+    tags:
+      - TRACFIN
+    summary: Get the fixed TRACFIN profile catalog
+    description: Catalog of blocks, fields, codes and source rules of the embedded profile, with the transport limits.
+    operationId: tracfinGetCatalog
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: The profile catalog and the technical limits
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinCatalogDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '408':
+        $ref: 'components.yml#/responses/408'
+
+/organizations/{organizationId}/tracfin:
+  get:
+    tags:
+      - TRACFIN
+    summary: Get the TRACFIN configuration of an organization
+    description: Requires the permission to edit the organization. Responds 404 when no configuration exists yet.
+    operationId: tracfinGetConfiguration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: organizationId
+        description: ID of the organization
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The current TRACFIN configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinConfigurationDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+
+  put:
+    tags:
+      - TRACFIN
+    summary: Replace the TRACFIN configuration of an organization
+    description: |
+      Replaces all settings and mappings. `expected_revision` is the revision read before editing (0 creates the configuration).
+      An invalid configuration is refused with 400; the message lists each diagnostic code and target field
+      (`invalid TRACFIN configuration: CODE /target/field; CODE2 /other: bad parameter`).
+    operationId: tracfinPutConfiguration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: organizationId
+        description: ID of the organization
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinConfigurationInputDto'
+    responses:
+      '200':
+        description: The stored TRACFIN configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinConfigurationDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '409':
+        $ref: 'components.yml#/responses/409'
+      '413':
+        $ref: 'components.yml#/responses/413'
+
+/cases/{caseId}/tracfin/context:
+  get:
+    tags:
+      - TRACFIN
+    summary: Get the Person/Company roots available to a case
+    operationId: tracfinGetContext
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Person and Company roots of the case, with the origin of each
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinContextDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+
+/cases/{caseId}/tracfin/navigate:
+  post:
+    tags:
+      - TRACFIN
+    summary: Get one page of candidate records for a selection step
+    description: |
+      Follows the configured path of the mapping selected by `selection` up to `step_id`.
+      A page is never the complete list: follow `next_cursor` while `has_next_page` is true.
+      Responds 422 when the navigation index is unavailable.
+    operationId: tracfinNavigate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinNavigateInputDto'
+    responses:
+      '200':
+        description: One page of candidate records
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinNavigationPageDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '413':
+        $ref: 'components.yml#/responses/413'
+      '422':
+        $ref: 'components.yml#/responses/422'
+
+/cases/{caseId}/tracfin/draft:
+  get:
+    tags:
+      - TRACFIN
+    summary: Get the TRACFIN draft of a case
+    description: A case has at most one draft. Responds 404 when none exists yet.
+    operationId: tracfinGetDraft
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The draft with its revision and last export, if any
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinDraftDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+
+  post:
+    tags:
+      - TRACFIN
+    summary: Create the TRACFIN draft of a case
+    description: Requires a case outcome other than unset or unknown. The configuration of the organization is copied into the draft.
+    operationId: tracfinCreateDraft
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinCreateDraftInputDto'
+    responses:
+      '200':
+        description: The created draft
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinDraftDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '409':
+        $ref: 'components.yml#/responses/409'
+      '413':
+        $ref: 'components.yml#/responses/413'
+
+  patch:
+    tags:
+      - TRACFIN
+    summary: Apply changes to the TRACFIN draft of a case
+    description: |
+      Atomic. `expected_revision` is the revision the changes were prepared against; a stale revision is refused with 409.
+      The returned draft replaces the local one (temporary block aliases are replaced by server IDs).
+    operationId: tracfinPatchDraft
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinDraftInputDto'
+    responses:
+      '200':
+        description: The updated draft
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinDraftDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '409':
+        $ref: 'components.yml#/responses/409'
+      '413':
+        $ref: 'components.yml#/responses/413'
+      '422':
+        $ref: 'components.yml#/responses/422'
+
+/cases/{caseId}/tracfin/prefill:
+  post:
+    tags:
+      - TRACFIN
+    summary: Compute prefill proposals for a draft revision
+    description: Reads the selections already saved in the draft. Nothing is written; proposals are applied with `apply_prefill` changes.
+    operationId: tracfinPrefill
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinRevisionInputDto'
+    responses:
+      '200':
+        description: Proposals and diagnostics for the revision
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinPrefillResultDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '409':
+        $ref: 'components.yml#/responses/409'
+      '413':
+        $ref: 'components.yml#/responses/413'
+
+/cases/{caseId}/tracfin/validate:
+  post:
+    tags:
+      - TRACFIN
+    summary: Validate a draft revision
+    description: Internal checks only. The `official_xsd` layer is always unavailable.
+    operationId: tracfinValidate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinRevisionInputDto'
+    responses:
+      '200':
+        description: Validation layers and diagnostics for the revision
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinValidationDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '409':
+        $ref: 'components.yml#/responses/409'
+      '413':
+        $ref: 'components.yml#/responses/413'
+
+/cases/{caseId}/tracfin/export:
+  post:
+    tags:
+      - TRACFIN
+    summary: Export a draft revision as an XML artifact
+    description: |
+      Stores the XML for a saved revision. After a timeout or a 5xx the outcome may be uncertain: read the draft's `last_export` before retrying.
+      Non-exportable content (for example a character not representable in XML) is refused with 422.
+    operationId: tracfinExport
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TracfinRevisionInputDto'
+    responses:
+      '200':
+        description: The stored export
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TracfinExportDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '408':
+        $ref: 'components.yml#/responses/408'
+      '409':
+        $ref: 'components.yml#/responses/409'
+      '413':
+        $ref: 'components.yml#/responses/413'
+      '422':
+        $ref: 'components.yml#/responses/422'
+
+components:
+  schemas:
+    # ---- Shared document shapes ----
+
+    TracfinFieldRefDto:
+      type: object
+      required:
+        - block_id
+        - field_id
+      properties:
+        parent_value_id:
+          type: string
+          description: Owning scalar occurrence of an attribute of simple content.
+        value_id:
+          type: string
+          description: Existing occurrence addressed by the reference.
+        block_id:
+          type: string
+        field_id:
+          type: string
+          description: Catalog field ID (an XML path).
+      additionalProperties: false
+
+    TracfinReferenceDto:
+      type: object
+      required:
+        - block_id
+      properties:
+        block_id:
+          type: string
+        person_block_id:
+          type: string
+      additionalProperties: false
+
+    TracfinPathStepDto:
+      type: object
+      required:
+        - id
+        - table
+      properties:
+        id:
+          type: string
+        parent_id:
+          type: string
+        link:
+          type: string
+        direction:
+          type: string
+          enum: ['forward', 'inverse']
+        table:
+          type: string
+        record_id:
+          type: string
+      additionalProperties: false
+
+    TracfinSourceRefDto:
+      type: object
+      required:
+        - kind
+      properties:
+        kind:
+          type: string
+        table:
+          type: string
+        record_id:
+          type: string
+        field:
+          type: string
+        decision_id:
+          type: string
+        historical_type:
+          type: string
+        path:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinPathStepDto'
+
+    TracfinOriginDto:
+      type: object
+      required:
+        - source
+        - resolution
+      properties:
+        source_fingerprint:
+          type: string
+        source:
+          type: string
+          enum: ['ingested', 'decision_snapshot', 'settings', 'manual', 'calculated']
+        mapping_version:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinSourceRefDto'
+        resolution:
+          type: string
+          description: needs_review is written on a non-manual value whose parent changed or whose referenced block was removed (the value then also carries needs_review true); conflict only appears on prefill candidates.
+          enum: ['resolved', 'conflict', 'unavailable', 'cleared', 'partial', 'needs_review']
+
+    TracfinValueDto:
+      type: object
+      required:
+        - id
+        - kind
+      properties:
+        parent_value_id:
+          type: string
+        id:
+          type: string
+        kind:
+          type: string
+          enum: ['text', 'boolean', 'decimal', 'reference', 'cleared']
+        text:
+          type: string
+        boolean:
+          type: boolean
+        decimal:
+          type: string
+          description: Exact decimal lexeme. Never a binary floating point value.
+        reference:
+          $ref: '#/components/schemas/TracfinReferenceDto'
+        origin:
+          $ref: '#/components/schemas/TracfinOriginDto'
+        needs_review:
+          type: boolean
+
+    TracfinAttachmentDto:
+      type: object
+      required:
+        - source_file_id
+        - sha256
+        - size
+      properties:
+        source_file_id:
+          type: string
+          format: uuid
+        sha256:
+          type: string
+        size:
+          type: integer
+          format: int64
+
+    TracfinSelectionDto:
+      type: object
+      required:
+        - mapping_id
+        - root
+      properties:
+        mapping_id:
+          type: string
+        root:
+          $ref: '#/components/schemas/TracfinPathStepDto'
+        bindings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinPathStepDto'
+        decision_id:
+          type: string
+          format: uuid
+          description: Canonical lowercase UUID, exactly as returned by the server.
+        historical_type:
+          type: string
+        snapshot_field:
+          type: string
+      additionalProperties: false
+
+    TracfinBlockDto:
+      type: object
+      required:
+        - id
+        - catalog_id
+      properties:
+        id:
+          type: string
+        catalog_id:
+          type: string
+        fields:
+          type: object
+          description: Values by catalog field ID. A missing entry is absent; an explicit empty value stays present.
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/TracfinValueDto'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinBlockDto'
+        active_branches:
+          type: object
+          description: Selected alternative by choice ID.
+          additionalProperties:
+            type: string
+        selection:
+          $ref: '#/components/schemas/TracfinSelectionDto'
+        attachment:
+          $ref: '#/components/schemas/TracfinAttachmentDto'
+
+    TracfinDocumentDto:
+      type: object
+      required:
+        - root
+      properties:
+        root:
+          $ref: '#/components/schemas/TracfinBlockDto'
+
+    TracfinDiagnosticDto:
+      type: object
+      required:
+        - code
+        - layer
+        - severity
+        - message
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinSourceRefDto'
+        code:
+          type: string
+        layer:
+          type: string
+        severity:
+          type: string
+        message:
+          type: string
+        field:
+          $ref: '#/components/schemas/TracfinFieldRefDto'
+        rule_id:
+          type: string
+
+    # ---- Configuration ----
+
+    TracfinDiscriminatorDto:
+      type: object
+      required:
+        - field
+        - values
+      properties:
+        field:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+      additionalProperties: false
+
+    TracfinMappingSourceDto:
+      type: object
+      required:
+        - kind
+      properties:
+        unit_operation:
+          type: boolean
+        kind:
+          type: string
+          enum: ['ingested', 'decision_snapshot', 'settings']
+        entity_type:
+          type: string
+          enum: ['Person', 'Company']
+        table:
+          type: string
+        field:
+          type: string
+        historical_type:
+          type: string
+        path:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinPathStepDto'
+      additionalProperties: false
+
+    TracfinCodeMappingDto:
+      type: object
+      required:
+        - source
+        - target
+      properties:
+        source:
+          type: string
+        target:
+          type: string
+      additionalProperties: false
+
+    TracfinCurrencyEvidenceDto:
+      type: object
+      properties:
+        field:
+          type: string
+        constant:
+          type: string
+      additionalProperties: false
+
+    TracfinMappingDto:
+      type: object
+      required:
+        - id
+        - target_field
+        - source
+      properties:
+        discriminator:
+          $ref: '#/components/schemas/TracfinDiscriminatorDto'
+        id:
+          type: string
+        target_field:
+          type: string
+        source:
+          $ref: '#/components/schemas/TracfinMappingSourceDto'
+        codes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinCodeMappingDto'
+        unit:
+          type: string
+          enum: ['major', 'minor']
+        target_currency:
+          type: string
+        currency:
+          $ref: '#/components/schemas/TracfinCurrencyEvidenceDto'
+      additionalProperties: false
+
+    TracfinConfigurationDto:
+      type: object
+      required:
+        - org_id
+        - settings
+        - mappings
+        - profile_version
+        - profile_hash
+        - revision
+        - created_at
+        - updated_at
+        - updated_by
+      properties:
+        org_id:
+          type: string
+          format: uuid
+        settings:
+          $ref: '#/components/schemas/TracfinDocumentDto'
+        mappings:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinMappingDto'
+        profile_version:
+          type: string
+        profile_hash:
+          type: string
+        revision:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+
+    TracfinFieldInputDto:
+      type: object
+      required:
+        - kind
+      properties:
+        parent_value_id:
+          type: string
+        kind:
+          type: string
+          enum: ['text', 'boolean', 'decimal', 'reference']
+        text:
+          type: string
+        boolean:
+          type: boolean
+        decimal:
+          type: string
+          description: Exact decimal lexeme, as a string.
+        reference:
+          $ref: '#/components/schemas/TracfinReferenceDto'
+      additionalProperties: false
+
+    TracfinSettingFieldRefDto:
+      type: object
+      required:
+        - field_id
+      properties:
+        field_id:
+          type: string
+          description: Editable singleton field under /ds/organisme or /ds/contact. Blocks, values and owners are generated by the server.
+      additionalProperties: false
+
+    TracfinSettingInputDto:
+      type: object
+      required:
+        - field
+        - value
+      properties:
+        field:
+          $ref: '#/components/schemas/TracfinSettingFieldRefDto'
+        value:
+          $ref: '#/components/schemas/TracfinFieldInputDto'
+      additionalProperties: false
+
+    TracfinConfigurationInputDto:
+      type: object
+      required:
+        - expected_revision
+        - settings
+        - mappings
+      properties:
+        expected_revision:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Revision read before editing. 0 creates the configuration.
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinSettingInputDto'
+        mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinMappingDto'
+      additionalProperties: false
+
+    # ---- Draft ----
+
+    TracfinValidationLayerDto:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: ['passed', 'failed', 'incomplete', 'unavailable']
+        reason:
+          type: string
+
+    TracfinValidationDto:
+      type: object
+      required:
+        - profile_version
+        - layers
+        - diagnostics
+      properties:
+        profile_version:
+          type: string
+        layers:
+          type: object
+          description: Status by layer (internal_structure, references, business, xml_syntax, official_xsd).
+          additionalProperties:
+            $ref: '#/components/schemas/TracfinValidationLayerDto'
+        diagnostics:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinDiagnosticDto'
+
+    TracfinExportDto:
+      type: object
+      required:
+        - id
+        - draft_revision
+        - profile_version
+        - sha256
+        - size
+        - validation
+        - created_at
+        - download_url
+      properties:
+        id:
+          type: string
+          format: uuid
+        draft_revision:
+          type: integer
+          format: int64
+        profile_version:
+          type: string
+        sha256:
+          type: string
+        size:
+          type: integer
+          format: int64
+        validation:
+          $ref: '#/components/schemas/TracfinValidationDto'
+        created_at:
+          type: string
+          format: date-time
+        download_url:
+          type: string
+          description: Server-relative path, /cases/{case_id}/tracfin/exports/{export_id}.
+
+    TracfinDraftDto:
+      type: object
+      required:
+        - case_id
+        - org_id
+        - document
+        - configuration
+        - revision
+        - created_at
+        - updated_at
+        - updated_by
+      properties:
+        diagnostics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinDiagnosticDto'
+        case_id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        document:
+          $ref: '#/components/schemas/TracfinDocumentDto'
+        configuration:
+          $ref: '#/components/schemas/TracfinConfigurationDto'
+        revision:
+          type: integer
+          format: int64
+        last_export:
+          $ref: '#/components/schemas/TracfinExportDto'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+
+    TracfinCreateDraftInputDto:
+      type: object
+      required:
+        - declarant_is_actor
+      properties:
+        declarant_is_actor:
+          type: boolean
+          description: Required, `false` included.
+      additionalProperties: false
+
+    TracfinChangeInputDto:
+      type: object
+      required:
+        - action
+      properties:
+        candidate_id:
+          type: string
+          description: Candidate ID of a prefill proposal. Not a document value ID.
+        mapping_version:
+          type: string
+        action:
+          type: string
+          enum:
+            - set_field
+            - clear_field
+            - add_block
+            - remove_block
+            - set_selection
+            - set_relation
+            - apply_prefill
+            - refresh_configuration
+        field:
+          $ref: '#/components/schemas/TracfinFieldRefDto'
+        value:
+          $ref: '#/components/schemas/TracfinFieldInputDto'
+        block_id:
+          type: string
+        parent_block_id:
+          type: string
+        catalog_id:
+          type: string
+        selection:
+          $ref: '#/components/schemas/TracfinSelectionDto'
+        relation:
+          $ref: '#/components/schemas/TracfinReferenceDto'
+        source_file_id:
+          type: string
+          format: uuid
+          description: File of the case, as a canonical lowercase UUID exactly as returned by the server.
+        proposal_id:
+          type: string
+      additionalProperties: false
+
+    TracfinDraftInputDto:
+      type: object
+      required:
+        - expected_revision
+        - changes
+      properties:
+        expected_revision:
+          type: integer
+          format: int64
+          minimum: 1
+        changes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/TracfinChangeInputDto'
+      additionalProperties: false
+
+    TracfinRevisionInputDto:
+      type: object
+      required:
+        - expected_revision
+      properties:
+        expected_revision:
+          type: integer
+          format: int64
+          minimum: 1
+      additionalProperties: false
+
+    # ---- Context, navigation, prefill ----
+
+    TracfinContextRootDto:
+      type: object
+      required:
+        - table
+        - record_id
+        - origins
+      properties:
+        table:
+          type: string
+        record_id:
+          type: string
+        origins:
+          type: array
+          items:
+            type: string
+            enum: ['case_manual_entity', 'decision_pivot']
+
+    TracfinContextDto:
+      type: object
+      required:
+        - roots
+        - diagnostics
+      properties:
+        roots:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinContextRootDto'
+        diagnostics:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinDiagnosticDto'
+
+    TracfinNavigateInputDto:
+      type: object
+      required:
+        - selection
+        - step_id
+      properties:
+        selection:
+          $ref: '#/components/schemas/TracfinSelectionDto'
+        step_id:
+          type: string
+          minLength: 1
+        cursor:
+          type: string
+          minLength: 1
+          maxLength: 4096
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Defaults to 25 when omitted.
+      additionalProperties: false
+
+    TracfinNavigationObjectDto:
+      type: object
+      required:
+        - data
+        - metadata
+      properties:
+        data:
+          type: object
+          description: Fields of the customer record, including object_id.
+          additionalProperties: {}
+        metadata:
+          type: object
+          additionalProperties: {}
+
+    TracfinNavigationPageDto:
+      type: object
+      required:
+        - objects
+        - has_next_page
+        - diagnostics
+      properties:
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinNavigationObjectDto'
+        has_next_page:
+          type: boolean
+        next_cursor:
+          type: string
+        diagnostics:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinDiagnosticDto'
+
+    TracfinPrefillProposalDto:
+      type: object
+      required:
+        - id
+        - field
+        - candidates
+        - resolution
+      properties:
+        id:
+          type: string
+        field:
+          $ref: '#/components/schemas/TracfinFieldRefDto'
+        candidates:
+          type: array
+          description: Candidate IDs are not document value IDs.
+          items:
+            $ref: '#/components/schemas/TracfinValueDto'
+        resolution:
+          type: string
+          enum: ['resolved', 'conflict', 'partial']
+
+    TracfinPrefillResultDto:
+      type: object
+      required:
+        - draft_revision
+        - mapping_version
+        - proposals
+        - diagnostics
+      properties:
+        draft_revision:
+          type: integer
+          format: int64
+        mapping_version:
+          type: string
+        proposals:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinPrefillProposalDto'
+        diagnostics:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TracfinDiagnosticDto'
+
+    # ---- Catalog ----
+
+    TracfinCatalogConstraintDto:
+      type: object
+      required:
+        - kind
+        - value
+        - source_line
+      properties:
+        kind:
+          type: string
+        value:
+          type: string
+        source_line:
+          type: integer
+
+    TracfinCatalogFieldDto:
+      type: object
+      required:
+        - id
+        - parent
+        - name
+        - xsd_type
+        - source_line
+        - order
+        - kind
+        - min
+        - max
+        - attribute
+        - coverage
+        - model
+        - value_kind
+        - base
+        - documentation
+        - type_documentation
+        - constraints
+        - catalogs
+      properties:
+        id:
+          type: string
+        parent:
+          type: string
+        name:
+          type: string
+        xsd_type:
+          type: string
+        source_line:
+          type: integer
+        order:
+          type: integer
+        kind:
+          type: string
+          enum: ['block', 'field']
+        min:
+          type: string
+          description: Non-negative integer as a string.
+        max:
+          type: string
+          description: Non-negative integer as a string, or `unbounded`.
+        attribute:
+          type: boolean
+        coverage:
+          type: string
+          enum: ['editable', 'calculated', 'structural', 'excluded']
+        model:
+          type: string
+        reason:
+          type: string
+        value_kind:
+          type: string
+          enum: ['text', 'boolean', 'decimal', 'reference', 'text_or_reference']
+        base:
+          type: string
+        documentation:
+          type: string
+        type_documentation:
+          type: string
+        choice:
+          type: string
+          description: ID of the choice group the field belongs to.
+        constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinCatalogConstraintDto'
+        catalogs:
+          type: array
+          description: Names of the code lists (keys of `codes`) that apply to the field.
+          items:
+            type: string
+        currency:
+          type: string
+        currency_status:
+          type: string
+        currency_reason:
+          type: string
+
+    TracfinCatalogChoiceDto:
+      type: object
+      required:
+        - id
+        - parent
+        - min
+        - max
+        - source_line
+      properties:
+        id:
+          type: string
+        parent:
+          type: string
+        min:
+          type: string
+        max:
+          type: string
+        source_line:
+          type: integer
+
+    TracfinCatalogCodeDto:
+      type: object
+      required:
+        - value
+        - label
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+
+    TracfinCatalogSourceDto:
+      type: object
+      required:
+        - path
+        - origin
+        - sha256
+        - encoding
+      properties:
+        source_url:
+          type: string
+        retrieved_on:
+          type: string
+        profession_scope:
+          type: string
+        compatibility:
+          type: string
+        path:
+          type: string
+        origin:
+          type: string
+        sha256:
+          type: string
+        encoding:
+          type: string
+
+    TracfinCatalogRuleDto:
+      type: object
+      required:
+        - id
+        - source
+        - kind
+        - text
+        - fields
+        - status
+        - reason
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        line:
+          type: integer
+        kind:
+          type: string
+        text:
+          type: string
+        fields:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        reason:
+          type: string
+
+    TracfinProfileDto:
+      type: object
+      required:
+        - version
+        - hash
+        - source_version
+        - sources
+        - fields
+        - ordered_fields
+        - choices
+        - rules
+        - codes
+        - catalog_bindings
+        - ingested_entity_types
+        - excluded_codes
+      properties:
+        version:
+          type: string
+        hash:
+          type: string
+        source_version:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinCatalogSourceDto'
+        fields:
+          type: object
+          description: Blocks and fields by ID (an XML path).
+          additionalProperties:
+            $ref: '#/components/schemas/TracfinCatalogFieldDto'
+        ordered_fields:
+          type: array
+          items:
+            type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinCatalogChoiceDto'
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TracfinCatalogRuleDto'
+        codes:
+          type: object
+          description: Code lists by CSV name. A CSV referenced by a field but absent here is unavailable.
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/TracfinCatalogCodeDto'
+        catalog_bindings:
+          type: object
+          additionalProperties:
+            type: string
+        ingested_entity_types:
+          type: array
+          items:
+            type: string
+        excluded_codes:
+          type: object
+          description: Codes of a list that exist in the source but cannot be selected.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    TracfinLimitsDto:
+      type: object
+      required:
+        - request_bytes
+        - navigation_default
+        - navigation_max
+        - attachment_bytes
+        - xml_bytes
+      properties:
+        request_bytes:
+          type: integer
+          format: int64
+        navigation_default:
+          type: integer
+        navigation_max:
+          type: integer
+        attachment_bytes:
+          type: integer
+          format: int64
+        xml_bytes:
+          type: integer
+          format: int64
+
+    TracfinCatalogDto:
+      type: object
+      required:
+        - profile
+        - limits
+      properties:
+        profile:
+          $ref: '#/components/schemas/TracfinProfileDto'
+        limits:
+          $ref: '#/components/schemas/TracfinLimitsDto'

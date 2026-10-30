@@ -2335,6 +2335,369 @@ export type ScoringScore = {
     ruleset_id?: string;
     evaluations?: NodeEvaluationDto[];
 };
+export type TracfinCatalogSourceDto = {
+    source_url?: string;
+    retrieved_on?: string;
+    profession_scope?: string;
+    compatibility?: string;
+    path: string;
+    origin: string;
+    sha256: string;
+    encoding: string;
+};
+export type TracfinCatalogConstraintDto = {
+    kind: string;
+    value: string;
+    source_line: number;
+};
+export type TracfinCatalogFieldDto = {
+    id: string;
+    parent: string;
+    name: string;
+    xsd_type: string;
+    source_line: number;
+    order: number;
+    kind: "block" | "field";
+    /** Non-negative integer as a string. */
+    min: string;
+    /** Non-negative integer as a string, or `unbounded`. */
+    max: string;
+    attribute: boolean;
+    coverage: "editable" | "calculated" | "structural" | "excluded";
+    model: string;
+    reason?: string;
+    value_kind: "text" | "boolean" | "decimal" | "reference" | "text_or_reference";
+    base: string;
+    documentation: string;
+    type_documentation: string;
+    /** ID of the choice group the field belongs to. */
+    choice?: string;
+    constraints: TracfinCatalogConstraintDto[];
+    /** Names of the code lists (keys of `codes`) that apply to the field. */
+    catalogs: string[];
+    currency?: string;
+    currency_status?: string;
+    currency_reason?: string;
+};
+export type TracfinCatalogChoiceDto = {
+    id: string;
+    parent: string;
+    min: string;
+    max: string;
+    source_line: number;
+};
+export type TracfinCatalogRuleDto = {
+    id: string;
+    source: string;
+    line?: number;
+    kind: string;
+    text: string;
+    fields: string[];
+    status: string;
+    reason: string;
+};
+export type TracfinCatalogCodeDto = {
+    value: string;
+    label: string;
+};
+export type TracfinProfileDto = {
+    version: string;
+    hash: string;
+    source_version: string;
+    sources: TracfinCatalogSourceDto[];
+    /** Blocks and fields by ID (an XML path). */
+    fields: {
+        [key: string]: TracfinCatalogFieldDto;
+    };
+    ordered_fields: string[];
+    choices: TracfinCatalogChoiceDto[];
+    rules: TracfinCatalogRuleDto[];
+    /** Code lists by CSV name. A CSV referenced by a field but absent here is unavailable. */
+    codes: {
+        [key: string]: TracfinCatalogCodeDto[];
+    };
+    catalog_bindings: {
+        [key: string]: string;
+    };
+    ingested_entity_types: string[];
+    /** Codes of a list that exist in the source but cannot be selected. */
+    excluded_codes: {
+        [key: string]: string[];
+    };
+};
+export type TracfinLimitsDto = {
+    request_bytes: number;
+    navigation_default: number;
+    navigation_max: number;
+    attachment_bytes: number;
+    xml_bytes: number;
+};
+export type TracfinCatalogDto = {
+    profile: TracfinProfileDto;
+    limits: TracfinLimitsDto;
+};
+export type TracfinReferenceDto = {
+    block_id: string;
+    person_block_id?: string;
+};
+export type TracfinPathStepDto = {
+    id: string;
+    parent_id?: string;
+    link?: string;
+    direction?: "forward" | "inverse";
+    table: string;
+    record_id?: string;
+};
+export type TracfinSourceRefDto = {
+    kind: string;
+    table?: string;
+    record_id?: string;
+    field?: string;
+    decision_id?: string;
+    historical_type?: string;
+    path?: TracfinPathStepDto[];
+};
+export type TracfinOriginDto = {
+    source_fingerprint?: string;
+    source: "ingested" | "decision_snapshot" | "settings" | "manual" | "calculated";
+    mapping_version?: string;
+    sources?: TracfinSourceRefDto[];
+    /** needs_review is written on a non-manual value whose parent changed or whose referenced block was removed (the value then also carries needs_review true); conflict only appears on prefill candidates. */
+    resolution: "resolved" | "conflict" | "unavailable" | "cleared" | "partial" | "needs_review";
+};
+export type TracfinValueDto = {
+    parent_value_id?: string;
+    id: string;
+    kind: "text" | "boolean" | "decimal" | "reference" | "cleared";
+    text?: string;
+    "boolean"?: boolean;
+    /** Exact decimal lexeme. Never a binary floating point value. */
+    decimal?: string;
+    reference?: TracfinReferenceDto;
+    origin?: TracfinOriginDto;
+    needs_review?: boolean;
+};
+export type TracfinSelectionDto = {
+    mapping_id: string;
+    root: TracfinPathStepDto;
+    bindings?: TracfinPathStepDto[];
+    /** Canonical lowercase UUID, exactly as returned by the server. */
+    decision_id?: string;
+    historical_type?: string;
+    snapshot_field?: string;
+};
+export type TracfinAttachmentDto = {
+    source_file_id: string;
+    sha256: string;
+    size: number;
+};
+export type TracfinBlockDto = {
+    id: string;
+    catalog_id: string;
+    /** Values by catalog field ID. A missing entry is absent; an explicit empty value stays present. */
+    fields?: {
+        [key: string]: TracfinValueDto[];
+    };
+    children?: TracfinBlockDto[];
+    /** Selected alternative by choice ID. */
+    active_branches?: {
+        [key: string]: string;
+    };
+    selection?: TracfinSelectionDto;
+    attachment?: TracfinAttachmentDto;
+};
+export type TracfinDocumentDto = {
+    root: TracfinBlockDto;
+};
+export type TracfinDiscriminatorDto = {
+    field: string;
+    values: string[];
+};
+export type TracfinMappingSourceDto = {
+    unit_operation?: boolean;
+    kind: "ingested" | "decision_snapshot" | "settings";
+    entity_type?: "Person" | "Company";
+    table?: string;
+    field?: string;
+    historical_type?: string;
+    path?: TracfinPathStepDto[];
+};
+export type TracfinCodeMappingDto = {
+    source: string;
+    target: string;
+};
+export type TracfinCurrencyEvidenceDto = {
+    field?: string;
+    constant?: string;
+};
+export type TracfinMappingDto = {
+    discriminator?: TracfinDiscriminatorDto;
+    id: string;
+    target_field: string;
+    source: TracfinMappingSourceDto;
+    codes?: TracfinCodeMappingDto[];
+    unit?: "major" | "minor";
+    target_currency?: string;
+    currency?: TracfinCurrencyEvidenceDto;
+};
+export type TracfinConfigurationDto = {
+    org_id: string;
+    settings: TracfinDocumentDto;
+    mappings: TracfinMappingDto[] | null;
+    profile_version: string;
+    profile_hash: string;
+    revision: number;
+    created_at: string;
+    updated_at: string;
+    updated_by: string;
+};
+export type TracfinSettingFieldRefDto = {
+    /** Editable singleton field under /ds/organisme or /ds/contact. Blocks, values and owners are generated by the server. */
+    field_id: string;
+};
+export type TracfinFieldInputDto = {
+    parent_value_id?: string;
+    kind: "text" | "boolean" | "decimal" | "reference";
+    text?: string;
+    "boolean"?: boolean;
+    /** Exact decimal lexeme, as a string. */
+    decimal?: string;
+    reference?: TracfinReferenceDto;
+};
+export type TracfinSettingInputDto = {
+    field: TracfinSettingFieldRefDto;
+    value: TracfinFieldInputDto;
+};
+export type TracfinConfigurationInputDto = {
+    /** Revision read before editing. 0 creates the configuration. */
+    expected_revision: number;
+    settings: TracfinSettingInputDto[];
+    mappings: TracfinMappingDto[];
+};
+export type TracfinContextRootDto = {
+    table: string;
+    record_id: string;
+    origins: ("case_manual_entity" | "decision_pivot")[];
+};
+export type TracfinFieldRefDto = {
+    /** Owning scalar occurrence of an attribute of simple content. */
+    parent_value_id?: string;
+    /** Existing occurrence addressed by the reference. */
+    value_id?: string;
+    block_id: string;
+    /** Catalog field ID (an XML path). */
+    field_id: string;
+};
+export type TracfinDiagnosticDto = {
+    sources?: TracfinSourceRefDto[];
+    code: string;
+    layer: string;
+    severity: string;
+    message: string;
+    field?: TracfinFieldRefDto;
+    rule_id?: string;
+};
+export type TracfinContextDto = {
+    roots: TracfinContextRootDto[] | null;
+    diagnostics: TracfinDiagnosticDto[] | null;
+};
+export type TracfinNavigateInputDto = {
+    selection: TracfinSelectionDto;
+    step_id: string;
+    cursor?: string;
+    /** Defaults to 25 when omitted. */
+    limit?: number;
+};
+export type TracfinNavigationObjectDto = {
+    /** Fields of the customer record, including object_id. */
+    data: {
+        [key: string]: any;
+    };
+    metadata: {
+        [key: string]: any;
+    };
+};
+export type TracfinNavigationPageDto = {
+    objects: TracfinNavigationObjectDto[];
+    has_next_page: boolean;
+    next_cursor?: string;
+    diagnostics: TracfinDiagnosticDto[] | null;
+};
+export type TracfinValidationLayerDto = {
+    status: "passed" | "failed" | "incomplete" | "unavailable";
+    reason?: string;
+};
+export type TracfinValidationDto = {
+    profile_version: string;
+    /** Status by layer (internal_structure, references, business, xml_syntax, official_xsd). */
+    layers: {
+        [key: string]: TracfinValidationLayerDto;
+    };
+    diagnostics: TracfinDiagnosticDto[] | null;
+};
+export type TracfinExportDto = {
+    id: string;
+    draft_revision: number;
+    profile_version: string;
+    sha256: string;
+    size: number;
+    validation: TracfinValidationDto;
+    created_at: string;
+    /** Server-relative path, /cases/{case_id}/tracfin/exports/{export_id}. */
+    download_url: string;
+};
+export type TracfinDraftDto = {
+    diagnostics?: TracfinDiagnosticDto[];
+    case_id: string;
+    org_id: string;
+    document: TracfinDocumentDto;
+    configuration: TracfinConfigurationDto;
+    revision: number;
+    last_export?: TracfinExportDto;
+    created_at: string;
+    updated_at: string;
+    updated_by: string;
+};
+export type TracfinCreateDraftInputDto = {
+    /** Required, `false` included. */
+    declarant_is_actor: boolean;
+};
+export type TracfinChangeInputDto = {
+    /** Candidate ID of a prefill proposal. Not a document value ID. */
+    candidate_id?: string;
+    mapping_version?: string;
+    action: "set_field" | "clear_field" | "add_block" | "remove_block" | "set_selection" | "set_relation" | "apply_prefill" | "refresh_configuration";
+    field?: TracfinFieldRefDto;
+    value?: TracfinFieldInputDto;
+    block_id?: string;
+    parent_block_id?: string;
+    catalog_id?: string;
+    selection?: TracfinSelectionDto;
+    relation?: TracfinReferenceDto;
+    /** File of the case, as a canonical lowercase UUID exactly as returned by the server. */
+    source_file_id?: string;
+    proposal_id?: string;
+};
+export type TracfinDraftInputDto = {
+    expected_revision: number;
+    changes: TracfinChangeInputDto[];
+};
+export type TracfinRevisionInputDto = {
+    expected_revision: number;
+};
+export type TracfinPrefillProposalDto = {
+    id: string;
+    field: TracfinFieldRefDto;
+    /** Candidate IDs are not document value IDs. */
+    candidates: TracfinValueDto[];
+    resolution: "resolved" | "conflict" | "partial";
+};
+export type TracfinPrefillResultDto = {
+    draft_revision: number;
+    mapping_version: string;
+    proposals: TracfinPrefillProposalDto[] | null;
+    diagnostics: TracfinDiagnosticDto[] | null;
+};
 export type GraphRelation = {
     id: string;
     group_id: string;
@@ -8027,6 +8390,348 @@ export function getScoreDistribution(recordType: string, opts?: Oazapfts.Request
     }>(`/scoring/distribution/${encodeURIComponent(recordType)}`, {
         ...opts
     }));
+}
+/**
+ * Get the fixed TRACFIN profile catalog
+ */
+export function tracfinGetCatalog(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinCatalogDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    }>("/tracfin/catalog", {
+        ...opts
+    }));
+}
+/**
+ * Get the TRACFIN configuration of an organization
+ */
+export function tracfinGetConfiguration(organizationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinConfigurationDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}/tracfin`, {
+        ...opts
+    }));
+}
+/**
+ * Replace the TRACFIN configuration of an organization
+ */
+export function tracfinPutConfiguration(organizationId: string, tracfinConfigurationInputDto: TracfinConfigurationInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinConfigurationDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}/tracfin`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: tracfinConfigurationInputDto
+    })));
+}
+/**
+ * Get the Person/Company roots available to a case
+ */
+export function tracfinGetContext(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinContextDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/context`, {
+        ...opts
+    }));
+}
+/**
+ * Get one page of candidate records for a selection step
+ */
+export function tracfinNavigate(caseId: string, tracfinNavigateInputDto: TracfinNavigateInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinNavigationPageDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/navigate`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: tracfinNavigateInputDto
+    })));
+}
+/**
+ * Get the TRACFIN draft of a case
+ */
+export function tracfinGetDraft(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinDraftDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/draft`, {
+        ...opts
+    }));
+}
+/**
+ * Create the TRACFIN draft of a case
+ */
+export function tracfinCreateDraft(caseId: string, tracfinCreateDraftInputDto: TracfinCreateDraftInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinDraftDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/draft`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: tracfinCreateDraftInputDto
+    })));
+}
+/**
+ * Apply changes to the TRACFIN draft of a case
+ */
+export function tracfinPatchDraft(caseId: string, tracfinDraftInputDto: TracfinDraftInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinDraftDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/draft`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: tracfinDraftInputDto
+    })));
+}
+/**
+ * Compute prefill proposals for a draft revision
+ */
+export function tracfinPrefill(caseId: string, tracfinRevisionInputDto: TracfinRevisionInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinPrefillResultDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/prefill`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: tracfinRevisionInputDto
+    })));
+}
+/**
+ * Validate a draft revision
+ */
+export function tracfinValidate(caseId: string, tracfinRevisionInputDto: TracfinRevisionInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinValidationDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/validate`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: tracfinRevisionInputDto
+    })));
+}
+/**
+ * Export a draft revision as an XML artifact
+ */
+export function tracfinExport(caseId: string, tracfinRevisionInputDto: TracfinRevisionInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TracfinExportDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 408;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    } | {
+        status: 413;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/cases/${encodeURIComponent(caseId)}/tracfin/export`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: tracfinRevisionInputDto
+    })));
 }
 /**
  * List same-field relations configurations

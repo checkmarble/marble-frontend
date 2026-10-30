@@ -529,6 +529,25 @@ paths:
   /scoring/distribution/{recordType}:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1distribution~1{recordType}
 
+# TRACFIN
+
+  /tracfin/catalog:
+    $ref: ./marblecore-api/tracfin.yml#/~1tracfin~1catalog
+  /organizations/{organizationId}/tracfin:
+    $ref: ./marblecore-api/tracfin.yml#/~1organizations~1{organizationId}~1tracfin
+  /cases/{caseId}/tracfin/context:
+    $ref: ./marblecore-api/tracfin.yml#/~1cases~1{caseId}~1tracfin~1context
+  /cases/{caseId}/tracfin/navigate:
+    $ref: ./marblecore-api/tracfin.yml#/~1cases~1{caseId}~1tracfin~1navigate
+  /cases/{caseId}/tracfin/draft:
+    $ref: ./marblecore-api/tracfin.yml#/~1cases~1{caseId}~1tracfin~1draft
+  /cases/{caseId}/tracfin/prefill:
+    $ref: ./marblecore-api/tracfin.yml#/~1cases~1{caseId}~1tracfin~1prefill
+  /cases/{caseId}/tracfin/validate:
+    $ref: ./marblecore-api/tracfin.yml#/~1cases~1{caseId}~1tracfin~1validate
+  /cases/{caseId}/tracfin/export:
+    $ref: ./marblecore-api/tracfin.yml#/~1cases~1{caseId}~1tracfin~1export
+
 # GRAPH EXPLORATION
 
   /graph/relations:

@@ -81,6 +81,13 @@ responses:
         schema:
           type: string
           example: Not found
+  '408':
+    description: Request Timeout
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Request Timeout
   '409':
     description: Conflict
     content:
@@ -88,6 +95,13 @@ responses:
         schema:
           type: string
           example: Duplicate Value
+  '413':
+    description: Payload Too Large
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Payload Too Large
   '422':
     description: Unprocessable Content
     content:

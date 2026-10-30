@@ -140,6 +140,7 @@
   "tags.target.case": "حالة",
   "tags.target.object": "عنصر",
   "tags.update_tag": "تحديث الوسم",
+  "tracfin": "TRACFIN",
   "unavailableBanner.caption": "أنت حاليا معين كغير متاح حتى {{date}}.",
   "users": "المستخدمون",
   "users.delete_user": "حذف المستخدم",
