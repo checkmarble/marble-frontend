@@ -7,6 +7,7 @@ import type { OrganizationDto, UserDto } from 'marble-api/generated/marblecore-a
 const NIL_UUID = '00000000-0000-0000-0000-000000000000';
 
 export type GrantOrganization = Pick<OrganizationDto, 'id' | 'name' | 'tenant_id'>;
+export type GrantTenant = Pick<Tenant, 'id' | 'name'>;
 export type GrantEntry = { organization: GrantOrganization; role: string };
 type GrantsUser = Pick<UserDto, 'organization_id' | 'role'>;
 
@@ -81,8 +82,8 @@ export const getTenantGrantsView = ({
 };
 
 export type CustomerServiceGrantsView = {
-  groups: { tenant: Tenant; grants: GrantEntry[] }[];
-  addableByTenant: { tenant: Tenant; organizations: GrantOrganization[] }[];
+  groups: { tenant: GrantTenant; grants: GrantEntry[] }[];
+  addableByTenant: { tenant: GrantTenant; organizations: GrantOrganization[] }[];
 };
 
 export const getCustomerServiceGrantsView = ({
@@ -92,7 +93,7 @@ export const getCustomerServiceGrantsView = ({
 }: {
   grants: UserGrant[];
   organizations: GrantOrganization[];
-  tenants: Tenant[];
+  tenants: GrantTenant[];
 }): CustomerServiceGrantsView => {
   const entries = toEntries(grants, organizations);
   const grantedIds = new Set(grants.map((grant) => grant.organization_id));
@@ -146,7 +147,7 @@ export const getUserOrganizationTags = ({
 }: {
   user: GrantsUser & Pick<UserDto, 'grants'>;
   organizations: GrantOrganization[];
-  tenants: Tenant[];
+  tenants: GrantTenant[];
 }): UserOrganizationTag[] => {
   const organizationsById = new Map(organizations.map((organization) => [organization.id, organization]));
   const tenantNames = new Map(tenants.map((tenant) => [tenant.id, tenant.name]));

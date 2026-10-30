@@ -22,6 +22,12 @@
         name: x-oidc-access-token
         schema:
           type: string
+      - in: header
+        name: x-marble-tenant-id
+        description: Tenant whose OIDC provider is used to authenticate the bearer token.
+        schema:
+          type: string
+          format: uuid
       - name: organization_id
         description: Organization ID to generate a new access token
         in: query
@@ -38,6 +44,78 @@
               $ref: '#/components/schemas/Token'
       '401':
         $ref: './components.yml#/responses/401'
+/auth/discovery:
+  post:
+    tags: [Authorization]
+    summary: Discover the OIDC configuration for a domain
+    description: Available when tenant OIDC is configured and SSO is licensed.
+    operationId: discoverTenantOidc
+    security: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [domain]
+            properties:
+              domain:
+                type: string
+    responses:
+      '200':
+        description: Tenant OIDC configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantOidcDiscovery'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/oidc/token:
+  post:
+    tags: [Authorization]
+    summary: Exchange an authorization code or refresh token for OIDC tokens
+    description: Available when an OIDC provider is configured.
+    operationId: exchangeOidcToken
+    security: []
+    parameters:
+      - in: header
+        name: x-marble-tenant-id
+        description: Tenant whose OIDC provider should be used; omit for the default provider.
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            required: [grant_type]
+            properties:
+              grant_type:
+                type: string
+                enum: [authorization_code, refresh_token]
+              code:
+                type: string
+              code_verifier:
+                type: string
+              refresh_token:
+                type: string
+    responses:
+      '200':
+        description: OIDC tokens
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OidcTokens'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /credentials:
   get:
     tags:
@@ -60,6 +138,46 @@
         $ref: 'components.yml#/responses/403'
 components:
   schemas:
+    TenantOidcDiscovery:
+      type: object
+      required: [tenant_id, issuer, client_id, redirect_uri, scopes, extra_params]
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        issuer:
+          type: string
+        client_id:
+          type: string
+        redirect_uri:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        extra_params:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+    OidcTokens:
+      type: object
+      required: [token_type, access_token, refresh_token, id_token, expiry, expires_in]
+      properties:
+        token_type:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        id_token:
+          type: string
+        expiry:
+          type: string
+          format: date-time
+        expires_in:
+          type: integer
+          format: int64
     Token:
       type: object
       required:
@@ -88,6 +206,9 @@ components:
           properties:
             organization_id:
               type: string
+            auth_tenant_id:
+              type: string
+              format: uuid
             roles:
               type: array
               description: Roles bound to the principal. Omitted when the principal has none.

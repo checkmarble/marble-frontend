@@ -1,5 +1,6 @@
 import { getServerEnv } from '@app-builder/utils/environment';
 import { type AppConfigDto } from 'marble-api';
+import { type AuthProvider } from './auth-mode';
 
 export type AppConfig = {
   versions: {
@@ -17,7 +18,7 @@ export type AppConfig = {
     blobs: string[];
   };
   auth: {
-    providers: Array<'firebase' | 'oidc'>;
+    providers: AuthProvider[];
     firebase: {
       projectId?: string;
       apiKey?: string;

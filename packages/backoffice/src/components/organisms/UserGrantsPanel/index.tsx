@@ -24,6 +24,7 @@ import {
   canAssignHomeOrganization,
   type GrantEntry,
   type GrantOrganization,
+  type GrantTenant,
   getAllowedGrantRoles,
   getCustomerServiceGrantsView,
   getGrantRoleOptions,
@@ -350,7 +351,7 @@ function AddGrantForm({
   actions,
 }: {
   // Regular users pass their own tenant only; customer service users pick among every tenant.
-  groups: { tenant: Tenant | null; organizations: GrantOrganization[] }[];
+  groups: { tenant: GrantTenant | null; organizations: GrantOrganization[] }[];
   withTenantSelect?: boolean;
   actions: GrantActions;
 }) {

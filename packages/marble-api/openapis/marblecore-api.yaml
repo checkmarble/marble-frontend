@@ -74,6 +74,10 @@ paths:
     $ref: ./marblecore-api/authorization.yml#/~1token
   /credentials:
     $ref: ./marblecore-api/authorization.yml#/~1credentials
+  /auth/discovery:
+    $ref: ./marblecore-api/authorization.yml#/~1auth~1discovery
+  /oidc/token:
+    $ref: ./marblecore-api/authorization.yml#/~1oidc~1token
 
   /me/organizations:
     $ref: ./marblecore-api/users.yml#/~1me~1organizations
@@ -383,6 +387,12 @@ paths:
     $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}
   /tenants/{tenantId}/merge:
     $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}~1merge
+  /tenants/{tenantId}/oidc-configuration:
+    $ref: ./marblecore-api/tenant-oidc.yml#/~1tenants~1{tenantId}~1oidc-configuration
+  /tenants/{tenantId}/domains:
+    $ref: ./marblecore-api/tenant-oidc.yml#/~1tenants~1{tenantId}~1domains
+  /tenants/{tenantId}/domains/{domainId}:
+    $ref: ./marblecore-api/tenant-oidc.yml#/~1tenants~1{tenantId}~1domains~1{domainId}
   /tenants/{tenantId}/users/{userId}/grants:
     $ref: ./marblecore-api/admin.yml#/~1tenants~1{tenantId}~1users~1{userId}~1grants
   /organizations:

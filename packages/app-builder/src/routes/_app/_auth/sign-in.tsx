@@ -2,12 +2,14 @@ import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { MfaChallenge } from '@app-builder/components/Auth/MfaChallenge';
 import { SignInFirstConnection } from '@app-builder/components/Auth/SignInFirstConnection';
+import { SignInWithEmailDiscovery } from '@app-builder/components/Auth/SignInWithEmailDiscovery';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { Spinner } from '@app-builder/components/Spinner';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
+import { getAuthMode } from '@app-builder/models/auth-mode';
 import { signInFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
@@ -52,12 +54,20 @@ const signInLoader = createServerFn()
     }
 
     const authProviders = appConfig?.auth.providers ?? ['firebase'];
-    const isSsoEnabled = appConfig && appConfig.features.sso;
+    const authMode = getAuthMode(authProviders);
+    const isSsoEnabled = appConfig?.features.sso ?? false;
+    const isEmailDiscoveryEnabled = isSsoEnabled && authMode === 'firebase-oidc';
     // Handle email parameter manually to preserve literal '+' characters
     const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
     const prefilledEmail = emailParam ? decodeURIComponent(emailParam.replace(/\+/g, '%2B')) : '';
 
-    if (!isSsoEnabled || prefilledEmail) {
+    // `/sign-in-email` redirects back here without Firebase, so only send Firebase deployments there.
+    if (
+      authMode !== null &&
+      !isEmailDiscoveryEnabled &&
+      authProviders.includes('firebase') &&
+      (!isSsoEnabled || prefilledEmail)
+    ) {
       throw redirect({
         href: preserveSignedOut(`/sign-in-email?email=${encodeURIComponent(prefilledEmail)}`, signedOut),
       });
@@ -80,8 +90,16 @@ const signInLoader = createServerFn()
         ? appConfig.status.migrations && appConfig.status.hasOrg && appConfig.status.hasUser
         : false,
       authProviders,
+      authMode,
+      isEmailDiscoveryEnabled,
+      prefilledEmail,
       didMigrationsRun: appConfig?.status.migrations ?? false,
-      authError: authError ?? (!appConfig ? ('BackendUnavailable' as AuthErrors) : undefined),
+      // A misconfigured provider list blocks every sign-in, so it wins over a leftover session error.
+      authError: !appConfig
+        ? ('BackendUnavailable' as AuthErrors)
+        : !authMode
+          ? ('InvalidAuthConfiguration' as AuthErrors)
+          : authError,
       isManagedMarble: appConfig?.isManagedMarble ?? false,
       redirectTo,
       signedOut,
@@ -101,8 +119,18 @@ export const Route = createFileRoute('/_app/_auth/sign-in')({
 
 function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProviders, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
-    Route.useLoaderData();
+  const {
+    isSignupReady,
+    authProviders,
+    authMode,
+    isEmailDiscoveryEnabled,
+    prefilledEmail,
+    didMigrationsRun,
+    isManagedMarble,
+    authError,
+    redirectTo,
+    signedOut,
+  } = Route.useLoaderData();
 
   const signInMutation = useMutation({
     mutationFn: async (authPayload: AuthPayload) =>
@@ -129,6 +157,27 @@ function Login() {
     type: AuthPayload['type'];
   } | null>(null);
 
+  if (!authMode) {
+    return (
+      <div className="flex flex-col gap-xl w-full">
+        <Typo variant="title1" className="text-center">
+          {t('auth:sign_in')}
+        </Typo>
+        <AuthError error={authError as AuthErrors} />
+      </div>
+    );
+  }
+
+  if (isEmailDiscoveryEnabled) {
+    return (
+      <div className="flex flex-col gap-xl w-full">
+        {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
+        <SignInWithEmailDiscovery prefilledEmail={prefilledEmail} redirectTo={redirectTo} signedOut={signedOut} />
+        <AuthError error={authError as AuthErrors} />
+      </div>
+    );
+  }
+
   if (mfaChallenge) {
     return (
       <div className="flex flex-col gap-2xl w-full">
@@ -151,7 +200,7 @@ function Login() {
         </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <div className="flex flex-col gap-sm">
-          {authProviders.includes('oidc') ? (
+          {authMode === 'oidc-legacy' ? (
             <button
               className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
               onClick={() => {
