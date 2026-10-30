@@ -148,7 +148,7 @@ components:
               type: array
               items:
                 type: string
-                enum: [firebase, oidc]
+                enum: [firebase, oidc, oidc-legacy]
             firebase:
               type: object
               required:

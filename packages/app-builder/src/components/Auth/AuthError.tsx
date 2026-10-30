@@ -8,6 +8,7 @@ const errorLabels: Record<AuthErrors, ParseKeys<typeof authI18n>> = {
   NoAccount: 'auth:errors.no_account',
   CSRFError: 'auth:errors.csrf_error',
   SsoRefused: 'auth:errors.sso_refused',
+  InvalidAuthConfiguration: 'auth:errors.invalid_auth_configuration',
   Unknown: 'common:errors.unknown',
   BackendUnavailable: 'common:errors.backend_unvailable',
 };

@@ -2,7 +2,13 @@ import { CsrfError } from '@app-builder/utils/csrf';
 
 import { isMarbleError, isUnauthorizedHttpError } from './http-errors';
 
-export type AuthErrors = 'NoAccount' | 'CSRFError' | 'BackendUnavailable' | 'SsoRefused' | 'Unknown';
+export type AuthErrors =
+  | 'NoAccount'
+  | 'CSRFError'
+  | 'BackendUnavailable'
+  | 'InvalidAuthConfiguration'
+  | 'SsoRefused'
+  | 'Unknown';
 
 export function adaptAuthErrors(error: unknown): AuthErrors {
   if (error instanceof CsrfError) {
