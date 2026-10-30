@@ -8,6 +8,7 @@ import {
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
+import { getAuthMode } from '@app-builder/models/auth-mode';
 import { signInEmailFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
@@ -20,7 +21,7 @@ import { useMutation } from '@tanstack/react-query';
 import { ClientOnly, createFileRoute, Link, redirect, type SearchSchemaInput } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
@@ -58,7 +59,8 @@ const signInEmailLoader = createServerFn()
       throw redirect({ to: '/onboarding' });
     }
 
-    if (appConfig && !appConfig.auth.providers.includes('firebase')) {
+    // `/sign-in` explains a misconfigured provider list, so send those deployments there too.
+    if (appConfig && (!appConfig.auth.providers.includes('firebase') || !getAuthMode(appConfig.auth.providers))) {
       throw redirect({ href: signedOut ? signedOutTabHref() : '/sign-in' });
     }
 
@@ -133,6 +135,7 @@ function LoginWithEmail() {
   const signIn = (authPayload: AuthPayload) => signInMutation.mutate(authPayload);
   const loading = signInMutation.isPending;
   const type = signInMutation.variables?.type;
+  const highlight = { Highlight: <span className="text-purple-primary" /> };
 
   return (
     <div className="flex flex-col gap-2xl w-full">
@@ -148,7 +151,7 @@ function LoginWithEmail() {
       ) : null}
       <div className="flex flex-col gap-xl">
         <Typo variant="title2" className="text-center">
-          {t('auth:sign_in')}
+          <Trans t={t} i18nKey="auth:sign_in.discovery.title" components={highlight} />
         </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <ClientOnly

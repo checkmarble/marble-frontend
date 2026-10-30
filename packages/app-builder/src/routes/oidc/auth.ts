@@ -1,3 +1,4 @@
+import { getAuthMode } from '@app-builder/models/auth-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { createFileRoute } from '@tanstack/react-router';
@@ -18,8 +19,13 @@ export const Route = createFileRoute('/oidc/auth')({
         const { appConfigRepository } = initServerServices(request);
         const appConfig = await appConfigRepository.getAppConfig();
 
-        if (!appConfig.auth.providers.includes('oidc')) {
-          return Response.redirect(new URL('/sign-in', request.url).toString(), 302);
+        // Only the deployment-wide provider starts here; per-tenant OIDC starts from email discovery.
+        if (getAuthMode(appConfig.auth.providers) !== 'oidc-legacy') {
+          // `Response.redirect` has immutable headers, which the server runtime cannot handle: build the 302 instead.
+          return new Response(null, {
+            status: 302,
+            headers: { Location: new URL('/sign-in', request.url).toString() },
+          });
         }
 
         const oidc = await makeOidcService(appConfig.auth.oidc);
