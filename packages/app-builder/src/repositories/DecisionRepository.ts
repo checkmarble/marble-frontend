@@ -53,6 +53,7 @@ export type DecisionFiltersWithPagination = FiltersWithPagination<DecisionFilter
 export interface DecisionRepository {
   listDecisions(args: DecisionFiltersWithPagination): Promise<PaginatedResponse<Decision>>;
   listScheduledExecutions(args?: { scenarioId?: string }): Promise<ScheduledExecution[]>;
+  cancelScheduledExecution(id: string): Promise<void>;
   getDecisionById(id: string, args?: { includeRuleEvaluation?: boolean }): Promise<DecisionDetails>;
   getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
   createSnoozeForDecision(decisionId: string, snoozeDecisionInput: SnoozeDecisionInput): Promise<SnoozesOfDecision>;
@@ -124,6 +125,9 @@ export function makeGetDecisionRepository() {
     listScheduledExecutions: async (args = {}) => {
       const { scheduled_executions } = await marbleCoreApiClient.listScheduledExecutions(args);
       return scheduled_executions.map(adaptScheduledExecution);
+    },
+    cancelScheduledExecution: async (id) => {
+      await marbleCoreApiClient.cancelScheduledExecution(id);
     },
     getDecisionActiveSnoozes: async (decisionId) => {
       const { snoozes } = await marbleCoreApiClient.getDecisionActiveSnoozes(decisionId);

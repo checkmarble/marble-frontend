@@ -1,4 +1,4 @@
-import { type ScheduledExecution } from '@app-builder/models/decision';
+import { isScheduledExecutionCancellable, type ScheduledExecution } from '@app-builder/models/decision';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Link } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -6,13 +6,20 @@ import { type ParseKeys } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Button, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CancelScheduledExecution } from './CancelScheduledExecution';
 import { scenarioI18n } from './scenario-i18n';
 
 const columnHelper = createColumnHelper<MarbleTableFeatures, ScheduledExecution>();
 
-export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExecutions: ScheduledExecution[] }) {
+export function ScheduledExecutionsList({
+  scheduledExecutions,
+  canCancel = false,
+}: {
+  scheduledExecutions: ScheduledExecution[];
+  canCancel?: boolean;
+}) {
   const { t } = useTranslation(scenarioI18n);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
@@ -118,8 +125,29 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
           return <time dateTime={cell.row.original.startedAt}>{getValue()}</time>;
         },
       }),
+      ...(canCancel
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              cell: ({ row }) => {
+                if (!isScheduledExecutionCancellable(row.original.status)) {
+                  return null;
+                }
+                return (
+                  <CancelScheduledExecution scheduledExecutionId={row.original.id}>
+                    <Button variant="destructive" appearance="stroked" size="small">
+                      {t('scenarios:scheduled_execution.cancel')}
+                    </Button>
+                  </CancelScheduledExecution>
+                );
+              },
+              header: '',
+              size: 100,
+            }),
+          ]
+        : []),
     ],
-    [formatDateTime, language, t, showManifestRowsProcessed],
+    [formatDateTime, language, t, showManifestRowsProcessed, canCancel],
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scheduledExecutions,
@@ -148,6 +176,9 @@ const getStatusIcon = (status: string) => {
   if (status === 'failure' || status === 'partial_failure') {
     return <Icon icon="cross" className="text-red-primary size-6 shrink-0" />;
   }
+  if (status === 'cancelled') {
+    return <Icon icon="stop" className="text-grey-secondary size-6 shrink-0" />;
+  }
   return <Icon icon="restart-alt" className="text-grey-secondary size-6 shrink-0" />;
 };
 
@@ -163,6 +194,12 @@ const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {
   }
   if (status === 'processing') {
     return 'scenarios:scheduled_execution.status_processing';
+  }
+  if (status === 'cancelling') {
+    return 'scenarios:scheduled_execution.status_cancelling';
+  }
+  if (status === 'cancelled') {
+    return 'scenarios:scheduled_execution.status_cancelled';
   }
   return 'scenarios:scheduled_execution.status_pending';
 };

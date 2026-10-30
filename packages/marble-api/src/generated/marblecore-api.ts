@@ -777,7 +777,7 @@ export type ScheduledExecutionDto = {
     scenario_name: string;
     scenario_trigger_object_type: string;
     started_at: string;
-    status: "pending" | "processing" | "success" | "failure" | "partial_failure";
+    status: "pending" | "processing" | "success" | "failure" | "partial_failure" | "cancelling" | "cancelled";
 };
 export type DecisionDetailDto = DecisionDto & {
     rules: RuleExecutionDto[];
@@ -3649,6 +3649,29 @@ export function listScheduledExecutions({ scenarioId }: {
         scenario_id: scenarioId
     }))}`, {
         ...opts
+    }));
+}
+/**
+ * Cancel a scheduled execution by id
+ */
+export function cancelScheduledExecution(executionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/scheduled-executions/${encodeURIComponent(executionId)}/cancel`, {
+        ...opts,
+        method: "POST"
     }));
 }
 /**
