@@ -93,6 +93,8 @@ export const Route = createFileRoute('/oidc/callback')({
           await authService.authenticateOidc(request, tokens, {
             successRedirect: safeRedirect(cookieData.redirectTo, '/app-router'),
             failureRedirect: '/sign-in',
+            // Without it, the backend verifies the tenant's ID token against the deployment-wide provider.
+            tenantId,
           });
           // authenticateOidc always throws a redirect, but TypeScript doesn't know that
           /* istanbul ignore next */
