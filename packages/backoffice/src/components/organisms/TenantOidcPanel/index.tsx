@@ -194,7 +194,10 @@ function TenantOidcPanelBody({
 
           <form.Field name="scopes">
             {(field) => (
-              <Field label="Scopes" hint="Separate scopes with spaces. Defaults to openid, profile and email.">
+              <Field
+                label="Scopes"
+                hint="Separate scopes with spaces. Defaults to openid, profile and email. You may need additional scopes for the refresh token like 'offline_access'. Check your oidc provider documentation for more information."
+              >
                 <Input
                   id={field.name}
                   value={field.state.value}
