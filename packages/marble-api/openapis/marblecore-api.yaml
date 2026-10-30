@@ -161,6 +161,8 @@ paths:
 
   /scheduled-executions: # For ordering, should go down
     $ref: ./marblecore-api/decisions.yml#/~1scheduled-executions
+  /scheduled-executions/{execution_id}/cancel:
+    $ref: ./marblecore-api/decisions.yml#/~1scheduled-executions~1{execution_id}~1cancel
   /decisions/{decisionId}:
     $ref: ./marblecore-api/decisions.yml#/~1decisions~1{decisionId}
   /decisions/{decisionId}/active-snoozes:
