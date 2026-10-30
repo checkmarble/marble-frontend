@@ -87,8 +87,7 @@ export function SignInWithEmailDiscovery({
                     name={field.name}
                     type="email"
                     autoComplete="email"
-                    placeholder="joe@alasta.io"
-                    className="grow"
+                    className="min-w-0 flex-1"
                     borderColor={hasError ? 'redfigma-47' : 'greyfigma-90'}
                     disabled={!hydrated || pending}
                     defaultValue={field.state.value}
@@ -99,6 +98,7 @@ export function SignInWithEmailDiscovery({
                     type="submit"
                     size="large"
                     mode="icon"
+                    className="shrink-0"
                     aria-label={t('auth:sign_in.discovery.continue')}
                     disabled={!hydrated || pending || field.state.value.trim() === ''}
                   >

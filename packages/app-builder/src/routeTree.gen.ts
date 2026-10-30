@@ -26,6 +26,7 @@ import { Route as AppAuthCreatePasswordRouteImport } from './routes/_app/_auth/c
 import { Route as AppAuthEmailVerificationRouteImport } from './routes/_app/_auth/email-verification'
 import { Route as AppAuthSignInRouteImport } from './routes/_app/_auth/sign-in'
 import { Route as AppAuthSignInEmailRouteImport } from './routes/_app/_auth/sign-in-email'
+import { Route as AppAuthSignInOidcRouteImport } from './routes/_app/_auth/sign-in-oidc'
 import { Route as AppBuilderAccountRouteImport } from './routes/_app/_builder/account'
 import { Route as AppBuilderAnalyticsLegacyRouteImport } from './routes/_app/_builder/analytics-legacy'
 import { Route as AppBuilderCasesRouteImport } from './routes/_app/_builder/cases'
@@ -205,6 +206,11 @@ const AppAuthSignInRoute = AppAuthSignInRouteImport.update({
 const AppAuthSignInEmailRoute = AppAuthSignInEmailRouteImport.update({
   id: '/sign-in-email',
   path: '/sign-in-email',
+  getParentRoute: () => AppAuthRoute,
+} as any)
+const AppAuthSignInOidcRoute = AppAuthSignInOidcRouteImport.update({
+  id: '/sign-in-oidc',
+  path: '/sign-in-oidc',
   getParentRoute: () => AppAuthRoute,
 } as any)
 const AppBuilderAccountRoute = AppBuilderAccountRouteImport.update({
@@ -802,6 +808,7 @@ export interface FileRoutesByFullPath {
   '/email-verification': typeof AppAuthEmailVerificationRoute
   '/sign-in': typeof AppAuthSignInRoute
   '/sign-in-email': typeof AppAuthSignInEmailRoute
+  '/sign-in-oidc': typeof AppAuthSignInOidcRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
   '/cases': typeof AppBuilderCasesRouteWithChildren
@@ -913,6 +920,7 @@ export interface FileRoutesByTo {
   '/email-verification': typeof AppAuthEmailVerificationRoute
   '/sign-in': typeof AppAuthSignInRoute
   '/sign-in-email': typeof AppAuthSignInEmailRoute
+  '/sign-in-oidc': typeof AppAuthSignInOidcRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
@@ -1007,6 +1015,7 @@ export interface FileRoutesById {
   '/_app/_auth/email-verification': typeof AppAuthEmailVerificationRoute
   '/_app/_auth/sign-in': typeof AppAuthSignInRoute
   '/_app/_auth/sign-in-email': typeof AppAuthSignInEmailRoute
+  '/_app/_auth/sign-in-oidc': typeof AppAuthSignInOidcRoute
   '/_app/_builder/account': typeof AppBuilderAccountRoute
   '/_app/_builder/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
   '/_app/_builder/cases': typeof AppBuilderCasesRouteWithChildren
@@ -1122,6 +1131,7 @@ export interface FileRouteTypes {
     | '/email-verification'
     | '/sign-in'
     | '/sign-in-email'
+    | '/sign-in-oidc'
     | '/account'
     | '/analytics-legacy'
     | '/cases'
@@ -1233,6 +1243,7 @@ export interface FileRouteTypes {
     | '/email-verification'
     | '/sign-in'
     | '/sign-in-email'
+    | '/sign-in-oidc'
     | '/account'
     | '/analytics-legacy'
     | '/ressources/data/export-org'
@@ -1326,6 +1337,7 @@ export interface FileRouteTypes {
     | '/_app/_auth/email-verification'
     | '/_app/_auth/sign-in'
     | '/_app/_auth/sign-in-email'
+    | '/_app/_auth/sign-in-oidc'
     | '/_app/_builder/account'
     | '/_app/_builder/analytics-legacy'
     | '/_app/_builder/cases'
@@ -1564,6 +1576,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in-email'
       fullPath: '/sign-in-email'
       preLoaderRoute: typeof AppAuthSignInEmailRouteImport
+      parentRoute: typeof AppAuthRoute
+    }
+    '/_app/_auth/sign-in-oidc': {
+      id: '/_app/_auth/sign-in-oidc'
+      path: '/sign-in-oidc'
+      fullPath: '/sign-in-oidc'
+      preLoaderRoute: typeof AppAuthSignInOidcRouteImport
       parentRoute: typeof AppAuthRoute
     }
     '/_app/_builder/account': {
@@ -2254,6 +2273,7 @@ interface AppAuthRouteChildren {
   AppAuthEmailVerificationRoute: typeof AppAuthEmailVerificationRoute
   AppAuthSignInRoute: typeof AppAuthSignInRoute
   AppAuthSignInEmailRoute: typeof AppAuthSignInEmailRoute
+  AppAuthSignInOidcRoute: typeof AppAuthSignInOidcRoute
 }
 
 const AppAuthRouteChildren: AppAuthRouteChildren = {
@@ -2262,6 +2282,7 @@ const AppAuthRouteChildren: AppAuthRouteChildren = {
   AppAuthEmailVerificationRoute: AppAuthEmailVerificationRoute,
   AppAuthSignInRoute: AppAuthSignInRoute,
   AppAuthSignInEmailRoute: AppAuthSignInEmailRoute,
+  AppAuthSignInOidcRoute: AppAuthSignInOidcRoute,
 }
 
 const AppAuthRouteWithChildren =
