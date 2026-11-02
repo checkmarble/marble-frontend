@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: past-batch-vite-major
+expected_outcome: |
+  A plan that moves vite and @vitejs/plugin-react together everywhere including the pin, reviews the vite, plugin-react and testcontainers majors, and proves production SSR over real HTTP requests rather than trusting the build.
