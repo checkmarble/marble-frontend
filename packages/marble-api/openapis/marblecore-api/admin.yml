@@ -1102,6 +1102,7 @@ components:
           type: string
         role:
           type: string
+          description: Native role name or organization-scoped custom role slug.
     UserDto:
       type: object
       required:

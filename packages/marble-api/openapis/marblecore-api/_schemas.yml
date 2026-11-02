@@ -455,6 +455,12 @@ UserDto:
   $ref: admin.yml#/components/schemas/UserDto
 RoleBinding:
   $ref: admin.yml#/components/schemas/RoleBinding
+CustomRoleDto:
+  $ref: roles.yml#/components/schemas/CustomRoleDto
+CreateCustomRoleBody:
+  $ref: roles.yml#/components/schemas/CreateCustomRoleBody
+UpdateCustomRolePermissionsBody:
+  $ref: roles.yml#/components/schemas/UpdateCustomRolePermissionsBody
 CreateUser:
   $ref: admin.yml#/components/schemas/CreateUser
 CreateNewOrgAdmin:

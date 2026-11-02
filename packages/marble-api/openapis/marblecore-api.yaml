@@ -18,6 +18,8 @@ tags:
     description: Operations about api keys.
   - name: Users
     description: Operations about users.
+  - name: Roles
+    description: Operations about custom roles.
   - name: Organizations
     description: Operations about organizations.
   - name: Decisions
@@ -77,6 +79,11 @@ paths:
 
   /me/organizations:
     $ref: ./marblecore-api/users.yml#/~1me~1organizations
+
+  /roles:
+    $ref: ./marblecore-api/roles.yml#/~1roles
+  /roles/permissions:
+    $ref: ./marblecore-api/roles.yml#/~1roles~1permissions
 
   /decisions: # For ordering, should go down within decisions
     $ref: ./marblecore-api/decisions.yml#/~1decisions

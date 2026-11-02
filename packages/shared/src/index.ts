@@ -1,4 +1,6 @@
 // export * from './component-state';
+
+export * from './permissions';
 export * from './simple-context';
 export * from './use-callback-ref';
 export * from './use-debounced-callback-ref';
