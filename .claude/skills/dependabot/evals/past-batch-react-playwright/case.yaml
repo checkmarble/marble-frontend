@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: past-batch-react-playwright
-expected_outcome: |
-  A plan that aligns react-dom, types and overrides with the React bump, aligns @playwright/test with playwright, and checks the production build under Bun.
