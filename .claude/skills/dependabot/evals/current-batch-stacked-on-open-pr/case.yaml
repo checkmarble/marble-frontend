@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: current-batch-stacked-on-open-pr
-expected_outcome: |
-  A plan that stacks on open PR #2020, reduces the open Dependabot PRs to one row per package, moves the TanStack family together, and asks before closing PRs.
