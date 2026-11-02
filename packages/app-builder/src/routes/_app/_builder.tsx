@@ -17,6 +17,7 @@ import { OrganizationDetailsContextProvider } from '@app-builder/services/organi
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
+import { roleManagerOptionalList } from '@app-builder/services/roles-access';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { useSentryIdentification, useSentryReplay } from '@app-builder/services/sentry';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
@@ -36,10 +37,10 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
     const [organizationDetail, organizations, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
       organization.getCurrentOrganization(),
       organization.listMyOrganizations(),
-      organization.listUsers(),
-      organization.listTags(),
-      organization.listTags({ target: 'object' }),
-      inbox.listInboxes(),
+      roleManagerOptionalList(organization.listUsers(), user.permissions.canManageRoles),
+      roleManagerOptionalList(organization.listTags(), user.permissions.canManageRoles),
+      roleManagerOptionalList(organization.listTags({ target: 'object' }), user.permissions.canManageRoles),
+      roleManagerOptionalList(inbox.listInboxes(), user.permissions.canManageRoles),
     ]);
 
     const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
@@ -55,7 +56,7 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
         isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
         analytics: entitlements.analytics,
         settings:
-          !isAnalyst(user) && firstSetting !== undefined
+          firstSetting !== undefined
             ? { isAvailable: true as const, to: firstSetting.to }
             : { isAvailable: false as const },
         isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),

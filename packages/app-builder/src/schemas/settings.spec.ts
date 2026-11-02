@@ -36,4 +36,13 @@ describe('user role bindings', () => {
     }
     expect(grantOrganizationAccessPayloadSchema.safeParse({ userId: user.userId, role: 'ADMIN' }).success).toBe(false);
   });
+
+  it('accepts one custom role for creation, grants, and updates', () => {
+    const roles = [{ role: 'org/fraud.analyst' }];
+    expect(createUserPayloadSchema.parse({ ...user, roles }).roles).toEqual(roles);
+    for (const schema of [grantOrganizationAccessPayloadSchema, updateOrganizationUserPayloadSchema]) {
+      expect(schema.parse({ userId: user.userId, roles }).roles).toEqual(roles);
+      expect(schema.safeParse({ userId: user.userId, roles: [...roles, { role: 'ADMIN' }] }).success).toBe(false);
+    }
+  });
 });
