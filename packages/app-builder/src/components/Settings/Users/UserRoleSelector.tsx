@@ -1,7 +1,12 @@
-import { tKeyForUserRole } from '@app-builder/models';
 import { type RoleBinding } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { SelectV2 } from 'ui-design-system';
+import { roleLabel } from './role-label';
+
+export interface UserRoleOption {
+  value: string;
+  label: string;
+}
 
 export function UserRoleSelector({
   roles,
@@ -10,13 +15,16 @@ export function UserRoleSelector({
   onChange,
 }: {
   roles: RoleBinding[];
-  options: readonly string[];
+  options: readonly UserRoleOption[];
   disabled: boolean;
   onChange: (roles: RoleBinding[]) => void;
 }) {
   const { t } = useTranslation(['settings']);
   const selected = roles[0];
-  const availableRoles = [...new Set([...options, ...(selected ? [selected.role] : [])])];
+  const availableRoles =
+    selected && !options.some(({ value }) => value === selected.role)
+      ? [...options, { value: selected.role, label: roleLabel(selected.role, t) }]
+      : [...options];
 
   return (
     <SelectV2
@@ -24,7 +32,7 @@ export function UserRoleSelector({
       onChange={(role) => onChange([selected?.role === role ? selected : { role }])}
       disabled={disabled}
       placeholder={t('settings:users.role')}
-      options={availableRoles.map((role) => ({ label: t(tKeyForUserRole(role)), value: role }))}
+      options={availableRoles}
     />
   );
 }

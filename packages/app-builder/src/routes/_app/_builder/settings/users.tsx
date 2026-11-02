@@ -1,9 +1,12 @@
 import { Page } from '@app-builder/components';
+import { CustomRolesLoadError } from '@app-builder/components/Settings/Roles/CustomRolesLoadError';
 import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
 import { EditOrganizationUser } from '@app-builder/components/Settings/Users/EditOrganizationUser';
 import { GrantAccess } from '@app-builder/components/Settings/Users/GrantAccess';
 import { RevokeAccess } from '@app-builder/components/Settings/Users/RevokeAccess';
+import { roleLabel } from '@app-builder/components/Settings/Users/role-label';
+import { type UserRoleOption } from '@app-builder/components/Settings/Users/UserRoleSelector';
 import { Spinner } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TenantUser, type User } from '@app-builder/models';
@@ -12,6 +15,7 @@ import { useTenantUsersWithoutAccessQuery } from '@app-builder/queries/settings/
 import { useOrganizationUsersTfaQuery } from '@app-builder/queries/settings/users/get-users-tfa';
 import {
   getUserRoles,
+  isAccessible,
   isCreateUserAvailable,
   isDeleteUserAvailable,
   isEditUserAvailable,
@@ -35,7 +39,13 @@ const usersLoader = createServerFn()
 
     if (!isReadUserAvailable(user)) throw redirect({ to: '/' });
 
-    const inboxUsers = await inbox.listAllInboxUsers();
+    const [inboxUsers, customRolesResult] = await Promise.all([
+      inbox.listAllInboxUsers(),
+      context.authInfo.apiClient.listCustomRoles().then(
+        (roles) => ({ roles, error: false }),
+        () => ({ roles: [], error: true }),
+      ),
+    ]);
 
     const inboxUsersByUserId = R.pipe(
       inboxUsers,
@@ -55,6 +65,8 @@ const usersLoader = createServerFn()
       user,
       entitlements,
       userRoles: getUserRoles(entitlements),
+      customRoles: customRolesResult.roles,
+      customRolesError: customRolesResult.error,
       isCreateUserAvailable: isCreateUserAvailable(user),
       isEditUserAvailable: isEditUserAvailable(user),
       isDeleteUserAvailable: isDeleteUserAvailable(user),
@@ -74,12 +86,25 @@ function Users() {
     inboxUsersByUserId,
     user,
     entitlements,
-    userRoles,
+    userRoles: builtInRoles,
+    customRoles,
+    customRolesError,
     isCreateUserAvailable,
     isEditUserAvailable,
     isDeleteUserAvailable,
   } = Route.useLoaderData();
   const { orgUsers } = useOrganizationUsers();
+
+  const customRoleNames = useMemo(() => new Map(customRoles.map(({ slug, name }) => [slug, name])), [customRoles]);
+  const userRoles = useMemo<UserRoleOption[]>(
+    () => [
+      ...builtInRoles.map((role) => ({ value: role, label: t(tKeyForUserRole(role)) })),
+      ...(isAccessible(entitlements.userRoles)
+        ? customRoles.map(({ slug, name }) => ({ value: slug, label: name }))
+        : []),
+    ],
+    [builtInRoles, customRoles, entitlements.userRoles, t],
+  );
 
   const tfaQuery = useOrganizationUsersTfaQuery();
   const tfaByUserId = useMemo(
@@ -110,7 +135,7 @@ function Users() {
             overflowBehavior="popover"
             items={getValue().map(({ id, role }) => (
               <Tag key={id ?? role} size="small" color="purple">
-                {t(tKeyForUserRole(role))}
+                {roleLabel(role, t, customRoleNames)}
               </Tag>
             ))}
           />
@@ -162,7 +187,12 @@ function Users() {
                   <div className="flex gap-sm">
                     {isEditUserAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
-                        <EditOrganizationUser user={orgUser} userRoles={userRoles} access={entitlements.userRoles} />
+                        <EditOrganizationUser
+                          user={orgUser}
+                          userRoles={userRoles}
+                          access={entitlements.userRoles}
+                          roleLabel={customRoleNames.get(orgUser.roles[0]?.role ?? '')}
+                        />
                       </div>
                     ) : null}
                     {isDeleteUserAvailable ? (
@@ -179,6 +209,7 @@ function Users() {
     ];
   }, [
     inboxUsersByUserId,
+    customRoleNames,
     isDeleteUserAvailable,
     isEditUserAvailable,
     t,
@@ -199,6 +230,7 @@ function Users() {
 
   return (
     <Page.Content width="readable">
+      {customRolesError ? <CustomRolesLoadError /> : null}
       <SettingCard
         table={table}
         addButton={
@@ -219,7 +251,7 @@ function TenantUsersWithoutAccess({
   userRoles,
   access,
 }: {
-  userRoles: readonly [string, ...string[]];
+  userRoles: readonly UserRoleOption[];
   access: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(['settings', 'common']);

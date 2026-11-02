@@ -1,6 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGrantOrganizationAccessMutation } from '@app-builder/queries/settings/users/grant-organization-access';
-import { type OrganizationGrantRole } from '@app-builder/schemas/settings';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -8,10 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { UserRoleField } from './UserRoleField';
+import { type UserRoleOption } from './UserRoleSelector';
 
 interface GrantAccessProps {
   userId: string;
-  userRoles: readonly [string, ...string[]];
+  userRoles: readonly UserRoleOption[];
   access: FeatureAccessLevelDto;
 }
 
@@ -40,9 +40,7 @@ function GrantAccessContent({ userId, userRoles, access, onSuccess }: GrantAcces
   const grantAccessMutation = useGrantOrganizationAccessMutation();
   const revalidate = useLoaderRevalidator();
   // The role select is disabled when a single role can be granted
-  const [role, setRole] = useState<OrganizationGrantRole | null>(
-    userRoles.length === 1 ? (userRoles[0] as OrganizationGrantRole) : null,
-  );
+  const [role, setRole] = useState<string | null>(userRoles.length === 1 ? (userRoles[0]?.value ?? null) : null);
 
   const handleSubmit = () => {
     if (!role) return;
