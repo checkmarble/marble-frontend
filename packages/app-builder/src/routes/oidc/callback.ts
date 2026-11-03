@@ -1,6 +1,7 @@
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { setToast } from '@app-builder/services/toast.server';
+import { preserveSignedOut } from '@app-builder/utils/cross-tab-session';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { safeRedirect } from '@app-builder/utils/safe-redirect';
 import { createFileRoute } from '@tanstack/react-router';
@@ -11,6 +12,15 @@ import {
   type OAuth2CookieData,
   oauth2CookieSchema,
 } from '../../services/auth/oidc.server';
+
+function parseOauth2CookieData(rawCookie: string | null): OAuth2CookieData | null {
+  if (!rawCookie) return null;
+  try {
+    return oauth2CookieSchema.parse(JSON.parse(rawCookie));
+  } catch {
+    return null;
+  }
+}
 
 export const Route = createFileRoute('/oidc/callback')({
   server: {
@@ -27,6 +37,7 @@ export const Route = createFileRoute('/oidc/callback')({
         const oauth2Cookie = getOauth2Cookie({ secrets, secure });
 
         const rawCookie = await oauth2Cookie.parse(request.headers.get('cookie'));
+        const cookieData = parseOauth2CookieData(rawCookie);
 
         const { appConfigRepository, authService } = initServerServices(request);
 
@@ -35,12 +46,19 @@ export const Route = createFileRoute('/oidc/callback')({
           new Response(null, {
             status: 302,
             headers: [
-              ['Location', new URL('/sign-in', request.url).toString()],
+              ['Location', new URL(preserveSignedOut('/sign-in', !!cookieData?.signedOut), request.url).toString()],
               ['Set-Cookie', clearOauth2Cookie],
             ],
           });
 
         if (idpError) {
+          // Only the identity provider of this sign-in knows its `state`: a cross-site link must change nothing.
+          if (!cookieData || state !== cookieData.state) {
+            return new Response(null, {
+              status: 302,
+              headers: { Location: new URL('/sign-in', request.url).toString() },
+            });
+          }
           console.warn('[auth] identity provider returned an error', {
             error: idpError,
             description: url.searchParams.get('error_description'),
@@ -54,10 +72,7 @@ export const Route = createFileRoute('/oidc/callback')({
           return redirectToSignIn();
         }
 
-        let cookieData: OAuth2CookieData;
-        try {
-          cookieData = oauth2CookieSchema.parse(JSON.parse(rawCookie));
-        } catch {
+        if (!cookieData) {
           return new Response('Invalid oauth2 cookie', {
             status: 400,
             headers: { 'Set-Cookie': clearOauth2Cookie },
@@ -92,7 +107,7 @@ export const Route = createFileRoute('/oidc/callback')({
         try {
           await authService.authenticateOidc(request, tokens, {
             successRedirect: safeRedirect(cookieData.redirectTo, '/app-router'),
-            failureRedirect: '/sign-in',
+            failureRedirect: preserveSignedOut('/sign-in', !!cookieData.signedOut),
             // Without it, the backend verifies the tenant's ID token against the deployment-wide provider.
             tenantId,
           });

@@ -8,6 +8,7 @@ import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { Spinner } from '@app-builder/components/Spinner';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
+import { getAuthMode } from '@app-builder/models/auth-mode';
 import { signInFn } from '@app-builder/server-fns/auth';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
@@ -151,7 +152,7 @@ function Login() {
         </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <div className="flex flex-col gap-sm">
-          {authProviders.includes('oidc') ? (
+          {getAuthMode(authProviders) === 'oidc-legacy' ? (
             <button
               className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
               onClick={() => {
