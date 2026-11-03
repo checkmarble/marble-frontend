@@ -78,6 +78,7 @@ export const discoverSignInFn = createServerFn({ method: 'POST' })
         codeVerifier,
         tenantId: discovery.tenant_id,
         redirectTo: data.redirectTo ? safeRedirect(data.redirectTo, '/app-router') : undefined,
+        signedOut: data.signedOut,
       });
       return { type: 'redirect', href: url };
     } catch (error) {

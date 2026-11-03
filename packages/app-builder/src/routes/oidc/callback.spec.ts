@@ -5,12 +5,15 @@ const tokens = { sub: 'sub', accessToken: 'access', refreshToken: 'refresh', idT
 
 const authenticateOidc = vi.fn();
 const exchangeTenantOidcCode = vi.fn();
-let cookie: Record<string, string> = {};
+let cookie: Record<string, string | boolean> = {};
 
 vi.mock('@app-builder/services/init.server', () => ({
   initServerServices: () => ({ appConfigRepository: { getAppConfig: vi.fn() }, authService: { authenticateOidc } }),
 }));
-vi.mock('@app-builder/services/auth/auth-session.server', () => ({ useAuthSession: vi.fn() }));
+const updateAuthSession = vi.fn();
+vi.mock('@app-builder/services/auth/auth-session.server', () => ({
+  useAuthSession: async () => ({ update: updateAuthSession }),
+}));
 vi.mock('@app-builder/services/toast.server', () => ({ setToast: vi.fn() }));
 vi.mock('@app-builder/utils/environment', () => ({ getServerEnv: () => 'secret' }));
 vi.mock('../../services/auth/oidc.server', async (importOriginal) => ({
@@ -20,10 +23,10 @@ vi.mock('../../services/auth/oidc.server', async (importOriginal) => ({
   makeOidcService: vi.fn(),
 }));
 
-const callback = async () => {
+const callback = async (search = 'code=the-code&state=the-state') => {
   const { Route } = await import('./callback');
   const { GET } = Route.options.server!.handlers as { GET: (ctx: { request: Request }) => Promise<Response> };
-  return GET({ request: new Request('http://localhost:3000/oidc/callback?code=the-code&state=the-state') });
+  return GET({ request: new Request(`http://localhost:3000/oidc/callback?${search}`) });
 };
 
 describe('/oidc/callback', () => {
@@ -46,5 +49,50 @@ describe('/oidc/callback', () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get('Location')).toBe('/app-router');
+  });
+
+  it('keeps a signed-out tab signed out when Marble rejects the sign-in', async () => {
+    cookie = { state: 'the-state', codeVerifier: 'the-verifier', tenantId: TENANT_ID, signedOut: true };
+
+    await callback();
+
+    expect(authenticateOidc).toHaveBeenCalledWith(
+      expect.any(Request),
+      tokens,
+      expect.objectContaining({ failureRedirect: '/sign-in?signedOut=1' }),
+    );
+  });
+
+  describe('when the identity provider returns an error', () => {
+    const pendingSignIn = { state: 'the-state', codeVerifier: 'the-verifier', tenantId: TENANT_ID };
+
+    it('reports the refusal and ends the sign-in when the state matches', async () => {
+      cookie = pendingSignIn;
+
+      const response = await callback('error=access_denied&state=the-state');
+
+      expect(updateAuthSession).toHaveBeenCalledWith({ authError: { message: 'SsoRefused' } });
+      expect(response.headers.get('Location')).toBe('http://localhost:3000/sign-in');
+      expect(response.headers.get('Set-Cookie')).toBe('oauth2=; Max-Age=0');
+    });
+
+    it('keeps a signed-out tab signed out', async () => {
+      cookie = { ...pendingSignIn, signedOut: true };
+
+      const response = await callback('error=access_denied&state=the-state');
+
+      expect(response.headers.get('Location')).toBe('http://localhost:3000/sign-in?signedOut=1');
+    });
+
+    it.each(['error=access_denied&state=forged', 'error=access_denied'])('changes nothing for %s', async (search) => {
+      cookie = pendingSignIn;
+
+      const response = await callback(search);
+
+      expect(updateAuthSession).not.toHaveBeenCalled();
+      expect(response.status).toBe(302);
+      expect(response.headers.get('Location')).toBe('http://localhost:3000/sign-in');
+      expect(response.headers.get('Set-Cookie')).toBeNull();
+    });
   });
 });

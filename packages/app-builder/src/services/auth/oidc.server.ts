@@ -70,6 +70,7 @@ export const oauth2CookieSchema = z.object({
   codeVerifier: z.string(),
   tenantId: z.uuid().optional(),
   redirectTo: z.string().optional(),
+  signedOut: z.boolean().optional(),
 });
 export type OAuth2CookieData = z.infer<typeof oauth2CookieSchema>;
 
@@ -93,7 +94,8 @@ export function setOauth2Cookie(request: Request, data: OAuth2CookieData) {
     httpOnly: true,
     sameSite: 'lax',
     maxAge: OAUTH2_COOKIE_MAX_AGE,
-    secure: proto === 'https:',
+    // `x-forwarded-proto` carries `https`, `URL.protocol` carries `https:`.
+    secure: proto === 'https' || proto === 'https:',
   });
 }
 

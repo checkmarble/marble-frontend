@@ -364,13 +364,15 @@ export function makeAuthenticationServerService({
       const { tenantId } = options;
 
       const marbleToken = await getToken({ idToken, oldToken: accessToken, preferredOrganizationId, tenantId });
+      // A stored token only works with the identity provider that issued it.
+      const isSameIdentityProvider = authSession.data.provider === 'oidc' && authSession.data.oidcTenantId === tenantId;
 
       await authSession.update({
         authToken: marbleToken,
         provider: 'oidc',
         oidcTenantId: tenantId,
         authError: undefined,
-        ...(refreshToken ? { refreshToken } : {}),
+        refreshToken: refreshToken || (isSameIdentityProvider ? authSession.data.refreshToken : undefined),
       });
 
       redirectUrl = options.successRedirect;
