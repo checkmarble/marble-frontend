@@ -8,13 +8,18 @@ const exchangeTenantOidcCode = vi.fn();
 let cookie: Record<string, string | boolean> = {};
 
 vi.mock('@app-builder/services/init.server', () => ({
-  initServerServices: () => ({ appConfigRepository: { getAppConfig: vi.fn() }, authService: { authenticateOidc } }),
+  initServerServices: () => ({
+    appConfigRepository: { getAppConfig: vi.fn() },
+    authService: { authenticateOidc },
+    i18nextService: { getFixedT: async () => (key: string) => key },
+  }),
 }));
 const updateAuthSession = vi.fn();
 vi.mock('@app-builder/services/auth/auth-session.server', () => ({
   useAuthSession: async () => ({ update: updateAuthSession }),
 }));
-vi.mock('@app-builder/services/toast.server', () => ({ setToast: vi.fn() }));
+const setToast = vi.fn();
+vi.mock('@app-builder/services/toast.server', () => ({ setToast }));
 vi.mock('@app-builder/utils/environment', () => ({ getServerEnv: () => 'secret' }));
 vi.mock('../../services/auth/oidc.server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../services/auth/oidc.server')>()),
@@ -49,6 +54,53 @@ describe('/oidc/callback', () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get('Location')).toBe('/app-router');
+  });
+
+  it('opens the organization an organization switch asked for', async () => {
+    const organizationId = '7c1f6a2e-3c0b-4a51-9f27-2b8e4a7d9c10';
+    cookie = { state: 'the-state', codeVerifier: 'the-verifier', tenantId: TENANT_ID, organizationId };
+
+    await callback();
+
+    expect(authenticateOidc).toHaveBeenCalledWith(
+      expect.any(Request),
+      tokens,
+      expect.objectContaining({
+        organizationId,
+        failureRedirect: '/app-router',
+        failureToast: 'navigation:organization_change.switch_error',
+      }),
+    );
+  });
+
+  describe('when an organization switch fails', () => {
+    const pendingSwitch = {
+      state: 'the-state',
+      codeVerifier: 'the-verifier',
+      tenantId: TENANT_ID,
+      organizationId: '7c1f6a2e-3c0b-4a51-9f27-2b8e4a7d9c10',
+    };
+    const switchError = { type: 'error', message: 'navigation:organization_change.switch_error' };
+
+    it('returns to the app with a toast when the identity provider refuses', async () => {
+      cookie = pendingSwitch;
+
+      const response = await callback('error=access_denied&state=the-state');
+
+      expect(setToast).toHaveBeenCalledWith(switchError);
+      expect(updateAuthSession).not.toHaveBeenCalled();
+      expect(response.headers.get('Location')).toBe('http://localhost:3000/app-router');
+    });
+
+    it('returns to the app with a toast when the code exchange fails', async () => {
+      cookie = pendingSwitch;
+      exchangeTenantOidcCode.mockRejectedValue(new Error('exchange failed'));
+
+      const response = await callback();
+
+      expect(setToast).toHaveBeenCalledWith(switchError);
+      expect(response.headers.get('Location')).toBe('http://localhost:3000/app-router');
+    });
   });
 
   it('keeps a signed-out tab signed out when Marble rejects the sign-in', async () => {

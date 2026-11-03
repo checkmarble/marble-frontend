@@ -1,6 +1,11 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
-import { discoverTenantOidc, makeOidcService, setOauth2Cookie } from '@app-builder/services/auth/oidc.server';
+import {
+  discoverTenantOidc,
+  makeOidcService,
+  setOauth2Cookie,
+  tenantOidcClientConfig,
+} from '@app-builder/services/auth/oidc.server';
 import { captureUnexpectedError } from '@app-builder/services/monitoring';
 import { preserveSignedOut } from '@app-builder/utils/cross-tab-session';
 import { safeRedirect } from '@app-builder/utils/safe-redirect';
@@ -65,13 +70,7 @@ export const discoverSignInFn = createServerFn({ method: 'POST' })
         return { type: 'redirect', href: preserveSignedOut(href, data.signedOut) };
       }
 
-      const oidc = await makeOidcService({
-        issuer: discovery.issuer,
-        client_id: discovery.client_id,
-        redirect_uri: discovery.redirect_uri,
-        scopes: discovery.scopes,
-        extra_params: discovery.extra_params ?? {},
-      });
+      const oidc = await makeOidcService(tenantOidcClientConfig(discovery));
       const { url, state, codeVerifier } = await oidc.buildAuthorizationUrl({ loginHint: data.email });
       setOauth2Cookie(request, {
         state,
@@ -129,7 +128,7 @@ export const changeOrganizationId = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     const request = getRequest();
     try {
-      await context.services.authService.changeOrganization(request, data);
+      return await context.services.authService.changeOrganization(request, data);
     } catch (err) {
       if (err instanceof Response && err.status >= 300 && err.status < 400) {
         throw redirect({ href: err.headers.get('Location')!, statusCode: err.status });

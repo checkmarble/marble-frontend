@@ -39,14 +39,23 @@ export const Route = createFileRoute('/oidc/callback')({
         const rawCookie = await oauth2Cookie.parse(request.headers.get('cookie'));
         const cookieData = parseOauth2CookieData(rawCookie);
 
-        const { appConfigRepository, authService } = initServerServices(request);
+        const { appConfigRepository, authService, i18nextService } = initServerServices(request);
 
         const clearOauth2Cookie = await oauth2Cookie.serialize('', { maxAge: 0 });
+        // A failed organization switch leaves the user signed in, and the sign-in page would send them straight back.
+        const isOrganizationSwitch = !!cookieData?.organizationId;
+        const failurePath = isOrganizationSwitch
+          ? '/app-router'
+          : preserveSignedOut('/sign-in', !!cookieData?.signedOut);
+        const organizationSwitchError = async () => {
+          const t = await i18nextService.getFixedT(request, ['navigation']);
+          return t('navigation:organization_change.switch_error');
+        };
         const redirectToSignIn = () =>
           new Response(null, {
             status: 302,
             headers: [
-              ['Location', new URL(preserveSignedOut('/sign-in', !!cookieData?.signedOut), request.url).toString()],
+              ['Location', new URL(failurePath, request.url).toString()],
               ['Set-Cookie', clearOauth2Cookie],
             ],
           });
@@ -63,8 +72,12 @@ export const Route = createFileRoute('/oidc/callback')({
             error: idpError,
             description: url.searchParams.get('error_description'),
           });
-          const authSession = await useAuthSession();
-          await authSession.update({ authError: { message: 'SsoRefused' } });
+          if (isOrganizationSwitch) {
+            await setToast({ type: 'error', message: await organizationSwitchError() });
+          } else {
+            const authSession = await useAuthSession();
+            await authSession.update({ authError: { message: 'SsoRefused' } });
+          }
           return redirectToSignIn();
         }
 
@@ -99,7 +112,10 @@ export const Route = createFileRoute('/oidc/callback')({
           }
         } catch (err) {
           if (err instanceof Error) {
-            await setToast({ type: 'error', message: err.message });
+            await setToast({
+              type: 'error',
+              message: isOrganizationSwitch ? await organizationSwitchError() : err.message,
+            });
           }
           return redirectToSignIn();
         }
@@ -107,9 +123,11 @@ export const Route = createFileRoute('/oidc/callback')({
         try {
           await authService.authenticateOidc(request, tokens, {
             successRedirect: safeRedirect(cookieData.redirectTo, '/app-router'),
-            failureRedirect: preserveSignedOut('/sign-in', !!cookieData.signedOut),
+            failureRedirect: failurePath,
+            failureToast: isOrganizationSwitch ? await organizationSwitchError() : undefined,
             // Without it, the backend verifies the tenant's ID token against the deployment-wide provider.
             tenantId,
+            organizationId: cookieData.organizationId,
           });
           // authenticateOidc always throws a redirect, but TypeScript doesn't know that
           /* istanbul ignore next */

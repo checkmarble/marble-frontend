@@ -71,6 +71,8 @@ export const oauth2CookieSchema = z.object({
   tenantId: z.uuid().optional(),
   redirectTo: z.string().optional(),
   signedOut: z.boolean().optional(),
+  /** Set when this sign-in completes an organization switch. */
+  organizationId: z.uuid().optional(),
 });
 export type OAuth2CookieData = z.infer<typeof oauth2CookieSchema>;
 
@@ -109,6 +111,16 @@ export async function discoverTenantOidc(domain: string): Promise<TenantOidcDisc
     if (isNotFoundHttpError(error)) return null;
     throw error;
   }
+}
+
+export function tenantOidcClientConfig(discovery: TenantOidcDiscovery): OidcClientConfig {
+  return {
+    issuer: discovery.issuer,
+    client_id: discovery.client_id,
+    redirect_uri: discovery.redirect_uri,
+    scopes: discovery.scopes,
+    extra_params: discovery.extra_params ?? {},
+  };
 }
 
 export async function makeOidcService(config: OidcClientConfig) {
