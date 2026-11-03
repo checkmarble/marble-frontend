@@ -2,7 +2,7 @@ import { servicesMiddleware } from '@app-builder/middlewares/services-middleware
 import { registerSSRInstance } from '@app-builder/services/i18n/i18n-instance-store';
 import { getLocale, makeI18nextServerInstance } from '@app-builder/services/i18n/i18next.server';
 import { getSegmentScript } from '@app-builder/services/segment/segment.server';
-import { getToast } from '@app-builder/services/toast.server';
+import { getToastForPage } from '@app-builder/services/toast.server';
 import { commitCsrfToken } from '@app-builder/utils/csrf.server';
 import { getClientEnvVars, getServerEnv } from '@app-builder/utils/environment';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
@@ -20,7 +20,7 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     const [locale, csrfToken, toastMessage] = await Promise.all([
       getLocale(request),
       commitCsrfToken(request),
-      getToast(),
+      getToastForPage(request),
     ]);
 
     // Create per-locale SSR i18next instance and register it so App() can pick it up

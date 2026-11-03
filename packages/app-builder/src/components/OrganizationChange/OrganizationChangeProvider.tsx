@@ -324,7 +324,15 @@ export function OrganizationChangeProvider({
               appConfig,
             ).authenticationClientService.authenticationClientRepository.firebaseIdToken()
           : undefined;
-      await changeOrganizationIdMutation.mutateAsync({ idToken, csrf, newOrganizationId: organizationId });
+      const result = await changeOrganizationIdMutation.mutateAsync({
+        idToken,
+        csrf,
+        newOrganizationId: organizationId,
+      });
+      if (!result?.redirectTo) return false;
+      // The identity provider completes the switch on its way back: the session is unchanged until then.
+      window.location.assign(result.redirectTo);
+      return true;
     },
     [appConfig, authProvider, changeOrganizationIdMutation, csrf],
   );
@@ -344,7 +352,10 @@ export function OrganizationChangeProvider({
       const nextTransition = createTransition(currentOrganization.id, organizationId);
       setCurrentTransition({ ...nextTransition, phase: 'pending', silent: true });
       try {
-        await changeServerOrganization(organizationId);
+        if (await changeServerOrganization(organizationId)) {
+          setCurrentTransition(null);
+          return;
+        }
         setCurrentTransition({ ...nextTransition, phase: 'decision', silent: true });
         await navigateToSessionOrganization();
       } catch {
@@ -402,7 +413,11 @@ export function OrganizationChangeProvider({
           broadcast('started', nextTransition);
 
           try {
-            await changeServerOrganization(organizationId);
+            if (await changeServerOrganization(organizationId)) {
+              broadcast('cancelled', nextTransition);
+              setCurrentTransition(null);
+              return;
+            }
           } catch {
             broadcast('cancelled', nextTransition);
             await reconcileFromServer();
@@ -517,7 +532,12 @@ export function OrganizationChangeProvider({
       broadcast('started', reverseTransition);
 
       try {
-        await changeServerOrganization(protectedTransition.fromOrganizationId);
+        if (await changeServerOrganization(protectedTransition.fromOrganizationId)) {
+          // The session stays on the other organization until the identity provider returns: keep the protection.
+          broadcast('cancelled', reverseTransition);
+          setCurrentTransition(protectedTransition);
+          return;
+        }
       } catch {
         broadcast('cancelled', reverseTransition);
         setCurrentTransition({ ...protectedTransition, phase: 'error' });

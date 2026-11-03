@@ -22,6 +22,12 @@ export async function setToast(message: ToastMessage): Promise<void> {
   await session.update({ toastMessage: message });
 }
 
+/** `/app-router` only redirects: reading the toast there would clear it before a page can show it. */
+export async function getToastForPage(request: Request): Promise<ToastMessage | undefined> {
+  if (new URL(request.url).pathname === '/app-router') return undefined;
+  return getToast();
+}
+
 export async function getToast(): Promise<ToastMessage | undefined> {
   const session = await useToastSession();
   const raw = session.data.toastMessage;

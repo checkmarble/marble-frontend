@@ -40,7 +40,14 @@ import { BackendGlobalError, marblecoreApi, type Token, TokenService, TokenServi
 import * as z from 'zod/v4';
 import { captureUnexpectedError } from '../monitoring';
 import { refreshFirebaseIdToken } from './firebase.server';
-import { type makeOidcService, type OidcClientConfig, refreshTenantOidcToken } from './oidc.server';
+import {
+  discoverTenantOidc,
+  type makeOidcService,
+  type OidcClientConfig,
+  refreshTenantOidcToken,
+  setOauth2Cookie,
+  tenantOidcClientConfig,
+} from './oidc.server';
 
 function redirect(url: string, init?: { status?: number; headers?: HeadersInit }): Response {
   const headers = new Headers(init?.headers);
@@ -105,7 +112,7 @@ export interface AuthenticationServerService {
   changeOrganization(
     request: Request,
     payload: { csrf: string; newOrganizationId: string; idToken?: string },
-  ): Promise<void>;
+  ): Promise<OrganizationChangeResult>;
 
   isAuthenticated(
     request: Request,
@@ -138,6 +145,9 @@ const schema = z.object({
   csrf: z.string(),
 });
 export type AuthPayload = z.infer<typeof schema>;
+
+/** `redirectTo` is the identity provider's sign-in page, which completes the switch on its way back. */
+export type OrganizationChangeResult = { redirectTo: string } | undefined;
 
 interface MakeAuthenticationServerServiceArgs {
   marbleCoreApiClient: MarbleCoreApi;
@@ -353,6 +363,10 @@ export function makeAuthenticationServerService({
       successRedirect: string;
       failureRedirect: string;
       tenantId?: string;
+      /** The organization to open, when this sign-in completes an organization switch. */
+      organizationId?: string;
+      /** Shown instead of a sign-in error, for a user who stays signed in and never sees the sign-in page. */
+      failureToast?: string;
     },
   ): Promise<never> {
     const authSession = await useAuthSession();
@@ -363,21 +377,31 @@ export function makeAuthenticationServerService({
       const { idToken, accessToken, refreshToken } = tokens;
       const { tenantId } = options;
 
-      const marbleToken = await getToken({ idToken, oldToken: accessToken, preferredOrganizationId, tenantId });
-      // A stored token only works with the identity provider that issued it.
-      const isSameIdentityProvider = authSession.data.provider === 'oidc' && authSession.data.oidcTenantId === tenantId;
+      const { organizationId } = options;
+      const marbleToken = await getToken({
+        idToken,
+        oldToken: accessToken,
+        organizationId,
+        preferredOrganizationId,
+        tenantId,
+      });
 
       await authSession.update({
         authToken: marbleToken,
         provider: 'oidc',
         oidcTenantId: tenantId,
         authError: undefined,
-        refreshToken: refreshToken || (isSameIdentityProvider ? authSession.data.refreshToken : undefined),
+        // A stored token may belong to another account or identity provider: never carry it over.
+        refreshToken: refreshToken || undefined,
       });
 
       redirectUrl = options.successRedirect;
     } catch (error) {
-      await authSession.update({ authError: { message: adaptAuthErrors(error) } });
+      if (options.failureToast) {
+        await setToast({ type: 'error', message: options.failureToast });
+      } else {
+        await authSession.update({ authError: { message: adaptAuthErrors(error) } });
+      }
       redirectUrl = options.failureRedirect;
 
       if (!expectedErrors(error)) {
@@ -439,11 +463,11 @@ export function makeAuthenticationServerService({
   async function changeOrganization(
     request: Request,
     payload: { csrf: string; newOrganizationId: string; idToken?: string },
-  ): Promise<void> {
+  ): Promise<OrganizationChangeResult> {
     const authSession = await useAuthSession();
     if (authSession.data.provider === 'firebase') {
       if (!payload.idToken) throw new Error('A Firebase ID token is required to switch organizations');
-      return refresh(
+      await refresh(
         request,
         { ...payload, idToken: payload.idToken },
         {
@@ -451,13 +475,16 @@ export function makeAuthenticationServerService({
           preserveSessionOnFailure: true,
         },
       );
+      return undefined;
     }
 
     if (authSession.data.provider !== 'oidc') throw new Error('Unsupported authentication provider');
     await validateCsrf(request, payload.csrf);
-    if (!authSession.data.refreshToken) throw new Error('No OIDC refresh token is available to switch organizations');
     const appConfig = await getAppConfigRepository(unauthenticatedMarbleCoreApiClient).getAppConfig();
     const tenantId = authSession.data.oidcTenantId;
+    if (!authSession.data.refreshToken) {
+      return { redirectTo: await startOrganizationSwitchSignIn(request, appConfig, authSession.data, payload) };
+    }
     const response = await refreshOidcTokens(appConfig, authSession.data.refreshToken, tenantId);
     // Rotation may invalidate the old refresh token even if the target
     // organization exchange fails. Keep the active Marble token until success.
@@ -471,6 +498,37 @@ export function makeAuthenticationServerService({
       tenantId,
     });
     await authSession.update({ authToken: marbleToken });
+    return undefined;
+  }
+
+  /** Without a refresh token, only the identity provider can issue the tokens for another organization. */
+  async function startOrganizationSwitchSignIn(
+    request: Request,
+    appConfig: AppConfig,
+    session: AuthSessionData,
+    { newOrganizationId }: { newOrganizationId: string },
+  ): Promise<string> {
+    const tenantId = session.oidcTenantId;
+    const email = emailFromMarbleToken(session);
+
+    let config = appConfig.auth.oidc;
+    if (tenantId) {
+      const domain = email?.slice(email.lastIndexOf('@') + 1).toLowerCase();
+      const discovery = domain ? await discoverTenantOidc(domain) : null;
+      if (discovery?.tenant_id !== tenantId) throw new Error('The tenant identity provider cannot be found');
+      config = tenantOidcClientConfig(discovery);
+    }
+
+    const oidc = await makeOidcService(config);
+    const { url, state, codeVerifier } = await oidc.buildAuthorizationUrl({ loginHint: email });
+    setOauth2Cookie(request, {
+      state,
+      codeVerifier,
+      tenantId,
+      organizationId: newOrganizationId,
+      redirectTo: '/app-router',
+    });
+    return url;
   }
 
   async function isAuthenticated(
@@ -666,6 +724,16 @@ async function getToken({
     { baseUrl: getServerEnv('MARBLE_API_URL') },
   );
   return tokenWithOrg;
+}
+
+function emailFromMarbleToken(authSessionData: AuthSessionData): string | undefined {
+  const payload = authSessionData.authToken?.access_token.split('.')[1];
+  if (!payload) return undefined;
+
+  const claims = JSON.parse(Buffer.from(payload, 'base64url').toString()) as {
+    credentials?: { actor_identity?: { email?: string } };
+  };
+  return claims.credentials?.actor_identity?.email;
 }
 
 function organizationIdFromMarbleToken(authSessionData?: AuthSessionData): string | undefined {
