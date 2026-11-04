@@ -3,6 +3,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { useHydrated } from '@tanstack/react-router';
+import { useServerFn } from '@tanstack/react-start';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, Typo } from 'ui-design-system';
@@ -36,10 +37,10 @@ export function SignInWithEmailDiscovery({
   const hydrated = useHydrated();
   const [discoveryError, setDiscoveryError] = useState<DiscoveryError | null>(null);
   const [redirecting, setRedirecting] = useState(false);
+  const discoverSignIn = useServerFn(discoverSignInFn);
 
   const discoverMutation = useMutation({
-    mutationFn: (email: string) =>
-      discoverSignInFn({ data: { email, redirectTo: redirectTo ?? undefined, signedOut } }),
+    mutationFn: (email: string) => discoverSignIn({ data: { email, redirectTo: redirectTo ?? undefined, signedOut } }),
     onSuccess: (result) => {
       if (result.type === 'error') {
         setDiscoveryError(result.error);

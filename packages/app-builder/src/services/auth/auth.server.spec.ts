@@ -52,7 +52,7 @@ const buildAuthorizationUrl = vi.fn(async () => ({
 }));
 const makeOidcService = vi.fn(async (_config: unknown) => ({ buildAuthorizationUrl }));
 
-const marbleToken = (email: string) => ({
+const marbleToken = (email: unknown) => ({
   access_token: `h.${Buffer.from(JSON.stringify({ credentials: { actor_identity: { email } } })).toString('base64url')}.s`,
   token_type: 'Bearer',
   expires_at: '2100-01-01T00:00:00Z',
@@ -168,6 +168,29 @@ describe('changeOrganization', () => {
       expect(discoverTenantOidc).not.toHaveBeenCalled();
       expect(makeOidcService).toHaveBeenCalledWith(LEGACY_CONFIG);
     });
+
+    it('allows a deployment-wide user without an email claim to sign in again', async () => {
+      session.data = { ...noToken, authToken: marbleToken(undefined) };
+
+      await expect(switchOrganization()).resolves.toEqual({ redirectTo: 'https://idp.example/authorize' });
+
+      expect(buildAuthorizationUrl).toHaveBeenCalledWith({ loginHint: undefined });
+      expect(discoverTenantOidc).not.toHaveBeenCalled();
+    });
+
+    it.each([{ email: 42 }, { email: { email: 'ada@example.com' } }, { email: ['ada@example.com'] }])(
+      'rejects a non-string email claim before starting the tenant sign-in: $email',
+      async ({ email }) => {
+        session.data = { ...noToken, oidcTenantId: TENANT_ID, authToken: marbleToken(email) };
+
+        await expect(switchOrganization()).rejects.toMatchObject({ name: 'ZodError' });
+
+        expect(discoverTenantOidc).not.toHaveBeenCalled();
+        expect(makeOidcService).not.toHaveBeenCalled();
+        expect(setOauth2Cookie).not.toHaveBeenCalled();
+        expect(updateSession).not.toHaveBeenCalled();
+      },
+    );
 
     it('fails when the email domain now belongs to another tenant', async () => {
       session.data = { ...noToken, oidcTenantId: OTHER_TENANT_ID };

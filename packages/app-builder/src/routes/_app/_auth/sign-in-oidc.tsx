@@ -19,7 +19,7 @@ import {
 } from '@app-builder/utils/cross-tab-session';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, ErrorComponent, Link, redirect } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { createServerFn, useServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
@@ -104,10 +104,11 @@ function Login() {
   const { t } = useTranslation(['auth', 'common']);
   const { isSignupReady, authProviders, didMigrationsRun, isManagedMarble, authError, redirectTo, signedOut } =
     Route.useLoaderData();
+  const serverSignIn = useServerFn(signInFn);
 
   const signInMutation = useMutation({
     mutationFn: async (authPayload: AuthPayload) =>
-      signInFn({
+      serverSignIn({
         data: {
           idToken: authPayload.idToken,
           refreshToken: authPayload.refreshToken,
