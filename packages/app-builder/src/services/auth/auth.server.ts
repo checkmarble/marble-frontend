@@ -726,13 +726,19 @@ async function getToken({
   return tokenWithOrg;
 }
 
-function emailFromMarbleToken(authSessionData: AuthSessionData): string | undefined {
+const marbleTokenEmailClaimsSchema = z.object({
+  credentials: z
+    .object({
+      actor_identity: z.object({ email: z.string().optional() }).optional(),
+    })
+    .optional(),
+});
+
+function emailFromMarbleToken(authSessionData: AuthSessionData) {
   const payload = authSessionData.authToken?.access_token.split('.')[1];
   if (!payload) return undefined;
 
-  const claims = JSON.parse(Buffer.from(payload, 'base64url').toString()) as {
-    credentials?: { actor_identity?: { email?: string } };
-  };
+  const claims = marbleTokenEmailClaimsSchema.parse(JSON.parse(Buffer.from(payload, 'base64url').toString()));
   return claims.credentials?.actor_identity?.email;
 }
 
