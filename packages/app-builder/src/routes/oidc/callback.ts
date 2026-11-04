@@ -82,7 +82,11 @@ export const Route = createFileRoute('/oidc/callback')({
         }
 
         if (!code || !state || !rawCookie) {
-          return redirectToSignIn();
+          // An unrelated navigation must not consume another tab's pending sign-in.
+          return new Response(null, {
+            status: 302,
+            headers: { Location: new URL(failurePath, request.url).toString() },
+          });
         }
 
         if (!cookieData) {
@@ -93,10 +97,7 @@ export const Route = createFileRoute('/oidc/callback')({
         }
 
         if (state !== cookieData.state) {
-          return new Response('State mismatch', {
-            status: 400,
-            headers: { 'Set-Cookie': clearOauth2Cookie },
-          });
+          return new Response('State mismatch', { status: 400 });
         }
 
         const { tenantId, codeVerifier } = cookieData;
