@@ -13,7 +13,7 @@ export function useInvalidateCaseDecisions() {
   }, [queryClient]);
 }
 
-export function useCaseDecisionsQuery(caseId: string) {
+export function useCaseDecisionsQuery(caseId: string, options: { enabled?: boolean } = {}) {
   const listCaseDecisions = useServerFn(listCaseDecisionsFn);
   const queryKey = [...caseDecisionsQueryKey, caseId] as const;
 
@@ -27,6 +27,7 @@ export function useCaseDecisionsQuery(caseId: string) {
         pagination: { hasMore: boolean; cursorId: string | null };
       }>;
     },
+    enabled: options.enabled ?? true,
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => {
       // TanStack Query types `lastPage` as TPage but actually passes `undefined`

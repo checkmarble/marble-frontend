@@ -16,6 +16,7 @@ import scenarios from '@app-builder/locales/fr/scenarios.json';
 import screeningTopics from '@app-builder/locales/fr/screening-topics.json';
 import screenings from '@app-builder/locales/fr/screenings.json';
 import settings from '@app-builder/locales/fr/settings.json';
+import tracfin from '@app-builder/locales/fr/tracfin.json';
 import upload from '@app-builder/locales/fr/upload.json';
 import userScoring from '@app-builder/locales/fr/user-scoring.json';
 import workflows from '@app-builder/locales/fr/workflows.json';
@@ -39,6 +40,7 @@ export const fr = {
   screenings,
   screeningTopics,
   settings,
+  tracfin,
   upload,
   'user-scoring': userScoring,
   workflows,

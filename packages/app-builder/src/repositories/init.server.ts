@@ -26,6 +26,7 @@ import { makeGetScenarioRepository } from './ScenarioRepository';
 import { makeGetScreeningRepository } from './ScreeningRepository';
 import { getCsrfCookie, type SessionStorageRepositoryOptions } from './SessionStorageRepositories';
 import { makeGetTestRunRepository } from './TestRunRepository';
+import { makeGetTracfinRepository } from './TracfinRepository';
 import { makeGetUserRepository } from './UserRepository';
 import { makeGetUserScoringRepository } from './UserScoringRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
@@ -77,6 +78,7 @@ export function makeServerRepositories({
     getClient360TablesRepository: makeGetClient360TablesRepository(),
     getAuditEventsRepository: makeGetAuditEventsRepository(),
     getUserScoringRepository: makeGetUserScoringRepository(),
+    getTracfinRepository: makeGetTracfinRepository(),
   };
 }
 

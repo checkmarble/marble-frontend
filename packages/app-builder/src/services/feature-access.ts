@@ -164,3 +164,6 @@ export function getGraphExplorationDisplay({
   if (!isGraphExplorationAvailable) return 'placeholder' as const;
   return 'graph' as const;
 }
+
+/** The TRACFIN configuration is an organization setting: `ORGANIZATIONS_UPDATE`, like the backend's `EditOrganization`. */
+export const isTracfinConfigurationAvailable = ({ permissions }: CurrentUser) => permissions.canUpdateOrganization;

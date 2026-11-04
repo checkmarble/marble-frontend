@@ -1,0 +1,124 @@
+import { isTracfinRequestError } from '@app-builder/models/tracfin';
+import { getTracfinCatalogIndex } from '@app-builder/models/tracfin/catalog-index';
+import { useTracfinCatalogQuery } from '@app-builder/queries/tracfin/get-catalog';
+import { useTracfinDraftQuery } from '@app-builder/queries/tracfin/get-draft';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
+import { ErrorBanner } from '../Settings/ErrorBanner';
+import { ConfigurationCard } from './ConfigurationCard';
+import { CreateDraftPanel } from './CreateDraftPanel';
+import { DraftHeader } from './DraftHeader';
+import { DraftNotices } from './DraftNotices';
+import { TracfinDraftEditorProvider, useTracfinDraftEditorContext } from './editor/TracfinDraftEditorContext';
+import { LeaveGuard } from './LeaveGuard';
+import type { TracfinSectionId } from './model/sections';
+import { SectionPrefillBar } from './prefill/PrefillButton';
+import { PrefillPanel } from './prefill/PrefillPanel';
+import { TracfinPrefillProvider } from './prefill/TracfinPrefillContext';
+import { TracfinFocusProvider } from './review/TracfinFocusContext';
+import { TracfinReviewProvider } from './review/TracfinReviewContext';
+import { SectionNav } from './SectionNav';
+import { tracfinSectionComponents } from './sections/section-components';
+
+type TracfinDraftPageProps = {
+  /** UUID of the case. */
+  caseId: string;
+  /** The section on screen: it is kept in the URL search params by the route. */
+  section: TracfinSectionId;
+  onSectionChange: (section: TracfinSectionId) => void;
+};
+
+/**
+ * The TRACFIN draft of a case: creation when there is none, otherwise the sections around one shared
+ * editor. Loads the catalog and the draft; a failure is shown as such, never as an empty draft.
+ */
+export function TracfinDraftPage({ caseId, section, onSectionChange }: TracfinDraftPageProps) {
+  const { t } = useTranslation(['tracfin']);
+  const catalogQuery = useTracfinCatalogQuery();
+  const draftQuery = useTracfinDraftQuery(caseId);
+  const catalogIndex = useMemo(
+    () => (catalogQuery.data ? getTracfinCatalogIndex(catalogQuery.data.profile) : null),
+    [catalogQuery.data],
+  );
+
+  const failed = [draftQuery, catalogQuery].find((query) => query.isError && query.data === undefined);
+  if (failed) {
+    const forbidden = isTracfinRequestError(failed.error) && failed.error.error.kind === 'forbidden';
+    return (
+      <ErrorBanner>
+        <p className="font-semibold">
+          {forbidden ? t('tracfin:draft.load_forbidden') : t('tracfin:draft.load_failed')}
+        </p>
+        {!forbidden && failed.error instanceof Error && failed.error.message ? (
+          <p className="font-mono text-xs">{failed.error.message}</p>
+        ) : null}
+        {forbidden ? null : (
+          <Button
+            variant="secondary"
+            appearance="stroked"
+            className="self-start"
+            onClick={() => {
+              for (const query of [draftQuery, catalogQuery]) if (query.isError) void query.refetch();
+            }}
+          >
+            {t('tracfin:draft.errors.retry')}
+          </Button>
+        )}
+      </ErrorBanner>
+    );
+  }
+
+  if (draftQuery.data === undefined || !catalogIndex) {
+    return (
+      <p className="text-s text-grey-secondary" role="status">
+        {t('tracfin:draft.loading')}
+      </p>
+    );
+  }
+
+  if (draftQuery.data === null) return <CreateDraftPanel caseId={caseId} />;
+
+  return (
+    <TracfinDraftEditorProvider caseId={caseId} draft={draftQuery.data} catalogIndex={catalogIndex}>
+      <TracfinPrefillProvider>
+        <TracfinDraftShell section={section} onSectionChange={onSectionChange} />
+        <PrefillPanel />
+      </TracfinPrefillProvider>
+    </TracfinDraftEditorProvider>
+  );
+}
+
+function TracfinDraftShell({ section, onSectionChange }: Pick<TracfinDraftPageProps, 'section' | 'onSectionChange'>) {
+  const editor = useTracfinDraftEditorContext();
+  const Section = tracfinSectionComponents[section];
+  const changeSection = (next: TracfinSectionId) => {
+    // Leaving a section saves what was edited in it; the edits stay in the editor either way.
+    void editor.autoFlush();
+    onSectionChange(next);
+  };
+
+  return (
+    // The focus provider lets a diagnostic of the review open a section and land on its field; the
+    // review provider keeps the validation and the export above the sections.
+    <TracfinFocusProvider section={section} onSectionChange={changeSection}>
+      <TracfinReviewProvider>
+        <div className="flex min-w-0 flex-col gap-lg">
+          <DraftHeader />
+          <DraftNotices />
+          <ConfigurationCard />
+          <div className="flex min-w-0 flex-col gap-lg lg:flex-row lg:items-start">
+            <div className="lg:w-60 lg:shrink-0">
+              <SectionNav section={section} onSectionChange={changeSection} />
+            </div>
+            <div className="min-w-0 flex-1">
+              {section === 'review' ? null : <SectionPrefillBar section={section} />}
+              <Section />
+            </div>
+          </div>
+          <LeaveGuard />
+        </div>
+      </TracfinReviewProvider>
+    </TracfinFocusProvider>
+  );
+}

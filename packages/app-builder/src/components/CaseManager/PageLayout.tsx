@@ -23,7 +23,7 @@ import { getGraphExplorationDisplay } from '@app-builder/services/feature-access
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { Link, useMatches, useParams, useRouter } from '@tanstack/react-router';
+import { Link, useMatches, useNavigate, useParams, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -57,7 +57,7 @@ export function CaseManagerPageLayout({
   dataModel,
   dataModelFeatureAccess,
 }: CaseManagerPageLayoutProps) {
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases', 'tracfin']);
   const [sarReportModalOpen, setSarReportModalOpen] = useState(false);
   const [kycEnrichmentPanelOpen, setKycEnrichmentPanelOpen] = useState(false);
   const { info } = CommentContext.useValue();
@@ -79,6 +79,7 @@ export function CaseManagerPageLayout({
   });
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
   const router = useRouter();
+  const navigate = useNavigate();
   const nextUnassignedCaseHref = router.buildLocation({
     to: '/ressources/cases/next-unassigned/$caseId',
     params: { caseId: fromUUIDtoSUUID(caseDetail.id) },
@@ -89,6 +90,11 @@ export function CaseManagerPageLayout({
   };
   const handleKycEnrichAction = () => {
     setKycEnrichmentPanelOpen(true);
+  };
+  // The TRACFIN declaration needs a case outcome: the backend refuses to create a draft without one.
+  const canDeclareToTracfin = caseDetail.outcome !== 'unset';
+  const handleTracfinAction = () => {
+    void navigate({ to: '/cases/s/$caseId/tracfin', params: { caseId: fromUUIDtoSUUID(caseDetail.id) } });
   };
 
   const sarReport = sarReportsQuery.data?.[0];
@@ -184,6 +190,9 @@ export function CaseManagerPageLayout({
               ) : (
                 <ActionButton icon="plus" text={sarActionText} onClick={handleSarAction} />
               )}
+              {canDeclareToTracfin ? (
+                <ActionButton icon="plus" text={t('tracfin:draft.action')} onClick={handleTracfinAction} />
+              ) : null}
               <ActionButton
                 disabled={pivotObjects.length === 0}
                 icon="plus"

@@ -139,6 +139,7 @@
   "tags.target.case": "Investigation",
   "tags.target.object": "Objet",
   "tags.update_tag": "Modifier le tag",
+  "tracfin": "TRACFIN",
   "unavailableBanner.caption": "Vous êtes actuellement indisponible jusqu'au {{date}}.",
   "users": "Utilisateurs",
   "users.delete_user": "Supprimer l'utilisateur",

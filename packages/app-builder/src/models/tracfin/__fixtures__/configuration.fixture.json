@@ -1,0 +1,319 @@
+{
+  "org_id": "41d4f0cb-8ad6-546c-aced-bbe158330bb2",
+  "settings": {
+    "root": {
+      "id": "907ed272-510d-5e3b-8ce2-ebedf325627c",
+      "catalog_id": "/ds",
+      "children": [
+        {
+          "id": "af2eacdd-2fcf-5a91-92e6-8e430285376a",
+          "catalog_id": "/ds/organisme",
+          "fields": {
+            "/ds/organisme/profession": [
+              {
+                "id": "9bacbe69-9734-5d1f-b7c2-02adcdd556bb",
+                "kind": "text",
+                "text": "TPI9",
+                "origin": {
+                  "source": "settings",
+                  "resolution": "resolved"
+                }
+              }
+            ],
+            "/ds/organisme/libelle": [
+              {
+                "id": "0f6fee37-8386-5f8b-9269-8c06c4cdaade",
+                "kind": "text",
+                "text": "Banque Exemple SA",
+                "origin": {
+                  "source": "settings",
+                  "resolution": "resolved"
+                }
+              }
+            ],
+            "/ds/organisme/numIdPro": [
+              {
+                "id": "38090bfe-f887-5412-b772-af87489e6baa",
+                "kind": "text",
+                "text": "12345678",
+                "origin": {
+                  "source": "settings",
+                  "resolution": "resolved"
+                }
+              }
+            ]
+          },
+          "children": [
+            {
+              "id": "13f97d5e-60ac-5a20-9d97-fca840c99fa8",
+              "catalog_id": "/ds/organisme/adresse",
+              "fields": {
+                "/ds/organisme/adresse/type": [
+                  {
+                    "id": "d61d58ad-ec59-56df-a0cb-2bb2fb9b955f",
+                    "kind": "text",
+                    "text": "TAD3",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    }
+                  }
+                ],
+                "/ds/organisme/adresse/nomVoie": [
+                  {
+                    "id": "99e516a5-2e9a-5b41-9d49-9ad208957d6a",
+                    "kind": "text",
+                    "text": "rue de la Paix",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    }
+                  }
+                ],
+                "/ds/organisme/adresse/codePostal": [
+                  {
+                    "id": "19fa6813-f838-5aef-b240-f331a8dbda5e",
+                    "kind": "text",
+                    "text": "75002",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    }
+                  }
+                ],
+                "/ds/organisme/adresse/ville": [
+                  {
+                    "id": "7f8cdcbd-7e6b-56e3-ae42-11dce39327b4",
+                    "kind": "text",
+                    "text": "Paris",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    }
+                  }
+                ],
+                "/ds/organisme/adresse/pays": [
+                  {
+                    "id": "812dbec9-72be-5115-8721-26f5b4f960ea",
+                    "kind": "text",
+                    "text": "FR",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    }
+                  }
+                ],
+                "/ds/organisme/adresse/pays/@type": [
+                  {
+                    "id": "550a720c-e0b9-50d0-8eba-7422ee9f24d1",
+                    "kind": "text",
+                    "text": "code",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    },
+                    "parent_value_id": "812dbec9-72be-5115-8721-26f5b4f960ea"
+                  }
+                ],
+                "/ds/organisme/adresse/tel": [
+                  {
+                    "id": "20bded2f-0412-5336-b347-33efacf54820",
+                    "kind": "text",
+                    "text": "0100000000",
+                    "origin": {
+                      "source": "settings",
+                      "resolution": "resolved"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mappings": [
+    {
+      "id": "map-user-last-name",
+      "target_field": "/ds/personnes/pp/etatCivil/nomNaissance",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "last_name"
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-user-first-name",
+      "target_field": "/ds/personnes/pp/etatCivil/prenom",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "first_name"
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-user-gender",
+      "target_field": "/ds/personnes/pp/etatCivil/sexe",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "gender"
+      },
+      "codes": [
+        {
+          "source": "M",
+          "target": "SEX1"
+        },
+        {
+          "source": "F",
+          "target": "SEX2"
+        }
+      ],
+      "currency": {}
+    },
+    {
+      "id": "map-employer-name",
+      "target_field": "/ds/personnes/pp/activite/denominationSociale",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "name",
+        "path": [
+          {
+            "id": "employer",
+            "parent_id": "root",
+            "link": "employer",
+            "direction": "forward",
+            "table": "companies"
+          }
+        ]
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-user-employer-name",
+      "target_field": "/ds/personnes/pp/activite/denominationSociale",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "employer_name"
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-affiliated-name",
+      "target_field": "/ds/personnes/pp/lienAutrePm/denominationSociale",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "name",
+        "path": [
+          {
+            "id": "affiliated",
+            "parent_id": "root",
+            "link": "affiliated_company",
+            "direction": "forward",
+            "table": "companies"
+          }
+        ]
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-affiliated-registration",
+      "target_field": "/ds/personnes/pp/lienAutrePm/numIdentPro",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "registration_number",
+        "path": [
+          {
+            "id": "affiliated",
+            "parent_id": "root",
+            "link": "affiliated_company",
+            "direction": "forward",
+            "table": "companies"
+          }
+        ]
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-card-number",
+      "target_field": "/ds/personnes/pp/referencesFinancieres/referenceFinanciereNumeroCarteBancaire/@numeroCarteBancaire",
+      "source": {
+        "kind": "ingested",
+        "entity_type": "Person",
+        "table": "users",
+        "field": "number",
+        "path": [
+          {
+            "id": "accounts",
+            "parent_id": "root",
+            "link": "user",
+            "direction": "inverse",
+            "table": "accounts"
+          },
+          {
+            "id": "cards",
+            "parent_id": "accounts",
+            "link": "account",
+            "direction": "inverse",
+            "table": "cards"
+          }
+        ]
+      },
+      "currency": {}
+    },
+    {
+      "id": "map-operation-type",
+      "target_field": "/ds/operations/operation/typeOperation",
+      "source": {
+        "kind": "decision_snapshot",
+        "historical_type": "transactions",
+        "field": "channel"
+      },
+      "discriminator": {
+        "field": "direction",
+        "values": ["outgoing"]
+      },
+      "codes": [
+        {
+          "source": "card_payment",
+          "target": "OT03"
+        }
+      ],
+      "currency": {}
+    },
+    {
+      "id": "map-operation-amount",
+      "target_field": "/ds/operations/operation/montantTotal",
+      "source": {
+        "kind": "decision_snapshot",
+        "historical_type": "transactions",
+        "field": "amount"
+      },
+      "unit": "minor",
+      "target_currency": "EUR",
+      "currency": {
+        "constant": "EUR"
+      }
+    }
+  ],
+  "profile_version": "tracfin-financier-1.4.0-poc-3",
+  "profile_hash": "00d222c12baef60e12e35306660a5472d7d5ad88aa736c980bf4a1e4eeb9db68",
+  "revision": 3,
+  "created_at": "2026-10-20T09:12:45.123456Z",
+  "updated_at": "2026-10-27T14:03:11.508201Z",
+  "updated_by": "396a749f-c699-5b18-818b-62591589b43c"
+}

@@ -64,6 +64,7 @@ import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
 import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
+import { Route as AppBuilderSettingsTracfinRouteImport } from './routes/_app/_builder/settings/tracfin'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
 import { Route as AppBuilderTestGraphIndexRouteImport } from './routes/_app/_builder/test-graph/index'
@@ -101,12 +102,14 @@ import { Route as AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run'
 import { Route as AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/workflow'
 import { Route as RessourcesCasesSarDownloadCaseIdReportIdRouteImport } from './routes/ressources/cases/sar/download.$caseId.$reportId'
+import { Route as RessourcesCasesTracfinDownloadCaseIdExportIdRouteImport } from './routes/ressources/cases/tracfin/download.$caseId.$exportId'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings'
 import { Route as AppBuilderCasesDetailMCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId/index'
 import { Route as AppBuilderCasesDetailSCaseIdIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/index'
 import { Route as AppBuilderCasesDetailSCaseIdClientsRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/clients'
 import { Route as AppBuilderCasesDetailSCaseIdLinksRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/links'
 import { Route as AppBuilderCasesDetailSCaseIdPrincipalRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/principal'
+import { Route as AppBuilderCasesDetailSCaseIdTracfinRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/tracfin'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
@@ -417,6 +420,12 @@ const AppBuilderSettingsTagsRoute = AppBuilderSettingsTagsRouteImport.update({
   path: '/tags',
   getParentRoute: () => AppBuilderSettingsRoute,
 } as any)
+const AppBuilderSettingsTracfinRoute =
+  AppBuilderSettingsTracfinRouteImport.update({
+    id: '/tracfin',
+    path: '/tracfin',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
 const AppBuilderSettingsUsersRoute = AppBuilderSettingsUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -637,6 +646,12 @@ const RessourcesCasesSarDownloadCaseIdReportIdRoute =
     path: '/ressources/cases/sar/download/$caseId/$reportId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const RessourcesCasesTracfinDownloadCaseIdExportIdRoute =
+  RessourcesCasesTracfinDownloadCaseIdExportIdRouteImport.update({
+    id: '/ressources/cases/tracfin/download/$caseId/$exportId',
+    path: '/ressources/cases/tracfin/download/$caseId/$exportId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppBuilderCasesCaseIdDDecisionIdScreeningsRoute =
   AppBuilderCasesCaseIdDDecisionIdScreeningsRouteImport.update({
     id: '/screenings',
@@ -671,6 +686,12 @@ const AppBuilderCasesDetailSCaseIdPrincipalRoute =
   AppBuilderCasesDetailSCaseIdPrincipalRouteImport.update({
     id: '/principal',
     path: '/principal',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
+  } as any)
+const AppBuilderCasesDetailSCaseIdTracfinRoute =
+  AppBuilderCasesDetailSCaseIdTracfinRouteImport.update({
+    id: '/tracfin',
+    path: '/tracfin',
     getParentRoute: () => AppBuilderCasesDetailSCaseIdRoute,
   } as any)
 const AppBuilderDetectionScenariosScenarioIdIIterationIdRoute =
@@ -832,6 +853,7 @@ export interface FileRoutesByFullPath {
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
+  '/settings/tracfin': typeof AppBuilderSettingsTracfinRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
@@ -875,11 +897,13 @@ export interface FileRoutesByFullPath {
   '/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteWithChildren
   '/detection/scenarios/$scenarioId/workflow': typeof AppBuilderDetectionScenariosScenarioIdWorkflowRoute
   '/ressources/cases/sar/download/$caseId/$reportId': typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
+  '/ressources/cases/tracfin/download/$caseId/$exportId': typeof RessourcesCasesTracfinDownloadCaseIdExportIdRoute
   '/detection/scenarios/$scenarioId/': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
   '/cases/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  '/cases/s/$caseId/tracfin': typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
   '/cases/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/cases/s/$caseId/': typeof AppBuilderCasesDetailSCaseIdIndexRoute
@@ -930,6 +954,7 @@ export interface FileRoutesByTo {
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
+  '/settings/tracfin': typeof AppBuilderSettingsTracfinRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
   '/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
@@ -969,9 +994,11 @@ export interface FileRoutesByTo {
   '/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/detection/scenarios/$scenarioId/workflow': typeof AppBuilderDetectionScenariosScenarioIdWorkflowRoute
   '/ressources/cases/sar/download/$caseId/$reportId': typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
+  '/ressources/cases/tracfin/download/$caseId/$exportId': typeof RessourcesCasesTracfinDownloadCaseIdExportIdRoute
   '/detection/scenarios/$scenarioId': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  '/cases/s/$caseId/tracfin': typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
   '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdIndexRoute
@@ -1038,6 +1065,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/_app/_builder/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
+  '/_app/_builder/settings/tracfin': typeof AppBuilderSettingsTracfinRoute
   '/_app/_builder/settings/users': typeof AppBuilderSettingsUsersRoute
   '/_app/_builder/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
   '/_app/_builder/upload/$objectType': typeof AppBuilderUploadObjectTypeRoute
@@ -1081,11 +1109,13 @@ export interface FileRoutesById {
   '/_app/_builder/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteWithChildren
   '/_app/_builder/detection/scenarios/$scenarioId/workflow': typeof AppBuilderDetectionScenariosScenarioIdWorkflowRoute
   '/ressources/cases/sar/download/$caseId/$reportId': typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
+  '/ressources/cases/tracfin/download/$caseId/$exportId': typeof RessourcesCasesTracfinDownloadCaseIdExportIdRoute
   '/_app/_builder/detection/scenarios/$scenarioId/': typeof AppBuilderDetectionScenariosScenarioIdIndexRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/links': typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   '/_app/_builder/cases/_detail/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  '/_app/_builder/cases/_detail/s/$caseId/tracfin': typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
   '/_app/_builder/cases/_detail/m/$caseId/': typeof AppBuilderCasesDetailMCaseIdIndexRoute
   '/_app/_builder/cases/_detail/s/$caseId/': typeof AppBuilderCasesDetailSCaseIdIndexRoute
@@ -1152,6 +1182,7 @@ export interface FileRouteTypes {
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
+    | '/settings/tracfin'
     | '/settings/users'
     | '/settings/webhooks'
     | '/upload/$objectType'
@@ -1195,11 +1226,13 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/test-run'
     | '/detection/scenarios/$scenarioId/workflow'
     | '/ressources/cases/sar/download/$caseId/$reportId'
+    | '/ressources/cases/tracfin/download/$caseId/$exportId'
     | '/detection/scenarios/$scenarioId/'
     | '/cases/$caseId/d/$decisionId/screenings'
     | '/cases/s/$caseId/clients'
     | '/cases/s/$caseId/links'
     | '/cases/s/$caseId/principal'
+    | '/cases/s/$caseId/tracfin'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
     | '/cases/m/$caseId/'
     | '/cases/s/$caseId/'
@@ -1250,6 +1283,7 @@ export interface FileRouteTypes {
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
+    | '/settings/tracfin'
     | '/settings/users'
     | '/settings/webhooks'
     | '/upload/$objectType'
@@ -1289,9 +1323,11 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/scheduled-executions'
     | '/detection/scenarios/$scenarioId/workflow'
     | '/ressources/cases/sar/download/$caseId/$reportId'
+    | '/ressources/cases/tracfin/download/$caseId/$exportId'
     | '/detection/scenarios/$scenarioId'
     | '/cases/$caseId/d/$decisionId/screenings'
     | '/cases/s/$caseId/principal'
+    | '/cases/s/$caseId/tracfin'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
     | '/cases/m/$caseId'
     | '/cases/s/$caseId'
@@ -1357,6 +1393,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/scenarios'
     | '/_app/_builder/settings/screening-providers'
     | '/_app/_builder/settings/tags'
+    | '/_app/_builder/settings/tracfin'
     | '/_app/_builder/settings/users'
     | '/_app/_builder/settings/webhooks'
     | '/_app/_builder/upload/$objectType'
@@ -1400,11 +1437,13 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/scenarios/$scenarioId/test-run'
     | '/_app/_builder/detection/scenarios/$scenarioId/workflow'
     | '/ressources/cases/sar/download/$caseId/$reportId'
+    | '/ressources/cases/tracfin/download/$caseId/$exportId'
     | '/_app/_builder/detection/scenarios/$scenarioId/'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings'
     | '/_app/_builder/cases/_detail/s/$caseId/clients'
     | '/_app/_builder/cases/_detail/s/$caseId/links'
     | '/_app/_builder/cases/_detail/s/$caseId/principal'
+    | '/_app/_builder/cases/_detail/s/$caseId/tracfin'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId'
     | '/_app/_builder/cases/_detail/m/$caseId/'
     | '/_app/_builder/cases/_detail/s/$caseId/'
@@ -1443,6 +1482,7 @@ export interface RootRouteChildren {
   RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute: typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute
   RessourcesScreeningsDownloadScreeningIdFileIdRoute: typeof RessourcesScreeningsDownloadScreeningIdFileIdRoute
   RessourcesCasesSarDownloadCaseIdReportIdRoute: typeof RessourcesCasesSarDownloadCaseIdReportIdRoute
+  RessourcesCasesTracfinDownloadCaseIdExportIdRoute: typeof RessourcesCasesTracfinDownloadCaseIdExportIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1832,6 +1872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderSettingsTagsRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
+    '/_app/_builder/settings/tracfin': {
+      id: '/_app/_builder/settings/tracfin'
+      path: '/tracfin'
+      fullPath: '/settings/tracfin'
+      preLoaderRoute: typeof AppBuilderSettingsTracfinRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
     '/_app/_builder/settings/users': {
       id: '/_app/_builder/settings/users'
       path: '/users'
@@ -2091,6 +2138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RessourcesCasesSarDownloadCaseIdReportIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ressources/cases/tracfin/download/$caseId/$exportId': {
+      id: '/ressources/cases/tracfin/download/$caseId/$exportId'
+      path: '/ressources/cases/tracfin/download/$caseId/$exportId'
+      fullPath: '/ressources/cases/tracfin/download/$caseId/$exportId'
+      preLoaderRoute: typeof RessourcesCasesTracfinDownloadCaseIdExportIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/_builder/cases/$caseId/d/$decisionId/screenings': {
       id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings'
       path: '/screenings'
@@ -2131,6 +2185,13 @@ declare module '@tanstack/react-router' {
       path: '/principal'
       fullPath: '/cases/s/$caseId/principal'
       preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
+    }
+    '/_app/_builder/cases/_detail/s/$caseId/tracfin': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/tracfin'
+      path: '/tracfin'
+      fullPath: '/cases/s/$caseId/tracfin'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdTracfinRouteImport
       parentRoute: typeof AppBuilderCasesDetailSCaseIdRoute
     }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId': {
@@ -2388,6 +2449,7 @@ interface AppBuilderCasesDetailSCaseIdRouteChildren {
   AppBuilderCasesDetailSCaseIdClientsRoute: typeof AppBuilderCasesDetailSCaseIdClientsRouteWithChildren
   AppBuilderCasesDetailSCaseIdLinksRoute: typeof AppBuilderCasesDetailSCaseIdLinksRouteWithChildren
   AppBuilderCasesDetailSCaseIdPrincipalRoute: typeof AppBuilderCasesDetailSCaseIdPrincipalRoute
+  AppBuilderCasesDetailSCaseIdTracfinRoute: typeof AppBuilderCasesDetailSCaseIdTracfinRoute
   AppBuilderCasesDetailSCaseIdIndexRoute: typeof AppBuilderCasesDetailSCaseIdIndexRoute
 }
 
@@ -2399,6 +2461,8 @@ const AppBuilderCasesDetailSCaseIdRouteChildren: AppBuilderCasesDetailSCaseIdRou
       AppBuilderCasesDetailSCaseIdLinksRouteWithChildren,
     AppBuilderCasesDetailSCaseIdPrincipalRoute:
       AppBuilderCasesDetailSCaseIdPrincipalRoute,
+    AppBuilderCasesDetailSCaseIdTracfinRoute:
+      AppBuilderCasesDetailSCaseIdTracfinRoute,
     AppBuilderCasesDetailSCaseIdIndexRoute:
       AppBuilderCasesDetailSCaseIdIndexRoute,
   }
@@ -2718,6 +2782,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
   AppBuilderSettingsScreeningProvidersRoute: typeof AppBuilderSettingsScreeningProvidersRoute
   AppBuilderSettingsTagsRoute: typeof AppBuilderSettingsTagsRoute
+  AppBuilderSettingsTracfinRoute: typeof AppBuilderSettingsTracfinRoute
   AppBuilderSettingsUsersRoute: typeof AppBuilderSettingsUsersRoute
   AppBuilderSettingsWebhooksRoute: typeof AppBuilderSettingsWebhooksRoute
   AppBuilderSettingsIndexRoute: typeof AppBuilderSettingsIndexRoute
@@ -2735,6 +2800,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
   AppBuilderSettingsScreeningProvidersRoute:
     AppBuilderSettingsScreeningProvidersRoute,
   AppBuilderSettingsTagsRoute: AppBuilderSettingsTagsRoute,
+  AppBuilderSettingsTracfinRoute: AppBuilderSettingsTracfinRoute,
   AppBuilderSettingsUsersRoute: AppBuilderSettingsUsersRoute,
   AppBuilderSettingsWebhooksRoute: AppBuilderSettingsWebhooksRoute,
   AppBuilderSettingsIndexRoute: AppBuilderSettingsIndexRoute,
@@ -2851,6 +2917,8 @@ const rootRouteChildren: RootRouteChildren = {
     RessourcesScreeningsDownloadScreeningIdFileIdRoute,
   RessourcesCasesSarDownloadCaseIdReportIdRoute:
     RessourcesCasesSarDownloadCaseIdReportIdRoute,
+  RessourcesCasesTracfinDownloadCaseIdExportIdRoute:
+    RessourcesCasesTracfinDownloadCaseIdExportIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -27,6 +27,7 @@ import { type ScenarioIterationScreeningRepository } from '@app-builder/reposito
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
+import { type TracfinRepository } from '@app-builder/repositories/TracfinRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { type UserScoringRepository } from '@app-builder/repositories/UserScoringRepository';
 import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
@@ -81,6 +82,7 @@ interface AuthenticatedInfo {
   client360: Client360Repository;
   auditEvents: AuditEventsRepository;
   userScoring: UserScoringRepository;
+  tracfin: TracfinRepository;
 }
 
 export interface AuthenticationServerService {
@@ -170,6 +172,7 @@ interface MakeAuthenticationServerServiceArgs {
   getClient360TablesRepository: (marbleCoreApiClient: MarbleCoreApi) => Client360Repository;
   getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
   getUserScoringRepository: (marbleCoreApiClient: MarbleCoreApi) => UserScoringRepository;
+  getTracfinRepository: (marbleCoreApiClient: MarbleCoreApi) => TracfinRepository;
   makeOidcService: (appConfig: AppConfig) => ReturnType<typeof makeOidcService>;
 }
 
@@ -207,6 +210,7 @@ export function makeAuthenticationServerService({
   getClient360TablesRepository,
   getAuditEventsRepository,
   getUserScoringRepository,
+  getTracfinRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
   /**
@@ -577,6 +581,7 @@ export function makeAuthenticationServerService({
       client360: getClient360TablesRepository(marbleCoreApiClient),
       auditEvents: getAuditEventsRepository(marbleCoreApiClient),
       userScoring: getUserScoringRepository(marbleCoreApiClient),
+      tracfin: getTracfinRepository(marbleCoreApiClient),
     };
   }
 
