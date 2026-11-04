@@ -5,7 +5,7 @@ const tokens = { sub: 'sub', accessToken: 'access', refreshToken: 'refresh', idT
 
 const authenticateOidc = vi.fn();
 const exchangeTenantOidcCode = vi.fn();
-let cookie: Record<string, string | boolean> = {};
+let cookie: Record<string, string | boolean | undefined> = {};
 
 vi.mock('@app-builder/services/init.server', () => ({
   initServerServices: () => ({
@@ -54,6 +54,7 @@ describe('/oidc/callback', () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get('Location')).toBe('/app-router');
+    expect(response.headers.get('Set-Cookie')).toBe('oauth2=; Max-Age=0');
   });
 
   it('opens the organization an organization switch asked for', async () => {
@@ -113,6 +114,37 @@ describe('/oidc/callback', () => {
       tokens,
       expect.objectContaining({ failureRedirect: '/sign-in?signedOut=1' }),
     );
+  });
+
+  describe.each([
+    { name: 'sign-in', data: {}, destination: '/sign-in' },
+    { name: 'signed-out sign-in', data: { signedOut: true }, destination: '/sign-in?signedOut=1' },
+    {
+      name: 'organization switch',
+      data: { organizationId: '7c1f6a2e-3c0b-4a51-9f27-2b8e4a7d9c10' },
+      destination: '/app-router',
+    },
+  ])('with a pending $name', ({ data, destination }) => {
+    it.each([
+      { search: '', status: 302 },
+      { search: 'code=the-code', status: 302 },
+      { search: 'state=the-state', status: 302 },
+      { search: 'code=the-code&state=forged', status: 400 },
+    ])('preserves the pending attempt for an unverified callback: $search', async ({ search, status }) => {
+      cookie = { state: 'the-state', codeVerifier: 'the-verifier', tenantId: TENANT_ID, ...data };
+
+      const response = await callback(search);
+
+      expect(response.status).toBe(status);
+      if (status === 302) {
+        expect(response.headers.get('Location')).toBe(`http://localhost:3000${destination}`);
+      }
+      expect(response.headers.get('Set-Cookie')).toBeNull();
+      expect(exchangeTenantOidcCode).not.toHaveBeenCalled();
+      expect(authenticateOidc).not.toHaveBeenCalled();
+      expect(updateAuthSession).not.toHaveBeenCalled();
+      expect(setToast).not.toHaveBeenCalled();
+    });
   });
 
   describe('when the identity provider returns an error', () => {
