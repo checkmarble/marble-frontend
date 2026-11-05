@@ -69,7 +69,7 @@
       - bearerAuth: []
     parameters:
       - name: scenario_id
-        description: ID of the scenario returned iterations should be linked to
+        description: ID of the scenario returned iterations should be linked to. If omitted, returns the iterations of all scenarios of the organization.
         in: query
         required: false
         schema:
