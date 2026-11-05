@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { adjacentScreeningReviewItem, buildScreeningReviewItems, groupScreeningReviewItems } from './screening-review';
+import {
+  adjacentScreeningReviewItem,
+  buildScreeningReviewItems,
+  groupScreeningReviewItems,
+  matchedScreeningReviewFields,
+  screeningReviewTopicFamilies,
+} from './screening-review';
 import { datasetReviewScreening, objectReviewScreening, reviewCase } from './screening-review.test-helpers';
 
 describe('screening review stream', () => {
@@ -95,5 +101,55 @@ describe('screening review stream', () => {
     screening.request.searchInput.queries = {};
     expect(buildScreeningReviewItems([reviewCase('case', [screening])])[0]?.customer.name).toBe('people · alice');
     expect(buildScreeningReviewItems([reviewCase('decision', [screening], { type: 'decision' })])).toEqual([]);
+  });
+
+  it.each([
+    { name: 'object trigger', customer: 'object' as const },
+    { name: 'dataset trigger', customer: 'dataset' as const },
+  ])('compares customer and list record values for the $name', ({ customer }) => {
+    const compare = (customerProperties: Record<string, string[]>, listProperties: Record<string, string[]>) => {
+      if (customer === 'object') {
+        const screening = objectReviewScreening();
+        screening.request.searchInput.queries = { customer: { schema: 'Person', properties: customerProperties } };
+        screening.matches[0]!.payload.properties = listProperties;
+        return matchedScreeningReviewFields(buildScreeningReviewItems([reviewCase('case', [screening])])[0]!);
+      }
+      const screening = datasetReviewScreening();
+      screening.matches[0]!.payload.properties = customerProperties;
+      screening.opensanctionEntityPayload.properties = listProperties;
+      return matchedScreeningReviewFields(buildScreeningReviewItems([reviewCase('case', [screening])])[0]!);
+    };
+    expect(compare({ birthDate: ['1991-05-01'] }, { birthDate: ['1991-05-01'] })).toEqual(['birthDate']);
+    expect(compare({ birthDate: ['1991-05-01T00:00:00Z'] }, { birthDate: ['1991-05-01'] })).toEqual(['birthDate']);
+    expect(compare({ birthDate: ['1991-05-01'] }, { birthDate: ['1991'] })).toEqual([]);
+    expect(compare({ birthDate: ['1991'] }, { birthDate: ['1991'] })).toEqual([]);
+    expect(compare({ birthDate: ['1991-05'] }, { birthDate: ['1991-05'] })).toEqual([]);
+    expect(compare({ birthDate: ['1991-02-30'] }, { birthDate: ['1991-02-30'] })).toEqual([]);
+    expect(compare({ birthDate: ['unknown'] }, { birthDate: ['unknown'] })).toEqual([]);
+    expect(compare({ birthDate: ['1991-05-01'] }, { birthDate: ['1991-05-02'] })).toEqual([]);
+    expect(compare({ nationality: ['Egypt'] }, { nationality: ['eg'] })).toEqual(['nationality']);
+    expect(compare({ nationality: ['EG'] }, { citizenship: ['eg'] })).toEqual(['nationality']);
+    expect(compare({ nationality: ['France'] }, { nationality: ['eg'] })).toEqual([]);
+    expect(compare({ nationality: [''] }, { nationality: [''] })).toEqual([]);
+    expect(compare({}, { birthDate: ['1991-05-01'], nationality: ['eg'] })).toEqual([]);
+    expect(compare({ birthDate: ['1991-05-01'], nationality: ['eg'] }, {})).toEqual([]);
+    expect(
+      compare({ birthDate: ['1991-05-01'], nationality: ['eg'] }, { birthDate: ['1991-05-01'], nationality: ['eg'] }),
+    ).toEqual(['birthDate', 'nationality']);
+  });
+
+  it('keeps the customer entity type for both trigger types', () => {
+    const items = buildScreeningReviewItems([reviewCase('case', [objectReviewScreening(), datasetReviewScreening()])]);
+    expect(new Set(items.map((item) => item.customer.schema))).toEqual(new Set(['Person']));
+    const screening = objectReviewScreening();
+    screening.request.searchInput.queries = {};
+    expect(buildScreeningReviewItems([reviewCase('case', [screening])])[0]?.customer.schema).toBeUndefined();
+  });
+
+  it('reduces topics to ordered families and skips unknown topics', () => {
+    expect(screeningReviewTopicFamilies(['crime.fraud', 'role.pep', 'sanction', 'sanction.linked', 'isAlive'])).toEqual(
+      ['sanctions', 'peps', 'adverse-media'],
+    );
+    expect(screeningReviewTopicFamilies(['filter.something', 'unknown'])).toEqual([]);
   });
 });
