@@ -1,7 +1,14 @@
 import { toOrderedTopic, topicCategoryPriority } from '@app-builder/components/Screenings/TopicsDisplay';
 import type { CaseDetail } from './cases';
 import type { ContinuousScreening, OpenSanctionEntityPayload } from './continuous-screening';
-import type { ScreeningMatchComment, ScreeningMatchStatus } from './screening';
+import {
+  getCategoryForTopic,
+  isLexisTopic,
+  lexisTopicIgnoreDisplay,
+  type ScreeningCategory,
+  type ScreeningMatchComment,
+  type ScreeningMatchStatus,
+} from './screening';
 
 export interface ScreeningReviewItem {
   id: string;
@@ -12,7 +19,14 @@ export interface ScreeningReviewItem {
   screeningId: string;
   matchId: string;
   triggerType: ContinuousScreening['triggerType'];
-  customer: { key: string; objectType: string; objectId: string; name: string; properties: Record<string, string[]> };
+  customer: {
+    key: string;
+    objectType: string;
+    objectId: string;
+    name: string;
+    schema?: string;
+    properties: Record<string, string[]>;
+  };
   listRecord: OpenSanctionEntityPayload;
   score: number;
   topics: string[];
@@ -36,12 +50,14 @@ function customerReference(
   objectType: string,
   objectId: string,
   properties: Record<string, string[]>,
+  schema?: string,
   caption?: string,
 ) {
   return {
     key: JSON.stringify([objectType, objectId]),
     objectType,
     objectId,
+    schema,
     name: caption || properties['name']?.filter(Boolean).join(' · ') || `${objectType} · ${objectId}`,
     properties,
   };
@@ -71,6 +87,7 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
             match.objectType,
             match.objectId,
             match.payload.properties,
+            match.payload.schema,
             match.payload.caption,
           ),
           listRecord: screening.opensanctionEntityPayload,
@@ -87,7 +104,8 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
           properties[key] = [...new Set([...(properties[key] ?? []), ...values])];
         }
       }
-      const customer = customerReference(screening.objectType, screening.objectId, properties);
+      const queries = Object.values(screening.request.searchInput.queries);
+      const customer = customerReference(screening.objectType, screening.objectId, properties, queries[0]?.schema);
       return screening.matches.map((match) => ({
         ...base,
         id: `${caseDetail.id}:${screening.id}:${match.id}`,
@@ -101,6 +119,78 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
       }));
     });
   });
+}
+
+const TOPIC_FAMILY_ORDER: ScreeningCategory[] = [
+  'sanctions',
+  'peps',
+  'adverse-media',
+  'third-parties',
+  'custom',
+  'global',
+];
+
+function topicFamily(topic: string): ScreeningCategory | undefined {
+  if (!isLexisTopic(topic)) return getCategoryForTopic(topic);
+  if (lexisTopicIgnoreDisplay(topic)) return undefined;
+  if (topic.startsWith('sanctions')) return 'sanctions';
+  if (topic.startsWith('pep')) return 'peps';
+  if (topic.startsWith('adverse_media')) return 'adverse-media';
+  return undefined;
+}
+
+/** One entry per topic family, for the hit card's topic dots. */
+export function screeningReviewTopicFamilies(topics: readonly string[]): ScreeningCategory[] {
+  const families = new Set(topics.map(topicFamily));
+  return TOPIC_FAMILY_ORDER.filter((family) => families.has(family));
+}
+
+export type ScreeningReviewMatchedField = 'birthDate' | 'nationality';
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .trim()
+    .toLowerCase();
+}
+
+// Timestamps and dates compare by day. Partial dates, like a year alone, don't count as equal.
+function normalizeDate(value: string) {
+  const match = /^(\d{4}-\d{2}-\d{2})(?:T.*)?$/.exec(value.trim());
+  const day = match?.[1];
+  if (!day) return '';
+  const date = new Date(`${day}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === day ? day : '';
+}
+
+// List records use ISO country codes, while customer data can hold a code or an English name.
+const countryNames = new Intl.DisplayNames(['en'], { type: 'region' });
+function normalizeCountry(value: string) {
+  const text = value.trim();
+  return normalizeText(/^[A-Za-z]{2}$/.test(text) ? (countryNames.of(text.toUpperCase()) ?? text) : text);
+}
+
+const COMPARED_FIELDS: {
+  field: ScreeningReviewMatchedField;
+  properties: string[];
+  normalize: (value: string) => string;
+}[] = [
+  { field: 'birthDate', properties: ['birthDate'], normalize: normalizeDate },
+  { field: 'nationality', properties: ['nationality', 'citizenship'], normalize: normalizeCountry },
+];
+
+/**
+ * The single comparison entry point: fields where customer and list record values are equal
+ * after normalization. It makes no phonetic or fuzzy claim. MAR-2444 extends it with field states.
+ */
+export function matchedScreeningReviewFields(item: ScreeningReviewItem): ScreeningReviewMatchedField[] {
+  return COMPARED_FIELDS.filter(({ properties, normalize }) => {
+    const values = (source: Record<string, string[]>) =>
+      properties.flatMap((property) => source[property] ?? []).map(normalize);
+    const listRecordValues = new Set(values(item.listRecord.properties));
+    return values(item.customer.properties).some((value) => value !== '' && listRecordValues.has(value));
+  }).map(({ field }) => field);
 }
 
 export function isPendingReviewItem(item: ScreeningReviewItem) {
