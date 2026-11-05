@@ -1,9 +1,9 @@
-import clsx from 'clsx';
+import { cn } from '../utils';
 
 export function Kbd({ className, ...props }: React.ComponentProps<'kbd'>) {
   return (
     <kbd
-      className={clsx(
+      className={cn(
         'border-grey-disabled bg-grey-background inline-flex min-h-6 min-w-6 items-center justify-center rounded-md border border-b-2',
         className,
       )}

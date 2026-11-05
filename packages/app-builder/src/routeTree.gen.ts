@@ -44,6 +44,7 @@ import { Route as AppBuilderCasesDetailRouteImport } from './routes/_app/_builde
 import { Route as AppBuilderCasesAnalyticsRouteImport } from './routes/_app/_builder/cases/analytics'
 import { Route as AppBuilderCasesInboxesRouteImport } from './routes/_app/_builder/cases/inboxes'
 import { Route as AppBuilderCasesOverviewRouteImport } from './routes/_app/_builder/cases/overview'
+import { Route as AppBuilderCasesScreeningReviewRouteImport } from './routes/_app/_builder/cases/screening-review'
 import { Route as AppBuilderClientDetailIndexRouteImport } from './routes/_app/_builder/client-detail/index'
 import { Route as AppBuilderContinuousScreeningIndexRouteImport } from './routes/_app/_builder/continuous-screening/index'
 import { Route as AppBuilderContinuousScreeningConfigurationsRouteImport } from './routes/_app/_builder/continuous-screening/configurations'
@@ -301,6 +302,12 @@ const AppBuilderCasesOverviewRoute = AppBuilderCasesOverviewRouteImport.update({
   path: '/overview',
   getParentRoute: () => AppBuilderCasesRoute,
 } as any)
+const AppBuilderCasesScreeningReviewRoute =
+  AppBuilderCasesScreeningReviewRouteImport.update({
+    id: '/screening-review',
+    path: '/screening-review',
+    getParentRoute: () => AppBuilderCasesRoute,
+  } as any)
 const AppBuilderClientDetailIndexRoute =
   AppBuilderClientDetailIndexRouteImport.update({
     id: '/client-detail/',
@@ -824,6 +831,7 @@ export interface FileRoutesByFullPath {
   '/cases/analytics': typeof AppBuilderCasesAnalyticsRoute
   '/cases/inboxes': typeof AppBuilderCasesInboxesRouteWithChildren
   '/cases/overview': typeof AppBuilderCasesOverviewRoute
+  '/cases/screening-review': typeof AppBuilderCasesScreeningReviewRoute
   '/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
   '/continuous-screening/observability': typeof AppBuilderContinuousScreeningObservabilityRoute
   '/data/list': typeof AppBuilderDataListRoute
@@ -927,6 +935,7 @@ export interface FileRoutesByTo {
   '/cases': typeof AppBuilderCasesIndexRoute
   '/cases/analytics': typeof AppBuilderCasesAnalyticsRoute
   '/cases/overview': typeof AppBuilderCasesOverviewRoute
+  '/cases/screening-review': typeof AppBuilderCasesScreeningReviewRoute
   '/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
   '/continuous-screening/observability': typeof AppBuilderContinuousScreeningObservabilityRoute
   '/data/list': typeof AppBuilderDataListRoute
@@ -1032,6 +1041,7 @@ export interface FileRoutesById {
   '/_app/_builder/cases/analytics': typeof AppBuilderCasesAnalyticsRoute
   '/_app/_builder/cases/inboxes': typeof AppBuilderCasesInboxesRouteWithChildren
   '/_app/_builder/cases/overview': typeof AppBuilderCasesOverviewRoute
+  '/_app/_builder/cases/screening-review': typeof AppBuilderCasesScreeningReviewRoute
   '/_app/_builder/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
   '/_app/_builder/continuous-screening/observability': typeof AppBuilderContinuousScreeningObservabilityRoute
   '/_app/_builder/data/list': typeof AppBuilderDataListRoute
@@ -1147,6 +1157,7 @@ export interface FileRouteTypes {
     | '/cases/analytics'
     | '/cases/inboxes'
     | '/cases/overview'
+    | '/cases/screening-review'
     | '/continuous-screening/configurations'
     | '/continuous-screening/observability'
     | '/data/list'
@@ -1250,6 +1261,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/cases/analytics'
     | '/cases/overview'
+    | '/cases/screening-review'
     | '/continuous-screening/configurations'
     | '/continuous-screening/observability'
     | '/data/list'
@@ -1354,6 +1366,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/cases/analytics'
     | '/_app/_builder/cases/inboxes'
     | '/_app/_builder/cases/overview'
+    | '/_app/_builder/cases/screening-review'
     | '/_app/_builder/continuous-screening/configurations'
     | '/_app/_builder/continuous-screening/observability'
     | '/_app/_builder/data/list'
@@ -1702,6 +1715,13 @@ declare module '@tanstack/react-router' {
       path: '/overview'
       fullPath: '/cases/overview'
       preLoaderRoute: typeof AppBuilderCasesOverviewRouteImport
+      parentRoute: typeof AppBuilderCasesRoute
+    }
+    '/_app/_builder/cases/screening-review': {
+      id: '/_app/_builder/cases/screening-review'
+      path: '/screening-review'
+      fullPath: '/cases/screening-review'
+      preLoaderRoute: typeof AppBuilderCasesScreeningReviewRouteImport
       parentRoute: typeof AppBuilderCasesRoute
     }
     '/_app/_builder/client-detail/': {
@@ -2468,6 +2488,7 @@ interface AppBuilderCasesRouteChildren {
   AppBuilderCasesAnalyticsRoute: typeof AppBuilderCasesAnalyticsRoute
   AppBuilderCasesInboxesRoute: typeof AppBuilderCasesInboxesRouteWithChildren
   AppBuilderCasesOverviewRoute: typeof AppBuilderCasesOverviewRoute
+  AppBuilderCasesScreeningReviewRoute: typeof AppBuilderCasesScreeningReviewRoute
   AppBuilderCasesIndexRoute: typeof AppBuilderCasesIndexRoute
 }
 
@@ -2477,6 +2498,7 @@ const AppBuilderCasesRouteChildren: AppBuilderCasesRouteChildren = {
   AppBuilderCasesAnalyticsRoute: AppBuilderCasesAnalyticsRoute,
   AppBuilderCasesInboxesRoute: AppBuilderCasesInboxesRouteWithChildren,
   AppBuilderCasesOverviewRoute: AppBuilderCasesOverviewRoute,
+  AppBuilderCasesScreeningReviewRoute: AppBuilderCasesScreeningReviewRoute,
   AppBuilderCasesIndexRoute: AppBuilderCasesIndexRoute,
 }
 

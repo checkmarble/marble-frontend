@@ -49,6 +49,7 @@ export type CaseFilters = {
   assigneeId?: string;
   tagId?: string;
   qualification?: 'green' | 'yellow' | 'red';
+  type?: Case['type'][];
 };
 
 export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;
@@ -121,7 +122,7 @@ export interface CaseRepository {
 
 export function makeGetCaseRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): CaseRepository => ({
-    listCases: async ({ dateRange, inboxIds, statuses, tagId, qualification, ...rest }) => {
+    listCases: async ({ dateRange, inboxIds, statuses, tagId, qualification, type, ...rest }) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
         startDate = dateRange?.startDate;
@@ -143,6 +144,7 @@ export function makeGetCaseRepository() {
         limit: DEFAULT_CASE_PAGINATION_SIZE,
         tagId,
         qualification,
+        $type: type,
         ...rest,
       });
 
