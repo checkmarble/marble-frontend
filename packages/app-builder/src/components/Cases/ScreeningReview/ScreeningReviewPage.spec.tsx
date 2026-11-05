@@ -137,13 +137,20 @@ describe('screening review keyboard navigation', () => {
   });
 
   it.each(['?', '؟'])(
-    'lists registered shortcuts with %s, suspends navigation while open, and closes with Escape',
+    'lists every key in its group with %s, suspends navigation while open, and closes with Escape',
     async (questionMark) => {
       renderPage();
       await waitFor(() => expect(activeCard()).not.toBeNull());
       press(questionMark, 'Slash', true);
       const dialog = await screen.findByRole('dialog');
-      expect(within(dialog).getAllByText('cases:screening_review.next_hit')).toHaveLength(2);
+      expect(
+        within(dialog).getByRole('heading', { name: 'cases:screening_review.shortcuts.groups.move' }),
+      ).toBeTruthy();
+      const hitRow = within(dialog).getByText('cases:screening_review.shortcuts.next_previous_hit').parentElement;
+      expect(within(hitRow as HTMLElement).getAllByText(/^(J|K|↓|↑)$/)).toHaveLength(4);
+      expect(within(dialog).getByText('cases:screening_review.shortcuts.toggle_list')).toBeTruthy();
+      expect(within(dialog).getByText('[')).toBeTruthy();
+      expect(within(dialog).queryByText('T')).toBeNull();
       const selected = onSearchChange.mock.lastCall?.[0].hit;
       press('j', 'KeyJ');
       expect(onSearchChange.mock.lastCall?.[0].hit).toBe(selected);
@@ -153,6 +160,44 @@ describe('screening review keyboard navigation', () => {
       expect(onSearchChange.mock.lastCall?.[0].hit).toBe(selected);
     },
   );
+
+  it('opens the shortcut help from the hint for mouse users and closes it with its button', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    fireEvent.click(screen.getByRole('button', { name: /cases:screening_review\.hint\.all_keys/ }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: /cases:screening_review\.shortcuts\.back_to_review/ }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  });
+
+  it('shows matching data as chips, the entity type, and only navigation that exists', async () => {
+    const screening = objectReviewScreening();
+    screening.request.searchInput.queries['customer']!.properties = {
+      name: ['Alice'],
+      birthDate: ['1970-01-01'],
+      nationality: ['Egypt'],
+    };
+    screening.matches[0]!.payload.properties['nationality'] = ['eg'];
+    screening.matches[1]!.payload.properties = { birthDate: ['1980-02-02'] };
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: buildScreeningReviewItems([reviewCase('case', [screening])]),
+      nextCursor: null,
+      failed: false,
+    });
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(screen.queryByRole('button', { name: /next_hit|previous_hit|next_customer|previous_customer/ })).toBeNull();
+    expect(screen.getAllByText('screenings:entity.schema.person').length).toBeGreaterThan(0);
+    expect(
+      within(activeCard() as HTMLElement).getByText('cases:screening_review.matched_field.birthDate'),
+    ).toBeTruthy();
+    expect(
+      within(activeCard() as HTMLElement).getByText('cases:screening_review.matched_field.nationality'),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /List record B/ }));
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+    expect(within(activeCard() as HTMLElement).queryByText(/matched_field/)).toBeNull();
+  });
 
   it('suspends shortcuts for other open modals, composition, and handled events', async () => {
     renderPage();
