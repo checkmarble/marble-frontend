@@ -3,6 +3,7 @@ import {
   type ScenarioIterationWithBodyDto,
   type UpdateScenarioIterationBody as UpdateScenarioIterationBodyDto,
 } from 'marble-api';
+import * as R from 'remeda';
 
 import { type AstNode, adaptAstNode, adaptNodeDto } from '../astNode/ast-node';
 import { adaptScreeningConfig, type ScreeningConfig } from '../screening-config';
@@ -116,6 +117,17 @@ export function adaptScenarioIterationWithoutRules(
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
     screeningConfigs: configsDto?.map(adaptScreeningConfig) ?? [],
   };
+}
+
+export function groupVersionsByScenario(
+  scenarioIds: string[],
+  iterations: ScenarioIterationSummary[],
+): Record<string, { versions: (number | null)[] }> {
+  const iterationsByScenario = R.groupBy(iterations, (iteration) => iteration.scenarioId);
+
+  return Object.fromEntries(
+    scenarioIds.map((id) => [id, { versions: (iterationsByScenario[id] ?? []).map((it) => it.version) }]),
+  );
 }
 
 export function adaptScenarioIterationSummary(dto: ScenarioIterationDto): ScenarioIterationSummary {
