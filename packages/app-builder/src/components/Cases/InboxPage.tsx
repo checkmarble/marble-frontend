@@ -42,6 +42,7 @@ type InboxPageProps = {
   inboxes: InboxWithCasesCount[];
   inboxUsersIds: string[];
   canViewNavigationTabs: boolean;
+  screeningReviewAvailable: boolean;
   query: string;
   limit: number;
   order: 'ASC' | 'DESC';
@@ -55,6 +56,7 @@ export const InboxPage = ({
   inboxes,
   inboxUsersIds,
   canViewNavigationTabs,
+  screeningReviewAvailable,
   query,
   limit,
   order,
@@ -137,7 +139,9 @@ export const InboxPage = ({
     return (
       <Page.Main className="flex flex-col">
         <Page.Content>
-          {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+          {canViewNavigationTabs || screeningReviewAvailable ? (
+            <CasesNavigationTabs showAdminSections={canViewNavigationTabs} inboxId={inboxId} />
+          ) : null}
           <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
         </Page.Content>
       </Page.Main>
@@ -155,7 +159,9 @@ export const InboxPage = ({
         )}
       />
       <Page.Content width="table">
-        {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+        {canViewNavigationTabs || screeningReviewAvailable ? (
+          <CasesNavigationTabs showAdminSections={canViewNavigationTabs} inboxId={inboxId} />
+        ) : null}
         <div className="flex flex-col gap-md relative">
           <div className="flex justify-between">
             <div className="flex gap-sm items-center">
