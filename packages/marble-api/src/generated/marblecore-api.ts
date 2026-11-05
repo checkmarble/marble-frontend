@@ -2867,7 +2867,7 @@ export function createAnnotation(tableName: string, objectId: string, createAnno
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, excludeAssigned, assigneeId, tagId, qualification }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, excludeAssigned, assigneeId, tagId, qualification, $type }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
@@ -2882,6 +2882,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
     assigneeId?: string;
     tagId?: string;
     qualification?: "green" | "yellow" | "red";
+    $type?: ("decision" | "continuous_screening")[];
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -2908,7 +2909,8 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
         exclude_assigned: excludeAssigned,
         assignee_id: assigneeId,
         tag_id: tagId,
-        qualification
+        qualification,
+        "type[]": $type
     }))}`, {
         ...opts
     }));

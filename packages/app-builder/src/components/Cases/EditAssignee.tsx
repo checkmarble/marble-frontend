@@ -11,6 +11,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { capitalize } from 'radash';
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -26,7 +27,7 @@ export const EditCaseAssignee = ({
   currentUser: CurrentUser;
   id: string;
 }) => {
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases', 'common']);
   const editAssigneeMutation = useEditAssigneeMutation();
   const revalidate = useLoaderRevalidator();
   const [open, setOpen] = useState(false);
@@ -35,9 +36,14 @@ export const EditCaseAssignee = ({
   const form = useForm({
     defaultValues: { assigneeId, caseId: id } as EditAssigneePayload,
     onSubmit: ({ value }) => {
-      editAssigneeMutation.mutateAsync(value).then(() => {
-        revalidate();
-      });
+      return editAssigneeMutation
+        .mutateAsync(value)
+        .then(() => {
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: editAssigneePayloadSchema,
