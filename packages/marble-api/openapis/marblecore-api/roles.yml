@@ -1,0 +1,123 @@
+/roles:
+  get:
+    tags:
+      - Roles
+    summary: List the current organization's custom roles
+    operationId: listCustomRoles
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Custom roles
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomRoleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - Roles
+    summary: Create a custom role without permissions
+    operationId: createCustomRole
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCustomRoleBody'
+    responses:
+      '201':
+        description: Created custom role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomRoleDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '409':
+        $ref: 'components.yml#/responses/409'
+/roles/permissions:
+  put:
+    tags:
+      - Roles
+    summary: Replace a custom role's permissions
+    operationId: updateCustomRolePermissions
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateCustomRolePermissionsBody'
+    responses:
+      '200':
+        description: Updated custom role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomRoleDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        $ref: 'components.yml#/responses/409'
+components:
+  schemas:
+    CustomRoleDto:
+      type: object
+      required:
+        - slug
+        - name
+        - permissions
+      properties:
+        slug:
+          type: string
+          description: Organization-scoped role slug, for example org/fraud.analyst.
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+    CreateCustomRoleBody:
+      type: object
+      required:
+        - slug
+        - name
+      properties:
+        slug:
+          type: string
+          description: Organization-scoped role slug, for example org/fraud.analyst.
+        name:
+          type: string
+    UpdateCustomRolePermissionsBody:
+      type: object
+      required:
+        - role
+        - permissions
+      properties:
+        role:
+          type: string
+          description: Organization-scoped role slug.
+        permissions:
+          type: array
+          description: Permission names replacing the role's current permissions.
+          items:
+            type: string

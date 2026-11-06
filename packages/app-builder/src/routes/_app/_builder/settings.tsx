@@ -4,11 +4,27 @@ import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models/user';
+import { roleManagerOptionalList } from '@app-builder/services/roles-access';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { createFileRoute, Link, Outlet, redirect, useMatches } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';
+import { z } from 'zod/v4';
+
+const guardSettingsPath = createServerFn()
+  .middleware([authMiddleware])
+  .validator(z.string())
+  .handler(async ({ context, data }) => {
+    if (
+      isAnalyst(context.authInfo.user) &&
+      data !== '/settings/roles' &&
+      data !== '/settings' &&
+      data !== '/settings/'
+    ) {
+      throw redirect({ to: '/cases' });
+    }
+  });
 
 const settingsLoader = createServerFn()
   .middleware([authMiddleware])
@@ -16,11 +32,11 @@ const settingsLoader = createServerFn()
     const { user, entitlements, inbox } = context.authInfo;
     const appConfig = context.appConfig;
 
-    if (isAnalyst(user)) {
+    if (isAnalyst(user) && !user.permissions.canManageRoles) {
       throw redirect({ to: '/cases' });
     }
 
-    const inboxes = await inbox.listInboxes();
+    const inboxes = await roleManagerOptionalList(inbox.listInboxes(), user.permissions.canManageRoles);
     const sections = getSettingsAccess(user, appConfig, inboxes);
     if (appConfig.isManagedMarble) sections.screening_providers.settings = []; // not in SaaS
 
@@ -28,6 +44,7 @@ const settingsLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/settings')({
+  beforeLoad: ({ location }) => guardSettingsPath({ data: location.pathname }),
   staticData: {
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
