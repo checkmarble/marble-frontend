@@ -1,4 +1,7 @@
+import { FormatContext } from '@app-builder/contexts/FormatContext';
+import { adaptContinuousScreening } from '@app-builder/models/continuous-screening';
 import { buildScreeningReviewItems } from '@app-builder/models/screening-review';
+import stagingObjectAddedDto from '@app-builder/models/screening-review.staging-object-added.json';
 import {
   datasetReviewScreening,
   objectReviewScreening,
@@ -8,11 +11,21 @@ import { listScreeningReviewPageFn } from '@app-builder/server-fns/screening-rev
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
+import { type ContinuousScreeningDto } from 'marble-api';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ScreeningReviewPage, type ScreeningReviewSearch } from './ScreeningReviewPage';
 
 vi.mock('@app-builder/server-fns/screening-review', () => ({ listScreeningReviewPageFn: vi.fn() }));
+vi.mock('@app-builder/queries/data/get-data-model', () => ({ useDataModelQuery: () => ({ data: undefined }) }));
+vi.mock('@app-builder/queries/data/get-object-details', () => ({ useObjectDetailsQuery: () => ({ data: undefined }) }));
+vi.mock('@app-builder/queries/screening/lists-config', () => ({ useListConfigQuery: () => ({ data: undefined }) }));
+vi.mock('@app-builder/queries/scoring/get-scoring-settings', () => ({
+  useGetScoringSettingsQuery: () => ({ data: { settings: { maxRiskLevel: 3 } } }),
+}));
+vi.mock('@app-builder/queries/scoring/get-risk-level-latest', () => ({
+  useRiskLevelLatestQuery: () => ({ data: { riskLevel: 2 } }),
+}));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock('../Navigation/Tabs', () => ({ CasesNavigationTabs: () => <div>Case Manager navigation</div> }));
 vi.mock('@tanstack/react-router', () => ({
@@ -20,7 +33,9 @@ vi.mock('@tanstack/react-router', () => ({
     <a href={to.replace('$inboxId', params?.inboxId ?? '')}>{children}</a>
   ),
 }));
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en' } }),
+}));
 mockResizeObserver();
 
 const initialItems = buildScreeningReviewItems([
@@ -44,7 +59,7 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-function renderPage(initial: ScreeningReviewSearch = { limit: 50, cursors: [] }) {
+function renderPage(initial: ScreeningReviewSearch = { limit: 50, cursors: [] }, canViewRiskLevel = false) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
   function Harness() {
     const [search, setSearch] = useState(initial);
@@ -52,6 +67,7 @@ function renderPage(initial: ScreeningReviewSearch = { limit: 50, cursors: [] })
       <>
         <ScreeningReviewPage
           canViewAdminSections={false}
+          canViewRiskLevel={canViewRiskLevel}
           inboxes={inboxes}
           search={search}
           onSearchChange={(next) => {
@@ -71,7 +87,9 @@ function renderPage(initial: ScreeningReviewSearch = { limit: 50, cursors: [] })
   }
   const result = render(
     <QueryClientProvider client={queryClient}>
-      <Harness />
+      <FormatContext.Provider value={{ locale: 'en', timezone: 'UTC' }}>
+        <Harness />
+      </FormatContext.Provider>
     </QueryClientProvider>,
   );
   return { ...result, queryClient };
@@ -413,5 +431,61 @@ describe('screening review pages and restoration', () => {
     expect((await screen.findByRole('link', { name: 'cases:screening_review.go_to_cases' })).getAttribute('href')).toBe(
       '/cases/inboxes/my-inbox',
     );
+  });
+});
+
+describe('screening review comparison view', () => {
+  function rowStates() {
+    const table = screen.getByRole('table');
+    return within(table)
+      .getAllByRole('row')
+      .slice(1)
+      .map((row) => [within(row).getByRole('rowheader').textContent, row.lastElementChild?.textContent]);
+  }
+
+  it('shows the customer before the list record and marks each compared field', async () => {
+    renderPage();
+    await waitFor(() => expect(onSearchChange).toHaveBeenLastCalledWith({ limit: 50, cursors: [], hit: firstId }));
+    const columns = within(screen.getByRole('table'))
+      .getAllByRole('columnheader')
+      .map((header) => header.textContent);
+    expect(columns).toEqual([
+      'cases:screening_review.column.field',
+      'cases:screening_review.customer',
+      'cases:screening_review.list_record',
+      'cases:screening_review.column.match',
+    ]);
+    // Alice has no birth date; the list record has one.
+    expect(rowStates()).toEqual([
+      ['screenings:entity.property.name', 'cases:screening_review.state.different'],
+      ['screenings:entity.property.birthDate', 'cases:screening_review.state.missing'],
+    ]);
+    expect(screen.getByText('cases:screening_review.all_hit_information')).not.toBeNull();
+  });
+
+  it.each([
+    { canViewRiskLevel: true, shown: true },
+    { canViewRiskLevel: false, shown: false },
+  ])(
+    'shows the customer risk level only with scoring access ($canViewRiskLevel)',
+    async ({ canViewRiskLevel, shown }) => {
+      renderPage(undefined, canViewRiskLevel);
+      await screen.findByRole('table');
+      expect(screen.queryByText('cases:manager.client.risk_label') !== null).toBe(shown);
+    },
+  );
+
+  it('renders a real customer-triggered payload with its Motiva name states', async () => {
+    const screening = adaptContinuousScreening(stagingObjectAddedDto as unknown as ContinuousScreeningDto);
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: buildScreeningReviewItems([reviewCase('staging', [screening])]),
+      nextCursor: null,
+      failed: false,
+    });
+    renderPage();
+    await screen.findByRole('table');
+    // The hit with a literal name match comes first: hits are ordered by topic, then score.
+    expect(rowStates()[0]).toEqual(['screenings:entity.property.name', 'cases:screening_review.state.same']);
+    expect(screen.getByText('cases:screening_review.all_hit_information')).not.toBeNull();
   });
 });

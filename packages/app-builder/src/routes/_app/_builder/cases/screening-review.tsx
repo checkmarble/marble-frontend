@@ -2,8 +2,8 @@ import { ScreeningReviewPage } from '@app-builder/components/Cases/ScreeningRevi
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
-import { isContinuousScreeningAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { isAccessible, isContinuousScreeningAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
+import { createFileRoute, redirect, useLoaderData } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
 
@@ -38,11 +38,14 @@ export const Route = createFileRoute('/_app/_builder/cases/screening-review')({
 function ScreeningReviewRoute() {
   const search = Route.useSearch();
   const { canViewAdminSections, inboxes } = Route.useLoaderData();
+  // Analysts are restricted to no user scoring access by the layout loader.
+  const { featuresAccess } = useLoaderData({ from: '/_app/_builder' });
   const navigate = Route.useNavigate();
   return (
     <ScreeningReviewPage
       search={search}
       canViewAdminSections={canViewAdminSections}
+      canViewRiskLevel={isAccessible(featuresAccess.userScoring)}
       inboxes={inboxes}
       onSearchChange={(next) => {
         void navigate({ search: next, replace: true, resetScroll: false });

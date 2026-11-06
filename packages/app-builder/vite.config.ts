@@ -70,12 +70,11 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  // `qrcode.react` is only reached through a code-split route chunk (TwoFactorAuthSettings),
-  // so Vite's startup scan misses it and discovers it at runtime — the resulting re-optimize
-  // invalidates the already-served client entry chunk ("Outdated Optimize Dep") and breaks
-  // hydration app-wide. Pin it so it is pre-bundled on startup.
+  // These dependencies are reached through code-split route chunks, so Vite's startup scan
+  // can miss them. Pre-bundle them to avoid runtime re-optimization invalidating modules
+  // already served to the browser ("Outdated Optimize Dep").
   optimizeDeps: {
-    include: ['qrcode.react'],
+    include: ['qrcode.react', 'ego-graph', 'ego-graph/dagre', 'ego-graph/fold', 'ego-graph/react-flow'],
   },
   ssr: {
     // country-flag-emojis ships CJS; force Vite to bundle it for SSR.
