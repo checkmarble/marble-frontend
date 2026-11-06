@@ -1,16 +1,18 @@
 import { Page } from '@app-builder/components/Page';
-import { TopicsDisplay } from '@app-builder/components/Screenings/TopicsDisplay';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import type { DataModel } from '@app-builder/models/data-model';
 import type { InboxMetadata } from '@app-builder/models/inbox';
 import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import {
   adjacentScreeningReviewItem,
+  compareScreeningReviewFields,
   groupScreeningReviewItems,
-  matchedScreeningReviewFields,
   type ScreeningReviewItem,
+  screeningReviewChipFields,
   screeningReviewTopicFamilies,
 } from '@app-builder/models/screening-review';
 import { useScreeningReviewPageQuery } from '@app-builder/queries/cases/screening-review-page';
+import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -18,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, Tag, Typo } from 'ui-design-system';
 import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
+import { CustomerTypeTag, ScreeningReviewHit } from './ScreeningReviewHit';
 import { ShortcutHelp, ShortcutKeys } from './ShortcutHelp';
 import { ScreeningReviewShortcutProvider, useScreeningReviewShortcuts } from './shortcuts';
 
@@ -32,6 +35,7 @@ interface ScreeningReviewPageProps {
   search: ScreeningReviewSearch;
   onSearchChange: (search: ScreeningReviewSearch) => void;
   canViewAdminSections: boolean;
+  canViewRiskLevel: boolean;
   inboxes: InboxMetadata[];
 }
 
@@ -40,26 +44,6 @@ export function ScreeningReviewPage(props: ScreeningReviewPageProps) {
     <ScreeningReviewShortcutProvider scope="screening-review">
       <ReviewStream {...props} />
     </ScreeningReviewShortcutProvider>
-  );
-}
-
-function DataPoints({ item }: { item: ScreeningReviewItem }) {
-  const { t } = useTranslation(['cases', 'screenings']);
-  const properties = item.listRecord.properties;
-  const keys = ['name', 'birthDate', 'nationality', 'citizenship', 'country', 'address'];
-  const points = keys.filter((key) => properties[key]?.length).slice(0, 3);
-  if (!points.length) return null;
-  return (
-    <dl className="flex flex-col gap-xs text-s">
-      {points.map((key) => (
-        <div key={key} className="flex flex-wrap gap-x-xs">
-          <dt className="text-grey-secondary">{t(`screenings:entity.property.${key}`)}:</dt>
-          <dd className="wrap-break-words">
-            <bdi>{properties[key]?.slice(0, 2).join(' · ')}</bdi>
-          </dd>
-        </div>
-      ))}
-    </dl>
   );
 }
 
@@ -92,9 +76,35 @@ function TopicDots({ topics }: { topics: string[] }) {
   );
 }
 
-function MatchedFieldChips({ item }: { item: ScreeningReviewItem }) {
+type MappedProperties = (objectType: string) => readonly string[] | undefined;
+
+/** FTM properties mapped on each table, so the comparison follows the screening configuration. */
+function useMappedProperties(): MappedProperties {
+  const dataModelQuery = useDataModelQuery();
+  const byTable = useMemo(() => mappedPropertiesByTable(dataModelQuery.data?.dataModel), [dataModelQuery.data]);
+  return (objectType) => byTable.get(objectType);
+}
+
+function mappedPropertiesByTable(dataModel: DataModel | undefined) {
+  return new Map(
+    (dataModel ?? []).flatMap((table) => {
+      const properties = table.fields.flatMap((field) => (field.ftmProperty ? [field.ftmProperty] : []));
+      return table.ftmEntity && properties.length ? [[table.name, properties] as const] : [];
+    }),
+  );
+}
+
+function MatchedFieldChips({
+  item,
+  mappedProperties,
+}: {
+  item: ScreeningReviewItem;
+  mappedProperties: MappedProperties;
+}) {
   const { t } = useTranslation(['cases']);
-  const fields = matchedScreeningReviewFields(item);
+  const fields = screeningReviewChipFields(
+    compareScreeningReviewFields(item, mappedProperties(item.customer.objectType)),
+  );
   if (!fields.length) return null;
   return (
     <span className="flex flex-wrap gap-xs">
@@ -110,18 +120,6 @@ function MatchedFieldChips({ item }: { item: ScreeningReviewItem }) {
         </Tag>
       ))}
     </span>
-  );
-}
-
-function CustomerTypeTag({ customer }: { customer: ScreeningReviewItem['customer'] }) {
-  const { t } = useTranslation(['screenings']);
-  const label = customer.schema
-    ? t(`screenings:entity.schema.${customer.schema.toLowerCase()}`, { defaultValue: customer.schema })
-    : customer.objectType;
-  return (
-    <Tag color="white" size="xs" appearance="monospace" className="h-5 shrink-0">
-      {label}
-    </Tag>
   );
 }
 
@@ -157,11 +155,18 @@ function prefersReducedMotion() {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
 }
 
-function ReviewStream({ search, onSearchChange, canViewAdminSections, inboxes }: ScreeningReviewPageProps) {
+function ReviewStream({
+  search,
+  onSearchChange,
+  canViewAdminSections,
+  canViewRiskLevel,
+  inboxes,
+}: ScreeningReviewPageProps) {
   const { t } = useTranslation(['cases', 'common']);
   const allInboxes = [{ id: MY_INBOX_ID, name: t('cases:inbox.my-inbox.link') }, ...inboxes];
   const selectedInbox = allInboxes.find((inbox) => inbox.id === search.inboxId) ?? allInboxes[0]!;
   const query = useScreeningReviewPageQuery(search.limit, search.cursors.at(-1) ?? null, selectedInbox.id);
+  const mappedProperties = useMappedProperties();
   const [helpOpen, setHelpOpen] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
   const activeRef = useRef<HTMLButtonElement>(null);
@@ -319,7 +324,7 @@ function ReviewStream({ search, onSearchChange, canViewAdminSections, inboxes }:
                                     {Math.round(item.score * 100)}%
                                   </bdi>
                                 </span>
-                                <MatchedFieldChips item={item} />
+                                <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
                               </button>
                             </li>
                           );
@@ -333,32 +338,11 @@ function ReviewStream({ search, onSearchChange, canViewAdminSections, inboxes }:
             <ShortcutHint onOpenHelp={() => setHelpOpen(true)} />
           </div>
           {active ? (
-            <section
-              aria-labelledby="screening-review-active-title"
-              className="flex min-h-0 min-w-0 flex-col gap-md overflow-y-auto"
-            >
-              <p className="sr-only" aria-live="polite" aria-atomic="true">
-                {active.customer.name} · {active.listRecord.caption || active.listRecord.id}
-              </p>
-              <div className="flex min-w-0 items-center gap-sm">
-                <Typo variant="title2" id="screening-review-active-title" className="min-w-0 truncate">
-                  <bdi>{active.customer.name}</bdi>
-                </Typo>
-                <CustomerTypeTag customer={active.customer} />
-              </div>
-              <div className="flex flex-col gap-md rounded-lg border border-grey-border bg-surface-card p-lg">
-                <Typo variant="subtitle1">
-                  <bdi>{active.listRecord.caption || active.listRecord.id}</bdi>
-                </Typo>
-                <p>{t('cases:screening_review.score', { score: Math.round(active.score * 100) })}</p>
-                <TopicsDisplay entity={{ id: active.listRecord.id, properties: { topics: active.topics } }} />
-                <Typo variant="subtitle2">{t('cases:screening_review.data_points')}</Typo>
-                <DataPoints item={active} />
-                <p className="text-s text-grey-secondary">
-                  {t('cases:screening_review.case_name', { name: active.caseName })}
-                </p>
-              </div>
-            </section>
+            <ScreeningReviewHit
+              item={active}
+              comparisons={compareScreeningReviewFields(active, mappedProperties(active.customer.objectType))}
+              canViewRiskLevel={canViewRiskLevel}
+            />
           ) : ready && !query.data?.failed && !items.length ? (
             <div className="flex flex-col items-start gap-md self-start rounded border border-grey-border p-lg">
               <Typo variant="title2">{t('cases:screening_review.empty_title')}</Typo>
