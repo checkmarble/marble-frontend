@@ -8,7 +8,7 @@ type FilterInboxSelectorProps = {
   inboxes: PartialInbox[];
   selectedInbox: PartialInbox;
   onSelectInbox: (inbox: PartialInbox) => void;
-  variant: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary';
 };
 
 export const FilterInboxSelector = ({
