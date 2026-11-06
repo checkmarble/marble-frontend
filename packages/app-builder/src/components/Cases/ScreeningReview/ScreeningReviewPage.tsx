@@ -249,6 +249,7 @@ function ReviewStream({ search, onSearchChange, canViewAdminSections, inboxes }:
                   setUnavailable(false);
                   onSearchChange({ ...search, inboxId: inbox.id, cursors: [], hit: undefined });
                 }}
+                variant="secondary"
               />
             </div>
             <div className="relative min-h-0 flex-1">
