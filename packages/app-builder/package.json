@@ -106,7 +106,7 @@
     "i18next-resources-to-backend": "^1.2.3",
     "js-cookie": "^3.0.8",
     "libphonenumber-js": "^1.13.15",
-    "maplibre-gl": "^6.6.0",
+    "maplibre-gl": "^6.15.0",
     "marble-api": "workspace:*",
     "match-sorter": "^8.0.0",
     "nanoid": "^6.0.2",
