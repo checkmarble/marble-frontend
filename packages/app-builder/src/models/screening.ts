@@ -180,7 +180,13 @@ export type ScreeningMatchPayload = {
     associations?: AssociationEntity[];
     membershipMember?: MembershipMemberEntity[];
   } & Record<string, string[]>;
+  /** Non-zero Motiva scoring features, keyed by feature name. */
+  features?: Record<string, number>;
+  /** Motiva explanations, only stored when the match was requested with `explain=true`. */
+  explanations?: Record<string, ScreeningMatchExplanation>;
 };
+
+export type ScreeningMatchExplanation = { score?: number; weighted?: number; detail?: string };
 
 export function isKnownEntitySchema<K extends OpenSanctionEntitySchema>(
   schema: string,

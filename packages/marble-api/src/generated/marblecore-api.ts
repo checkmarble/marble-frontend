@@ -312,6 +312,18 @@ export type ScreeningMatchPayloadDto = {
     } & {
         [key: string]: string[];
     };
+    /** Non-zero Motiva scoring features, keyed by feature name */
+    features?: {
+        [key: string]: number;
+    };
+    /** Motiva scoring explanations (explain=true), keyed by feature name */
+    explanations?: {
+        [key: string]: {
+            score?: number;
+            weighted?: number;
+            detail?: string;
+        };
+    };
 };
 export type ContinuousScreeningMatchPayloadDto = ScreeningMatchPayloadDto & {
     datasets: string[];

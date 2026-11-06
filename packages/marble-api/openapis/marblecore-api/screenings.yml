@@ -967,6 +967,25 @@ components:
                 type: array
                 items:
                   type: string
+        features:
+          type: object
+          description: Non-zero Motiva scoring features, keyed by feature name
+          additionalProperties:
+            type: number
+        explanations:
+          type: object
+          description: Motiva scoring explanations (explain=true), keyed by feature name
+          additionalProperties:
+            $ref: '#/components/schemas/ScreeningMatchExplanationDto'
+    ScreeningMatchExplanationDto:
+      type: object
+      properties:
+        score:
+          type: number
+        weighted:
+          type: number
+        detail:
+          type: string
     ScreeningMatchDto:
       type: object
       required:
