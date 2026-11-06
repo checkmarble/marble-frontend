@@ -49,7 +49,7 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [UI.Weekday]: 'flex items-center justify-center size-12 text-xs font-semibold text-grey-primary',
         [UI.Weeks]: 'border-none',
         [UI.Week]: 'flex w-full',
-        [UI.Day]: 'flex p-0',
+        [UI.Day]: 'flex size-12 shrink-0 p-0',
         [UI.DayButton]: 'size-12 text-default font-medium',
         [SelectionState.selected]: clsx(
           'transition-colors',
