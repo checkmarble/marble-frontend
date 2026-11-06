@@ -71,7 +71,7 @@ function customerReference(
     objectType,
     objectId,
     schema,
-    name: caption || properties['name']?.filter(Boolean).join(' · ') || `${objectType} · ${objectId}`,
+    name: caption || customerNames(properties).join(' · ') || `${objectType} · ${objectId}`,
     properties,
   };
 }
