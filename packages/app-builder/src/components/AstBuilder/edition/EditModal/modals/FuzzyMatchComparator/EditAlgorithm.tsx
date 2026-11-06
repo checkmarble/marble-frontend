@@ -67,7 +67,7 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
 
   return (
     <div className="flex flex-1 flex-col gap-sm">
-      <span className="text-m text-grey-primary font-normal">{t('scenarios:edit_fuzzy_match.threshold.label')}</span>
+      <span className="text-m text-grey-primary font-normal">{t('scenarios:edit_fuzzy_match.algorithm.label')}</span>
       <div className="bg-grey-background-light border-grey-border flex h-10 items-center justify-center rounded-sm border p-sm text-center">
         <FuzzyMatchAlgorithmLabel fuzzyMatchConfig={fuzzyMatchConfig} fuzzyMatchAlgorithm={algorithm} />
       </div>
