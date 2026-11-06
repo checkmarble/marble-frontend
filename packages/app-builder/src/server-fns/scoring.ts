@@ -141,6 +141,19 @@ export const getScoreLatestFn = createServerFn({ method: 'GET' })
     }
   });
 
+/** The latest risk level only, without the evaluation. Never fails: no access, no score or an error give `null`. */
+export const getRiskLevelLatestFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .handler(async ({ context, data }) => {
+    try {
+      const score = await context.authInfo.userScoring.getScoreLatest(data.objectType, data.objectId);
+      return { riskLevel: score?.risk_level ?? null };
+    } catch {
+      return { riskLevel: null };
+    }
+  });
+
 export const startScoringDryRunFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ recordType: z.string() }))
