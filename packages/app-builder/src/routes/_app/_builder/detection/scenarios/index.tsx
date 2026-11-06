@@ -9,6 +9,7 @@ import { getFormattedVersion } from '@app-builder/components/Scenario/Iteration/
 import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Scenario } from '@app-builder/models/scenario';
+import { groupVersionsByScenario } from '@app-builder/models/scenario/iteration';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -27,24 +28,18 @@ import { Icon } from 'ui-icons';
 const scenariosLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function scenariosLoader({ context }) {
-    const scenarios = await context.authInfo.scenario.listScenarios();
-
-    const iterationsMetadata = await Promise.all(
-      scenarios.map((s) => context.authInfo.scenario.listScenarioIterationsMetadata({ scenarioId: s.id })),
-    );
-
-    const scenarioMetadataMap = Object.fromEntries(
-      scenarios.map((s, i) => {
-        const iterations = iterationsMetadata[i] ?? [];
-        const versions = iterations.map((it) => it.version);
-        return [s.id, { versions }];
-      }),
-    );
+    const [scenarios, iterations] = await Promise.all([
+      context.authInfo.scenario.listScenarios(),
+      context.authInfo.scenario.listOrganizationScenarioIterationsMetadata(),
+    ]);
 
     return {
       isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
       scenarios,
-      scenarioMetadataMap,
+      scenarioMetadataMap: groupVersionsByScenario(
+        scenarios.map((s) => s.id),
+        iterations,
+      ),
     };
   });
 
