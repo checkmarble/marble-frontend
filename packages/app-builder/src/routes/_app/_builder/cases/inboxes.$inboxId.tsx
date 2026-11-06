@@ -3,7 +3,7 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
-import { isInboxAdmin } from '@app-builder/services/feature-access';
+import { isContinuousScreeningAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -29,7 +29,7 @@ const casesInboxesLoader = createServerFn()
   .validator(casesInboxesLoaderSchema)
   .handler(async function casesInboxesLoader({ context, data: { params, query } }) {
     const request = getRequest();
-    const { user, inbox: inboxRepository } = context.authInfo;
+    const { user, entitlements, inbox: inboxRepository } = context.authInfo;
     const inboxes = await inboxRepository.listInboxesWithCaseCount();
     const canViewNavigationTabs = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
@@ -47,6 +47,7 @@ const casesInboxesLoader = createServerFn()
       inboxes,
       inboxUsersIds,
       canViewNavigationTabs,
+      screeningReviewAvailable: isContinuousScreeningAvailable(entitlements),
       query: query.q,
       limit: query.limit,
       order: query.order,
@@ -63,8 +64,17 @@ export const Route = createFileRoute('/_app/_builder/cases/inboxes/$inboxId')({
 
 function CasesInboxesPage() {
   const navigate = useNavigate();
-  const { inboxId, inboxes, inboxUsersIds, canViewNavigationTabs, query, limit, order, favoriteInboxId } =
-    Route.useLoaderData();
+  const {
+    inboxId,
+    inboxes,
+    inboxUsersIds,
+    canViewNavigationTabs,
+    screeningReviewAvailable,
+    query,
+    limit,
+    order,
+    favoriteInboxId,
+  } = Route.useLoaderData();
   const updatePage = (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => {
     navigate({
       to: '.',
@@ -89,6 +99,7 @@ function CasesInboxesPage() {
       inboxes={inboxes}
       inboxUsersIds={inboxUsersIds}
       canViewNavigationTabs={canViewNavigationTabs}
+      screeningReviewAvailable={screeningReviewAvailable}
       query={query}
       limit={limit}
       order={order}

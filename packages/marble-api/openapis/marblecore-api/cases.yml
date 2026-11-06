@@ -80,6 +80,17 @@
             - green
             - yellow
             - red
+      - name: type[]
+        description: case types used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+              - decision
+              - continuous_screening
     responses:
       "200":
         description: List of corresponding cases
