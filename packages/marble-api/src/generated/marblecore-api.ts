@@ -1841,17 +1841,21 @@ export type CreateInitialOrgBody = {
      */
     password?: string;
 };
+export type RoleBinding = {
+    id?: string;
+    role: string;
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
     organization_id: string;
     /** 3 first characters of the API key */
     prefix: string;
-    role: string;
+    roles: RoleBinding[];
 };
 export type CreateApiKeyBody = {
     description: string;
-    role: string;
+    roles: RoleBinding[];
 };
 export type CreatedApiKeyDto = ApiKeyDto & {
     key: string;
@@ -1862,7 +1866,7 @@ export type UserDto = {
     email: string;
     first_name: string;
     last_name: string;
-    role: string;
+    roles: RoleBinding[];
     organization_id: string;
     /** Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`. */
     tfa_enabled?: boolean;
@@ -1875,14 +1879,14 @@ export type UserDto = {
 };
 export type CreateUser = {
     email: string;
-    role: string;
+    roles: RoleBinding[];
     organization_id?: string;
     first_name: string;
     last_name: string;
 };
 export type UpdateUser = {
     email: string;
-    role: string;
+    roles: RoleBinding[];
     organization_id?: string;
     first_name: string;
     last_name: string;

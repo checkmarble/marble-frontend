@@ -315,7 +315,7 @@ type OrgUser = {
   first_name: string;
   last_name: string;
   email: string;
-  role: string;
+  roles: { role: string }[];
 };
 
 const ROSTER_PREVIEW = 5;
@@ -337,7 +337,7 @@ function People({ users, orgId }: { users: OrgUser[]; orgId: string }) {
   }
 
   const roleCounts = users.reduce<Record<string, number>>((acc, user) => {
-    acc[user.role] = (acc[user.role] ?? 0) + 1;
+    for (const { role } of user.roles) acc[role] = (acc[role] ?? 0) + 1;
     return acc;
   }, {});
 
@@ -374,7 +374,9 @@ function People({ users, orgId }: { users: OrgUser[]; orgId: string }) {
                 <span className="text-grey-primary truncate text-s font-medium">{fullName || user.email}</span>
                 <span className="text-grey-secondary truncate text-xs">{user.email}</span>
               </span>
-              <span className="text-grey-secondary shrink-0 text-xs">{humanizeRole(user.role)}</span>
+              <span className="text-grey-secondary shrink-0 text-xs">
+                {user.roles.map(({ role }) => humanizeRole(role)).join(', ')}
+              </span>
             </li>
           );
         })}
