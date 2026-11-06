@@ -302,6 +302,10 @@ export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
   return properties;
 }
 
+export function isScreeningEntityProperty(property: string): property is ScreeningEntityProperty {
+  return Object.hasOwn(propertyMetadata, property);
+}
+
 export function isPropertyListed(property: ScreeningEntityProperty) {
   return propertyMetadataList.includes(property);
 }
