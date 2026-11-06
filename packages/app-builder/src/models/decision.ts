@@ -45,7 +45,7 @@ export interface ScheduledExecution {
   id: string;
   /** Whether the execution was manual or not */
   manual: boolean;
-  status: 'pending' | 'processing' | 'success' | 'failure' | 'partial_failure';
+  status: 'pending' | 'processing' | 'success' | 'failure' | 'partial_failure' | 'cancelling' | 'cancelled';
   numberOfCreatedDecisions: number;
   numberOfEvaluatedDecisions: number;
   numberOfPlannedDecisions: number | null;
@@ -67,10 +67,16 @@ export const scheduledExecutionInProgressByStatus = {
   success: false,
   failure: false,
   partial_failure: false,
+  cancelling: true,
+  cancelled: false,
 } as const satisfies Record<ScheduledExecution['status'], boolean>;
 
 export function isScheduledExecutionInProgress(status: ScheduledExecution['status']) {
   return scheduledExecutionInProgressByStatus[status];
+}
+
+export function isScheduledExecutionCancellable(status: ScheduledExecution['status']) {
+  return status === 'pending' || status === 'processing';
 }
 
 export function hasInProgressScheduledExecution(executions: readonly Pick<ScheduledExecution, 'status'>[]) {

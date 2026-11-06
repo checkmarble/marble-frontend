@@ -260,6 +260,33 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+/scheduled-executions/{execution_id}/cancel:
+  post:
+    tags:
+      - ScheduledExecutions
+    summary: Cancel a scheduled execution by id
+    operationId: cancelScheduledExecution
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: execution_id
+        description: ID of the scheduled execution to cancel
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The cancellation of the scheduled execution was requested
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        $ref: 'components.yml#/responses/409'
 
 components:
   schemas:
@@ -435,4 +462,4 @@ components:
           type: string
         status:
           type: string
-          enum: ['pending', 'processing', 'success', 'failure', 'partial_failure']
+          enum: ['pending', 'processing', 'success', 'failure', 'partial_failure', 'cancelling', 'cancelled']

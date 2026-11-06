@@ -7,6 +7,7 @@ import {
   getScheduledExecutionsRefetchInterval,
   useListScheduleExecutions,
 } from '@app-builder/queries/decisions/list-scheduled-executions';
+import { isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { createFileRoute } from '@tanstack/react-router';
@@ -22,7 +23,11 @@ const scheduledExecutionsLoader = createServerFn()
 
     const scheduledExecutions = await context.authInfo.decision.listScheduledExecutions({ scenarioId });
 
-    return { scenarioId, scheduledExecutions };
+    return {
+      scenarioId,
+      scheduledExecutions,
+      canCancel: isManualTriggerScenarioAvailable(context.authInfo.user),
+    };
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions')({
@@ -54,7 +59,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
 
 function ScheduledExecutions() {
   const { t } = useTranslation(scenarioI18n);
-  const { scenarioId, scheduledExecutions } = Route.useLoaderData();
+  const { scenarioId, scheduledExecutions, canCancel } = Route.useLoaderData();
   const scheduledExecutionsQuery = useListScheduleExecutions({
     scenarioId,
     initialData: { scheduledExecutions },
@@ -74,7 +79,7 @@ function ScheduledExecutions() {
             count: currentScheduledExecutions.length,
           })}
         </Typo>
-        <ScheduledExecutionsList scheduledExecutions={currentScheduledExecutions} />
+        <ScheduledExecutionsList scheduledExecutions={currentScheduledExecutions} canCancel={canCancel} />
       </Page.Content>
     </Page.Main>
   );
