@@ -1,4 +1,6 @@
+import { type ContinuousScreeningDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
+import { adaptContinuousScreening } from './continuous-screening';
 import {
   adjacentScreeningReviewItem,
   buildScreeningReviewItems,
@@ -8,6 +10,7 @@ import {
   screeningReviewChipFields,
   screeningReviewTopicFamilies,
 } from './screening-review';
+import stagingObjectAddedDto from './screening-review.staging-object-added.json';
 import { datasetReviewScreening, objectReviewScreening, reviewCase } from './screening-review.test-helpers';
 
 const TRIGGERS = ['object_added', 'dataset_updated'] as const;
@@ -130,6 +133,10 @@ describe('screening review stream', () => {
       second: { schema: 'Person', properties: { name: ['Snapshot name'] } },
     };
     expect(buildScreeningReviewItems([reviewCase('case', [screening])])[0]?.customer.name).toBe('Snapshot name');
+    screening.request.searchInput.queries = {
+      only: { schema: 'Person', properties: { firstName: ['Amira'], lastName: ['Nasser'] } },
+    };
+    expect(buildScreeningReviewItems([reviewCase('case', [screening])])[0]?.customer.name).toBe('Amira Nasser');
     screening.request.searchInput.queries = {};
     expect(buildScreeningReviewItems([reviewCase('case', [screening])])[0]?.customer.name).toBe('people · alice');
     expect(buildScreeningReviewItems([reviewCase('decision', [screening], { type: 'decision' })])).toEqual([]);
@@ -463,5 +470,49 @@ describe('screening review stream', () => {
       ['sanctions', 'peps', 'adverse-media'],
     );
     expect(screeningReviewTopicFamilies(['filter.something', 'unknown'])).toEqual([]);
+  });
+
+  // A real `object_added` screening from staging, pseudonymized. The customer was screened on
+  // first and last name only; the stored payloads carry Motiva `features` but no `explanations`.
+  describe('real customer-triggered payload', () => {
+    const items = buildScreeningReviewItems([
+      reviewCase('case', [adaptContinuousScreening(stagingObjectAddedDto as unknown as ContinuousScreeningDto)]),
+    ]);
+    const nameRows = (mapped?: string[], withSignals = true) =>
+      items.map((item) => {
+        const row = compareScreeningReviewFields(withSignals ? item : { ...item, signals: {} }, mapped)[0];
+        return [row?.field, row?.state, row?.source, row?.signal];
+      });
+
+    it('names the customer from the first and last name', () => {
+      expect(items).toHaveLength(3);
+      expect(items.every((item) => item.customer.name !== 'user · ' + item.customer.objectId)).toBe(true);
+      expect(new Set(items.map((item) => item.customer.name)).size).toBe(1);
+    });
+
+    it('lets the stored Motiva features decide the name state', () => {
+      expect(nameRows(['firstName', 'lastName'])).toEqual([
+        ['name', 'close', 'motiva', 'person_name_phonetic_match'],
+        ['name', 'same', 'motiva', 'name_literal_match'],
+        ['name', 'close', 'motiva', 'person_name_phonetic_match'],
+      ]);
+      // Without the features, the browser can't see the phonetic match of the first hit.
+      expect(nameRows(['firstName', 'lastName'], false).map(([, state]) => state)).toEqual([
+        'different',
+        'same',
+        'close',
+      ]);
+    });
+
+    it('compares only the mapped name, or marks the unscreened fields Missing without a mapping', () => {
+      expect(items.map((item) => compareScreeningReviewFields(item, ['firstName', 'lastName']).length)).toEqual([
+        1, 1, 1,
+      ]);
+      const fallback = compareScreeningReviewFields(items[1]!);
+      expect(fallback[0]?.state).toBe('same');
+      expect(fallback.slice(1).every((row) => row.state === 'missing' && !row.customerValues.length)).toBe(true);
+      expect(fallback.slice(1).length).toBeGreaterThan(0);
+      expect(screeningReviewChipFields(fallback)).toEqual([]);
+    });
   });
 });

@@ -1,5 +1,7 @@
 import { FormatContext } from '@app-builder/contexts/FormatContext';
+import { adaptContinuousScreening } from '@app-builder/models/continuous-screening';
 import { buildScreeningReviewItems } from '@app-builder/models/screening-review';
+import stagingObjectAddedDto from '@app-builder/models/screening-review.staging-object-added.json';
 import {
   datasetReviewScreening,
   objectReviewScreening,
@@ -9,6 +11,7 @@ import { listScreeningReviewPageFn } from '@app-builder/server-fns/screening-rev
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
+import { type ContinuousScreeningDto } from 'marble-api';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ScreeningReviewPage, type ScreeningReviewSearch } from './ScreeningReviewPage';
@@ -471,4 +474,18 @@ describe('screening review comparison view', () => {
       expect(screen.queryByText('cases:manager.client.risk_label') !== null).toBe(shown);
     },
   );
+
+  it('renders a real customer-triggered payload with its Motiva name states', async () => {
+    const screening = adaptContinuousScreening(stagingObjectAddedDto as unknown as ContinuousScreeningDto);
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: buildScreeningReviewItems([reviewCase('staging', [screening])]),
+      nextCursor: null,
+      failed: false,
+    });
+    renderPage();
+    await screen.findByRole('table');
+    // The hit with a literal name match comes first: hits are ordered by topic, then score.
+    expect(rowStates()[0]).toEqual(['screenings:entity.property.name', 'cases:screening_review.state.same']);
+    expect(screen.getByText('cases:screening_review.all_hit_information')).not.toBeNull();
+  });
 });
