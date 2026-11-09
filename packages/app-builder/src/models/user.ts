@@ -90,6 +90,14 @@ export function adaptUser(user: UserDto): User {
   };
 }
 
+// A user of the organization's tenant, without the role they would hold on a given organization.
+export interface TenantUser {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export const isAdmin = (user: CurrentUser) => user.roles.includes('ADMIN');
 
 export const isMarbleAdmin = (user: CurrentUser) => user.roles.includes('MARBLE_ADMIN');

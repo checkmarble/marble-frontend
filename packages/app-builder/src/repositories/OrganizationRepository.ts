@@ -1,5 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { adaptUser, isNotFoundHttpError, type User } from '@app-builder/models';
+import { adaptUser, isNotFoundHttpError, type TenantUser, type User } from '@app-builder/models';
 import {
   adaptOrganizationDto,
   adaptUserOrganization,
@@ -7,7 +7,8 @@ import {
   type OrganizationUpdateInput,
   type UserOrganization,
 } from '@app-builder/models/organization';
-import { type Tag } from 'marble-api';
+import { type OrganizationGrantRole } from '@app-builder/schemas/settings';
+import { type Tag, type UserDto } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
@@ -16,6 +17,9 @@ export interface OrganizationRepository {
   importOrganization(body: unknown): Promise<{ org_id: string }>;
   importOrganizationFromFile(file: Blob): Promise<{ org_id: string }>;
   listUsers(args?: { withTfa?: boolean }): Promise<User[]>;
+  listTenantUsersWithoutAccess(): Promise<TenantUser[]>;
+  grantAccess(args: { tenantId: string; userId: string; role: OrganizationGrantRole }): Promise<void>;
+  revokeAccess(args: { tenantId: string; userId: string }): Promise<void>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
   updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<string[]>;
@@ -42,10 +46,27 @@ export function makeGetOrganizationRepository() {
       return marbleCoreApiClient.importOrganizationFromFile({ file });
     },
     listUsers: async (args) => {
-      const { users } = await marbleCoreApiClient.listOrganizationUsers(organizationId, {
+      const { users } = await marbleCoreApiClient.listUsers({
+        organizationId,
         withTfa: args?.withTfa ?? false,
       });
-      return users.map(adaptUser);
+      // Without `tenantAccess`, the endpoint returns plain users
+      return (users as UserDto[]).map(adaptUser);
+    },
+    listTenantUsersWithoutAccess: async () => {
+      const { users } = await marbleCoreApiClient.listUsers({ organizationId, tenantAccess: 'missing' });
+      return users.map((user) => ({
+        userId: user.user_id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      }));
+    },
+    grantAccess: async ({ tenantId, userId, role }) => {
+      await marbleCoreApiClient.replaceOrganizationGrant(tenantId, userId, { role }, { organizationId });
+    },
+    revokeAccess: async ({ tenantId, userId }) => {
+      await marbleCoreApiClient.revokeOrganizationGrant(tenantId, userId, { organizationId });
     },
     listTags: async (args) => {
       const withCaseCount = args?.withCaseCount ?? false;

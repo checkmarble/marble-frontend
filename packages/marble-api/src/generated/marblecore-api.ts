@@ -1881,11 +1881,11 @@ export type CreateUser = {
     last_name: string;
 };
 export type UpdateUser = {
-    email: string;
-    role: string;
+    email?: string;
+    role?: string;
     organization_id?: string;
-    first_name: string;
-    last_name: string;
+    first_name?: string;
+    last_name?: string;
 };
 export type Items2 = {
     organization_id: string;

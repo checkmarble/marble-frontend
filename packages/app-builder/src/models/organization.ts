@@ -3,6 +3,7 @@ import type { OrganizationDto, OrganizationEnvironmentDto, UserOrganizationDto }
 export type ScreeningProvider = 'opensanctions' | 'lexisnexis';
 export interface Organization {
   id: string;
+  tenantId: string;
   name: string;
   defaultScenarioTimezone: string | null;
   sanctionThreshold?: number;
@@ -19,6 +20,7 @@ export interface Organization {
 
 export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
   id: organizationDto.id,
+  tenantId: organizationDto.tenant_id,
   name: organizationDto.name,
   defaultScenarioTimezone: organizationDto.default_scenario_timezone ? organizationDto.default_scenario_timezone : null,
   sanctionLimit: organizationDto.sanctions_limit,

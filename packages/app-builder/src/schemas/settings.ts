@@ -134,20 +134,32 @@ export const createUserPayloadSchema = z.object({
 });
 export type CreateUserPayload = z.infer<typeof createUserPayloadSchema>;
 
-export const deleteUserPayloadSchema = z.object({
-  userId: z.uuid(),
-});
-export type DeleteUserPayload = z.infer<typeof deleteUserPayloadSchema>;
+export const organizationGrantRoleSchema = z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']);
+export type OrganizationGrantRole = z.infer<typeof organizationGrantRoleSchema>;
 
-export const updateUserPayloadSchema = z.object({
+export const grantOrganizationAccessPayloadSchema = z.object({
   userId: z.uuid(),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
-  organizationId: z.uuid(),
+  role: organizationGrantRoleSchema,
 });
-export type UpdateUserPayload = z.infer<typeof updateUserPayloadSchema>;
+export type GrantOrganizationAccessPayload = z.infer<typeof grantOrganizationAccessPayloadSchema>;
+
+export const editOrganizationUserFormSchema = z.object({
+  firstName: z.string().trim().nonempty(),
+  lastName: z.string().trim().nonempty(),
+  role: organizationGrantRoleSchema,
+});
+export type EditOrganizationUserForm = z.infer<typeof editOrganizationUserFormSchema>;
+
+// Only the provided fields are updated.
+export const updateOrganizationUserPayloadSchema = editOrganizationUserFormSchema.partial().extend({
+  userId: z.uuid(),
+});
+export type UpdateOrganizationUserPayload = z.infer<typeof updateOrganizationUserPayloadSchema>;
+
+export const revokeOrganizationAccessPayloadSchema = z.object({
+  userId: z.uuid(),
+});
+export type RevokeOrganizationAccessPayload = z.infer<typeof revokeOrganizationAccessPayloadSchema>;
 
 // ---- Webhooks ----
 
