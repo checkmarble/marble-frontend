@@ -16,13 +16,13 @@ gh pr list --author 'app/dependabot' --state open --limit 100 --json number,titl
 gh pr list --state open --search 'consolidate in:title' --json number,title,headRefName,baseRefName,body
 ```
 
-If a consolidation PR is open, stack on its branch and drop the PRs its body lists as superseded, but keep a new PR that moves one of its packages further (26.6.4 → 26.6.5). Otherwise base on `origin/main`.
+If a consolidation PR is open, stack on its branch and drop the PRs its body lists as superseded, but keep a new PR that moves one of its packages further (26.6.4 → 26.6.5). Otherwise base on `origin/main`. `git fetch origin` before reading any base manifest.
 
 ## 2. List the real changes
 
 One row per package: current version (from the base's manifests; Dependabot's "from" can be stale), target, PRs replaced. Classify by the actual jump: the `patch` group has carried minors (`@radix-ui/react-slot` 1.3.3 → 1.5.0).
 
-Per-workspace PRs (`in /packages/...`) change only `package.json`, so they fail `bun install --frozen-lockfile` whatever they bump. PRs that touch `bun.lock` fail for real reasons: `gh run view <run-id> --log-failed | grep '##\[error\]'`.
+Per-workspace PRs (`in /packages/...`) change only `package.json`, so they fail `bun install --frozen-lockfile` whatever they bump. PRs that touch `bun.lock` fail for real reasons: `gh run view <run-id> --log-failed` (don't grep for `##[error]`: tsc diagnostics are plain log lines).
 
 ## 3. Move families together
 
@@ -53,11 +53,13 @@ Hunt changed defaults type-check can't see, in telemetry and auth above all: Sen
 
 Branch `chore/deps-consolidate-<first>-<last>`. If the checkout is in use or dirty, work inside a worktree from the base (Claude Code: `EnterWorktree`): the repo hooks check the session directory's branch.
 
-Edit manifests and `overrides` to the targets, keeping each range style; don't merge or cherry-pick Dependabot branches. Install once with the cooldown, or carets resolve into it (they did in #2050):
+Edit manifests and `overrides` to the targets, keeping each range style; apply Actions PRs' `uses:` and Docker PRs' `FROM` edits too; don't merge or cherry-pick Dependabot branches. Install once with the cooldown, or carets resolve into it (they did in #2050):
 
 ```bash
 bun install --minimum-release-age=1209600
 ```
+
+A security update skips Dependabot's cooldown: exempt that package (and any family member it needs) with `--minimum-release-age-excludes=<pkg>`.
 
 Confirm each row hit its target. Nested lock entries (`"<parent>/<pkg>": [...]`) hide split versions; compare yours with the base's (`git show <base>:bun.lock`):
 
@@ -67,16 +69,16 @@ grep -oE '"(@tanstack/(router-core|query-core)|@sentry/core|react|react-dom|vite
 
 Add no second version; a family you move ends on one (an exact root `overrides` entry forces it). Expected: `@sentry/core` under `@sentry/bundler-plugins`. Main already splits `router-core` (stale copy used by the devtools) and `query-core` (devtools): fix if you move that family, else report.
 
-Keep code changes to what review and checks require.
+Keep code changes to what review and checks require. Record the base's head commit (`git rev-parse <base>`): a stacked branch needs it after the base merges (step 8).
 
 ## 6. Verify
 
-Run every `run:` step of `.github/workflows/check.yaml` in order, each from its `working-directory` (`bunx biome ci .` for setup-biome), OpenAPI validation and `generate-api` + `git diff --exit-code` included. The Node and Bun smoke runs matter: in #1986 both builds passed while every SSR request returned 500, and production runs on Bun. Note it if local Node differs from `.tool-versions`.
+Run every `run:` step of `.github/workflows/check.yaml` in order, each from its `working-directory` (`bunx biome ci .` for setup-biome), OpenAPI validation and `generate-api` + `git diff --exit-code` included (stage your changes first: CI runs it on a clean tree, so only generator output may show up). The Node and Bun smoke runs matter: in #1986 both builds passed while every SSR request returned 500, and production runs on Bun. Note it if local Node differs from `.tool-versions`.
 
 | When the batch touches | Also run |
 | --- | --- |
 | Router/Start, React, Vite, Bun, Playwright, Testcontainers | `bun run -F tests test:install && bun run -F tests test:run:prod` after the app-builder build (Docker with `marble-infra` image access, free port 3000) |
-| New or replaced dependency | `compliance.yaml`'s `license-report \| license-report-check` in each changed workspace (CI checks only app-builder) |
+| Any dependency change outside app-builder (licenses can change between versions) | `compliance.yaml`'s `license-report \| license-report-check` in each changed workspace (CI checks only app-builder) |
 | Storybook | `bunx storybook dev --ci --smoke-test` in `packages/ui-design-system` |
 | Bun or a Docker base image | `docker build -f Dockerfile .` and `-f Dockerfile.backoffice .` |
 
@@ -86,7 +88,7 @@ If a bump won't work in reasonable effort, revert it and its family, leave its P
 
 ## 7. Open the PR
 
-Open it against the step-1 base, titled `chore(deps): consolidate Dependabot bumps from #<first> to #<last>` (step 1 finds stacked bases by it). A stacked PR names its base PR in the body's first line. Body:
+Commit (`chore(deps): …`) and push the branch, then open the PR against the step-1 base, titled `chore(deps): consolidate Dependabot bumps from #<first> to #<last>` (step 1 finds stacked bases by it). A stacked PR names its base PR in the body's first line. Body:
 
 - `## Summary`: "Replaces #A–#B with one PR" (name any left out, and why); table `Package | From → To | Replaces`; breaking changes with a short diff per fix, one line per change needing none.
 - `## Evidence`: commands and results, before/after for fixes, anything not run.
@@ -101,4 +103,4 @@ Give the PR link, bumps left out, and step 4 risks; list the PRs it replaces and
 gh pr close <n> --comment "Superseded by #<new>, which consolidates the Dependabot bumps from #<first> to #<last>."
 ```
 
-Once a stacked PR's base merges: `git fetch origin && git merge origin/main`, plain `git push`, and `gh pr edit <new> --base main` if GitHub hasn't retargeted it. For a rebased history, hand the user `git rebase --onto origin/main <old-base-branch>` and `git push --force-with-lease` to run.
+Once a stacked PR's base merges: `git fetch origin && git merge origin/main`, plain `git push`, and `gh pr edit <new> --base main` if GitHub hasn't retargeted it. For a rebased history, hand the user `git rebase --onto origin/main <base-commit-recorded-in-step-5>` and `git push --force-with-lease` to run (the base branch may be gone or rewritten by then).

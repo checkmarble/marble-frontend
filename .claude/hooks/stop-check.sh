@@ -23,19 +23,17 @@ if [ "$(printf '%s' "$INPUT" | jq -r '.stop_hook_active // .stopHookActive')" = 
   exit 0
 fi
 
-# Find modified TS/TSX files (staged + unstaged + new untracked)
-MODIFIED=$(git diff --name-only 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
-STAGED=$(git diff --cached --name-only 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
-UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
-ALL_MODIFIED=$(echo -e "${MODIFIED}\n${STAGED}\n${UNTRACKED}" | sort -u | grep -v '^$' || true)
+# Changed files (staged + unstaged + new untracked)
+CHANGED=$({ git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; } 2>/dev/null | sort -u | grep -v '^$' || true)
 
-# Nothing modified, let the agent stop
-if [ -z "$ALL_MODIFIED" ]; then
+# Nothing changed, let the agent stop
+if [ -z "$CHANGED" ]; then
   exit 0
 fi
 
 # Format and apply assist (including named-import sort) so the result matches `biome check`.
-for file in $ALL_MODIFIED; do
+TS_FILES=$(echo "$CHANGED" | grep -E '\.(ts|tsx)$' || true)
+for file in $TS_FILES; do
   if [ -f "$file" ]; then
     "$PROJECT_DIR"/node_modules/.bin/biome check --write --linter-enabled=false "$file" >/dev/null 2>&1 || true
   fi
@@ -49,8 +47,9 @@ if [ -z "$BUN_COMMAND" ]; then
   BUN_COMMAND="${BUN_INSTALL:-$HOME/.bun}/bin/bun"
 fi
 
-# Type-check every changed package that defines a type-check script
-PACKAGES=$(echo "$ALL_MODIFIED" | sed -n 's#^packages/\([^/]*\)/.*#\1#p' | sort -u)
+# Type-check every changed package that defines a type-check script. Any changed file counts
+# (locale JSON, tsconfig.json and package.json changes can break type-check too).
+PACKAGES=$(echo "$CHANGED" | sed -n 's#^packages/\([^/]*\)/.*#\1#p' | sort -u)
 for pkg in $PACKAGES; do
   PKG_DIR="$PROJECT_DIR/packages/$pkg"
   jq -e '.scripts["type-check"]' "$PKG_DIR/package.json" >/dev/null 2>&1 || continue

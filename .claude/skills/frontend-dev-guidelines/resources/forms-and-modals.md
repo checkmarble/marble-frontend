@@ -28,6 +28,7 @@ import { Input } from 'ui-design-system';
         value={field.state.value}
         onChange={(e) => field.handleChange(e.currentTarget.value)}
         onBlur={field.handleBlur}
+        aria-invalid={field.state.meta.errors.length > 0 || undefined}
         borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
       />
       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

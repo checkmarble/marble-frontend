@@ -16,27 +16,25 @@ cd "$PROJECT_DIR"
 MODIFIED=$(git diff --name-only 2>/dev/null || true)
 STAGED=$(git diff --cached --name-only 2>/dev/null || true)
 UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null || true)
-ALL_MODIFIED=$(
-  printf '%s\n%s\n%s\n' "$MODIFIED" "$STAGED" "$UNTRACKED" |
-    grep -E '\.(ts|tsx)$' |
-    sort -u || true
-)
+CHANGED=$(printf '%s\n%s\n%s\n' "$MODIFIED" "$STAGED" "$UNTRACKED" | grep -v '^$' | sort -u || true)
 
-if [ -z "$ALL_MODIFIED" ]; then
+if [ -z "$CHANGED" ]; then
   echo '{}'
   exit 0
 fi
 
+TS_FILES=$(printf '%s\n' "$CHANGED" | grep -E '\.(ts|tsx)$' || true)
 while IFS= read -r file; do
-  if [ -f "$file" ]; then
+  if [ -n "$file" ] && [ -f "$file" ]; then
     "$PROJECT_DIR/node_modules/.bin/biome" format --write "$file" >/dev/null 2>&1 || true
   fi
-done <<<"$ALL_MODIFIED"
+done <<<"$TS_FILES"
 
 ERRORS=""
 
-# Type-check every changed package that defines a type-check script
-PACKAGES=$(printf '%s\n' "$ALL_MODIFIED" | sed -n 's#^packages/\([^/]*\)/.*#\1#p' | sort -u)
+# Type-check every changed package that defines a type-check script. Any changed file counts
+# (locale JSON, tsconfig.json and package.json changes can break type-check too).
+PACKAGES=$(printf '%s\n' "$CHANGED" | sed -n 's#^packages/\([^/]*\)/.*#\1#p' | sort -u)
 for pkg in $PACKAGES; do
   PKG_DIR="$PROJECT_DIR/packages/$pkg"
   jq -e '.scripts["type-check"]' "$PKG_DIR/package.json" >/dev/null 2>&1 || continue
