@@ -57,3 +57,6 @@ ui-debug.log
 .claude/hooks/node_modules/
 .claude/hooks/state/
 CONTEXT.md
+
+# Notes left by the former /dev-docs workflow
+/dev/active/*

@@ -41,7 +41,7 @@ await mutation.mutateAsync(value)
   .catch(() => toast.error(t('common:errors.unknown')));
 ```
 
-- Expected failures are **returned** (`{ error: '<code>' }`), not thrown. `res` is `undefined` after a server-side redirect ([data-fetching.md](data-fetching.md)).
+- Expected failures are **returned** (`{ error: '<code>' }`), not thrown. `res` is `undefined` after any server-side redirect: the success redirect, but also `authMiddleware`'s sign-in redirect when the session expired ([data-fetching.md](data-fetching.md)). Keep the code after it redirect-safe (no navigation); a mutation that doesn't redirect on success returns an explicit value to check.
 - Exception: data-model table mutations throw `getTableMutationError(error, t)`. The hook's `onError` checks `isTableMutationError` and toasts `formatTableMutationError(error)`. See `editSemanticTableFn` (`server-fns/data.ts`) and `queries/data/edit-semantic-table.ts`.
 - Toast before a server redirect: `await setToast({ type: 'error', message: t(…) })` (`@app-builder/services/toast.server`), then `throw redirect(…)`. Server-only: call it in a `createServerFn` handler (a loader's included), a function middleware or `*.server.ts`, never in the isomorphic `loader:` itself. In a loader, also set `preload: false` on the route, or a link hover stores the toast early ([data-fetching.md](data-fetching.md)). `messageKey` is `@deprecated`; pass a translated `message`.
 
