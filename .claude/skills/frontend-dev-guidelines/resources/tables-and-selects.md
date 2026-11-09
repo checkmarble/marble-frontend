@@ -1,197 +1,48 @@
 # Tables & Selects
 
-Virtual tables with TanStack Table and MenuCommand dropdowns.
+Tables use TanStack Table **v9** through `ui-design-system`; selects use `SelectV2` or `MenuCommand`.
 
----
+## Tables
 
-## Virtual Tables
+### Which hook
 
-Tables use TanStack React Table with virtual scrolling via `useVirtualTable` from ui-design-system.
+- `useTable` from `ui-design-system` by default. TanStack's own `useTable` (no `rowLink`, no DS defaults, `features: marbleTableFeatures` by hand) is only for custom-markup grids (`as useTanStackTable` in `components/DataModelExplorer/DataTableRender.tsx`).
+- `useVirtualTable` for long client-side lists: adds row virtualization, `isEmpty` and `scrollToTop`, and needs a bounded container (`max-h-*` on `Table.Container`).
+- Both return `{ table, rows, getBodyProps, getContainerProps }`. `<Table.Default {...result} />` renders the standard markup in a `max-h-96` container; otherwise compose `Table.Container` / `Header` / `Body` / `Row` as in `routes/_app/_builder/detection/lists/index.tsx`.
+- Simple settings lists: pass the `useTable` result as `table` to `SettingCard` (`components/Settings/settingCard.tsx`), as in `components/Settings/Inboxes/InboxMembers.tsx`.
 
-### Canonical Example
+### v9 API (not v8)
 
-Reference: `routes/_app/_builder/detection/lists.tsx`
+- Helpers and types take the features first: `createColumnHelper<MarbleTableFeatures, TData>()`, `ColumnDef<MarbleTableFeatures, TData>`, `Row<MarbleTableFeatures, TData>`.
+- No `getCoreRowModel()` / `getSortedRowModel()` options: the core row model is built in, and the sorted and filtered row models come from `marbleTableFeatures`.
+- The column sort option is `sortFn`, not `sortingFn`.
 
-```typescript
-import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
-import { Table, useVirtualTable } from 'ui-design-system';
-import { Link } from '@tanstack/react-router';
+### Sorting & filtering
 
-const columnHelper = createColumnHelper<CustomList>();
+The DS hooks default to `manualSorting: true` and `manualFiltering: true`: without a mode, a header click flips the arrow but rows keep server order. Pick one:
 
-export function ListsTable({ customLists }: { customLists: CustomList[] }) {
-  const { t } = useTranslation(['lists']);
+- **Client sort**: `manualSorting: false`.
+- **Server sort**: controlled `state.sorting` + `onSortingChange` + `enableSortingRemoval: false` (`components/Cases/Inbox/CasesList.tsx`).
+- **No sort**: `enableSorting: false`.
+- **Client search**: `manualFiltering: false` + `table.setGlobalFilter(value)`.
 
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor('name', {
-        id: 'name',
-        header: t('lists:name'),
-        size: 200,
-        sortingFn: 'text',
-        enableSorting: true,
-      }),
-      columnHelper.accessor('description', {
-        id: 'description',
-        header: t('lists:description'),
-        size: 500,
-      }),
-    ],
-    [t],
-  );
+### Resizing, row links, selection
 
-  const { table, isEmpty, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: customLists,
-    columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    rowLink: ({ id }) => (
-      <Link to={getRoute('/detection/lists/:listId', { listId: id })} />
-    ),
-  });
+- Resizing is on by default: pass `columnResizeMode: 'onChange'` so widths follow the drag; disable with `enableColumnResizing: false`.
+- `rowLink` returns a bare `<Link to=... params=... />`. `Table.Row` forwards any click in the row to that link, so cells with buttons, checkboxes or menus wrap them in `onClick={(e) => e.stopPropagation()}`.
+- Selectable rows: `useTanstackTableListSelection(data, getRowId)` (`hooks/useTanstackTableListSelection.ts`) in the page; in the table, spread its `tableProps` into `useTable`, pass `state: { rowSelection: selectionProps.rowSelection }` + `enableRowSelection`, and prepend `...getTableSelectColumn(columnHelper, selectable)` (`utils/table-selection.tsx`, already stops the click reaching the row link): `detection/decisions/index.tsx` → the `useTable` call in `components/Decisions/DecisionsList.tsx` (ignore that file's dead `useSelectedDecisionIds`).
 
-  if (isEmpty) {
-    return <EmptyState />;
-  }
+## Selects & Menus
 
-  return (
-    <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
-      <Table.Header headerGroups={table.getHeaderGroups()} />
-      <Table.Body {...getBodyProps()}>
-        {rows.map((row) => (
-          <Table.Row key={row.id} row={row} />
-        ))}
-      </Table.Body>
-    </Table.Container>
-  );
-}
-```
+- **Static option list** (single or `multiple`): `SelectV2` from `ui-design-system` (controlled `value` / `onChange`, `options: { label, value }[]`, `placeholder`). Only the `Select` namespace in the same file is `@deprecated`.
+- **Search, groups, submenus, custom rows, action menus**: compose `MenuCommand`. Composition: JSDoc on `Menu` in `packages/ui-design-system/src/MenuCommand/MenuCommand.tsx`; searchable select: `components/Settings/FormSelectTimezone.tsx`.
+- **List inside an existing popover/panel**: `MenuCommand.Inline` instead of `Menu` + `Content`. It never closes the host and does no filtering (the caller filters): `components/Decisions/Filters/FilterDetail/ScenarioFilter.tsx`.
 
-### Key API
+### MenuCommand gotchas
 
-- `useVirtualTable(options)` returns `{ table, isEmpty, getBodyProps, rows, getContainerProps }`
-- `rowLink` makes entire rows clickable (optional)
-- Virtual scrolling handles 2500+ rows efficiently
-- `columnResizeMode: 'onChange'` enables drag-to-resize columns
-- `getSortedRowModel()` enables column header sorting
-
-### Table Components
-
-```typescript
-<Table.Container {...getContainerProps()}>     // Scrollable container
-  <Table.Header headerGroups={...} />          // Column headers with sort controls
-  <Table.Body {...getBodyProps()}>             // Virtual body with padding
-    <Table.Row key={row.id} row={row} />       // Individual row (handles rowLink)
-  </Table.Body>
-</Table.Container>
-```
-
----
-
-## MenuCommand (Dropdowns & Selects)
-
-`MenuCommand` replaces the deprecated `Select` and `SelectWithCombobox`. It supports dropdowns, searchable selects, nested menus, and groups.
-
-### Simple Select
-
-```typescript
-import { MenuCommand } from 'ui-design-system';
-import { useState } from 'react';
-
-export function StatusSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
-      <MenuCommand.Trigger>
-        <MenuCommand.SelectButton>
-          {value || 'Select status'}
-        </MenuCommand.SelectButton>
-      </MenuCommand.Trigger>
-      <MenuCommand.Content sameWidth>
-        <MenuCommand.List>
-          {statuses.map((status) => (
-            <MenuCommand.Item
-              key={status.id}
-              value={status.id}
-              onSelect={(selectedId) => {
-                onChange(selectedId);
-                setOpen(false);
-              }}
-            >
-              {status.label}
-              {value === status.id && <Icon icon="tick" className="size-6" />}
-            </MenuCommand.Item>
-          ))}
-        </MenuCommand.List>
-      </MenuCommand.Content>
-    </MenuCommand.Menu>
-  );
-}
-```
-
-### Searchable Select (Combobox)
-
-```typescript
-import { MenuCommand } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-export function UserSelect({ users, selectedUserId, onSelect }: UserSelectProps) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
-      <MenuCommand.Trigger>
-        <MenuCommand.SelectButton>
-          Select assignee
-        </MenuCommand.SelectButton>
-      </MenuCommand.Trigger>
-      <MenuCommand.Content sameWidth className="mt-sm">
-        <MenuCommand.Combobox placeholder="Search..." />
-        <MenuCommand.List>
-          {users.map(({ userId, firstName, lastName }) => (
-            <MenuCommand.Item
-              key={userId}
-              value={userId}
-              onSelect={() => {
-                onSelect(userId);
-                setOpen(false);
-              }}
-            >
-              <span className="inline-flex w-full justify-between">
-                <span>{`${firstName} ${lastName}`}</span>
-                {userId === selectedUserId && (
-                  <Icon icon="tick" className="text-purple-primary size-6" />
-                )}
-              </span>
-            </MenuCommand.Item>
-          ))}
-        </MenuCommand.List>
-      </MenuCommand.Content>
-    </MenuCommand.Menu>
-  );
-}
-```
-
-### MenuCommand Components
-
-| Component | Purpose |
-|-----------|---------|
-| `MenuCommand.Menu` | Root - manages open/close state. Props: `open`, `onOpenChange`, `hover`, `persistOnSelect` |
-| `MenuCommand.Trigger` | Wraps the trigger element |
-| `MenuCommand.SelectButton` | Pre-styled button for select-style triggers |
-| `MenuCommand.Content` | Dropdown container. Props: `sameWidth`, `align`, `side`, `sideOffset` |
-| `MenuCommand.Combobox` | Search input (adds filtering). Props: `placeholder`, `onValueChange` |
-| `MenuCommand.List` | Scrollable list container |
-| `MenuCommand.Item` | Menu item. Props: `value`, `onSelect`, `disabled` |
-| `MenuCommand.SubMenu` | Nested submenu |
-| `MenuCommand.Separator` | Visual divider |
-| `MenuCommand.Group` | Groups items with optional heading |
-
----
-
-## Deprecated - Do NOT Use
-
-- `Select` from ui-design-system - use `MenuCommand` instead
-- `SelectWithCombobox` from ui-design-system - use `MenuCommand` with `Combobox` instead
+- **Closing**: selecting an item calls your `onOpenChange(false)`, so only a controlled menu (`open` + an `onOpenChange` that updates it) closes; an uncontrolled `Menu`, even with `onOpenChange`, stays open. Don't also call `setOpen(false)` in `onSelect`. `persistOnSelect` keeps it open (multi-select) and is inherited by `SubMenu`.
+- **Read once**: `persistOnSelect` and the `onOpenChange` used on select are captured at mount. Keep them static (pass `setOpen`, or a closure over setters only), or remount the `Menu` with a `key` when they change.
+- **Filtering**: cmdk matches the Item `value` (plus `keywords`), else the rendered text. Set a unique `value` (`${label} ${id}`) when the row renders more or less than what should be searchable, and read the selection from the closure, not from `onSelect`'s argument.
+- **Caller-side search**: `Combobox onValueChange` → `useDeferredValue` → `matchSorter` (`@app-builder/utils/search`) → `<Highlight text query />` (`@app-builder/components/Highlight`). With cmdk filtering still on, a row shows only if both match: point the matchSorter keys and the Item `value` at the label the user sees. Virtualized lists need `shouldFilter={false}` on `Content`: cmdk only sees mounted rows.
+- **Trigger** child must accept `ref` and spread `...props` onto its DOM element (Radix `asChild`): a DS `Button` for action menus, `MenuCommand.SelectButton` for selects (`size`, `readOnly`, `noArrow`; its `hasError` prop is ignored, so show an error with `className="border-red-primary"`).
+- **Less obvious parts**: `Empty`, `SubMenu` (requires `trigger`, opens on hover by default), `HeadlessItem` (unstyled), `Content` props `sameWidth` / `size="small"` / `shouldFilter`, and `MenuCommand.State.useSharp().value.search` to read the search from deep children (`components/AstBuilder/edition/OperandMenu/index.tsx`).

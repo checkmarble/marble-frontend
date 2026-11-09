@@ -6,18 +6,18 @@ paths:
 
 # Deprecations
 
-The `@deprecated` tag is the source of truth, and it names its own replacement — read the
+The `@deprecated` tag is the source of truth and usually names its replacement — read the
 tag and follow it. Migrate to the replacement's own API rather than forcing the old
 markup or props onto it.
 
-A `V2` suffix carries no information about which export is current. Both directions exist
-in this codebase right now:
+A `V2` suffix says nothing on its own: `CaseStatusBadgeV2` replaces the `@deprecated`
+`CaseStatusBadge`, while `Tooltip`/`TooltipV2` are both live with no tag, and `ScrollArea`
+has no tag but no consumers outside its spec/stories (use `ScrollAreaV2`). Check the tag
+and current usage before picking.
 
-- `Collapsible` (`ui-design-system`) is current; the `CollapsibleV2` it replaced is gone
-- `CalloutV2` (`app-builder/components/Callout.tsx`) is current; plain `Callout` is the older one
+Defaults for new code:
 
-Conventions the code does not encode, so they live only here:
-
-- Reach for `CalloutV2` for new callout and banner components
-- Reach for `MenuCommand` for new dropdowns — `Select` from `ui-design-system` is
-  deprecated in favour of it
+- Value pickers: `SelectV2` (built on `MenuCommand`). Action menus and custom dropdowns:
+  `MenuCommand`. `Select` from `ui-design-system` is `@deprecated`
+- Callouts and banners: `Callout` (`@app-builder/components/Callout`) with
+  `color`/`variant`/`icon`; `CalloutV2` only for the neutral purple tip aside
