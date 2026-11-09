@@ -20,6 +20,7 @@ export interface OrganizationRepository {
   listTenantUsersWithoutAccess(): Promise<TenantUser[]>;
   grantAccess(args: { tenantId: string; userId: string; role: OrganizationGrantRole }): Promise<void>;
   revokeAccess(args: { tenantId: string; userId: string }): Promise<void>;
+  updateUserName(args: { userId: string; firstName?: string; lastName?: string }): Promise<void>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
   updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<string[]>;
@@ -67,6 +68,9 @@ export function makeGetOrganizationRepository() {
     },
     revokeAccess: async ({ tenantId, userId }) => {
       await marbleCoreApiClient.revokeOrganizationGrant(tenantId, userId, { organizationId });
+    },
+    updateUserName: async ({ userId, firstName, lastName }) => {
+      await marbleCoreApiClient.updateUser(userId, { first_name: firstName, last_name: lastName });
     },
     listTags: async (args) => {
       const withCaseCount = args?.withCaseCount ?? false;

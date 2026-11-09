@@ -15,7 +15,7 @@ export const useUpdateOrganizationUserMutation = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateOrganizationUserPayload) => updateOrganizationUser({ data: payload }),
-    // Covers the users' TFA status
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['organization', 'users'] }),
+    // Covers the users' TFA status. Also on error: the name may be saved when the role update fails.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['organization', 'users'] }),
   });
 };

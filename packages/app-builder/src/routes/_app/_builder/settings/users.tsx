@@ -26,7 +26,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Tag, useTable } from 'ui-design-system';
+import { Button, Tag, useTable } from 'ui-design-system';
 
 const usersLoader = createServerFn()
   .middleware([authMiddleware])
@@ -212,7 +212,7 @@ function TenantUsersWithoutAccess({
   userRoles: readonly [string, ...string[]];
   access: FeatureAccessLevelDto;
 }) {
-  const { t } = useTranslation(['settings']);
+  const { t } = useTranslation(['settings', 'common']);
   const usersQuery = useTenantUsersWithoutAccessQuery();
 
   const columns = useMemo(
@@ -243,6 +243,21 @@ function TenantUsersWithoutAccess({
     columnResizeMode: 'onChange',
     enableSorting: false,
   });
+
+  if (usersQuery.isError && !usersQuery.data) {
+    return (
+      <SettingCard title={t('settings:users.tenant_users_without_access')}>
+        <div className="flex flex-col items-start gap-sm">
+          <p role="alert" className="text-s text-grey-secondary">
+            {t('common:generic_fetch_data_error')}
+          </p>
+          <Button type="button" variant="secondary" onClick={() => void usersQuery.refetch()}>
+            {t('common:retry')}
+          </Button>
+        </div>
+      </SettingCard>
+    );
+  }
 
   // Most tenants hold a single organization: only show the section when there is someone to add.
   if (!usersQuery.data || usersQuery.data.length === 0) return null;
