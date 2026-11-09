@@ -2,6 +2,8 @@
 
 | Canonical role | Linear label | Meaning |
 | --- | --- | --- |
+| bug | bug | Something is broken (category) |
+| enhancement | enhancement | New feature or improvement (category) |
 | needs-triage | needs-triage | Needs maintainer evaluation |
 | needs-info | needs-info | Waiting for more information |
 | ready-for-agent | ready-for-agent | Fully specified for agent implementation |
