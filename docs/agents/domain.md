@@ -1,7 +1,9 @@
 # Domain docs
 
+Read by the `mattpocock-skills@claude-plugins-official` plugin skills (when installed) through the "Domain docs" pointer in CLAUDE.md; `domain-modeling` creates and updates the glossary and ADRs.
+
 Use a single-context layout shared across packages:
-root `GLOSSARY.md` and `docs/adr/`.
+root `GLOSSARY.md` and `docs/adr/` (neither is created yet).
 
 ## Before domain exploration
 
