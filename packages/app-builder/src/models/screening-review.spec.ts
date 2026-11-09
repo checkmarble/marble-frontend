@@ -273,6 +273,19 @@ describe('screening review stream', () => {
         reviewItem(trigger, { name: ['Amira Nasser'] }, { name: ['Amira Nasser'], weakAlias: ['Amira Nasser'] }),
       )[0];
       expect(mainName?.viaAlias).toBeUndefined();
+      // The main name wins the tie even when it pairs with a later customer value.
+      const laterMainName = compareScreeningReviewFields(
+        reviewItem(trigger, { name: ['A. Nasser', 'Amira Nasser'] }, { name: ['Amira Nasser'], alias: ['A. Nasser'] }),
+      )[0];
+      expect(laterMainName).toMatchObject({ state: 'same', customerValues: ['Amira Nasser', 'A. Nasser'] });
+      expect(laterMainName?.viaAlias).toBeUndefined();
+    });
+
+    it('keeps a repeated name component when building the name from first and last names', () => {
+      const row = compareScreeningReviewFields(
+        reviewItem(trigger, { firstName: ['Ali'], lastName: ['Ali'] }, { name: ['Ali Ali'] }),
+      )[0];
+      expect(row).toMatchObject({ field: 'name', state: 'same', customerValues: ['Ali Ali'] });
     });
 
     it('compares the mapped fields in table order, and hides fields empty on both sides', () => {
@@ -352,6 +365,18 @@ describe('screening review stream', () => {
         },
         state: 'different',
         signal: undefined,
+      },
+      // An explanation without a score falls back to the feature.
+      {
+        field: 'name',
+        customer: ['Mohamed Aly'],
+        list: ['Muhammad Ali'],
+        signals: {
+          features: { person_name_phonetic_match: 1 },
+          explanations: { person_name_phonetic_match: { detail: 'phonetic match' } },
+        },
+        state: 'close',
+        signal: 'person_name_phonetic_match',
       },
       // Date of birth penalties.
       {

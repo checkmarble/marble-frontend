@@ -371,7 +371,8 @@ function comparedRows(item: ScreeningReviewItem, mappedProperties: readonly stri
 function customerNames(properties: Record<string, string[]>) {
   const names = propertyValues(properties, ['name']);
   if (names.length) return names;
-  const fullName = propertyValues(properties, ['firstName', 'lastName']).join(' ');
+  // Each component is deduplicated on its own, so `Ali Ali` keeps both parts.
+  const fullName = ['firstName', 'lastName'].flatMap((property) => propertyValues(properties, [property])).join(' ');
   return fullName ? [fullName] : [];
 }
 
@@ -385,12 +386,19 @@ function compareRow(item: ScreeningReviewItem, row: ComparedRow): ScreeningRevie
   const aliases = row.kind === 'name' ? propertyValues(listProperties, NAME_ALIAS_PROPERTIES) : [];
   if (!customerValues.length && !listRecordValues.length && !aliases.length) return undefined;
 
-  // The best pair decides. Main names come before aliases, so they win ties.
+  // The best pair decides. On a tie, a main name beats an alias, whichever customer value it pairs with.
   let best: { state: Exclude<ScreeningReviewFieldState, 'missing'>; customer: string; listRecord: string } | undefined;
   for (const customer of customerValues) {
     for (const listRecord of [...listRecordValues, ...aliases]) {
       const state = compareValues(row.kind, customer, listRecord);
-      if (state && (!best || STATE_RANK[state] > STATE_RANK[best.state])) best = { state, customer, listRecord };
+      if (!state) continue;
+      const beatsBest =
+        !best ||
+        STATE_RANK[state] > STATE_RANK[best.state] ||
+        (STATE_RANK[state] === STATE_RANK[best.state] &&
+          listRecordValues.includes(listRecord) &&
+          !listRecordValues.includes(best.listRecord));
+      if (beatsBest) best = { state, customer, listRecord };
     }
   }
   const viaAlias = best && !listRecordValues.includes(best.listRecord) ? best.listRecord : undefined;
@@ -482,8 +490,8 @@ function motivaRules(row: ScreeningReviewFieldComparison, singleIdentifier: bool
 }
 
 function motivaFired({ features, explanations }: ScreeningReviewSignals, signal: string) {
-  const explanation = explanations?.[signal];
-  const value = explanation ? (explanation.score ?? 0) : (features?.[signal] ?? 0);
+  // An explanation's score wins, a zero included; one without a score falls back to the feature.
+  const value = explanations?.[signal]?.score ?? features?.[signal] ?? 0;
   return value > 0;
 }
 
