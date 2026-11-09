@@ -23,7 +23,7 @@ import { useRiskLevelLatestQuery } from '@app-builder/queries/scoring/get-risk-l
 import { useGetScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, Tag, type TagProps, Typo } from 'ui-design-system';
 
@@ -220,12 +220,13 @@ function FieldLabel({ field }: { field: string }) {
 
 function FieldValues({ field, values }: { field: string; values: string[] }) {
   const PropertyValue = usePropertyValue();
+  const [expanded, setExpanded] = useState(false);
   if (!values.length) return <span className="text-grey-secondary">—</span>;
   if (field === 'birthDate') return <BirthdDateAverage values={values} />;
-  const rest = values.length - MAX_VALUES;
+  const rest = expanded ? 0 : values.length - MAX_VALUES;
   return (
     <span className="flex flex-wrap items-center gap-x-sm gap-y-xs">
-      {values.slice(0, MAX_VALUES).map((value, index) => (
+      {(expanded ? values : values.slice(0, MAX_VALUES)).map((value, index) => (
         <span key={value} className="inline-flex items-center gap-sm">
           {index > 0 ? <span aria-hidden="true">·</span> : null}
           <bdi>
@@ -233,7 +234,15 @@ function FieldValues({ field, values }: { field: string; values: string[] }) {
           </bdi>
         </span>
       ))}
-      {rest > 0 ? <span className="text-grey-secondary">+{rest}</span> : null}
+      {rest > 0 ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="text-grey-secondary underline-offset-2 hover:underline"
+        >
+          +{rest}
+        </button>
+      ) : null}
     </span>
   );
 }
