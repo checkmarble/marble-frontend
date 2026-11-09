@@ -48,7 +48,7 @@ Project > User          (project deny overrides user allow)
 Local > Project > User  (local overrides everything)
 ```
 
-When multiple agents/skills share the same name, project wins over user.
+When agents share a name, project wins over user. Skills go the other way: a personal skill (`~/.claude/skills/<name>`) shadows a project skill with the same name, so don't reuse project skill names in your personal skills.
 
 ### What goes where?
 
@@ -94,7 +94,7 @@ You can also request a skill explicitly. Manual workflow skills may appear as sl
 
 ## Commands — Manual Workflows
 
-Triggered by typing `/command-name`. For repeatable workflows you want to control. Also a skill now.
+Triggered by typing `/command-name`. For new manual workflows, prefer a skill with `disable-model-invocation: true`: it is also invoked as `/name`, and Codex and Cursor discover it too.
 
 ```yaml
 # .claude/commands/review.md
@@ -185,7 +185,7 @@ Shell scripts that run on lifecycle events. Cannot be bypassed by Claude.
 ```json
 {
   "PreToolUse": [{
-    "matcher": "Edit|Write|MultiEdit",
+    "matcher": "Edit|Write",
     "hooks": [{
       "type": "command",
       "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-main-edits.sh"
@@ -245,7 +245,7 @@ Should Claude know this SOMETIMES (based on context)?
   → Skill
 
 Do I want to trigger this MANUALLY?
-  → Command (/name)
+  → Skill with disable-model-invocation: true (/name)
 
 Does this need ISOLATED context or restricted tools?
   → Agent
@@ -260,11 +260,11 @@ Must this happen AUTOMATICALLY every time?
 
 Cursor loads the root `CLAUDE.md` and discovers project skills and agents under `.claude/`.
 
-Codex reads the same project memory through the `AGENTS.md` symlink and discovers skills through `.agents/skills` (a symlink to `.claude/skills`). Codex does not load Claude subagent files, slash-command wrappers, or glob-scoped rules.
+Codex reads the same project memory through the `AGENTS.md` symlink and discovers skills through `.agents/skills` (a symlink to `.claude/skills`). Codex does not load Claude subagent files or glob-scoped rules.
 
 File-specific conventions remain canonical in `.claude/rules/`. Thin `.cursor/rules/*.mdc` wrappers provide Cursor's `globs` metadata and reference those files instead of copying their bodies.
 
-Shared manual workflows live in `.claude/skills/`. Claude command files are thin compatibility wrappers around those skills.
+Shared manual workflows live in `.claude/skills/` with `disable-model-invocation: true`. Don't wrap one in a `.claude/commands/` file of the same name: Claude then lists the command instead of the skill, and the model can start a workflow that was meant to be manual.
 
 Hooks share the scripts in `.claude/hooks/` where the contract matches. Registration is platform-specific:
 
@@ -287,7 +287,6 @@ Project Codex hooks are skipped until the project is trusted and the hooks are r
   rules/                  # Path-scoped conventions
   agents/                 # Sub-agents (isolated workers)
   skills/                 # Shared on-demand knowledge and workflows
-  commands/               # Claude slash-command compatibility wrappers
 
 .cursor/
   rules/                  # Cursor activation wrappers for Claude rules

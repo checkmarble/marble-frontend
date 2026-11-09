@@ -57,5 +57,3 @@ ui-debug.log
 .claude/hooks/node_modules/
 .claude/hooks/state/
 CONTEXT.md
-
-/dev/active/*

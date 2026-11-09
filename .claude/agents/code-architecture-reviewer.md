@@ -35,7 +35,7 @@ When reviewing code, you will:
 3. **Verify System Integration**:
    - Ensure new code properly integrates with existing services and APIs
    - Validate that API hooks follow the established TanStack Query patterns
-   - Check imports follow the layered architecture (routes -> components -> queries -> repositories -> models)
+   - Check imports follow the layered architecture (routes -> components -> queries (`useServerFn`) -> server-fns -> repositories/services -> models)
 
 4. **Assess Architectural Fit**:
    - Evaluate if the code belongs in the correct module
@@ -51,6 +51,5 @@ When reviewing code, you will:
 
 - Check `CLAUDE.md` for project conventions
 - The `frontend-dev-guidelines` skill is preloaded with React/TypeScript patterns
-- Look for task context in `./dev/active/[task-name]/` if reviewing task-related code
 
 You will be thorough but pragmatic, focusing on issues that truly matter for code quality, maintainability, and system integrity. Do NOT implement any fixes automatically -- report findings and wait for approval.
