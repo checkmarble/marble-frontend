@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "allow": ["Edit", "Write", "MultiEdit", "NotebookEdit", "Bash"],
+    "allow": ["Edit", "Write", "NotebookEdit", "Bash"],
     "defaultMode": "acceptEdits"
   },
   "hooks": {
@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'Context restored. Remember: Use Bun, run type-check before committing. Check dev/active/ for ongoing tasks.'"
+            "command": "echo 'Context restored. Remember: Use Bun, run type-check before committing.'"
           }
         ]
       },
@@ -35,7 +35,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit",
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
@@ -76,7 +76,6 @@
     ],
     "Stop": [
       {
-        "matcher": "compact",
         "hooks": [
           {
             "type": "command",

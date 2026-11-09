@@ -35,25 +35,19 @@ done <<<"$ALL_MODIFIED"
 
 ERRORS=""
 
-if printf '%s\n' "$ALL_MODIFIED" | grep -q '^packages/app-builder/'; then
-  APP_RESULT=$(cd "$PROJECT_DIR/packages/app-builder" && bun run type-check 2>&1) || {
-    APP_ERRORS=$(printf '%s\n' "$APP_RESULT" | awk 'NR <= 50')
+# Type-check every changed package that defines a type-check script
+PACKAGES=$(printf '%s\n' "$ALL_MODIFIED" | sed -n 's#^packages/\([^/]*\)/.*#\1#p' | sort -u)
+for pkg in $PACKAGES; do
+  PKG_DIR="$PROJECT_DIR/packages/$pkg"
+  jq -e '.scripts["type-check"]' "$PKG_DIR/package.json" >/dev/null 2>&1 || continue
+  RESULT=$(cd "$PKG_DIR" && bun run type-check 2>&1) || {
+    PKG_ERRORS=$(printf '%s\n' "$RESULT" | awk 'NR <= 50')
     ERRORS="${ERRORS}
 
-app-builder type-check errors:
-${APP_ERRORS}"
+${pkg} type-check errors:
+${PKG_ERRORS}"
   }
-fi
-
-if printf '%s\n' "$ALL_MODIFIED" | grep -q '^packages/ui-design-system/'; then
-  UI_RESULT=$(cd "$PROJECT_DIR/packages/ui-design-system" && bun run type-check 2>&1) || {
-    UI_ERRORS=$(printf '%s\n' "$UI_RESULT" | awk 'NR <= 50')
-    ERRORS="${ERRORS}
-
-ui-design-system type-check errors:
-${UI_ERRORS}"
-  }
-fi
+done
 
 if [ -n "$ERRORS" ]; then
   jq -n \
