@@ -1,12 +1,14 @@
 import { Page } from '@app-builder/components';
 import { SettingCard } from '@app-builder/components/Settings/settingCard';
 import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
-import { DeleteUser } from '@app-builder/components/Settings/Users/DeleteUser';
-import { UpdateUser } from '@app-builder/components/Settings/Users/UpdateUser';
+import { EditOrganizationUser } from '@app-builder/components/Settings/Users/EditOrganizationUser';
+import { GrantAccess } from '@app-builder/components/Settings/Users/GrantAccess';
+import { RevokeAccess } from '@app-builder/components/Settings/Users/RevokeAccess';
 import { Spinner } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { type User } from '@app-builder/models';
+import { type TenantUser, type User } from '@app-builder/models';
 import { tKeyForUserRole } from '@app-builder/models/user';
+import { useTenantUsersWithoutAccessQuery } from '@app-builder/queries/settings/users/get-tenant-users-without-access';
 import { useOrganizationUsersTfaQuery } from '@app-builder/queries/settings/users/get-users-tfa';
 import {
   getUserRoles,
@@ -19,6 +21,7 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -141,16 +144,20 @@ function Users() {
               id: 'actions',
               size: 50,
               cell: ({ cell }) => {
+                const orgUser = cell.row.original;
+                // Admins cannot change or revoke their own access
+                if (orgUser.userId === user.actorIdentity.userId) return null;
+
                 return (
                   <div className="flex gap-sm">
                     {isEditUserAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
-                        <UpdateUser user={cell.row.original} userRoles={userRoles} access={entitlements.userRoles} />
+                        <EditOrganizationUser user={orgUser} userRoles={userRoles} access={entitlements.userRoles} />
                       </div>
                     ) : null}
                     {isDeleteUserAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
-                        <DeleteUser userId={cell.row.original.userId} currentUserId={user.actorIdentity.userId} />
+                        <RevokeAccess userId={orgUser.userId} />
                       </div>
                     ) : null}
                   </div>
@@ -190,8 +197,57 @@ function Users() {
           ) : null
         }
       />
+      {isEditUserAvailable ? <TenantUsersWithoutAccess userRoles={userRoles} access={entitlements.userRoles} /> : null}
     </Page.Content>
   );
+}
+
+const tenantUserColumnHelper = createColumnHelper<MarbleTableFeatures, TenantUser>();
+
+// Users of the organization's tenant who have no access to this organization yet.
+function TenantUsersWithoutAccess({
+  userRoles,
+  access,
+}: {
+  userRoles: readonly [string, ...string[]];
+  access: FeatureAccessLevelDto;
+}) {
+  const { t } = useTranslation(['settings']);
+  const usersQuery = useTenantUsersWithoutAccessQuery();
+
+  const columns = useMemo(
+    () => [
+      tenantUserColumnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
+        id: 'name',
+        header: t('settings:users.name'),
+        size: 150,
+      }),
+      tenantUserColumnHelper.accessor((row) => row.email, {
+        id: 'email',
+        header: t('settings:users.email'),
+        size: 200,
+        cell: ({ getValue }) => <div className="overflow-hidden text-ellipsis">{getValue()}</div>,
+      }),
+      tenantUserColumnHelper.display({
+        id: 'actions',
+        size: 120,
+        cell: ({ cell }) => <GrantAccess userId={cell.row.original.userId} userRoles={userRoles} access={access} />,
+      }),
+    ],
+    [t, userRoles, access],
+  );
+
+  const table = useTable({
+    data: usersQuery.data ?? [],
+    columns,
+    columnResizeMode: 'onChange',
+    enableSorting: false,
+  });
+
+  // Most tenants hold a single organization: only show the section when there is someone to add.
+  if (!usersQuery.data || usersQuery.data.length === 0) return null;
+
+  return <SettingCard title={t('settings:users.tenant_users_without_access')} table={table} />;
 }
 
 const tKeyForInboxUserRole = (role: string) => {

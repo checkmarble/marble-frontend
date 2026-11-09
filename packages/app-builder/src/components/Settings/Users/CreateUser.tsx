@@ -83,7 +83,7 @@ function CreateUserContent({
           .mutateAsync(value)
           .then((res) => {
             if (res && 'error' in res) {
-              toast.error(t('common:errors.list.duplicate_email'));
+              toast.error(t('settings:users.new_user.duplicate_email'));
               return;
             }
             onSuccess();

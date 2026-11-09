@@ -1163,11 +1163,7 @@ components:
           type: string
     UpdateUser:
       type: object
-      required:
-        - email
-        - role
-        - first_name
-        - last_name
+      description: Partial update, only the provided fields are changed.
       properties:
         email:
           type: string

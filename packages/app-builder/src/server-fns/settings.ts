@@ -1,6 +1,7 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import {
   isAdmin,
+  isForbiddenHttpError,
   isHttpError,
   isMarbleError,
   isNotFoundHttpError,
@@ -22,19 +23,20 @@ import {
   deleteInboxPayloadSchema,
   deleteInboxUserPayloadSchema,
   deleteTagPayloadSchema,
-  deleteUserPayloadSchema,
   deleteWebhookPayloadSchema,
   editInboxUserAutoAssignPayloadSchema,
   exportedFieldSchema,
+  grantOrganizationAccessPayloadSchema,
+  revokeOrganizationAccessPayloadSchema,
   revokeWebhookSecretPayloadSchema,
   updateAllowedNetworksPayloadSchema,
   updateInboxPayloadSchema,
   updateInboxUserPayloadSchema,
   updateOrganizationPayloadSchema,
   updateOrganizationScenariosPayloadSchema,
+  updateOrganizationUserPayloadSchema,
   updateScreeningProvidersPayloadSchema,
   updateTagPayloadSchema,
-  updateUserPayloadSchema,
   updateWebhookPayloadSchema,
 } from '@app-builder/schemas/settings';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
@@ -473,28 +475,63 @@ export const createUserFn = createServerFn({ method: 'POST' })
     }
   });
 
-export const deleteUserFn = createServerFn({ method: 'POST' })
+// Users of the organization's tenant who have no access to the organization yet.
+export const getTenantUsersWithoutAccessFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .validator(deleteUserPayloadSchema)
+  .handler(async ({ context }) => {
+    const { user, organization } = context.authInfo;
+
+    if (!isReadUserAvailable(user)) {
+      throw redirect({ to: '/' });
+    }
+
+    const users = await organization.listTenantUsersWithoutAccess();
+    return { users };
+  });
+
+// Grants the user a role on the current organization, or replaces the role they hold on it.
+export const grantOrganizationAccessFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(grantOrganizationAccessPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.apiClient.deleteUser(data.userId);
-    } catch {
-      throw new Error('Failed to delete user');
+    const { organization } = context.authInfo;
+    const { tenantId } = await organization.getCurrentOrganization();
+
+    await organization.grantAccess({ tenantId, userId: data.userId, role: data.role });
+  });
+
+// Updates the user's name and the role they hold on the current organization.
+// The backend only lets the user's home organization change their name.
+export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(updateOrganizationUserPayloadSchema)
+  .handler(async ({ context, data }) => {
+    const { apiClient, organization } = context.authInfo;
+
+    if (data.firstName !== undefined || data.lastName !== undefined) {
+      try {
+        await apiClient.updateUser(data.userId, { first_name: data.firstName, last_name: data.lastName });
+      } catch (error) {
+        if (isForbiddenHttpError(error)) return { error: 'name_forbidden' as const };
+        throw error;
+      }
+    }
+
+    if (data.role) {
+      const { tenantId } = await organization.getCurrentOrganization();
+      await organization.grantAccess({ tenantId, userId: data.userId, role: data.role });
     }
   });
 
-export const updateUserFn = createServerFn({ method: 'POST' })
+// Revokes the user's access to the current organization. The user account itself is kept.
+export const revokeOrganizationAccessFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .validator(updateUserPayloadSchema)
+  .validator(revokeOrganizationAccessPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.apiClient.updateUser(data.userId, {
-      first_name: data.firstName,
-      last_name: data.lastName,
-      email: data.email,
-      role: data.role,
-      organization_id: data.organizationId,
-    });
+    const { organization } = context.authInfo;
+    const { tenantId } = await organization.getCurrentOrganization();
+
+    await organization.revokeAccess({ tenantId, userId: data.userId });
   });
 
 // ---- Webhooks ----
