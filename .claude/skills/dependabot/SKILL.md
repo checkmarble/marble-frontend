@@ -1,160 +1,104 @@
 ---
 name: dependabot
-description: Use when the user wants to handle, merge, combine, consolidate, or clean up open Dependabot PRs, or wants the weekly dependency bumps rolled into one PR, even if they only say "deal with the bumps" or give a range of PR numbers. Also use when one Dependabot PR fails CI and the fix belongs with the rest of the batch.
+description: Use when the user wants to handle, merge, combine, consolidate, or clean up open Dependabot PRs, or wants the weekly dependency bumps rolled into one PR, even if they only say "deal with the bumps" or give a range of Dependabot PR numbers. Also use when one Dependabot PR fails CI and the fix belongs with the rest of the batch.
 ---
 
 # Consolidate Dependabot PRs
 
-Turn the open Dependabot PRs into one reviewed, verified `chore(deps)` PR.
+Turn the open Dependabot PRs into one verified `chore(deps)` PR. `.github/dependabot.yaml` opens one PR per package per directory (`/`, `packages/*`) for minors and majors, plus `patch`-group PRs across directories, behind a 14-day cooldown. Add what it can't: move related packages together, adapt code, catch production-only breakage.
 
-Dependabot opens one PR per package per directory, so a dozen PRs usually hold only a few real changes. Merging them one by one conflicts on `bun.lock` and leaves related packages at mismatched versions. The value of this workflow is in what Dependabot can't do: move related packages together, adapt the code to breaking changes, and catch runtime breakage that only appears in a production build.
-
-Stop for the user's confirmation only where step 8 says to. Don't merge anything.
+Stop for the user only at step 8. Merge nothing. Never force-push: `.claude/hooks/block-dangerous-commands.sh` blocks every `git push --force*`, `--force-with-lease` included.
 
 ## 1. Collect the batch
 
 ```bash
-gh pr list --author 'app/dependabot' --state open --limit 100 \
-  --json number,title,headRefName,statusCheckRollup
-gh pr list --state open --search 'consolidate in:title' \
-  --json number,title,headRefName,body
+gh pr list --author 'app/dependabot' --state open --limit 100 --json number,title,headRefName,statusCheckRollup
+gh pr list --state open --search 'consolidate in:title' --json number,title,headRefName,baseRefName,body
 ```
 
-If an earlier consolidation PR is open, stack on it:
+If a consolidation PR is open, stack on its branch and drop the PRs its body lists as superseded, but keep a new PR that moves one of its packages further (26.6.4 → 26.6.5). Otherwise base on `origin/main`.
 
-- Take its branch as your base, and exclude the Dependabot PRs its body already lists as replaced.
-- If a new PR moves a package the open PR already bumps, such as 26.6.4 to 26.6.5, keep it in the batch. It's a real increment on top of the base.
+## 2. List the real changes
 
-Otherwise, base the work on `origin/main`.
+One row per package: current version (from the base's manifests; Dependabot's "from" can be stale), target, PRs replaced. Classify by the actual jump: the `patch` group has carried minors (`@radix-ui/react-slot` 1.3.3 → 1.5.0).
 
-## 2. Build the list of real changes
+Per-workspace PRs (`in /packages/...`) change only `package.json`, so they fail `bun install --frozen-lockfile` whatever they bump. PRs that touch `bun.lock` fail for real reasons: `gh run view <run-id> --log-failed | grep '##\[error\]'`.
 
-Read the title and body of each PR, then reduce them to one row per package: current version, target version, and the PR numbers it replaces. Take the current version from the base branch's manifests, because Dependabot's "from" can be stale.
+## 3. Move families together
 
-Classify each row by its actual version jump. Group names mislead: the `patch` group has carried minor jumps such as `@radix-ui/react-slot` 1.3.3 → 1.5.0.
+The cooldown can hold back half of a pair. Check every manifest and the root `overrides`:
 
-Use each PR's CI as a head start, not a verdict:
-
-- PRs that target `/packages/*` often change only `package.json`, so they fail at `bun install --frozen-lockfile` whatever they contain. That failure says nothing about the bump.
-- PRs that update `bun.lock` fail for real reasons. Read their errors before you start, since they usually point at the fix:
-
-  ```bash
-  gh run view <run-id> --log-failed | grep '##\[error\]'
-  ```
-
-## 3. Add the packages Dependabot left out
-
-Dependabot moves packages independently, and its 14-day cooldown can hold back one half of a pair. Check these families against all manifests and the root `overrides` in `package.json`, and move them as a unit:
-
-| Family | Why it has to move together |
+| Family | Why |
 | --- | --- |
-| `react`, `react-dom`, `@types/react`, `@types/react-dom` | React requires an exact match. The versions are also pinned in the root `dependencies` and `overrides`. |
-| `@tanstack/react-start`, `react-router`, `router-plugin`, `react-router-ssr-query`, `react-router-devtools` | They share `router-core`. Moving Router without Start breaks the `server` route option across every route, with `TS2353` errors in type-check. |
-| `vite`, `@vitejs/plugin-react` | `vite` is pinned exactly, in root `overrides` and in the package manifests. |
-| `storybook`, `@storybook/*` | Addons must match the core version. |
-| `playwright`, `@playwright/test` | CI installs browsers with the first and runs tests with the second. |
-| `vitest`, `@vitest/*` | The versions must match. |
-| `@sentry/*` | The SDKs share a core and should stay on the same major. |
-| `@biomejs/biome` | The `biome.json` schema URL carries the version. |
-| Bun | `packageManager`, `.tool-versions`, `Dockerfile`, `Dockerfile.backoffice`, and `bun-version` in `.github/workflows/*.yaml`. |
-| Node | `.tool-versions` and the Dockerfiles. |
+| `react`, `react-dom` | Exact match (react-dom throws otherwise), also in root `dependencies` and `overrides`. `@types/*` release separately: take the matching minor. On a major, update the `react@19.`/`react-dom@19.` prefixes in `scripts/link-single-react.mjs` (it skips silently) and workspace `peerDependencies`. |
+| `@tanstack/react-router`, `@tanstack/react-start`, `@tanstack/router-plugin`, `@tanstack/react-router-ssr-query`, `@tanstack/react-router-devtools`, root `srvx` override | Shared `router-core`: Router without Start breaks `server` on every route that declares it (`TS2353`). Start's plugin needs `srvx ^0.11.22`. Start 1.169+ drops `useSession` from `@tanstack/react-start/server`, which five session stores use (#2050 held the family back). |
+| `vite`, `@vitejs/plugin-react` | Exact pins in root `overrides` and manifests. |
+| `storybook`, `@storybook/*` | Addons match the core. |
+| `playwright`, `@playwright/test` | `@playwright/test` pins `playwright` exactly; both ship the `playwright` bin, so a mismatch installs browsers for the wrong `playwright-core`. |
+| `vitest`, `@vitest/*` | Must match. |
+| `@sentry/node`, `@sentry/react`, `@sentry/tanstackstart-react` | One version: they pin `@sentry/core` exactly. `@sentry/vite-plugin` is versioned separately. |
+| `@biomejs/biome` | `biome.json` `$schema` URL. |
+| Bun | `packageManager`, `.tool-versions`, both tags (`oven/bun:<v>`, `<v>-distroless`) in `Dockerfile` and `Dockerfile.backoffice`, `bun-version` in `check.yaml`, `e2e.yaml`, `compliance.yaml`. |
+| Node | `.tool-versions` (setup-node reads it) and `mise.toml`. The Dockerfiles pin no Node. |
 
-The same package in several workspaces should also land on one version. This list isn't exhaustive, so read the peer dependency warnings from `bun install` too.
-
-If a family member's target version is inside the cooldown window, or the family can't be aligned at all, leave the whole family at its current version and report why. A half-moved family is the failure this step exists to prevent.
+A package in several workspaces lands on one version; read `bun install`'s peer warnings too. If a member can't move (still in cooldown, no aligned release), leave the whole family and say why.
 
 ## 4. Review breaking changes
 
-Do this for every major bump, every `0.x` minor, every GitHub Actions or Docker major, and every TanStack Router or Start bump, whose patch releases have broken this app before. Read the release notes or changelog (`gh release view`, or the notes in the Dependabot PR body), then grep this repo for each affected API, option, or import.
+For every major, `0.x` minor, Actions or Docker major, and every TanStack Router/Start bump (their patches have broken this app), read the notes (`gh release view <tag> -R <owner>/<repo>`, or the PR body) and grep for each affected API. Record only what we use and the fix.
 
-Record only the outcome for this repo: what changed that we use, and the fix. "Reviewed, and we don't use it" belongs in one line.
+Hunt changed defaults type-check can't see, in telemetry and auth above all: Sentry 11's `dataCollection` collects more than `sendDefaultPii` did, so `app-builder/src/client.tsx` sets limits. Marble handles regulated financial data: flag anything sending more to a third party, even when it compiles.
 
-Look specifically for changed defaults that type-check can't catch, particularly in telemetry and auth. Sentry 11, for example, replaced `sendDefaultPii` with `dataCollection`, which defaults to collecting more, and this app needed explicit limits to keep cookies, headers, and request bodies out of events. Marble handles regulated financial data, so raise anything that sends more data to a third party in the PR, even when the code still compiles.
+## 5. Apply on a branch
 
-## 5. Apply the changes on a branch
+Branch `chore/deps-consolidate-<first>-<last>`. If the checkout is in use or dirty, work inside a worktree from the base (Claude Code: `EnterWorktree`): the repo hooks check the session directory's branch.
 
-Name the branch `chore/deps-consolidate-<first>-<last>` after the lowest and highest PR numbers.
+Edit manifests and `overrides` to the targets, keeping each range style; don't merge or cherry-pick Dependabot branches. Install once with the cooldown, or carets resolve into it (they did in #2050):
 
-Leave the user's current work alone. If the checkout is on another branch or has uncommitted changes, create a worktree from the base and run `bun install` there.
+```bash
+bun install --minimum-release-age=1209600
+```
 
-Edit the manifests and overrides directly, then run `bun install` once. Don't merge or cherry-pick the Dependabot branches: they conflict on `bun.lock`, and the per-package ones have no lockfile changes to offer.
+Confirm each row hit its target. Nested lock entries (`"<parent>/<pkg>": [...]`) hide split versions; compare yours with the base's (`git show <base>:bun.lock`):
 
-Keep the existing range style, exact or caret, for each dependency. A caret range can resolve past Dependabot's target if a newer release exists, so note that in the PR. Afterwards, check `bun.lock` holds one version of each family.
+```bash
+grep -oE '"(@tanstack/(router-core|query-core)|@sentry/core|react|react-dom|vite|playwright-core)@[0-9][^"]*' bun.lock | sort | uniq -c
+```
 
-Make the code changes the review and the checks call for, and keep them minimal. This PR isn't the place for refactors. Don't edit `routeTree.gen.ts` or `packages/marble-api/src/generated/*` by hand.
+Add no second version; a family you move ends on one (an exact root `overrides` entry forces it). Expected: `@sentry/core` under `@sentry/bundler-plugins`. Main already splits `router-core` (stale copy used by the devtools) and `query-core` (devtools): fix if you move that family, else report.
+
+Keep code changes to what review and checks require.
 
 ## 6. Verify
 
-Run the same checks as `.github/workflows/check.yaml`. If that file has changed, it takes priority over this list.
-
-```bash
-bun install --frozen-lockfile
-bunx biome ci .
-bun run -F '*' type-check
-bun run test:all
-bun run -F app-builder build
-bun run -F backoffice build
-bun run test:production
-SMOKE_RUNTIME=bun bun run test:production
-```
-
-Both smoke runs matter, because production runs on Bun and a dependency can parse under Node and crash under Bun. react-dom 19.3 did exactly that, and every SSR request returned 500 while the build stayed green.
-
-Add the checks the batch calls for:
+Run every `run:` step of `.github/workflows/check.yaml` in order, each from its `working-directory` (`bunx biome ci .` for setup-biome), OpenAPI validation and `generate-api` + `git diff --exit-code` included. The Node and Bun smoke runs matter: in #1986 both builds passed while every SSR request returned 500, and production runs on Bun. Note it if local Node differs from `.tool-versions`.
 
 | When the batch touches | Also run |
 | --- | --- |
-| TanStack Router or Start, React, Vite, Bun, Playwright, Testcontainers | `bun run -F tests test:run:prod` (needs Docker and a free port 3000) |
-| Any new or replaced dependency | The `license-report` command from `.github/workflows/compliance.yaml` |
-| The API generator | `bun run -F marble-api generate-api`, then confirm there's no diff |
-| Storybook | Start Storybook from `packages/ui-design-system` |
-| Bun, Node, or a Docker base image | `docker build` on `Dockerfile` and `Dockerfile.backoffice` |
+| Router/Start, React, Vite, Bun, Playwright, Testcontainers | `bun run -F tests test:install && bun run -F tests test:run:prod` after the app-builder build (Docker with `marble-infra` image access, free port 3000) |
+| New or replaced dependency | `compliance.yaml`'s `license-report \| license-report-check` in each changed workspace (CI checks only app-builder) |
+| Storybook | `bunx storybook dev --ci --smoke-test` in `packages/ui-design-system` |
+| Bun or a Docker base image | `docker build -f Dockerfile .` and `-f Dockerfile.backoffice .` |
 
-The first row matters most. Type-check, unit tests, and builds have all passed on versions that left sign-in stuck on "Loading…" or produced a dev-mode SSR bundle, and only e2e caught them. If a check can't run locally, say so in the PR and name the CI job that covers it.
+E2E matters most: it covers the sign-in flow that earlier Start bumps broke. The `E2E tests` workflow runs only on PRs into `main`: for a stacked PR, run it locally or say in the PR that e2e runs once it targets `main`. Name the CI job covering anything not run.
 
-If a bump can't be made to work within a reasonable effort, revert that bump and its family, leave its PRs open, and report why. One stubborn package shouldn't hold back the batch.
+If a bump won't work in reasonable effort, revert it and its family, leave its PRs open, say why.
 
 ## 7. Open the PR
 
-Commit, push, and open the PR against the base from step 1. For a stacked PR, say which PR it's stacked on in the first line of the body.
+Open it against the step-1 base, titled `chore(deps): consolidate Dependabot bumps from #<first> to #<last>` (step 1 finds stacked bases by it). A stacked PR names its base PR in the body's first line. Body:
 
-Use this structure for the body, unless the `pr` skill is available, in which case follow that and keep the same content:
-
-```markdown
-## Summary
-
-Replaces #A–#B with one PR. (Name any PRs in that range left out, and why.)
-
-| Package | From → To | Replaces |
-| --- | --- | --- |
-
-Breaking changes and the fixes applied:
-(a short diff block per change, then one line each for changes reviewed that needed no code)
-
-## Evidence
-
-(the commands that ran and their results, before/after for anything fixed, and anything not run)
-
-## Merge Danger
-
-**Door:** one-way or two-way
-**Blast Radius:** (what could break in production, including dashboards and alerts)
-
-Supersedes #A, #B, #C.
-```
-
-List every replaced PR number individually, so the closing step and reviewers can work from it. Write "Supersedes" and not "Closes": closing keywords would act on the Dependabot PRs at merge time without anyone deciding to.
+- `## Summary`: "Replaces #A–#B with one PR" (name any left out, and why); table `Package | From → To | Replaces`; breaking changes with a short diff per fix, one line per change needing none.
+- `## Evidence`: commands and results, before/after for fixes, anything not run.
+- `## Merge Danger`: `**Door:** one-way or two-way`, `**Blast Radius:**` (including dashboards and alerts).
+- Last line: `Supersedes #A, #B, #C.`, every PR listed. Never "Closes": it would close Dependabot PRs at merge without anyone deciding to.
 
 ## 8. Report, then ask before closing
 
-Give the user the PR link, the bumps left out, and any risk from step 4. Then list the Dependabot PRs the new PR replaces and ask whether to close them.
-
-Wait for an answer, because closing tells Dependabot to skip that version. If the consolidated PR is later abandoned, those bumps won't come back on their own until a newer release exists. Once the user confirms:
+Give the PR link, bumps left out, and step 4 risks; list the PRs it replaces and ask whether to close them. Wait: closing tells Dependabot to skip that version, so an abandoned PR's bumps won't return until a newer release. Once confirmed (skip PRs whose bump was left out):
 
 ```bash
 gh pr close <n> --comment "Superseded by #<new>, which consolidates the Dependabot bumps from #<first> to #<last>."
 ```
 
-Leave out any PR whose bump was left out of the consolidated PR.
-
-For a stacked PR, remind the user it needs rebasing once its base merges, because the base's commits get squashed: `git rebase --onto origin/main <old-base-branch>`, then `git push --force-with-lease`. Plain `--force` is blocked here.
+Once a stacked PR's base merges: `git fetch origin && git merge origin/main`, plain `git push`, and `gh pr edit <new> --base main` if GitHub hasn't retargeted it. For a rebased history, hand the user `git rebase --onto origin/main <old-base-branch>` and `git push --force-with-lease` to run.

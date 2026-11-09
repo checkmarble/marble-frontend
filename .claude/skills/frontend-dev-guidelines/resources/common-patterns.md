@@ -1,241 +1,54 @@
 # Common Patterns
 
-Frequently used patterns across the Marble codebase.
+Cross-cutting conventions in `packages/app-builder/src`.
 
----
+## Query state in JSX
 
-## ts-pattern (Pattern Matching)
+Use ts-pattern: `match(query).with({ isPending: true }, …).with({ isError: true }, …).with({ isSuccess: true }, ({ data }) => …).exhaustive()`. See `components/CustomerKpis/CustomerKpis.tsx`.
 
-Use `match` from `ts-pattern` for query state handling and discriminated unions:
+## Feature access
 
-### Query State Matching
+Every gate is a predicate in `services/feature-access.ts`, covering both role permissions (`isEditListAvailable(user)`) and entitlements (`isAccessible(entitlements.workflows)`). Add new gates there, not inline. Call them in the loader and return the results as flags (`routes/_app/_builder/detection/lists/$listId.tsx`).
 
-```typescript
-import { match } from 'ts-pattern';
+Entitlement levels are `FeatureAccessLevelDto` (`'allowed' | 'test' | 'restricted' | 'missing_configuration'`, from `marble-api/generated/feature-access-api`), and `isAccessible` means `allowed` or `test`. When the level is not `allowed`, show `<Nudge kind={access} content={t(…)} />` (`components/Settings/Users/CreateUser.tsx`).
 
-{match(dataListQuery)
-  .with({ isError: true }, () => (
-    <div className="border-red-primary bg-red-background text-red-primary mt-md rounded-sm border p-sm">
-      {t('common:global_error')}
-    </div>
-  ))
-  .with({ isPending: true }, () => <LoadingSkeleton />)
-  .otherwise((query) => (
-    <DataTable data={query.data} />
-  ))}
-```
+## Utilities
 
-### Feature Access Matching
+- `tryCatch` (`@app-builder/utils/tryCatch`) returns `{ ok: true, value } | { ok: false, error: Error }`, or a `Promise` of that when given an async function or a promise. Prefer it to the legacy radash `tryit`.
+- Transform data with remeda (`import * as R from 'remeda'`). For multi-select state, use radash's `toggle(list, item)`.
 
-```typescript
-import { match, P } from 'ts-pattern';
+## i18n
 
-{match(featuresAccess.continuousScreening)
-  .with(P.union('allowed', 'test'), () => (
-    <SidebarLink
-      labelTKey="navigation:continuous_screening"
-      to={getRoute('/continuous-screening')}
-      Icon={(props) => <Icon icon="scan-eye" {...props} />}
-    />
-  ))
-  .otherwise(() => null)}
-```
+- `t()` keys are **not** type-checked, because `services/i18n/i18next.d.ts` types them against `resources['en']`, which doesn't exist (locales are `en-GB`, `en-US`, `fr`, `ar`). Check that the key exists in `locales/en/<file>.json`.
+- Namespace ids are the camelCase keys in `services/i18n/resources/en.ts`, so `continuousScreening` maps to `continuous-screening.json`. Adding keys or namespaces: `.claude/rules/i18n.md`.
+- Don't add `export const handle = { i18n }` (Remix-era).
+- On the server (server fn handler or function middleware): `const t = await context.services.i18nextService.getFixedT(getRequest(), ['common', 'cases'])`, with `getRequest` from `@tanstack/react-start/server` (`addRuleSnoozeFn` in `server-fns/cases.ts`).
 
-### Exhaustive Matching
+## Icons
 
-```typescript
-const getStatusColor = (status: CaseStatus) =>
-  match(status)
-    .with('open', () => 'text-yellow-primary')
-    .with('investigating', () => 'text-purple-primary')
-    .with('closed', () => 'text-green-primary')
-    .with('discarded', () => 'text-grey-placeholder')
-    .exhaustive();
-```
+Render with `<Icon icon="delete" className="size-5" />` from `ui-icons` and type icon props as `IconName`. To add an icon, put a mono SVG in `packages/ui-icons/svgs/icons` and run `bun run -F ui-icons generate-icons`. Multicolour marks go in `svgs/logos` and render with `<Logo logo=… />`. For RTL, see [styling-guide.md](styling-guide.md#rtl).
 
----
+## Toasts
 
-## remeda (Functional Utils)
+The calling component toasts with `toast` from `react-hot-toast`:
 
-Import as namespace `R`:
-
-```typescript
-import * as R from 'remeda';
-
-// Pipe-based data transformations
-const fieldOptions = R.pipe(
-  tableModel.fields,
-  R.filter((field) => field.dataType === 'String'),
-  R.filter((field) => field.name !== 'object_id'),
-  R.map((field) => adaptFieldOption({ baseTableId: tableModel.id, field })),
-);
-
-// Common functions: pipe, filter, map, flatMap, entries, keys, isNonNullish, prop
-const fulfilled = R.pipe(
-  results,
-  R.filter((r) => r.status === 'fulfilled'),
-  R.map((r) => r.value),
-);
-```
-
----
-
-## i18n (react-i18next)
-
-Three locale directories (en, fr, ar) with multiple namespaces. Missing keys cause TS errors.
-
-### In Components
-
-```typescript
-import { useTranslation } from 'react-i18next';
-import { Typo } from 'ui-design-system';
-
-export function MyComponent() {
-  const { t } = useTranslation(['common', 'cases']);
-
-  return (
-    <div>
-      <Typo type="title1">{t('cases:case.title')}</Typo>
-      <Button>{t('common:cancel')}</Button>
-    </div>
-  );
-}
-```
-
-### Server-Side Translation
-
-```typescript
-import { getRequest } from '@tanstack/react-start/server';
-
-const { i18nextService: { getFixedT } } = context.services;
-const request = getRequest();
-const t = await getFixedT(request, ['common', 'data']);
-
-throw new Error(t('data:apply_archetype.error.invalid_payload'));
-```
-
-Use server-side `t` for messages embedded in thrown errors or returned data. Toasts themselves are surfaced client-side from mutation callbacks (see [Toast Notifications](#toast-notifications) below).
-
-i18n namespaces no longer live in a `handle` export — each component just calls `useTranslation([...])` with the namespaces it needs. Server functions get the request via `getRequest()` to resolve the per-request `t`.
-
-### Adding i18n Keys
-
-Always update all three locale files:
-- `locales/en/{namespace}.json`
-- `locales/fr/{namespace}.json`
-- `locales/ar/{namespace}.json`
-
----
-
-## Icons (ui-icons)
-
-SVG sprite-based icons with strongly-typed names:
-
-```typescript
-import { Icon } from 'ui-icons';
-
-<Icon icon="delete" className="size-6 shrink-0" />
-<Icon icon="plus" className="size-5" />
-<Icon icon="category" className="text-purple-primary size-10" />
-<Icon icon="case-manager" className="me-sm size-6" />
-<Icon icon="scan-eye" className="size-5" />
-```
-
-Size with `size-{n}`, color via `text-{color}`.
-
----
-
-## Toast Notifications
-
-Toasts are **client-side only**, fired from React Query mutation callbacks (`onSuccess` / `onError`) or `mutateAsync().then(...).catch(...)`. There is no server-side flash session — server functions throw errors, the client decides what to show.
-
-```typescript
-import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
-
-const { t } = useTranslation(['common']);
-const createMutation = useCreateTagMutation();
-
-// In a form submit / handler:
-createMutation
-  .mutateAsync(value)
-  .then(() => {
-    toast.success(t('common:success.save'));
+```tsx
+await mutation.mutateAsync(value)
+  .then((res) => {
+    if (res && 'error' in res) return toast.error(t('common:errors.list.duplicate_list_name'));
     onSuccess();
   })
-  .catch(() => {
-    toast.error(t('common:errors.unknown'));
-  });
-
-// Or via useMutation options:
-useMutation({
-  mutationFn: createTagFn,
-  onSuccess: () => toast.success(t('common:success.save')),
-  onError: () => toast.error(t('common:errors.unknown')),
-});
+  .catch(() => toast.error(t('common:errors.unknown')));
 ```
 
-For server-side errors that need to surface specific messages, throw a typed error from the server function and inspect it in the client `onError` handler.
+- Expected failures are **returned** (`{ error: '<code>' }`), not thrown. `res` is `undefined` after a server-side redirect ([data-fetching.md](data-fetching.md)).
+- Exception: data-model table mutations throw `getTableMutationError(error, t)`. The hook's `onError` checks `isTableMutationError` and toasts `formatTableMutationError(error)`. See `editSemanticTableFn` (`server-fns/data.ts`) and `queries/data/edit-semantic-table.ts`.
+- Toast before a server redirect: `await setToast({ type: 'error', message: t(…) })` (`@app-builder/services/toast.server`), then `throw redirect(…)`. Server-only: call it in a `createServerFn` handler (a loader's included), a function middleware or `*.server.ts`, never in the isomorphic `loader:` itself. In a loader, also set `preload: false` on the route, or a link hover stores the toast early ([data-fetching.md](data-fetching.md)). `messageKey` is `@deprecated`; pass a translated `message`.
 
----
+## Dates and numbers
 
-## Date Formatting
+Helpers are in `@app-builder/utils/format`.
 
-### useFormatDateTime Hook (preferred)
-
-```typescript
-import { useFormatDateTime } from '@app-builder/utils/format';
-
-const formatDateTime = useFormatDateTime();
-
-// Format with Intl options
-formatDateTime(timestamp, { dateStyle: 'short' })    // "2/24/26"
-formatDateTime(timestamp, { timeStyle: 'short' })    // "2:30 PM"
-formatDateTime(timestamp, { dateStyle: 'medium', timeStyle: 'short' })
-```
-
-### Direct date-fns (when needed)
-
-```typescript
-import { formatDate } from 'date-fns';
-import { fr } from 'date-fns/locale';
-
-formatDate(date, 'dd/MM/yyyy', { locale: fr })
-```
-
-### Other Format Utilities
-
-Available from `@app-builder/utils/format`:
-- `formatNumber(number, { language, style })`
-- `formatCurrency(amount, { language, currency })`
-- `formatPercentage(percentage, language)`
-- `formatDuration(duration, language)`
-
----
-
-## Route Helpers
-
-```typescript
-import { getRoute } from '@app-builder/utils/routes';
-
-// Type-safe route building (TypeScript enforces required params)
-getRoute('/cases')
-getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })
-getRoute('/ressources/lists/create')
-```
-
----
-
-## Query Invalidation
-
-```typescript
-import { useQueryClient } from '@tanstack/react-query';
-
-const queryClient = useQueryClient();
-
-// Broad invalidation (invalidates all queries starting with prefix)
-queryClient.invalidateQueries({ queryKey: ['cases'] });
-
-// Specific invalidation
-queryClient.invalidateQueries({ queryKey: ['cases', 'get-case', caseId] });
-```
+- Locale: `useFormatLanguage()`, set by the root loader so SSR and hydration agree; never `i18n.language`, `navigator.language` or `toLocale*()` in render (old code does). It is a plain string: don't switch exhaustively on it.
+- In components, `useFormatDateTime()` applies the user's locale **and timezone**. `formatDateTimeWithoutPresets(ts, { language, … })` ignores the timezone unless you pass `timeZone: useFormatTimezone()`.
+- `formatNumber`, `formatPercentage`, `formatDuration` and `formatDateRelative` take the `language`. `formatCurrency` takes a Dinero currency object, not an ISO code. For date-fns, pass `locale: getDateFnsLocale(language)` (`services/i18n/i18n-config`).

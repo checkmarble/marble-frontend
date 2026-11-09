@@ -1,161 +1,55 @@
 # Styling Guide
 
-Tailwind CSS 4 styling with CSS variable-based theming.
+Tailwind 4. Tokens: `packages/tailwind-preset/src/tailwind.css` (light in `@theme`, dark in `.dark`); app-only additions: `packages/app-builder/src/tailwind.css`, which also loads `app-builder/tailwind.config.ts` via `@config` (`tailwindcss-grid-areas` plugin, `lg-analytics` screen). A class is valid only if one of them defines its token or utility.
 
----
+## Colours
 
-## Color System
+The preset sets `--color-*: initial`: Tailwind's palette is gone, so `text-gray-500` or `bg-red-200` generate nothing, and neither do legacy Figma names still in old code (`text-grey-60`, `bg-grey-20`, `text-red-base`). Don't copy them.
 
-The project uses **semantic CSS variables** (oklch) defined in `packages/tailwind-preset/src/tailwind.css`. Colors automatically flip in dark mode.
+Names are hue × role. Hues: `grey`, `purple`, `red`, `green`, `yellow`, `orange`. Roles: `-primary`, `-hover`, `-secondary`, `-placeholder`, `-disabled`, `-border`, `-background`, `-background-light`. Extras: `grey-white`, `purple-border-light`, `blue-58`/`blue-96` (the only numeric ones), `enum-*` (enum values, `models/enum.ts`).
 
-### Text Colors
-
-```
-text-grey-primary         # Main text
-text-grey-hover           # Hover state text
-text-grey-secondary       # Secondary text
-text-grey-placeholder     # Muted/placeholder text
-text-grey-disabled        # Disabled state
-text-purple-primary       # Purple accent (links, active items)
-text-purple-hover         # Purple hover state
-text-red-primary          # Error text
-text-green-primary        # Success text
-text-yellow-primary       # Warning text
-```
-
-### Background Colors
-
-```
-bg-grey-background        # Main page background
-bg-grey-background-light  # Lighter background (hover states)
-bg-grey-white             # White
-bg-purple-background      # Purple tinted background
-bg-purple-background-light # Light purple background
-bg-red-background         # Error background
-bg-green-background       # Success background
-```
-
-### Surface Tokens (auto-flip in dark mode)
-
-These semantic tokens are the preferred way to set backgrounds:
-
-```
-bg-surface-page           # Page background
-bg-surface-card           # Card/container background
-bg-surface-sidebar        # Sidebar background
-bg-surface-elevated       # Elevated elements (popovers, modals)
-bg-surface-row            # Table row background
-bg-surface-row-hover      # Table row hover
-```
-
-### Border Colors
-
-```
-border-grey-border        # Standard borders
-border-purple-primary     # Active/focused borders
-border-red-primary        # Error borders
-```
-
----
+Backgrounds: `surface-page` (body, `Page.Main`), `surface-card` (cards, modals, popovers, menus, panels), `surface-elevated` (tooltips, raised inline blocks), `surface-sidebar`. `grey-background` is a neutral hover/disabled fill, not the page. Table rows: use the DS `Table` (it handles `surface-row` striping and its dark-mode exception).
 
 ## Typography
 
-```
-text-2xl    # 28px / 32px  (page titles)
-text-l      # 20px / 30px  (section headers)
-text-m      # 16px / 24px  (body text)
-text-s      # 14px / 21px  (default UI text)
-text-r      # 13px / 20px  (compact text)
-text-xs     # 12px / 18px  (small labels)
-text-2xs    # 10px / 12px  (tiny labels)
-```
+- Pixel scale, used by most code including new code: `text-2xs` 10px, `text-xs` 12, `text-r` 13, `text-s` 14 (default UI text), `text-m` 16, `text-l` 20 (page titles).
+- Figma scale, 140% line-height, used by `Typo` and `Button`: `text-h1` 20px, `text-h2` 16, `text-default` 14, `text-small` 12, `text-tiny` 10.
 
----
+Tailwind's `text-sm`/`text-base` still generate (only colours are reset) but fit neither scale: use `text-s`. Headings: `<Typo variant="title1|title2|subtitle1|subtitle2">` (`h1`–`h4`). A bare `<Typo>` is `variant="text"`: a `<p>` in `text-tiny` (10px).
 
-## Spacing (custom scale)
+## Spacing
 
-```
-gap-xs    # 0.25rem (4px)
-gap-sm    # 0.5rem  (8px)
-gap-md    # 1rem    (16px)
-gap-lg    # 1.5rem  (24px)
-gap-xl    # 2rem    (32px)
-gap-2xl   # 2.5rem  (40px)
-gap-3xl  # 3rem    (48px)
-```
+Named scale: `2xs` 2px, `xs` 4, `sm` 8, `md` 16, `lg` 24, `xl` 32, `2xl` 40, `3xl` 48, `4xl` 80. Padding, margin and gap use it (`p-md`, `gap-sm`, not `p-4`). Traps:
 
-Standard Tailwind spacing (`p-4`, `gap-2`, `m-4`) should be avoided.
+- On `w-`/`h-`/`size-` the names are spacing values (`w-xl` = 2rem). Size with the numeric scale (`size-4`, `h-8`).
+- On `max-w-`/`min-w-` the preset makes them container widths (`max-w-3xl` = 48rem).
+- `cn` (tailwind-merge) doesn't know `4xl`: `cn('p-md', 'p-4xl')` keeps both.
 
----
+## Dark mode
 
-## Common Layout Patterns
+The `dark` class on `<html>` swaps token values. Not every token changes:
 
-```typescript
-// Flexbox row with gap
-<div className="flex items-center gap-md">
+| Tokens | In dark mode |
+|---|---|
+| `surface-*`, `grey-*` except `-placeholder` and `-white`, every hue's `-primary`/`-hover`/`-secondary`/`-disabled`, `purple-border` | Flip |
+| `enum-*` | Get darker |
+| `*-placeholder`, `blue-*` | Unchanged |
+| `purple-background-light` | Becomes `grey-background-light` |
+| red/green/yellow/orange `-border`, `-background`, `-background-light` | Stay light pastel |
+| `grey-white` (alias `white`) | Stays `#FFFFFF` |
+| `purple-background`, `purple-border-light` | Get lighter |
 
-// Flexbox column
-<div className="flex flex-col gap-sm">
+So pastel and white fills need a `dark:` override. Check `<Tag color=…>` (outlined, works in both themes) or `Callout` first; for surfaces use `surface-*`, never `bg-white`.
 
-// Space between
-<div className="flex justify-between items-center">
+## Custom variants
 
-// Card container
-<div className="bg-surface-card border-grey-border rounded-lg border p-md">
+- `disabled:` matches `:disabled` or `[aria-disabled="true"]`; `enabled:` matches neither, on any element. Write hover as `enabled:hover:` so it skips disabled buttons and links.
+- Radix state: `radix-state-open:`, `group-radix-state-open:`, … (tailwindcss-radix), same as `data-[state=open]:`.
 
-// Conditional classes — prefer cn over clsx (cn resolves Tailwind conflicts)
-import { cn } from 'ui-design-system';
-<div className={cn(
-  'rounded-lg border p-md transition-colors',
-  isActive
-    ? 'border-purple-primary bg-purple-background'
-    : 'border-grey-border hover:bg-grey-background-light',
-)}>
-```
+## RTL
 
----
-
-## Dark Mode
-
-Colors are CSS variables that auto-flip via `.dark` class on the root element. Most of the time, you don't need to do anything special.
-
-```css
-/* What happens under the hood */
-.dark {
-  --color-grey-primary: oklch(98.54% ...);     /* Becomes light text */
-  --color-surface-page: oklch(5% ...);          /* Becomes dark bg */
-  --color-purple-primary: oklch(63.77% ...);    /* Adjusted for contrast */
-}
-```
-
-Use `dark:` prefix only when you need different behavior from the default:
-
-```typescript
-className="text-purple-primary dark:text-grey-primary"
-className="hover:bg-grey-background-light dark:hover:bg-grey-background"
-```
-
----
+The `ar` locale renders `<html dir="rtl">`. Use logical utilities (`ms-`/`me-`, `ps-`/`pe-`, `start-`/`end-`, `border-s`/`border-e`, `rounded-s-`/`rounded-e-`, `text-start`/`text-end`). Flip directional icons with `rtl:rotate-180` (back arrows in `components/Page.tsx`).
 
 ## Animations
 
-```typescript
-// Transitions
-className="transition-colors duration-200"
-
-// Skeleton loading
-className="animate-pulse bg-grey-background-light h-4 rounded"
-
-// Slide-in (used by Panel)
-className="animate-slideRightAndFadeIn"
-```
-
----
-
-## Summary
-
-- **Semantic colors** auto-adapt to dark mode (e.g., `text-grey-primary`, `bg-surface-card`)
-- **Surface tokens** (`bg-surface-card`, `bg-surface-page`) for main backgrounds
-- **`cn`** (from ui-design-system) for conditional classes — resolves Tailwind conflicts
-- Use `dark:` only when overriding defaults
-- Use ui-design-system components when available instead of raw HTML + Tailwind
+A kebab `animate-*` generates CSS only from Tailwind's defaults (`animate-spin`, `animate-pulse`, …), a `--animate-*` entry in the preset's `@theme`, or an `@utility` in the app's `tailwind.css`. The preset's other `.animate-*` are plain camelCase CSS classes (`animate-overlayShow`) that take no variants; their kebab spellings, still in old code (`animate-overlay-show`, `animate-slide-up-and-fade`), generate nothing. Radix enter/exit uses tw-animate-css (`data-[state=open]:animate-in fade-in-0 zoom-in-95`, see `ui-design-system/src/MenuCommand/MenuCommand.tsx`). Add an animation as an `--animate-*` entry plus `@keyframes` in the preset.

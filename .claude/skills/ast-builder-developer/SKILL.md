@@ -1,361 +1,86 @@
 ---
 name: ast-builder-developer
-description: Use when working with AstBuilder components, editing AST nodes, managing node state with sharpstate, changing validation flows, or modifying any rule-builder UI.
+description: Use when working with AstBuilder components, editing AST nodes or operands, building AST edit modals, managing the AST node store (sharpstate), changing validation flows, or modifying any rule-builder UI (edit or view mode).
 ---
 
 # AST Builder Developer Guide
 
-## Purpose
-
-Comprehensive guide for working with the AstBuilder component system - Marble's visual rule and condition builder. This system allows users to create complex logical expressions using a visual UI.
-
-## When to Use This Skill
-
-Automatically activates when you mention:
-- AstBuilder components
-- Rule builder / condition builder
-- AST nodes or node types
-- Edition mode / viewing mode
-- Node validation
-- Operand editing
-- sharpstate in AstBuilder context
-
----
-
-## Architecture Overview
-
-```
-AstBuilder/
-  index.tsx           # Exports: Root, Operand, Provider, EditModal
-  Provider.tsx        # AstBuilderDataSharpFactory - holds builder options
-  Root.tsx            # Routes to edition/viewing based on mode
-  Operand.tsx         # Operand display component
-  types.ts            # Type definitions
-
-  edition/            # Edit mode components
-    node-store.ts     # AstBuilderNodeSharpFactory - node state
-    EditionNode.tsx   # Main editing node component
-    EditionOperand.tsx
-    EditionAndRoot.tsx
-    EditionOrWithAndRoot.tsx
-    EditModal/        # Modal for special node types
-      modals/         # Aggregation, FuzzyMatch, TimeAdd, etc.
-
-  viewing/            # View mode components
-    ViewingNode.tsx
-    ViewingOperand.tsx
-    ViewingAndRoot.tsx
-```
-
----
-
-## Core Concepts
-
-### Two State Factories
-
-**1. AstBuilderDataSharpFactory** (Provider.tsx)
-- Holds scenario data, builder options, mode
-- Created once per AstBuilder instance
-- Provides: `dataModel`, `triggerObjectType`, `mode`, `showValues`
-
-```typescript
-const builderMode = AstBuilderDataSharpFactory.select((s) => s.mode);
-const data = AstBuilderDataSharpFactory.useSharp().value.$data!.value;
-```
-
-**2. AstBuilderNodeSharpFactory** (node-store.ts)
-- Holds current node state, validation, actions
-- Created per Root component
-- Actions: `setNodeAtPath`, `validate`, `copyNode`, `triggerUpdate`
-
-```typescript
-const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-nodeSharp.actions.setNodeAtPath(path, newNode);
-nodeSharp.actions.validate();
-```
-
-### Modes
-
-| Mode | Purpose | Components |
-|------|---------|------------|
-| `edit` | User can modify nodes | `EditionAstBuilder*` |
-| `view` | Read-only display | `ViewingAstBuilder*` |
-
----
-
-## Node Types
-
-### Logical Structure Nodes
-
-```typescript
-// AND node - groups conditions
-interface AndAstNode {
-  id: string;
-  name: 'And';
-  children: AstNode[];
-  namedChildren: Record<string, never>;
-}
-
-// OR with AND children - top-level structure
-interface OrWithAndAstNode {
-  id: string;
-  name: 'Or';
-  children: AndAstNode[];
-  namedChildren: Record<string, never>;
-}
-```
-
-### Operator Nodes
-
-```typescript
-// Binary operators: =, ≠, <, <=, >, >=, +, -, *, /, IsInList, etc.
-interface MainAstBinaryNode {
-  id: string;
-  name: BinaryMainAstOperatorFunction;
-  children: [AstNode, AstNode];  // Left and right operands
-}
-
-// Unary operators: IsEmpty, IsNotEmpty
-interface MainAstUnaryNode {
-  id: string;
-  name: UnaryMainAstOperatorFunction;
-  children: [AstNode];  // Single operand
-}
-```
-
-### Operand Nodes (KnownOperandAstNode)
-
-| Type | Description | Example |
-|------|-------------|---------|
-| `UndefinedAstNode` | Empty placeholder | New condition slot |
-| `ConstantAstNode` | Literal value | `"hello"`, `42`, `true` |
-| `DataAccessorAstNode` | Field reference | `transaction.amount` |
-| `CustomListAccessAstNode` | List reference | `blockedCountries` |
-| `EditableAstNode` | Complex nodes | Aggregation, FuzzyMatch |
-
-### Editable Nodes (Modal-based)
-
-These nodes require a dedicated EditModal:
-- `AggregationAstNode` - Count, Sum, Avg operations
-- `TimeAddAstNode` - Date arithmetic
-- `FuzzyMatchComparatorAstNode` - Fuzzy string matching
-- `IsMultipleOfAstNode` - Divisibility check
-- `StringTemplateAstNode` - String interpolation
-
----
-
-## Path-Based Navigation
-
-Nodes are accessed via path strings:
-
-```typescript
-import { getAtPath, parsePath, getParentPath } from '@app-builder/utils/tree';
-
-// Get node at path
-const node = getAtPath(rootNode, parsePath('children.0.children.1'));
-
-// Get parent path
-const parentPath = getParentPath(parsePath('children.0.children.1'));
-// Result: { path: 'children.0', childPathSegment: { type: 'children', index: 1 } }
-```
-
-**Path format:**
-- `children.0` - First child
-- `children.1.children.0` - First grandchild of second child
-- `namedChildren.left` - Named child 'left'
-
----
-
-## Component Patterns
-
-### Using AstBuilder
-
-```typescript
-import { AstBuilder } from '@app-builder/components/AstBuilder';
-
-// Full setup with Provider
-<AstBuilder.Provider scenarioId={scenarioId} mode="edit">
-  <AstBuilder.Root
-    node={astNode}
-    validation={validation}
-    onUpdate={(node) => handleUpdate(node)}
-    onValidationUpdate={(v) => setValidation(v)}
-  />
-</AstBuilder.Provider>
-```
-
-### EditionNode Pattern
-
-The `EditionAstBuilderNode` uses `ts-pattern` to route rendering:
-
-```typescript
-match(node.value)
-  .when(isMainAstBinaryNode, (node) => {
-    // Render binary operator with left/right children
-    return (
-      <>
-        <EditionAstBuilderNode path={`${path}.children.0`} />
-        <OperatorSelect operator={node.name} onOperatorChange={setOperator} />
-        <EditionAstBuilderNode path={`${path}.children.1`} />
-      </>
-    );
-  })
-  .when(isMainAstUnaryNode, (node) => {
-    // Render unary operator with single child
-  })
-  .when(isKnownOperandAstNode, (node) => {
-    // Render operand (leaf node)
-    return <EditionAstBuilderOperand node={node} onChange={setNode} />;
-  })
-  .otherwise(() => <NodeTypeError />);
-```
-
-### Updating Nodes
-
-```typescript
-const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-
-// Update node at path
-const setNode = (newNode: AstNode) => {
-  nodeSharp.actions.setNodeAtPath(props.path, newNode);
-  nodeSharp.actions.validate();
-};
-
-// Update operator only
-const setOperator = (operator: string) => {
-  node.value.name = operator;
-  // Adjust children count for unary/binary
-  if (isUnaryMainAstOperatorFunction(operator) && node.value.children.length > 1) {
-    node.value.children = [node.value.children[0]!];
-  }
-  nodeSharp.actions.triggerUpdate();
-  nodeSharp.actions.validate();
-};
-```
-
----
-
-## Type Guards
-
-Always use type guards before accessing node properties:
-
-```typescript
-import {
-  isAndAstNode,
-  isOrWithAndAstNode,
-  isMainAstNode,
-  isMainAstBinaryNode,
-  isMainAstUnaryNode,
-  isKnownOperandAstNode,
-  isEditableAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
-
-import { isConstant } from '@app-builder/models/astNode/constant';
-import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
-import { isAggregation } from '@app-builder/models/astNode/aggregation';
-```
-
----
-
-## Validation Flow
-
-```typescript
-// 1. Node store has validation function
-const nodeStore = AstBuilderNodeSharpFactory.createSharp({
-  initialNode: node,
-  initialValidation: validation,
-  validationFn: async (node) => {
-    // Call API to validate
-    return await validateAst(scenarioId, node);
-  },
-  updateFn: (node) => onUpdate(node),
-});
-
-// 2. After changes, trigger validation
-nodeSharp.actions.setNodeAtPath(path, newNode);
-nodeSharp.actions.validate();
-
-// 3. Get errors for specific node
-import { getErrorsForNode } from './edition/helpers';
-const errors = getErrorsForNode(validation, node.id, true);
-const hasError = errors.length > 0;
-```
-
----
-
-## Common Tasks
-
-### Adding a New Operator
-
-1. Add to `builder-ast-node-node-operator.ts`
-2. Update `allMainAstOperatorFunctionsOptions` in `EditionNode.tsx`
-3. Add i18n translation in `scenarios` namespace
-
-### Creating a New Editable Node Type
-
-1. Define interface in `models/astNode/`
-2. Add type guard function
-3. Update `isEditableAstNode` in `builder-ast-node.ts`
-4. Create modal in `edition/EditModal/modals/`
-5. Register in `EditModal.tsx`
-
-### Working with Data Accessors
-
-```typescript
-import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
-
-if (isDataAccessorAstNode(node)) {
-  const field = getDataAccessorAstNodeField(node, {
-    dataModel: data.dataModel,
-    triggerObjectTable: triggerTable,
-  });
-  // field.isEnum, field.values, field.dataType, etc.
-}
-```
-
----
-
-## Key Files Reference
-
-| File | Purpose |
-|------|---------|
-| `components/AstBuilder/index.tsx` | Main exports |
-| `components/AstBuilder/Provider.tsx` | Data provider factory |
-| `components/AstBuilder/Root.tsx` | Entry point, mode routing |
-| `components/AstBuilder/edition/node-store.ts` | Node state management |
-| `components/AstBuilder/edition/EditionNode.tsx` | Main editing component |
-| `components/AstBuilder/edition/EditionOperand.tsx` | Operand editing |
-| `models/astNode/builder-ast-node.ts` | Node types & guards |
-| `models/astNode/builder-ast-node-node-operator.ts` | Operator definitions |
-| `utils/tree.ts` | Path navigation utilities |
-
----
-
-## Best Practices
-
-1. **Always validate after changes** - Call `nodeSharp.actions.validate()` after any node modification
-2. **Use type guards** - Never assume node type, always check with `is*` functions
-3. **Use ts-pattern** - For node type routing, use `match().when().otherwise()`
-4. **Clone before mutating** - Use `clone()` from remeda when needed
-5. **Path-based updates** - Use `setNodeAtPath` instead of direct mutation
-6. **Handle both modes** - Check if component needs to support edit AND view modes
-
----
-
-## Troubleshooting
-
-### Node not updating visually
-- Ensure `validate()` is called after `setNodeAtPath()`
-- Check if `triggerUpdate()` is needed for operator changes
-
-### Validation not showing errors
-- Verify `getErrorsForNode()` is called with correct node ID
-- Check if validation response contains the expected structure
-
-### Type errors with node properties
-- Use appropriate type guard before accessing properties
-- Check if node type matches expected interface
-
----
-
-**Skill Status**: Initial version for Marble AstBuilder
+AstBuilder: `packages/app-builder/src/components/AstBuilder`, alias `@ast-builder/*`.
+
+## Architecture
+
+- `Root.tsx` routes by shape (`And` trigger, `OrWithAnd` rule, else Any), then by `mode` to `edition/Edition*` or `viewing/Viewing*`.
+- Node store: `edition/node-store.ts`, created by `edition/hooks/useRoot.ts`. Validation helpers: `edition/helpers.ts`.
+
+## State factories (sharpstate)
+
+- `AstBuilderDataSharpFactory` (`Provider.tsx`): options `data`, `scenarioId`, `mode`, `showValues`, `isValueSwitchOpen`; computed `triggerObjectTable`.
+- `AstBuilderNodeSharpFactory`, edit mode only: `node`, `validation`, `copiedNode`; actions `setNodeAtPath`, `validate`, `copyNode`, `triggerUpdate`. Create it with `useRoot()` (Edition roots, `OperandEditModal`, ValueSwitch, `UserScoring/SwitchNode/AggregateRuleEdit.tsx`). `CustomerKpisConfigurationPopover.tsx` and the `EditFilters.spec.tsx` harness bypass it (`createSharp`, no-op `validationFn`).
+- `EditionOperandSharpFactory` (`edition/EditionOperand.tsx`), per operand: `filteredOptions` applies `optionsDataType` / `excludeFuntionsType` / `excludeFields` to the menu.
+
+## Hosting
+
+- `Provider` fetches options by `scenarioId` (default `mode="view"`). `StaticProvider` takes `data` (default `"edit"`) and has no `scenarioId`, so validation is always empty.
+- Operand-constraining props are in `AstBuilderRootProps` (`types.ts`); note the spelling `excludeFuntionsType`.
+- **Edit-mode roots are uncontrolled**: `createSharp` runs once (sharpstate `useRefFn`), so a new `node` prop is ignored. Read changes via `onUpdate`; to replace the formula, remount with `key` (`formulaKey` in `Scenario/Rules/RuleEditPanel.tsx`).
+- `view` mode exists only for And and OrWithAnd roots; others render `'view mode not supported yet!'`.
+
+## Node types
+
+- Import, don't redeclare: builder-level types and guards (`EditableAstNode`, `isKnownOperandAstNode`, `isMainAst*`) from `@app-builder/models/astNode/builder-ast-node`; per-node ones from `@app-builder/models/astNode/<kind>`; `NewUndefinedAstNode`, `IdLessAstNode`, `injectIdToNode` from `@app-builder/models`.
+- `Undefined` with no children is an empty slot; with children, an operator not chosen yet (nest: `NewUndefinedAstNode({ children: [node, NewUndefinedAstNode()] })`).
+- Menu options and copied nodes are `IdLessAstNode`; insert them through `injectIdToNode`.
+
+## Paths
+
+Paths start at `root` (`root.children.0.namedChildren.value`); `parsePath` (`@app-builder/utils/tree`) throws otherwise. Inside an edit modal, `root` is the edited node.
+
+## Updating nodes
+
+The store node is a deep signal: mutating `nodeSharp.value.node` (never a copy) re-renders.
+
+- **Replace at a path**: `nodeSharp.actions.setNodeAtPath(path, newNode)`; it calls `onUpdate` itself.
+- **In-place edits** (push/splice children, set `namedChildren`, change `name`): mutate, then `triggerUpdate()` so the host's `onUpdate` sees it. `nodeSharp.update(() => {...})` batches the writes (subscribed components re-render once) but doesn't call `onUpdate`. Reference: `setOperator` in `edition/EditionNode.tsx`.
+- `validate()` after every committed change. `onReplaceNode` (ValueSwitch live drafts) skips validation on purpose.
+- A modal store has no `onUpdate`: mutate, then `validate()`.
+
+**ValueSwitch lock**: while a ValueSwitch is open every other control is disabled, so new interactive controls must read `AstBuilderDataSharpFactory.select((s) => s.isValueSwitchOpen)` and disable themselves.
+
+## Edit modals
+
+Editable nodes open through the `match` in `edition/EditModal/EditModal.tsx`; ValueSwitch is edited inline. `OperandEditModal` creates a nested store, `useRoot({ node, validation }, false)`, holding a clone of the edited node; inside, `AstBuilderNodeSharpFactory.useSharp()` returns it, not the rule's store. Template: `modals/IpHasFlag/IpHasFlag.tsx`.
+
+- `nodeSharp.select((s) => s.node as XAstNode)`; on every input assign `node.namedChildren.<key>`, then `validate()`.
+- Wrap in `OperandEditModalContainer` (Save sends `nodeSharp.value.node` to `onSave`; Escape and outside clicks don't close).
+- Errors: `<EditionEvaluationErrors id={node.id} filterOut={['FUNCTION_ERROR']} />`; child status via `getValidationStatus`.
+- For a complex sub-structure, convert to an edit model and back (`modals/Aggregation/edit-model.ts`).
+
+## Validation flow
+
+- `useRoot` validates through `useValidateAstMutation` (`queries/validate-ast.ts`) and calls `onValidationUpdate` (empty without `scenarioId`) before the store's `validation` is set. Edition roots validate on mount; modals don't.
+- It aborts the previous `AbortController`, but `ac` never reaches `validateAstFn`: a stale response can still overwrite the store's `validation` and reach `onValidationUpdate` out of order.
+- Validation is flat (`generateFlatEvaluation` in `server-fns/scenarios.ts`): one row per node with `nodeId` and `relatedIds` (the node plus its ancestors, cut at the nearest operand). Leaf operands with child errors get a synthetic `FUNCTION_ERROR`.
+- `getErrorsForNode(validation, id, true)` and `EditionEvaluationErrors direct` match `nodeId` only; without `direct`, `relatedIds`.
+- View mode: the caller builds validation (`generateFlatEvaluation` in `Decisions/RulesDetail.tsx`).
+
+## Adding a new operator
+
+1. Add it to `binaryMainAstOperatorFunctions` or `unaryMainAstOperatorFunctions` in `models/astNode/builder-ast-node-node-operator.ts`.
+2. Add a key to `allMainAstOperatorFunctionsOptions` in `edition/EditionNode.tsx` (key order = dropdown order).
+3. Add a case in `models/get-operator-name.ts` (exhaustive via `assertNever`).
+4. Add any `scenarios:operator.<key>` to `locales/{en,fr,ar}/scenarios.json`.
+
+## Creating a new editable node type
+
+1. Interface, `NewXAstNode` and `isX` in `models/astNode/<kind>.ts`.
+2. Add it to both the `EditableAstNode` union and `isEditableAstNode` (`builder-ast-node.ts`); the guard decides what is a leaf operand. `.exhaustive()` in `EditModal.tsx` only enforces union members, and the two have drifted: TimestampExtract is only in the guard, FuzzyMatchFilterOptions (modal-only sub-node) only in the union.
+3. Modal in `edition/EditModal/modals/<X>/` + `.when(isX, ...)` in `EditModal.tsx`.
+4. Menu entry in `edition/base-options.ts`, then `services/ast-node/getAstNodeDisplayName.ts`, `getAstNodeDataType.ts`, `getAstNodeOperandType.ts`, `OperandInfos.tsx`. TypeScript doesn't enforce these (a missed one hides the node or shows it as unknown); grep `IpHasFlag` for every touch point.
+
+## Data accessor fields
+
+Use `isEnumField(field)` / `resolveEnumValues(field).values` (`@app-builder/models/enum-values`), never `field.isEnum`: it misses semantic-type enums.
+
+## Testing
+
+Copy the harness in `modals/Aggregation/EditFilters.spec.tsx`.

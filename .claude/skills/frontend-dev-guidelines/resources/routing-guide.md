@@ -1,219 +1,50 @@
 # Routing Guide
 
-TanStack Router file-based routing patterns used in the Marble app. Routes are auto-discovered by the TanStack Router Vite plugin and types are generated into `routeTree.gen.ts`.
+File routes in `packages/app-builder/src/routes/`. File name → URL and route ID, `createFileRoute`, loader shapes and breadcrumb typing: `.claude/rules/page-routes.md`. Loader → server fn → repository flow: [data-fetching.md](data-fetching.md).
 
----
+## Route tree facts
 
-## Route Structure
-
-```text
-packages/app-builder/src/routes/
-├── __root.tsx                       # Root route (createRootRouteWithContext)
-├── index.tsx                        # /
-├── $.tsx                            # Catch-all (404)
-├── _app.tsx                         # Authenticated app layout
-├── _app/
-│   ├── _builder.tsx                 # Main builder layout (sidebar, nav)
-│   ├── _builder/
-│   │   ├── cases.tsx                # /cases layout
-│   │   ├── cases/
-│   │   │   ├── index.tsx            # /cases
-│   │   │   ├── $caseId.tsx          # /cases/:caseId
-│   │   │   └── inboxes.$inboxId.tsx # /cases/inboxes/:inboxId
-│   │   ├── detection.tsx            # /detection layout
-│   │   ├── detection/
-│   │   │   └── lists.tsx            # /detection/lists
-│   │   ├── settings.tsx             # /settings layout
-│   │   └── settings/
-│   │       └── api-keys.tsx         # /settings/api-keys
-│   ├── _auth.tsx                    # Auth layout
-│   └── _auth/
-│       ├── sign-in.tsx              # /sign-in
-│       └── create-password.tsx      # /create-password
-└── ressources/                      # Resource file routes (downloads, streams)
-    ├── lists/
-    │   └── download-csv-file.$listId.ts
-    └── cases/
-        └── download-file.$fileId.ts
-```
-
-Mutation endpoints called via React Query live in `packages/app-builder/src/server-fns/` (not in `routes/`). See [data-fetching.md](data-fetching.md).
-
-## Naming Conventions
-
-| Pattern | Meaning | Example |
-|---------|---------|---------|
-| `_name.tsx` | Layout route (renders `<Outlet />` for children) | `_app.tsx`, `_builder.tsx` |
-| `$param` | Dynamic segment | `cases/$caseId.tsx` → `/cases/:caseId` |
-| `parent/child.tsx` | Subdirectory nesting under a parent layout | `detection/lists.tsx` → `/detection/lists` |
-| `dot.separated.tsx` | Combine static + dynamic segments in one filename | `cases/inboxes.$inboxId.tsx` → `/cases/inboxes/:inboxId` |
-| `name_.tsx` (trailing underscore) | Break out of the parent layout while keeping the URL | `settings/webhooks_.$webhookId.tsx` |
-| `index.tsx` | Index route at parent's path | `_app/_builder/index.tsx` |
-| `$.tsx` | Catch-all splat route | `$.tsx` for 404 |
-| `.server.ts` | Pure server utility (not a route, no `createFileRoute`) | `update-rule.server.ts` |
-| `ressources/...` | Resource file routes (API-like, returns `Response`) | `ressources/lists/download-csv-file.$listId.ts` |
-
----
+- No 404 page: the `$.tsx` splat sends unknown URLs to `/app-router` (signed in) or `/sign-in`.
+- `_app.tsx` is a pathless shell with no auth; `_app/_builder.tsx`'s loader runs `authMiddleware`.
+- `/` (`index.tsx`) is only a server handler (GET → 302 `/sign-in`): a client navigation there renders a blank page, so never link or redirect to it.
+- Mutations go in `server-fns/`. Don't copy the two legacy route-local ones (`detection/scenarios/$scenarioId/home.tsx`, `.../_edit-view/decision.tsx`).
+- Every file under `routes/` is a route candidate unless its name starts with `-`: keep helpers and specs elsewhere or `-`-prefix them.
 
 ## Breadcrumbs
 
-Routes declare breadcrumbs via `staticData.BreadCrumbs` inside `createFileRoute`:
+`BreadCrumbs` (`components/Breadcrumbs.tsx`) walks `useMatches()` and renders each `staticData.BreadCrumbs` array with `isLast` and `data` = that match's loader data.
 
-```typescript
-import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { createFileRoute } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
-
-export const Route = createFileRoute('/_app/_builder/cases')({
-  staticData: {
-    BreadCrumbs: [
-      ({ isLast }: BreadCrumbProps) => {
-        const { t } = useTranslation(['navigation']);
-        return (
-          <BreadCrumbLink to="/cases" isLast={isLast}>
-            <Icon icon="case-manager" className="me-sm size-6" />
-            {t('navigation:case_manager')}
-          </BreadCrumbLink>
-        );
-      },
-    ],
-  },
-  loader: () => casesLayoutLoader(),
-  component: CasesLayout,
-});
-```
-
-Key points:
-- `staticData.BreadCrumbs` is an array of React render functions
-- Each receives `{ isLast: boolean }`
-- The `Breadcrumbs` component walks the matched routes and collects each route's `staticData.BreadCrumbs`
-- i18n namespaces are declared **per-component** via `useTranslation([...])` — no longer in a `handle` export
-
----
+- Data from the route's `beforeLoad`: `Route.useRouteContext()` (`detection/scenarios/$scenarioId.tsx`, `detection/scenarios/$scenarioId/i/$iterationId.tsx`).
+- One array shared by several routes: type it `FunctionComponent<BreadCrumbProps<T>>[]`, read `data`, and make each route's loader return `T` (`caseDetailBreadcrumbs` in `components/CaseManager/case-detail-breadcrumbs.tsx`, used by `cases/_detail/s.$caseId.tsx` and `m.$caseId/index.tsx`).
+- Translate inside the component with `useTranslation([...])`. `staticData.i18n` and exported `handle = { i18n }` objects are Remix leftovers nothing reads: don't add them.
 
 ## Navigation
 
-### Type-safe Route Helper
+- `to` is typed: `$param` paths plus `params`, never `:param` or template strings.
+- `to` and Link / `navigate` `from` take the URL path (no `_app`, `_builder` or other pathless segments); `from` on `useLoaderData` / `useRouteContext` takes the route ID (`/_app/_builder/...`, as in `routeTree.gen.ts`).
+- Need a URL string (`fetch`, `useDownloadFile`)? `useRouter().buildLocation({ to, params }).href`.
+- `useAgnosticNavigation` (`contexts/AgnosticNavigationContext`) is a legacy string-path adapter: use `Link` / `useNavigate` in new code.
 
-```typescript
-import { getRoute } from '@app-builder/utils/routes';
+### Ids in URLs
 
-// No params
-getRoute('/cases')
+- Page URLs carry short UUIDs: encode with `fromUUIDtoSUUID` in `params`; decode in the loader with `fromParams(params, 'xId')` (`utils/short-uuid`, throws if missing), `shortUUIDSchema`, or `await parseIdParamSafe(params, 'xId')` (`utils/input-validation`: returns `{ success, data }` so you throw the 404 yourself). Components read the decoded id with `useParam('xId')`.
+- On document loads `middlewares/short-uuid-redirect.ts` 302s any long UUID in a page path to its short form (not under `/client-detail/`, `/ressources/`, `/oidc/`), so page loaders must decode.
+- Linking to an existing route? Check what it decodes. Most `ressources/` handlers read raw ids (only `lists/download-csv-file` and `cases/next-unassigned` decode), and so does `settings/webhooks_.$webhookId` (links pass `webhook.id`; don't copy it for new pages).
+- Case detail: `/cases/$caseId` redirects to `/cases/s/$caseId` (standard) or `/cases/m/$caseId` (continuous screening); link to `s`/`m` when the type is known.
+- Client detail: `params={clientDetailLinkParams(objectType, objectId)}` (`utils/routes/client-detail-url`); ids containing `/` are base64url-encoded.
 
-// With params (TypeScript enforces required params)
-getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })
-getRoute('/detection/lists/:listId', { listId: fromUUIDtoSUUID(id) })
+## Loaders: repo specifics
 
-// Resource routes
-getRoute('/ressources/lists/download-csv-file/:listId', { listId })
-```
+Shapes: page-routes rule.
 
-### Link Component
+- `loaderDeps` must return every search key the loader reads, or changing that key won't re-run it.
+- Feature gate: check a `services/feature-access` predicate in the loader and `throw redirect({ to: '/app-router' })`, not the legacy `redirect({ to: '/' })`.
+- Parent data for child loaders: return it from the parent's `beforeLoad` (route context, `detection/scenarios/$scenarioId.tsx`). For child components only, the parent loader is enough: `useLoaderData({ from: '<parent route ID>' })`. Wrap either in a hook in `hooks/routes-layout-data.ts`. `beforeLoad` is not cached and also runs on hover preload: keep it cheap and side-effect free.
+- Refreshing loader data after a mutation: [data-fetching.md](data-fetching.md).
 
-```typescript
-import { Link } from '@tanstack/react-router';
+## Resource file routes
 
-<Link to={getRoute('/cases/:caseId', { caseId: id })}>
-  View Case
-</Link>
-```
+Handler shape: `.claude/rules/resource-routes.md`. The client depends on the response:
 
-### Programmatic Navigation
-
-```typescript
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-
-const navigate = useAgnosticNavigation();
-navigate(getRoute('/cases'));
-navigate(result.redirectTo); // from server response
-```
-
-`useAgnosticNavigation` wraps TanStack Router's navigation hook and is preferred across the codebase for consistent SSR/CSR behavior.
-
----
-
-## Route Template
-
-```typescript
-// routes/_app/_builder/cases.tsx
-import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { DataModelContextProvider } from '@app-builder/services/data/data-model';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
-import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
-
-const casesLayoutLoader = createServerFn()
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    const { dataModelRepository } = context.authInfo;
-    const dataModel = await dataModelRepository.getDataModel();
-    return { dataModel };
-  });
-
-export const Route = createFileRoute('/_app/_builder/cases')({
-  staticData: {
-    BreadCrumbs: [
-      ({ isLast }: BreadCrumbProps) => {
-        const { t } = useTranslation(['navigation']);
-        return (
-          <BreadCrumbLink to="/cases" isLast={isLast}>
-            <Icon icon="case-manager" className="me-sm size-6" />
-            {t('navigation:case_manager')}
-          </BreadCrumbLink>
-        );
-      },
-    ],
-  },
-  loader: () => casesLayoutLoader(),
-  component: CasesLayout,
-});
-
-function CasesLayout() {
-  const { dataModel } = Route.useLoaderData();
-  return (
-    <DataModelContextProvider dataModel={dataModel}>
-      <Outlet />
-    </DataModelContextProvider>
-  );
-}
-```
-
-Key points:
-- Loaders are defined as `createServerFn` chains and passed via the `loader` option
-- `Route.useLoaderData()` reads loader data inside the component
-- `authMiddleware` provides `context.authInfo` (repositories, user, entitlements) — no separate redirect middleware needed; auth redirects are handled inside `authMiddleware`
-
----
-
-## Resource File Routes
-
-For downloads, streams, or file-typed responses, use `createFileRoute(...)({ server: { handlers: { ... } } })`:
-
-```typescript
-// routes/ressources/lists/download-csv-file.$listId.ts
-import { fromParams } from '@app-builder/utils/short-uuid';
-import { createFileRoute } from '@tanstack/react-router';
-
-export const Route = createFileRoute('/ressources/lists/download-csv-file/$listId')({
-  server: {
-    handlers: {
-      GET: async ({ request, params }) => {
-        // ... auth, fetch, etc.
-        const listId = fromParams(params, 'listId');
-        return new Response(fileContents, {
-          headers: {
-            'Content-Disposition': `attachment; filename="list-${listId}.csv"`,
-            'Content-Type': 'text/csv',
-          },
-        });
-      },
-    },
-  },
-});
-```
-
-For JSON endpoints called from React Query, use `server-fns/` instead (see [data-fetching.md](data-fetching.md)).
+- Signed link (`Response.json({ url })`, `ressources/cases/download-file.$fileId.ts`) or zip / octet-stream body: `useDownloadFile(href)` (`services/DownloadFilesService.ts`; rejects any other content type), as in `components/CaseManager/CaseDocuments/CaseFileButton.tsx`.
+- File body with `Content-Disposition: attachment` (the CSV route): a document link, `<Link reloadDocument to="/ressources/lists/download-csv-file/$listId" params={{ listId: fromUUIDtoSUUID(listId) }}>`.

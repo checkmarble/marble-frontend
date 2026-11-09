@@ -1,10 +1,7 @@
 ---
-description: Read before adding, renaming, or removing a translation key — all three locales must stay in sync or the build breaks
-globs:
-  - "**/locales/**"
-  - "**/i18n/**"
-  - "**/resources.server.ts"
+description: Read before adding, renaming, or removing a translation key — every en key must exist in fr and ar or type-check fails
+globs: **/locales/**,**/i18n/**
 alwaysApply: false
 ---
 
-Apply the rules in @.claude/rules/i18n.md
+Before editing files matching this rule, read `.claude/rules/i18n.md` and follow it.

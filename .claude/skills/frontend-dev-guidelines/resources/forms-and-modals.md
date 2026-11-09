@@ -1,234 +1,70 @@
 # Forms & Modals
 
-TanStack Form, Modal dialogs, and Panel slide-outs.
+TanStack Form with Zod v4, plus `Modal` and `Panel` from `ui-design-system`. Reference form: `components/Settings/Inboxes/InboxPanel.tsx`. Its fields file, `InboxFormFields.tsx`, is not a model: it uses the deprecated `FormInput` (wire inputs as shown below), casts `defaultValues` with `as` (type them as the payload instead) and keeps a needless `isValid` guard.
 
 ---
 
 ## TanStack Form
 
-Forms use `@tanstack/react-form` with Zod v4 validation and custom form components.
+- **Split outer and inner.** The outer component owns `Modal.Root`/`Trigger` (or `Panel.Root`) and the open state. An inner `XContent`, rendered under `Modal.Content` or `Panel.Container`, owns `useForm` and the mutation. Both unmount on close, so the form resets on every open. Render the inner component only once the query behind its defaults has succeeded (`components/Cases/Overview/Panel/SlaConfigPanelContent.tsx`). Give it a `key` when one panel edits different entities (`InboxPanel.tsx`).
+- **Schema.** Use the payload schema that the `queries/` mutation file re-exports, which is the same one the server function validates with. Use `.pick()` for subset forms (`InboxFormFields.tsx`), and a local `z.object` only for UI-only shapes.
+- **Submit.** `<form onSubmit={handleSubmit(form)}>`, with `handleSubmit` from `@app-builder/utils/form`. It also stops propagation, because React events bubble through the modal portal into a parent `<form>`. `onSubmit` runs only after validation passes, so there's no need for a `formApi.state.isValid` guard. Make `onSubmit` async: `await` the mutation and catch inside it. That way `isSubmitting` covers the request, and nothing rejects unhandled (`handleSubmit` doesn't await `form.handleSubmit()`).
+- **After success**, refresh as described in [data-fetching.md](data-fetching.md#refreshing-data).
 
-### Basic Form Pattern
+Field wiring inside the inner component:
 
-```typescript
-import { useForm } from '@tanstack/react-form';
-import { z } from 'zod/v4';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+```tsx
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
-import { Button, Modal } from 'ui-design-system';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { getFieldErrors } from '@app-builder/utils/form';
+import { Input } from 'ui-design-system';
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string(),
-});
-
-export function CreateItemForm({ closeModal }: { closeModal: () => void }) {
-  const createMutation = useCreateItemMutation();
-
-  const form = useForm({
-    defaultValues: { name: '', description: '' },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createMutation.mutateAsync(value).then((res) => {
-          closeModal();
-        });
-      }
-    },
-    validators: {
-      onSubmit: schema,
-    },
-  });
-
-  return (
-    <form onSubmit={handleSubmit(form)}>
-      <Modal.Title>Create Item</Modal.Title>
-      <div className="flex flex-col gap-lg p-lg">
-        <form.Field
-          name="name"
-          validators={{
-            onBlur: schema.shape.name,
-            onChange: schema.shape.name,
-          }}
-        >
-          {(field) => (
-            <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>Name</FormLabel>
-              <FormInput
-                type="text"
-                name={field.name}
-                defaultValue={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0}
-              />
-              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-            </div>
-          )}
-        </form.Field>
-      </div>
-      <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" type="button">Cancel</Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" disabled={createMutation.isPending}>Save</Button>
-      </Modal.Footer>
-    </form>
-  );
-}
+<form.Field name="name" validators={{ onChange: formSchema.shape.name }}>
+  {(field) => (
+    <div className="flex flex-col gap-sm">
+      <FormLabel name={field.name}>{t('settings:inboxes.inbox_name')}</FormLabel>
+      <Input
+        id={field.name}
+        value={field.state.value}
+        onChange={(e) => field.handleChange(e.currentTarget.value)}
+        onBlur={field.handleBlur}
+        borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+      />
+      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+    </div>
+  )}
+</form.Field>
 ```
 
-### Form Utilities
+### Reading form state
 
-```typescript
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
+`useForm` doesn't subscribe its component to the form, so `form.state` read during render is stale. In render, use `<form.Subscribe selector={(s) => [s.isSubmitting, s.canSubmit] as const}>` (`InboxPanel.tsx`) or `useSelector(form.store, (s) => s.values.x)` from `@tanstack/react-form`. The `useStore` you'll see in older files is a `@deprecated` alias of `useSelector`. Read `form.state` only in handlers.
 
-// handleSubmit wraps form.handleSubmit with preventDefault
-<form onSubmit={handleSubmit(form)}>
+### Form components (`components/Form/Tanstack/`)
 
-// getFieldErrors extracts error messages from TanStack Form error objects
-<FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-```
+- `FormInput` is `@deprecated`. Use `Input` as above, and keep `id={field.name}` so `FormLabel`'s `htmlFor={name}` links to it.
+- `FormLabel` turns red when `valid === false`. `FormErrorOrDescription` shows the first of `errors`, otherwise `description`.
+- `FormTextArea` has a red border unless `valid` is true, and it passes `valid` on to the DOM `<textarea>`, which triggers a React warning. Prefer `TextArea` from `ui-design-system`, wired like `Input` (`id`, `borderColor`). Always pass it a `placeholder`: the default is an untranslated "Write a note".
 
-### Form Components
+### Number fields
 
-| Component                | Props                                                         | Purpose                             |
-| ------------------------ | ------------------------------------------------------------- | ----------------------------------- |
-| `FormInput`              | `type`, `name`, `defaultValue`, `onChange`, `onBlur`, `valid` | Text/number input with error border |
-| `FormLabel`              | `name`, `valid`                                               | Label linked to input via `htmlFor` |
-| `FormErrorOrDescription` | `errors?`, `description?`                                     | Shows errors or help text           |
-| `FormTextArea`           | Same as FormInput                                             | Multi-line input                    |
-| `FormError`              | `field`, `asString?`, `translations?`                         | Translates Zod error codes to i18n  |
-
-### Number Fields
-
-For number fields, coerce the value in `handleChange`:
-
-```typescript
-<FormInput
-  type="number"
-  min={0}
-  step={1}
-  name={field.name}
-  defaultValue={field.state.value}
-  onChange={(e) => field.handleChange(+e.currentTarget.value)}
-  onBlur={field.handleBlur}
-  valid={field.state.meta.errors.length === 0}
-/>
-```
+`NumberInput` (`ui-design-system`) binds directly: `onChange={field.handleChange}` receives a number, and `value` must be a number. It accepts integers only unless you pass `decimalPrecision={n}`. Clearing it does not call `onChange`, so the field keeps its last number while the input shows empty. (With a plain `Input type="number"` and `+e.currentTarget.value`, an empty input becomes `0`.) Give it `id={field.name}` under a `FormLabel`.
 
 ---
 
 ## Modal
 
-Compound component built on Radix Dialog. Import from ui-design-system.
-
-### Basic Modal
-
-```typescript
-import { useState } from 'react';
-import { Button, Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
-        <Button variant="secondary" color="red">
-          <Icon icon="delete" className="size-5" />
-          Delete
-        </Button>
-      </Modal.Trigger>
-      <Modal.Content>
-        <Modal.Title>Delete Item</Modal.Title>
-        <div className="flex flex-col gap-lg p-lg">
-          <p className="text-s text-center text-grey-primary">
-            Are you sure you want to delete this item?
-          </p>
-        </div>
-        <Modal.Footer>
-          <Modal.FooterButton isCloseButton label={t('common:cancel')} onClick={onClose} />
-          <Modal.FooterButton variant="destructive" label={t('common:delete')} onClick={handleDelete} leadingIcon='delete' />
-        </Modal.Footer>
-      </Modal.Content>
-    </Modal.Root>
-  );
-}
-```
-
-### Modal Components
-
-| Component       | Purpose                                                                                                               |
-| --------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `Modal.Root`    | Root state manager. Props: `open`, `onOpenChange`                                                                     |
-| `Modal.Trigger` | Opens the modal. Use `asChild` to wrap custom trigger                                                                 |
-| `Modal.Content` | Dialog container. Props: `size` (`small`/`medium`/`large`/`xlarge`)                                                   |
-| `Modal.Title`   | Dialog title (required for accessibility)                                                                             |
-| `Modal.Close`   | Closes on click. Use `asChild` to wrap custom button                                                                  |
-| `Modal.Footer`  | Standard buttons in the footer, asClosed for the buttons that close the modal, with optional icon and isLoading state |
-
-### Modal with Form
-
-Wrap `<form>` around `Modal.Title`, content, and `Modal.Footer`:
-
-```typescript
-<Modal.Content>
-  <form onSubmit={handleSubmit(form)}>
-    <Modal.Title>Create Item</Modal.Title>
-    <div className="flex flex-col gap-lg p-lg">
-      {/* form fields */}
-    </div>
-    <Modal.Footer>
-      <Modal.FooterButton isCloseButton label={t('common:cancel')} onClick={onClose} />
-      <Modal.FooterButton variant="destructive" label={t('common:delete')} onClick={handleDelete} leadingIcon='delete' />
-    </Modal.Footer>
-  </form>
-</Modal.Content>
-```
+- `Modal.Content` unmounts when closed. Always render a `Modal.Title`: Radix warns without one. `Modal.FooterButton isCloseButton` closes the modal through `Dialog.Close`, so it needs no `onClick`.
+- `Button` defaults to `type="button"`, so the submit `FooterButton` needs `type="submit"`. When the footer sits outside the `<form>`, add `form={formId}`.
+- **Destructive confirm**: `<Modal.FooterButton variant="destructive" leadingIcon="delete" ... />`, not `color="red"`, which only applies to `variant="primary"` with the filled appearance. Footer markup reference: `components/Settings/Inboxes/DeleteInboxUser.tsx` (its trigger is `DeleteInboxUserButton` in `InboxMembers.tsx`); refresh with `router.invalidate()`, not its `useLoaderRevalidator()`.
 
 ---
 
-## Panel (Slide-out)
+## Panel (slide-out)
 
-Right-side sliding panel for detail views. Import from app-builder components.
+A custom sharpstate component, not Radix. Reference: `components/Settings/Inboxes/InboxPanel.tsx` (form `id` from `useId`, `Panel.Footer` under `Panel.Content`, `router.invalidate()`).
 
-```typescript
-import { Panel } from 'ui-design-system';
-import { useTranslation } from 'react-i18next';
-
-export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const { t } = useTranslation(['common']);
-
-  const handleValidateClick = () => {
-    onOpenChange(false);
-  };
-
-  return (
-    <Panel.Root open={open} onOpenChange={onOpenChange}>
-      <Panel.Container size="medium">
-        <Panel.Content>
-          <Panel.Header>Detail View</Panel.Header>
-          {/* Scrollable content */}
-          <Panel.Footer>
-            <Panel.FooterButton variant="secondary" label={t('common:close')} isCloseButton />
-            <Panel.FooterButton variant="primary" onClick={handleValidateClick} label={t('common:save')} />
-          </Panel.Footer>
-        </Panel.Content>
-      </Panel.Container>
-    </Panel.Root>
-  );
-}
-```
-
-### Panel Sizes
-
-| Size   | Max Width                       |
-| ------ | ------------------------------- |
-| small  | 'max-w-[calc(100vw_/_3)]'       |
-| medium | 'max-w-[50vw]'                  |
-| large  | 'max-w-[calc(100vw_*_(2_/_3))]' |
-
-Features: slide animation, focus trapping, Escape to close, portal rendering.
+- `Panel.Root` always renders its children; only `Panel.Container` returns `null` when closed. Keep `useForm` in a component rendered inside `Panel.Container`, otherwise the form state survives a close.
+- Close from inside with `PanelSharpFactory.useSharp().actions.close()`. `PanelSharpFactory` is exported from `ui-design-system`.
+- Escape, the header ✕ and `isCloseButton` all call `onOpenChange(false)`. A controlled panel stays open until the parent flips `open`, so the parent can confirm unsaved changes first. An uncontrolled panel (`Panel.Trigger`) closes unless `onOpenChange` returns `false`.
+- `Panel.Footer` must stay a direct child of `Panel.Content`, because of its sticky `mt-auto` layout. Either give the `<form>` an `id` and use `<Panel.FooterButton type="submit" form={formId} />`, or wrap `Panel.Content` in `<form className="contents">`.
