@@ -1,5 +1,6 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import {
+  type CurrentUser,
   isAdmin,
   isForbiddenHttpError,
   isHttpError,
@@ -475,6 +476,13 @@ export const createUserFn = createServerFn({ method: 'POST' })
     }
   });
 
+// Admins cannot change or revoke their own access, which could leave the organization without an admin.
+function assertNotOwnAccess(user: CurrentUser, userId: string) {
+  if (user.actorIdentity.userId?.toLowerCase() === userId.toLowerCase()) {
+    throw new Error('Cannot change your own access');
+  }
+}
+
 // Users of the organization's tenant who have no access to the organization yet.
 export const getTenantUsersWithoutAccessFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -494,7 +502,8 @@ export const grantOrganizationAccessFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(grantOrganizationAccessPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { organization } = context.authInfo;
+    const { user, organization } = context.authInfo;
+    assertNotOwnAccess(user, data.userId);
     const { tenantId } = await organization.getCurrentOrganization();
 
     await organization.grantAccess({ tenantId, userId: data.userId, role: data.role });
@@ -506,11 +515,12 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(updateOrganizationUserPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { apiClient, organization } = context.authInfo;
+    const { user, organization } = context.authInfo;
+    if (data.role) assertNotOwnAccess(user, data.userId);
 
     if (data.firstName !== undefined || data.lastName !== undefined) {
       try {
-        await apiClient.updateUser(data.userId, { first_name: data.firstName, last_name: data.lastName });
+        await organization.updateUserName({ userId: data.userId, firstName: data.firstName, lastName: data.lastName });
       } catch (error) {
         if (isForbiddenHttpError(error)) return { error: 'name_forbidden' as const };
         throw error;
@@ -528,7 +538,8 @@ export const revokeOrganizationAccessFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(revokeOrganizationAccessPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { organization } = context.authInfo;
+    const { user, organization } = context.authInfo;
+    assertNotOwnAccess(user, data.userId);
     const { tenantId } = await organization.getCurrentOrganization();
 
     await organization.revokeAccess({ tenantId, userId: data.userId });

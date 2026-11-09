@@ -9,11 +9,12 @@ import {
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
 import { UserRoleField } from './UserRoleField';
 
 interface EditOrganizationUserProps {
@@ -53,6 +54,21 @@ function EditOrganizationUserContent({
   const { t } = useTranslation(['common', 'settings']);
   const updateUserMutation = useUpdateOrganizationUserMutation();
   const revalidate = useLoaderRevalidator();
+  // A name that was already blank may stay blank: changing it requires the user's home organization.
+  const formSchema = useMemo(
+    () =>
+      editOrganizationUserFormSchema.extend({
+        firstName: z
+          .string()
+          .trim()
+          .min(user.firstName.trim() ? 1 : 0),
+        lastName: z
+          .string()
+          .trim()
+          .min(user.lastName.trim() ? 1 : 0),
+      }),
+    [user.firstName, user.lastName],
+  );
 
   const form = useForm({
     defaultValues: {
@@ -61,12 +77,13 @@ function EditOrganizationUserContent({
       role: user.role,
     } as EditOrganizationUserForm,
     validators: {
-      onSubmit: editOrganizationUserFormSchema,
+      onSubmit: formSchema,
     },
     onSubmit: ({ value }) => {
-      const nameChanged = value.firstName !== user.firstName || value.lastName !== user.lastName;
+      const firstNameChanged = value.firstName.trim() !== user.firstName.trim();
+      const lastNameChanged = value.lastName.trim() !== user.lastName.trim();
       const roleChanged = value.role !== user.role;
-      if (!nameChanged && !roleChanged) {
+      if (!firstNameChanged && !lastNameChanged && !roleChanged) {
         onSuccess();
         return;
       }
@@ -74,7 +91,8 @@ function EditOrganizationUserContent({
       return updateUserMutation
         .mutateAsync({
           userId: user.userId,
-          ...(nameChanged && { firstName: value.firstName, lastName: value.lastName }),
+          ...(firstNameChanged && { firstName: value.firstName }),
+          ...(lastNameChanged && { lastName: value.lastName }),
           ...(roleChanged && { role: value.role }),
         })
         .then((result) => {
@@ -88,6 +106,8 @@ function EditOrganizationUserContent({
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
+          // The name may have been saved before the role update failed
+          revalidate();
         });
     },
   });
@@ -103,7 +123,7 @@ function EditOrganizationUserContent({
       <Modal.Title>{t('settings:users.edit_user.title')}</Modal.Title>
       <div className="flex flex-col gap-md p-lg">
         <div className="flex gap-sm">
-          <form.Field name="firstName" validators={{ onChange: editOrganizationUserFormSchema.shape.firstName }}>
+          <form.Field name="firstName" validators={{ onChange: formSchema.shape.firstName }}>
             {(field) => (
               <div className="flex w-full flex-col gap-xs">
                 <label htmlFor={field.name} className="text-s text-grey-secondary">
@@ -122,7 +142,7 @@ function EditOrganizationUserContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="lastName" validators={{ onChange: editOrganizationUserFormSchema.shape.lastName }}>
+          <form.Field name="lastName" validators={{ onChange: formSchema.shape.lastName }}>
             {(field) => (
               <div className="flex w-full flex-col gap-xs">
                 <label htmlFor={field.name} className="text-s text-grey-secondary">
