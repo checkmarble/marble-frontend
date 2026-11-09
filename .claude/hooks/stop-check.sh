@@ -23,10 +23,11 @@ if [ "$(printf '%s' "$INPUT" | jq -r '.stop_hook_active // .stopHookActive')" = 
   exit 0
 fi
 
-# Find modified TS/TSX files (staged + unstaged)
+# Find modified TS/TSX files (staged + unstaged + new untracked)
 MODIFIED=$(git diff --name-only 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
 STAGED=$(git diff --cached --name-only 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
-ALL_MODIFIED=$(echo -e "${MODIFIED}\n${STAGED}" | sort -u | grep -v '^$' || true)
+UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
+ALL_MODIFIED=$(echo -e "${MODIFIED}\n${STAGED}\n${UNTRACKED}" | sort -u | grep -v '^$' || true)
 
 # Nothing modified, let the agent stop
 if [ -z "$ALL_MODIFIED" ]; then
@@ -36,19 +37,8 @@ fi
 # Format and apply assist (including named-import sort) so the result matches `biome check`.
 for file in $ALL_MODIFIED; do
   if [ -f "$file" ]; then
-    "$PROJECT_DIR"/node_modules/.bin/biome check --write --linter-enabled=false "$file" 2>/dev/null || true
+    "$PROJECT_DIR"/node_modules/.bin/biome check --write --linter-enabled=false "$file" >/dev/null 2>&1 || true
   fi
-done
-
-# Determine which packages need type-checking
-CHECK_APP=false
-CHECK_UI=false
-
-for file in $ALL_MODIFIED; do
-  case "$file" in
-    packages/app-builder/*) CHECK_APP=true ;;
-    packages/ui-design-system/*) CHECK_UI=true ;;
-  esac
 done
 
 ERRORS=""
@@ -59,17 +49,15 @@ if [ -z "$BUN_COMMAND" ]; then
   BUN_COMMAND="${BUN_INSTALL:-$HOME/.bun}/bin/bun"
 fi
 
-if [ "$CHECK_APP" = true ]; then
-  APP_RESULT=$(cd "$PROJECT_DIR/packages/app-builder" && "$BUN_COMMAND" run type-check 2>&1) || {
-    ERRORS="$ERRORS\n\n## app-builder type-check errors:\n$(echo "$APP_RESULT" | head -50)"
+# Type-check every changed package that defines a type-check script
+PACKAGES=$(echo "$ALL_MODIFIED" | sed -n 's#^packages/\([^/]*\)/.*#\1#p' | sort -u)
+for pkg in $PACKAGES; do
+  PKG_DIR="$PROJECT_DIR/packages/$pkg"
+  jq -e '.scripts["type-check"]' "$PKG_DIR/package.json" >/dev/null 2>&1 || continue
+  RESULT=$(cd "$PKG_DIR" && "$BUN_COMMAND" run type-check 2>&1) || {
+    ERRORS="$ERRORS\n\n## $pkg type-check errors:\n$(echo "$RESULT" | head -50)"
   }
-fi
-
-if [ "$CHECK_UI" = true ]; then
-  UI_RESULT=$(cd "$PROJECT_DIR/packages/ui-design-system" && "$BUN_COMMAND" run type-check 2>&1) || {
-    ERRORS="$ERRORS\n\n## ui-design-system type-check errors:\n$(echo "$UI_RESULT" | head -50)"
-  }
-fi
+done
 
 # If type-check failed, block the agent from stopping and show errors
 if [ -n "$ERRORS" ]; then

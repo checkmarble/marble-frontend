@@ -1,7 +1,7 @@
 ---
 name: auto-error-resolver
-description: Diagnoses and fixes frontend errors including TypeScript compilation errors, build failures, and runtime browser errors. Use proactively when encountering any frontend error or when the build hook reports errors.
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+description: Diagnoses and fixes frontend errors including TypeScript compilation errors, build failures, and runtime browser errors. Use proactively when encountering any frontend error or when the Stop hook reports type-check errors.
+tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 color: red
 ---
@@ -37,7 +37,6 @@ Determine the error type:
 3. **Fix errors efficiently**:
    - Start with import errors and missing dependencies
    - Then fix type errors
-   - Use MultiEdit when fixing similar issues across multiple files
    - Make minimal, targeted changes
 
 4. **Verify fixes**:
