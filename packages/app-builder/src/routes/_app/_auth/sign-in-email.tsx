@@ -1,10 +1,13 @@
 import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
+import { MfaChallenge } from '@app-builder/components/Auth/MfaChallenge';
 import { SignInFirstConnection } from '@app-builder/components/Auth/SignInFirstConnection';
 import {
   SignInWithEmailAndPassword,
   StaticSignInWithEmailAndPassword,
 } from '@app-builder/components/Auth/SignInWithEmailAndPassword';
+import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
+import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
@@ -21,6 +24,8 @@ import { useMutation } from '@tanstack/react-query';
 import { ClientOnly, createFileRoute, Link, redirect, type SearchSchemaInput } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
+import { type MultiFactorResolver } from 'firebase/auth';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -87,6 +92,8 @@ const signInEmailLoader = createServerFn()
       authError: authError ?? (!appConfig ? ('BackendUnavailable' as AuthErrors) : undefined),
       isSsoEnabled: appConfig && appConfig.features.sso,
       isManagedMarble: appConfig?.isManagedMarble ?? false,
+      // Email discovery sends Firebase users here, so offer the other Firebase providers too.
+      showFederatedProviders: appConfig ? getAuthMode(appConfig.auth.providers) === 'firebase-oidc' : false,
       prefilledEmail,
       redirectTo,
       signedOut,
@@ -111,6 +118,7 @@ function LoginWithEmail() {
     isSignupReady,
     didMigrationsRun,
     isManagedMarble,
+    showFederatedProviders,
     prefilledEmail,
     redirectTo,
     signedOut,
@@ -137,11 +145,30 @@ function LoginWithEmail() {
   const type = signInMutation.variables?.type;
   const highlight = { Highlight: <span className="text-purple-primary" /> };
 
+  const [mfaChallenge, setMfaChallenge] = useState<{
+    resolver: MultiFactorResolver;
+    type: AuthPayload['type'];
+  } | null>(null);
+
+  if (mfaChallenge) {
+    return (
+      <div className="flex flex-col gap-2xl w-full">
+        <MfaChallenge
+          resolver={mfaChallenge.resolver}
+          authType={mfaChallenge.type}
+          signIn={signIn}
+          loading={loading}
+          onCancel={() => setMfaChallenge(null)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2xl w-full">
       {isSsoEnabled ? (
         <Link
-          className="lg:absolute lg:top-15 lg:start-15 flex gap-sm text-s items-center"
+          className="lg:absolute lg:top-5 lg:start-5 flex gap-sm text-s items-center"
           to="/sign-in"
           search={signedOut ? { signedOut: 1 } : undefined}
         >
@@ -169,6 +196,27 @@ function LoginWithEmail() {
             prefilledEmail={prefilledEmail}
           />
         </ClientOnly>
+        {showFederatedProviders ? (
+          <>
+            <div className="flex items-center gap-md self-stretch">
+              <div className="h-px bg-grey-border grow" />
+              <span>{t('common:or')}</span>
+              <div className="h-px bg-grey-border grow" />
+            </div>
+            <div className="flex flex-col gap-sm">
+              <SignInWithGoogle
+                signIn={signIn}
+                onMfaRequired={(resolver) => setMfaChallenge({ resolver, type: 'google' })}
+                loading={loading && type === 'google'}
+              />
+              <SignInWithMicrosoft
+                signIn={signIn}
+                onMfaRequired={(resolver) => setMfaChallenge({ resolver, type: 'microsoft' })}
+                loading={loading && type === 'microsoft'}
+              />
+            </div>
+          </>
+        ) : null}
         {!isSsoEnabled ? (
           <>
             <div className="flex items-center gap-md self-stretch">
