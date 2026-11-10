@@ -6,7 +6,7 @@ import * as R from 'remeda';
 import { cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { CustomerKpis } from '../CustomerKpis/CustomerKpis';
+import { CustomerKpiTiles } from '../CustomerKpis/CustomerKpiTiles';
 import { type ColumnFilters } from './column-filters';
 import { DataTableRender } from './DataTableRender';
 import { DataModelExplorerContext, type DataModelExplorerState } from './Provider';
@@ -80,7 +80,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-md pt-md">
-      {props.client ? <CustomerKpis tinted currentUser={currentUser} {...props.client} /> : null}
+      {props.client ? <CustomerKpiTiles currentUser={currentUser} {...props.client} /> : null}
       <div className="flex flex-wrap items-center gap-sm">
         {tabs.map((tab) => {
           const targetTable = props.dataModel.find((table) => table.name === tab.targetTableName);
