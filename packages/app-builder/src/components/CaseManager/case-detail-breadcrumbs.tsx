@@ -62,7 +62,9 @@ export const caseDetailBreadcrumbs: FunctionComponent<BreadCrumbProps<CaseDetail
           isLast={isLast}
           className="min-w-0 shrink"
         >
-          <span className="line-clamp-2 text-start">{data.detail.name}</span>
+          <span className="min-w-0 truncate" title={data.detail.name}>
+            {data.detail.name}
+          </span>
         </BreadCrumbLink>
         <CaseDueDateUrgencyTag dueAt={data.detail.dueAt} status={data.detail.status} />
       </>
