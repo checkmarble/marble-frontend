@@ -5,7 +5,7 @@ import { type CustomerAggregateDto, type CustomerAggregateResultDto } from 'marb
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Popover } from 'ui-design-system';
+import { Button, Card, cn, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CustomerKpisConfigurationPopover } from './CustomerKpisConfigurationPopover';
 
@@ -13,26 +13,16 @@ type CustomerKpisProps = {
   currentUser: CurrentUser;
   objectId: string;
   objectType: string;
-  /** Tinted tiles with the value in the accent colour, as in the data exploration panel. */
-  tinted?: boolean;
 };
 
 type CustomerKpiCardProps = {
   currentUser: CurrentUser;
   aggregate: CustomerAggregateDto;
   language: string;
-  tinted?: boolean;
   onEdit: () => void;
 };
 
-function tileClassName(tinted: boolean | undefined) {
-  return cn(
-    'flex min-h-17 min-w-0 flex-1 flex-col justify-center gap-xs rounded-md border border-grey-border p-3',
-    tinted ? 'bg-grey-background-light' : 'bg-surface-card',
-  );
-}
-
-export function CustomerKpis({ currentUser, objectId, objectType, tinted }: CustomerKpisProps) {
+export function CustomerKpis({ currentUser, objectId, objectType }: CustomerKpisProps) {
   const { t } = useTranslation(['common', 'client360']);
   const language = useFormatLanguage();
   const [open, setOpen] = useState(false);
@@ -46,19 +36,18 @@ export function CustomerKpis({ currentUser, objectId, objectType, tinted }: Cust
 
   return match(customerAggregatesQuery)
     .with({ isPending: true }, () => (
-      <div
-        role="status"
+      <Card
         aria-label={t('client360:customer_kpis.status.loading')}
-        className={cn(tileClassName(tinted), 'flex-none animate-pulse bg-grey-background')}
+        className="min-h-23.5 animate-pulse bg-grey-background"
       />
     ))
     .with({ isError: true }, () => (
-      <div className={cn(tileClassName(tinted), 'flex-none flex-row items-center justify-center gap-sm')}>
+      <Card className="flex min-h-23.5 flex-col items-center justify-center gap-sm text-center">
         <span className="text-small text-grey-secondary">{t('common:generic_fetch_data_error')}</span>
         <Button size="small" variant="secondary" onClick={() => customerAggregatesQuery.refetch()}>
           {t('common:retry')}
         </Button>
-      </div>
+      </Card>
     ))
     .with({ isSuccess: true }, ({ data }) => (
       <Popover.Root
@@ -68,28 +57,37 @@ export function CustomerKpis({ currentUser, objectId, objectType, tinted }: Cust
           if (!nextOpen) setEditingAggregate(null);
         }}
       >
-        <Popover.Anchor>
-          <div className={cn('flex', tinted ? 'gap-md' : 'gap-sm')}>
-            {data.map((aggregate) => (
-              <CustomerKpiCard
-                key={aggregate.id}
-                currentUser={currentUser}
-                aggregate={aggregate}
-                language={language}
-                tinted={tinted}
-                onEdit={() => {
-                  setEditingAggregate(aggregate);
-                  setOpen(true);
-                }}
-              />
-            ))}
-            {data.length === 0 ? (
-              <CustomerKpisConfigurationCard variant="empty" tinted={tinted} onOpen={() => setEditingAggregate(null)} />
-            ) : isAdmin(currentUser) && data.length < 3 ? (
-              <CustomerKpisConfigurationCard variant="add" tinted={tinted} onOpen={() => setEditingAggregate(null)} />
-            ) : null}
-          </div>
-        </Popover.Anchor>
+        {match(data)
+          .with([], () => (
+            <Popover.Anchor>
+              <CustomerKpisConfigurationCard variant="empty" onOpen={() => setEditingAggregate(null)} />
+            </Popover.Anchor>
+          ))
+          .otherwise((aggregates) => (
+            <Popover.Anchor>
+              <div className="grid grid-cols-1 gap-sm sm:grid-cols-2 xl:grid-cols-3">
+                {aggregates.map((aggregate) => (
+                  <CustomerKpiCard
+                    key={aggregate.id}
+                    currentUser={currentUser}
+                    aggregate={aggregate}
+                    language={language}
+                    onEdit={() => {
+                      setEditingAggregate(aggregate);
+                      setOpen(true);
+                    }}
+                  />
+                ))}
+                {isAdmin(currentUser) &&
+                  match(aggregates.length)
+                    .when(
+                      (count) => count < 3,
+                      () => <CustomerKpisConfigurationCard variant="add" onOpen={() => setEditingAggregate(null)} />,
+                    )
+                    .otherwise(() => null)}
+              </div>
+            </Popover.Anchor>
+          ))}
         <Popover.Content
           side="bottom"
           align="end"
@@ -110,44 +108,56 @@ export function CustomerKpis({ currentUser, objectId, objectType, tinted }: Cust
     .exhaustive();
 }
 
-function CustomerKpiCard({ currentUser, aggregate, language, tinted, onEdit }: CustomerKpiCardProps) {
+function CustomerKpiCard({ currentUser, aggregate, language, onEdit }: CustomerKpiCardProps) {
   const { t } = useTranslation(['common', 'client360']);
   const metrics = getAggregateMetrics(aggregate.results);
 
   return (
-    <div className={tileClassName(tinted)}>
+    <Card className="flex min-h-36 flex-col gap-xs rounded-lg p-md">
       <div className="flex items-start gap-sm">
-        <span className="min-w-0 flex-1 break-words text-small text-grey-placeholder">{aggregate.name}</span>
+        <span className="min-w-0 flex-1 text-small text-grey-secondary">{aggregate.name}</span>
         {isAdmin(currentUser) && (
-          <Button aria-label={t('common:edit')} variant="secondary" mode="icon" size="small" onClick={onEdit}>
-            <Icon aria-hidden="true" icon="edit" className="size-4" />
-          </Button>
+          <MenuCommand.Menu>
+            <MenuCommand.Trigger>
+              <Button aria-label={t('common:actions')} variant="secondary" appearance="link" mode="icon" size="small">
+                <Icon aria-hidden="true" icon="dots-three" className="size-4" />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content align="end" sideOffset={4} size="small">
+              <MenuCommand.List>
+                <MenuCommand.Item onSelect={onEdit}>
+                  <Icon icon="edit" className="size-4" />
+                  {t('common:edit')}
+                </MenuCommand.Item>
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
         )}
       </div>
-      {metrics ? (
-        <div className="flex flex-wrap items-center gap-x-sm">
-          <span className={cn('text-small font-medium tabular-nums', tinted && 'text-purple-primary')}>
-            {formatMetric(metrics.current, language)}
-          </span>
-          <CustomerKpiChange percentageChange={metrics.percentageChange} language={language} />
-        </div>
-      ) : (
-        <span className="text-small text-grey-secondary">{t('client360:customer_kpis.status.unavailable')}</span>
-      )}
-    </div>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-xs">
+        {metrics ? (
+          <>
+            <span className="text-default font-medium tabular-nums">{formatMetric(metrics.current, language)}</span>
+            <CustomerKpiChange percentageChange={metrics.percentageChange} language={language} />
+          </>
+        ) : (
+          <span className="text-small text-grey-secondary">{t('client360:customer_kpis.status.unavailable')}</span>
+        )}
+      </div>
+    </Card>
   );
 }
 
 function CustomerKpiChange({ percentageChange, language }: { percentageChange: number | null; language: string }) {
   if (percentageChange === null) return null;
-  if (percentageChange === 0) return <span className="text-2xs font-medium text-grey-secondary">0%</span>;
+  if (percentageChange === 0) return <span className="text-small font-medium text-grey-secondary">0%</span>;
 
   const isNegative = percentageChange < 0;
   return (
     <div
-      className={cn('flex items-center text-2xs font-medium', isNegative ? 'text-red-primary' : 'text-green-primary')}
+      className={cn('flex items-center text-small font-medium', isNegative ? 'text-red-primary' : 'text-green-primary')}
     >
-      <Icon aria-hidden="true" icon="arrow-2-up" className={cn('size-4', isNegative ? 'rotate-180' : '')} />
+      <Icon aria-hidden="true" icon="arrow-2-up" className={cn('size-6 -me-xs', isNegative ? 'rotate-180' : '')} />
       <span>{formatPercentage(percentageChange, language)}</span>
     </div>
   );
@@ -155,34 +165,35 @@ function CustomerKpiChange({ percentageChange, language }: { percentageChange: n
 
 type CustomerKpisConfigurationCardProps = {
   variant: 'empty' | 'add';
-  tinted?: boolean;
   onOpen: () => void;
 };
 
-function CustomerKpisConfigurationCard({ variant, tinted, onOpen }: CustomerKpisConfigurationCardProps) {
+function CustomerKpisConfigurationCard({ variant, onOpen }: CustomerKpisConfigurationCardProps) {
   const { t } = useTranslation(['client360']);
 
   return (
-    <div className={cn(tileClassName(tinted), 'items-start')}>
-      <span className="text-small text-grey-placeholder">
+    <Card className="flex min-h-36 flex-col items-center justify-center gap-sm text-center">
+      <span className="text-small text-grey-secondary">
         {match(variant)
           .with('empty', () => t('client360:customer_kpis.card.empty_description'))
           .with('add', () => t('client360:customer_kpis.card.add_description'))
           .exhaustive()}
       </span>
       <Popover.Trigger asChild>
-        <Button variant="primary" appearance="stroked" size="small" onClick={onOpen}>
-          {match(variant)
-            .with('empty', () => t('client360:customer_kpis.actions.configure'))
-            .with('add', () => t('client360:customer_kpis.actions.create'))
-            .exhaustive()}
-        </Button>
+        {match(variant)
+          .with('empty', () => <Button onClick={onOpen}>{t('client360:customer_kpis.actions.configure')}</Button>)
+          .with('add', () => (
+            <Button variant="primary" appearance="stroked" onClick={onOpen}>
+              {t('client360:customer_kpis.actions.create')}
+            </Button>
+          ))
+          .exhaustive()}
       </Popover.Trigger>
-    </div>
+    </Card>
   );
 }
 
-function getAggregateMetrics(results: CustomerAggregateResultDto[] | undefined) {
+export function getAggregateMetrics(results: CustomerAggregateResultDto[] | undefined) {
   return match(results)
     .when(
       (values): values is [CustomerAggregateResultDto, CustomerAggregateResultDto] => values?.length === 2,
@@ -196,10 +207,10 @@ function getAggregateMetrics(results: CustomerAggregateResultDto[] | undefined) 
     .otherwise(() => null);
 }
 
-function formatMetric(value: number, language: string) {
+export function formatMetric(value: number, language: string) {
   return new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
 }
 
-function formatPercentage(value: number, language: string) {
+export function formatPercentage(value: number, language: string) {
   return `${new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(Math.abs(value))}%`;
 }
