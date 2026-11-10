@@ -49,11 +49,11 @@ export function CustomerKpis({ currentUser, objectId, objectType, tinted }: Cust
       <div
         role="status"
         aria-label={t('client360:customer_kpis.status.loading')}
-        className={cn(tileClassName(tinted), 'animate-pulse bg-grey-background')}
+        className={cn(tileClassName(tinted), 'flex-none animate-pulse bg-grey-background')}
       />
     ))
     .with({ isError: true }, () => (
-      <div className={cn(tileClassName(tinted), 'flex-row items-center justify-center gap-sm')}>
+      <div className={cn(tileClassName(tinted), 'flex-none flex-row items-center justify-center gap-sm')}>
         <span className="text-small text-grey-secondary">{t('common:generic_fetch_data_error')}</span>
         <Button size="small" variant="secondary" onClick={() => customerAggregatesQuery.refetch()}>
           {t('common:retry')}
@@ -117,7 +117,7 @@ function CustomerKpiCard({ currentUser, aggregate, language, tinted, onEdit }: C
   return (
     <div className={tileClassName(tinted)}>
       <div className="flex items-start gap-sm">
-        <span className="min-w-0 flex-1 text-small text-grey-placeholder">{aggregate.name}</span>
+        <span className="min-w-0 flex-1 break-words text-small text-grey-placeholder">{aggregate.name}</span>
         {isAdmin(currentUser) && (
           <Button aria-label={t('common:edit')} variant="secondary" mode="icon" size="small" onClick={onEdit}>
             <Icon aria-hidden="true" icon="edit" className="size-4" />
@@ -125,7 +125,7 @@ function CustomerKpiCard({ currentUser, aggregate, language, tinted, onEdit }: C
         )}
       </div>
       {metrics ? (
-        <div className="flex items-center gap-sm">
+        <div className="flex flex-wrap items-center gap-x-sm">
           <span className={cn('text-small font-medium tabular-nums', tinted && 'text-purple-primary')}>
             {formatMetric(metrics.current, language)}
           </span>

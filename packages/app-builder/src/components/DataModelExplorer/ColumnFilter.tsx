@@ -73,7 +73,8 @@ export function ColumnFilterPopover({
                 field={field}
                 multiple
                 selectedValues={value?.type === 'enum' ? value.values : []}
-                onChange={(values) => commit({ type: 'enum', values })}
+                // The list endpoint accepts at most 100 values.
+                onChange={(values) => commit({ type: 'enum', values: values.slice(0, 100) })}
               />
             </div>
           ))

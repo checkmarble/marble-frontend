@@ -137,18 +137,34 @@ export function DataTableRender({
           // A timeout says nothing about the data: there may be matches the query had no time to find.
           const isTimeout = isRequestTimeoutError(query.error);
           return (
-            <Callout
-              color={isTimeout ? 'orange' : 'red'}
-              icon={isTimeout ? 'warning' : 'error'}
-              iconColor={isTimeout ? 'orange' : 'red'}
-            >
-              <div className="flex items-center justify-between gap-md">
-                {isTimeout ? t('cases:data_explorer.filters.timeout') : t('common:generic_fetch_data_error')}
-                <Button size="small" variant="secondary" onClick={() => query.refetch()}>
-                  {t('common:retry')}
-                </Button>
-              </div>
-            </Callout>
+            <>
+              <Callout
+                color={isTimeout ? 'orange' : 'red'}
+                icon={isTimeout ? 'warning' : 'error'}
+                iconColor={isTimeout ? 'orange' : 'red'}
+              >
+                <div className="flex items-center justify-between gap-md">
+                  {isTimeout ? t('cases:data_explorer.filters.timeout') : t('common:generic_fetch_data_error')}
+                  <Button size="small" variant="secondary" onClick={() => query.refetch()}>
+                    {t('common:retry')}
+                  </Button>
+                </div>
+              </Callout>
+              {/* The headers stay available: narrowing the search means adding a filter on another column. */}
+              <DataTable
+                caseId={caseId}
+                pivotObject={item.pivotObject}
+                table={currentTable}
+                filters={filters}
+                onFiltersChange={onFiltersChange}
+                isRefreshing={filters !== appliedFilters}
+                navigateTo={navigateTo}
+                list={[]}
+                metadata={undefined}
+                pagination={null}
+                hideEmptyState
+              />
+            </>
           );
         })}
     </div>
@@ -227,11 +243,13 @@ type DataTableProps = {
   pivotObject: DataModelExplorerNavigationTab['pivotObject'];
   table: TableModel;
   list: ClientDataListResponse['data'];
-  pagination: ReactElement;
+  pagination: ReactElement | null;
   metadata: ClientDataListResponse['metadata'] | undefined;
   filters: ColumnFilters;
   onFiltersChange: (filters: ColumnFilters) => void;
   isRefreshing: boolean;
+  /** Set when the caller already explains why there is no row (failed request). */
+  hideEmptyState?: boolean;
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
@@ -254,6 +272,7 @@ function DataTable({
   filters,
   onFiltersChange,
   isRefreshing,
+  hideEmptyState,
   navigateTo,
 }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
@@ -496,7 +515,7 @@ function DataTable({
               ) : null}
             </tbody>
           </table>
-          {list.length === 0 ? (
+          {list.length === 0 && !hideEmptyState ? (
             <div role="status" className="text-grey-secondary p-md text-center text-small">
               {hasActiveFilter
                 ? t('cases:data_explorer.filters.no_match')

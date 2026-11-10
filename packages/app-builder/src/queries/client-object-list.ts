@@ -42,6 +42,7 @@ export function useClientObjectListQuery(params: UseClientObjectListQueryParams)
     placeholderData: keepPreviousData,
     // A timed out query would time out again: let the user narrow the filters instead.
     retry: (failureCount, error) => !isRequestTimeoutError(error) && failureCount < 3,
+    refetchOnWindowFocus: (query) => !isRequestTimeoutError(query.state.error),
     enabled: !!params.tableName,
   });
 }
