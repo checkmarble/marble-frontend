@@ -1,5 +1,10 @@
 import type { DateRangeFilterType } from '@app-builder/components/Filters/DateRangeFilter';
-import type { ClientDataListFilter, DataModelField, EnumValue } from '@app-builder/models/data-model';
+import {
+  type ClientDataListFilter,
+  type DataModelField,
+  EnumDataTypes,
+  type EnumValue,
+} from '@app-builder/models/data-model';
 import { isEnumField } from '@app-builder/models/enum-values';
 import { add } from 'date-fns/add';
 import { Temporal } from 'temporal-polyfill';
@@ -14,7 +19,8 @@ export type ColumnFilterValue =
 export type ColumnFilters = Record<string, ColumnFilterValue>;
 
 export function getColumnFilterKind(field: DataModelField): ColumnFilterValue['type'] | null {
-  if (isEnumField(field)) return 'enum';
+  // The list endpoint only accepts a list of values on these data types.
+  if (isEnumField(field) && EnumDataTypes.includes(field.dataType)) return 'enum';
   switch (field.dataType) {
     case 'Int':
     case 'Float':
