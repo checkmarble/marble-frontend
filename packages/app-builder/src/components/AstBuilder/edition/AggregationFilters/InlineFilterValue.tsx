@@ -1,6 +1,8 @@
+import { SelectableValues } from '@app-builder/components/SelectableValues';
 import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { type IsMultipleOfFilterAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import { getMonthLabels, getWeekdayLabels } from '@app-builder/utils/calendar-labels';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -19,7 +21,6 @@ import {
   timestampExtractParts,
   timestampExtractTimePart,
 } from '../EditModal/modals/Aggregation/edit-model';
-import { getTimestampExtractMonths, getTimestampExtractWeekdays } from './timestampExtractLabels';
 
 type ComplexInlineAggregationFilterEditModel = StandardAggregationFilterEditModel | TimestampExtractFilterEditModel;
 
@@ -294,35 +295,16 @@ function TimestampExtractPartRow({
   onChange: (filter: TimestampExtractFilterEditModel) => void;
 }) {
   const { locale } = FormatContext.useValue();
-  const values = part === 'month' ? getTimestampExtractMonths(locale) : getTimestampExtractWeekdays(locale);
+  const values = part === 'month' ? getMonthLabels(locale) : getWeekdayLabels(locale);
   const selectedValues = getTimestampExtractSelectedValues(filter.ranges, part);
 
   return (
     <div className="grid grid-cols-subgrid col-span-full">
-      <div className="flex items-center gap-xs">
-        {values.map(({ value, label }) => {
-          const isSelected = selectedValues.includes(value);
-
-          return (
-            <Button
-              key={`${part}_${value}`}
-              variant={isSelected ? 'primary' : 'secondary'}
-              appearance="filter"
-              onClick={() => {
-                const nextSelectedValues = new Set(selectedValues);
-                if (isSelected) {
-                  nextSelectedValues.delete(value);
-                } else {
-                  nextSelectedValues.add(value);
-                }
-                onChange(setTimestampExtractSelectedValues(filter, part, nextSelectedValues));
-              }}
-            >
-              {label}
-            </Button>
-          );
-        })}
-      </div>
+      <SelectableValues
+        options={values}
+        selected={selectedValues}
+        onChange={(next) => onChange(setTimestampExtractSelectedValues(filter, part, new Set(next)))}
+      />
     </div>
   );
 }

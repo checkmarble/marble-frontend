@@ -191,7 +191,7 @@ function Users() {
                           user={orgUser}
                           userRoles={userRoles}
                           access={entitlements.userRoles}
-                          roleLabel={customRoleNames.get(orgUser.roles[0]?.role ?? '')}
+                          roleLabels={customRoleNames}
                         />
                       </div>
                     ) : null}

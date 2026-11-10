@@ -1,5 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { Nudge } from '@app-builder/components/Nudge';
 import { type UserRoleOption, UserRoleSelector } from '@app-builder/components/Settings/Users/UserRoleSelector';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
@@ -7,17 +6,15 @@ import {
   createUserPayloadSchema,
   useCreateUserMutation,
 } from '@app-builder/queries/settings/users/create-user';
-import { isAccessible } from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useRouterState } from '@tanstack/react-router';
-import clsx from 'clsx';
 import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal } from 'ui-design-system';
+import { Button, Input, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateUser({
@@ -40,17 +37,17 @@ export function CreateUser({
   }, [isLoading]);
 
   return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
+    <Panel.Root open={open} onOpenChange={setOpen}>
+      <Panel.Trigger asChild>
         <Button appearance="stroked" variant="primary" onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-5" />
           {t('settings:users.new_user')}
         </Button>
-      </Modal.Trigger>
-      <Modal.Content onClick={(e) => e.stopPropagation()}>
+      </Panel.Trigger>
+      <Panel.Container size="medium">
         <CreateUserContent orgId={orgId} access={access} userRoles={userRoles} onSuccess={() => setOpen(false)} />
-      </Modal.Content>
-    </Modal.Root>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
 
@@ -68,6 +65,7 @@ function CreateUserContent({
   const { t } = useTranslation(['common', 'settings'] satisfies Namespace);
   const createUserMutation = useCreateUserMutation();
   const revalidate = useLoaderRevalidator();
+  const formId = useId();
 
   const form = useForm({
     defaultValues: {
@@ -100,32 +98,73 @@ function CreateUserContent({
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
-      <Modal.Title>{t('settings:users.new_user')}</Modal.Title>
-      <div className="flex flex-col gap-lg p-lg">
-        <div className="flex flex-1 flex-col gap-md">
-          <div className="flex gap-sm">
-            <form.Field
-              name="firstName"
-              validators={{
-                onBlur: createUserPayloadSchema.shape.firstName,
-                onChange: createUserPayloadSchema.shape.firstName,
-              }}
-            >
+    <Panel.Content>
+      <Panel.Header>{t('settings:users.new_user')}</Panel.Header>
+      <form
+        id={formId}
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
+        <div className="flex flex-col gap-lg py-lg">
+          <div className="flex flex-1 flex-col gap-md">
+            <div className="flex gap-sm">
+              <form.Field
+                name="firstName"
+                validators={{
+                  onBlur: createUserPayloadSchema.shape.firstName,
+                  onChange: createUserPayloadSchema.shape.firstName,
+                }}
+              >
+                {(field) => (
+                  <div className="flex w-full flex-col gap-xs">
+                    <label htmlFor={field.name} className="text-s text-grey-secondary">
+                      {t('settings:users.first_name')}
+                    </label>
+                    <Input
+                      id={field.name}
+                      type="text"
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                    />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="lastName" validators={{ onChange: createUserPayloadSchema.shape.lastName }}>
+                {(field) => (
+                  <div className="flex w-full flex-col gap-xs">
+                    <label htmlFor={field.name} className="text-s text-grey-secondary">
+                      {t('settings:users.last_name')}
+                    </label>
+                    <Input
+                      id={field.name}
+                      type="text"
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                    />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+            </div>
+            <form.Field name="email" validators={{ onChange: createUserPayloadSchema.shape.email }}>
               {(field) => (
-                <div className="flex w-full flex-col gap-xs">
+                <div className="flex flex-col gap-xs">
                   <label htmlFor={field.name} className="text-s text-grey-secondary">
-                    {t('settings:users.first_name')}
+                    {t('settings:users.email')}
                   </label>
                   <Input
                     id={field.name}
-                    type="text"
+                    type="email"
                     name={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
@@ -136,81 +175,32 @@ function CreateUserContent({
                 </div>
               )}
             </form.Field>
-            <form.Field name="lastName" validators={{ onChange: createUserPayloadSchema.shape.lastName }}>
+            <form.Field name="roles" validators={{ onChange: createUserPayloadSchema.shape.roles }}>
               {(field) => (
-                <div className="flex w-full flex-col gap-xs">
-                  <label htmlFor={field.name} className="text-s text-grey-secondary">
-                    {t('settings:users.last_name')}
-                  </label>
-                  <Input
-                    id={field.name}
-                    type="text"
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
-                    onBlur={field.handleBlur}
-                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                <div className="flex flex-col gap-xs">
+                  <UserRoleSelector
+                    roles={field.state.value}
+                    onChange={field.handleChange}
+                    access={access}
+                    options={userRoles}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
           </div>
-          <form.Field name="email" validators={{ onChange: createUserPayloadSchema.shape.email }}>
-            {(field) => (
-              <div className="flex flex-col gap-xs">
-                <label htmlFor={field.name} className="text-s text-grey-secondary">
-                  {t('settings:users.email')}
-                </label>
-                <Input
-                  id={field.name}
-                  type="email"
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
-                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
-          <form.Field name="roles" validators={{ onChange: createUserPayloadSchema.shape.roles }}>
-            {(field) => (
-              <div className="flex flex-col gap-xs">
-                <div className="text-s text-grey-secondary flex flex-row gap-sm">
-                  <span
-                    className={clsx({
-                      'text-grey-disabled': access === 'restricted',
-                    })}
-                  >
-                    {t('settings:users.role')}
-                  </span>
-                  {access === 'allowed' ? null : (
-                    <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
-                  )}
-                </div>
-                <UserRoleSelector
-                  roles={field.state.value}
-                  onChange={field.handleChange}
-                  disabled={!isAccessible(access)}
-                  options={userRoles}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
         </div>
-      </div>
-      <Modal.Footer>
-        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-        <Modal.FooterButton
+      </form>
+      <Panel.Footer>
+        <Panel.FooterButton isCloseButton label={t('common:cancel')} />
+        <Panel.FooterButton
           label={t('settings:users.new_user.create')}
           type="submit"
+          form={formId}
           name="create"
           isLoading={createUserMutation.isPending}
         />
-      </Modal.Footer>
-    </form>
+      </Panel.Footer>
+    </Panel.Content>
   );
 }

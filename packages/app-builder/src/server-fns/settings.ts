@@ -10,6 +10,7 @@ import {
 } from '@app-builder/models';
 import { type ExportedFields } from '@app-builder/models/data-model';
 import { type PersonalSettings } from '@app-builder/models/personal-settings';
+import { normalizeRoleBindings } from '@app-builder/models/user';
 import {
   auditEventsFiltersSchema,
   auditEventsPaginationSchema,
@@ -28,6 +29,7 @@ import {
   editInboxUserAutoAssignPayloadSchema,
   exportedFieldSchema,
   grantOrganizationAccessPayloadSchema,
+  organizationGrantRoleSchema,
   revokeOrganizationAccessPayloadSchema,
   revokeWebhookSecretPayloadSchema,
   updateAllowedNetworksPayloadSchema,
@@ -47,6 +49,7 @@ import { FORBIDDEN, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-st
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
+import { type RoleBinding } from 'marble-api';
 import { pick } from 'radash';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
@@ -518,10 +521,24 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
     const { user, organization } = context.authInfo;
     if (data.roles) {
       assertNotOwnAccess(user, data.userId);
-      const users = await organization.listUsers();
+      const [users, customRoles] = await Promise.all([
+        organization.listUsers(),
+        context.authInfo.apiClient.listCustomRoles(),
+      ]);
       const target = users.find((candidate) => candidate.userId.toLowerCase() === data.userId.toLowerCase());
-      if (!target || target.roles.length !== 1) {
-        throw new Error('Cannot replace multiple or missing role bindings');
+      if (!target || target.roles.length === 0) {
+        throw new Error('Cannot replace missing role bindings');
+      }
+      // Bindings on a role the organization cannot grant (e.g. TENANT_ADMIN, a deleted custom role)
+      // must come back exactly as they are: they can be neither changed, removed nor added.
+      const grantable = new Set<string>([
+        ...organizationGrantRoleSchema.options,
+        ...customRoles.map(({ slug }) => slug),
+      ]);
+      const protectedBindings = (roles: RoleBinding[]) =>
+        normalizeRoleBindings(roles).filter(({ role }) => !grantable.has(role));
+      if (!R.isDeepEqual(protectedBindings(target.roles), protectedBindings(data.roles))) {
+        throw new Error('Cannot change role bindings the organization cannot grant');
       }
     }
 
