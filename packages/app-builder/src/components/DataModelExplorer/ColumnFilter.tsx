@@ -171,6 +171,11 @@ function ColumnFilterSummary({ field, value }: { field: DataModelField; value: C
   const { t } = useTranslation(['filters']);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
+  const formatBounds = (min: string | undefined, max: string | undefined) => {
+    if (min && max) return min === max ? min : t('filters:between', { min, max });
+    if (min) return t('filters:at_least', { value: min });
+    return max ? t('filters:at_most', { value: max }) : null;
+  };
 
   switch (value?.type) {
     case 'text':
@@ -201,10 +206,4 @@ function ColumnFilterSummary({ field, value }: { field: DataModelField; value: C
     default:
       return null;
   }
-}
-
-function formatBounds(min: string | undefined, max: string | undefined) {
-  if (min && max) return min === max ? min : `${min} – ${max}`;
-  if (min) return `≥ ${min}`;
-  return max ? `≤ ${max}` : null;
 }

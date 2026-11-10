@@ -90,6 +90,11 @@ export interface DataModelField {
   hidden?: boolean;
 }
 
+/** Identifiers are shown as copyable values: fields declared as one, or named like one. */
+export function isIdField(field: Pick<DataModelField, 'name' | 'semanticType'>) {
+  return field.semanticType === 'unique_id' || field.semanticType === 'foreign_key' || /(^|_)id$/i.test(field.name);
+}
+
 /** Returns the saved declaration so supervised editing can still infer missing semantics. */
 export function getDeclaredSemanticType(field: DataModelField) {
   return field.semanticTypeIsFallback ? undefined : field.semanticType;
