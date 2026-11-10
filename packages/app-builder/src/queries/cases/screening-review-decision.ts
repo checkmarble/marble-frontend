@@ -3,9 +3,13 @@ import type { ScreeningReviewDecisionInput } from '@app-builder/services/screeni
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
+/** Lets the request finish after the page unloads. */
+const keepaliveFetch: typeof fetch = (input, init) => fetch(input, { ...init, keepalive: true });
+
 export function useScreeningReviewDecisionMutation() {
   const review = useServerFn(reviewScreeningReviewMatchFn);
   return useMutation({
-    mutationFn: (input: ScreeningReviewDecisionInput) => review({ data: input }),
+    mutationFn: ({ input, keepalive = false }: { input: ScreeningReviewDecisionInput; keepalive?: boolean }) =>
+      review({ data: input, ...(keepalive ? { fetch: keepaliveFetch } : {}) }),
   });
 }
