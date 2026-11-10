@@ -73,6 +73,19 @@ export const listObjectsInputSchema = z.object({
   filterFieldName: z.string(),
   filterFieldValue: z.union([z.string(), z.number()]),
   orderingFieldName: z.string(),
+  filters: z
+    .array(
+      z.object({
+        fieldName: z.string(),
+        operator: z.enum(['contains', 'in', '>=', '<=', '<']),
+        values: z
+          .array(z.union([z.string(), z.number()]))
+          .min(1)
+          .max(100),
+      }),
+    )
+    .max(20)
+    .optional(),
   limit: z.number().optional(),
   offsetId: z.union([z.string(), z.number()]).optional(),
 });

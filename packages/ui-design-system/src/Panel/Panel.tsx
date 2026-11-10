@@ -134,7 +134,8 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      // A layer opened inside the panel (popover, menu, drag in progress) handles Escape first.
+      if (event.key === 'Escape' && !event.defaultPrevented) {
         sharp.actions.close();
       }
     };
@@ -150,14 +151,17 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
     const panel = panelRef.current;
     if (!panel) return;
 
-    const focusableElements = panel.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    // Queried on each use: the panel content changes after mount (data loads, sections open).
+    const getFocusableElements = () =>
+      panel.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const firstElement = getFocusableElements()[0];
 
     const handleTabKey = (event: KeyboardEvent) => {
       if (event.key !== 'Tab') return;
+
+      const focusableElements = getFocusableElements();
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
 
       if (event.shiftKey) {
         if (document.activeElement === firstElement) {

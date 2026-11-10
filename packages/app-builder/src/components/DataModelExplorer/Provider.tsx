@@ -1,13 +1,15 @@
 import { createSimpleContext } from '@marble/shared';
 import { type ReactNode, useCallback, useState } from 'react';
 
+import { type ColumnFilters } from './column-filters';
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerState = {
   tabs: DataModelExplorerNavigationTab[];
   currentTab: DataModelExplorerNavigationTab;
   lastActiveTab: DataModelExplorerNavigationTab | null;
-  closedTabsHistory: DataModelExplorerNavigationTab[];
+  /** Column filters of each open tab, by tab key: they survive a switch to another tab. */
+  filtersByTab: Record<string, ColumnFilters>;
 };
 
 type DataModelExplorerContextValue = {
@@ -23,10 +25,10 @@ export function DataModelExplorerProvider({ children }: { children: ReactNode })
   const startNavigation = useCallback(
     (tab: DataModelExplorerNavigationTab) => {
       _setExplorerState({
-        closedTabsHistory: [],
         currentTab: tab,
         lastActiveTab: null,
         tabs: [tab],
+        filtersByTab: {},
       });
     },
     [_setExplorerState],

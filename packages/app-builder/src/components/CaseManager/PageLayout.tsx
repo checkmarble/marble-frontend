@@ -105,7 +105,7 @@ export function CaseManagerPageLayout({
     <Page.Main className={isLinksTab ? 'min-h-0 overflow-hidden' : undefined}>
       <Page.Header color="page" className="justify-between">
         <BreadCrumbs />
-        <div className="flex gap-sm">
+        <div className="flex shrink-0 gap-sm ps-md">
           {caseDetail.status !== 'closed' ? (
             <>
               <SnoozeCase caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />

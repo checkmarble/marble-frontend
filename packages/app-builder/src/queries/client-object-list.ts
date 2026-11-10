@@ -1,6 +1,7 @@
-import { type ClientDataListResponse } from '@app-builder/models/data-model';
+import { isRequestTimeoutError } from '@app-builder/models';
+import { type ClientDataListFilter, type ClientDataListResponse } from '@app-builder/models/data-model';
 import { listObjectsFn } from '@app-builder/server-fns/data';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
 export type DataTableObjectListResource = {
@@ -14,6 +15,7 @@ type UseClientObjectListQueryParams = {
     filterFieldName: string;
     filterFieldValue: string | number;
     orderingFieldName: string;
+    filters?: ClientDataListFilter[];
     limit?: number;
   };
 };
@@ -36,6 +38,10 @@ export function useClientObjectListQuery(params: UseClientObjectListQueryParams)
     getNextPageParam: (lastPage) => {
       return lastPage.clientDataListResponse.pagination.nextCursorId;
     },
+    // Changing a filter keeps the current rows on screen until the new ones arrive.
+    placeholderData: keepPreviousData,
+    // A timed out query would time out again: let the user narrow the filters instead.
+    retry: (failureCount, error) => !isRequestTimeoutError(error) && failureCount < 3,
     enabled: !!params.tableName,
   });
 }

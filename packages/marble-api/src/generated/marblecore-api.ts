@@ -819,6 +819,14 @@ export type DataModelObjectDto = {
         valid_from: string;
     };
 };
+export type ClientDataListFilterDto = {
+    /** Name of a field of the explored table. */
+    field_name: string;
+    /** 'contains' is a case-insensitive substring match (text fields). 'in' matches any of the values. The comparison operators apply to numbers and timestamps. */
+    operator: "contains" | "in" | ">=" | "<=" | "<";
+    /** A single value for every operator except 'in'. Numbers for number fields, strings otherwise (RFC 3339 for timestamps). */
+    values: (string | number)[];
+};
 export type ClientDataListRequestBody = {
     exploration_options: {
         /** The table from which we want to start the exploration. */
@@ -829,6 +837,8 @@ export type ClientDataListRequestBody = {
         filter_field_value: string | number;
         /** The field on which we want to order the objects (in descending order) */
         ordering_field_name: string;
+        /** Additional filters on fields of the explored table, all applied together (AND). The same field can appear several times, e.g. to express a range. */
+        filters?: ClientDataListFilterDto[];
     };
     /** The id of the object after which to paginate, using ordering by the specified field in 'exploration_options' */
     cursor_id?: string | number;

@@ -411,7 +411,12 @@ export const ClientDetailPage = ({
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
-      <DataExplorerPanel open={showExplorer} onOpenChange={setShowExplorer} dataModel={dataModel} />
+      <DataExplorerPanel
+        client={{ objectType, objectId }}
+        open={showExplorer}
+        onOpenChange={setShowExplorer}
+        dataModel={dataModel}
+      />
       {scoringSettings && scoreForPanel && isAccessible(userScoringAccess) ? (
         <ScoreDetailPanel
           open={showScorePanel}
