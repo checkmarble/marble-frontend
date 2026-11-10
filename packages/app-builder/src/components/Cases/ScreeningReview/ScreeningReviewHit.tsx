@@ -66,14 +66,11 @@ interface ScreeningReviewHitProps {
 export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags }: ScreeningReviewHitProps) {
   const { t } = useTranslation(['cases']);
   return (
-    <section
-      aria-labelledby="screening-review-active-title"
-      className="flex min-h-0 min-w-0 flex-1 flex-col gap-md overflow-y-auto"
-    >
+    <section aria-labelledby="screening-review-active-title" className="flex min-h-0 min-w-0 flex-1 flex-col gap-md">
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {item.customer.name} · {item.listRecord.caption || item.listRecord.id}
       </p>
-      <div className="flex flex-col gap-xs">
+      <div className="flex shrink-0 flex-col gap-xs">
         <div className="flex min-w-0 items-center gap-sm">
           <Typo variant="title2" id="screening-review-active-title" className="min-w-0 truncate">
             <bdi>{item.customer.name}</bdi>
@@ -84,13 +81,15 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags }
         <p className="text-s text-grey-secondary">{t('cases:screening_review.case_name', { name: item.caseName })}</p>
       </div>
       {/* The AI history strip of the second iteration goes here, above the identity cards. */}
-      <div className="grid grid-cols-1 gap-md lg:grid-cols-2">
+      <div className="grid shrink-0 grid-cols-1 gap-md lg:grid-cols-2">
         <CustomerCard item={item} canViewRiskLevel={canViewRiskLevel} />
         <ListRecordCard item={item} />
       </div>
-      <div className="flex flex-col gap-lg rounded-lg border border-grey-border bg-surface-card p-lg">
-        <ComparisonTable comparisons={comparisons} />
-        <AllHitInformation item={item} comparisons={comparisons} />
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain rounded-lg border border-grey-border bg-surface-card p-lg">
+        <div className="flex flex-col gap-lg">
+          <ComparisonTable comparisons={comparisons} />
+          <AllHitInformation item={item} comparisons={comparisons} />
+        </div>
       </div>
     </section>
   );
