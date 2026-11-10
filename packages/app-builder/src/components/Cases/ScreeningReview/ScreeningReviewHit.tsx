@@ -58,15 +58,17 @@ interface ScreeningReviewHitProps {
   item: ScreeningReviewItem;
   comparisons: ScreeningReviewFieldComparison[];
   canViewRiskLevel: boolean;
+  /** Step and decision tags. The AI tag of the second iteration goes beside them. */
+  tags?: ReactNode;
 }
 
 /** The selected hit: the customer and the list record, compared in the same order whatever the trigger. */
-export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel }: ScreeningReviewHitProps) {
+export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags }: ScreeningReviewHitProps) {
   const { t } = useTranslation(['cases']);
   return (
     <section
       aria-labelledby="screening-review-active-title"
-      className="flex min-h-0 min-w-0 flex-col gap-md overflow-y-auto"
+      className="flex min-h-0 min-w-0 flex-1 flex-col gap-md overflow-y-auto"
     >
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {item.customer.name} · {item.listRecord.caption || item.listRecord.id}
@@ -77,6 +79,7 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel }: Scre
             <bdi>{item.customer.name}</bdi>
           </Typo>
           <CustomerTypeTag customer={item.customer} />
+          {tags}
         </div>
         <p className="text-s text-grey-secondary">{t('cases:screening_review.case_name', { name: item.caseName })}</p>
       </div>

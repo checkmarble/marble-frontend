@@ -15,7 +15,6 @@ import {
 import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
 import { formatDateTimeWithoutPresets } from '@app-builder/utils/format';
-import { Fragment } from 'react';
 import { match } from 'ts-pattern';
 
 export {
@@ -315,17 +314,19 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
     const { type, format } = propertyMetadata[property];
     switch (type) {
       case 'string':
-        return value.includes('\n')
-          ? value
-              .split('\n')
-              .map((v, index) =>
-                v ? (
-                  <div key={`chunk-${index}`}>{formatedValue(format, v, ctx.highlightText)}</div>
-                ) : (
-                  <br key={`chunk-${index}`} />
-                ),
-              )
-          : formatedValue(format, value, ctx.highlightText);
+        return value.includes('\n') ? (
+          value.split('\n').map((v, index) =>
+            v ? (
+              <div key={`chunk-${index}`}>
+                <FormattedValue format={format} value={v} highlightText={ctx.highlightText} />
+              </div>
+            ) : (
+              <br key={`chunk-${index}`} />
+            ),
+          )
+        ) : (
+          <FormattedValue format={format} value={value} highlightText={ctx.highlightText} />
+        );
       case 'url':
         return (
           <ExternalLink className="break-all" href={value} title={value}>
@@ -343,10 +344,19 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
   };
 }
 
-function formatedValue(format: PropertyFormat | undefined, value: string, highlightText?: string) {
+/** A component, not a helper: the formatters below call hooks, and their count depends on the value. */
+function FormattedValue({
+  format,
+  value,
+  highlightText,
+}: {
+  format: PropertyFormat | undefined;
+  value: string;
+  highlightText?: string;
+}) {
   const { locale } = FormatContext.useValue();
   return match(format)
-    .with('monospace', () => StringCodeComponent({ value }))
+    .with('monospace', () => <StringCodeComponent value={value} />)
     .with('date', () => (
       <time dateTime={value}>{formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short' })}</time>
     ))
@@ -355,12 +365,12 @@ function formatedValue(format: PropertyFormat | undefined, value: string, highli
         {formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short', timeStyle: 'short' })}
       </time>
     ))
-    .with('dateOfBirth', () => DateBirthdateComponent({ value }))
-    .with('country', () => StringCountryComponent({ value, withCountryName: true }))
-    .with('countryFlag', () => StringCountryComponent({ value, withCountryName: false }))
+    .with('dateOfBirth', () => <DateBirthdateComponent value={value} />)
+    .with('country', () => <StringCountryComponent value={value} withCountryName />)
+    .with('countryFlag', () => <StringCountryComponent value={value} withCountryName={false} />)
     .with('position', () => <span>{value}</span>)
-    .with('email', () => StringEmailComponent({ value }))
-    .with('phone', () => StringPhoneComponent({ value }))
+    .with('email', () => <StringEmailComponent value={value} />)
+    .with('phone', () => <StringPhoneComponent value={value} />)
     .with(undefined, () => <TextWithEmbeddedDates value={value} highlightText={highlightText} />)
     .exhaustive();
 }
@@ -376,14 +386,13 @@ function TextWithEmbeddedDates({ value, highlightText }: { value: string; highli
     <>
       {segments.map((segment, index) =>
         segment.type === 'date' ? (
-          <Fragment key={index}>
-            {DateDatetimeComponent({
-              value: segment.value,
-              withTime: false,
-              monospaced: true,
-              className: 'p-0 inline-block',
-            })}
-          </Fragment>
+          <DateDatetimeComponent
+            key={index}
+            value={segment.value}
+            withTime={false}
+            monospaced
+            className="p-0 inline-block"
+          />
         ) : segment.value.length > 0 ? (
           <HighlightText key={index} text={segment.value} highlight={highlightText} />
         ) : null,

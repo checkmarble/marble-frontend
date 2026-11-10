@@ -1,8 +1,14 @@
 import { useTranslation } from 'react-i18next';
-import { Kbd, Modal, Typo } from 'ui-design-system';
+import { Kbd, type KbdProps, Modal, Typo } from 'ui-design-system';
 import { SCREENING_REVIEW_SHORTCUT_HELP, type ShortcutHotkey, useShortcutKeyLabels } from './shortcuts';
 
-export function ShortcutKeys({ hotkeys }: { hotkeys: readonly ShortcutHotkey[] }) {
+export function ShortcutKeys({
+  hotkeys,
+  variant = 'default',
+}: {
+  hotkeys: readonly ShortcutHotkey[];
+  variant?: KbdProps['variant'];
+}) {
   const keyLabels = useShortcutKeyLabels();
   return (
     <span dir="ltr" className="inline-flex items-center gap-xs">
@@ -11,7 +17,7 @@ export function ShortcutKeys({ hotkeys }: { hotkeys: readonly ShortcutHotkey[] }
         return (
           <span key={labels.join('+')} className="inline-flex items-center gap-2xs">
             {labels.map((label) => (
-              <Kbd key={label} className="px-xs text-xs text-grey-primary">
+              <Kbd key={label} variant={variant}>
                 {label}
               </Kbd>
             ))}
@@ -55,7 +61,7 @@ export function ShortcutHelp({ open, onOpenChange }: { open: boolean; onOpenChan
             variant="primary"
             label={t('cases:screening_review.shortcuts.back_to_review')}
           >
-            <ShortcutKeys hotkeys={['Escape']} />
+            <ShortcutKeys hotkeys={['Escape']} variant="small" />
           </Modal.FooterButton>
         </Modal.Footer>
       </Modal.Content>

@@ -2,9 +2,11 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import {
   buildScreeningReviewItems,
   isPendingReviewItem,
+  needsFalsePositiveClosure,
   type ScreeningReviewItem,
 } from '@app-builder/models/screening-review';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
+import { closeFalsePositiveCase } from './screening-review-decision';
 
 export interface ScreeningReviewPage {
   items: ScreeningReviewItem[];
@@ -14,7 +16,7 @@ export interface ScreeningReviewPage {
 
 /** Whole case batches may overflow the hit target, avoiding offsets inside mutable screenings. */
 export async function readScreeningReviewPage(
-  repository: Pick<CaseRepository, 'listCases' | 'getCase'>,
+  repository: Pick<CaseRepository, 'listCases' | 'getCase' | 'updateCase'>,
   userId: string,
   limit: number,
   cursor: string | null,
@@ -58,6 +60,11 @@ export async function readScreeningReviewPage(
             (detail.snoozedUntil && Date.parse(detail.snoozedUntil) > Date.now())
           )
             return [];
+          // A closure that failed after the last review is retried here; its hits are done either way.
+          if (needsFalsePositiveClosure(detail)) {
+            await closeFalsePositiveCase(repository, detail);
+            return [];
+          }
           return buildScreeningReviewItems([detail]);
         }),
       );
