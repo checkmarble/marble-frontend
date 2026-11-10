@@ -74,7 +74,10 @@ export type CredentialsDto = {
             last_name?: string;
             api_key_name?: string;
         };
+        /** Permissions granted by bindings whose conditions are met for this request. */
         permissions: string[];
+        /** Whether the current sign-in used a second factor. */
+        used_second_factor: boolean;
     };
 };
 export type OrganizationEnvironmentDto = "production" | "staging" | "demo";
@@ -1862,6 +1865,19 @@ export type RoleBinding = {
     id?: string;
     /** Native role name or organization-scoped custom role slug. */
     role: string;
+    /** All provided conditions must be met for the binding to apply. Dates and times have inclusive bounds; days and times use the organization's time zone, or UTC if none is configured. */
+    conditions?: {
+        not_before?: string;
+        not_after?: string;
+        /** Days from 0 (Sunday) to 6 (Saturday). An empty list allows every day. */
+        day_of_week?: number[];
+        /** Inclusive start and end in HHMM format. The range may span midnight. */
+        time_of_day?: number[];
+        /** CIDRs or individual IP addresses. An empty list or unknown client IP does not restrict access. */
+        networks?: string[];
+        /** Require a Firebase TOTP sign-in when true. */
+        used_second_factor?: boolean;
+    };
 };
 export type ApiKeyDto = {
     id: string;

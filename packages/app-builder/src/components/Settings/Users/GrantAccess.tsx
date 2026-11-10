@@ -1,13 +1,13 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGrantOrganizationAccessMutation } from '@app-builder/queries/settings/users/grant-organization-access';
+import { roleBindingsSchema } from '@app-builder/schemas/settings';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { UserRoleField } from './UserRoleField';
-import { type UserRoleOption } from './UserRoleSelector';
+import { type UserRoleOption, UserRoleSelector } from './UserRoleSelector';
 
 interface GrantAccessProps {
   userId: string;
@@ -21,17 +21,17 @@ export function GrantAccess({ userId, userRoles, access }: GrantAccessProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
+    <Panel.Root open={open} onOpenChange={setOpen}>
+      <Panel.Trigger asChild>
         <Button appearance="stroked" variant="primary" size="small">
           <Icon icon="plus" className="size-4" />
           {t('settings:users.grant_access.add')}
         </Button>
-      </Modal.Trigger>
-      <Modal.Content>
+      </Panel.Trigger>
+      <Panel.Container size="medium">
         <GrantAccessContent userId={userId} userRoles={userRoles} access={access} onSuccess={() => setOpen(false)} />
-      </Modal.Content>
-    </Modal.Root>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
 
@@ -39,14 +39,13 @@ function GrantAccessContent({ userId, userRoles, access, onSuccess }: GrantAcces
   const { t } = useTranslation(['common', 'settings']);
   const grantAccessMutation = useGrantOrganizationAccessMutation();
   const revalidate = useLoaderRevalidator();
-  // The role select is disabled when a single role can be granted
-  const [role, setRole] = useState<string | null>(userRoles.length === 1 ? (userRoles[0]?.value ?? null) : null);
+  const [roles, setRoles] = useState([{ role: userRoles.length === 1 ? (userRoles[0]?.value ?? '') : '' }]);
 
   const handleSubmit = () => {
-    if (!role) return;
+    if (!roleBindingsSchema.safeParse(roles).success) return;
 
     grantAccessMutation
-      .mutateAsync({ userId, roles: [{ role }] })
+      .mutateAsync({ userId, roles })
       .then(() => {
         toast.success(t('settings:users.grant_access.success'));
         onSuccess();
@@ -58,20 +57,20 @@ function GrantAccessContent({ userId, userRoles, access, onSuccess }: GrantAcces
   };
 
   return (
-    <>
-      <Modal.Title>{t('settings:users.grant_access.title')}</Modal.Title>
-      <div className="p-lg">
-        <UserRoleField value={role} onChange={setRole} userRoles={userRoles} access={access} />
+    <Panel.Content>
+      <Panel.Header>{t('settings:users.grant_access.title')}</Panel.Header>
+      <div className="py-lg">
+        <UserRoleSelector roles={roles} onChange={setRoles} options={userRoles} access={access} />
       </div>
-      <Modal.Footer>
-        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-        <Modal.FooterButton
+      <Panel.Footer>
+        <Panel.FooterButton isCloseButton label={t('common:cancel')} />
+        <Panel.FooterButton
           label={t('settings:users.grant_access.confirm')}
           onClick={handleSubmit}
-          disabled={!role || grantAccessMutation.isPending}
+          disabled={!roleBindingsSchema.safeParse(roles).success || grantAccessMutation.isPending}
           isLoading={grantAccessMutation.isPending}
         />
-      </Modal.Footer>
-    </>
+      </Panel.Footer>
+    </Panel.Content>
   );
 }

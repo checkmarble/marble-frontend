@@ -6,46 +6,45 @@ import {
   editOrganizationUserFormSchema,
   useUpdateOrganizationUserMutation,
 } from '@app-builder/queries/settings/users/update-organization-user';
-import { organizationGrantRoleSchema } from '@app-builder/schemas/settings';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Input, Modal } from 'ui-design-system';
+import { isDeepEqual } from 'remeda';
+import { Input, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
-import { UserRoleField } from './UserRoleField';
-import { type UserRoleOption } from './UserRoleSelector';
+import { type UserRoleOption, UserRoleSelector } from './UserRoleSelector';
 
 interface EditOrganizationUserProps {
   user: User;
   userRoles: readonly UserRoleOption[];
   access: FeatureAccessLevelDto;
-  roleLabel?: string;
+  roleLabels?: ReadonlyMap<string, string>;
 }
 
 // Edits the name of a user of the organization and the role they hold on it.
-export function EditOrganizationUser({ user, userRoles, access, roleLabel }: EditOrganizationUserProps) {
+export function EditOrganizationUser({ user, userRoles, access, roleLabels }: EditOrganizationUserProps) {
   const { t } = useTranslation(['settings']);
   const [open, setOpen] = useState(false);
 
   return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger>
+    <Panel.Root open={open} onOpenChange={setOpen}>
+      <Panel.Trigger>
         <Icon icon="edit-square" className="size-6 shrink-0" aria-label={t('settings:users.edit_user')} />
-      </Modal.Trigger>
-      <Modal.Content>
+      </Panel.Trigger>
+      <Panel.Container size="medium">
         <EditOrganizationUserContent
           user={user}
           userRoles={userRoles}
           access={access}
-          roleLabel={roleLabel}
+          roleLabels={roleLabels}
           onSuccess={() => setOpen(false)}
         />
-      </Modal.Content>
-    </Modal.Root>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
 
@@ -53,17 +52,13 @@ function EditOrganizationUserContent({
   user,
   userRoles,
   access,
-  roleLabel,
+  roleLabels,
   onSuccess,
 }: EditOrganizationUserProps & { onSuccess: () => void }) {
   const { t } = useTranslation(['common', 'settings']);
   const updateUserMutation = useUpdateOrganizationUserMutation();
   const revalidate = useLoaderRevalidator();
-  const currentRole = user.roles[0]?.role ?? '';
-  const canChangeRole =
-    user.roles.length === 1 &&
-    (organizationGrantRoleSchema.safeParse(currentRole).success ||
-      userRoles.some(({ value }) => value === currentRole));
+  const formId = useId();
   // A name that was already blank may stay blank: changing it requires the user's home organization.
   const formSchema = useMemo(
     () =>
@@ -84,7 +79,7 @@ function EditOrganizationUserContent({
     defaultValues: {
       firstName: user.firstName,
       lastName: user.lastName,
-      role: currentRole,
+      roles: user.roles,
     } as EditOrganizationUserForm,
     validators: {
       onSubmit: formSchema,
@@ -92,7 +87,7 @@ function EditOrganizationUserContent({
     onSubmit: ({ value }) => {
       const firstNameChanged = value.firstName.trim() !== user.firstName.trim();
       const lastNameChanged = value.lastName.trim() !== user.lastName.trim();
-      const roleChanged = canChangeRole && value.role !== currentRole;
+      const roleChanged = !isDeepEqual(value.roles, user.roles);
       if (!firstNameChanged && !lastNameChanged && !roleChanged) {
         onSuccess();
         return;
@@ -103,7 +98,7 @@ function EditOrganizationUserContent({
           userId: user.userId,
           ...(firstNameChanged && { firstName: value.firstName }),
           ...(lastNameChanged && { lastName: value.lastName }),
-          ...(roleChanged && { roles: [{ role: value.role }] }),
+          ...(roleChanged && { roles: value.roles }),
         })
         .then((result) => {
           if (result?.error === 'name_forbidden') {
@@ -123,81 +118,84 @@ function EditOrganizationUserContent({
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
-      <Modal.Title>{t('settings:users.edit_user.title')}</Modal.Title>
-      <div className="flex flex-col gap-md p-lg">
-        <div className="flex gap-sm">
-          <form.Field name="firstName" validators={{ onChange: formSchema.shape.firstName }}>
+    <Panel.Content>
+      <Panel.Header>{t('settings:users.edit_user.title')}</Panel.Header>
+      <form
+        id={formId}
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
+        <div className="flex flex-col gap-md py-lg">
+          <div className="flex gap-sm">
+            <form.Field name="firstName" validators={{ onChange: formSchema.shape.firstName }}>
+              {(field) => (
+                <div className="flex w-full flex-col gap-xs">
+                  <label htmlFor={field.name} className="text-s text-grey-secondary">
+                    {t('settings:users.first_name')}
+                  </label>
+                  <Input
+                    id={field.name}
+                    type="text"
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="lastName" validators={{ onChange: formSchema.shape.lastName }}>
+              {(field) => (
+                <div className="flex w-full flex-col gap-xs">
+                  <label htmlFor={field.name} className="text-s text-grey-secondary">
+                    {t('settings:users.last_name')}
+                  </label>
+                  <Input
+                    id={field.name}
+                    type="text"
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                </div>
+              )}
+            </form.Field>
+          </div>
+          <form.Field name="roles">
             {(field) => (
-              <div className="flex w-full flex-col gap-xs">
-                <label htmlFor={field.name} className="text-s text-grey-secondary">
-                  {t('settings:users.first_name')}
-                </label>
-                <Input
-                  id={field.name}
-                  type="text"
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
-                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
-          <form.Field name="lastName" validators={{ onChange: formSchema.shape.lastName }}>
-            {(field) => (
-              <div className="flex w-full flex-col gap-xs">
-                <label htmlFor={field.name} className="text-s text-grey-secondary">
-                  {t('settings:users.last_name')}
-                </label>
-                <Input
-                  id={field.name}
-                  type="text"
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
-                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
+              <UserRoleSelector
+                roles={field.state.value}
+                onChange={field.handleChange}
+                options={userRoles}
+                access={access}
+                roleLabels={roleLabels}
+              />
             )}
           </form.Field>
         </div>
-        <form.Field name="role">
-          {(field) => (
-            <UserRoleField
-              value={field.state.value}
-              onChange={field.handleChange}
-              userRoles={userRoles}
-              access={access}
-              disabled={!canChangeRole}
-              selectedLabel={roleLabel}
-            />
-          )}
-        </form.Field>
-      </div>
-      <Modal.Footer>
-        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+      </form>
+      <Panel.Footer>
+        <Panel.FooterButton isCloseButton label={t('common:cancel')} />
         <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty] as const}>
           {([canSubmit, isDirty]) => (
-            <Modal.FooterButton
+            <Panel.FooterButton
               label={t('common:save')}
               type="submit"
+              form={formId}
               disabled={!canSubmit || !isDirty || updateUserMutation.isPending}
               isLoading={updateUserMutation.isPending}
             />
           )}
         </form.Subscribe>
-      </Modal.Footer>
-    </form>
+      </Panel.Footer>
+    </Panel.Content>
   );
 }

@@ -203,6 +203,7 @@ components:
             - organization_id
             - actor_identity
             - permissions
+            - used_second_factor
           properties:
             organization_id:
               type: string
@@ -229,5 +230,9 @@ components:
                   type: string
             permissions:
               type: array
+              description: Permissions granted by bindings whose conditions are met for this request.
               items:
                 type: string
+            used_second_factor:
+              type: boolean
+              description: Whether the current sign-in used a second factor.

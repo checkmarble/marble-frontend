@@ -520,8 +520,8 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
       assertNotOwnAccess(user, data.userId);
       const users = await organization.listUsers();
       const target = users.find((candidate) => candidate.userId.toLowerCase() === data.userId.toLowerCase());
-      if (!target || target.roles.length !== 1) {
-        throw new Error('Cannot replace multiple or missing role bindings');
+      if (!target || target.roles.length === 0) {
+        throw new Error('Cannot replace missing role bindings');
       }
     }
 
