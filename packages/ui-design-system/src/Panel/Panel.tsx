@@ -154,7 +154,6 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
     // Queried on each use: the panel content changes after mount (data loads, sections open).
     const getFocusableElements = () =>
       panel.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    const firstElement = getFocusableElements()[0];
 
     const handleTabKey = (event: KeyboardEvent) => {
       if (event.key !== 'Tab') return;
@@ -177,7 +176,7 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
     };
 
     // Focus first element on mount
-    firstElement?.focus();
+    getFocusableElements()[0]?.focus();
 
     panel.addEventListener('keydown', handleTabKey);
     return () => panel.removeEventListener('keydown', handleTabKey);

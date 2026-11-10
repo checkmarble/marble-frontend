@@ -89,7 +89,6 @@
   "annotations.documents.plus_other": "+{{count}} others",
   "annotations.documents.title": "Documents",
   "annotations.documents.upload_file": "Upload a file",
-  "annotations.popover.annotate.subtitle": "Comment, add file, add tag",
   "annotations.popover.annotate.title": "Annotate",
   "annotations.tags.title": "Tags",
   "assigned_to": "Assigned to",

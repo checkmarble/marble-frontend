@@ -47,21 +47,15 @@ const FilterItemRoot = function FilterItem({
   );
 };
 
+export const filterItemTriggerClassName =
+  'text-purple-primary dark:text-grey-primary focus:border-purple-primary dark:focus:border-purple-hover -me-xs flex h-full flex-row items-center gap-xs rounded-sm border border-solid border-transparent px-xs outline-hidden';
+
 const FilterItemTrigger = function FilterItem({
   ref,
   className,
   ...props
 }: React.ComponentProps<typeof Popover.Trigger> & { ref?: React.Ref<HTMLButtonElement> }) {
-  return (
-    <FilterPopover.Trigger
-      ref={ref}
-      className={clsx(
-        'text-purple-primary dark:text-grey-primary focus:border-purple-primary dark:focus:border-purple-hover -me-xs flex h-full flex-row items-center gap-xs rounded-sm border border-solid border-transparent px-xs outline-hidden',
-        className,
-      )}
-      {...props}
-    />
-  );
+  return <FilterPopover.Trigger ref={ref} className={clsx(filterItemTriggerClassName, className)} {...props} />;
 };
 
 const FilterItemClear = function FilterItem({

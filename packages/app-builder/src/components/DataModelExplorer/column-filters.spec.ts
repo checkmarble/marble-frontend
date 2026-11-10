@@ -34,7 +34,6 @@ describe('isColumnFilterActive', () => {
     expect(isColumnFilterActive({ type: 'text', value: '' })).toBe(false);
     expect(isColumnFilterActive({ type: 'enum', values: [] })).toBe(false);
     expect(isColumnFilterActive({ type: 'number' })).toBe(false);
-    expect(isColumnFilterActive({ type: 'date', range: null })).toBe(false);
     expect(isColumnFilterActive(staticRange('', ''))).toBe(false);
   });
 

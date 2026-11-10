@@ -2,19 +2,24 @@ import { EnumTag } from '@app-builder/components/Data/EnumTag';
 import { EnumValueMenu } from '@app-builder/components/Data/EnumValueMenu';
 import { ClearAllFiltersButton } from '@app-builder/components/Filters/ClearAllFilters';
 import { DateRangeFilter } from '@app-builder/components/Filters/DateRangeFilter';
-import { FilterItem, FilterPopover } from '@app-builder/components/Filters/FilterPopover';
-import type { DataModelField, TableModel } from '@app-builder/models/data-model';
+import { FilterItem, FilterPopover, filterItemTriggerClassName } from '@app-builder/components/Filters/FilterPopover';
+import {
+  CLIENT_DATA_LIST_MAX_FILTER_VALUES,
+  type DataModelField,
+  type TableModel,
+} from '@app-builder/models/data-model';
 import { formatDuration, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { sub } from 'date-fns/sub';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Input, Separator } from 'ui-design-system';
+import { Button, cn, Input, Separator } from 'ui-design-system';
 import {
   type ColumnFilters,
   type ColumnFilterValue,
   getColumnFilterKind,
   isColumnFilterActive,
+  setColumnFilter,
 } from './column-filters';
 
 export function ColumnFilterPopover({
@@ -73,8 +78,9 @@ export function ColumnFilterPopover({
                 field={field}
                 multiple
                 selectedValues={value?.type === 'enum' ? value.values : []}
-                // The list endpoint accepts at most 100 values.
-                onChange={(values) => commit({ type: 'enum', values: values.slice(0, 100) })}
+                onChange={(values) =>
+                  commit({ type: 'enum', values: values.slice(0, CLIENT_DATA_LIST_MAX_FILTER_VALUES) })
+                }
               />
             </div>
           ))
@@ -87,7 +93,7 @@ export function ColumnFilterPopover({
           .with('date', () => (
             <DateRangeFilter.Root
               dateRangeFilter={value?.type === 'date' ? value.range : undefined}
-              setDateRangeFilter={(range) => commit({ type: 'date', range })}
+              setDateRangeFilter={(range) => (range ? commit({ type: 'date', range }) : onChange(undefined))}
               className="grid"
             >
               <DateRangeFilter.FromNowPicker title={label} />
@@ -128,11 +134,6 @@ export function ColumnFilterChips({
   const fields = table.fields.filter((field) => isColumnFilterActive(filters[field.name]) || field.name === openField);
   if (fields.length === 0) return null;
 
-  const setFilter = (name: string, value: ColumnFilterValue | undefined) => {
-    const { [name]: _previous, ...rest } = filters;
-    onChange(value ? { ...rest, [name]: value } : rest);
-  };
-
   return (
     <div className="flex flex-row flex-wrap items-center gap-sm">
       {fields.map((field) => {
@@ -142,14 +143,11 @@ export function ColumnFilterChips({
             <ColumnFilterPopover
               field={field}
               value={filters[field.name]}
-              onChange={(value) => setFilter(field.name, value)}
+              onChange={(value) => onChange(setColumnFilter(filters, field.name, value))}
               onOpenChange={(open) => setOpenField(open ? field.name : null)}
             >
-              {/* Same look as FilterItem.Trigger, which is itself a Popover.Trigger and cannot be nested in one. */}
-              <button
-                type="button"
-                className="text-purple-primary dark:text-grey-primary focus:border-purple-primary dark:focus:border-purple-hover -me-xs flex h-full flex-row items-center gap-xs rounded-sm border border-solid border-transparent px-xs text-s outline-hidden"
-              >
+              {/* FilterItem.Trigger is itself a Popover.Trigger and cannot be nested in one. */}
+              <button type="button" className={cn(filterItemTriggerClassName, 'text-s')}>
                 <span className="font-semibold">{label}:</span>
                 <span className="text-grey-primary flex min-w-0 items-center gap-xs">
                   <ColumnFilterSummary field={field} value={filters[field.name]} />
@@ -159,7 +157,7 @@ export function ColumnFilterChips({
             <FilterItem.Clear
               type="button"
               aria-label={`${t('filters:clear_filters')}: ${label}`}
-              onClick={() => setFilter(field.name, undefined)}
+              onClick={() => onChange(setColumnFilter(filters, field.name, undefined))}
             />
           </FilterItem.Root>
         );
@@ -170,6 +168,7 @@ export function ColumnFilterChips({
 }
 
 function ColumnFilterSummary({ field, value }: { field: DataModelField; value: ColumnFilterValue | undefined }) {
+  const { t } = useTranslation(['filters']);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
 
@@ -192,8 +191,7 @@ function ColumnFilterSummary({ field, value }: { field: DataModelField; value: C
       );
     case 'date': {
       const { range } = value;
-      if (!range) return null;
-      if (range.type === 'dynamic') return `≥ ${formatDuration(range.fromNow, language)}`;
+      if (range.type === 'dynamic') return t('filters:up_to', { duration: formatDuration(range.fromNow, language) });
       // The stored end is the day after the one picked (see DateRangeFilter).
       return formatBounds(
         range.startDate ? formatDateTime(range.startDate, { dateStyle: 'short' }) : undefined,

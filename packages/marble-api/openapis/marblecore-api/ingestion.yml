@@ -361,6 +361,7 @@ components:
         mapping:
           String: "#/components/schemas/StringFieldStatisticsDto"
           Bool: "#/components/schemas/BoolFieldStatisticsDto"
+          Int: "#/components/schemas/IntFieldStatisticsDto"
           Float: "#/components/schemas/FloatFieldStatisticsDto"
           Timestamp: "#/components/schemas/TimestampFieldStatisticsDto"
           IpAddress: "#/components/schemas/IpAddressFieldStatisticsDto"
@@ -377,6 +378,13 @@ components:
     BoolFieldStatisticsDto:
       allOf:
         - $ref: "#/components/schemas/FieldStatisticsDto"
+    IntFieldStatisticsDto:
+      allOf:
+        - $ref: "#/components/schemas/FieldStatisticsDto"
+        - type: object
+          properties:
+            max_length:
+              type: number
     FloatFieldStatisticsDto:
       allOf:
         - $ref: "#/components/schemas/FieldStatisticsDto"

@@ -1,6 +1,8 @@
 import { CreateTableValue } from '@app-builder/schemas/data';
+import { exhaustiveUnionList } from '@app-builder/utils/types';
 import { type ParseKeys } from 'i18next';
 import {
+  type ClientDataListFilterDto,
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
   type ClientDataListResponseDto,
   type ClientObjectDetailDto,
@@ -21,7 +23,7 @@ import {
   UpdateTableBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 import {
   type CountryCodeFormat,
@@ -597,10 +599,22 @@ export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjec
   };
 }
 
+export type ClientDataListFilterOperator = ClientDataListFilterDto['operator'];
+export const clientDataListFilterOperators = exhaustiveUnionList<ClientDataListFilterOperator>()([
+  'contains',
+  'in',
+  '>=',
+  '<=',
+  '<',
+]);
+// Limits of the list endpoint.
+export const CLIENT_DATA_LIST_MAX_FILTERS = 20;
+export const CLIENT_DATA_LIST_MAX_FILTER_VALUES = 100;
+
 /** A single value for every operator except `in`. Timestamps are RFC 3339 strings. */
 export type ClientDataListFilter = {
   fieldName: string;
-  operator: 'contains' | 'in' | '>=' | '<=' | '<';
+  operator: ClientDataListFilterOperator;
   values: (string | number)[];
 };
 
@@ -640,7 +654,7 @@ export function adaptClientDataListRequestBodyDto(model: ClientDataListRequestBo
 
 export type FieldStatistics =
   | { type: 'String'; maxLength?: number; format?: string }
-  | { type: 'Float'; maxLength?: number }
+  | { type: 'Float' | 'Int'; maxLength?: number }
   | {
       type: 'Bool' | 'Timestamp' | 'IpAddress' | 'Coords';
     };
@@ -656,7 +670,7 @@ export type ClientDataListResponse = {
   };
 };
 
-/** Returns undefined for a type this frontend does not know: the backend also emits e.g. `Int`. */
+/** Returns undefined for a type the API spec does not know yet, instead of failing the whole list. */
 export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics | undefined {
   return match(dto)
     .with({ type: 'String' }, ({ max_length, format }) => ({
@@ -664,8 +678,8 @@ export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics |
       maxLength: max_length,
       format: format,
     }))
-    .with({ type: 'Float' }, ({ max_length }) => ({
-      type: 'Float' as const,
+    .with({ type: P.union('Float', 'Int') }, ({ type, max_length }) => ({
+      type,
       maxLength: max_length,
     }))
     .with({ type: 'Bool' }, () => ({

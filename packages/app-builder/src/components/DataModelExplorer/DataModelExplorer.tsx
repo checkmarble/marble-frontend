@@ -2,6 +2,7 @@ import { type DataModel } from '@app-builder/models';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useCallbackRef } from '@marble/shared';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -24,10 +25,6 @@ function getTabUniqValue(tab: DataModelExplorerNavigationTab) {
   return `${tab.sourceTableName}_${tab.sourceFieldName}_${sourceId ?? 'unknown'}_${tab.targetTableName}_${tab.filterFieldName}_${tab.orderingFieldName}`;
 }
 
-function findTabWithUniqValue(tabUniqValue: string) {
-  return (tab: DataModelExplorerNavigationTab) => tabUniqValue === getTabUniqValue(tab);
-}
-
 export function DataModelExplorer(props: DataModelExplorerProps) {
   const explorerContext = DataModelExplorerContext.useValue();
   const { currentUser } = useOrganizationDetails();
@@ -35,7 +32,8 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
   const addTab = useCallbackRef((newTab: DataModelExplorerNavigationTab) => {
     if (!explorerContext.explorerState) return;
 
-    const existingTab = explorerContext.explorerState.tabs.find(findTabWithUniqValue(getTabUniqValue(newTab)));
+    const newTabUniqValue = getTabUniqValue(newTab);
+    const existingTab = explorerContext.explorerState.tabs.find((tab) => getTabUniqValue(tab) === newTabUniqValue);
 
     explorerContext.setExplorerState({
       tabs: existingTab ? explorerContext.explorerState.tabs : [...explorerContext.explorerState.tabs, newTab],
@@ -68,8 +66,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
 
     nextState.tabs = nextTabsState;
     // A closed tab starts without filters if it is opened again.
-    const { [getTabUniqValue(tab)]: _closedTabFilters, ...remainingFilters } = filtersByTab;
-    nextState.filtersByTab = remainingFilters;
+    nextState.filtersByTab = R.omit(filtersByTab, [getTabUniqValue(tab)]);
 
     explorerContext.setExplorerState(nextState);
   });

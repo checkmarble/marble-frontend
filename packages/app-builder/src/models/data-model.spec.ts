@@ -114,8 +114,11 @@ describe('data model semantic defaults', () => {
 
 describe('adaptClientDataListResponse', () => {
   it('ignores field statistics of a type the frontend does not know', () => {
-    // The backend emits a statistic for every field, including types absent from the API spec.
-    const fieldStatistics = { amount: { type: 'Int', max_length: 4 }, label: { type: 'String', max_length: 12 } };
+    const fieldStatistics = {
+      amount: { type: 'Int', max_length: 4 },
+      label: { type: 'String', max_length: 12 },
+      position: { type: 'unknown' },
+    };
 
     const response = adaptClientDataListResponse({
       data: [],
@@ -125,6 +128,9 @@ describe('adaptClientDataListResponse', () => {
       pagination: { has_next_page: false },
     });
 
-    expect(response.metadata.fieldStatistics).toEqual({ label: { type: 'String', maxLength: 12, format: undefined } });
+    expect(response.metadata.fieldStatistics).toEqual({
+      amount: { type: 'Int', maxLength: 4 },
+      label: { type: 'String', maxLength: 12, format: undefined },
+    });
   });
 });
