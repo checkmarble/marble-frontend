@@ -2,7 +2,13 @@ import { adaptUpdateTableValue } from '@app-builder/components/Data/SemanticTabl
 import type { TableField } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import type { ClientDataListResponseDto, FieldDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
-import { adaptClientDataListResponse, adaptDataModel, getDeclaredSemanticType, primitiveTypes } from './data-model';
+import {
+  adaptClientDataListResponse,
+  adaptDataModel,
+  getDeclaredSemanticType,
+  isIdField,
+  primitiveTypes,
+} from './data-model';
 import { getDefaultSemanticType } from './semantic-types';
 
 function readField(overrides: Partial<FieldDto> & { metadata?: Record<string, unknown>; semantic_type?: string } = {}) {
@@ -109,6 +115,16 @@ describe('data model semantic defaults', () => {
     } else {
       expect(operation.data.metadata).toBeUndefined();
     }
+  });
+});
+
+describe('isIdField', () => {
+  it('detects ids from the semantic type or the field name', () => {
+    expect(isIdField({ name: 'registration_number', semanticType: 'unique_id' })).toBe(true);
+    expect(isIdField({ name: 'owner', semanticType: 'foreign_key' })).toBe(true);
+    expect(isIdField({ name: 'account_id', semanticType: 'text' })).toBe(true);
+    expect(isIdField({ name: 'ID', semanticType: undefined })).toBe(true);
+    expect(isIdField({ name: 'valid', semanticType: 'text' })).toBe(false);
   });
 });
 

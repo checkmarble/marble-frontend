@@ -4,6 +4,7 @@ import {
   DataModel,
   type DataModelField,
   FieldStatistics,
+  isIdField,
   isRequestTimeoutError,
   type NavigationOption,
   TableModel,
@@ -203,7 +204,7 @@ function DataTableCell({ field, value }: { field: DataModelField; value: unknown
   if (isEnumField(field) && (typeof value === 'string' || typeof value === 'number')) {
     return <EnumTag field={field} value={value} />;
   }
-  if (typeof value === 'string' && /(^|_)id$/i.test(field.name)) {
+  if (typeof value === 'string' && isIdField(field)) {
     return (
       <CopyToClipboardButton toCopy={value} size="sm" className="bg-surface-card font-mono text-2xs">
         <span className="line-clamp-1">{value}</span>
@@ -234,9 +235,6 @@ type DataTableProps = {
 
 const ROW_HEIGHT = 48;
 const columnHelper = createColumnHelper<MarbleTableFeatures, Record<string, unknown>>();
-const headerIconClassName =
-  'flex size-6 shrink-0 items-center justify-center rounded-sm transition-opacity hover:text-purple-primary disabled:pointer-events-none';
-const headerActionClassName = cn(headerIconClassName, 'border border-grey-border bg-surface-card');
 // Hidden until the header (or the row) is hovered or holds the keyboard focus.
 const revealOnHeaderClassName =
   'opacity-0 group-hover/th:opacity-100 group-focus-within/th:opacity-100 data-[state=open]:opacity-100';
@@ -379,21 +377,24 @@ function DataTable({
                               value={filters[name]}
                               onChange={(value) => onFiltersChange(setColumnFilter(filters, name, value))}
                             >
-                              <button
-                                type="button"
+                              <Button
+                                variant="secondary"
+                                appearance="link"
+                                mode="icon"
                                 aria-label={t('cases:data_explorer.filters.filter_column')}
                                 className={cn(
-                                  headerIconClassName,
+                                  'shrink-0 enabled:hover:text-purple-primary',
                                   isFiltered ? 'text-purple-primary' : ['text-grey-primary', revealOnHeaderClassName],
                                 )}
                               >
                                 <Icon icon="filters" className="size-5" />
-                              </button>
+                              </Button>
                             </ColumnFilterPopover>
                           ) : null}
                           {/* While the column settings are open, their draft is the only place to pin. */}
-                          <button
-                            type="button"
+                          <Button
+                            variant="secondary"
+                            mode="icon"
                             disabled={settingsOpen}
                             aria-label={
                               pinnedCell.isPinned
@@ -401,7 +402,7 @@ function DataTable({
                                 : t('cases:data_explorer.pin_column')
                             }
                             className={cn(
-                              headerActionClassName,
+                              'shrink-0',
                               pinnedCell.isPinned
                                 ? 'text-purple-primary'
                                 : ['text-grey-secondary', revealOnHeaderClassName],
@@ -409,26 +410,23 @@ function DataTable({
                             onClick={() => setPrefs({ ...prefs, pinned: toggle(prefs.pinned, name) })}
                           >
                             <Icon icon={pinnedCell.isPinned ? 'pin' : 'pin-outline'} className="size-4" />
-                          </button>
+                          </Button>
                         </div>
                       </th>
                     );
                   })}
                   <th className="border-grey-border bg-surface-card sticky end-0 top-0 z-30 w-px border-b px-sm">
                     <div className="flex justify-end">
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
+                        mode="icon"
                         aria-pressed={settingsOpen}
                         aria-label={t('cases:data_explorer.column_settings.open')}
-                        className={cn(
-                          headerActionClassName,
-                          'rounded-md shadow-md',
-                          settingsOpen ? 'text-purple-primary' : 'text-grey-secondary',
-                        )}
+                        className={cn('shadow-md', settingsOpen ? 'text-purple-primary' : 'text-grey-secondary')}
                         onClick={() => setSettingsOpen((open) => !open)}
                       >
                         <Icon icon="settings" className="size-4" />
-                      </button>
+                      </Button>
                     </div>
                   </th>
                 </tr>

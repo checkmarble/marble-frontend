@@ -1,4 +1,7 @@
 {
+  "at_least": "≥ {{value}}",
+  "at_most": "≤ {{value}}",
+  "between": "{{min}} – {{max}}",
   "clear_filters": "Effacer les filtres",
   "date_range_filter.preset.last_3_months": "Derniers 3 mois",
   "date_range_filter.preset.last_6_months": "Derniers 6 mois",
