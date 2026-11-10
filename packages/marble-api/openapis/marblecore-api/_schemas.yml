@@ -210,6 +210,8 @@ DataModelObjectDto:
   $ref: ingestion.yml#/components/schemas/DataModelObjectDto
 ClientDataListRequestBody:
   $ref: ingestion.yml#/components/schemas/ClientDataListRequestBody
+ClientDataListFilterDto:
+  $ref: ingestion.yml#/components/schemas/ClientDataListFilterDto
 ClientDataListResponseDto:
   $ref: ingestion.yml#/components/schemas/ClientDataListResponseDto
 ClientObjectDetailDto:

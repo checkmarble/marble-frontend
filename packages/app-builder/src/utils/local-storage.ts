@@ -9,7 +9,11 @@ export function getLocalStorageItem<T>(key: string): T | null {
 }
 
 export function setLocalStorageItem<T>(key: string, value: T): void {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Quota exceeded or storage blocked (private mode): the value stays in memory only.
+  }
 }
 
 export function removeLocalStorageItem(key: string): void {

@@ -46,6 +46,16 @@ export class RequestTimeoutError extends Error {
   override name = 'RequestTimeoutError';
 }
 
+/**
+ * Only the message of an error thrown by a server function reaches the browser (its class and HTTP
+ * status are dropped), so a server function flags a timed out request with this message.
+ */
+export const REQUEST_TIMEOUT_ERROR_MESSAGE = 'request_timeout';
+
+export function isRequestTimeoutError(error: unknown): boolean {
+  return error instanceof Error && error.message === REQUEST_TIMEOUT_ERROR_MESSAGE;
+}
+
 const marbleErrorSchema = z.object({
   error_code: z.string().optional(),
   message: z.string(),

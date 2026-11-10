@@ -1,8 +1,8 @@
 import { adaptUpdateTableValue } from '@app-builder/components/Data/SemanticTables/EditTable/updateTable-adapter';
 import type { TableField } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
-import type { FieldDto } from 'marble-api';
+import type { ClientDataListResponseDto, FieldDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
-import { adaptDataModel, getDeclaredSemanticType, primitiveTypes } from './data-model';
+import { adaptClientDataListResponse, adaptDataModel, getDeclaredSemanticType, primitiveTypes } from './data-model';
 import { getDefaultSemanticType } from './semantic-types';
 
 function readField(overrides: Partial<FieldDto> & { metadata?: Record<string, unknown>; semantic_type?: string } = {}) {
@@ -109,5 +109,22 @@ describe('data model semantic defaults', () => {
     } else {
       expect(operation.data.metadata).toBeUndefined();
     }
+  });
+});
+
+describe('adaptClientDataListResponse', () => {
+  it('ignores field statistics of a type the frontend does not know', () => {
+    // The backend emits a statistic for every field, including types absent from the API spec.
+    const fieldStatistics = { amount: { type: 'Int', max_length: 4 }, label: { type: 'String', max_length: 12 } };
+
+    const response = adaptClientDataListResponse({
+      data: [],
+      metadata: {
+        field_statistics: fieldStatistics as unknown as ClientDataListResponseDto['metadata']['field_statistics'],
+      },
+      pagination: { has_next_page: false },
+    });
+
+    expect(response.metadata.fieldStatistics).toEqual({ label: { type: 'String', maxLength: 12, format: undefined } });
   });
 });

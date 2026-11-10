@@ -101,6 +101,8 @@ export const iconNames = [
   'paste',
   'percentage',
   'person',
+  'pin-outline',
+  'pin',
   'play',
   'plus',
   'policy',

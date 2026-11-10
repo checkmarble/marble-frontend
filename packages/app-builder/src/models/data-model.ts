@@ -597,12 +597,20 @@ export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjec
   };
 }
 
+/** A single value for every operator except `in`. Timestamps are RFC 3339 strings. */
+export type ClientDataListFilter = {
+  fieldName: string;
+  operator: 'contains' | 'in' | '>=' | '<=' | '<';
+  values: (string | number)[];
+};
+
 export type ClientDataListRequestBody = {
   explorationOptions: {
     sourceTableName: string;
     filterFieldName: string;
     filterFieldValue: string | number;
     orderingFieldName: string;
+    filters?: ClientDataListFilter[];
   };
   limit?: number;
   offsetId?: string | number;
@@ -615,6 +623,15 @@ export function adaptClientDataListRequestBodyDto(model: ClientDataListRequestBo
       filter_field_name: model.explorationOptions.filterFieldName,
       filter_field_value: model.explorationOptions.filterFieldValue,
       ordering_field_name: model.explorationOptions.orderingFieldName,
+      ...(model.explorationOptions.filters?.length
+        ? {
+            filters: model.explorationOptions.filters.map((filter) => ({
+              field_name: filter.fieldName,
+              operator: filter.operator,
+              values: filter.values,
+            })),
+          }
+        : {}),
     },
     cursor_id: model.offsetId,
     limit: model.limit,
@@ -639,7 +656,8 @@ export type ClientDataListResponse = {
   };
 };
 
-export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
+/** Returns undefined for a type this frontend does not know: the backend also emits e.g. `Int`. */
+export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics | undefined {
   return match(dto)
     .with({ type: 'String' }, ({ max_length, format }) => ({
       type: 'String' as const,
@@ -662,7 +680,7 @@ export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
     .with({ type: 'Coords' }, () => ({
       type: 'Coords' as const,
     }))
-    .exhaustive();
+    .otherwise(() => undefined);
 }
 
 export function adaptClientDataListResponse(dto: ClientDataListResponseDto): ClientDataListResponse {
@@ -672,7 +690,10 @@ export function adaptClientDataListResponse(dto: ClientDataListResponseDto): Cli
       fieldStatistics: R.pipe(
         dto.metadata.field_statistics,
         R.entries(),
-        R.map(([key, value]) => [key, adaptFieldStatistics(value)] as const),
+        R.flatMap(([key, value]) => {
+          const fieldStatistics = adaptFieldStatistics(value);
+          return fieldStatistics ? [[key, fieldStatistics] as const] : [];
+        }),
         R.fromEntries(),
       ),
     },

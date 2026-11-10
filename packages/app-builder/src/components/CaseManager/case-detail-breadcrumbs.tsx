@@ -55,7 +55,13 @@ export const caseDetailBreadcrumbs: FunctionComponent<BreadCrumbProps<CaseDetail
   ({ isLast, data }) => {
     return (
       <>
-        <BreadCrumbLink to="/cases/$caseId" params={{ caseId: fromUUIDtoSUUID(data.detail.id) }} isLast={isLast}>
+        {/* The case name is the only crumb allowed to shrink: it gives way to the header actions. */}
+        <BreadCrumbLink
+          to="/cases/$caseId"
+          params={{ caseId: fromUUIDtoSUUID(data.detail.id) }}
+          isLast={isLast}
+          className="min-w-0 shrink"
+        >
           <span className="line-clamp-2 text-start">{data.detail.name}</span>
         </BreadCrumbLink>
         <CaseDueDateUrgencyTag dueAt={data.detail.dueAt} status={data.detail.status} />

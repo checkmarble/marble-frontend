@@ -112,7 +112,13 @@ export function CaseManagerClientsPage({
                   dataModel={dataModel}
                   onExplore={() => setExplorationOpen(true)}
                 />
-                <DataExplorerPanel dataModel={dataModel} open={explorationOpen} onOpenChange={setExplorationOpen} />
+                <DataExplorerPanel
+                  caseId={caseDetail.id}
+                  client={ingestedInfo ?? undefined}
+                  dataModel={dataModel}
+                  open={explorationOpen}
+                  onOpenChange={setExplorationOpen}
+                />
               </DataModelExplorerProvider>
             ) : null}
           </div>

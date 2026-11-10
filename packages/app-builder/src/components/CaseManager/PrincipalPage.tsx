@@ -328,7 +328,13 @@ function ClientCard({ caseId, client, dataModel, client360Tables, userScoringAcc
               dataModel={dataModel}
               onExplore={() => setExplorationOpen(true)}
             />
-            <DataExplorerPanel dataModel={dataModel} open={explorationOpen} onOpenChange={setExplorationOpen} />
+            <DataExplorerPanel
+              caseId={caseId}
+              client={client.objectId ? { objectType: client.tableName, objectId: client.objectId } : undefined}
+              dataModel={dataModel}
+              open={explorationOpen}
+              onOpenChange={setExplorationOpen}
+            />
           </DataModelExplorerProvider>
         ) : null}
       </div>
