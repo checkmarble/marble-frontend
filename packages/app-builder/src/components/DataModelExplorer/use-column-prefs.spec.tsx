@@ -21,10 +21,10 @@ describe('useColumnPrefs', () => {
   beforeEach(() => localStorage.clear());
 
   it('persists the columns of a table and restores them on the next mount', () => {
-    const saved = { visible: ['status', 'id'], pinned: ['status'] };
+    const saved = { visible: ['status', 'id'], pinned: ['status'], widths: { status: 240 } };
     const first = renderHook(() => useColumnPrefs(table('transactions')), { wrapper: inOrganization('org-1') });
 
-    expect(first.result.current[0]).toEqual({ visible: ['id', 'amount', 'status'], pinned: [] });
+    expect(first.result.current[0]).toEqual({ visible: ['id', 'amount', 'status'], pinned: [], widths: {} });
     act(() => first.result.current[1](saved));
     expect(first.result.current[0]).toEqual(saved);
     first.unmount();
@@ -35,7 +35,7 @@ describe('useColumnPrefs', () => {
 
   it('keeps preferences separate per table and per organization', () => {
     const { result } = renderHook(() => useColumnPrefs(table('transactions')), { wrapper: inOrganization('org-1') });
-    act(() => result.current[1]({ visible: ['status'], pinned: [] }));
+    act(() => result.current[1]({ visible: ['status'], pinned: [], widths: {} }));
 
     const otherTable = renderHook(() => useColumnPrefs(table('accounts')), { wrapper: inOrganization('org-1') });
     const otherOrg = renderHook(() => useColumnPrefs(table('transactions')), { wrapper: inOrganization('org-2') });

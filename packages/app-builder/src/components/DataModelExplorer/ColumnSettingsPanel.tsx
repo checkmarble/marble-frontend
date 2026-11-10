@@ -8,6 +8,9 @@ import { Button, cn, ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type ColumnPrefs } from './column-prefs';
 
+/** The part of the prefs edited here: column widths are changed from the table itself. */
+type ColumnOrderPrefs = Pick<ColumnPrefs, 'visible' | 'pinned'>;
+
 export function ColumnSettingsPanel({
   table,
   prefs,
@@ -15,13 +18,13 @@ export function ColumnSettingsPanel({
   onClose,
 }: {
   table: TableModel;
-  prefs: ColumnPrefs;
-  onValidate: (prefs: ColumnPrefs) => void;
+  prefs: ColumnOrderPrefs;
+  onValidate: (prefs: ColumnOrderPrefs) => void;
   onClose: () => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
   // Draft never resyncs with `prefs`: mount this card only while it is open.
-  const [draft, setDraft] = useState(prefs);
+  const [draft, setDraft] = useState<ColumnOrderPrefs>({ visible: prefs.visible, pinned: prefs.pinned });
 
   const labels = new Map(table.fields.map((field) => [field.name, field.alias || field.name]));
   const otherFields = table.fields.filter((field) => !draft.visible.includes(field.name));

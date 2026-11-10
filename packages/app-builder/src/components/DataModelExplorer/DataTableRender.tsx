@@ -15,7 +15,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { createColumnHelper, flexRender, useTable as useTanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { toggle } from 'radash';
-import { type ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, type ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
@@ -31,7 +31,7 @@ import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
 import { ColumnFilterChips, ColumnFilterPopover } from './ColumnFilter';
 import { ColumnSettingsPanel } from './ColumnSettingsPanel';
 import { type ColumnFilters, isColumnFilterActive, setColumnFilter, toExplorationFilters } from './column-filters';
-import { useColumnPrefs } from './column-prefs';
+import { MIN_COLUMN_WIDTH, useColumnPrefs } from './column-prefs';
 import { type DataModelExplorerNavigationTab } from './types';
 
 const CHARACTER_WIDTH = 8;
@@ -239,6 +239,21 @@ const columnHelper = createColumnHelper<MarbleTableFeatures, Record<string, unkn
 const revealOnHeaderClassName =
   'opacity-0 group-hover/th:opacity-100 group-focus-within/th:opacity-100 data-[state=open]:opacity-100';
 
+// A resized column is given its width through a CSS variable set on the table and read by its cells:
+// a drag updates the variable, without rendering the table on every move.
+const columnWidthVar = (name: string) => `--column-width-${name}`;
+
+// In an auto table layout a cell only keeps a width if it can neither grow nor shrink. While the
+// variable is not set, the three properties are ignored and the column follows its content.
+function getColumnWidthStyle(name: string, defaultMinWidth?: string): CSSProperties {
+  const width = `var(${columnWidthVar(name)})`;
+  return {
+    width,
+    minWidth: defaultMinWidth ? `var(${columnWidthVar(name)}, ${defaultMinWidth})` : width,
+    maxWidth: width,
+  };
+}
+
 function DataTable({
   caseId,
   pivotObject,
@@ -277,6 +292,11 @@ function DataTable({
         }),
       ),
     [prefs.visible, fieldByName],
+  );
+
+  const columnWidthVars = useMemo(
+    () => R.mapToObj(Object.entries(prefs.widths), ([name, width]) => [columnWidthVar(name), `${width}px`]),
+    [prefs.widths],
   );
 
   // Stable identity: the table re-renders whenever its state object changes.
@@ -338,7 +358,7 @@ function DataTable({
             isRefreshing && 'opacity-60',
           )}
         >
-          <table className="min-w-full border-separate border-spacing-0 text-small">
+          <table className="min-w-full border-separate border-spacing-0 text-small" style={columnWidthVars}>
             <thead>
               {reactTable.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="h-10 text-start">
@@ -356,12 +376,15 @@ function DataTable({
                           else headerRefs.current.delete(name);
                         }}
                         className={cn(
-                          'group/th border-grey-border bg-surface-card sticky top-0 z-20 border-b px-md font-medium',
+                          'group/th border-grey-border bg-surface-card sticky top-0 z-20 overflow-hidden border-b px-md font-medium',
                           pinnedCell.isPinned && 'z-30',
                           pinnedCell.className,
                           name === hoveredColumn && 'bg-grey-background-light',
                         )}
-                        style={{ ...getHeaderStyle(fieldStatistics[name]), ...pinnedCell.style }}
+                        style={{
+                          ...getColumnWidthStyle(name, getHeaderStyle(fieldStatistics[name])?.minWidth),
+                          ...pinnedCell.style,
+                        }}
                         onMouseEnter={() => setHoveredColumn(name)}
                         onMouseLeave={() => setHoveredColumn(null)}
                       >
@@ -412,9 +435,25 @@ function DataTable({
                             <Icon icon={pinnedCell.isPinned ? 'pin' : 'pin-outline'} className="size-4" />
                           </Button>
                         </div>
+                        <ColumnResizeHandle
+                          name={name}
+                          width={prefs.widths[name]}
+                          onResize={(width) =>
+                            setPrefs({
+                              ...prefs,
+                              widths:
+                                width === undefined ? R.omit(prefs.widths, [name]) : { ...prefs.widths, [name]: width },
+                            })
+                          }
+                        />
                       </th>
                     );
                   })}
+                  {/* Takes the width left when the resized columns do not fill the table, instead of stretching them. */}
+                  <th
+                    aria-hidden="true"
+                    className="border-grey-border bg-surface-card sticky top-0 z-20 border-b p-0"
+                  />
                   <th className="border-grey-border bg-surface-card sticky end-0 top-0 z-30 w-px border-b px-sm">
                     <div className="flex justify-end">
                       <Button
@@ -455,17 +494,18 @@ function DataTable({
                         <td
                           key={cell.id}
                           className={cn(
-                            'group-hover:bg-grey-background-light px-md',
+                            'group-hover:bg-grey-background-light overflow-hidden px-md',
                             pinnedCell.isPinned && 'z-10',
                             pinnedCell.className,
                             cell.column.id === hoveredColumn && 'bg-grey-background-light',
                           )}
-                          style={pinnedCell.style}
+                          style={{ ...getColumnWidthStyle(cell.column.id), ...pinnedCell.style }}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       );
                     })}
+                    <td aria-hidden="true" className="group-hover:bg-grey-background-light p-0" />
                     <td className="bg-surface-card group-hover:bg-grey-background-light sticky end-0 z-10 px-sm">
                       <DataTableActionsButton
                         caseId={caseId}
@@ -497,9 +537,78 @@ function DataTable({
         <div className="flex items-center justify-end gap-sm">{pagination}</div>
       </div>
       {settingsOpen ? (
-        <ColumnSettingsPanel table={table} prefs={prefs} onValidate={setPrefs} onClose={() => setSettingsOpen(false)} />
+        <ColumnSettingsPanel
+          table={table}
+          prefs={prefs}
+          onValidate={(draft) => setPrefs({ ...prefs, ...draft })}
+          onClose={() => setSettingsOpen(false)}
+        />
       ) : null}
     </div>
+  );
+}
+
+// A drag has to move this far before it resizes: a click on the handle must not freeze the column width.
+const RESIZE_THRESHOLD = 3;
+
+type ColumnResizeHandleProps = {
+  name: string;
+  /** The saved width of the column, if it was resized. */
+  width: number | undefined;
+  /** Called at the end of a drag with the new width, or with `undefined` to follow the content again. */
+  onResize: (width: number | undefined) => void;
+};
+
+/**
+ * Same handle as the design-system `Table` (drag to resize, double click to reset). The drag itself is
+ * handled here: the columns of this table have no size until they are resized, and the table is too
+ * large to be rendered on every move.
+ */
+function ColumnResizeHandle({ name, width, onResize }: ColumnResizeHandleProps) {
+  const drag = useRef<{ startX: number; startWidth: number; direction: 1 | -1; width?: number } | null>(null);
+  const applyWidth = (handle: HTMLElement, value: number | undefined) => {
+    const tableStyle = handle.closest('table')?.style;
+    if (value === undefined) tableStyle?.removeProperty(columnWidthVar(name));
+    else tableStyle?.setProperty(columnWidthVar(name), `${value}px`);
+  };
+
+  return (
+    <div
+      aria-hidden="true"
+      className="hover:bg-grey-border active:bg-grey-placeholder absolute inset-y-0 end-0 w-1 cursor-col-resize touch-none select-none"
+      onPointerDown={(event) => {
+        const header = event.currentTarget.closest('th');
+        if (!header || event.button !== 0) return;
+        // Captured: the drag goes on outside of the handle, and ends even if the pointer leaves the table.
+        event.currentTarget.setPointerCapture(event.pointerId);
+        drag.current = {
+          startX: event.clientX,
+          startWidth: header.getBoundingClientRect().width,
+          direction: getComputedStyle(header).direction === 'rtl' ? -1 : 1,
+        };
+      }}
+      onPointerMove={(event) => {
+        const current = drag.current;
+        if (!current) return;
+        const delta = (event.clientX - current.startX) * current.direction;
+        if (current.width === undefined && Math.abs(delta) < RESIZE_THRESHOLD) return;
+        current.width = Math.max(MIN_COLUMN_WIDTH, Math.round(current.startWidth + delta));
+        applyWidth(event.currentTarget, current.width);
+      }}
+      onPointerUp={() => {
+        const resizedWidth = drag.current?.width;
+        drag.current = null;
+        if (resizedWidth !== undefined) onResize(resizedWidth);
+      }}
+      // Also fired after a pointer up, when the drag is already over: only an interrupted drag is undone here.
+      onLostPointerCapture={(event) => {
+        if (drag.current?.width !== undefined) applyWidth(event.currentTarget, width);
+        drag.current = null;
+      }}
+      onDoubleClick={() => {
+        if (width !== undefined) onResize(undefined);
+      }}
+    />
   );
 }
 
