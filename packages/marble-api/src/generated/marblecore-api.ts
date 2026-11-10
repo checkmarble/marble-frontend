@@ -855,6 +855,11 @@ export type StringFieldStatisticsDto = {
 export type BoolFieldStatisticsDto = {
     "type": "Bool";
 } & FieldStatisticsDtoBase;
+export type IntFieldStatisticsDto = {
+    "type": "Int";
+} & FieldStatisticsDtoBase & {
+    max_length?: number;
+};
 export type FloatFieldStatisticsDto = {
     "type": "Float";
 } & FieldStatisticsDtoBase & {
@@ -869,7 +874,7 @@ export type IpAddressFieldStatisticsDto = {
 export type CoordsFieldStatisticsDto = {
     "type": "Coords";
 } & FieldStatisticsDtoBase;
-export type FieldStatisticsDto = StringFieldStatisticsDto | BoolFieldStatisticsDto | FloatFieldStatisticsDto | TimestampFieldStatisticsDto | IpAddressFieldStatisticsDto | CoordsFieldStatisticsDto;
+export type FieldStatisticsDto = StringFieldStatisticsDto | BoolFieldStatisticsDto | IntFieldStatisticsDto | FloatFieldStatisticsDto | TimestampFieldStatisticsDto | IpAddressFieldStatisticsDto | CoordsFieldStatisticsDto;
 export type ClientDataListResponseDto = {
     data: ClientObjectDetailDto[];
     metadata: {

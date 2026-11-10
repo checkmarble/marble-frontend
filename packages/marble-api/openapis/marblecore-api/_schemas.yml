@@ -171,6 +171,8 @@ StringFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/StringFieldStatisticsDto
 BoolFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/BoolFieldStatisticsDto
+IntFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/IntFieldStatisticsDto
 FloatFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/FloatFieldStatisticsDto
 TimestampFieldStatisticsDto:

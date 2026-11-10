@@ -1,5 +1,6 @@
 import { isRequestTimeoutError } from '@app-builder/models';
-import { type ClientDataListFilter, type ClientDataListResponse } from '@app-builder/models/data-model';
+import { type ClientDataListResponse } from '@app-builder/models/data-model';
+import { type ListObjectsInput } from '@app-builder/schemas/data';
 import { listObjectsFn } from '@app-builder/server-fns/data';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
@@ -10,14 +11,7 @@ export type DataTableObjectListResource = {
 
 type UseClientObjectListQueryParams = {
   tableName?: string;
-  params: {
-    sourceTableName: string;
-    filterFieldName: string;
-    filterFieldValue: string | number;
-    orderingFieldName: string;
-    filters?: ClientDataListFilter[];
-    limit?: number;
-  };
+  params: Omit<ListObjectsInput, 'tableName' | 'offsetId'>;
 };
 
 export function useClientObjectListQuery(params: UseClientObjectListQueryParams) {
@@ -42,7 +36,8 @@ export function useClientObjectListQuery(params: UseClientObjectListQueryParams)
     placeholderData: keepPreviousData,
     // A timed out query would time out again: let the user narrow the filters instead.
     retry: (failureCount, error) => !isRequestTimeoutError(error) && failureCount < 3,
-    refetchOnWindowFocus: (query) => !isRequestTimeoutError(query.state.error),
+    // Refetching reloads every loaded page, one request after the other.
+    refetchOnWindowFocus: false,
     enabled: !!params.tableName,
   });
 }

@@ -170,21 +170,12 @@ export const listObjectsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(listObjectsInputSchema)
   .handler(async ({ context, data }) => {
-    const {
-      tableName,
-      sourceTableName,
-      filterFieldName,
-      filterFieldValue,
-      orderingFieldName,
-      filters,
-      limit,
-      offsetId,
-    } = data;
+    const { tableName, limit, offsetId, ...explorationOptions } = data;
     try {
       const clientDataListResponse = await context.authInfo.dataModelRepository.listClientObjects({
         tableName,
         body: {
-          explorationOptions: { sourceTableName, filterFieldName, filterFieldValue, orderingFieldName, filters },
+          explorationOptions,
           ...(limit !== undefined ? { limit } : {}),
           ...(offsetId !== undefined ? { offsetId } : {}),
         },

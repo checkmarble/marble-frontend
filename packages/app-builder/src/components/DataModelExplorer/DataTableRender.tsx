@@ -13,6 +13,7 @@ import { useClientObjectListQuery } from '@app-builder/queries/client-object-lis
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { createColumnHelper, flexRender, useTable as useTanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { toggle } from 'radash';
 import { type ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -28,7 +29,7 @@ import { Spinner } from '../Spinner';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
 import { ColumnFilterChips, ColumnFilterPopover } from './ColumnFilter';
 import { ColumnSettingsPanel } from './ColumnSettingsPanel';
-import { type ColumnFilters, isColumnFilterActive, toExplorationFilters } from './column-filters';
+import { type ColumnFilters, isColumnFilterActive, setColumnFilter, toExplorationFilters } from './column-filters';
 import { useColumnPrefs } from './column-prefs';
 import { type DataModelExplorerNavigationTab } from './types';
 
@@ -76,9 +77,15 @@ export function DataTableRender({
       filterFieldName: item.filterFieldName,
       filterFieldValue,
       orderingFieldName: item.orderingFieldName,
-      ...(explorationFilters.length > 0 ? { filters: explorationFilters } : {}),
+      filters: explorationFilters,
     },
   });
+  // Stable identity: the table only rebuilds its rows when a page arrives.
+  const pages = dataListQuery.data?.pages;
+  const list = useMemo(() => pages?.flatMap((page) => page.clientDataListResponse.data) ?? [], [pages]);
+  const fieldStatistics = pages?.at(-1)?.clientDataListResponse.metadata.fieldStatistics ?? {};
+
+  const isTimeout = isRequestTimeoutError(dataListQuery.error);
 
   if (!currentTable) {
     return (
@@ -91,14 +98,29 @@ export function DataTableRender({
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-sm">
       <ColumnFilterChips table={currentTable} filters={filters} onChange={onFiltersChange} />
-      {match(dataListQuery)
-        .with({ isPending: true }, () => (
-          <div className="flex min-h-60 flex-1 items-center justify-center">
-            <Spinner className="size-6" />
-          </div>
-        ))
-        // A failed "load more" keeps `data`: the rows already loaded stay on screen.
-        .with({ data: P.nonNullable }, (query) => (
+      {dataListQuery.isPending ? (
+        <div className="flex min-h-60 flex-1 items-center justify-center">
+          <Spinner className="size-6" />
+        </div>
+      ) : (
+        <>
+          {/* A failed "load more" keeps the pages: the rows already loaded stay on screen. */}
+          {pages ? null : (
+            <Callout
+              // A timeout says nothing about the data: there may be matches the query had no time to find.
+              color={isTimeout ? 'orange' : 'red'}
+              icon={isTimeout ? 'warning' : 'error'}
+              iconColor={isTimeout ? 'orange' : 'red'}
+            >
+              <div className="flex items-center justify-between gap-md">
+                {isTimeout ? t('cases:data_explorer.filters.timeout') : t('common:generic_fetch_data_error')}
+                <Button size="small" variant="secondary" onClick={() => dataListQuery.refetch()}>
+                  {t('common:retry')}
+                </Button>
+              </div>
+            </Callout>
+          )}
+          {/* Without pages the headers stay available: narrowing the search means filtering another column. */}
           <DataTable
             caseId={caseId}
             pivotObject={item.pivotObject}
@@ -106,67 +128,24 @@ export function DataTableRender({
             filters={filters}
             onFiltersChange={onFiltersChange}
             // The rows of the previous filters stay visible while the new ones are fetched.
-            isRefreshing={query.isPlaceholderData || filters !== appliedFilters}
+            isRefreshing={dataListQuery.isPlaceholderData || filters !== appliedFilters}
             navigateTo={navigateTo}
-            list={query.data.pages.flatMap((page) => page.clientDataListResponse.data)}
-            metadata={query.data.pages.reduce(
-              (mergedMetadata, page) => {
-                if (!page.clientDataListResponse.metadata) return mergedMetadata;
-                if (!mergedMetadata) return page.clientDataListResponse.metadata;
-
-                return {
-                  ...mergedMetadata,
-                  ...page.clientDataListResponse.metadata,
-                };
-              },
-              undefined as ClientDataListResponse['metadata'] | undefined,
-            )}
+            list={list}
+            fieldStatistics={fieldStatistics}
+            hideEmptyState={!pages}
             pagination={
               <DataTablePagination
-                hasNext={query.hasNextPage}
-                isLoading={query.isFetchingNextPage}
-                isError={query.isFetchNextPageError}
+                hasNext={dataListQuery.hasNextPage}
+                isLoading={dataListQuery.isFetchingNextPage}
+                isError={dataListQuery.isFetchNextPageError}
                 onNext={() => {
-                  query.fetchNextPage();
+                  dataListQuery.fetchNextPage();
                 }}
               />
             }
           />
-        ))
-        .otherwise((query) => {
-          // A timeout says nothing about the data: there may be matches the query had no time to find.
-          const isTimeout = isRequestTimeoutError(query.error);
-          return (
-            <>
-              <Callout
-                color={isTimeout ? 'orange' : 'red'}
-                icon={isTimeout ? 'warning' : 'error'}
-                iconColor={isTimeout ? 'orange' : 'red'}
-              >
-                <div className="flex items-center justify-between gap-md">
-                  {isTimeout ? t('cases:data_explorer.filters.timeout') : t('common:generic_fetch_data_error')}
-                  <Button size="small" variant="secondary" onClick={() => query.refetch()}>
-                    {t('common:retry')}
-                  </Button>
-                </div>
-              </Callout>
-              {/* The headers stay available: narrowing the search means adding a filter on another column. */}
-              <DataTable
-                caseId={caseId}
-                pivotObject={item.pivotObject}
-                table={currentTable}
-                filters={filters}
-                onFiltersChange={onFiltersChange}
-                isRefreshing={filters !== appliedFilters}
-                navigateTo={navigateTo}
-                list={[]}
-                metadata={undefined}
-                pagination={null}
-                hideEmptyState
-              />
-            </>
-          );
-        })}
+        </>
+      )}
     </div>
   );
 }
@@ -206,7 +185,7 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
     .with({ type: 'Coords' }, () => ({ minWidth: '160px' }))
     .with({ type: 'Bool' }, () => ({ minWidth: '50px' }))
     .with({ type: 'String', format: 'uuid' }, () => ({ minWidth: '100px' }))
-    .with({ type: P.union('String', 'Float') }, ({ maxLength }) => ({
+    .with({ type: P.union('String', 'Float', 'Int') }, ({ maxLength }) => ({
       minWidth: (maxLength !== undefined ? CHARACTER_WIDTH * maxLength : DEFAULT_CELL_WIDTH) + 'px',
     }))
     .exhaustive();
@@ -243,8 +222,8 @@ type DataTableProps = {
   pivotObject: DataModelExplorerNavigationTab['pivotObject'];
   table: TableModel;
   list: ClientDataListResponse['data'];
-  pagination: ReactElement | null;
-  metadata: ClientDataListResponse['metadata'] | undefined;
+  pagination: ReactElement;
+  fieldStatistics: ClientDataListResponse['metadata']['fieldStatistics'];
   filters: ColumnFilters;
   onFiltersChange: (filters: ColumnFilters) => void;
   isRefreshing: boolean;
@@ -267,7 +246,7 @@ function DataTable({
   pivotObject,
   table,
   list,
-  metadata,
+  fieldStatistics,
   pagination,
   filters,
   onFiltersChange,
@@ -285,19 +264,22 @@ function DataTable({
   // Hovering a header tints its whole column.
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
 
-  const columns = useMemo(() => {
-    return prefs.visible.flatMap((name) => {
-      const field = table.fields.find((f) => f.name === name);
-      if (!field) return [];
-      return [
+  // `prefs.visible` only holds names of fields of the table (see reconcileColumnPrefs).
+  const fieldByName = useMemo(() => new Map(table.fields.map((field) => [field.name, field])), [table.fields]);
+  const columns = useMemo(
+    () =>
+      prefs.visible.map((name) =>
         columnHelper.accessor(name, {
           id: name,
-          header: () => field.alias || field.name,
-          cell: (info) => <DataTableCell field={field} value={info.getValue()} />,
+          header: () => fieldByName.get(name)?.alias || name,
+          cell: (info) => {
+            const field = fieldByName.get(name);
+            return field ? <DataTableCell field={field} value={info.getValue()} /> : null;
+          },
         }),
-      ];
-    });
-  }, [prefs.visible, table.fields]);
+      ),
+    [prefs.visible, fieldByName],
+  );
 
   // Stable identity: the table re-renders whenever its state object changes.
   const columnPinning = useMemo(() => ({ start: prefs.pinned, end: [] }), [prefs.pinned]);
@@ -338,13 +320,6 @@ function DataTable({
 
   const lastPinned = prefs.pinned[prefs.pinned.length - 1];
 
-  const handleTogglePin = (name: string) => {
-    setPrefs({
-      ...prefs,
-      pinned: prefs.pinned.includes(name) ? prefs.pinned.filter((pinned) => pinned !== name) : [...prefs.pinned, name],
-    });
-  };
-
   const getPinnedCell = (name: string) => {
     const isPinned = prefs.pinned.includes(name);
     return {
@@ -371,7 +346,7 @@ function DataTable({
                 <tr key={headerGroup.id} className="h-10 text-start">
                   {headerGroup.headers.map((header) => {
                     const name = header.column.id;
-                    const field = table.fields.find((f) => f.name === name);
+                    const field = fieldByName.get(name);
                     const pinnedCell = getPinnedCell(name);
                     const isFiltered = isColumnFilterActive(filters[name]);
 
@@ -388,7 +363,7 @@ function DataTable({
                           pinnedCell.className,
                           name === hoveredColumn && 'bg-grey-background-light',
                         )}
-                        style={{ ...getHeaderStyle(metadata?.fieldStatistics[name]), ...pinnedCell.style }}
+                        style={{ ...getHeaderStyle(fieldStatistics[name]), ...pinnedCell.style }}
                         onMouseEnter={() => setHoveredColumn(name)}
                         onMouseLeave={() => setHoveredColumn(null)}
                       >
@@ -402,9 +377,7 @@ function DataTable({
                             <ColumnFilterPopover
                               field={field}
                               value={filters[name]}
-                              onChange={(value) =>
-                                onFiltersChange(value ? { ...filters, [name]: value } : R.omit(filters, [name]))
-                              }
+                              onChange={(value) => onFiltersChange(setColumnFilter(filters, name, value))}
                             >
                               <button
                                 type="button"
@@ -433,7 +406,7 @@ function DataTable({
                                 ? 'text-purple-primary'
                                 : ['text-grey-secondary', revealOnHeaderClassName],
                             )}
-                            onClick={() => handleTogglePin(name)}
+                            onClick={() => setPrefs({ ...prefs, pinned: toggle(prefs.pinned, name) })}
                           >
                             <Icon icon={pinnedCell.isPinned ? 'pin' : 'pin-outline'} className="size-4" />
                           </button>
