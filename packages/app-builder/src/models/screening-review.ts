@@ -584,6 +584,9 @@ export function adjacentScreeningReviewItem(
 /** How long a customer's hits stay listed after their case closes. */
 export const SCREENING_REVIEW_HIDE_DELAY_MS = 5_000;
 
+/** How long a decision can be undone before it's written. */
+export const SCREENING_REVIEW_UNDO_DELAY_MS = 5_000;
+
 export type ScreeningReviewDecision = 'confirmed_hit' | 'no_hit';
 
 /** A decision written during this visit. */
@@ -592,6 +595,8 @@ export interface ScreeningReviewDecided {
   item: ScreeningReviewItem;
   decision: ScreeningReviewDecision;
   comment?: string;
+  /** False during the undo delay and while the write runs: the screen shows its predicted effect. */
+  written: boolean;
 }
 
 /** What a write did to its screening and case. */
@@ -624,8 +629,43 @@ export function screeningReviewHitsSkippedBy(items: readonly ScreeningReviewItem
   );
 }
 
+function isAwaitingWrite(session: ScreeningReviewSession, screeningId: string) {
+  return Object.values(session.decided).some(({ item, written }) => !written && item.screeningId === screeningId);
+}
+
+/**
+ * What the backend will do to a screening once its unwritten decisions are written: a Hit ends a
+ * customer-triggered screening, and the last pending hit ends any complete screening.
+ */
+function predictedScreeningStatus(hits: readonly ScreeningReviewItem[]): ContinuousScreening['status'] | undefined {
+  const [first] = hits;
+  if (!first) return undefined;
+  const confirmed = hits.some((hit) => hit.status === 'confirmed_hit');
+  if (confirmed && isObjectTriggeredItem(first)) return 'confirmed_hit';
+  if (first.partial || hits.some((hit) => hit.status === 'pending')) return undefined;
+  return confirmed ? 'confirmed_hit' : 'no_hit';
+}
+
 /** Server items with this visit's decisions applied, minus the cases already hidden. */
 export function applyScreeningReviewSession(
+  items: readonly ScreeningReviewItem[],
+  session: ScreeningReviewSession,
+): ScreeningReviewItem[] {
+  const applied = applyScreeningReviewDecisions(items, session);
+  const predicted = new Map<string, ContinuousScreening['status']>();
+  for (const { item, written } of Object.values(session.decided)) {
+    if (written || predicted.has(item.screeningId)) continue;
+    const status = predictedScreeningStatus(applied.filter((other) => other.screeningId === item.screeningId));
+    if (status) predicted.set(item.screeningId, status);
+  }
+  if (!predicted.size) return applied;
+  return applied.map((item) => {
+    const status = predicted.get(item.screeningId);
+    return status ? { ...item, screeningStatus: status } : item;
+  });
+}
+
+function applyScreeningReviewDecisions(
   items: readonly ScreeningReviewItem[],
   session: ScreeningReviewSession,
 ): ScreeningReviewItem[] {
@@ -650,9 +690,14 @@ export function applyScreeningReviewSession(
     });
 }
 
-/** Pending hits, plus every hit of a screening decided during this visit. */
+/** Pending hits, plus every hit of a screening decided during this visit, written or not. */
 export function isListedInScreeningReviewSession(item: ScreeningReviewItem, session: ScreeningReviewSession) {
-  return isPendingReviewItem(item) || !!session.decided[item.id] || !!session.screenings[item.screeningId];
+  return (
+    isPendingReviewItem(item) ||
+    !!session.decided[item.id] ||
+    !!session.screenings[item.screeningId] ||
+    Object.values(session.decided).some((decided) => decided.item.screeningId === item.screeningId)
+  );
 }
 
 export type ScreeningReviewScreeningState =
@@ -670,11 +715,27 @@ export function screeningReviewScreeningState(
   session: ScreeningReviewSession,
 ): ScreeningReviewScreeningState {
   const result = session.screenings[item.screeningId];
-  const status = result?.status ?? item.screeningStatus;
+  // An unwritten decision is newer than the last write's result, so its prediction wins.
+  const predicted = isAwaitingWrite(session, item.screeningId);
+  const status = predicted
+    ? (items.find((other) => other.id === item.id) ?? item).screeningStatus
+    : (result?.status ?? item.screeningStatus);
   if (status === 'confirmed_hit') return 'confirmed_hit';
-  if (status === 'no_hit') return result?.caseClosed ? 'case_closed' : 'closure_pending';
+  if (status === 'no_hit') {
+    // The case closes once every one of its screenings ends at no_hit.
+    const caseClosed = predicted
+      ? items.every((other) => other.caseId !== item.caseId || other.screeningStatus === 'no_hit')
+      : result?.caseClosed;
+    return caseClosed ? 'case_closed' : 'closure_pending';
+  }
   const pending = items.some((other) => other.screeningId === item.screeningId && isPendingReviewItem(other));
   return item.partial && !pending ? 'load_more' : 'in_review';
+}
+
+/** The pending hits of the active hit's customer, which A selects. */
+export function screeningReviewCustomerPendingItems(groups: readonly ScreeningReviewGroup[], activeId: string) {
+  const group = groups.find((candidate) => candidate.items.some((item) => item.id === activeId));
+  return group?.items.filter(isPendingReviewItem) ?? [];
 }
 
 /** After a decision: the customer's next pending hit, then the next customer's, wrapping around. */

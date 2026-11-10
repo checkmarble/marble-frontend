@@ -14,6 +14,7 @@ import { Link } from '@tanstack/react-router';
 import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Tag, type TagProps, TextArea } from 'ui-design-system';
+import { useFlushPendingDecision, useOpenCaseInNewTab } from './pending-decision';
 import { ShortcutKeys } from './ShortcutHelp';
 
 export interface ScreeningReviewDraft {
@@ -89,7 +90,6 @@ interface ActionDockProps {
   onDraftChange: (draft: ScreeningReviewDraft) => void;
   onSubmit: () => void;
   onCancel: () => void;
-  submitting: boolean;
   /** Pending hits that a Hit skips, on a customer-triggered screening. */
   skippedCount: number;
   commentRef: Ref<HTMLTextAreaElement>;
@@ -102,7 +102,6 @@ export function ActionDock({
   onDraftChange,
   onSubmit,
   onCancel,
-  submitting,
   skippedCount,
   commentRef,
 }: ActionDockProps) {
@@ -114,7 +113,6 @@ export function ActionDock({
   return (
     <section
       aria-label={t('cases:screening_review.dock.title')}
-      aria-busy={submitting}
       className="flex shrink-0 flex-col gap-sm rounded-lg border border-grey-border bg-surface-card p-md"
     >
       <HitComments comments={item.comments} />
@@ -126,7 +124,6 @@ export function ActionDock({
               key={value}
               variant="secondary"
               aria-pressed={selected}
-              disabled={submitting}
               onClick={() => onDraftChange({ ...draft, decision: value })}
               className={cn(
                 selected && value === 'confirmed_hit' && 'border-red-primary text-red-primary',
@@ -147,7 +144,6 @@ export function ActionDock({
         aria-label={t('cases:screening_review.dock.comment')}
         placeholder={t('cases:screening_review.dock.comment')}
         value={draft.comment}
-        disabled={submitting}
         onChange={(event) => onDraftChange({ ...draft, comment: event.target.value })}
         onKeyDown={(event) => {
           if (event.nativeEvent.isComposing) return;
@@ -161,10 +157,10 @@ export function ActionDock({
         }}
       />
       <div className="flex flex-wrap items-center justify-end gap-sm">
-        <Button variant="secondary" disabled={submitting} onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel}>
           {t('cases:screening_review.dock.cancel')}
         </Button>
-        <Button variant="primary" disabled={!draft.decision || submitting} onClick={onSubmit}>
+        <Button variant="primary" disabled={!draft.decision} onClick={onSubmit}>
           {t('cases:screening_review.dock.validate')}
           <ShortcutKeys hotkeys={['Enter']} variant="small" />
         </Button>
@@ -175,12 +171,17 @@ export function ActionDock({
 
 export function OpenCaseLink({ caseId, className }: { caseId: string; className?: string }) {
   const { t } = useTranslation(['cases']);
+  const openCase = useOpenCaseInNewTab();
   return (
     <Link
       to="/cases/m/$caseId"
       params={{ caseId: fromUUIDtoSUUID(caseId) }}
       target="_blank"
       rel="noopener"
+      onClick={(event) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (openCase(event.currentTarget.href)) event.preventDefault();
+      }}
       className={cn('text-purple-primary underline', className)}
     >
       {t('cases:screening_review.open_case')}
@@ -191,12 +192,14 @@ export function OpenCaseLink({ caseId, className }: { caseId: string; className?
 function LoadMoreMatches({ screeningId, onLoaded }: { screeningId: string; onLoaded: () => Promise<unknown> }) {
   const { t } = useTranslation(['cases']);
   const loadMore = useLoadMoreContinuousScreeningMatchesMutation(screeningId);
+  const flush = useFlushPendingDecision();
   return (
     <>
       <Button
         variant="secondary"
         disabled={loadMore.isPending}
-        onClick={() => loadMore.mutate(undefined, { onSuccess: () => void onLoaded() })}
+        // A pending decision may be on this screening: write it before loading more matches.
+        onClick={() => void flush().then(() => loadMore.mutate(undefined, { onSuccess: () => void onLoaded() }))}
       >
         {t('cases:screening_review.load_more')}
       </Button>
@@ -267,6 +270,59 @@ export function ReadOnlyDock({
       </div>
       <ScreeningStateNote item={item} state={state} onMatchesLoaded={onMatchesLoaded} />
       <HitComments comments={item.comments} sessionComment={sessionComment} />
+    </section>
+  );
+}
+
+/** No hit for every selected hit, with one comment recorded on each. */
+export function BatchDock({
+  count,
+  comment,
+  onCommentChange,
+  onSubmit,
+  onClear,
+  commentRef,
+}: {
+  count: number;
+  comment: string;
+  onCommentChange: (comment: string) => void;
+  onSubmit: () => void;
+  onClear: () => void;
+  commentRef: Ref<HTMLTextAreaElement>;
+}) {
+  const { t } = useTranslation(['cases']);
+  return (
+    <section
+      aria-label={t('cases:screening_review.dock.title')}
+      className="flex shrink-0 flex-col gap-sm rounded-lg border border-grey-border bg-surface-card p-md"
+    >
+      <TextArea
+        ref={commentRef}
+        aria-label={t('cases:screening_review.batch.comment')}
+        placeholder={t('cases:screening_review.batch.comment')}
+        value={comment}
+        onChange={(event) => onCommentChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.nativeEvent.isComposing) return;
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            onSubmit();
+          } else if (event.key === 'Escape') {
+            event.preventDefault();
+            event.currentTarget.blur();
+          }
+        }}
+      />
+      <div className="flex flex-wrap items-center justify-end gap-sm">
+        <Button variant="secondary" onClick={onClear}>
+          {t('cases:screening_review.batch.clear')}
+          <ShortcutKeys hotkeys={['Escape']} variant="small" />
+        </Button>
+        <Button variant="primary" onClick={onSubmit}>
+          {t('cases:screening_review.batch.no_hit', { count })}
+          <ShortcutKeys hotkeys={['Enter']} variant="small" />
+        </Button>
+      </div>
     </section>
   );
 }
