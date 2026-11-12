@@ -1563,3 +1563,52 @@ describe('screening review details panel', () => {
     expect(open).toHaveBeenCalledWith(`/cases/m/${fromUUIDtoSUUID(caseId)}`, '_blank', 'noopener');
   });
 });
+
+describe('screening review list rail', () => {
+  const list = () => screen.getByRole('navigation', { name: 'cases:screening_review.hit_list' }).closest('[id]')!;
+  const railButton = () => screen.getByRole('button', { name: /screening_review\.list\.show/ });
+  function setPageWidth(width: number) {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width);
+  }
+  afterEach(() => vi.restoreAllMocks());
+
+  it('shows the hits left to review on the rail, which controls the list', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(railButton().textContent).toContain('4');
+    expect(railButton().getAttribute('aria-controls')).toBe(list().id);
+  });
+
+  it('collapses the list to the rail with [ or the button on a wide page', async () => {
+    setPageWidth(1200);
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(list().className).toContain('@min-[1044px]/review:flex');
+    press('[', 'BracketLeft');
+    expect(list().className).toContain('@min-[1044px]/review:hidden');
+    // The rail shows on wide pages once the list is collapsed.
+    expect(railButton().parentElement!.className).not.toContain('@min-[1044px]/review:hidden');
+    fireEvent.click(railButton());
+    expect(list().className).toContain('@min-[1044px]/review:flex');
+    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.list.hide' }));
+    expect(list().className).toContain('@min-[1044px]/review:hidden');
+  });
+
+  it('opens the list over the hit on a narrow page, and Esc closes it after the panel', async () => {
+    setPageWidth(900);
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(list().className).toMatch(/(^| )hidden( |$)/);
+    press('[', 'BracketLeft');
+    expect(list().className).toContain('absolute');
+    // J keeps moving through the open list.
+    press('j', 'KeyJ');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+    press('p', 'KeyP');
+    press('Escape', 'Escape');
+    expect(screen.queryByRole('complementary')).toBeNull();
+    expect(list().className).toContain('absolute');
+    press('Escape', 'Escape');
+    expect(list().className).not.toContain('absolute');
+  });
+});

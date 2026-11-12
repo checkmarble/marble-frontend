@@ -574,6 +574,8 @@
   "screening_review.hit_list": "Assigned screening hits",
   "screening_review.hits_per_page": "Hits per page",
   "screening_review.list_record": "List record",
+  "screening_review.list.hide": "Hide the hit list",
+  "screening_review.list.show": "Show the hit list",
   "screening_review.lists": "Lists",
   "screening_review.load_error": "Some cases could not be loaded. Retry to see all available hits.",
   "screening_review.load_more": "Load more matches",

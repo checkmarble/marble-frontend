@@ -84,7 +84,7 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, 
         {actions ? <div className="flex flex-wrap items-center gap-xs">{actions}</div> : null}
       </div>
       {/* The AI history strip of the second iteration goes here, above the identity cards. */}
-      <div className="grid shrink-0 grid-cols-1 gap-md lg:grid-cols-2">
+      <div className="grid shrink-0 grid-cols-1 gap-md @min-[1044px]/review:grid-cols-2">
         <CustomerCard item={item} canViewRiskLevel={canViewRiskLevel} />
         <ListRecordCard item={item} />
       </div>

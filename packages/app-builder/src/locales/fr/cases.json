@@ -574,6 +574,8 @@
   "screening_review.hit_list": "Correspondances de screening attribuées",
   "screening_review.hits_per_page": "Correspondances par page",
   "screening_review.list_record": "Fiche de liste",
+  "screening_review.list.hide": "Masquer la liste des correspondances",
+  "screening_review.list.show": "Afficher la liste des correspondances",
   "screening_review.lists": "Listes",
   "screening_review.load_error": "Certains dossiers n’ont pas pu être chargés. Réessayez pour voir toutes les correspondances disponibles.",
   "screening_review.load_more": "Charger plus de correspondances",
