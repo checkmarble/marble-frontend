@@ -1,6 +1,5 @@
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { Spinner } from '@app-builder/components/Spinner';
-import { Case } from '@app-builder/models/cases';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +9,10 @@ import { ObjectRelatedCases } from './ObjectRelatedCases';
 type ObjectDetailsProps = {
   objectType: string;
   objectId: string;
-  currentCase: Case;
+  currentCaseId: string;
 };
 
-export const ObjectDetails = ({ objectType, objectId, currentCase }: ObjectDetailsProps) => {
+export const ObjectDetails = ({ objectType, objectId, currentCaseId }: ObjectDetailsProps) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const dataModelQuery = useDataModelQuery();
   const objectDetailsQuery = useObjectDetailsQuery(objectType, objectId);
@@ -45,7 +44,7 @@ export const ObjectDetails = ({ objectType, objectId, currentCase }: ObjectDetai
       <ObjectRelatedCases
         objectType={objectType}
         objectId={objectId}
-        currentCase={currentCase}
+        currentCaseId={currentCaseId}
         className="bg-grey-background-light border border-grey-border"
       />
     </div>

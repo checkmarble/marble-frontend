@@ -17,7 +17,7 @@ import { Icon } from 'ui-icons';
 type CaseEventsProps = {
   events: CaseEvent[];
   currentInboxId: string;
-  inboxes: Inbox[];
+  inboxes: Pick<Inbox, 'id' | 'name'>[];
   /** When set, only these event types are shown. Empty array => no event steps, only due date eventually. */
   includeEventTypes?: CaseEventType[];
   /** Removed after include filtering. Ignored types that were never included. */

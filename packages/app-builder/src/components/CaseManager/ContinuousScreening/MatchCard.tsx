@@ -110,7 +110,7 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
                 <ObjectDetails
                   objectType={indirectMatch.objectType}
                   objectId={indirectMatch.objectId}
-                  currentCase={caseDetail}
+                  currentCaseId={caseDetail.id}
                 />
               </div>
             ))
