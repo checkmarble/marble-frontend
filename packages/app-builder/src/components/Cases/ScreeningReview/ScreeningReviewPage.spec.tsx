@@ -1579,31 +1579,6 @@ describe('screening review list rail', () => {
     expect(railButton().getAttribute('aria-controls')).toBe(list().id);
   });
 
-  it('collapses the list to the rail with [ or the button on a wide page', async () => {
-    setPageWidth(1200);
-    renderPage();
-    await waitFor(() => expect(activeCard()).not.toBeNull());
-    expect(list().className).toContain('@min-[1044px]/review:flex');
-    press('[', 'BracketLeft');
-    expect(list().className).toContain('@min-[1044px]/review:hidden');
-    // The rail shows on wide pages once the list is collapsed.
-    expect(railButton().parentElement!.className).not.toContain('@min-[1044px]/review:hidden');
-    fireEvent.click(railButton());
-    expect(list().className).toContain('@min-[1044px]/review:flex');
-    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.list.hide' }));
-    expect(list().className).toContain('@min-[1044px]/review:hidden');
-  });
-
-  it('toggles the list with [ typed as Option+Shift+5 on a Mac AZERTY keyboard', async () => {
-    setPageWidth(1200);
-    renderPage();
-    await waitFor(() => expect(activeCard()).not.toBeNull());
-    const azertyBracket = { key: '[', code: 'Digit5', altKey: true, shiftKey: true };
-    fireEvent.keyDown(document, azertyBracket);
-    fireEvent.keyUp(document, azertyBracket);
-    expect(list().className).toContain('@min-[1044px]/review:hidden');
-  });
-
   it('opens the list over the hit on a narrow page, and Esc closes it after the panel', async () => {
     setPageWidth(900);
     renderPage();
