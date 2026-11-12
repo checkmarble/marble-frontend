@@ -13,7 +13,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
 import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tag, type TagProps, TextArea } from 'ui-design-system';
+import { Button, Card, cn, Tag, type TagProps, TextArea } from 'ui-design-system';
 import { useFlushPendingDecision, useOpenCaseInNewTab } from './pending-decision';
 import { ShortcutKeys } from './ShortcutHelp';
 
@@ -111,9 +111,10 @@ export function ActionDock({
     { value: 'no_hit', hotkey: 'N' },
   ] as const;
   return (
-    <section
+    <Card
+      as="section"
       aria-label={t('cases:screening_review.dock.title')}
-      className="flex shrink-0 flex-col gap-sm rounded-lg border border-grey-border bg-surface-card p-md"
+      className="flex shrink-0 flex-col gap-sm p-md"
     >
       <HitComments comments={item.comments} />
       <div role="group" aria-label={t('cases:screening_review.dock.title')} className="flex flex-wrap gap-sm">
@@ -165,7 +166,7 @@ export function ActionDock({
           <ShortcutKeys hotkeys={['Enter']} variant="small" />
         </Button>
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -179,8 +180,10 @@ export function OpenCaseLink({ caseId, className }: { caseId: string; className?
       target="_blank"
       rel="noopener"
       onClick={(event) => {
-        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        if (openCase(event.currentTarget.href)) event.preventDefault();
+        if (!event.altKey && openCase(event.currentTarget.href)) event.preventDefault();
+      }}
+      onAuxClick={(event) => {
+        if (event.button === 1 && !event.altKey && openCase(event.currentTarget.href)) event.preventDefault();
       }}
       className={cn('text-purple-primary underline', className)}
     >
@@ -278,6 +281,7 @@ export function ReadOnlyDock({
 export function BatchDock({
   count,
   comment,
+  mixedComments,
   onCommentChange,
   onSubmit,
   onClear,
@@ -285,6 +289,8 @@ export function BatchDock({
 }: {
   count: number;
   comment: string;
+  /** The selected hits keep different comments: typing replaces them all. */
+  mixedComments: boolean;
   onCommentChange: (comment: string) => void;
   onSubmit: () => void;
   onClear: () => void;
@@ -292,14 +298,17 @@ export function BatchDock({
 }) {
   const { t } = useTranslation(['cases']);
   return (
-    <section
+    <Card
+      as="section"
       aria-label={t('cases:screening_review.dock.title')}
-      className="flex shrink-0 flex-col gap-sm rounded-lg border border-grey-border bg-surface-card p-md"
+      className="flex shrink-0 flex-col gap-sm p-md"
     >
       <TextArea
         ref={commentRef}
         aria-label={t('cases:screening_review.batch.comment')}
-        placeholder={t('cases:screening_review.batch.comment')}
+        placeholder={t(
+          mixedComments ? 'cases:screening_review.batch.mixed_comments' : 'cases:screening_review.batch.comment',
+        )}
         value={comment}
         onChange={(event) => onCommentChange(event.target.value)}
         onKeyDown={(event) => {
@@ -323,6 +332,6 @@ export function BatchDock({
           <ShortcutKeys hotkeys={['Enter']} variant="small" />
         </Button>
       </div>
-    </section>
+    </Card>
   );
 }

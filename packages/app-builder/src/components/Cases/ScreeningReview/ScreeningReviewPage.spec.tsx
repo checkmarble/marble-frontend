@@ -52,14 +52,16 @@ vi.mock('@tanstack/react-router', () => {
       params,
       target,
       onClick,
+      onAuxClick,
     }: {
       children: React.ReactNode;
       to: string;
       params?: { inboxId?: string; caseId?: string };
       target?: string;
       onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+      onAuxClick?: React.MouseEventHandler<HTMLAnchorElement>;
     }) => (
-      <a href={href(to, params)} target={target} onClick={onClick}>
+      <a href={href(to, params)} target={target} onClick={onClick} onAuxClick={onAuxClick}>
         {children}
       </a>
     ),
@@ -558,8 +560,9 @@ describe('screening review decisions', () => {
       .getAllByRole('button')
       .find((button) => button.hasAttribute('data-review-hit-card') && button.textContent?.includes(name));
   const checkbox = (name: string) => card(name)!.parentElement!.querySelector<HTMLElement>('[role="checkbox"]')!;
+  // Hit cards only: the batch summary repeats each selected hit with its own checkbox.
   const checked = () =>
-    screen.queryAllByRole('checkbox').filter((box) => box.getAttribute('aria-checked') === 'true').length;
+    document.querySelectorAll('[data-review-hit-card] ~ [role="checkbox"][aria-checked="true"]').length;
   const elapse = (ms: number) =>
     act(async () => {
       await vi.advanceTimersByTimeAsync(ms);
@@ -921,10 +924,87 @@ describe('screening review decisions', () => {
       await waitFor(() => expect(tab.location.href).toBe(new URL(caseHref, window.location.href).href));
       open.mockRestore();
     });
+    it('keeps O, modified and middle clicks on the case link waiting for a write the delay already started', async () => {
+      const tab = { opener: {} as unknown, location: { href: '' } };
+      const open = vi.spyOn(window, 'open').mockReturnValue(tab as unknown as Window);
+      const write = Promise.withResolvers<{ ok: true; screeningStatus: 'confirmed_hit'; caseClosed: false }>();
+      vi.mocked(reviewScreeningReviewMatchFn).mockImplementation(() => write.promise as never);
+      renderDecisionPage();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('m', 'KeyM');
+      press('Enter', 'Enter');
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
+      // The undo window is over, but the write is still running.
+      press('o', 'KeyO');
+      expect(open).toHaveBeenLastCalledWith('', '_blank');
+
+      const link = screen.getAllByRole('link', { name: 'cases:screening_review.open_case' })[0]!;
+      expect(fireEvent.click(link, { metaKey: true })).toBe(false);
+      expect(fireEvent.click(link, { ctrlKey: true, shiftKey: true })).toBe(false);
+      expect(fireEvent(link, new MouseEvent('auxclick', { button: 1, bubbles: true, cancelable: true }))).toBe(false);
+      expect(open).toHaveBeenCalledTimes(4);
+      expect(open.mock.calls.every((call) => call[0] === '')).toBe(true);
+      // Alt+click downloads the link: left to the browser.
+      expect(fireEvent.click(link, { altKey: true })).toBe(true);
+      expect(tab.location.href).toBe('');
+
+      write.resolve({ ok: true, screeningStatus: 'confirmed_hit', caseClosed: false });
+      await waitFor(() => expect(tab.location.href).not.toBe(''));
+      // Everything is written: links keep their default behavior.
+      expect(fireEvent.click(link, { metaKey: true })).toBe(true);
+      expect(fireEvent(link, new MouseEvent('auxclick', { button: 1, bubbles: true, cancelable: true }))).toBe(true);
+      expect(open).toHaveBeenCalledTimes(4);
+      open.mockRestore();
+    });
+
+    it('loads more matches only after a write the delay already started has finished', async () => {
+      const screening = objectReviewScreening();
+      screening.partial = true;
+      screening.matches = screening.matches.slice(0, 1);
+      const items = buildScreeningReviewItems([reviewCase(caseId, [screening])]);
+      const write = Promise.withResolvers<typeof inReview>();
+      vi.mocked(reviewScreeningReviewMatchFn).mockImplementation(() => write.promise as never);
+      vi.mocked(loadMoreContinuousScreeningMatchesFn).mockResolvedValue(undefined);
+      renderDecisionPage(items);
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('n', 'KeyN');
+      press('Enter', 'Enter');
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
+      fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.load_more' }));
+      await elapse(100);
+      expect(loadMoreContinuousScreeningMatchesFn).not.toHaveBeenCalled();
+      write.resolve(inReview);
+      await waitFor(() => expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledTimes(1));
+    });
+
+    it('leaves the screen alone when a write redirects, and still opens the waiting case tab', async () => {
+      const tab = { opener: {} as unknown, location: { href: '' } };
+      const open = vi.spyOn(window, 'open').mockReturnValue(tab as unknown as Window);
+      // `useServerFn` navigates on a redirect and resolves with nothing.
+      vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue(undefined as never);
+      renderDecisionPage();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('n', 'KeyN');
+      press('Enter', 'Enter');
+      press('o', 'KeyO');
+      await waitFor(() => expect(tab.location.href).toBe(caseHref));
+      expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('alert')).toBeNull();
+
+      press('a', 'KeyA');
+      press('Enter', 'Enter');
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3));
+      await elapse(0);
+      expect(screen.queryByRole('alert')).toBeNull();
+      open.mockRestore();
+    });
   });
 
   describe('batch No hit', () => {
-    it('selects with X, A and the mouse, shows a summary, and clears the selection with Esc', async () => {
+    it('selects with X, A and the mouse, shows a summary, and clears the selection with Esc, Shift+A and Clear', async () => {
       renderDecisionPage();
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
       press('x', 'KeyX');
@@ -942,13 +1022,31 @@ describe('screening review decisions', () => {
       press('Escape', 'Escape');
       expect(checked()).toBe(0);
 
+      // Clear appears once a hit of the customer is checked, and clears that customer only.
+      expect(screen.queryByRole('checkbox', { name: /screening_review\.batch\.deselect_customer_hits/ })).toBeNull();
+      press('a', 'KeyA');
+      expect(checked()).toBe(3);
+      press('A', 'KeyA', true);
+      expect(checked()).toBe(0);
+      press('a', 'KeyA');
+      const clearGroup = screen.getByRole('checkbox', { name: /screening_review\.batch\.deselect_customer_hits/ });
+      expect(clearGroup.getAttribute('aria-checked')).toBe('mixed');
+      expect(clearGroup.parentElement!.querySelectorAll('kbd')).toHaveLength(2);
+      fireEvent.click(clearGroup);
+      expect(checked()).toBe(0);
+
       fireEvent.click(checkbox('List record B'));
       expect(checked()).toBe(1);
       fireEvent.click(checkbox('List record B'));
       expect(checked()).toBe(0);
-      fireEvent.click(screen.getAllByRole('button', { name: /screening_review\.batch\.select_customer_hits/ })[1]!);
+      const selectGroup = screen.getAllByRole('checkbox', {
+        name: /screening_review\.batch\.select_customer_hits/,
+      })[1]!;
+      expect(selectGroup.getAttribute('aria-checked')).toBe('false');
+      expect(selectGroup.parentElement!.querySelectorAll('kbd')).toHaveLength(1);
+      fireEvent.click(selectGroup);
       expect(checked()).toBe(1);
-      fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.batch.deselect' }));
+      fireEvent.click(screen.getByRole('checkbox', { name: /screening_review\.batch\.deselect_hit/ }));
       expect(checked()).toBe(0);
     });
 
@@ -1053,6 +1151,122 @@ describe('screening review decisions', () => {
       expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
       expect(card('List record B')?.textContent).not.toContain('cases:screening_review.decision.no_hit');
       expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3);
+    });
+
+    it('keeps a failed batch selected with its comment when undoing a later batch, each hit retrying with its own', async () => {
+      const failing = Promise.withResolvers<never>();
+      vi.mocked(reviewScreeningReviewMatchFn).mockImplementation((({ data }: { data: { matchId: string } }) =>
+        data.matchId === 'screening-1-high' ? failing.promise : Promise.resolve(inReview)) as never);
+      renderDecisionPage();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('x', 'KeyX');
+      fireEvent.change(commentBox(), { target: { value: 'Comment A' } });
+      press('Enter', 'Enter');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+      press('x', 'KeyX');
+      fireEvent.change(commentBox(), { target: { value: 'Comment B' } });
+      // Submitting B writes A.
+      press('Enter', 'Enter');
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
+      failing.reject(new Error('network'));
+      expect((await screen.findByRole('alert')).textContent).toBe('cases:screening_review.batch.failed');
+      expect(isChecked('List record A')).toBe(true);
+      expect(commentBox().value).toBe('Comment A');
+
+      press('u', 'KeyU');
+      await waitFor(() => expect(isChecked('Shared list record')).toBe(true));
+      expect(isChecked('List record A')).toBe(true);
+      expect(screen.getByRole('alert').textContent).toBe('cases:screening_review.batch.failed');
+      // The hits keep different comments: the box offers to replace them, and each row shows its own.
+      expect(commentBox().value).toBe('');
+      expect(commentBox().getAttribute('placeholder')).toBe('cases:screening_review.batch.mixed_comments');
+      expect(screen.getAllByText('cases:screening_review.batch.hit_comment')).toHaveLength(2);
+
+      vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue(inReview);
+      press('Enter', 'Enter');
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3));
+      expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith(
+        written('screening-1-high', 'no_hit', { comment: 'Comment A' }),
+      );
+      expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith(
+        written('dataset-1-alice', 'no_hit', { comment: 'Comment B' }),
+      );
+    });
+
+    it('keeps a newer screening result when an earlier batch finishes on a slower case', async () => {
+      const slower = Promise.withResolvers<typeof inReview>();
+      const items = buildScreeningReviewItems([
+        reviewCase(caseId, [objectReviewScreening('fast')]),
+        reviewCase('44444444-4444-4444-8444-444444444444', [objectReviewScreening('slow', 'bob')]),
+      ]).map((item) => ({
+        ...item,
+        listRecord: { ...item.listRecord, caption: item.matchId },
+      }));
+      vi.mocked(reviewScreeningReviewMatchFn).mockImplementation((async ({ data }: { data: { matchId: string } }) => {
+        if (data.matchId === 'slow-high') return slower.promise;
+        if (data.matchId === 'fast-low') return { ok: true, screeningStatus: 'no_hit', caseClosed: true };
+        return inReview;
+      }) as never);
+      renderDecisionPage(items);
+      await waitFor(() => expect(activeCard()?.textContent).toContain('fast-high'));
+      fireEvent.click(checkbox('fast-high'));
+      fireEvent.click(checkbox('slow-high'));
+      press('Enter', 'Enter');
+      fireEvent.click(card('fast-low')!);
+      press('n', 'KeyN');
+      // The newer single decision starts the batch, whose slow case remains in flight.
+      press('Enter', 'Enter');
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3));
+      fireEvent.click(card('fast-low')!);
+      await screen.findByText('cases:screening_review.screening_state.case_closed');
+
+      await act(async () => {
+        slower.resolve(inReview);
+      });
+      await waitFor(() => expect(listScreeningReviewPageFn).toHaveBeenCalledTimes(3));
+      expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
+    });
+
+    it('keeps a failed single decision and its draft when undoing a later decision', async () => {
+      const failing = Promise.withResolvers<never>();
+      vi.mocked(reviewScreeningReviewMatchFn).mockImplementationOnce(() => failing.promise);
+      renderDecisionPage();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('n', 'KeyN');
+      fireEvent.change(commentBox(), { target: { value: 'Comment A' } });
+      press('Enter', 'Enter');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+      press('n', 'KeyN');
+      fireEvent.change(commentBox(), { target: { value: 'Comment B' } });
+      press('Enter', 'Enter');
+      failing.reject(new Error('network'));
+      expect((await screen.findByRole('alert')).textContent).toBe('cases:screening_review.decision_failed');
+      press('u', 'KeyU');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+      expect(commentBox().value).toBe('Comment B');
+      expect(screen.getByRole('alert').textContent).toBe('cases:screening_review.decision_failed');
+      press('k', 'KeyK');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      expect(decisionButton('no_hit').getAttribute('aria-pressed')).toBe('true');
+      expect(commentBox().value).toBe('Comment A');
+    });
+
+    it('shows an unchecked checkbox on hover or keyboard focus only, even on the hit under the cursor', async () => {
+      renderDecisionPage();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      const classes = () => checkbox('List record A').className.split(/\s+/);
+      expect(classes()).toContain('opacity-0');
+      expect(classes()).not.toContain('opacity-100');
+      expect(classes()).toEqual(
+        expect.arrayContaining([
+          'group-hover/hit:opacity-100',
+          'group-has-[:focus-visible]/hit:opacity-100',
+          'radix-state-checked:opacity-100',
+        ]),
+      );
     });
   });
 });

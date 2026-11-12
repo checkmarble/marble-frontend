@@ -46,6 +46,7 @@ export const SCREENING_REVIEW_SHORTCUT_HELP = [
     rows: [
       { name: 'select_hit', hotkeys: ['X'] },
       { name: 'select_object_hits', hotkeys: ['A'] },
+      { name: 'clear_object_hits', hotkeys: ['Shift+A'] },
     ],
   },
   {
