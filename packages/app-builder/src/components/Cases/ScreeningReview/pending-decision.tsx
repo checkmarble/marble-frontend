@@ -1,8 +1,6 @@
 import { SCREENING_REVIEW_UNDO_DELAY_MS } from '@app-builder/models/screening-review';
-import { useFormatLanguage } from '@app-builder/utils/format';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
-import { Button, Kbd } from 'ui-design-system';
+import toast, { type ToastOptions } from 'react-hot-toast';
 
 export interface WriteOptions {
   /** Set when the request starts while the page goes away, so it can outlive the page. */
@@ -18,6 +16,8 @@ export type WriteItems = <T extends { caseId: string }, R>(
 export interface PendingDecision {
   /** Shown in the undo toast. */
   message: string;
+  /** Shown once the decision is undone. */
+  undoneMessage: string;
   /** Restores the screen as it was before the decision. Nothing was written yet. */
   undo: () => void;
   /** Writes the decision with `writeItems`, then applies the outcome. Handles its own failures. */
@@ -107,6 +107,10 @@ export function createCaseWriteQueue(limit: number) {
 }
 
 const UNDO_TOAST_ID = 'screening-review-undo';
+const UNDONE_TOAST_ID = 'screening-review-undone';
+const UNDONE_TOAST_DURATION_MS = 4_000;
+// Away from the page header, where app notifications show.
+const TOAST_POSITION: ToastOptions['position'] = 'bottom-center';
 
 /**
  * Holds at most one undoable decision for the undo delay, then writes it. A new decision, `flush`,
@@ -121,7 +125,6 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
   const outstandingRef = useRef(new Set<Promise<void>>());
   const [queue] = useState(() => createCaseWriteQueue(WRITE_CASE_CONCURRENCY));
   const [undoable, setUndoable] = useState(false);
-  const language = useFormatLanguage();
 
   const take = useCallback(() => {
     window.clearTimeout(timerRef.current);
@@ -144,7 +147,16 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
     await Promise.allSettled([...outstandingRef.current]);
   }, [take, queue]);
 
-  const undo = useCallback(() => take()?.undo(), [take]);
+  const undo = useCallback(() => {
+    const decision = take();
+    if (!decision) return;
+    decision.undo();
+    toast.custom(<ReviewToast message={decision.undoneMessage} />, {
+      id: UNDONE_TOAST_ID,
+      duration: UNDONE_TOAST_DURATION_MS,
+      position: TOAST_POSITION,
+    });
+  }, [take]);
 
   /** True while a decision can be undone or is still being written. */
   const hasUnsaved = useCallback(() => !!undoableRef.current || outstandingRef.current.size > 0, []);
@@ -154,21 +166,13 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
     undoableRef.current = decision;
     setUndoable(true);
     timerRef.current = window.setTimeout(() => void flush(), SCREENING_REVIEW_UNDO_DELAY_MS);
-    const deadline = Date.now() + SCREENING_REVIEW_UNDO_DELAY_MS;
+    toast.dismiss(UNDONE_TOAST_ID);
     // The timer above decides when the write happens, so the toast doesn't expire on its own.
-    toast(
-      <UndoToast
-        message={decision.message}
-        deadline={deadline}
-        language={language}
-        undoLabel={undoLabel}
-        onUndo={undo}
-      />,
-      {
-        id: UNDO_TOAST_ID,
-        duration: Number.POSITIVE_INFINITY,
-      },
-    );
+    toast.custom(<ReviewToast message={decision.message} undoLabel={undoLabel} onUndo={undo} />, {
+      id: UNDO_TOAST_ID,
+      duration: Number.POSITIVE_INFINITY,
+      position: TOAST_POSITION,
+    });
   };
 
   useEffect(() => {
@@ -189,43 +193,29 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
   return { undoable, schedule, flush, undo, hasUnsaved };
 }
 
-function UndoToast({
-  message,
-  deadline,
-  language,
-  undoLabel,
-  onUndo,
-}: {
-  message: string;
-  deadline: number;
-  language: string;
-  undoLabel: string;
-  onUndo: () => void;
-}) {
+/** A dark snackbar with an optional undo action, drawn by the page rather than the app's toast bar. */
+function ReviewToast({ message, undoLabel, onUndo }: { message: string; undoLabel?: string; onUndo?: () => void }) {
   return (
-    <span className="flex items-center gap-sm">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex items-center gap-lg rounded-lg bg-grey-primary/90 px-md py-sm text-s text-grey-white shadow-lg dark:border dark:border-grey-border dark:bg-grey-background-light dark:text-grey-primary"
+    >
       <span>{message}</span>
-      <Countdown deadline={deadline} language={language} />
-      <Button variant="secondary" size="small" onClick={onUndo}>
-        {undoLabel}
-        <Kbd variant="small">U</Kbd>
-      </Button>
-    </span>
-  );
-}
-
-/** Seconds left before the write. Hidden from screen readers, which would read it every second. */
-function Countdown({ deadline, language }: { deadline: number; language: string }) {
-  const [now, setNow] = useState(Date.now);
-  useEffect(() => {
-    const interval = window.setInterval(() => setNow(Date.now()), 250);
-    return () => window.clearInterval(interval);
-  }, []);
-  const seconds = Math.max(0, Math.ceil((deadline - now) / 1_000));
-  return (
-    <span aria-hidden className="text-grey-secondary tabular-nums" data-undo-countdown>
-      {new Intl.NumberFormat(language, { style: 'unit', unit: 'second', unitDisplay: 'narrow' }).format(seconds)}
-    </span>
+      {onUndo ? (
+        <button
+          type="button"
+          onClick={onUndo}
+          aria-keyshortcuts="U"
+          className="inline-flex shrink-0 cursor-pointer items-center gap-xs rounded-sm font-semibold text-purple-secondary focus-visible:outline-2 focus-visible:outline-purple-secondary dark:text-purple-hover"
+        >
+          {undoLabel}
+          <kbd aria-hidden className="font-sans">
+            U
+          </kbd>
+        </button>
+      ) : null}
+    </div>
   );
 }
 
