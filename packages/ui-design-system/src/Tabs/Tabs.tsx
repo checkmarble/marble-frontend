@@ -35,25 +35,40 @@ const tabClassName = cva(
           'data-[status=active]:border-purple-primary',
         ],
       },
+      // After color, so the variant's classes win the merge.
+      variant: {
+        default: null,
+        fluid: null,
+        pills: 'h-5 gap-xs rounded-full px-1.5 text-xs',
+      },
     },
+    compoundVariants: [
+      // The tinted purple background turns near-white in dark mode, where pills have no tablist behind them.
+      { color: 'purple', variant: 'pills', className: 'dark:bg-purple-background-light' },
+    ],
     defaultVariants: {
       color: 'purple',
+      variant: 'default',
     },
   },
 );
 
 type TabColor = NonNullable<VariantProps<typeof tabClassName>['color']>;
+type TabVariant = NonNullable<VariantProps<typeof tabClassName>['variant']>;
 
 const tabsClassName = cva('flex p-xs gap-xs rounded-md self-start justify-self-start items-center', {
   variants: {
-    variant: {
-      default: '',
-      fluid: 'flex-wrap',
-    },
     color: {
       purple: 'bg-purple-background dark:bg-grey-background',
       grey: '',
     } satisfies Record<TabColor, string>,
+    // After color, so pills drop the tinted tablist background.
+    variant: {
+      default: '',
+      fluid: 'flex-wrap',
+      /** Separate rounded tabs that wrap, such as filters with counts. Pair with `Tabs.Count`. */
+      pills: 'flex-wrap p-0 bg-transparent dark:bg-transparent',
+    } satisfies Record<TabVariant, string>,
   },
   defaultVariants: {
     color: 'purple',
@@ -66,6 +81,7 @@ type TabsContextValue = {
   value: string | undefined;
   onValueChange: ((value: string) => void) | undefined;
   color: TabColor;
+  variant: TabVariant;
 };
 
 const TabsContext = createContext<TabsContextValue>({
@@ -73,6 +89,7 @@ const TabsContext = createContext<TabsContextValue>({
   value: undefined,
   onValueChange: undefined,
   color: 'purple',
+  variant: 'default',
 });
 
 const toIdSegment = (value: string) => value.replace(/[^\w-]/g, '_');
@@ -118,19 +135,25 @@ interface TabsProps<T extends string = string> extends VariantProps<typeof tabsC
 
 function TabsRoot<T extends string = string>({ children, variant, color, id, value, onValueChange }: TabsProps<T>) {
   const resolvedColor = color ?? 'purple';
+  const resolvedVariant = variant ?? 'default';
   const contextValue = useMemo(
     (): TabsContextValue => ({
       id,
       value,
       onValueChange: onValueChange as TabsContextValue['onValueChange'],
       color: resolvedColor,
+      variant: resolvedVariant,
     }),
-    [id, value, onValueChange, resolvedColor],
+    [id, value, onValueChange, resolvedColor, resolvedVariant],
   );
 
   return (
     <TabsContext.Provider value={contextValue}>
-      <div role="tablist" onKeyDown={handleTablistKeyDown} className={tabsClassName({ variant, color: resolvedColor })}>
+      <div
+        role="tablist"
+        onKeyDown={handleTablistKeyDown}
+        className={cn(tabsClassName({ variant: resolvedVariant, color: resolvedColor }))}
+      >
         {children}
       </div>
     </TabsContext.Provider>
@@ -143,14 +166,21 @@ interface TabsNavProps extends Omit<ComponentProps<'nav'>, 'color'>, VariantProp
 /** Tab-styled navigation between routes. Use with `Tabs.Link`; use `Tabs` for in-place content switching. */
 function TabsNav({ variant, color, className, ...props }: TabsNavProps) {
   const resolvedColor = color ?? 'purple';
+  const resolvedVariant = variant ?? 'default';
   const contextValue = useMemo(
-    (): TabsContextValue => ({ id: undefined, value: undefined, onValueChange: undefined, color: resolvedColor }),
-    [resolvedColor],
+    (): TabsContextValue => ({
+      id: undefined,
+      value: undefined,
+      onValueChange: undefined,
+      color: resolvedColor,
+      variant: resolvedVariant,
+    }),
+    [resolvedColor, resolvedVariant],
   );
 
   return (
     <TabsContext.Provider value={contextValue}>
-      <nav {...props} className={cn(tabsClassName({ variant, color: resolvedColor }), className)} />
+      <nav {...props} className={cn(tabsClassName({ variant: resolvedVariant, color: resolvedColor }), className)} />
     </TabsContext.Provider>
   );
 }
@@ -165,7 +195,7 @@ interface TabsButtonProps extends ComponentProps<'button'> {
 }
 
 function TabsButton({ active, value, className, onClick, type = 'button', ref, ...props }: TabsButtonProps) {
-  const { id: tabsId, value: selectedValue, onValueChange, color } = useContext(TabsContext);
+  const { id: tabsId, value: selectedValue, onValueChange, color, variant } = useContext(TabsContext);
   const isActive = active ?? (value !== undefined && selectedValue === value);
   const isLinked = tabsId !== undefined && value !== undefined;
 
@@ -180,7 +210,7 @@ function TabsButton({ active, value, className, onClick, type = 'button', ref, .
       aria-selected={isActive}
       data-status={isActive ? 'active' : undefined}
       value={value}
-      className={cn(tabClassName({ color }), className)}
+      className={cn(tabClassName({ color, variant }), className)}
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented && value !== undefined) {
@@ -229,22 +259,37 @@ interface TabsLinkProps extends ComponentProps<'a'> {
 
 /** Navigation link styled as a tab. Render inside `Tabs.Nav`. */
 function TabsLink({ asChild, active, className, ref, ...props }: TabsLinkProps) {
-  const { color } = useContext(TabsContext);
+  const { color, variant } = useContext(TabsContext);
   const Comp = asChild ? Slot : 'a';
 
   return (
     <Comp
       ref={ref}
       {...props}
-      className={cn(tabClassName({ color }), className)}
+      className={cn(tabClassName({ color, variant }), className)}
       data-status={active ? 'active' : undefined}
     />
   );
 }
 TabsLink.displayName = 'Tabs.Link';
 
+/** A count beside a tab's label, such as the items a filter holds. Made for the `pills` variant. */
+function TabsCount({ className, ...props }: ComponentProps<'span'>) {
+  return (
+    <span
+      {...props}
+      className={cn(
+        'inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-surface-card px-1 text-2xs font-medium text-grey-primary tabular-nums',
+        className,
+      )}
+    />
+  );
+}
+TabsCount.displayName = 'Tabs.Count';
+
 export const Tabs = Object.assign(TabsRoot, {
   Button: TabsButton,
+  Count: TabsCount,
   Link: TabsLink,
   Nav: TabsNav,
   Panel: TabsPanel,
