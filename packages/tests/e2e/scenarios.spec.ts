@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Request, test } from '@playwright/test';
 import crypto from 'crypto';
 import { waitForHydration, waitForThen } from 'tests/common/utils';
 
@@ -38,6 +38,7 @@ async function createScenarioAndGoToRules(page: import('@playwright/test').Page)
   await page.getByPlaceholder('Select or create an operand').fill('100');
   await page.getByPlaceholder('Select or create an operand').press('Enter');
   await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Saved successfully')).toBeVisible({ timeout: 10_000 });
 
   await page.getByRole('link', { name: 'Rules' }).click();
   await waitForHydration(page);
@@ -107,6 +108,7 @@ test('Create a simple scenario', async ({ page }) => {
   await page.getByPlaceholder('Select or create an operand').fill('100');
   await page.getByPlaceholder('Select or create an operand').press('Enter');
   await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Saved successfully')).toBeVisible({ timeout: 10_000 });
   await page.getByRole('link', { name: 'Rules' }).click();
   await page.getByRole('button', { name: 'Add' }).click();
   await page.getByRole('button', { name: 'Add a Rule' }).click();
@@ -132,6 +134,64 @@ test('Create a simple scenario', async ({ page }) => {
 
   await expect(page.getByRole('button', { name: 'edit_operand.operator_type.' })).toHaveText('amount');
   await expect(page.getByRole('button', { name: '>' })).toHaveText('>');
+  await expect(page.getByRole('button', { name: 'Number 100' })).toBeVisible();
+});
+
+test('Save a trigger condition right after its last edit', async ({ page }) => {
+  // Once holding, AST validation responses are delayed, so Save is clicked while the last edit is still
+  // being validated and the page only has the previous result, which has errors.
+  const isValidation = (request: Request) =>
+    request.method() === 'POST' && !!request.postData()?.includes('"expectedReturnType"');
+  let holdValidation = false;
+  await page.route('**/_serverFn/**', async (route) => {
+    if (holdValidation && isValidation(route.request())) {
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+    }
+    await route.continue();
+  });
+
+  await page.goto('/detection/scenarios');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'New Scenario' }).click();
+  const dialog = page.getByRole('dialog');
+  await waitForThen(
+    page,
+    dialog.getByRole('textbox', { name: 'Name' }),
+    async (f) => await f.fill(crypto.randomUUID()),
+  );
+  await waitForThen(
+    page,
+    dialog.getByRole('combobox', { name: 'Select a trigger object' }),
+    async (box) => await box.click(),
+  );
+  await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
+  await page.getByRole('button', { name: 'Save' }).click();
+  await waitForHydration(page);
+
+  await waitForThen(
+    page,
+    page.getByRole('button', { name: 'Add trigger condition' }),
+    async (btn) => await btn.click(),
+  );
+  await page.getByRole('button', { name: 'Condition', exact: true }).click();
+  await page.getByRole('button', { name: 'Select an operand...' }).first().click();
+  await page.getByRole('option', { name: 'transactions' }).hover();
+  await page.getByText('amount').click();
+  await page.getByRole('button', { name: '...' }).first().click();
+  // The condition without its right operand is validated, with errors.
+  const validated = page.waitForResponse((response) => isValidation(response.request()));
+  await page.getByRole('option', { name: '>' }).click();
+  await validated;
+  await page.getByRole('button', { name: 'Select an operand...' }).click();
+  await page.getByPlaceholder('Select or create an operand').fill('100');
+  holdValidation = true;
+  await page.getByPlaceholder('Select or create an operand').press('Enter');
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  await expect(page.getByText('Saved successfully')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText('Fix the trigger condition errors before saving')).toBeHidden();
+  await page.reload();
+  await waitForHydration(page);
   await expect(page.getByRole('button', { name: 'Number 100' })).toBeVisible();
 });
 

@@ -6,6 +6,7 @@ import { useScheduleForm } from '@app-builder/components/Scenario/Trigger';
 import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
 import { isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { useSaveTriggerMutation } from '@app-builder/queries/scenarios/save-trigger';
+import { useValidateAstMutation } from '@app-builder/queries/validate-ast';
 import { type FlatAstValidation, getBuilderOptionsFn } from '@app-builder/server-fns/scenarios';
 import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
@@ -26,6 +27,13 @@ export const Route = createFileRoute(
   component: Trigger,
 });
 
+function hasTriggerErrors(validation: FlatAstValidation) {
+  return (
+    validation.errors.some((error) => error !== 'TRIGGER_CONDITION_REQUIRED') ||
+    validation.evaluation.some((row) => row.errors.length > 0)
+  );
+}
+
 function Trigger() {
   const { t } = useTranslation([...scenarioI18n, 'common']);
   const { scenarioIteration, scenarioValidation } = useDetectionScenarioIterationData();
@@ -35,6 +43,8 @@ function Trigger() {
   });
   const validationErrors = validation.errors.filter((error) => error !== 'TRIGGER_CONDITION_REQUIRED');
   const saveTriggerMutation = useSaveTriggerMutation();
+  const { currentScenario } = useDetectionScenarioData();
+  const validateTriggerMutation = useValidateAstMutation({ scenarioId: currentScenario.id });
 
   const builderOptions = Route.useLoaderData();
 
@@ -42,7 +52,6 @@ function Trigger() {
 
   const router = useRouter();
 
-  const { currentScenario } = useDetectionScenarioData();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const initialTrigger =
@@ -50,13 +59,27 @@ function Trigger() {
   const [savedTrigger, setSavedTrigger] = useState(initialTrigger);
   const [trigger, setTrigger] = useState(initialTrigger);
   const isTriggerChanged = !R.isDeepEqual(trigger, savedTrigger);
-  const isTriggerInvalid =
-    trigger !== null && (validationErrors.length > 0 || validation.evaluation.some((row) => row.errors.length > 0));
 
   const form = useScheduleForm(scenarioIteration.schedule ?? '', async (schedule) => {
-    if (isTriggerInvalid) {
-      toast.error(t('scenarios:trigger.trigger_object.invalid'));
-      return;
+    if (trigger !== null) {
+      // The builder validates each edit in the background, so its last result can predate the latest
+      // edit. Validate the trigger being saved instead.
+      let triggerValidation: FlatAstValidation;
+      try {
+        triggerValidation = await validateTriggerMutation.mutateAsync({
+          node: trigger,
+          expectedReturnType: 'bool',
+          ac: new AbortController(),
+        });
+      } catch {
+        toast.error(t('common:errors.unknown'));
+        return;
+      }
+      setValidation(triggerValidation);
+      if (hasTriggerErrors(triggerValidation)) {
+        toast.error(t('scenarios:trigger.trigger_object.invalid'));
+        return;
+      }
     }
 
     try {
@@ -84,14 +107,10 @@ function Trigger() {
     setTrigger(null);
   };
 
+  const saving = validateTriggerMutation.isPending || saveTriggerMutation.isPending;
   const saveButton = (
-    <Button
-      variant="primary"
-      type="button"
-      onClick={() => void form.handleSubmit()}
-      disabled={saveTriggerMutation.isPending}
-    >
-      {saveTriggerMutation.isPending ? <Icon icon="spinner" className="size-4" /> : null}
+    <Button variant="primary" type="button" onClick={() => void form.handleSubmit()} disabled={saving}>
+      {saving ? <Icon icon="spinner" className="size-4" /> : null}
       {t('common:save')}
     </Button>
   );
