@@ -370,6 +370,7 @@ function ReviewStream({
       enabled: canNavigate && !!active,
     })),
     { hotkey: { key: '[' }, action: toggleList, enabled: canNavigate },
+    { hotkey: { key: '(' }, action: toggleList, enabled: canNavigate },
     { hotkey: '?', action: () => setHelpOpen(true) },
     {
       hotkey: 'Escape',
