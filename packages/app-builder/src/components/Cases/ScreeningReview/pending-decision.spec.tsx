@@ -123,7 +123,7 @@ describe('usePendingDecision', () => {
       await request.promise;
     });
     const { result } = renderPendingDecision();
-    act(() => result.current.schedule({ message: 'Decided', undo: vi.fn(), write }));
+    act(() => result.current.schedule({ message: 'Decided', undoneMessage: 'Undone', undo: vi.fn(), write }));
     expect(result.current.hasUnsaved()).toBe(true);
     await act(async () => {
       await vi.advanceTimersByTimeAsync(SCREENING_REVIEW_UNDO_DELAY_MS);
@@ -147,8 +147,8 @@ describe('usePendingDecision', () => {
   });
 
   it('holds one undoable decision: a new one writes the previous at once, undo drops only the latest', async () => {
-    const first = { message: 'First', undo: vi.fn(), write: vi.fn(() => Promise.resolve()) };
-    const second = { message: 'Second', undo: vi.fn(), write: vi.fn(() => Promise.resolve()) };
+    const first = { message: 'First', undoneMessage: 'Undone', undo: vi.fn(), write: vi.fn(() => Promise.resolve()) };
+    const second = { message: 'Second', undoneMessage: 'Undone', undo: vi.fn(), write: vi.fn(() => Promise.resolve()) };
     const { result } = renderPendingDecision();
     act(() => result.current.schedule(first));
     act(() => result.current.schedule(second));
@@ -168,6 +168,7 @@ describe('usePendingDecision', () => {
     act(() =>
       result.current.schedule({
         message: 'Batch',
+        undoneMessage: 'Undone',
         undo: vi.fn(),
         write: async (writeItems) => {
           await writeItems(items, write);
@@ -177,6 +178,7 @@ describe('usePendingDecision', () => {
     act(() =>
       result.current.schedule({
         message: 'Single',
+        undoneMessage: 'Undone',
         undo: vi.fn(),
         write: async (writeItems) => {
           await writeItems([{ caseId: 'e', id: 'e' }], write);
