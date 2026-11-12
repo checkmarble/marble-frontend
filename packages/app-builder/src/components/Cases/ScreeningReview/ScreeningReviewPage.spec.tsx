@@ -1594,6 +1594,16 @@ describe('screening review list rail', () => {
     expect(list().className).toContain('@min-[1044px]/review:hidden');
   });
 
+  it('toggles the list with [ typed as Option+Shift+5 on a Mac AZERTY keyboard', async () => {
+    setPageWidth(1200);
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    const azertyBracket = { key: '[', code: 'Digit5', altKey: true, shiftKey: true };
+    fireEvent.keyDown(document, azertyBracket);
+    fireEvent.keyUp(document, azertyBracket);
+    expect(list().className).toContain('@min-[1044px]/review:hidden');
+  });
+
   it('opens the list over the hit on a narrow page, and Esc closes it after the panel', async () => {
     setPageWidth(900);
     renderPage();
