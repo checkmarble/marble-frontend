@@ -148,7 +148,8 @@ function ListRail({
 }) {
   const { t } = useTranslation(['cases']);
   return (
-    <div className={cn('flex flex-col items-center', className)}>
+    // The top padding keeps the badge inside the grid, which clips what overflows it.
+    <div className={cn('flex flex-col items-center pt-2', className)}>
       <Button
         variant="secondary"
         mode="icon"
@@ -164,7 +165,7 @@ function ListRail({
           <Tag
             color="orange"
             size="xs"
-            className="absolute -end-2 -top-2 border-transparent bg-orange-background-light font-semibold text-orange-hover"
+            className="absolute -end-2 -top-2 min-w-4 justify-center border-transparent bg-orange-background-light font-semibold text-orange-hover tabular-nums"
           >
             {remaining}
             {partial ? '+' : ''}
