@@ -36,7 +36,7 @@ export function CaseEventDetail({
 }: {
   event: CaseEvent;
   currentInboxId: string;
-  inboxes: Inbox[];
+  inboxes: Pick<Inbox, 'id' | 'name'>[];
 }) {
   const inboxName =
     event.inboxId && event.inboxId !== currentInboxId

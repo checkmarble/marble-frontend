@@ -60,10 +60,12 @@ interface ScreeningReviewHitProps {
   canViewRiskLevel: boolean;
   /** Step and decision tags. The AI tag of the second iteration goes beside them. */
   tags?: ReactNode;
+  /** Buttons under the title, such as those opening the details panel. */
+  actions?: ReactNode;
 }
 
 /** The selected hit: the customer and the list record, compared in the same order whatever the trigger. */
-export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags }: ScreeningReviewHitProps) {
+export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, actions }: ScreeningReviewHitProps) {
   const { t } = useTranslation(['cases']);
   return (
     <section aria-labelledby="screening-review-active-title" className="flex min-h-0 min-w-0 flex-1 flex-col gap-md">
@@ -79,6 +81,7 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags }
           {tags}
         </div>
         <p className="text-s text-grey-secondary">{t('cases:screening_review.case_name', { name: item.caseName })}</p>
+        {actions ? <div className="flex flex-wrap items-center gap-xs">{actions}</div> : null}
       </div>
       {/* The AI history strip of the second iteration goes here, above the identity cards. */}
       <div className="grid shrink-0 grid-cols-1 gap-md lg:grid-cols-2">
