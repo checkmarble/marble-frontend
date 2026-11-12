@@ -3,7 +3,7 @@ import type { ComponentProps } from 'react';
 
 import { cn } from '../utils';
 
-const kbdClassName = cva('inline-flex shrink-0 items-center justify-center border', {
+const kbdClassName = cva('inline-flex shrink-0 items-center justify-center border border-b-2', {
   variants: {
     variant: {
       default: 'min-h-6 min-w-6 rounded-md border-b-2 border-grey-disabled bg-grey-background',
