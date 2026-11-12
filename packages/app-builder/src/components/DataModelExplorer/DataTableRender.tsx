@@ -1,28 +1,37 @@
-import useIntersection from '@app-builder/hooks/useIntersection';
 import {
   type ClientDataListResponse,
   type ClientObjectDetail,
   DataModel,
+  type DataModelField,
   FieldStatistics,
+  isIdField,
+  isRequestTimeoutError,
   type NavigationOption,
   TableModel,
 } from '@app-builder/models';
+import { isEnumField } from '@app-builder/models/enum-values';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import {
-  type ColumnPinningState,
-  createColumnHelper,
-  flexRender,
-  useTable as useTanStackTable,
-} from '@tanstack/react-table';
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { createColumnHelper, flexRender, useTable as useTanStackTable } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { toggle } from 'radash';
+import { type CSSProperties, type ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
 import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, cn, MenuCommand, marbleTableFeatures, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { Callout } from '../Callout';
+import { CopyToClipboardButton } from '../CopyToClipboardButton';
+import { EnumTag } from '../Data/EnumTag';
 import { FormatData } from '../FormatData';
+import { Spinner } from '../Spinner';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
+import { ColumnFilterChips, ColumnFilterPopover } from './ColumnFilter';
+import { ColumnSettingsPanel } from './ColumnSettingsPanel';
+import { type ColumnFilters, isColumnFilterActive, setColumnFilter, toExplorationFilters } from './column-filters';
+import { MIN_COLUMN_WIDTH, useColumnPrefs } from './column-prefs';
 import { type DataModelExplorerNavigationTab } from './types';
 
 const CHARACTER_WIDTH = 8;
@@ -32,14 +41,35 @@ export type DataTableRenderProps = {
   caseId?: string;
   item: DataModelExplorerNavigationTab;
   dataModel: DataModel;
+  filters: ColumnFilters;
+  onFiltersChange: (filters: ColumnFilters) => void;
   navigateTo: (tabItem: DataModelExplorerNavigationTab) => void;
 };
 
-export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTableRenderProps) {
+const FILTER_DEBOUNCE_MS = 400;
+
+export function DataTableRender({
+  caseId,
+  dataModel,
+  item,
+  filters,
+  onFiltersChange,
+  navigateTo,
+}: DataTableRenderProps) {
   const { t } = useTranslation(['common', 'cases']);
   const currentTable = dataModel.find((t) => t.name === item.targetTableName);
   const sourceField = item.sourceObject[item.sourceFieldName];
   const filterFieldValue = typeof sourceField === 'string' || typeof sourceField === 'number' ? sourceField : '';
+
+  // Filters are applied by the server: wait for the user to stop typing before querying.
+  const [appliedFilters, setAppliedFilters] = useState(filters);
+  useEffect(() => {
+    const timeout = setTimeout(() => setAppliedFilters(filters), FILTER_DEBOUNCE_MS);
+    return () => clearTimeout(timeout);
+  }, [filters]);
+  // Memoized: relative date filters resolve against the current time, which must not change the
+  // query on every render.
+  const explorationFilters = useMemo(() => toExplorationFilters(appliedFilters), [appliedFilters]);
 
   const dataListQuery = useClientObjectListQuery({
     tableName: item.targetTableName,
@@ -48,62 +78,75 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
       filterFieldName: item.filterFieldName,
       filterFieldValue,
       orderingFieldName: item.orderingFieldName,
+      filters: explorationFilters,
     },
   });
+  // Stable identity: the table only rebuilds its rows when a page arrives.
+  const pages = dataListQuery.data?.pages;
+  const list = useMemo(() => pages?.flatMap((page) => page.clientDataListResponse.data) ?? [], [pages]);
+  const fieldStatistics = pages?.at(-1)?.clientDataListResponse.metadata.fieldStatistics ?? {};
+
+  const isTimeout = isRequestTimeoutError(dataListQuery.error);
 
   if (!currentTable) {
     return (
-      <div className="border-red-primary bg-red-background text-red-primary mt-md rounded-sm border p-sm">
+      <Callout color="red" icon="error" iconColor="red">
         {t('common:global_error')}
-      </div>
+      </Callout>
     );
   }
 
   return (
-    <div className="mt-md flex min-h-0 flex-1 flex-col">
-      {match(dataListQuery)
-        .with({ isError: true }, () => {
-          return (
-            <div className="border-red-primary bg-red-background text-red-primary mt-md rounded-sm border p-sm">
-              {t('common:global_error')}
-            </div>
-          );
-        })
-        .with({ isPending: true }, () => {
-          return <>Loading list of objects...</>;
-        })
-        .otherwise((query) => {
-          return (
-            <DataTable
-              caseId={caseId}
-              pivotObject={item.pivotObject}
-              table={currentTable}
-              navigateTo={navigateTo}
-              list={query.data.pages.flatMap((page) => page.clientDataListResponse.data)}
-              metadata={query.data.pages.reduce(
-                (mergedMetadata, page) => {
-                  if (!page.clientDataListResponse.metadata) return mergedMetadata;
-                  if (!mergedMetadata) return page.clientDataListResponse.metadata;
-
-                  return {
-                    ...mergedMetadata,
-                    ...page.clientDataListResponse.metadata,
-                  };
-                },
-                undefined as ClientDataListResponse['metadata'] | undefined,
-              )}
-              pagination={
-                <DataTablePagination
-                  hasNext={query.hasNextPage}
-                  isLoading={query.isFetchingNextPage}
-                  onNext={() => {
-                    query.fetchNextPage();
-                  }}
-                />
-              }
-            />
-          );
-        })}
+    <div className="flex min-h-0 flex-1 flex-col gap-sm">
+      <ColumnFilterChips table={currentTable} filters={filters} onChange={onFiltersChange} />
+      {dataListQuery.isPending ? (
+        <div className="flex min-h-60 flex-1 items-center justify-center">
+          <Spinner className="size-6" />
+        </div>
+      ) : (
+        <>
+          {/* A failed "load more" keeps the pages: the rows already loaded stay on screen. */}
+          {pages ? null : (
+            <Callout
+              // A timeout says nothing about the data: there may be matches the query had no time to find.
+              color={isTimeout ? 'orange' : 'red'}
+              icon={isTimeout ? 'warning' : 'error'}
+              iconColor={isTimeout ? 'orange' : 'red'}
+            >
+              <div className="flex items-center justify-between gap-md">
+                {isTimeout ? t('cases:data_explorer.filters.timeout') : t('common:generic_fetch_data_error')}
+                <Button size="small" variant="secondary" onClick={() => dataListQuery.refetch()}>
+                  {t('common:retry')}
+                </Button>
+              </div>
+            </Callout>
+          )}
+          {/* Without pages the headers stay available: narrowing the search means filtering another column. */}
+          <DataTable
+            caseId={caseId}
+            pivotObject={item.pivotObject}
+            table={currentTable}
+            filters={filters}
+            onFiltersChange={onFiltersChange}
+            // The rows of the previous filters stay visible while the new ones are fetched.
+            isRefreshing={dataListQuery.isPlaceholderData || filters !== appliedFilters}
+            navigateTo={navigateTo}
+            list={list}
+            fieldStatistics={fieldStatistics}
+            hideEmptyState={!pages}
+            pagination={
+              <DataTablePagination
+                hasNext={dataListQuery.hasNextPage}
+                isLoading={dataListQuery.isFetchingNextPage}
+                isError={dataListQuery.isFetchNextPageError}
+                onNext={() => {
+                  dataListQuery.fetchNextPage();
+                }}
+              />
+            }
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -111,13 +154,19 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
 type DataTablePaginationProps = {
   hasNext: boolean;
   isLoading: boolean;
+  isError: boolean;
   onNext: () => void;
 };
 
-function DataTablePagination({ hasNext, isLoading, onNext }: DataTablePaginationProps) {
-  const { t } = useTranslation(['common']);
+function DataTablePagination({ hasNext, isLoading, isError, onNext }: DataTablePaginationProps) {
+  const { t } = useTranslation(['common', 'cases']);
   return (
     <>
+      {isError ? (
+        <span role="alert" className="text-red-primary text-small">
+          {t('cases:data_explorer.load_more_error')}
+        </span>
+      ) : null}
       {hasNext ? (
         <Button variant="secondary" size="small" onClick={onNext} disabled={isLoading}>
           <Icon icon="arrow-up" className="size-4 rotate-180" />
@@ -126,10 +175,6 @@ function DataTablePagination({ hasNext, isLoading, onNext }: DataTablePagination
       ) : null}
     </>
   );
-}
-
-function getColumnList(tableModel: TableModel) {
-  return tableModel.fields.filter((f) => !f.hidden).map((f) => f.name);
 }
 
 function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
@@ -141,10 +186,36 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
     .with({ type: 'Coords' }, () => ({ minWidth: '160px' }))
     .with({ type: 'Bool' }, () => ({ minWidth: '50px' }))
     .with({ type: 'String', format: 'uuid' }, () => ({ minWidth: '100px' }))
-    .with({ type: P.union('String', 'Float') }, ({ maxLength }) => ({
+    .with({ type: P.union('String', 'Float', 'Int') }, ({ maxLength }) => ({
       minWidth: (maxLength !== undefined ? CHARACTER_WIDTH * maxLength : DEFAULT_CELL_WIDTH) + 'px',
     }))
     .exhaustive();
+}
+
+function DataTableCell({ field, value }: { field: DataModelField; value: unknown }) {
+  const { t } = useTranslation(['common']);
+
+  if (value === null || value === undefined || value === '') {
+    return <span className="text-grey-secondary">-</span>;
+  }
+  if (typeof value === 'boolean') {
+    return <span>{value ? t('common:true') : t('common:false')}</span>;
+  }
+  if (isEnumField(field) && (typeof value === 'string' || typeof value === 'number')) {
+    return <EnumTag field={field} value={value} />;
+  }
+  if (typeof value === 'string' && isIdField(field)) {
+    return (
+      <CopyToClipboardButton toCopy={value} size="sm" className="bg-surface-card font-mono text-2xs">
+        <span className="line-clamp-1">{value}</span>
+      </CopyToClipboardButton>
+    );
+  }
+  return (
+    <span className={cn('line-clamp-1', typeof value === 'number' && 'text-end')}>
+      <FormatData compact type={field.dataType} data={parseUnknownData(value)} />
+    </span>
+  );
 }
 
 type DataTableProps = {
@@ -153,306 +224,391 @@ type DataTableProps = {
   table: TableModel;
   list: ClientDataListResponse['data'];
   pagination: ReactElement;
-  metadata: ClientDataListResponse['metadata'] | undefined;
+  fieldStatistics: ClientDataListResponse['metadata']['fieldStatistics'];
+  filters: ColumnFilters;
+  onFiltersChange: (filters: ColumnFilters) => void;
+  isRefreshing: boolean;
+  /** Set when the caller already explains why there is no row (failed request). */
+  hideEmptyState?: boolean;
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
-const ROW_NUMBER_COL_WIDTH = 50;
-const DEFAULT_PINNED_COL_WIDTH = 150;
-const INITIAL_COLUMN_PINNING: ColumnPinningState = { start: [], end: [] };
+const ROW_HEIGHT = 48;
 const columnHelper = createColumnHelper<MarbleTableFeatures, Record<string, unknown>>();
+// Hidden until the header (or the row) is hovered or holds the keyboard focus.
+const revealOnHeaderClassName =
+  'opacity-0 group-hover/th:opacity-100 group-focus-within/th:opacity-100 data-[state=open]:opacity-100';
 
-function DataTable({ caseId, pivotObject, table, list, metadata, pagination, navigateTo }: DataTableProps) {
+// A resized column is given its width through a CSS variable set on the table and read by its cells:
+// a drag updates the variable, without rendering the table on every move.
+const columnWidthVar = (name: string) => `--column-width-${name}`;
+
+// In an auto table layout a cell only keeps a width if it can neither grow nor shrink. While the
+// variable is not set, the three properties are ignored and the column follows its content.
+function getColumnWidthStyle(name: string, defaultMinWidth?: string): CSSProperties {
+  const width = `var(${columnWidthVar(name)})`;
+  return {
+    width,
+    minWidth: defaultMinWidth ? `var(${columnWidthVar(name)}, ${defaultMinWidth})` : width,
+    maxWidth: width,
+  };
+}
+
+function DataTable({
+  caseId,
+  pivotObject,
+  table,
+  list,
+  fieldStatistics,
+  pagination,
+  filters,
+  onFiltersChange,
+  isRefreshing,
+  hideEmptyState,
+  navigateTo,
+}: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
-  const [columnList, setColumnList] = useState(() => {
-    return getColumnList(table);
-  });
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(INITIAL_COLUMN_PINNING);
-  const tableData = useMemo(() => list.map((d) => d.data), [list]);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [prefs, setPrefs] = useColumnPrefs(table);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const hasActiveFilter = Object.values(filters).some(isColumnFilterActive);
+  const tableData = useMemo(() => list.map((row) => row.data), [list]);
   const headerRefs = useRef<Map<string, HTMLTableCellElement>>(new Map());
-  const rowNumberColRef = useRef<HTMLTableCellElement>(null);
-  const intersection = useIntersection(sentinelRef, {
-    root: wrapperRef.current,
-    rootMargin: '1px',
-    threshold: 1,
-  });
+  const [pinnedOffsets, setPinnedOffsets] = useState<Record<string, number>>({});
+  // Hovering a header tints its whole column.
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
 
-  useEffect(() => {
-    setColumnList(getColumnList(table));
-    setColumnPinning(INITIAL_COLUMN_PINNING);
-  }, [table]);
+  // `prefs.visible` only holds names of fields of the table (see reconcileColumnPrefs).
+  const fieldByName = useMemo(() => new Map(table.fields.map((field) => [field.name, field])), [table.fields]);
+  const columns = useMemo(
+    () =>
+      prefs.visible.map((name) =>
+        columnHelper.accessor(name, {
+          id: name,
+          header: () => fieldByName.get(name)?.alias || name,
+          cell: (info) => {
+            const field = fieldByName.get(name);
+            return field ? <DataTableCell field={field} value={info.getValue()} /> : null;
+          },
+        }),
+      ),
+    [prefs.visible, fieldByName],
+  );
 
-  const columns = useMemo(() => {
-    return columnList.map((colName) => {
-      return columnHelper.accessor(colName, {
-        header: () => colName,
-        cell: (info) => {
-          const parsedData = parseUnknownData(info.getValue());
-          return (
-            <span
-              className={cn('relative line-clamp-1 px-sm', {
-                'text-right': parsedData.type === 'number' || parsedData.value === null,
-              })}
-            >
-              <FormatData type={table.fields.find((f) => f.name === colName)?.dataType} data={parsedData} />
-            </span>
-          );
-        },
-      });
-    });
-  }, [columnList, table]);
+  const columnWidthVars = useMemo(
+    () => R.mapToObj(Object.entries(prefs.widths), ([name, width]) => [columnWidthVar(name), `${width}px`]),
+    [prefs.widths],
+  );
+
+  // Stable identity: the table re-renders whenever its state object changes.
+  const columnPinning = useMemo(() => ({ start: prefs.pinned, end: [] }), [prefs.pinned]);
 
   const reactTable = useTanStackTable({
     features: marbleTableFeatures,
     manualSorting: true,
     manualFiltering: true,
-    state: {
-      columnOrder: table.fieldOrder,
-      columnPinning,
-    },
-    onColumnPinningChange: setColumnPinning,
+    state: { columnPinning },
     data: tableData,
     columns,
   });
 
-  const pinnedLeft = columnPinning.start ?? [];
+  // Only the rows in view are rendered: a client can have thousands of loaded rows.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const tableRows = reactTable.getRowModel().rows;
+  const rowVirtualizer = useVirtualizer({
+    count: tableRows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 10,
+  });
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualRows[0]?.start ?? 0;
+  const paddingBottom = rowVirtualizer.getTotalSize() - (virtualRows[virtualRows.length - 1]?.end ?? 0);
 
-  const getPinnedColumnOffset = (columnId: string): number => {
-    const idx = pinnedLeft.indexOf(columnId);
-    if (idx < 0) return 0;
-
-    const rowNumWidth = rowNumberColRef.current?.getBoundingClientRect().width ?? ROW_NUMBER_COL_WIDTH;
-    let offset = rowNumWidth;
-    for (let i = 0; i < idx; i++) {
-      const pinnedColId = pinnedLeft[i];
-      if (!pinnedColId) continue;
-      const el = headerRefs.current.get(pinnedColId);
-      offset += el?.getBoundingClientRect().width ?? DEFAULT_PINNED_COL_WIDTH;
+  // Each pinned column sticks after the pinned columns before it. Widths depend on the content,
+  // so they are measured after every render (state only changes when a width changed).
+  useLayoutEffect(() => {
+    const offsets: Record<string, number> = {};
+    let offset = 0;
+    for (const name of prefs.pinned) {
+      offsets[name] = offset;
+      offset += headerRefs.current.get(name)?.getBoundingClientRect().width ?? 0;
     }
-    return offset;
-  };
+    if (!R.isDeepEqual(pinnedOffsets, offsets)) setPinnedOffsets(offsets);
+  });
 
-  const isLastPinnedColumn = (columnId: string): boolean => {
-    return pinnedLeft[pinnedLeft.length - 1] === columnId;
-  };
+  const lastPinned = prefs.pinned[prefs.pinned.length - 1];
 
-  const handleToggleColumn = (colName: string) => {
-    setColumnList((cl) => {
-      if (cl.includes(colName)) {
-        // Also unpin the column when hiding it to prevent phantom offsets
-        setColumnPinning((prev) => ({
-          ...prev,
-          start: (prev.start ?? []).filter((c) => c !== colName),
-        }));
-        const idx = cl.indexOf(colName);
-        return [...cl.slice(0, idx), ...cl.slice(idx + 1)];
-      } else {
-        return [...cl, colName];
-      }
-    });
+  const getPinnedCell = (name: string) => {
+    const isPinned = prefs.pinned.includes(name);
+    return {
+      isPinned,
+      className: cn(isPinned && 'sticky bg-surface-card', name === lastPinned && 'border-e border-grey-border'),
+      style: isPinned ? { insetInlineStart: `${pinnedOffsets[name] ?? 0}px` } : undefined,
+    };
   };
-
-  const handleTogglePin = (colName: string) => {
-    setColumnPinning((prev) => {
-      const left = prev.start ?? [];
-      if (left.includes(colName)) {
-        return { ...prev, start: left.filter((c) => c !== colName) };
-      }
-      return { ...prev, start: [...left, colName] };
-    });
-  };
-
-  const hasPinnedColumns = pinnedLeft.length > 0;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-sm">
-      <div className="flex items-center gap-md">
-        <div className="text-m font-semibold">{table.name}</div>
-        {list.length > 0 ? (
-          <MenuCommand.Menu>
-            <MenuCommand.Trigger>
-              <Button variant="secondary">
-                <Icon className="size-3.5" icon="column" />
-                {t('cases:data_explorer.columns')}
-              </Button>
-            </MenuCommand.Trigger>
-            <MenuCommand.Content sideOffset={4} align="start" sameWidth>
-              <MenuCommand.List>
-                {table.fieldOrder.map((fieldName) => {
-                  const isPinned = pinnedLeft.includes(fieldName);
-                  return (
-                    <MenuCommand.Item key={fieldName} onSelect={() => handleToggleColumn(fieldName)}>
-                      <div className="flex w-full items-center justify-between">
-                        <span>{fieldName}</span>
-                        <div className="flex items-center gap-xs">
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            className={cn(
-                              'flex items-center justify-center rounded p-2xs hover:bg-grey-background-light',
-                              isPinned ? 'text-purple-primary' : 'text-grey-secondary',
-                            )}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleTogglePin(fieldName);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.stopPropagation();
-                                handleTogglePin(fieldName);
-                              }
-                            }}
-                          >
-                            <Icon icon="map-pin" className="size-3.5" />
-                          </span>
-                          {columnList.includes(fieldName) ? <Icon icon="tick" className="size-5" /> : null}
-                        </div>
-                      </div>
-                    </MenuCommand.Item>
-                  );
-                })}
-              </MenuCommand.List>
-            </MenuCommand.Content>
-          </MenuCommand.Menu>
-        ) : null}
-      </div>
-      <div className="flex min-h-0 flex-1 overflow-auto" ref={wrapperRef}>
-        <div ref={sentinelRef} className="w-0" />
-        {list.length > 0 ? (
-          <table className="mb-md border-separate border-spacing-0">
+    <div className="flex min-h-0 flex-1 gap-md">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-sm">
+        <div
+          ref={scrollRef}
+          aria-busy={isRefreshing}
+          className={cn(
+            'border-grey-border min-h-60 flex-1 overflow-auto rounded-md border transition-opacity',
+            isRefreshing && 'opacity-60',
+          )}
+        >
+          <table className="min-w-full border-separate border-spacing-0 text-small" style={columnWidthVars}>
             <thead>
               {reactTable.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="text-grey-secondary border-grey-border bg-surface-card sticky top-0 z-20 h-10 text-left"
-                >
-                  <th
-                    ref={rowNumberColRef}
-                    className={cn(
-                      'border-grey-border bg-surface-card sticky start-0 z-30 border-y border-r p-sm font-normal',
-                      {
-                        'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
-                      },
-                    )}
-                  ></th>
+                <tr key={headerGroup.id} className="h-10 text-start">
                   {headerGroup.headers.map((header) => {
-                    const fieldStatistic = metadata?.fieldStatistics[header.getContext().column.id];
-                    const isPinned = header.column.getIsPinned();
+                    const name = header.column.id;
+                    const field = fieldByName.get(name);
+                    const pinnedCell = getPinnedCell(name);
+                    const isFiltered = isColumnFilterActive(filters[name]);
 
                     return (
                       <th
                         key={header.id}
                         ref={(el) => {
-                          if (el) headerRefs.current.set(header.column.id, el);
-                          else headerRefs.current.delete(header.column.id);
+                          if (el) headerRefs.current.set(name, el);
+                          else headerRefs.current.delete(name);
                         }}
                         className={cn(
-                          'border-grey-border border-y px-xs font-normal not-last:border-r box-border group/th',
-                          {
-                            'sticky z-30 bg-surface-card border-r': isPinned,
-                            'shadow-sticky-left':
-                              isPinned && isLastPinnedColumn(header.column.id) && !intersection?.isIntersecting,
-                          },
+                          'group/th border-grey-border bg-surface-card sticky top-0 z-20 overflow-hidden border-b px-md font-medium',
+                          pinnedCell.isPinned && 'z-30',
+                          pinnedCell.className,
+                          name === hoveredColumn && 'bg-grey-background-light',
                         )}
                         style={{
-                          left: isPinned ? `${getPinnedColumnOffset(header.column.id)}px` : undefined,
-                          ...getHeaderStyle(fieldStatistic),
+                          ...getColumnWidthStyle(name, getHeaderStyle(fieldStatistics[name])?.minWidth),
+                          ...pinnedCell.style,
                         }}
+                        onMouseEnter={() => setHoveredColumn(name)}
+                        onMouseLeave={() => setHoveredColumn(null)}
                       >
-                        <div className="flex items-center justify-between gap-sm">
-                          <span className="truncate">
+                        <div className="flex items-center gap-sm">
+                          <span className="flex-1 truncate text-start">
                             {header.isPlaceholder
                               ? null
                               : flexRender(header.column.columnDef.header, header.getContext())}
                           </span>
-                          <button
-                            type="button"
+                          {field ? (
+                            <ColumnFilterPopover
+                              field={field}
+                              value={filters[name]}
+                              onChange={(value) => onFiltersChange(setColumnFilter(filters, name, value))}
+                            >
+                              <Button
+                                variant="secondary"
+                                appearance="link"
+                                mode="icon"
+                                aria-label={t('cases:data_explorer.filters.filter_column')}
+                                className={cn(
+                                  'shrink-0 enabled:hover:text-purple-primary',
+                                  isFiltered ? 'text-purple-primary' : ['text-grey-primary', revealOnHeaderClassName],
+                                )}
+                              >
+                                <Icon icon="filters" className="size-5" />
+                              </Button>
+                            </ColumnFilterPopover>
+                          ) : null}
+                          {/* While the column settings are open, their draft is the only place to pin. */}
+                          <Button
+                            variant="secondary"
+                            mode="icon"
+                            disabled={settingsOpen}
                             aria-label={
-                              isPinned ? t('cases:data_explorer.unpin_column') : t('cases:data_explorer.pin_column')
+                              pinnedCell.isPinned
+                                ? t('cases:data_explorer.unpin_column')
+                                : t('cases:data_explorer.pin_column')
                             }
                             className={cn(
-                              'shrink-0 transition-opacity',
-                              isPinned
-                                ? 'text-purple-primary opacity-100'
-                                : 'opacity-0 group-hover/th:opacity-100 text-grey-secondary',
+                              'shrink-0',
+                              pinnedCell.isPinned
+                                ? 'text-purple-primary'
+                                : ['text-grey-secondary', revealOnHeaderClassName],
                             )}
-                            onClick={() => handleTogglePin(header.column.id)}
+                            onClick={() => setPrefs({ ...prefs, pinned: toggle(prefs.pinned, name) })}
                           >
-                            <Icon icon="map-pin" className="size-3" />
-                          </button>
+                            <Icon icon={pinnedCell.isPinned ? 'pin' : 'pin-outline'} className="size-4" />
+                          </Button>
                         </div>
+                        <ColumnResizeHandle
+                          name={name}
+                          width={prefs.widths[name]}
+                          onResize={(width) =>
+                            setPrefs({
+                              ...prefs,
+                              widths:
+                                width === undefined ? R.omit(prefs.widths, [name]) : { ...prefs.widths, [name]: width },
+                            })
+                          }
+                        />
                       </th>
                     );
                   })}
+                  {/* Takes the width left when the resized columns do not fill the table, instead of stretching them. */}
+                  <th
+                    aria-hidden="true"
+                    className="border-grey-border bg-surface-card sticky top-0 z-20 border-b p-0"
+                  />
+                  <th className="border-grey-border bg-surface-card sticky end-0 top-0 z-30 w-px border-b px-sm">
+                    <div className="flex justify-end">
+                      <Button
+                        variant="secondary"
+                        mode="icon"
+                        aria-pressed={settingsOpen}
+                        aria-label={t('cases:data_explorer.column_settings.open')}
+                        className={cn('shadow-md', settingsOpen ? 'text-purple-primary' : 'text-grey-secondary')}
+                        onClick={() => setSettingsOpen((open) => !open)}
+                      >
+                        <Icon icon="settings" className="size-4" />
+                      </Button>
+                    </div>
+                  </th>
                 </tr>
               ))}
             </thead>
 
             <tbody>
-              {reactTable.getRowModel().rows.map((row) => {
-                const fullSourceObject = list.find((item) => item.data === row.original);
-                if (!fullSourceObject) {
+              {paddingTop > 0 ? (
+                <tr aria-hidden>
+                  <td style={{ height: `${paddingTop}px` }} />
+                </tr>
+              ) : null}
+              {virtualRows.map((virtualRow) => {
+                const row = tableRows[virtualRow.index];
+                // `tableData` is `list` mapped in order, so indexes match.
+                const sourceObject = row ? list[row.index] : undefined;
+                if (!row || !sourceObject) {
                   return null;
                 }
 
                 return (
-                  <tr key={row.id} className="border-grey-border group z-0 h-10">
-                    <td
-                      className={cn(
-                        'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky start-0 z-10 h-full border-b border-r p-sm',
-                        {
-                          'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
-                        },
-                      )}
-                    >
-                      <div className="flex items-center justify-between gap-sm">
-                        {row.index + 1}
-                        <DataTableActionsButton
-                          caseId={caseId}
-                          navigationOptions={table.navigationOptions}
-                          pivotObject={pivotObject}
-                          sourceObject={fullSourceObject}
-                          tableName={table.name}
-                          navigateTo={navigateTo}
-                        />
-                      </div>
-                    </td>
+                  <tr key={row.id} className="group" style={{ height: `${ROW_HEIGHT}px` }}>
                     {row.getVisibleCells().map((cell) => {
-                      const isPinned = cell.column.getIsPinned();
+                      const pinnedCell = getPinnedCell(cell.column.id);
                       return (
                         <td
-                          className={cn(
-                            'border-grey-border group-hover:bg-grey-background-light border-b not-last:border-r',
-                            {
-                              'sticky z-10 bg-surface-card border-r': isPinned,
-                              'shadow-sticky-left':
-                                isPinned && isLastPinnedColumn(cell.column.id) && !intersection?.isIntersecting,
-                            },
-                          )}
-                          style={{
-                            left: isPinned ? `${getPinnedColumnOffset(cell.column.id)}px` : undefined,
-                          }}
                           key={cell.id}
+                          className={cn(
+                            'group-hover:bg-grey-background-light overflow-hidden px-md',
+                            pinnedCell.isPinned && 'z-10',
+                            pinnedCell.className,
+                            cell.column.id === hoveredColumn && 'bg-grey-background-light',
+                          )}
+                          style={{ ...getColumnWidthStyle(cell.column.id), ...pinnedCell.style }}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       );
                     })}
+                    <td aria-hidden="true" className="group-hover:bg-grey-background-light p-0" />
+                    <td className="bg-surface-card group-hover:bg-grey-background-light sticky end-0 z-10 px-sm">
+                      <DataTableActionsButton
+                        caseId={caseId}
+                        navigationOptions={table.navigationOptions}
+                        pivotObject={pivotObject}
+                        sourceObject={sourceObject}
+                        tableName={table.name}
+                        navigateTo={navigateTo}
+                      />
+                    </td>
                   </tr>
                 );
               })}
+              {paddingBottom > 0 ? (
+                <tr aria-hidden>
+                  <td style={{ height: `${paddingBottom}px` }} />
+                </tr>
+              ) : null}
             </tbody>
           </table>
-        ) : (
-          <div className="border-grey-border rounded-sm border p-sm text-center">
-            {t('cases:data_explorer.no_table_data', { tableName: table.name })}
-          </div>
-        )}
+          {list.length === 0 && !hideEmptyState ? (
+            <div role="status" className="text-grey-secondary p-md text-center text-small">
+              {hasActiveFilter
+                ? t('cases:data_explorer.filters.no_match')
+                : t('cases:data_explorer.no_table_data', { tableName: table.alias || table.name })}
+            </div>
+          ) : null}
+        </div>
+        <div className="flex items-center justify-end gap-sm">{pagination}</div>
       </div>
-      <div className="flex justify-end gap-sm">{pagination}</div>
+      {settingsOpen ? (
+        <ColumnSettingsPanel
+          table={table}
+          prefs={prefs}
+          onValidate={(draft) => setPrefs({ ...prefs, ...draft })}
+          onClose={() => setSettingsOpen(false)}
+        />
+      ) : null}
     </div>
+  );
+}
+
+// A drag has to move this far before it resizes: a click on the handle must not freeze the column width.
+const RESIZE_THRESHOLD = 3;
+
+type ColumnResizeHandleProps = {
+  name: string;
+  /** The saved width of the column, if it was resized. */
+  width: number | undefined;
+  /** Called at the end of a drag with the new width, or with `undefined` to follow the content again. */
+  onResize: (width: number | undefined) => void;
+};
+
+/**
+ * Same handle as the design-system `Table` (drag to resize, double click to reset). The drag itself is
+ * handled here: the columns of this table have no size until they are resized, and the table is too
+ * large to be rendered on every move.
+ */
+function ColumnResizeHandle({ name, width, onResize }: ColumnResizeHandleProps) {
+  const drag = useRef<{ startX: number; startWidth: number; direction: 1 | -1; width?: number } | null>(null);
+  const applyWidth = (handle: HTMLElement, value: number | undefined) => {
+    const tableStyle = handle.closest('table')?.style;
+    if (value === undefined) tableStyle?.removeProperty(columnWidthVar(name));
+    else tableStyle?.setProperty(columnWidthVar(name), `${value}px`);
+  };
+
+  return (
+    <div
+      aria-hidden="true"
+      className="hover:bg-grey-border active:bg-grey-placeholder absolute inset-y-0 end-0 w-1 cursor-col-resize touch-none select-none"
+      onPointerDown={(event) => {
+        const header = event.currentTarget.closest('th');
+        if (!header || event.button !== 0) return;
+        // Captured: the drag goes on outside of the handle, and ends even if the pointer leaves the table.
+        event.currentTarget.setPointerCapture(event.pointerId);
+        drag.current = {
+          startX: event.clientX,
+          startWidth: header.getBoundingClientRect().width,
+          direction: getComputedStyle(header).direction === 'rtl' ? -1 : 1,
+        };
+      }}
+      onPointerMove={(event) => {
+        const current = drag.current;
+        if (!current) return;
+        const delta = (event.clientX - current.startX) * current.direction;
+        if (current.width === undefined && Math.abs(delta) < RESIZE_THRESHOLD) return;
+        current.width = Math.max(MIN_COLUMN_WIDTH, Math.round(current.startWidth + delta));
+        applyWidth(event.currentTarget, current.width);
+      }}
+      onPointerUp={() => {
+        const resizedWidth = drag.current?.width;
+        drag.current = null;
+        if (resizedWidth !== undefined) onResize(resizedWidth);
+      }}
+      // Also fired after a pointer up, when the drag is already over: only an interrupted drag is undone here.
+      onLostPointerCapture={(event) => {
+        if (drag.current?.width !== undefined) applyWidth(event.currentTarget, width);
+        drag.current = null;
+      }}
+      onDoubleClick={() => {
+        if (width !== undefined) onResize(undefined);
+      }}
+    />
   );
 }
 
@@ -478,27 +634,39 @@ function DataTableActionsButton({
   const annotations = sourceObject.annotations ?? { files: [], comments: [], tags: [] };
 
   const annotationsCount = annotations.comments.length + annotations.files.length + annotations.tags.length;
-  const showCommentAction = annotationsCount > 0 || annotationMenuOpen;
+  const hasNavigationOptions = !!navigationOptions?.length;
+
+  if (!sourceObject.metadata.canBeAnnotated && !hasNavigationOptions) return null;
 
   return (
     <Popover.Root open={annotationMenuOpen} onOpenChange={setAnnotationMenuOpen}>
       <Popover.Anchor asChild>
-        <div className="relative flex">
-          {showCommentAction ? (
+        <div
+          className={cn(
+            'relative flex justify-end gap-xs',
+            // Rows without annotation only show their actions on hover or keyboard focus.
+            annotationsCount === 0 &&
+              !annotationMenuOpen &&
+              'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 has-data-[state=open]:opacity-100',
+          )}
+        >
+          {sourceObject.metadata.canBeAnnotated ? (
             <Popover.Trigger asChild>
               <Button
                 variant="secondary"
                 size="small"
-                className="hover:border-purple-primary data-[state=open]:border-purple-primary items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
+                mode={annotationsCount > 0 ? 'normal' : 'icon'}
+                aria-label={t('cases:annotations.popover.annotate.title')}
+                className="border-purple-border text-purple-primary hover:border-purple-primary data-[state=open]:border-purple-primary shadow-md"
               >
                 <Icon icon="comment" className="size-4" />
-                <span className="text-xs font-normal">{annotationsCount}</span>
+                {annotationsCount > 0 ? <span className="text-xs font-normal">{annotationsCount}</span> : null}
               </Button>
             </Popover.Trigger>
           ) : null}
           <Popover.Content
-            side="right"
-            align="start"
+            side="bottom"
+            align="end"
             sideOffset={4}
             collisionPadding={10}
             className="max-h-none w-[340px]"
@@ -512,74 +680,54 @@ function DataTableActionsButton({
               />
             ) : null}
           </Popover.Content>
-          <MenuCommand.Menu>
-            <MenuCommand.Trigger>
-              <Button
-                variant="secondary"
-                mode={showCommentAction ? 'normal' : 'icon'}
-                className={cn(
-                  'hover:border-purple-primary data-[state=open]:border-purple-primary hover:z-10 data-[state=open]:z-10',
-                  {
-                    '-ms-px rounded-l-none': showCommentAction,
-                  },
-                )}
-              >
-                <Icon icon="more-menu" className="size-3.5" />
-              </Button>
-            </MenuCommand.Trigger>
-            <MenuCommand.Content side="right" align="start" sideOffset={4} className="text-r min-w-[280px]">
-              <MenuCommand.List>
-                {sourceObject.metadata.canBeAnnotated ? (
-                  <MenuCommand.Group>
-                    <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-sm">
-                          {t('cases:annotations.popover.annotate.title')}&nbsp;
-                          <span className="text-grey-disabled text-xs">{annotationsCount}</span>
-                        </div>
-                        <span className="text-grey-secondary">{t('cases:annotations.popover.annotate.subtitle')}</span>
+          {hasNavigationOptions ? (
+            <MenuCommand.Menu>
+              <MenuCommand.Trigger>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  mode="icon"
+                  aria-label={t('cases:case_detail.pivot_panel.explore')}
+                  className="hover:border-purple-primary data-[state=open]:border-purple-primary shadow-md"
+                >
+                  <Icon icon="more-menu" className="size-3.5" />
+                </Button>
+              </MenuCommand.Trigger>
+              <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="text-r min-w-[280px]">
+                <MenuCommand.List>
+                  <MenuCommand.Group
+                    heading={
+                      <div className="p-xs py-xs text-xs font-semibold">
+                        {t('cases:case_detail.pivot_panel.explore')}
                       </div>
-                      <Icon icon="comment" className="size-5" />
-                    </MenuCommand.Item>
+                    }
+                  >
+                    {navigationOptions.map((navigationOption) => (
+                      <MenuCommand.Item
+                        forceMount
+                        key={navigationOption.id}
+                        onSelect={() => {
+                          navigateTo({
+                            pivotObject,
+                            sourceObject: sourceObject.data,
+                            navigationOptionId: navigationOption.id,
+                            sourceTableName: tableName,
+                            sourceFieldName: navigationOption.sourceFieldName,
+                            filterFieldName: navigationOption.filterFieldName,
+                            targetTableName: navigationOption.targetTableName,
+                            orderingFieldName: navigationOption.orderingFieldName,
+                          });
+                        }}
+                      >
+                        {navigationOption.targetTableName}
+                        <Icon icon="north-east" className="size-5" />
+                      </MenuCommand.Item>
+                    ))}
                   </MenuCommand.Group>
-                ) : null}
-                {navigationOptions ? (
-                  <>
-                    <MenuCommand.Separator className="bg-grey-border" />
-                    <MenuCommand.Group
-                      heading={
-                        <div className="p-xs py-xs text-xs font-semibold">
-                          {t('cases:case_detail.pivot_panel.explore')}
-                        </div>
-                      }
-                    >
-                      {navigationOptions.map((navigationOption) => (
-                        <MenuCommand.Item
-                          forceMount
-                          key={navigationOption.id}
-                          onSelect={() => {
-                            navigateTo({
-                              pivotObject,
-                              sourceObject: sourceObject.data,
-                              navigationOptionId: navigationOption.id,
-                              sourceTableName: tableName,
-                              sourceFieldName: navigationOption.sourceFieldName,
-                              filterFieldName: navigationOption.filterFieldName,
-                              targetTableName: navigationOption.targetTableName,
-                              orderingFieldName: navigationOption.orderingFieldName,
-                            });
-                          }}
-                        >
-                          {navigationOption.targetTableName}
-                          <Icon icon="north-east" className="size-5" />
-                        </MenuCommand.Item>
-                      ))}
-                    </MenuCommand.Group>
-                  </>
-                ) : null}
-              </MenuCommand.List>
-            </MenuCommand.Content>
-          </MenuCommand.Menu>
+                </MenuCommand.List>
+              </MenuCommand.Content>
+            </MenuCommand.Menu>
+          ) : null}
         </div>
       </Popover.Anchor>
     </Popover.Root>

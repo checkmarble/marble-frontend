@@ -1,6 +1,8 @@
 import { CreateTableValue } from '@app-builder/schemas/data';
+import { exhaustiveUnionList } from '@app-builder/utils/types';
 import { type ParseKeys } from 'i18next';
 import {
+  type ClientDataListFilterDto,
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
   type ClientDataListResponseDto,
   type ClientObjectDetailDto,
@@ -21,7 +23,7 @@ import {
   UpdateTableBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 import {
   type CountryCodeFormat,
@@ -86,6 +88,11 @@ export interface DataModelField {
   isInteger?: boolean;
   foreignkeyTable?: string;
   hidden?: boolean;
+}
+
+/** Identifiers are shown as copyable values: fields declared as one, or named like one. */
+export function isIdField(field: Pick<DataModelField, 'name' | 'semanticType'>) {
+  return field.semanticType === 'unique_id' || field.semanticType === 'foreign_key' || /(^|_)id$/i.test(field.name);
 }
 
 /** Returns the saved declaration so supervised editing can still infer missing semantics. */
@@ -597,12 +604,32 @@ export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjec
   };
 }
 
+export type ClientDataListFilterOperator = ClientDataListFilterDto['operator'];
+export const clientDataListFilterOperators = exhaustiveUnionList<ClientDataListFilterOperator>()([
+  'contains',
+  'in',
+  '>=',
+  '<=',
+  '<',
+]);
+// Limits of the list endpoint.
+export const CLIENT_DATA_LIST_MAX_FILTERS = 20;
+export const CLIENT_DATA_LIST_MAX_FILTER_VALUES = 100;
+
+/** A single value for every operator except `in`. Timestamps are RFC 3339 strings. */
+export type ClientDataListFilter = {
+  fieldName: string;
+  operator: ClientDataListFilterOperator;
+  values: (string | number)[];
+};
+
 export type ClientDataListRequestBody = {
   explorationOptions: {
     sourceTableName: string;
     filterFieldName: string;
     filterFieldValue: string | number;
     orderingFieldName: string;
+    filters?: ClientDataListFilter[];
   };
   limit?: number;
   offsetId?: string | number;
@@ -615,6 +642,15 @@ export function adaptClientDataListRequestBodyDto(model: ClientDataListRequestBo
       filter_field_name: model.explorationOptions.filterFieldName,
       filter_field_value: model.explorationOptions.filterFieldValue,
       ordering_field_name: model.explorationOptions.orderingFieldName,
+      ...(model.explorationOptions.filters?.length
+        ? {
+            filters: model.explorationOptions.filters.map((filter) => ({
+              field_name: filter.fieldName,
+              operator: filter.operator,
+              values: filter.values,
+            })),
+          }
+        : {}),
     },
     cursor_id: model.offsetId,
     limit: model.limit,
@@ -623,7 +659,7 @@ export function adaptClientDataListRequestBodyDto(model: ClientDataListRequestBo
 
 export type FieldStatistics =
   | { type: 'String'; maxLength?: number; format?: string }
-  | { type: 'Float'; maxLength?: number }
+  | { type: 'Float' | 'Int'; maxLength?: number }
   | {
       type: 'Bool' | 'Timestamp' | 'IpAddress' | 'Coords';
     };
@@ -639,15 +675,16 @@ export type ClientDataListResponse = {
   };
 };
 
-export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
+/** Returns undefined for a type the API spec does not know yet, instead of failing the whole list. */
+export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics | undefined {
   return match(dto)
     .with({ type: 'String' }, ({ max_length, format }) => ({
       type: 'String' as const,
       maxLength: max_length,
       format: format,
     }))
-    .with({ type: 'Float' }, ({ max_length }) => ({
-      type: 'Float' as const,
+    .with({ type: P.union('Float', 'Int') }, ({ type, max_length }) => ({
+      type,
       maxLength: max_length,
     }))
     .with({ type: 'Bool' }, () => ({
@@ -662,7 +699,7 @@ export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
     .with({ type: 'Coords' }, () => ({
       type: 'Coords' as const,
     }))
-    .exhaustive();
+    .otherwise(() => undefined);
 }
 
 export function adaptClientDataListResponse(dto: ClientDataListResponseDto): ClientDataListResponse {
@@ -672,7 +709,10 @@ export function adaptClientDataListResponse(dto: ClientDataListResponseDto): Cli
       fieldStatistics: R.pipe(
         dto.metadata.field_statistics,
         R.entries(),
-        R.map(([key, value]) => [key, adaptFieldStatistics(value)] as const),
+        R.flatMap(([key, value]) => {
+          const fieldStatistics = adaptFieldStatistics(value);
+          return fieldStatistics ? [[key, fieldStatistics] as const] : [];
+        }),
         R.fromEntries(),
       ),
     },

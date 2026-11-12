@@ -2,6 +2,11 @@ import { semanticTypeTable } from '@app-builder/components/Data/SemanticTables/S
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { semanticFieldForBack } from '@app-builder/constants/data-model';
 import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
+import {
+  CLIENT_DATA_LIST_MAX_FILTER_VALUES,
+  CLIENT_DATA_LIST_MAX_FILTERS,
+  clientDataListFilterOperators,
+} from '@app-builder/models/data-model';
 import { enumEntrySchema } from '@app-builder/models/enum';
 import { z } from 'zod/v4';
 
@@ -73,6 +78,19 @@ export const listObjectsInputSchema = z.object({
   filterFieldName: z.string(),
   filterFieldValue: z.union([z.string(), z.number()]),
   orderingFieldName: z.string(),
+  filters: z
+    .array(
+      z.object({
+        fieldName: z.string(),
+        operator: z.enum(clientDataListFilterOperators),
+        values: z
+          .array(z.union([z.string(), z.number()]))
+          .min(1)
+          .max(CLIENT_DATA_LIST_MAX_FILTER_VALUES),
+      }),
+    )
+    .max(CLIENT_DATA_LIST_MAX_FILTERS)
+    .optional(),
   limit: z.number().optional(),
   offsetId: z.union([z.string(), z.number()]).optional(),
 });

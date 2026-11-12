@@ -1,8 +1,14 @@
 import { adaptUpdateTableValue } from '@app-builder/components/Data/SemanticTables/EditTable/updateTable-adapter';
 import type { TableField } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
-import type { FieldDto } from 'marble-api';
+import type { ClientDataListResponseDto, FieldDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
-import { adaptDataModel, getDeclaredSemanticType, primitiveTypes } from './data-model';
+import {
+  adaptClientDataListResponse,
+  adaptDataModel,
+  getDeclaredSemanticType,
+  isIdField,
+  primitiveTypes,
+} from './data-model';
 import { getDefaultSemanticType } from './semantic-types';
 
 function readField(overrides: Partial<FieldDto> & { metadata?: Record<string, unknown>; semantic_type?: string } = {}) {
@@ -109,5 +115,38 @@ describe('data model semantic defaults', () => {
     } else {
       expect(operation.data.metadata).toBeUndefined();
     }
+  });
+});
+
+describe('isIdField', () => {
+  it('detects ids from the semantic type or the field name', () => {
+    expect(isIdField({ name: 'registration_number', semanticType: 'unique_id' })).toBe(true);
+    expect(isIdField({ name: 'owner', semanticType: 'foreign_key' })).toBe(true);
+    expect(isIdField({ name: 'account_id', semanticType: 'text' })).toBe(true);
+    expect(isIdField({ name: 'ID', semanticType: undefined })).toBe(true);
+    expect(isIdField({ name: 'valid', semanticType: 'text' })).toBe(false);
+  });
+});
+
+describe('adaptClientDataListResponse', () => {
+  it('ignores field statistics of a type the frontend does not know', () => {
+    const fieldStatistics = {
+      amount: { type: 'Int', max_length: 4 },
+      label: { type: 'String', max_length: 12 },
+      position: { type: 'unknown' },
+    };
+
+    const response = adaptClientDataListResponse({
+      data: [],
+      metadata: {
+        field_statistics: fieldStatistics as unknown as ClientDataListResponseDto['metadata']['field_statistics'],
+      },
+      pagination: { has_next_page: false },
+    });
+
+    expect(response.metadata.fieldStatistics).toEqual({
+      amount: { type: 'Int', maxLength: 4 },
+      label: { type: 'String', maxLength: 12, format: undefined },
+    });
   });
 });

@@ -1,6 +1,11 @@
 import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isNotFoundHttpError, isStatusConflictHttpError } from '@app-builder/models';
+import {
+  isNotFoundHttpError,
+  isRequestTimeoutHttpError,
+  isStatusConflictHttpError,
+  REQUEST_TIMEOUT_ERROR_MESSAGE,
+} from '@app-builder/models';
 import { type Case } from '@app-builder/models/cases';
 import { type ClientDataListResponse, type DataModel, type DataModelObjectValue } from '@app-builder/models/data-model';
 import { createAnnotationPayloadSchema } from '@app-builder/schemas/annotations';
@@ -165,16 +170,22 @@ export const listObjectsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(listObjectsInputSchema)
   .handler(async ({ context, data }) => {
-    const { tableName, sourceTableName, filterFieldName, filterFieldValue, orderingFieldName, limit, offsetId } = data;
-    const clientDataListResponse = await context.authInfo.dataModelRepository.listClientObjects({
-      tableName,
-      body: {
-        explorationOptions: { sourceTableName, filterFieldName, filterFieldValue, orderingFieldName },
-        ...(limit !== undefined ? { limit } : {}),
-        ...(offsetId !== undefined ? { offsetId } : {}),
-      },
-    });
-    return { clientDataListResponse } as { clientDataListResponse: ClientDataListResponse };
+    const { tableName, limit, offsetId, ...explorationOptions } = data;
+    try {
+      const clientDataListResponse = await context.authInfo.dataModelRepository.listClientObjects({
+        tableName,
+        body: {
+          explorationOptions,
+          ...(limit !== undefined ? { limit } : {}),
+          ...(offsetId !== undefined ? { offsetId } : {}),
+        },
+      });
+      return { clientDataListResponse } as { clientDataListResponse: ClientDataListResponse };
+    } catch (error) {
+      // A timeout is not a failure of the data: the UI tells it apart from other errors.
+      if (isRequestTimeoutHttpError(error)) throw new Error(REQUEST_TIMEOUT_ERROR_MESSAGE);
+      throw error;
+    }
   });
 
 export const listArchetypesFn = createServerFn({ method: 'GET' })

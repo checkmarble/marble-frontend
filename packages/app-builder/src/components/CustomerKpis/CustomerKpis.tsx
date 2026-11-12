@@ -193,7 +193,7 @@ function CustomerKpisConfigurationCard({ variant, onOpen }: CustomerKpisConfigur
   );
 }
 
-function getAggregateMetrics(results: CustomerAggregateResultDto[] | undefined) {
+export function getAggregateMetrics(results: CustomerAggregateResultDto[] | undefined) {
   return match(results)
     .when(
       (values): values is [CustomerAggregateResultDto, CustomerAggregateResultDto] => values?.length === 2,
@@ -207,10 +207,10 @@ function getAggregateMetrics(results: CustomerAggregateResultDto[] | undefined) 
     .otherwise(() => null);
 }
 
-function formatMetric(value: number, language: string) {
+export function formatMetric(value: number, language: string) {
   return new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
 }
 
-function formatPercentage(value: number, language: string) {
+export function formatPercentage(value: number, language: string) {
   return `${new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(Math.abs(value))}%`;
 }

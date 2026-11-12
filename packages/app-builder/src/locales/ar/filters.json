@@ -1,4 +1,7 @@
 {
+  "at_least": "≥ {{value}}",
+  "at_most": "≤ {{value}}",
+  "between": "{{min}} – {{max}}",
   "clear_filters": "مسح الفلاتر",
   "date_range_filter.preset.last_3_months": "آخر 3 أشهر",
   "date_range_filter.preset.last_6_months": "آخر 6 أشهر",
@@ -20,5 +23,5 @@
   "filters": "الفلاتر",
   "new_filter": "فلتر جدبد",
   "unavailable_filter_tooltip": "الفلتر غير متاح للمجال المحدد",
-  "up_to": "حتى {{date}}"
+  "up_to": "حتى {{duration}}"
 }
