@@ -54,15 +54,18 @@ function withoutDecided(session: ScreeningReviewSession, ids: readonly string[])
  * comments, beside whatever changed since, so one restore never erases another.
  *
  * `onNavigate` moves the cursor to a hit: the next pending one after a decision, or back to a hit
- * that needs the analyst again.
+ * that needs the analyst again. `canValidate` says whether a decision is final or goes to a validator,
+ * which the undo toast tells the analyst.
  */
 export function useReviewDecisions({
   serverItems,
   hasMore,
+  canValidate,
   onNavigate,
 }: {
   serverItems: readonly ScreeningReviewItem[];
   hasMore: boolean;
+  canValidate: boolean;
   onNavigate: (itemId: string) => void;
 }) {
   const { t } = useTranslation(['cases']);
@@ -183,9 +186,11 @@ export function useReviewDecisions({
       updateSession((current) => withDecided(current, [[item, comment]], decision)),
     );
     pendingDecision.schedule({
-      message: t('cases:screening_review.undo.decided', {
-        decision: t(`cases:screening_review.decision.${decision}`),
-      }),
+      message: t(
+        canValidate ? 'cases:screening_review.undo.validated' : 'cases:screening_review.undo.sent_for_validation',
+        { name: item.customer.name },
+      ),
+      undoneMessage: t('cases:screening_review.undo.recalled', { name: item.customer.name }),
       undo: () => {
         if (!isCurrent()) return;
         restore();
@@ -243,7 +248,13 @@ export function useReviewDecisions({
     );
     if (activeId && items.some((item) => item.id === activeId)) openNextPending(activeId, next);
     pendingDecision.schedule({
-      message: t('cases:screening_review.undo.batch_decided', { count: items.length }),
+      message: t(
+        canValidate
+          ? 'cases:screening_review.undo.batch_validated'
+          : 'cases:screening_review.undo.batch_sent_for_validation',
+        { count: items.length },
+      ),
+      undoneMessage: t('cases:screening_review.undo.batch_recalled', { count: items.length }),
       undo: () => {
         if (!isCurrent()) return;
         updateSession((current) =>

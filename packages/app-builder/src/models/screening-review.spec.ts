@@ -6,9 +6,11 @@ import {
   applyScreeningReviewSession,
   buildScreeningReviewItems,
   compareScreeningReviewFields,
+  countScreeningReviewFilters,
   emptyScreeningReviewSession,
   groupScreeningReviewItems,
   isListedInScreeningReviewSession,
+  matchesScreeningReviewFilter,
   needsFalsePositiveClosure,
   nextPendingScreeningReviewItem,
   type ScreeningReviewItem,
@@ -727,5 +729,46 @@ describe('screening review session', () => {
     expect(needsFalsePositiveClosure(reviewCase('case', [noHit, objectReviewScreening('other')]))).toBe(false);
     expect(needsFalsePositiveClosure(reviewCase('case', []))).toBe(false);
     expect(needsFalsePositiveClosure(reviewCase('case', [{ ...noHit, status: 'confirmed_hit' }]))).toBe(false);
+  });
+});
+
+describe('screening review filters', () => {
+  const pending = buildScreeningReviewItems([reviewCase('open')]);
+  const closed = buildScreeningReviewItems([
+    reviewCase(
+      'closed',
+      [
+        {
+          ...objectReviewScreening('ended'),
+          status: 'no_hit',
+          matches: objectReviewScreening('ended').matches.map((match) => ({ ...match, status: 'no_hit' as const })),
+        },
+      ],
+      { status: 'closed' },
+    ),
+  ]);
+
+  it('splits hits between To review and Validated, and All holds both', () => {
+    const items = [...pending, ...closed];
+    expect(items.filter((item) => matchesScreeningReviewFilter(item, 'to_review'))).toEqual(pending);
+    expect(items.filter((item) => matchesScreeningReviewFilter(item, 'validated'))).toEqual(closed);
+    expect(items.filter((item) => matchesScreeningReviewFilter(item, 'all'))).toEqual(items);
+    expect(countScreeningReviewFilters(items)).toEqual({ all: 4, to_review: 2, validated: 2 });
+  });
+
+  it('counts a pending match of an ended screening as validated', () => {
+    const [item] = buildScreeningReviewItems([
+      reviewCase('confirmed', [{ ...objectReviewScreening(), status: 'confirmed_hit' }]),
+    ]);
+    expect(matchesScreeningReviewFilter(item!, 'validated')).toBe(true);
+  });
+
+  it('reads a closed case from the server as closed, without a write this visit', () => {
+    const [item] = closed;
+    expect(screeningReviewScreeningState(closed, item!, emptyScreeningReviewSession)).toBe('case_closed');
+    const [open] = buildScreeningReviewItems([
+      reviewCase('open-ended', [{ ...objectReviewScreening(), status: 'no_hit' }]),
+    ]);
+    expect(screeningReviewScreeningState([open!], open!, emptyScreeningReviewSession)).toBe('closure_pending');
   });
 });

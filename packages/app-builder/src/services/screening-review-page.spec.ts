@@ -19,7 +19,7 @@ describe('assigned screening review page reader', () => {
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(detail),
     };
-    const result = await readScreeningReviewPage(repository, 'analyst', 50, null, 'selected-inbox');
+    const result = await readScreeningReviewPage(repository, 'analyst', 50, null, { inboxId: 'selected-inbox' });
     expect(result.items).toHaveLength(2);
     expect(repository.listCases).toHaveBeenCalledTimes(2);
     for (const [filters] of repository.listCases.mock.calls) {
@@ -41,7 +41,7 @@ describe('assigned screening review page reader', () => {
         .fn<CaseRepository['getCase']>()
         .mockImplementation(async ({ caseId }) => (caseId === first.id ? first : second)),
     };
-    const result = await readScreeningReviewPage(repository, 'analyst', 50, null, 'my-inbox');
+    const result = await readScreeningReviewPage(repository, 'analyst', 50, null, { inboxId: 'my-inbox' });
     expect(result.items).toHaveLength(4);
     expect(repository.listCases.mock.calls[0]?.[0].inboxIds).toBeUndefined();
   });
@@ -57,7 +57,7 @@ describe('assigned screening review page reader', () => {
       'analyst',
       50,
       null,
-      'selected-inbox',
+      { inboxId: 'selected-inbox' },
     );
     expect(result.items).toEqual([]);
   });
@@ -191,6 +191,73 @@ describe('assigned screening review page reader', () => {
       items: [],
       nextCursor: null,
       failed: false,
+    });
+  });
+
+  describe('filters and search', () => {
+    const decided = { ...objectReviewScreening(), status: 'confirmed_hit' as const };
+
+    it('reads closed cases outside To review and keeps their hits', async () => {
+      const closed = reviewCase('closed', [decided], { status: 'closed' });
+      const repository = {
+        listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [closed], hasNextPage: false }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
+        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(closed),
+      };
+      const result = await readScreeningReviewPage(repository, 'analyst', 50, null, { filter: 'validated' });
+      expect(result.items).toHaveLength(2);
+      expect(result.items[0]).toMatchObject({ caseStatus: 'closed' });
+      expect(repository.listCases.mock.calls[0]?.[0].statuses).toEqual([
+        'pending',
+        'investigating',
+        'waiting_for_action',
+        'closed',
+      ]);
+    });
+
+    it('fills the page with hits that match the filter', async () => {
+      // Details load four at a time: the first batch is all pending, the second is decided.
+      const cases = [
+        ...Array.from({ length: 4 }, (_, index) => reviewCase(`pending-${index}`)),
+        reviewCase('reviewed', [decided]),
+      ];
+      const repository = {
+        listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: cases, hasNextPage: true }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
+        getCase: vi
+          .fn<CaseRepository['getCase']>()
+          .mockImplementation(async ({ caseId }) => cases.find((item) => item.id === caseId)!),
+      };
+      const toReview = await readScreeningReviewPage(repository, 'analyst', 1, null);
+      expect(toReview).toMatchObject({ nextCursor: 'pending-3' });
+      expect(toReview.items).toHaveLength(8);
+      const validated = await readScreeningReviewPage(repository, 'analyst', 1, null, { filter: 'validated' });
+      expect(validated).toMatchObject({ nextCursor: 'reviewed' });
+      expect(validated.items).toHaveLength(10);
+    });
+
+    it('retries a failed closure and keeps the case as validated outside To review', async () => {
+      const ended = reviewCase('ended', [{ ...objectReviewScreening(), status: 'no_hit' }]);
+      const repository = {
+        listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [ended], hasNextPage: false }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
+        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(ended),
+      };
+      const result = await readScreeningReviewPage(repository, 'analyst', 50, null, { filter: 'all' });
+      expect(repository.updateCase).toHaveBeenCalledOnce();
+      expect(result.items.map((item) => item.caseStatus)).toEqual(['closed', 'closed']);
+    });
+
+    it('passes a search to the case name filter and omits an empty one', async () => {
+      const repository = {
+        listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [], hasNextPage: false }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
+        getCase: vi.fn<CaseRepository['getCase']>(),
+      };
+      await readScreeningReviewPage(repository, 'analyst', 50, null, { name: 'Amira' });
+      await readScreeningReviewPage(repository, 'analyst', 50, null, { name: '' });
+      expect(repository.listCases.mock.calls[0]?.[0]).toMatchObject({ name: 'Amira' });
+      expect(repository.listCases.mock.calls[1]?.[0]).not.toHaveProperty('name');
     });
   });
 });

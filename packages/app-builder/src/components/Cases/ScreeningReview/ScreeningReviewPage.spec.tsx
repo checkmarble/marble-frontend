@@ -97,7 +97,11 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-function renderPage(initial: ScreeningReviewSearch = { limit: 50, cursors: [] }, canViewRiskLevel = false) {
+function renderPage(
+  initial: ScreeningReviewSearch = { filter: 'to_review', limit: 50, cursors: [] },
+  canViewRiskLevel = false,
+  canValidate = true,
+) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
   function Harness() {
     const [search, setSearch] = useState(initial);
@@ -106,6 +110,7 @@ function renderPage(initial: ScreeningReviewSearch = { limit: 50, cursors: [] },
         <ScreeningReviewPage
           canViewAdminSections={false}
           canViewRiskLevel={canViewRiskLevel}
+          canValidate={canValidate}
           inboxes={inboxes}
           search={search}
           onSearchChange={(next) => {
@@ -145,7 +150,9 @@ function press(key: string, code: string, shiftKey = false, target: Element | Do
 describe('screening review keyboard navigation', () => {
   it('navigates hits and customers with keys, records selection in search, and stops at boundaries', async () => {
     renderPage();
-    await waitFor(() => expect(onSearchChange).toHaveBeenLastCalledWith({ limit: 50, cursors: [], hit: firstId }));
+    await waitFor(() =>
+      expect(onSearchChange).toHaveBeenLastCalledWith({ filter: 'to_review', limit: 50, cursors: [], hit: firstId }),
+    );
     expect(activeCard()?.textContent).toContain('List record A');
     press('k', 'KeyK');
     expect(activeCard()?.textContent).toContain('List record A');
@@ -328,11 +335,11 @@ describe('screening review pages and restoration', () => {
   it('restores the selected inbox with its bookmarked page and hit', async () => {
     vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
     const hit = secondPageItems[1]!.id;
-    renderPage({ limit: 25, cursors: [pageTwoCursor], inboxId: selectedInboxId, hit });
+    renderPage({ filter: 'to_review', limit: 25, cursors: [pageTwoCursor], inboxId: selectedInboxId, hit });
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
     expect(screen.getByRole('button', { name: 'cases:case.inbox: Screening alerts' })).not.toBeNull();
     expect(listScreeningReviewPageFn).toHaveBeenCalledWith({
-      data: { limit: 25, cursor: pageTwoCursor, inboxId: selectedInboxId },
+      data: { filter: 'to_review', limit: 25, cursor: pageTwoCursor, inboxId: selectedInboxId },
     });
     expect(onSearchChange).not.toHaveBeenCalled();
   });
@@ -341,16 +348,22 @@ describe('screening review pages and restoration', () => {
     vi.mocked(listScreeningReviewPageFn)
       .mockResolvedValueOnce({ items: [], nextCursor: null, failed: false })
       .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
-    renderPage({ limit: 50, cursors: [pageTwoCursor] });
-    await screen.findByText('cases:screening_review.empty_title');
+    renderPage({ filter: 'to_review', limit: 50, cursors: [pageTwoCursor] });
+    await screen.findByText('cases:screening_review.empty.empty.title');
     fireEvent.click(screen.getByRole('button', { name: 'cases:case.inbox: cases:inbox.my-inbox.link' }));
     fireEvent.click(await screen.findByRole('option', { name: 'Screening alerts' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
-        data: { limit: 50, cursor: null, inboxId: selectedInboxId },
+        data: { filter: 'to_review', limit: 50, cursor: null, inboxId: selectedInboxId },
       }),
     );
-    expect(onSearchChange).toHaveBeenCalledWith({ limit: 50, inboxId: selectedInboxId, cursors: [], hit: undefined });
+    expect(onSearchChange).toHaveBeenCalledWith({
+      filter: 'to_review',
+      limit: 50,
+      inboxId: selectedInboxId,
+      cursors: [],
+      hit: undefined,
+    });
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(secondPageItems[0]!.id));
     expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
   });
@@ -359,19 +372,19 @@ describe('screening review pages and restoration', () => {
     vi.mocked(listScreeningReviewPageFn)
       .mockResolvedValueOnce({ items: initialItems, nextCursor: pageTwoCursor, failed: false })
       .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
-    renderPage({ limit: 50, cursors: [], inboxId: selectedInboxId });
+    renderPage({ filter: 'to_review', limit: 50, cursors: [], inboxId: selectedInboxId });
     await waitFor(() => expect(activeCard()).not.toBeNull());
     fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.next_page' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
-        data: { limit: 50, cursor: pageTwoCursor, inboxId: selectedInboxId },
+        data: { filter: 'to_review', limit: 50, cursor: pageTwoCursor, inboxId: selectedInboxId },
       }),
     );
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(secondPageItems[0]!.id));
     fireEvent.click(screen.getByRole('button', { name: '25' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
-        data: { limit: 25, cursor: null, inboxId: selectedInboxId },
+        data: { filter: 'to_review', limit: 25, cursor: null, inboxId: selectedInboxId },
       }),
     );
     expect(onSearchChange.mock.lastCall?.[0].inboxId).toBe(selectedInboxId);
@@ -388,7 +401,7 @@ describe('screening review pages and restoration', () => {
     fireEvent.click(await screen.findByRole('option', { name: 'Screening alerts' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
-        data: { limit: 50, cursor: null, inboxId: selectedInboxId },
+        data: { filter: 'to_review', limit: 50, cursor: null, inboxId: selectedInboxId },
       }),
     );
     expect(activeCard()).toBeNull();
@@ -413,16 +426,16 @@ describe('screening review pages and restoration', () => {
   it('restores a bookmarked hit and cursor after reload', async () => {
     vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
     const hit = secondPageItems[1]!.id;
-    renderPage({ limit: 25, cursors: [pageTwoCursor], hit });
+    renderPage({ filter: 'to_review', limit: 25, cursors: [pageTwoCursor], hit });
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
     expect(listScreeningReviewPageFn).toHaveBeenCalledWith({
-      data: { limit: 25, cursor: pageTwoCursor, inboxId: 'my-inbox' },
+      data: { filter: 'to_review', limit: 25, cursor: pageTwoCursor, inboxId: 'my-inbox' },
     });
     expect(onSearchChange).not.toHaveBeenCalled();
   });
 
   it('explains stale selection and falls back to the first pending hit', async () => {
-    renderPage({ limit: 50, cursors: [], hit: 'no-longer-eligible' });
+    renderPage({ filter: 'to_review', limit: 50, cursors: [], hit: 'no-longer-eligible' });
     await screen.findByText('cases:screening_review.unavailable');
     expect(onSearchChange.mock.lastCall?.[0].hit).toBe(firstId);
   });
@@ -436,7 +449,7 @@ describe('screening review pages and restoration', () => {
     fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.next_page' }));
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(secondPageItems[0]!.id));
     expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
-      data: { limit: 50, cursor: pageTwoCursor, inboxId: 'my-inbox' },
+      data: { filter: 'to_review', limit: 50, cursor: pageTwoCursor, inboxId: 'my-inbox' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.previous_page' }));
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(firstId));
@@ -444,7 +457,7 @@ describe('screening review pages and restoration', () => {
     fireEvent.click(screen.getByRole('button', { name: '25' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
-        data: { limit: 25, cursor: null, inboxId: 'my-inbox' },
+        data: { filter: 'to_review', limit: 25, cursor: null, inboxId: 'my-inbox' },
       }),
     );
   });
@@ -484,7 +497,9 @@ describe('screening review comparison view', () => {
 
   it('shows the customer before the list record and marks each compared field', async () => {
     renderPage();
-    await waitFor(() => expect(onSearchChange).toHaveBeenLastCalledWith({ limit: 50, cursors: [], hit: firstId }));
+    await waitFor(() =>
+      expect(onSearchChange).toHaveBeenLastCalledWith({ filter: 'to_review', limit: 50, cursors: [], hit: firstId }),
+    );
     const columns = within(screen.getByRole('table'))
       .getAllByRole('columnheader')
       .map((header) => header.textContent);
@@ -598,12 +613,7 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
     expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
     expect(await undoButton()).toBeTruthy();
-    const countdown = () => document.querySelector('[data-undo-countdown]')?.textContent;
-    expect(countdown()).toBe('5s');
-    await elapse(2_000);
-    expect(countdown()).toBe('3s');
-    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS - 2_100);
-    expect(countdown()).toBe('1s');
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS - 100);
     expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
     await elapse(100);
     await waitFor(() =>
@@ -623,6 +633,20 @@ describe('screening review decisions', () => {
     expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('button', { name: /screening_review\.dock\.next_hit/ }));
     await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+  });
+
+  it('keeps a decided hit decided when a window-focus refetch returns the data from before the write', async () => {
+    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue(inReview);
+    const { queryClient } = renderDecisionPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('n', 'KeyN');
+    press('Enter', 'Enter');
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledOnce());
+    // The server still lists the hit as pending, as a read racing the write would.
+    await act(() => queryClient.refetchQueries({ queryKey: ['cases', 'screening-review'] }));
+    expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
+    expect(activeCard()?.textContent).not.toContain('List record A');
   });
 
   it('focuses the comment with C, keeps Shift+Enter for line breaks, leaves with Esc and submits with Enter', async () => {
@@ -719,9 +743,12 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
     expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
     expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
-    expect(screen.queryByText('cases:screening_review.empty_title')).toBeNull();
+    // The decided hits stay listed under a notice until the case is hidden.
+    expect(screen.getByText('cases:screening_review.empty.all_reviewed.title')).toBeTruthy();
+    expect(screen.queryByText('cases:screening_review.empty.all_reviewed.description')).toBeNull();
     await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-    await screen.findByText('cases:screening_review.empty_title');
+    // Hits decided during the visit end on the all-reviewed state, not the empty queue.
+    await screen.findByText('cases:screening_review.empty.all_reviewed.description');
     expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
   });
 
@@ -799,9 +826,11 @@ describe('screening review decisions', () => {
       fireEvent.change(commentBox(), { target: { value: 'Same name only' } });
       press('Enter', 'Enter');
       await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
-      expect(screen.getByText('cases:screening_review.undo.decided')).toBeTruthy();
+      expect(screen.getByText('cases:screening_review.undo.validated')).toBeTruthy();
       fireEvent.click(await undoButton());
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      // The undo toast gives way to the recall.
+      expect(await screen.findByText('cases:screening_review.undo.recalled')).toBeTruthy();
       expect(card('List record A')?.textContent).not.toContain('cases:screening_review.decision.no_hit');
       expect(decisionButton('no_hit').getAttribute('aria-pressed')).toBe('true');
       expect(commentBox().value).toBe('Same name only');
@@ -816,6 +845,16 @@ describe('screening review decisions', () => {
       // Nothing is left to undo.
       press('u', 'KeyU');
       expect(activeCard()?.textContent).toContain('List record A');
+    });
+
+    it('tells an analyst who can’t validate that the decision went for validation', async () => {
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: decisionItems, nextCursor: null, failed: false });
+      renderPage(undefined, false, false);
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('n', 'KeyN');
+      press('Enter', 'Enter');
+      expect(await screen.findByText('cases:screening_review.undo.sent_for_validation')).toBeTruthy();
+      expect(screen.queryByText('cases:screening_review.undo.validated')).toBeNull();
     });
 
     it('writes the previous decision at once when another is made, and undoes only the latest', async () => {
@@ -1118,7 +1157,7 @@ describe('screening review decisions', () => {
         await waitFor(() => expect(card(name)?.textContent).toContain('cases:screening_review.decision.no_hit'));
       }
       expect(checked()).toBe(0);
-      expect(screen.getByText('cases:screening_review.undo.batch_decided')).toBeTruthy();
+      expect(screen.getByText('cases:screening_review.undo.batch_validated')).toBeTruthy();
 
       press('u', 'KeyU');
       await waitFor(() => expect(checked()).toBe(3));
@@ -1268,5 +1307,160 @@ describe('screening review decisions', () => {
         ]),
       );
     });
+  });
+});
+
+describe('screening review queue tools', () => {
+  const closedItems = buildScreeningReviewItems([
+    reviewCase(
+      'closed-case',
+      [
+        {
+          ...objectReviewScreening('closed-screening', 'bob'),
+          status: 'no_hit',
+          matches: objectReviewScreening('closed-screening', 'bob').matches.map((match) => ({
+            ...match,
+            status: 'no_hit' as const,
+          })),
+        },
+      ],
+      { status: 'closed' },
+    ),
+  ]);
+  const filterTab = (filter: string) =>
+    screen.getByRole('tab', { name: new RegExp(`screening_review\\.filter\\.${filter}`) });
+  const searchBox = () => screen.getByRole('textbox', { name: 'cases:screening_review.search.label' });
+
+  it('counts each filter among the loaded hits, with + where more may exist', async () => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: [...initialItems, ...closedItems],
+      nextCursor: null,
+      failed: false,
+    });
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(filterTab('to_review').textContent).toMatch(/4$/);
+    // To review never reads closed cases, so the other filters may hold more.
+    expect(filterTab('validated').textContent).toMatch(/2\+$/);
+    expect(filterTab('all').textContent).toBe('cases:screening_review.filter.all');
+    expect(filterTab('to_review').getAttribute('data-status')).toBe('active');
+  });
+
+  it('shows + on every count while another page exists', async () => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: [...initialItems, ...closedItems],
+      nextCursor: pageTwoCursor,
+      failed: false,
+    });
+    renderPage({ filter: 'all', limit: 50, cursors: [] });
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(filterTab('to_review').textContent).toMatch(/4\+$/);
+    expect(filterTab('validated').textContent).toMatch(/2\+$/);
+  });
+
+  it('switches to Validated through the search, then lists decided hits read-only', async () => {
+    vi.mocked(listScreeningReviewPageFn)
+      .mockResolvedValueOnce({ items: initialItems, nextCursor: null, failed: false })
+      .mockResolvedValue({ items: [...initialItems, ...closedItems], nextCursor: null, failed: false });
+    renderPage({ filter: 'to_review', limit: 50, cursors: [pageTwoCursor] });
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    fireEvent.click(filterTab('validated'));
+    expect(onSearchChange).toHaveBeenCalledWith({ filter: 'validated', limit: 50, cursors: [], hit: undefined });
+    await waitFor(() =>
+      expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
+        data: { filter: 'validated', limit: 50, cursor: null, inboxId: 'my-inbox' },
+      }),
+    );
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(closedItems[0]!.id));
+    const listed = screen
+      .getAllByRole('button')
+      .filter((button) => button.hasAttribute('data-review-hit-card'))
+      .map((button) => button.textContent);
+    expect(listed).toHaveLength(2);
+    expect(listed.every((text) => text?.includes('cases:screening_review.decision.no_hit'))).toBe(true);
+    expect(screen.getByText('cases:screening_review.dock.validated')).toBeTruthy();
+    expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
+    // Decided hits can't be decided again.
+    press('m', 'KeyM');
+    expect(screen.queryByRole('group', { name: 'cases:screening_review.dock.title' })).toBeNull();
+  });
+
+  it('searches by name after a pause, keeping the filter and resetting the page', async () => {
+    vi.mocked(listScreeningReviewPageFn)
+      .mockResolvedValueOnce({ items: initialItems, nextCursor: null, failed: false })
+      .mockResolvedValue({ items: [], nextCursor: null, failed: false });
+    renderPage({ filter: 'all', limit: 50, cursors: [pageTwoCursor] });
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    fireEvent.change(searchBox(), { target: { value: '  Ali' } });
+    fireEvent.change(searchBox(), { target: { value: '  Alice ' } });
+    await waitFor(() =>
+      expect(onSearchChange).toHaveBeenCalledWith({
+        filter: 'all',
+        q: 'Alice',
+        limit: 50,
+        cursors: [],
+        hit: undefined,
+      }),
+    );
+    expect(onSearchChange.mock.calls.filter(([search]) => search.q === 'Ali')).toHaveLength(0);
+    await waitFor(() =>
+      expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
+        data: { filter: 'all', name: 'Alice', limit: 50, cursor: null, inboxId: 'my-inbox' },
+      }),
+    );
+    // The typed text stays as typed while the search echoes back.
+    expect(searchBox()).toHaveProperty('value', '  Alice ');
+    await screen.findByText('cases:screening_review.empty.no_results.title');
+    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.search.clear' }));
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].q).toBeUndefined());
+    await waitFor(() => expect(searchBox()).toHaveProperty('value', ''));
+  });
+
+  it('applies the search at once on Enter', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    fireEvent.change(searchBox(), { target: { value: 'Bob' } });
+    fireEvent.keyDown(searchBox(), { key: 'Enter', code: 'Enter' });
+    expect(onSearchChange).toHaveBeenLastCalledWith({
+      filter: 'to_review',
+      q: 'Bob',
+      limit: 50,
+      cursors: [],
+      hit: undefined,
+    });
+  });
+
+  it('pages through a filtered search, and keys stop at the page boundary', async () => {
+    vi.mocked(listScreeningReviewPageFn)
+      .mockResolvedValueOnce({ items: closedItems, nextCursor: pageTwoCursor, failed: false })
+      .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
+    renderPage({ filter: 'validated', q: 'Bob', limit: 50, cursors: [] });
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('j', 'KeyJ');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+    // The last hit of the page: J stays, it doesn't load the next page.
+    press('j', 'KeyJ');
+    press('ArrowDown', 'ArrowDown');
+    expect(activeCard()?.textContent).toContain('List record B');
+    expect(listScreeningReviewPageFn).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.next_page' }));
+    await waitFor(() =>
+      expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
+        data: { filter: 'validated', name: 'Bob', limit: 50, cursor: pageTwoCursor, inboxId: 'my-inbox' },
+      }),
+    );
+    expect(onSearchChange).toHaveBeenCalledWith({
+      filter: 'validated',
+      q: 'Bob',
+      limit: 50,
+      cursors: [pageTwoCursor],
+      hit: undefined,
+    });
+  });
+
+  it('shows an empty Validated filter apart from an empty queue', async () => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: null, failed: false });
+    renderPage({ filter: 'validated', limit: 50, cursors: [] });
+    await screen.findByText('cases:screening_review.empty.no_validated.title');
   });
 });

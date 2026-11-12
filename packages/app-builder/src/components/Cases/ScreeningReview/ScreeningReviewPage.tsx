@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components/Callout';
 import { Page } from '@app-builder/components/Page';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import type { InboxMetadata } from '@app-builder/models/inbox';
@@ -5,9 +6,12 @@ import {
   adjacentScreeningReviewItem,
   applyScreeningReviewSession,
   compareScreeningReviewFields,
+  countScreeningReviewFilters,
   groupScreeningReviewItems,
   isListedInScreeningReviewSession,
   isPendingReviewItem,
+  matchesScreeningReviewFilter,
+  type ScreeningReviewFilter,
   type ScreeningReviewItem,
   screeningReviewCustomerPendingItems,
   screeningReviewHitsSkippedBy,
@@ -28,6 +32,7 @@ import { HitList } from './HitList';
 import { useMappedProperties } from './MatchedFieldChips';
 import { PaginationFooter, type ScreeningReviewPageSize } from './PaginationFooter';
 import { openInNewTabAfter, PendingDecisionProvider } from './pending-decision';
+import { QueueFilters } from './QueueFilters';
 import { type ScreeningReviewNotice, useReviewDecisions } from './review-decisions';
 import { ScreeningReviewHit } from './ScreeningReviewHit';
 import { ShortcutHelp, ShortcutKeys } from './ShortcutHelp';
@@ -35,6 +40,9 @@ import { ScreeningReviewShortcutProvider, useScreeningReviewShortcuts } from './
 
 export interface ScreeningReviewSearch {
   inboxId?: string;
+  filter: ScreeningReviewFilter;
+  /** Matched against case names. */
+  q?: string;
   limit: ScreeningReviewPageSize;
   cursors: string[];
   hit?: string;
@@ -45,6 +53,8 @@ interface ScreeningReviewPageProps {
   onSearchChange: (search: ScreeningReviewSearch) => void;
   canViewAdminSections: boolean;
   canViewRiskLevel: boolean;
+  /** The analyst's decisions are final. Otherwise they go to a validator. */
+  canValidate: boolean;
   inboxes: InboxMetadata[];
 }
 
@@ -97,13 +107,20 @@ function ReviewStream({
   onSearchChange,
   canViewAdminSections,
   canViewRiskLevel,
+  canValidate,
   inboxes,
 }: ScreeningReviewPageProps) {
   const { t } = useTranslation(['cases', 'common']);
   const router = useRouter();
   const allInboxes = [{ id: MY_INBOX_ID, name: t('cases:inbox.my-inbox.link') }, ...inboxes];
   const selectedInbox = allInboxes.find((inbox) => inbox.id === search.inboxId) ?? allInboxes[0]!;
-  const query = useScreeningReviewPageQuery(search.limit, search.cursors.at(-1) ?? null, selectedInbox.id);
+  const query = useScreeningReviewPageQuery({
+    limit: search.limit,
+    cursor: search.cursors.at(-1) ?? null,
+    inboxId: selectedInbox.id,
+    filter: search.filter,
+    name: search.q,
+  });
   const mappedProperties = useMappedProperties();
   const [helpOpen, setHelpOpen] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
@@ -118,6 +135,7 @@ function ReviewStream({
   const decisions = useReviewDecisions({
     serverItems: query.data?.items ?? [],
     hasMore,
+    canValidate,
     onNavigate: (itemId) => onSearchChange({ ...latestSearch.current, hit: itemId }),
   });
   const { session, selection, setSelection, pendingDecision } = decisions;
@@ -126,15 +144,27 @@ function ReviewStream({
     [query.data, session],
   );
   const groups = useMemo(
-    () => groupScreeningReviewItems(reviewItems, hasMore, (item) => isListedInScreeningReviewSession(item, session)),
-    [reviewItems, hasMore, session],
+    () =>
+      groupScreeningReviewItems(reviewItems, hasMore, (item) =>
+        // To review keeps this visit's decisions listed, so the analyst sees them land.
+        search.filter === 'to_review'
+          ? isListedInScreeningReviewSession(item, session)
+          : matchesScreeningReviewFilter(item, search.filter),
+      ),
+    [reviewItems, hasMore, session, search.filter],
   );
+  const counts = useMemo(() => countScreeningReviewFilters(reviewItems), [reviewItems]);
+  // To review never reads closed cases, so the other counts can't be complete there.
+  const isCountPartial = (filter: ScreeningReviewFilter) =>
+    hasMore || (search.filter === 'to_review' && filter !== 'to_review');
   const items = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const active = items.find((item) => item.id === search.hit) ?? items.find(isPendingReviewItem) ?? items[0];
   const selectedItems = items.filter((item) => selection.has(item.id) && isPendingReviewItem(item));
   const batchMode = selectedItems.length > 0;
   const ready = !!query.data && !query.isPlaceholderData;
   const reviewable = !!active && isPendingReviewItem(active);
+  // The end of the queue: nothing left to decide on the first and only page.
+  const allReviewed = ready && !hasMore && !search.cursors.length && search.filter !== 'validated' && !counts.to_review;
   const activeDraft = decisions.draftFor(active?.id);
 
   useEffect(() => {
@@ -278,7 +308,7 @@ function ReviewStream({
             aria-busy={query.isFetching}
           >
             <div className="flex min-h-0 min-w-0 flex-col gap-sm">
-              <div className="shrink-0">
+              <div className="flex shrink-0 flex-col gap-sm">
                 <FilterInboxSelector
                   inboxes={allInboxes}
                   selectedInbox={selectedInbox}
@@ -287,6 +317,17 @@ function ReviewStream({
                   }}
                   variant="secondary"
                 />
+                <QueueFilters
+                  filter={search.filter}
+                  counts={counts}
+                  isCountPartial={isCountPartial}
+                  query={search.q}
+                  onFilterChange={(filter) => changeSearch({ filter, cursors: [] })}
+                  onQueryChange={(q) => changeSearch({ q, cursors: [] })}
+                />
+                {allReviewed && items.length ? (
+                  <AllReviewedNotice onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })} />
+                ) : null}
               </div>
               <div className="relative min-h-0 flex-1">
                 <HitList
@@ -346,7 +387,20 @@ function ReviewStream({
                 )}
               </div>
             ) : ready && !query.data?.failed && !items.length ? (
-              <EmptyQueue inboxId={selectedInbox.id} />
+              <EmptyQueue
+                inboxId={selectedInbox.id}
+                state={
+                  search.q
+                    ? 'no_results'
+                    : search.filter === 'validated'
+                      ? 'no_validated'
+                      : allReviewed && Object.keys(session.decided).length
+                        ? 'all_reviewed'
+                        : 'empty'
+                }
+                onClearSearch={() => changeSearch({ q: undefined, cursors: [] })}
+                onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })}
+              />
             ) : null}
           </div>
           <PaginationFooter
@@ -385,19 +439,60 @@ function ReviewNotices({ notice, unavailable }: { notice: ScreeningReviewNotice 
   );
 }
 
-function EmptyQueue({ inboxId }: { inboxId: string }) {
+type EmptyQueueState = 'empty' | 'all_reviewed' | 'no_validated' | 'no_results';
+
+function EmptyQueue({
+  inboxId,
+  state,
+  onClearSearch,
+  onShowValidated,
+}: {
+  inboxId: string;
+  state: EmptyQueueState;
+  onClearSearch: () => void;
+  onShowValidated: () => void;
+}) {
   const { t } = useTranslation(['cases']);
   return (
-    <div className="flex flex-col items-start gap-md self-start rounded border border-grey-border p-lg">
-      <Typo variant="title2">{t('cases:screening_review.empty_title')}</Typo>
-      <p>{t('cases:screening_review.empty_description')}</p>
-      <Link
-        to="/cases/inboxes/$inboxId"
-        params={{ inboxId: inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId) }}
-        className="text-purple-primary underline"
-      >
-        {t('cases:screening_review.go_to_cases')}
-      </Link>
+    <div role="status" className="flex flex-col items-start gap-md self-start rounded border border-grey-border p-lg">
+      <Typo variant="title2">{t(`cases:screening_review.empty.${state}.title`)}</Typo>
+      <p>{t(`cases:screening_review.empty.${state}.description`)}</p>
+      {state === 'no_results' ? (
+        <Button variant="secondary" onClick={onClearSearch}>
+          {t('cases:screening_review.search.clear')}
+        </Button>
+      ) : state === 'all_reviewed' ? (
+        <Button variant="secondary" onClick={onShowValidated}>
+          {t('cases:screening_review.all_reviewed.show_validated')}
+        </Button>
+      ) : (
+        <Link
+          to="/cases/inboxes/$inboxId"
+          params={{ inboxId: inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId) }}
+          className="text-purple-primary underline"
+        >
+          {t('cases:screening_review.go_to_cases')}
+        </Link>
+      )}
     </div>
+  );
+}
+
+/** Shown above the list once its last pending hit is decided, while decided hits stay listed. */
+function AllReviewedNotice({ onShowValidated }: { onShowValidated: () => void }) {
+  const { t } = useTranslation(['cases']);
+  return (
+    <Callout role="status" color="purple" icon="tick" iconColor="purple">
+      <div className="flex flex-col items-start gap-xs">
+        <span className="font-medium">{t('cases:screening_review.empty.all_reviewed.title')}</span>
+        <button
+          type="button"
+          onClick={onShowValidated}
+          className="cursor-pointer text-purple-primary underline focus-visible:outline-2 focus-visible:outline-purple-primary"
+        >
+          {t('cases:screening_review.all_reviewed.show_validated')}
+        </button>
+      </div>
+    </Callout>
   );
 }
