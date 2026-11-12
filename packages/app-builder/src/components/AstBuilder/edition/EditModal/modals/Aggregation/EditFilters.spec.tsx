@@ -54,6 +54,9 @@ function table(name: string, fields: DataModelField[]): TableModel {
     fields,
     linksToSingle: [],
     fieldOrder: fields.map((f) => f.name),
+    lifecycle: {
+      enabled: false,
+    },
   };
 }
 

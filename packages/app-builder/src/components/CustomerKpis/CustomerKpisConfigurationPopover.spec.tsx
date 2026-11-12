@@ -61,6 +61,9 @@ function table(name: string, fields: DataModelField[], navigationOptions?: Navig
     linksToSingle: [],
     fieldOrder: fields.map((field) => field.name),
     navigationOptions,
+    lifecycle: {
+      enabled: false,
+    },
   };
 }
 
