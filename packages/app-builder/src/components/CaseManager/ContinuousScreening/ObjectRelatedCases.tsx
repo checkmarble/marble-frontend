@@ -1,6 +1,5 @@
 import { CaseStatusBadgeV2 } from '@app-builder/components/Cases';
 import { Spinner } from '@app-builder/components/Spinner';
-import { Case } from '@app-builder/models/cases';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -12,12 +11,12 @@ import { CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function ObjectRelatedCases({
-  currentCase,
+  currentCaseId,
   objectType,
   objectId,
   className,
 }: {
-  currentCase: Case;
+  currentCaseId: string;
   objectType: string;
   objectId: string;
   className?: string;
@@ -38,7 +37,7 @@ export function ObjectRelatedCases({
       return <Spinner className="size-6" />;
     })
     .otherwise((query) => {
-      const cases = query.data?.cases.filter((caseObj) => caseObj.id !== currentCase.id) ?? [];
+      const cases = query.data?.cases.filter((caseObj) => caseObj.id !== currentCaseId) ?? [];
       if (cases.length === 0) {
         return null;
       }
