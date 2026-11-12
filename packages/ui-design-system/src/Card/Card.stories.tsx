@@ -12,10 +12,12 @@ const Story: Meta<StoryProps> = {
   component: Card,
   title: 'Card',
   args: {
+    as: 'div',
     children: 'Card content',
     color: 'default',
   },
   argTypes: {
+    as: { control: 'text' },
     children: { control: 'text' },
     className: { control: 'text' },
     color: {
