@@ -22,12 +22,13 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useRouter } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Typo } from 'ui-design-system';
+import { Button, cn, Typo } from 'ui-design-system';
 import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
 import { ActionDock, DecisionTag, ReadOnlyDock, StepTag } from './ActionDock';
 import { BatchPanel } from './BatchSummary';
 import { emptyBatchSelection, toggleSelected, withoutSelected, withSelected } from './batch-selection';
+import { DETAILS_PANEL_TABS, DetailsPanel, type DetailsPanelTab } from './DetailsPanel';
 import { HitList } from './HitList';
 import { useMappedProperties } from './MatchedFieldChips';
 import { PaginationFooter, type ScreeningReviewPageSize } from './PaginationFooter';
@@ -98,6 +99,10 @@ function ShortcutHint({ onOpenHelp }: { onOpenHelp: () => void }) {
   );
 }
 
+const DOCKED_PANEL_GRID = '@min-[1294px]/review:grid-cols-[270px_minmax(0,1fr)_480px]';
+const PANEL_PLACEMENT =
+  'absolute inset-y-0 end-0 z-10 w-[min(480px,100%)] shadow-lg @min-[1294px]/review:static @min-[1294px]/review:w-auto @min-[1294px]/review:shadow-none';
+
 function prefersReducedMotion() {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
 }
@@ -123,6 +128,7 @@ function ReviewStream({
   });
   const mappedProperties = useMappedProperties();
   const [helpOpen, setHelpOpen] = useState(false);
+  const [panelTab, setPanelTab] = useState<DetailsPanelTab>();
   const [unavailable, setUnavailable] = useState(false);
   const activeRef = useRef<HTMLButtonElement>(null);
   const commentRef = useRef<HTMLTextAreaElement>(null);
@@ -218,7 +224,12 @@ function ReviewStream({
   };
 
   const canNavigate = ready && !helpOpen;
+  const panelOpen = !!panelTab && !!active;
+  /** Opens the panel on `tab`, or closes it when `tab` is already shown. */
+  const togglePanel = (tab: DetailsPanelTab) => setPanelTab((current) => (current === tab ? undefined : tab));
+
   const canDecide = canNavigate && reviewable && !batchMode;
+
   useScreeningReviewShortcuts([
     { hotkey: 'J', action: () => move(1), enabled: canNavigate },
     { hotkey: 'ArrowDown', action: () => move(1), enabled: canNavigate },
@@ -263,12 +274,18 @@ function ReviewStream({
       enabled: canNavigate && !!active,
     },
     { hotkey: 'O', action: openActiveCase, enabled: canNavigate && !!active },
+    ...DETAILS_PANEL_TABS.map(({ tab, hotkey }) => ({
+      hotkey,
+      action: () => togglePanel(tab),
+      enabled: canNavigate && !!active,
+    })),
     { hotkey: '?', action: () => setHelpOpen(true) },
     {
       hotkey: 'Escape',
-      // The help closes first, then the selection clears. Other dialogs keep their own Escape.
+      // The help closes first, then the panel, then the selection clears. Other dialogs keep their own Escape.
       action: () => {
         if (helpOpen) setHelpOpen(false);
+        else if (panelOpen) setPanelTab(undefined);
         else if (batchMode) setSelection(emptyBatchSelection);
         else changeDraft({ decision: undefined });
       },
@@ -284,7 +301,7 @@ function ReviewStream({
 
   return (
     <PendingDecisionProvider hasUnsaved={pendingDecision.hasUnsaved} flush={pendingDecision.flush}>
-      <Page.Main className="h-screen max-h-screen min-h-0 overflow-hidden">
+      <Page.Main className="@container/review h-screen max-h-screen min-h-0 overflow-hidden">
         <Page.Content className="min-h-0 gap-md">
           <div className="shrink-0">
             <CasesNavigationTabs showAdminSections={canViewAdminSections} inboxId={selectedInbox.id} />
@@ -304,7 +321,10 @@ function ReviewStream({
             </p>
           ) : null}
           <div
-            className="grid min-h-0 min-w-0 flex-1 grid-cols-[270px_minmax(0,1fr)] grid-rows-1 gap-lg overflow-hidden"
+            className={cn(
+              'relative grid min-h-0 min-w-0 flex-1 grid-cols-[270px_minmax(0,1fr)] grid-rows-1 gap-lg overflow-hidden',
+              panelOpen && DOCKED_PANEL_GRID,
+            )}
             aria-busy={query.isFetching}
           >
             <div className="flex min-h-0 min-w-0 flex-col gap-sm">
@@ -364,6 +384,27 @@ function ReviewStream({
                       <DecisionTag status={active.status} />
                     </>
                   }
+                  actions={
+                    <>
+                      {DETAILS_PANEL_TABS.map(({ tab, hotkey }) => (
+                        <Button
+                          key={tab}
+                          variant="secondary"
+                          size="small"
+                          aria-pressed={panelTab === tab}
+                          aria-keyshortcuts={hotkey}
+                          onClick={() => togglePanel(tab)}
+                        >
+                          {t(`cases:screening_review.panel.tab.${tab}`)}
+                          <ShortcutKeys hotkeys={[hotkey]} variant="small" />
+                        </Button>
+                      ))}
+                      <Button variant="secondary" size="small" aria-keyshortcuts="O" onClick={openActiveCase}>
+                        {t('cases:screening_review.open_case')}
+                        <ShortcutKeys hotkeys={['O']} variant="small" />
+                      </Button>
+                    </>
+                  }
                 />
                 {reviewable ? (
                   <ActionDock
@@ -400,6 +441,16 @@ function ReviewStream({
                 }
                 onClearSearch={() => changeSearch({ q: undefined, cursors: [] })}
                 onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })}
+              />
+            ) : null}
+            {panelOpen && panelTab && active ? (
+              <DetailsPanel
+                item={active}
+                tab={panelTab}
+                inboxes={inboxes}
+                onTabChange={setPanelTab}
+                onClose={() => setPanelTab(undefined)}
+                className={PANEL_PLACEMENT}
               />
             ) : null}
           </div>

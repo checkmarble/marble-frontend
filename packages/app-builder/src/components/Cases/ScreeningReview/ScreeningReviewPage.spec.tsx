@@ -31,8 +31,26 @@ vi.mock('@app-builder/server-fns/continuous-screening', () => ({ loadMoreContinu
 vi.mock('@app-builder/services/organization/organization-users', () => ({
   useOrganizationUsers: () => ({ getOrgUserById: () => undefined }),
 }));
-vi.mock('@app-builder/queries/data/get-data-model', () => ({ useDataModelQuery: () => ({ data: undefined }) }));
-vi.mock('@app-builder/queries/data/get-object-details', () => ({ useObjectDetailsQuery: () => ({ data: undefined }) }));
+vi.mock('@app-builder/queries/data/get-data-model', () => ({
+  useDataModelQuery: () => ({ data: undefined, isPending: true }),
+}));
+vi.mock('@app-builder/queries/data/get-object-details', () => ({
+  useObjectDetailsQuery: () => ({ data: undefined, isPending: true }),
+}));
+vi.mock('@app-builder/queries/cases/related-cases-by-object', () => ({
+  useRelatedCasesByObjectQuery: () => ({ data: undefined, isPending: true }),
+}));
+vi.mock('@app-builder/queries/continuous-screening/configuration', () => ({
+  useContinuousScreeningConfigurationQuery: () => ({ data: undefined, isPending: true }),
+}));
+vi.mock('@app-builder/queries/cases/get-inboxes', () => ({ useGetInboxesQuery: () => ({ data: undefined }) }));
+vi.mock('@app-builder/queries/cases/get-detail', () => ({
+  useGetCaseDetailQuery: (caseId: string) => ({
+    isPending: false,
+    isError: false,
+    data: { caseDetail: reviewCase(caseId, [objectReviewScreening(), datasetReviewScreening()]) },
+  }),
+}));
 vi.mock('@app-builder/queries/screening/lists-config', () => ({ useListConfigQuery: () => ({ data: undefined }) }));
 vi.mock('@app-builder/queries/scoring/get-scoring-settings', () => ({
   useGetScoringSettingsQuery: () => ({ data: { settings: { maxRiskLevel: 3 } } }),
@@ -42,6 +60,8 @@ vi.mock('@app-builder/queries/scoring/get-risk-level-latest', () => ({
 }));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock('../Navigation/Tabs', () => ({ CasesNavigationTabs: () => <div>Case Manager navigation</div> }));
+// The case timeline reaches server functions through its event details; it has its own tests.
+vi.mock('@app-builder/components/CaseManager/CaseEvents', () => ({ CaseEvents: () => <div>Case events</div> }));
 vi.mock('@tanstack/react-router', () => {
   const href = (to: string, params?: { inboxId?: string; caseId?: string }) =>
     to.replace('$inboxId', params?.inboxId ?? '').replace('$caseId', params?.caseId ?? '');
@@ -72,6 +92,7 @@ vi.mock('@tanstack/react-router', () => {
 });
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en' } }),
+  Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
 }));
 mockResizeObserver();
 
@@ -1462,5 +1483,83 @@ describe('screening review queue tools', () => {
     vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: null, failed: false });
     renderPage({ filter: 'validated', limit: 50, cursors: [] });
     await screen.findByText('cases:screening_review.empty.no_validated.title');
+  });
+});
+
+describe('screening review details panel', () => {
+  const caseId = '44444444-4444-4444-8444-444444444444';
+  beforeEach(() => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: buildScreeningReviewItems([reviewCase(caseId, [objectReviewScreening(), datasetReviewScreening()])]),
+      nextCursor: null,
+      failed: false,
+    });
+  });
+  const panel = () => screen.queryByRole('complementary', { name: 'cases:screening_review.panel.label' });
+  const panelTitle = () => within(panel()!).getByRole('heading', { level: 2 }).textContent;
+  const panelTab = (tab: string) =>
+    within(panel()!).getByRole('tab', { name: new RegExp(`screening_review\\.panel\\.tab\\.${tab}`) });
+
+  it('opens each tab with P, L and H, closes with the same key, and follows the active hit', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    expect(panel()).toBeNull();
+    press('p', 'KeyP');
+    expect(panelTitle()).toBe('Alice');
+    expect(panelTab('customer').getAttribute('aria-selected')).toBe('true');
+    expect(within(panel()!).getByText('cases:screening_review.panel.heading.customer')).toBeTruthy();
+    press('l', 'KeyL');
+    expect(panelTitle()).toBe('List record A');
+    // J keeps working: the panel follows the active hit.
+    press('j', 'KeyJ');
+    await waitFor(() => expect(panelTitle()).toBe('Shared list record'));
+    press('h', 'KeyH');
+    expect(panelTitle()).toBe(`Case ${caseId}`);
+    expect(within(panel()!).getByLabelText('cases:screening_review.panel.trigger')).toBeTruthy();
+    press('h', 'KeyH');
+    expect(panel()).toBeNull();
+  });
+
+  it('opens from the buttons above the hit and switches with the panel tabs', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    const opener = screen.getByRole('button', { name: /screening_review\.panel\.tab\.list_record/ });
+    fireEvent.click(opener);
+    expect(opener.getAttribute('aria-pressed')).toBe('true');
+    expect(panelTitle()).toBe('List record A');
+    fireEvent.click(panelTab('customer'));
+    expect(panelTitle()).toBe('Alice');
+    fireEvent.click(within(panel()!).getByRole('button', { name: 'cases:screening_review.panel.close' }));
+    expect(panel()).toBeNull();
+  });
+
+  it('is not a modal dialog, so the review keys keep working while it is open', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    press('p', 'KeyP');
+    expect(screen.queryByRole('dialog')).toBeNull();
+    press('n', 'KeyN');
+    expect(screen.getByRole('button', { name: /screening_review\.decision\.no_hit/, pressed: true })).toBeTruthy();
+  });
+
+  it('closes with Esc before clearing the decision', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    press('n', 'KeyN');
+    press('p', 'KeyP');
+    press('Escape', 'Escape');
+    expect(panel()).toBeNull();
+    const noHit = () => screen.getByRole('button', { name: /screening_review\.decision\.no_hit/ });
+    expect(noHit().getAttribute('aria-pressed')).toBe('true');
+    press('Escape', 'Escape');
+    expect(noHit().getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('opens the case in a new tab from the button above the hit', async () => {
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    fireEvent.click(screen.getByRole('button', { name: /screening_review\.open_case/ }));
+    expect(open).toHaveBeenCalledWith(`/cases/m/${fromUUIDtoSUUID(caseId)}`, '_blank', 'noopener');
   });
 });

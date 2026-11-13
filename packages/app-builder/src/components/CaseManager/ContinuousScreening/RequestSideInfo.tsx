@@ -37,19 +37,7 @@ export function RequestSideInfo({ screening, caseDetail }: RequestSideInfoProps)
           <Tag>{t(`continuousScreening:review.search_tag.${screening.triggerType}`)}</Tag>
         ) : null}
       </div>
-      <Callout variant="outlined" color="purple" className="text-small">
-        <div className="grid grid-cols-[1fr_auto] items-center">
-          <div>
-            <Trans
-              i18nKey={`continuousScreening:review.callout.${screening.triggerType}`}
-              components={{
-                EntityType: <Tag color="grey">{getEntityType(screening)}</Tag>,
-              }}
-            />
-          </div>
-          <CaseSourceType type={isDirectContinuousScreening(screening) ? 'direct' : 'indirect'} />
-        </div>
-      </Callout>
+      <ScreeningTriggerCallout screening={screening} />
       {match(screening)
         .when(isDirectContinuousScreening, (directScreening) => {
           return <DirectScreeningRequestDetail screening={directScreening} caseDetail={caseDetail} />;
@@ -59,6 +47,24 @@ export function RequestSideInfo({ screening, caseDetail }: RequestSideInfoProps)
         })
         .exhaustive()}
     </div>
+  );
+}
+
+export function ScreeningTriggerCallout({ screening }: { screening: ContinuousScreening }) {
+  return (
+    <Callout variant="outlined" color="purple" className="text-small">
+      <div className="grid grid-cols-[1fr_auto] items-center">
+        <div>
+          <Trans
+            i18nKey={`continuousScreening:review.callout.${screening.triggerType}`}
+            components={{
+              EntityType: <Tag color="grey">{getEntityType(screening)}</Tag>,
+            }}
+          />
+        </div>
+        <CaseSourceType type={isDirectContinuousScreening(screening) ? 'direct' : 'indirect'} />
+      </div>
+    </Callout>
   );
 }
 
@@ -79,7 +85,7 @@ const DirectScreeningRequestDetail = ({
   return (
     <>
       <Card>
-        <ObjectDetails objectType={screening.objectType} objectId={screening.objectId} currentCase={caseDetail} />
+        <ObjectDetails objectType={screening.objectType} objectId={screening.objectId} currentCaseId={caseDetail.id} />
       </Card>
       <RequestDetail configStableId={screening.continuousScreeningConfigStableId} request={screening.request} />
     </>
@@ -138,31 +144,40 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
             <span className="font-medium">{entity.caption}</span>
             <span className="text-small text-grey-placeholder">{entity.schema}</span>
           </div>
-          <div className="flex items-center gap-sm">
-            {entity.properties['topics']?.map((topic) => {
-              return <TopicTag key={topic} topic={topic} className="text-small" />;
-            })}
-          </div>
-          <EntityProperties
-            entity={entity}
-            before={
-              <>
-                <div className="font-bold">{t('screenings:dataset', { count: entity.datasets.length })}</div>
-                <div className="">
-                  <EntityDatasetsList
-                    datasets={entity.datasets}
-                    useCase="transaction_monitoring"
-                    listClassName="list-disc list-inside"
-                  />
-                </div>
-              </>
-            }
-          />
+          <ScreeningEntityDetails entity={entity} />
         </div>
       </Panel.Content>
     </Panel.Container>
   );
 };
+
+export function ScreeningEntityDetails({ entity }: { entity: OpenSanctionEntityPayload }) {
+  const { t } = useTranslation(['screenings']);
+  return (
+    <>
+      <div className="flex flex-wrap items-center gap-sm">
+        {entity.properties['topics']?.map((topic) => {
+          return <TopicTag key={topic} topic={topic} className="text-small" />;
+        })}
+      </div>
+      <EntityProperties
+        entity={entity}
+        before={
+          <>
+            <div className="font-bold">{t('screenings:dataset', { count: entity.datasets.length })}</div>
+            <div className="">
+              <EntityDatasetsList
+                datasets={entity.datasets}
+                useCase="transaction_monitoring"
+                listClassName="list-disc list-inside"
+              />
+            </div>
+          </>
+        }
+      />
+    </>
+  );
+}
 
 const CaseSourceType = ({ type }: { type: 'direct' | 'indirect' }) => {
   const { t } = useTranslation(['continuousScreening']);
