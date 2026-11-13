@@ -134,6 +134,7 @@ function CustomerGroup({
             >
               <Checkbox
                 id={selectionId}
+                size="small"
                 checked={hasSelected ? 'indeterminate' : false}
                 disabled={!ready}
                 aria-label={selectionLabel}

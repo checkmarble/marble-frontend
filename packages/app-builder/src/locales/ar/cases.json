@@ -574,6 +574,8 @@
   "screening_review.hit_list": "تطابقات الفحص المسندة",
   "screening_review.hits_per_page": "التطابقات في الصفحة",
   "screening_review.list_record": "سجل القائمة",
+  "screening_review.list.hide": "إخفاء قائمة التطابقات",
+  "screening_review.list.show": "إظهار قائمة التطابقات",
   "screening_review.lists": "القوائم",
   "screening_review.load_error": "تعذّر تحميل بعض الحالات. أعد المحاولة لعرض جميع التطابقات المتاحة.",
   "screening_review.load_more": "تحميل المزيد من التطابقات",

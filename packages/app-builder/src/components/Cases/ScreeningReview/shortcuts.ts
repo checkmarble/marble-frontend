@@ -52,7 +52,7 @@ export const SCREENING_REVIEW_SHORTCUT_HELP = [
   {
     group: 'list',
     // Brackets are reserved for physical key codes in hotkey strings.
-    rows: [{ name: 'toggle_list', hotkeys: [{ key: '[' }] }],
+    rows: [{ name: 'toggle_list', hotkeys: [{ key: '[' }, { key: '(' }] }],
   },
   {
     group: 'more_information',

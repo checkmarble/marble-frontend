@@ -58,13 +58,10 @@ interface ScreeningReviewHitProps {
   item: ScreeningReviewItem;
   comparisons: ScreeningReviewFieldComparison[];
   canViewRiskLevel: boolean;
-  /** Step and decision tags. The AI tag of the second iteration goes beside them. */
   tags?: ReactNode;
-  /** Buttons under the title, such as those opening the details panel. */
   actions?: ReactNode;
 }
 
-/** The selected hit: the customer and the list record, compared in the same order whatever the trigger. */
 export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, actions }: ScreeningReviewHitProps) {
   const { t } = useTranslation(['cases']);
   return (
@@ -84,7 +81,7 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, 
         {actions ? <div className="flex flex-wrap items-center gap-xs">{actions}</div> : null}
       </div>
       {/* The AI history strip of the second iteration goes here, above the identity cards. */}
-      <div className="grid shrink-0 grid-cols-1 gap-md lg:grid-cols-2">
+      <div className="grid shrink-0 grid-cols-1 gap-md @min-[1044px]/review:grid-cols-2">
         <CustomerCard item={item} canViewRiskLevel={canViewRiskLevel} />
         <ListRecordCard item={item} />
       </div>
@@ -102,7 +99,6 @@ export function CustomerTypeTag({ customer }: { customer: ScreeningReviewItem['c
   return <SchemaTag schema={customer.schema} fallback={customer.objectType} />;
 }
 
-/** The FTM schema, such as Person, in a monospace tag. */
 export function SchemaTag({ schema, fallback }: { schema: string | undefined; fallback?: string }) {
   const { t } = useTranslation(['screenings']);
   const label = schema ? t(`screenings:entity.schema.${schema.toLowerCase()}`, { defaultValue: schema }) : fallback;
@@ -160,9 +156,9 @@ function IdentitySummary({ properties }: { properties: Record<string, unknown> }
   );
 }
 
-function IdentityCard({ label, children }: { label: string; children: ReactNode }) {
+function IdentityCard({ label, children, borderColor }: { label: string; children: ReactNode; borderColor?: string }) {
   return (
-    <Card className="flex min-w-0 flex-col gap-sm p-md">
+    <Card className={cn('flex min-w-0 flex-col gap-sm p-md border-l-3', borderColor)}>
       <Tag color="grey" size="xs" className="self-start">
         {label}
       </Tag>
@@ -174,7 +170,7 @@ function IdentityCard({ label, children }: { label: string; children: ReactNode 
 function CustomerCard({ item, canViewRiskLevel }: { item: ScreeningReviewItem; canViewRiskLevel: boolean }) {
   const { t } = useTranslation(['cases']);
   return (
-    <IdentityCard label={t('cases:screening_review.customer')}>
+    <IdentityCard label={t('cases:screening_review.customer')} borderColor="border-l-grey-placeholder">
       <Typo variant="subtitle1" className="min-w-0 truncate">
         <bdi>{item.customer.name}</bdi>
       </Typo>
@@ -186,7 +182,6 @@ function CustomerCard({ item, canViewRiskLevel }: { item: ScreeningReviewItem; c
   );
 }
 
-/** Loads one score for the customer, without blocking the page. Shows nothing without a score. */
 function CustomerRiskLevel({ objectType, objectId }: { objectType: string; objectId: string }) {
   const settingsQuery = useGetScoringSettingsQuery();
   const riskLevelQuery = useRiskLevelLatestQuery(objectType, objectId);
@@ -205,7 +200,7 @@ function ListRecordCard({ item }: { item: ScreeningReviewItem }) {
   const properties = item.listRecord.properties;
   const aliases = listRecordAliasCount(item);
   return (
-    <IdentityCard label={t('cases:screening_review.list_record')}>
+    <IdentityCard label={t('cases:screening_review.list_record')} borderColor="border-l-purple-primary">
       <div className="flex min-w-0 flex-wrap items-center gap-sm">
         <Typo variant="subtitle1" className="min-w-0 truncate">
           <bdi>{item.listRecord.caption || item.listRecord.id}</bdi>

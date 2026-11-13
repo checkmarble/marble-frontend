@@ -20,9 +20,10 @@ import {
 import { useScreeningReviewPageQuery } from '@app-builder/queries/cases/screening-review-page';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useRouter } from '@tanstack/react-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Typo } from 'ui-design-system';
+import { Button, cn, Tag, Typo } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
 import { ActionDock, DecisionTag, ReadOnlyDock, StepTag } from './ActionDock';
@@ -99,9 +100,81 @@ function ShortcutHint({ onOpenHelp }: { onOpenHelp: () => void }) {
   );
 }
 
-const DOCKED_PANEL_GRID = '@min-[1294px]/review:grid-cols-[270px_minmax(0,1fr)_480px]';
+/*
+ * Breakpoints on the page area, which leaves out the collapsed 56px sidebar: the design's 1100px
+ * and 1350px windows. Below 1044px the list collapses to a rail and opens over the hit. From 1294px
+ * the details panel docks; below that, it floats over the hit.
+ */
+const WIDE_PAGE_WIDTH = 1044;
+
+/** Full class names, so Tailwind finds every one. */
+function gridColumns(listCollapsed: boolean, panelOpen: boolean) {
+  return cn(
+    'grid-cols-[2.5rem_minmax(0,1fr)]',
+    !listCollapsed && '@min-[1044px]/review:grid-cols-[270px_minmax(0,1fr)]',
+    panelOpen &&
+      (listCollapsed
+        ? '@min-[1294px]/review:grid-cols-[2.5rem_minmax(0,1fr)_480px]'
+        : '@min-[1294px]/review:grid-cols-[270px_minmax(0,1fr)_480px]'),
+  );
+}
+
+function listPlacement(listCollapsed: boolean, overlayOpen: boolean) {
+  return cn(
+    // Narrow pages: hidden behind the rail, or open over the hit.
+    overlayOpen ? 'absolute inset-y-0 start-0 z-20 flex w-[270px] bg-surface-page pe-sm shadow-lg' : 'hidden',
+    listCollapsed
+      ? '@min-[1044px]/review:hidden'
+      : '@min-[1044px]/review:static @min-[1044px]/review:flex @min-[1044px]/review:h-full @min-[1044px]/review:w-auto @min-[1044px]/review:pe-0 @min-[1044px]/review:shadow-none',
+  );
+}
+
 const PANEL_PLACEMENT =
   'absolute inset-y-0 end-0 z-10 w-[min(480px,100%)] shadow-lg @min-[1294px]/review:static @min-[1294px]/review:w-auto @min-[1294px]/review:shadow-none';
+
+/** The collapsed list: a button that opens it, with the hits left to review. */
+function ListRail({
+  listId,
+  remaining,
+  partial,
+  onOpen,
+  className,
+}: {
+  listId: string;
+  remaining: number;
+  partial: boolean;
+  onOpen: () => void;
+  className?: string;
+}) {
+  const { t } = useTranslation(['cases']);
+  return (
+    // The top padding keeps the badge inside the grid, which clips what overflows it.
+    <div className={cn('flex flex-col items-center pt-2', className)}>
+      <Button
+        variant="secondary"
+        mode="icon"
+        className="relative"
+        aria-controls={listId}
+        aria-expanded={false}
+        aria-keyshortcuts="["
+        onClick={onOpen}
+      >
+        <Icon icon="left-panel-open" className="size-4" aria-hidden />
+        <span className="sr-only">{t('cases:screening_review.list.show')}</span>
+        {remaining > 0 ? (
+          <Tag
+            color="orange"
+            size="xs"
+            className="absolute -end-2 -top-2 min-w-4 justify-center border-transparent bg-orange-background-light font-semibold text-orange-hover tabular-nums"
+          >
+            {remaining}
+            {partial ? '+' : ''}
+          </Tag>
+        ) : null}
+      </Button>
+    </div>
+  );
+}
 
 function prefersReducedMotion() {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
@@ -129,6 +202,11 @@ function ReviewStream({
   const mappedProperties = useMappedProperties();
   const [helpOpen, setHelpOpen] = useState(false);
   const [panelTab, setPanelTab] = useState<DetailsPanelTab>();
+  // Wide and narrow pages keep their own list state: collapsed by choice, or open over the hit.
+  const [listCollapsed, setListCollapsed] = useState(false);
+  const [listOverlayOpen, setListOverlayOpen] = useState(false);
+  const mainRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
   const [unavailable, setUnavailable] = useState(false);
   const activeRef = useRef<HTMLButtonElement>(null);
   const commentRef = useRef<HTMLTextAreaElement>(null);
@@ -227,6 +305,12 @@ function ReviewStream({
   const panelOpen = !!panelTab && !!active;
   /** Opens the panel on `tab`, or closes it when `tab` is already shown. */
   const togglePanel = (tab: DetailsPanelTab) => setPanelTab((current) => (current === tab ? undefined : tab));
+  // The layout follows container queries; the width is only read to know what a toggle means.
+  const isNarrow = () => (mainRef.current?.clientWidth ?? WIDE_PAGE_WIDTH) < WIDE_PAGE_WIDTH;
+  const toggleList = () => {
+    if (isNarrow()) setListOverlayOpen((open) => !open);
+    else setListCollapsed((collapsed) => !collapsed);
+  };
 
   const canDecide = canNavigate && reviewable && !batchMode;
 
@@ -279,13 +363,17 @@ function ReviewStream({
       action: () => togglePanel(tab),
       enabled: canNavigate && !!active,
     })),
+    { hotkey: { key: '[' }, action: toggleList, enabled: canNavigate },
+    { hotkey: { key: '(' }, action: toggleList, enabled: canNavigate },
     { hotkey: '?', action: () => setHelpOpen(true) },
     {
       hotkey: 'Escape',
-      // The help closes first, then the panel, then the selection clears. Other dialogs keep their own Escape.
+      // The help closes first, then the panel, then the list over the hit, then the selection clears.
+      // Other dialogs keep their own Escape.
       action: () => {
         if (helpOpen) setHelpOpen(false);
         else if (panelOpen) setPanelTab(undefined);
+        else if (listOverlayOpen && isNarrow()) setListOverlayOpen(false);
         else if (batchMode) setSelection(emptyBatchSelection);
         else changeDraft({ decision: undefined });
       },
@@ -301,7 +389,7 @@ function ReviewStream({
 
   return (
     <PendingDecisionProvider hasUnsaved={pendingDecision.hasUnsaved} flush={pendingDecision.flush}>
-      <Page.Main className="@container/review h-screen max-h-screen min-h-0 overflow-hidden">
+      <Page.Main ref={mainRef} className="@container/review h-screen max-h-screen min-h-0 overflow-hidden">
         <Page.Content className="min-h-0 gap-md">
           <div className="shrink-0">
             <CasesNavigationTabs showAdminSections={canViewAdminSections} inboxId={selectedInbox.id} />
@@ -322,47 +410,74 @@ function ReviewStream({
           ) : null}
           <div
             className={cn(
-              'relative grid min-h-0 min-w-0 flex-1 grid-cols-[270px_minmax(0,1fr)] grid-rows-1 gap-lg overflow-hidden',
-              panelOpen && DOCKED_PANEL_GRID,
+              'relative grid min-h-0 min-w-0 flex-1 grid-rows-1 gap-lg overflow-hidden',
+              gridColumns(listCollapsed, panelOpen),
             )}
             aria-busy={query.isFetching}
           >
-            <div className="flex min-h-0 min-w-0 flex-col gap-sm">
-              <div className="flex shrink-0 flex-col gap-sm">
-                <FilterInboxSelector
-                  inboxes={allInboxes}
-                  selectedInbox={selectedInbox}
-                  onSelectInbox={(inbox) => {
-                    if (inbox.id !== selectedInbox.id) changeSearch({ inboxId: inbox.id, cursors: [] });
-                  }}
-                  variant="secondary"
-                />
-                <QueueFilters
-                  filter={search.filter}
-                  counts={counts}
-                  isCountPartial={isCountPartial}
-                  query={search.q}
-                  onFilterChange={(filter) => changeSearch({ filter, cursors: [] })}
-                  onQueryChange={(q) => changeSearch({ q, cursors: [] })}
-                />
-                {allReviewed && items.length ? (
-                  <AllReviewedNotice onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })} />
-                ) : null}
+            <div className="relative min-h-0 min-w-0">
+              <ListRail
+                listId={listId}
+                remaining={counts.to_review}
+                partial={isCountPartial('to_review')}
+                onOpen={toggleList}
+                className={cn(!listCollapsed && '@min-[1044px]/review:hidden')}
+              />
+              <div
+                id={listId}
+                className={cn('min-h-0 min-w-0 flex-col gap-sm', listPlacement(listCollapsed, listOverlayOpen))}
+              >
+                <div className="flex shrink-0 flex-col gap-sm">
+                  <div className="flex items-center gap-xs">
+                    <div className="min-w-0 flex-1">
+                      <FilterInboxSelector
+                        inboxes={allInboxes}
+                        selectedInbox={selectedInbox}
+                        onSelectInbox={(inbox) => {
+                          if (inbox.id !== selectedInbox.id) changeSearch({ inboxId: inbox.id, cursors: [] });
+                        }}
+                        variant="secondary"
+                      />
+                    </div>
+                    <Button
+                      variant="secondary"
+                      mode="icon"
+                      aria-label={t('cases:screening_review.list.hide')}
+                      aria-controls={listId}
+                      aria-expanded
+                      aria-keyshortcuts="["
+                      onClick={toggleList}
+                    >
+                      <Icon icon="left-panel-close" className="size-4" aria-hidden />
+                    </Button>
+                  </div>
+                  <QueueFilters
+                    filter={search.filter}
+                    counts={counts}
+                    isCountPartial={isCountPartial}
+                    query={search.q}
+                    onFilterChange={(filter) => changeSearch({ filter, cursors: [] })}
+                    onQueryChange={(q) => changeSearch({ q, cursors: [] })}
+                  />
+                  {allReviewed && items.length ? (
+                    <AllReviewedNotice onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })} />
+                  ) : null}
+                </div>
+                <div className="relative min-h-0 flex-1">
+                  <HitList
+                    groups={groups}
+                    reviewItems={reviewItems}
+                    session={session}
+                    activeId={active?.id}
+                    activeRef={activeRef}
+                    ready={ready}
+                    selection={selection}
+                    onSelectionChange={setSelection}
+                    onActivate={select}
+                  />
+                </div>
+                <ShortcutHint onOpenHelp={() => setHelpOpen(true)} />
               </div>
-              <div className="relative min-h-0 flex-1">
-                <HitList
-                  groups={groups}
-                  reviewItems={reviewItems}
-                  session={session}
-                  activeId={active?.id}
-                  activeRef={activeRef}
-                  ready={ready}
-                  selection={selection}
-                  onSelectionChange={setSelection}
-                  onActivate={select}
-                />
-              </div>
-              <ShortcutHint onOpenHelp={() => setHelpOpen(true)} />
             </div>
             {batchMode ? (
               <BatchPanel
