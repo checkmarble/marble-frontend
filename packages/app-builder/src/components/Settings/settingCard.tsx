@@ -8,6 +8,7 @@ export function SettingCard<TData extends RowData>({
   additionalButtons,
   onRowClick,
   isRowClickable,
+  emptyState,
   children,
 }: {
   title?: string | React.ReactNode;
@@ -16,6 +17,7 @@ export function SettingCard<TData extends RowData>({
   additionalButtons?: React.ReactNode;
   onRowClick?: (row: TData) => void;
   isRowClickable?: (row: TData) => boolean;
+  emptyState?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
@@ -34,6 +36,13 @@ export function SettingCard<TData extends RowData>({
             }
           />
           <Table.Body {...table.getBodyProps()}>
+            {table.rows.length === 0 && emptyState ? (
+              <tr>
+                <td colSpan={table.table.getVisibleLeafColumns().length} className="p-xl">
+                  {emptyState}
+                </td>
+              </tr>
+            ) : null}
             {table.rows.map((row) => {
               const handleClick =
                 onRowClick && (isRowClickable?.(row.original) ?? true) ? () => onRowClick(row.original) : undefined;

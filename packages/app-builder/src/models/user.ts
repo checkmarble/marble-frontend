@@ -41,6 +41,7 @@ function NewPermissionsList() {
     canUpdateOrganization: 'ORGANIZATIONS_UPDATE',
     canDeleteAnnotation: 'ANNOTATION_DELETE',
     canWriteRiskTagAnnotation: 'ANNOTATION_RISK_TAG_WRITE',
+    canManageRoles: 'MANAGE_ROLES',
   } as const;
 }
 

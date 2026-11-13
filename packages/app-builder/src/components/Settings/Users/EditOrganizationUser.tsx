@@ -17,15 +17,17 @@ import { Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { UserRoleField } from './UserRoleField';
+import { type UserRoleOption } from './UserRoleSelector';
 
 interface EditOrganizationUserProps {
   user: User;
-  userRoles: readonly [string, ...string[]];
+  userRoles: readonly UserRoleOption[];
   access: FeatureAccessLevelDto;
+  roleLabel?: string;
 }
 
 // Edits the name of a user of the organization and the role they hold on it.
-export function EditOrganizationUser({ user, userRoles, access }: EditOrganizationUserProps) {
+export function EditOrganizationUser({ user, userRoles, access, roleLabel }: EditOrganizationUserProps) {
   const { t } = useTranslation(['settings']);
   const [open, setOpen] = useState(false);
 
@@ -39,6 +41,7 @@ export function EditOrganizationUser({ user, userRoles, access }: EditOrganizati
           user={user}
           userRoles={userRoles}
           access={access}
+          roleLabel={roleLabel}
           onSuccess={() => setOpen(false)}
         />
       </Modal.Content>
@@ -50,13 +53,17 @@ function EditOrganizationUserContent({
   user,
   userRoles,
   access,
+  roleLabel,
   onSuccess,
 }: EditOrganizationUserProps & { onSuccess: () => void }) {
   const { t } = useTranslation(['common', 'settings']);
   const updateUserMutation = useUpdateOrganizationUserMutation();
   const revalidate = useLoaderRevalidator();
   const currentRole = user.roles[0]?.role ?? '';
-  const canChangeRole = user.roles.length === 1 && organizationGrantRoleSchema.safeParse(currentRole).success;
+  const canChangeRole =
+    user.roles.length === 1 &&
+    (organizationGrantRoleSchema.safeParse(currentRole).success ||
+      userRoles.some(({ value }) => value === currentRole));
   // A name that was already blank may stay blank: changing it requires the user's home organization.
   const formSchema = useMemo(
     () =>
@@ -96,7 +103,7 @@ function EditOrganizationUserContent({
           userId: user.userId,
           ...(firstNameChanged && { firstName: value.firstName }),
           ...(lastNameChanged && { lastName: value.lastName }),
-          ...(roleChanged && { roles: [{ role: organizationGrantRoleSchema.parse(value.role) }] }),
+          ...(roleChanged && { roles: [{ role: value.role }] }),
         })
         .then((result) => {
           if (result?.error === 'name_forbidden') {
@@ -173,6 +180,7 @@ function EditOrganizationUserContent({
               userRoles={userRoles}
               access={access}
               disabled={!canChangeRole}
+              selectedLabel={roleLabel}
             />
           )}
         </form.Field>

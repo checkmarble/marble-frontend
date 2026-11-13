@@ -4,6 +4,7 @@ import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
 import { EditOrganizationUser } from '@app-builder/components/Settings/Users/EditOrganizationUser';
 import { GrantAccess } from '@app-builder/components/Settings/Users/GrantAccess';
 import { RevokeAccess } from '@app-builder/components/Settings/Users/RevokeAccess';
+import { type UserRoleOption } from '@app-builder/components/Settings/Users/UserRoleSelector';
 import { Spinner } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TenantUser, type User } from '@app-builder/models';
@@ -12,13 +13,14 @@ import { useTenantUsersWithoutAccessQuery } from '@app-builder/queries/settings/
 import { useOrganizationUsersTfaQuery } from '@app-builder/queries/settings/users/get-users-tfa';
 import {
   getUserRoles,
+  isAccessible,
   isCreateUserAvailable,
   isDeleteUserAvailable,
   isEditUserAvailable,
   isReadUserAvailable,
 } from '@app-builder/services/feature-access';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -35,7 +37,13 @@ const usersLoader = createServerFn()
 
     if (!isReadUserAvailable(user)) throw redirect({ to: '/' });
 
-    const inboxUsers = await inbox.listAllInboxUsers();
+    const [inboxUsers, customRolesResult] = await Promise.all([
+      inbox.listAllInboxUsers(),
+      context.authInfo.apiClient.listCustomRoles().then(
+        (roles) => ({ roles, error: false }),
+        () => ({ roles: [], error: true }),
+      ),
+    ]);
 
     const inboxUsersByUserId = R.pipe(
       inboxUsers,
@@ -55,6 +63,8 @@ const usersLoader = createServerFn()
       user,
       entitlements,
       userRoles: getUserRoles(entitlements),
+      customRoles: customRolesResult.roles,
+      customRolesError: customRolesResult.error,
       isCreateUserAvailable: isCreateUserAvailable(user),
       isEditUserAvailable: isEditUserAvailable(user),
       isDeleteUserAvailable: isDeleteUserAvailable(user),
@@ -70,16 +80,30 @@ const columnHelper = createColumnHelper<MarbleTableFeatures, User>();
 
 function Users() {
   const { t } = useTranslation(['settings', 'cases']);
+  const router = useRouter();
   const {
     inboxUsersByUserId,
     user,
     entitlements,
-    userRoles,
+    userRoles: builtInRoles,
+    customRoles,
+    customRolesError,
     isCreateUserAvailable,
     isEditUserAvailable,
     isDeleteUserAvailable,
   } = Route.useLoaderData();
   const { orgUsers } = useOrganizationUsers();
+
+  const customRoleNames = useMemo(() => new Map(customRoles.map(({ slug, name }) => [slug, name])), [customRoles]);
+  const userRoles = useMemo<UserRoleOption[]>(
+    () => [
+      ...builtInRoles.map((role) => ({ value: role, label: t(tKeyForUserRole(role)) })),
+      ...(isAccessible(entitlements.userRoles)
+        ? customRoles.map(({ slug, name }) => ({ value: slug, label: name }))
+        : []),
+    ],
+    [builtInRoles, customRoles, entitlements.userRoles, t],
+  );
 
   const tfaQuery = useOrganizationUsersTfaQuery();
   const tfaByUserId = useMemo(
@@ -106,7 +130,7 @@ function Users() {
         size: 150,
         cell: ({ getValue }) =>
           getValue()
-            .map(({ role }) => t(tKeyForUserRole(role)))
+            .map(({ role }) => customRoleNames.get(role) ?? (role.startsWith('org/') ? role : t(tKeyForUserRole(role))))
             .join(', '),
       }),
       columnHelper.accessor((row) => row.userId, {
@@ -155,7 +179,12 @@ function Users() {
                   <div className="flex gap-sm">
                     {isEditUserAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
-                        <EditOrganizationUser user={orgUser} userRoles={userRoles} access={entitlements.userRoles} />
+                        <EditOrganizationUser
+                          user={orgUser}
+                          userRoles={userRoles}
+                          access={entitlements.userRoles}
+                          roleLabel={customRoleNames.get(orgUser.roles[0]?.role ?? '')}
+                        />
                       </div>
                     ) : null}
                     {isDeleteUserAvailable ? (
@@ -172,6 +201,7 @@ function Users() {
     ];
   }, [
     inboxUsersByUserId,
+    customRoleNames,
     isDeleteUserAvailable,
     isEditUserAvailable,
     t,
@@ -192,6 +222,14 @@ function Users() {
 
   return (
     <Page.Content width="readable">
+      {customRolesError ? (
+        <div role="alert" className="flex items-center gap-sm">
+          <span>{t('settings:custom_roles.load_error')}</span>
+          <Button variant="secondary" appearance="stroked" onClick={() => void router.invalidate()}>
+            {t('settings:custom_roles.retry')}
+          </Button>
+        </div>
+      ) : null}
       <SettingCard
         table={table}
         addButton={
@@ -212,7 +250,7 @@ function TenantUsersWithoutAccess({
   userRoles,
   access,
 }: {
-  userRoles: readonly [string, ...string[]];
+  userRoles: readonly UserRoleOption[];
   access: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(['settings', 'common']);
