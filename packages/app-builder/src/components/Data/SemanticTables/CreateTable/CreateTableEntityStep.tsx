@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
+import { LifecycleSettings } from '../Shared/LifecycleSettings';
 import { isLinkableTable } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 import { requiresLink, type TablePropertyError } from './createTable-types';
@@ -21,6 +22,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   const selectedEntityType = useStore(form.store, (state) => state.values.entityType);
   const selectedSubEntity = useStore(form.store, (state) => state.values.subEntity);
   const selectedBelongsToTableId = useStore(form.store, (state) => state.values.belongsToTableId);
+  const lifecycle = useStore(form.store, (state) => state.values.lifecycle);
 
   // Tables that qualify as "person" or "other" for the transaction/event link requirement
   const personOrOtherTables = useMemo(() => dataModel.filter(isLinkableTable), [dataModel]);
@@ -30,6 +32,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   const hasEntityTypeError = errorFields?.has('entityType') ?? false;
   const hasSubEntityError = errorFields?.has('subEntity') ?? false;
   const hasBelongsToError = errorFields?.has('belongsToTableId') ?? false;
+  const hasLifecycleError = errorFields?.has('lifecycle') ?? false;
 
   const linkTargetOptions = useMemo(
     () =>
@@ -172,6 +175,12 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
           })}
         </div>
       </div>
+
+      <LifecycleSettings
+        value={lifecycle}
+        onChange={(nextLifecycle) => form.setFieldValue('lifecycle', nextLifecycle)}
+        hasError={hasLifecycleError}
+      />
     </div>
   );
 }

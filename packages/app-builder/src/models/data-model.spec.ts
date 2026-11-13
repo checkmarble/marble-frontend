@@ -93,6 +93,11 @@ describe('data model semantic defaults', () => {
         metaData: {},
         isCanceled: false,
         isVisited: true,
+        lifecycle: {
+          enabled: false,
+          deleteStaleRowsAfter: { unit: 'months' },
+          deleteActiveRowsAfter: { unit: 'months' },
+        },
       },
       [{ type: 'field', operation: 'MOD', objectId: 'field' }],
       [formField],
