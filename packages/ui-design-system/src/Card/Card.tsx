@@ -1,6 +1,6 @@
-import { cva, VariantProps } from 'class-variance-authority';
-import { forwardRef, type ReactNode } from 'react';
-import { cn } from 'ui-design-system';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { type ComponentProps, type ElementType, type ReactNode } from 'react';
+import { cn } from '../utils';
 
 const cardClassName = cva('border rounded-md p-md', {
   variants: {
@@ -15,15 +15,21 @@ const cardClassName = cva('border rounded-md p-md', {
   },
 });
 
-export type CardProps = {
+type CardOwnProps = {
   children?: ReactNode;
   className?: string;
 } & VariantProps<typeof cardClassName>;
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(function Card({ children, className, color }, ref) {
+export type CardProps<E extends ElementType = 'div'> = CardOwnProps & {
+  as?: E;
+} & Omit<ComponentProps<E>, keyof CardOwnProps | 'as'>;
+
+export function Card<E extends ElementType = 'div'>({ as, children, className, color, ...props }: CardProps<E>) {
+  const Component = (as ?? 'div') as ElementType;
+
   return (
-    <div ref={ref} className={cn(cardClassName({ color }), className)}>
+    <Component className={cn(cardClassName({ color }), className)} {...props}>
       {children}
-    </div>
+    </Component>
   );
-});
+}

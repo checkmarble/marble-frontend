@@ -25,7 +25,7 @@ import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn, Tag, type TagProps, Typo } from 'ui-design-system';
+import { Card, cn, Tag, type TagProps, Typo } from 'ui-design-system';
 
 const MAX_VALUES = 3;
 const IDENTITY_ID_PROPERTIES = [
@@ -85,21 +85,25 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags }
         <CustomerCard item={item} canViewRiskLevel={canViewRiskLevel} />
         <ListRecordCard item={item} />
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain rounded-lg border border-grey-border bg-surface-card p-lg">
+      <Card className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-lg">
         <div className="flex flex-col gap-lg">
           <ComparisonTable comparisons={comparisons} />
           <AllHitInformation item={item} comparisons={comparisons} />
         </div>
-      </div>
+      </Card>
     </section>
   );
 }
 
 export function CustomerTypeTag({ customer }: { customer: ScreeningReviewItem['customer'] }) {
+  return <SchemaTag schema={customer.schema} fallback={customer.objectType} />;
+}
+
+/** The FTM schema, such as Person, in a monospace tag. */
+export function SchemaTag({ schema, fallback }: { schema: string | undefined; fallback?: string }) {
   const { t } = useTranslation(['screenings']);
-  const label = customer.schema
-    ? t(`screenings:entity.schema.${customer.schema.toLowerCase()}`, { defaultValue: customer.schema })
-    : customer.objectType;
+  const label = schema ? t(`screenings:entity.schema.${schema.toLowerCase()}`, { defaultValue: schema }) : fallback;
+  if (!label) return null;
   return (
     <Tag color="white" size="xs" appearance="monospace" className="h-5 shrink-0">
       {label}
@@ -155,12 +159,12 @@ function IdentitySummary({ properties }: { properties: Record<string, unknown> }
 
 function IdentityCard({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-col gap-sm rounded-lg border border-grey-border bg-surface-card p-md">
+    <Card className="flex min-w-0 flex-col gap-sm p-md">
       <Tag color="grey" size="xs" className="self-start">
         {label}
       </Tag>
       {children}
-    </div>
+    </Card>
   );
 }
 
@@ -196,7 +200,7 @@ function CustomerRiskLevel({ objectType, objectId }: { objectType: string; objec
 function ListRecordCard({ item }: { item: ScreeningReviewItem }) {
   const { t } = useTranslation(['cases']);
   const properties = item.listRecord.properties;
-  const aliases = new Set([...(properties['alias'] ?? []), ...(properties['weakAlias'] ?? [])]).size;
+  const aliases = listRecordAliasCount(item);
   return (
     <IdentityCard label={t('cases:screening_review.list_record')}>
       <div className="flex min-w-0 flex-wrap items-center gap-sm">
@@ -276,7 +280,7 @@ function StatePill({ comparison }: { comparison: ScreeningReviewFieldComparison 
 function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldComparison[] }) {
   const { t } = useTranslation(['cases']);
   return (
-    <div className="overflow-x-auto rounded-lg border border-grey-border">
+    <div className="overflow-x-auto rounded-md border border-grey-border">
       <table className="w-full table-fixed text-s">
         <thead className="bg-grey-background-light text-start text-grey-secondary">
           <tr>
@@ -328,6 +332,20 @@ function findDataset(filters: ListConfigFilters | undefined, name: string) {
     if (dataset) return { category: category as ScreeningCategory, title: dataset.title };
   }
   return undefined;
+}
+
+export function listRecordAliasCount(item: ScreeningReviewItem) {
+  const properties = item.listRecord.properties;
+  return new Set([...(properties['alias'] ?? []), ...(properties['weakAlias'] ?? [])]).size;
+}
+
+/** The titles of the lists that hold the list record. */
+export function useListRecordListTitles(datasets: readonly string[]) {
+  const listConfigQuery = useListConfigQuery('continuous_monitoring');
+  const { formatItemName } = useDatasetTitle();
+  return datasets.map((name) =>
+    formatItemName({ name, title: findDataset(listConfigQuery.data?.filters, name)?.title }),
+  );
 }
 
 function ListRecordLists({ datasets }: { datasets: string[] }) {

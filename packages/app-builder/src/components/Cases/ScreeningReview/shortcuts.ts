@@ -46,6 +46,7 @@ export const SCREENING_REVIEW_SHORTCUT_HELP = [
     rows: [
       { name: 'select_hit', hotkeys: ['X'] },
       { name: 'select_object_hits', hotkeys: ['A'] },
+      { name: 'clear_object_hits', hotkeys: ['Shift+A'] },
     ],
   },
   {
@@ -96,7 +97,13 @@ export function useScreeningReviewShortcuts(shortcuts: readonly ScreeningReviewS
       event.preventDefault();
       shortcut.action();
     };
-    const options = { enabled: shortcut.enabled ?? true, scope: shortcutScope };
+    const options = {
+      enabled: shortcut.enabled ?? true,
+      scope: shortcutScope,
+      // The library skips Enter and Space on every focused button. The guard above already leaves them
+      // to controls, so a focused hit card can still pass them on.
+      ...(shortcut.yieldToControls ? { ignoreInputs: false } : {}),
+    };
     definitions.push({ hotkey: shortcut.hotkey, callback, options });
     if (shortcut.hotkey === '?') {
       // The beta's letter fallback works for J/K, but Arabic ؟ needs an explicit punctuation alias.

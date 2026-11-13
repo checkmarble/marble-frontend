@@ -15,6 +15,7 @@ import {
   type ScreeningReviewSession,
   type ScreeningReviewSignals,
   screeningReviewChipFields,
+  screeningReviewCustomerPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
   screeningReviewTopicFamilies,
@@ -559,7 +560,7 @@ describe('screening review session', () => {
     decision: 'confirmed_hit' | 'no_hit',
     screening: Partial<ScreeningReviewSession['screenings'][string]> = {},
   ): ScreeningReviewSession => ({
-    decided: { [item.id]: { item, decision } },
+    decided: { [item.id]: { item, decision, written: true } },
     screenings: { [item.screeningId]: { status: 'in_review', caseClosed: false, ...screening } },
     hiddenCases: [],
   });
@@ -640,6 +641,83 @@ describe('screening review session', () => {
     const [item] = buildScreeningReviewItems([reviewCase('case', [screening])]);
     const session = decide(item!, 'no_hit', result);
     expect(screeningReviewScreeningState(applyScreeningReviewSession([item!], session), item!, session)).toBe(state);
+  });
+
+  describe('before the write', () => {
+    const unwritten = (
+      decisions: readonly (readonly [ScreeningReviewItem, 'confirmed_hit' | 'no_hit'])[],
+      screenings: ScreeningReviewSession['screenings'] = {},
+    ): ScreeningReviewSession => ({
+      decided: Object.fromEntries(decisions.map(([item, decision]) => [item.id, { item, decision, written: false }])),
+      screenings,
+      hiddenCases: [],
+    });
+    const state = (session: ScreeningReviewSession, matchId: string, source = items) => {
+      const applied = applyScreeningReviewSession(source, session);
+      return screeningReviewScreeningState(applied, applied.find((item) => item.matchId === matchId)!, session);
+    };
+
+    it('predicts a customer-triggered Hit, and leaves a list-update Hit in review until its last hit', () => {
+      const session = unwritten([[byMatch('screening-1-high'), 'confirmed_hit']]);
+      expect(state(session, 'screening-1-high')).toBe('confirmed_hit');
+      expect(state(unwritten([[byMatch('dataset-1-alice'), 'confirmed_hit']]), 'dataset-1-alice')).toBe('in_review');
+      expect(
+        state(
+          unwritten([
+            [byMatch('dataset-1-alice'), 'confirmed_hit'],
+            [byMatch('dataset-1-bob'), 'no_hit'],
+          ]),
+          'dataset-1-bob',
+        ),
+      ).toBe('confirmed_hit');
+    });
+
+    it('predicts closure only once every screening of the case ends at no_hit', () => {
+      const allObjectHits = unwritten([
+        [byMatch('screening-1-high'), 'no_hit'],
+        [byMatch('screening-1-low'), 'no_hit'],
+      ]);
+      // The list-update screening of the same case is still in review.
+      expect(state(allObjectHits, 'screening-1-low')).toBe('closure_pending');
+      const objectOnly = buildScreeningReviewItems([reviewCase('case', [objectReviewScreening()])]);
+      const [high, low] = objectOnly;
+      const session = unwritten([
+        [high!, 'no_hit'],
+        [low!, 'no_hit'],
+      ]);
+      expect(state(session, 'screening-1-low', objectOnly)).toBe('case_closed');
+      expect(state(unwritten([[high!, 'no_hit']]), 'screening-1-high', objectOnly)).toBe('in_review');
+    });
+
+    it('keeps a partial screening in review, and prefers the prediction over an older write', () => {
+      const screening = objectReviewScreening();
+      screening.partial = true;
+      screening.matches = screening.matches.slice(0, 1);
+      const partial = buildScreeningReviewItems([reviewCase('case', [screening])]);
+      expect(state(unwritten([[partial[0]!, 'no_hit']]), 'screening-1-high', partial)).toBe('load_more');
+
+      const objectOnly = buildScreeningReviewItems([reviewCase('case', [objectReviewScreening()])]);
+      const [high, low] = objectOnly;
+      const session: ScreeningReviewSession = {
+        decided: {
+          [high!.id]: { item: high!, decision: 'no_hit', written: true },
+          [low!.id]: { item: low!, decision: 'no_hit', written: false },
+        },
+        screenings: { [high!.screeningId]: { status: 'in_review', caseClosed: false } },
+        hiddenCases: [],
+      };
+      expect(state(session, 'screening-1-low', objectOnly)).toBe('case_closed');
+    });
+
+    it('selects the pending hits of the active hit’s customer', () => {
+      const groups = listedGroups(unwritten([[byMatch('screening-1-high'), 'no_hit']]));
+      const alice = groups[0]!.items.find((item) => item.matchId === 'dataset-1-alice')!;
+      expect(screeningReviewCustomerPendingItems(groups, alice.id).map((item) => item.matchId)).toEqual([
+        'dataset-1-alice',
+        'screening-1-low',
+      ]);
+      expect(screeningReviewCustomerPendingItems(groups, 'missing')).toEqual([]);
+    });
   });
 
   it('closes on load only when every screening ended at no_hit and the case is open', () => {
