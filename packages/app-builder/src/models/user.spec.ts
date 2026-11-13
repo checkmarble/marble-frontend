@@ -8,6 +8,7 @@ const credentials: CredentialsDto['credentials'] = {
   roles: ['ADMIN', 'TENANT_ADMIN'],
   actor_identity: { user_id: 'user-id', email: 'admin@example.com' },
   permissions: ['DATA_MODEL_WRITE', 'MARBLE_USER_CREATE'],
+  used_second_factor: false,
 };
 
 describe('current user access', () => {
@@ -55,7 +56,7 @@ describe('adaptUser', () => {
       first_name: 'First',
       last_name: 'Last',
       organization_id: 'org-id',
-      roles: [{ id: 'binding-id', role: 'ADMIN' }, { role: 'ANALYST' }],
+      roles: [{ id: 'binding-id', role: 'ADMIN', conditions: { used_second_factor: true } }, { role: 'ANALYST' }],
     };
     expect(adaptUser(dto).roles).toEqual(dto.roles);
   });

@@ -1,3 +1,4 @@
+import { SelectableValues } from '@app-builder/components/SelectableValues';
 import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { type IsMultipleOfFilterAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
@@ -299,30 +300,11 @@ function TimestampExtractPartRow({
 
   return (
     <div className="grid grid-cols-subgrid col-span-full">
-      <div className="flex items-center gap-xs">
-        {values.map(({ value, label }) => {
-          const isSelected = selectedValues.includes(value);
-
-          return (
-            <Button
-              key={`${part}_${value}`}
-              variant={isSelected ? 'primary' : 'secondary'}
-              appearance="filter"
-              onClick={() => {
-                const nextSelectedValues = new Set(selectedValues);
-                if (isSelected) {
-                  nextSelectedValues.delete(value);
-                } else {
-                  nextSelectedValues.add(value);
-                }
-                onChange(setTimestampExtractSelectedValues(filter, part, nextSelectedValues));
-              }}
-            >
-              {label}
-            </Button>
-          );
-        })}
-      </div>
+      <SelectableValues
+        options={values}
+        selected={selectedValues}
+        onChange={(next) => onChange(setTimestampExtractSelectedValues(filter, part, new Set(next)))}
+      />
     </div>
   );
 }

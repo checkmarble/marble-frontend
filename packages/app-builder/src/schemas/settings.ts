@@ -125,7 +125,44 @@ export type UpdateTagPayload = z.infer<typeof updateTagPayloadSchema>;
 
 // ---- Users ----
 
-const roleBindingsSchema = z.array(z.object({ id: z.string().optional(), role: z.string().min(1) })).length(1);
+export const roleBindingsSchema = z
+  .array(
+    z.object({
+      id: z.string().optional(),
+      role: z.string().min(1),
+      conditions: z
+        .object({
+          not_before: z.iso.datetime({ offset: true }).optional(),
+          not_after: z.iso.datetime({ offset: true }).optional(),
+          day_of_week: z.array(z.number().int().min(1).max(7)).optional(),
+          time_of_day: z
+            .array(
+              z
+                .number()
+                .int()
+                .min(0)
+                .max(2359)
+                .refine((time) => time % 100 < 60),
+            )
+            .length(2)
+            .optional(),
+          networks: z.array(cidrSchema).optional(),
+          used_second_factor: z.boolean().optional(),
+        })
+        .refine(
+          (conditions) =>
+            !conditions.not_before ||
+            !conditions.not_after ||
+            Date.parse(conditions.not_before) <= Date.parse(conditions.not_after),
+          {
+            message: 'Start date must be before end date',
+            path: ['not_after'],
+          },
+        )
+        .optional(),
+    }),
+  )
+  .min(1);
 
 export const createUserPayloadSchema = z.object({
   firstName: z.string().nonempty(),
@@ -148,13 +185,13 @@ export type GrantOrganizationAccessPayload = z.infer<typeof grantOrganizationAcc
 export const editOrganizationUserFormSchema = z.object({
   firstName: z.string().trim().nonempty(),
   lastName: z.string().trim().nonempty(),
-  role: z.string(),
+  roles: z.array(roleBindingsSchema.element),
 });
 export type EditOrganizationUserForm = z.infer<typeof editOrganizationUserFormSchema>;
 
 // Only the provided fields are updated.
 export const updateOrganizationUserPayloadSchema = editOrganizationUserFormSchema
-  .omit({ role: true })
+  .omit({ roles: true })
   .partial()
   .extend({
     userId: z.uuid(),
