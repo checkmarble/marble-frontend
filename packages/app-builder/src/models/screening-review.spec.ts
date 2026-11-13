@@ -3,11 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { adaptContinuousScreening } from './continuous-screening';
 import {
   adjacentScreeningReviewItem,
+  applyScreeningReviewSession,
   buildScreeningReviewItems,
   compareScreeningReviewFields,
+  emptyScreeningReviewSession,
   groupScreeningReviewItems,
+  isListedInScreeningReviewSession,
+  needsFalsePositiveClosure,
+  nextPendingScreeningReviewItem,
+  type ScreeningReviewItem,
+  type ScreeningReviewSession,
   type ScreeningReviewSignals,
   screeningReviewChipFields,
+  screeningReviewHitsSkippedBy,
+  screeningReviewScreeningState,
   screeningReviewTopicFamilies,
 } from './screening-review';
 import stagingObjectAddedDto from './screening-review.staging-object-added.json';
@@ -539,5 +548,106 @@ describe('screening review stream', () => {
       expect(fallback.slice(1).length).toBeGreaterThan(0);
       expect(screeningReviewChipFields(fallback)).toEqual([]);
     });
+  });
+});
+
+describe('screening review session', () => {
+  const items = buildScreeningReviewItems([reviewCase('case', [objectReviewScreening(), datasetReviewScreening()])]);
+  const byMatch = (matchId: string) => items.find((item) => item.matchId === matchId)!;
+  const decide = (
+    item: ScreeningReviewItem,
+    decision: 'confirmed_hit' | 'no_hit',
+    screening: Partial<ScreeningReviewSession['screenings'][string]> = {},
+  ): ScreeningReviewSession => ({
+    decided: { [item.id]: { item, decision } },
+    screenings: { [item.screeningId]: { status: 'in_review', caseClosed: false, ...screening } },
+    hiddenCases: [],
+  });
+  const listedGroups = (session: ScreeningReviewSession, source = items) =>
+    groupScreeningReviewItems(applyScreeningReviewSession(source, session), false, (item) =>
+      isListedInScreeningReviewSession(item, session),
+    );
+
+  it('skips the other pending hits of a customer-triggered screening on Hit, and nothing on a list update', () => {
+    const objectHit = byMatch('screening-1-high');
+    const datasetHit = byMatch('dataset-1-alice');
+    expect(screeningReviewHitsSkippedBy(items, objectHit).map((item) => item.matchId)).toEqual(['screening-1-low']);
+    expect(screeningReviewHitsSkippedBy(items, datasetHit)).toEqual([]);
+
+    const afterObjectHit = applyScreeningReviewSession(items, decide(objectHit, 'confirmed_hit'));
+    expect(Object.fromEntries(afterObjectHit.map((item) => [item.matchId, item.status]))).toEqual({
+      'screening-1-high': 'confirmed_hit',
+      'screening-1-low': 'skipped',
+      'dataset-1-alice': 'pending',
+      'dataset-1-bob': 'pending',
+    });
+    const afterDatasetHit = applyScreeningReviewSession(items, decide(datasetHit, 'confirmed_hit'));
+    expect(afterDatasetHit.find((item) => item.matchId === 'dataset-1-bob')?.status).toBe('pending');
+    expect(applyScreeningReviewSession(items, decide(objectHit, 'no_hit')).map((item) => item.status)).toEqual([
+      'no_hit',
+      'pending',
+      'pending',
+      'pending',
+    ]);
+  });
+
+  it('keeps decided hits listed after their case leaves the server data, until the case is hidden', () => {
+    const decided = byMatch('screening-1-high');
+    const session = decide(decided, 'no_hit', { status: 'no_hit', caseClosed: true });
+    const groups = listedGroups(session, []);
+    expect(groups[0]?.items).toMatchObject([{ id: decided.id, status: 'no_hit', screeningStatus: 'no_hit' }]);
+    expect(groups[0]).toMatchObject({ remaining: 0, total: 1 });
+    expect(listedGroups({ ...session, hiddenCases: ['case'] }, [])).toEqual([]);
+  });
+
+  it('lists the hits of screenings decided this visit, and counts only pending hits as remaining', () => {
+    const session = decide(byMatch('screening-1-high'), 'confirmed_hit', { status: 'confirmed_hit' });
+    const alice = listedGroups(session)[0]!;
+    expect(alice.items.map((item) => [item.matchId, item.status])).toEqual([
+      ['screening-1-high', 'confirmed_hit'],
+      ['dataset-1-alice', 'pending'],
+      ['screening-1-low', 'skipped'],
+    ]);
+    expect(alice).toMatchObject({ remaining: 1, total: 3 });
+    expect(listedGroups(emptyScreeningReviewSession).flatMap((group) => group.items)).toHaveLength(4);
+  });
+
+  it('opens the same customer’s next pending hit first, then the next customer, wrapping around', () => {
+    const groups = listedGroups(emptyScreeningReviewSession);
+    const [high, datasetAlice, low] = groups[0]!.items;
+    const bob = groups[1]!.items[0]!;
+    expect(nextPendingScreeningReviewItem(groups, high!.id)?.id).toBe(datasetAlice!.id);
+    expect(nextPendingScreeningReviewItem(groups, low!.id)?.id).toBe(high!.id);
+    expect(nextPendingScreeningReviewItem(groups, bob.id)?.id).toBe(high!.id);
+
+    const skipped = decide(byMatch('screening-1-high'), 'confirmed_hit', { status: 'confirmed_hit' });
+    const afterHit = listedGroups(skipped);
+    expect(nextPendingScreeningReviewItem(afterHit, high!.id)?.matchId).toBe('dataset-1-alice');
+    const onlyOne = listedGroups(emptyScreeningReviewSession, [high!]);
+    expect(nextPendingScreeningReviewItem(onlyOne, high!.id)).toBeUndefined();
+  });
+
+  it.each([
+    [{ status: 'confirmed_hit' as const }, false, 'confirmed_hit'],
+    [{ status: 'no_hit' as const, caseClosed: true }, false, 'case_closed'],
+    [{ status: 'no_hit' as const, caseClosed: false }, false, 'closure_pending'],
+    [{ status: 'in_review' as const }, true, 'load_more'],
+    [{ status: 'in_review' as const }, false, 'in_review'],
+  ])('derives the screening state from %o (partial: %s) as %s', (result, partial, state) => {
+    const screening = objectReviewScreening();
+    screening.partial = partial;
+    screening.matches = screening.matches.slice(0, 1);
+    const [item] = buildScreeningReviewItems([reviewCase('case', [screening])]);
+    const session = decide(item!, 'no_hit', result);
+    expect(screeningReviewScreeningState(applyScreeningReviewSession([item!], session), item!, session)).toBe(state);
+  });
+
+  it('closes on load only when every screening ended at no_hit and the case is open', () => {
+    const noHit = { ...objectReviewScreening(), status: 'no_hit' as const };
+    expect(needsFalsePositiveClosure(reviewCase('case', [noHit]))).toBe(true);
+    expect(needsFalsePositiveClosure(reviewCase('case', [noHit], { status: 'closed' }))).toBe(false);
+    expect(needsFalsePositiveClosure(reviewCase('case', [noHit, objectReviewScreening('other')]))).toBe(false);
+    expect(needsFalsePositiveClosure(reviewCase('case', []))).toBe(false);
+    expect(needsFalsePositiveClosure(reviewCase('case', [{ ...noHit, status: 'confirmed_hit' }]))).toBe(false);
   });
 });

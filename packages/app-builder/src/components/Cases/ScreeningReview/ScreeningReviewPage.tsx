@@ -5,21 +5,35 @@ import type { InboxMetadata } from '@app-builder/models/inbox';
 import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import {
   adjacentScreeningReviewItem,
+  applyScreeningReviewSession,
   compareScreeningReviewFields,
+  emptyScreeningReviewSession,
   groupScreeningReviewItems,
+  isListedInScreeningReviewSession,
+  isPendingReviewItem,
+  nextPendingScreeningReviewItem,
+  SCREENING_REVIEW_HIDE_DELAY_MS,
   type ScreeningReviewItem,
+  type ScreeningReviewScreeningState,
+  type ScreeningReviewSession,
   screeningReviewChipFields,
+  screeningReviewHitsSkippedBy,
+  screeningReviewScreeningState,
   screeningReviewTopicFamilies,
 } from '@app-builder/models/screening-review';
+import { useScreeningReviewDecisionMutation } from '@app-builder/queries/cases/screening-review-decision';
 import { useScreeningReviewPageQuery } from '@app-builder/queries/cases/screening-review-page';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
+import type { ScreeningReviewRejection } from '@app-builder/services/screening-review-decision';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Tag, Typo } from 'ui-design-system';
 import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
+import { ActionDock, DecisionTag, OpenCaseLink, ReadOnlyDock, type ScreeningReviewDraft, StepTag } from './ActionDock';
 import { CustomerTypeTag, ScreeningReviewHit } from './ScreeningReviewHit';
 import { ShortcutHelp, ShortcutKeys } from './ShortcutHelp';
 import { ScreeningReviewShortcutProvider, useScreeningReviewShortcuts } from './shortcuts';
@@ -155,6 +169,38 @@ function prefersReducedMotion() {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
 }
 
+type ScreeningReviewNotice = ScreeningReviewRejection | 'decision_failed';
+
+/** Notes for a customer's screenings that need something besides a decision. */
+function GroupScreeningNotes({
+  items,
+  listed,
+  session,
+}: {
+  items: readonly ScreeningReviewItem[];
+  listed: readonly ScreeningReviewItem[];
+  session: ScreeningReviewSession;
+}) {
+  const { t } = useTranslation(['cases']);
+  const notes = new Map<string, { item: ScreeningReviewItem; state: ScreeningReviewScreeningState }>();
+  for (const item of listed) {
+    if (notes.has(item.screeningId)) continue;
+    const state = screeningReviewScreeningState(items, item, session);
+    if (state !== 'in_review') notes.set(item.screeningId, { item, state });
+  }
+  if (!notes.size) return null;
+  return (
+    <ul className="flex flex-col gap-2xs text-xs text-grey-secondary">
+      {[...notes.values()].map(({ item, state }) => (
+        <li key={item.screeningId} className="flex flex-wrap items-center gap-xs">
+          <span>{t(`cases:screening_review.group_state.${state}`)}</span>
+          {state === 'confirmed_hit' ? <OpenCaseLink caseId={item.caseId} /> : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function ReviewStream({
   search,
   onSearchChange,
@@ -163,27 +209,65 @@ function ReviewStream({
   inboxes,
 }: ScreeningReviewPageProps) {
   const { t } = useTranslation(['cases', 'common']);
+  const queryClient = useQueryClient();
   const allInboxes = [{ id: MY_INBOX_ID, name: t('cases:inbox.my-inbox.link') }, ...inboxes];
   const selectedInbox = allInboxes.find((inbox) => inbox.id === search.inboxId) ?? allInboxes[0]!;
   const query = useScreeningReviewPageQuery(search.limit, search.cursors.at(-1) ?? null, selectedInbox.id);
+  const decisionMutation = useScreeningReviewDecisionMutation();
   const mappedProperties = useMappedProperties();
   const [helpOpen, setHelpOpen] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
+  const [notice, setNotice] = useState<ScreeningReviewNotice>();
+  const [session, setSession] = useState<ScreeningReviewSession>(emptyScreeningReviewSession);
+  const [draft, setDraft] = useState<{ itemId: string } & ScreeningReviewDraft>();
   const activeRef = useRef<HTMLButtonElement>(null);
+  const commentRef = useRef<HTMLTextAreaElement>(null);
+  const sessionRef = useRef(session);
+  const hideTimers = useRef<number[]>([]);
+  const hasMore = !!query.data?.nextCursor || !!query.data?.failed;
+  const reviewItems = useMemo(
+    () => applyScreeningReviewSession(query.data?.items ?? [], session),
+    [query.data, session],
+  );
   const groups = useMemo(
-    () => groupScreeningReviewItems(query.data?.items ?? [], !!query.data?.nextCursor || !!query.data?.failed),
-    [query.data],
+    () => groupScreeningReviewItems(reviewItems, hasMore, (item) => isListedInScreeningReviewSession(item, session)),
+    [reviewItems, hasMore, session],
   );
   const items = useMemo(() => groups.flatMap((group) => group.items), [groups]);
-  const active = items.find((item) => item.id === search.hit) ?? items[0];
+  const active = items.find((item) => item.id === search.hit) ?? items.find(isPendingReviewItem) ?? items[0];
   const ready = !!query.data && !query.isPlaceholderData;
+  const submitting = decisionMutation.isPending;
+  const reviewable = !!active && isPendingReviewItem(active);
+  const activeDraft: ScreeningReviewDraft = (draft?.itemId === active?.id ? draft : undefined) ?? { comment: '' };
+  // The latest server data, read when a write completes to pick the next hit.
+  const latest = useRef({ items: query.data?.items ?? [], hasMore });
+  useEffect(() => {
+    latest.current = { items: query.data?.items ?? [], hasMore };
+  });
+  useEffect(() => () => hideTimers.current.forEach((timer) => window.clearTimeout(timer)), []);
+
+  const updateSession = (update: (current: ScreeningReviewSession) => ScreeningReviewSession) => {
+    sessionRef.current = update(sessionRef.current);
+    setSession(sessionRef.current);
+    return sessionRef.current;
+  };
+  // Decisions belong to the page they were made on.
+  const resetSession = () => {
+    hideTimers.current.forEach((timer) => window.clearTimeout(timer));
+    hideTimers.current = [];
+    sessionRef.current = emptyScreeningReviewSession;
+    setSession(emptyScreeningReviewSession);
+    setDraft(undefined);
+    setNotice(undefined);
+  };
 
   useEffect(() => {
     // Wait for fresh data before declaring a bookmarked hit unavailable.
     if (!ready || query.isFetching || query.data?.failed) return;
-    if (search.hit && !items.some((item) => item.id === search.hit)) setUnavailable(true);
+    const hidden = session.hiddenCases.some((caseId) => search.hit?.startsWith(`${caseId}:`));
+    if (search.hit && !hidden && !items.some((item) => item.id === search.hit)) setUnavailable(true);
     if (active?.id !== search.hit) onSearchChange({ ...search, hit: active?.id });
-  }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange]);
+  }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange, session.hiddenCases]);
 
   useEffect(() => {
     activeRef.current?.scrollIntoView({
@@ -193,13 +277,79 @@ function ReviewStream({
   }, [active?.id]);
 
   const select = (item: ScreeningReviewItem | undefined) => {
-    if (!item || !ready) return;
+    if (!item || !ready || submitting) return;
     setUnavailable(false);
+    setNotice(undefined);
     onSearchChange({ ...search, hit: item.id });
   };
   const move = (direction: -1 | 1, byCustomer = false) =>
     select(adjacentScreeningReviewItem(groups, active?.id, direction, byCustomer));
-  const canNavigate = ready && !helpOpen;
+  const changeDraft = (next: Partial<ScreeningReviewDraft>) => {
+    if (active) setDraft({ ...activeDraft, ...next, itemId: active.id });
+  };
+
+  const submit = () => {
+    if (!active || !reviewable || !activeDraft.decision || submitting) return;
+    const item = active;
+    const decision = activeDraft.decision;
+    const comment = activeDraft.comment.trim() || undefined;
+    setNotice(undefined);
+    setUnavailable(false);
+    decisionMutation.mutate(
+      {
+        caseId: item.caseId,
+        screeningId: item.screeningId,
+        matchId: item.matchId,
+        status: decision,
+        ...(comment ? { comment } : {}),
+      },
+      {
+        onSuccess: (result) => {
+          if (!result.ok) {
+            // Show what changed, then return to the server's state.
+            setNotice(result.reason);
+            setDraft(undefined);
+            void query.refetch();
+            return;
+          }
+          const next = updateSession((current) => ({
+            ...current,
+            decided: { ...current.decided, [item.id]: { item, decision, ...(comment ? { comment } : {}) } },
+            screenings: {
+              ...current.screenings,
+              [item.screeningId]: {
+                status: result.screeningStatus ?? item.screeningStatus,
+                caseClosed: result.caseClosed,
+              },
+            },
+          }));
+          setDraft(undefined);
+          const nextGroups = groupScreeningReviewItems(
+            applyScreeningReviewSession(latest.current.items, next),
+            latest.current.hasMore,
+            (other) => isListedInScreeningReviewSession(other, next),
+          );
+          const nextItem = nextPendingScreeningReviewItem(nextGroups, item.id);
+          if (nextItem) onSearchChange({ ...search, hit: nextItem.id });
+          if (result.caseClosed) {
+            hideTimers.current.push(
+              window.setTimeout(
+                () => updateSession((current) => ({ ...current, hiddenCases: [...current.hiddenCases, item.caseId] })),
+                SCREENING_REVIEW_HIDE_DELAY_MS,
+              ),
+            );
+          }
+          void queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
+        },
+        // Keep the decision and comment, so the analyst can try again.
+        onError: () => setNotice('decision_failed'),
+      },
+    );
+  };
+  const refreshPage = () => queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
+
+  const canNavigate = ready && !helpOpen && !submitting;
+  const canDecide = canNavigate && reviewable;
   useScreeningReviewShortcuts([
     { hotkey: 'J', action: () => move(1), enabled: canNavigate },
     { hotkey: 'ArrowDown', action: () => move(1), enabled: canNavigate },
@@ -207,12 +357,22 @@ function ReviewStream({
     { hotkey: 'ArrowUp', action: () => move(-1), enabled: canNavigate },
     { hotkey: 'Shift+J', action: () => move(1, true), enabled: canNavigate },
     { hotkey: 'Shift+K', action: () => move(-1, true), enabled: canNavigate },
+    { hotkey: 'M', action: () => changeDraft({ decision: 'confirmed_hit' }), enabled: canDecide },
+    { hotkey: 'N', action: () => changeDraft({ decision: 'no_hit' }), enabled: canDecide },
+    { hotkey: 'C', action: () => commentRef.current?.focus(), enabled: canDecide },
+    { hotkey: 'Enter', action: submit, enabled: canDecide && !!activeDraft.decision, yieldToControls: true },
     { hotkey: '?', action: () => setHelpOpen(true) },
-    { hotkey: 'Escape', action: () => setHelpOpen(false), allowInModal: true },
+    {
+      hotkey: 'Escape',
+      // The help closes first. Other dialogs keep their own Escape.
+      action: () => (helpOpen ? setHelpOpen(false) : changeDraft({ decision: undefined })),
+      allowInModal: helpOpen,
+    },
   ]);
 
   const changePage = (cursors: string[]) => {
     setUnavailable(false);
+    resetSession();
     onSearchChange({ ...search, cursors, hit: undefined });
   };
 
@@ -222,7 +382,13 @@ function ReviewStream({
         <div className="shrink-0">
           <CasesNavigationTabs showAdminSections={canViewAdminSections} inboxId={selectedInbox.id} />
         </div>
-        {unavailable ? (
+        {notice ? (
+          <p role="alert" className="shrink-0 text-red-primary">
+            {notice === 'decision_failed'
+              ? t('cases:screening_review.decision_failed')
+              : t(`cases:screening_review.rejection.${notice}`)}
+          </p>
+        ) : unavailable ? (
           <p role="status" className="shrink-0">
             {t('cases:screening_review.unavailable')}
           </p>
@@ -252,6 +418,7 @@ function ReviewStream({
                 onSelectInbox={(inbox) => {
                   if (inbox.id === selectedInbox.id) return;
                   setUnavailable(false);
+                  resetSession();
                   onSearchChange({ ...search, inboxId: inbox.id, cursors: [], hit: undefined });
                 }}
                 variant="secondary"
@@ -296,6 +463,7 @@ function ReviewStream({
                             {group.incomplete ? '+' : ''}
                           </span>
                         </p>
+                        <GroupScreeningNotes items={reviewItems} listed={group.items} session={session} />
                       </div>
                       <ul className="flex flex-col gap-xs">
                         {group.items.map((item) => {
@@ -304,9 +472,10 @@ function ReviewStream({
                             <li key={item.id}>
                               <button
                                 type="button"
+                                data-review-hit-card
                                 ref={isActive ? activeRef : undefined}
                                 aria-current={isActive ? 'true' : undefined}
-                                disabled={!ready}
+                                disabled={!ready || submitting}
                                 onClick={() => select(item)}
                                 className={cn(
                                   'flex w-full min-w-0 scroll-my-sm cursor-pointer flex-col gap-xs rounded-lg border border-grey-border bg-surface-card px-3 py-2.5 text-start text-small focus-visible:outline-2 focus-visible:outline-purple-primary',
@@ -324,7 +493,10 @@ function ReviewStream({
                                     {Math.round(item.score * 100)}%
                                   </bdi>
                                 </span>
-                                <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
+                                <span className="flex flex-wrap items-center gap-xs empty:hidden">
+                                  <DecisionTag status={item.status} />
+                                  <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
+                                </span>
                               </button>
                             </li>
                           );
@@ -338,11 +510,40 @@ function ReviewStream({
             <ShortcutHint onOpenHelp={() => setHelpOpen(true)} />
           </div>
           {active ? (
-            <ScreeningReviewHit
-              item={active}
-              comparisons={compareScreeningReviewFields(active, mappedProperties(active.customer.objectType))}
-              canViewRiskLevel={canViewRiskLevel}
-            />
+            <div className="flex min-h-0 min-w-0 flex-col gap-md">
+              <ScreeningReviewHit
+                item={active}
+                comparisons={compareScreeningReviewFields(active, mappedProperties(active.customer.objectType))}
+                canViewRiskLevel={canViewRiskLevel}
+                tags={
+                  <>
+                    <StepTag pending={reviewable} />
+                    <DecisionTag status={active.status} />
+                  </>
+                }
+              />
+              {reviewable ? (
+                <ActionDock
+                  item={active}
+                  draft={activeDraft}
+                  onDraftChange={changeDraft}
+                  onSubmit={submit}
+                  onCancel={() => changeDraft({ decision: undefined, comment: '' })}
+                  submitting={submitting}
+                  skippedCount={screeningReviewHitsSkippedBy(reviewItems, active).length}
+                  commentRef={commentRef}
+                />
+              ) : (
+                <ReadOnlyDock
+                  item={active}
+                  state={screeningReviewScreeningState(reviewItems, active, session)}
+                  sessionComment={session.decided[active.id]?.comment}
+                  canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1) && canNavigate}
+                  onNext={() => move(1)}
+                  onMatchesLoaded={refreshPage}
+                />
+              )}
+            </div>
           ) : ready && !query.data?.failed && !items.length ? (
             <div className="flex flex-col items-start gap-md self-start rounded border border-grey-border p-lg">
               <Typo variant="title2">{t('cases:screening_review.empty_title')}</Typo>
@@ -370,6 +571,7 @@ function ReviewStream({
                 className={cn(search.limit === limit && 'border-purple-primary text-purple-primary')}
                 onClick={() => {
                   setUnavailable(false);
+                  resetSession();
                   onSearchChange({ ...search, limit, cursors: [], hit: undefined });
                 }}
               >
@@ -385,14 +587,14 @@ function ReviewStream({
             </span>
             <Button
               variant="secondary"
-              disabled={!search.cursors.length || query.isFetching}
+              disabled={!search.cursors.length || query.isFetching || submitting}
               onClick={() => changePage(search.cursors.slice(0, -1))}
             >
               {t('cases:screening_review.previous_page')}
             </Button>
             <Button
               variant="secondary"
-              disabled={!ready || !query.data?.nextCursor || query.data.failed || query.isFetching}
+              disabled={!ready || !query.data?.nextCursor || query.data.failed || query.isFetching || submitting}
               onClick={() => {
                 if (query.data?.nextCursor) changePage([...search.cursors, query.data.nextCursor]);
               }}

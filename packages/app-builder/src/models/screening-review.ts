@@ -522,7 +522,15 @@ function topicPriority(item: ScreeningReviewItem) {
   );
 }
 
-export function groupScreeningReviewItems(items: readonly ScreeningReviewItem[], hasMore = false) {
+/**
+ * Groups items by customer. `isListed` picks the items shown in the list; every item counts toward
+ * the customer's total, and only pending ones toward `remaining`.
+ */
+export function groupScreeningReviewItems(
+  items: readonly ScreeningReviewItem[],
+  hasMore = false,
+  isListed: (item: ScreeningReviewItem) => boolean = isPendingReviewItem,
+) {
   const groups = new Map<string, ScreeningReviewGroup>();
   for (const item of items) {
     let group = groups.get(item.customer.key);
@@ -544,13 +552,11 @@ export function groupScreeningReviewItems(items: readonly ScreeningReviewItem[],
       group.newestCase = item.caseCreatedAt;
       group.customer = item.customer;
     }
-    if (isPendingReviewItem(item)) {
-      group.items.push(item);
-      group.remaining += 1;
-    }
+    if (isPendingReviewItem(item)) group.remaining += 1;
+    if (isListed(item)) group.items.push(item);
   }
   return [...groups.values()]
-    .filter((group) => group.remaining > 0)
+    .filter((group) => group.items.length > 0)
     .sort((a, b) => b.newestCase.localeCompare(a.newestCase) || a.key.localeCompare(b.key))
     .map((group) => ({
       ...group,
@@ -573,4 +579,127 @@ export function adjacentScreeningReviewItem(
   const items = groups.flatMap((group) => group.items);
   const index = items.findIndex((item) => item.id === activeId);
   return items[index + direction];
+}
+
+/** How long a customer's hits stay listed after their case closes. */
+export const SCREENING_REVIEW_HIDE_DELAY_MS = 5_000;
+
+export type ScreeningReviewDecision = 'confirmed_hit' | 'no_hit';
+
+/** A decision written during this visit. */
+export interface ScreeningReviewDecided {
+  /** The item when it was decided, so it stays listed after its case leaves the server data. */
+  item: ScreeningReviewItem;
+  decision: ScreeningReviewDecision;
+  comment?: string;
+}
+
+/** What a write did to its screening and case. */
+export interface ScreeningReviewScreeningResult {
+  status: ContinuousScreening['status'];
+  caseClosed: boolean;
+}
+
+/** Local state laid over server data, so decided hits don't flicker back on refetch. */
+export interface ScreeningReviewSession {
+  decided: Readonly<Record<string, ScreeningReviewDecided>>;
+  screenings: Readonly<Record<string, ScreeningReviewScreeningResult>>;
+  hiddenCases: readonly string[];
+}
+
+export const emptyScreeningReviewSession: ScreeningReviewSession = { decided: {}, screenings: {}, hiddenCases: [] };
+
+function isObjectTriggeredItem(item: ScreeningReviewItem) {
+  return item.triggerType !== 'dataset_updated';
+}
+
+/**
+ * The pending hits a Hit on `item` skips. The backend skips them on a customer-triggered screening;
+ * list-update hits stay independent until the screening's last pending hit.
+ */
+export function screeningReviewHitsSkippedBy(items: readonly ScreeningReviewItem[], item: ScreeningReviewItem) {
+  if (!isObjectTriggeredItem(item)) return [];
+  return items.filter(
+    (other) => other.screeningId === item.screeningId && other.id !== item.id && isPendingReviewItem(other),
+  );
+}
+
+/** Server items with this visit's decisions applied, minus the cases already hidden. */
+export function applyScreeningReviewSession(
+  items: readonly ScreeningReviewItem[],
+  session: ScreeningReviewSession,
+): ScreeningReviewItem[] {
+  const hidden = new Set(session.hiddenCases);
+  const merged = new Map(items.map((item) => [item.id, item]));
+  for (const { item } of Object.values(session.decided)) if (!merged.has(item.id)) merged.set(item.id, item);
+  const confirmedScreenings = new Set(
+    Object.values(session.decided)
+      .filter(({ item, decision }) => decision === 'confirmed_hit' && isObjectTriggeredItem(item))
+      .map(({ item }) => item.screeningId),
+  );
+  return [...merged.values()]
+    .filter((item) => !hidden.has(item.caseId))
+    .map((item) => {
+      const decided = session.decided[item.id];
+      const skipped = item.status === 'pending' && confirmedScreenings.has(item.screeningId);
+      return {
+        ...item,
+        status: decided?.decision ?? (skipped ? 'skipped' : item.status),
+        screeningStatus: session.screenings[item.screeningId]?.status ?? item.screeningStatus,
+      };
+    });
+}
+
+/** Pending hits, plus every hit of a screening decided during this visit. */
+export function isListedInScreeningReviewSession(item: ScreeningReviewItem, session: ScreeningReviewSession) {
+  return isPendingReviewItem(item) || !!session.decided[item.id] || !!session.screenings[item.screeningId];
+}
+
+export type ScreeningReviewScreeningState =
+  | 'in_review'
+  /** Partial, with no pending hit left: more matches exist and the case must not close. */
+  | 'load_more'
+  | 'confirmed_hit'
+  | 'case_closed'
+  /** `no_hit` with the case still open: the next load closes it. */
+  | 'closure_pending';
+
+export function screeningReviewScreeningState(
+  items: readonly ScreeningReviewItem[],
+  item: ScreeningReviewItem,
+  session: ScreeningReviewSession,
+): ScreeningReviewScreeningState {
+  const result = session.screenings[item.screeningId];
+  const status = result?.status ?? item.screeningStatus;
+  if (status === 'confirmed_hit') return 'confirmed_hit';
+  if (status === 'no_hit') return result?.caseClosed ? 'case_closed' : 'closure_pending';
+  const pending = items.some((other) => other.screeningId === item.screeningId && isPendingReviewItem(other));
+  return item.partial && !pending ? 'load_more' : 'in_review';
+}
+
+/** After a decision: the customer's next pending hit, then the next customer's, wrapping around. */
+export function nextPendingScreeningReviewItem(groups: readonly ScreeningReviewGroup[], fromId: string) {
+  const start = Math.max(
+    0,
+    groups.findIndex((group) => group.items.some((item) => item.id === fromId)),
+  );
+  const ordered = [...groups.slice(start), ...groups.slice(0, start)];
+  for (const [position, group] of ordered.entries()) {
+    const pending = group.items.filter((item) => item.id !== fromId && isPendingReviewItem(item));
+    // In the customer's own group, prefer the hits below the decided one.
+    const from = position === 0 ? group.items.findIndex((item) => item.id === fromId) : -1;
+    const next = pending.find((item) => group.items.indexOf(item) > from) ?? pending[0];
+    if (next) return next;
+  }
+  return undefined;
+}
+
+/** Every screening ended at `no_hit` but the case is still open, after a failed closure. */
+export function needsFalsePositiveClosure(caseDetail: CaseDetail) {
+  return (
+    caseDetail.type === 'continuous_screening' &&
+    caseDetail.status !== 'closed' &&
+    caseDetail.continuousScreenings.length > 0 &&
+    caseDetail.continuousScreenings.every((screening) => screening.status === 'no_hit')
+  );
 }
