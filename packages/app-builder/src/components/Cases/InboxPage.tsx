@@ -70,7 +70,9 @@ export const InboxPage = ({
   const navigate = useAgnosticNavigation();
 
   const assignableUsers = useMemo(() => {
-    return orgUsers.filter(({ userId, role }) => inboxUsersIds.includes(userId) || role === 'ADMIN');
+    return orgUsers.filter(
+      ({ userId, roles }) => inboxUsersIds.includes(userId) || roles.some(({ role }) => role === 'ADMIN'),
+    );
   }, [orgUsers, inboxUsersIds]);
 
   const allowedFilters = useMemo(() => {

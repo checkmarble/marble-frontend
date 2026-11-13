@@ -6,6 +6,7 @@ import {
   editOrganizationUserFormSchema,
   useUpdateOrganizationUserMutation,
 } from '@app-builder/queries/settings/users/update-organization-user';
+import { organizationGrantRoleSchema } from '@app-builder/schemas/settings';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -54,6 +55,8 @@ function EditOrganizationUserContent({
   const { t } = useTranslation(['common', 'settings']);
   const updateUserMutation = useUpdateOrganizationUserMutation();
   const revalidate = useLoaderRevalidator();
+  const currentRole = user.roles[0]?.role ?? '';
+  const canChangeRole = user.roles.length === 1 && organizationGrantRoleSchema.safeParse(currentRole).success;
   // A name that was already blank may stay blank: changing it requires the user's home organization.
   const formSchema = useMemo(
     () =>
@@ -74,7 +77,7 @@ function EditOrganizationUserContent({
     defaultValues: {
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role,
+      role: currentRole,
     } as EditOrganizationUserForm,
     validators: {
       onSubmit: formSchema,
@@ -82,7 +85,7 @@ function EditOrganizationUserContent({
     onSubmit: ({ value }) => {
       const firstNameChanged = value.firstName.trim() !== user.firstName.trim();
       const lastNameChanged = value.lastName.trim() !== user.lastName.trim();
-      const roleChanged = value.role !== user.role;
+      const roleChanged = canChangeRole && value.role !== currentRole;
       if (!firstNameChanged && !lastNameChanged && !roleChanged) {
         onSuccess();
         return;
@@ -93,7 +96,7 @@ function EditOrganizationUserContent({
           userId: user.userId,
           ...(firstNameChanged && { firstName: value.firstName }),
           ...(lastNameChanged && { lastName: value.lastName }),
-          ...(roleChanged && { role: value.role }),
+          ...(roleChanged && { roles: [{ role: organizationGrantRoleSchema.parse(value.role) }] }),
         })
         .then((result) => {
           if (result?.error === 'name_forbidden') {
@@ -169,6 +172,7 @@ function EditOrganizationUserContent({
               onChange={field.handleChange}
               userRoles={userRoles}
               access={access}
+              disabled={!canChangeRole}
             />
           )}
         </form.Field>
