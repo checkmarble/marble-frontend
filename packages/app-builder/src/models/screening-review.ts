@@ -1,6 +1,6 @@
 import { toOrderedTopic, topicCategoryPriority } from '@app-builder/components/Screenings/TopicsDisplay';
 import { FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
-import type { CaseDetail } from './cases';
+import type { CaseDetail, CaseStatus } from './cases';
 import type { ContinuousScreening, OpenSanctionEntityPayload } from './continuous-screening';
 import {
   getCategoryForTopic,
@@ -17,6 +17,7 @@ export interface ScreeningReviewItem {
   caseId: string;
   caseName: string;
   caseCreatedAt: string;
+  caseStatus: CaseStatus;
   inboxId: string;
   screeningId: string;
   matchId: string;
@@ -85,6 +86,7 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
         caseId: caseDetail.id,
         caseName: caseDetail.name,
         caseCreatedAt: caseDetail.createdAt,
+        caseStatus: caseDetail.status,
         inboxId: caseDetail.inboxId,
         screeningId: screening.id,
         triggerType: screening.triggerType,
@@ -515,6 +517,24 @@ export function isPendingReviewItem(item: ScreeningReviewItem) {
   return item.status === 'pending' && item.screeningStatus === 'in_review';
 }
 
+/** The queue filters. To review reads open cases only; the others also read closed cases. */
+export const SCREENING_REVIEW_FILTERS = ['all', 'to_review', 'validated'] as const;
+export type ScreeningReviewFilter = (typeof SCREENING_REVIEW_FILTERS)[number];
+
+/** Validated holds every hit that no longer waits for a decision, so decided hits show read-only. */
+export function matchesScreeningReviewFilter(item: ScreeningReviewItem, filter: ScreeningReviewFilter) {
+  if (filter === 'all') return true;
+  return isPendingReviewItem(item) === (filter === 'to_review');
+}
+
+/** How many of `items` each filter holds. */
+export function countScreeningReviewFilters(
+  items: readonly ScreeningReviewItem[],
+): Record<ScreeningReviewFilter, number> {
+  const toReview = items.filter(isPendingReviewItem).length;
+  return { all: items.length, to_review: toReview, validated: items.length - toReview };
+}
+
 function topicPriority(item: ScreeningReviewItem) {
   return Math.min(
     999,
@@ -725,7 +745,7 @@ export function screeningReviewScreeningState(
     // The case closes once every one of its screenings ends at no_hit.
     const caseClosed = predicted
       ? items.every((other) => other.caseId !== item.caseId || other.screeningStatus === 'no_hit')
-      : result?.caseClosed;
+      : (result?.caseClosed ?? item.caseStatus === 'closed');
     return caseClosed ? 'case_closed' : 'closure_pending';
   }
   const pending = items.some((other) => other.screeningId === item.screeningId && isPendingReviewItem(other));

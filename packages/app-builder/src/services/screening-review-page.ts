@@ -1,8 +1,10 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import type { CaseStatus } from '@app-builder/models/cases';
 import {
   buildScreeningReviewItems,
-  isPendingReviewItem,
+  matchesScreeningReviewFilter,
   needsFalsePositiveClosure,
+  type ScreeningReviewFilter,
   type ScreeningReviewItem,
 } from '@app-builder/models/screening-review';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
@@ -14,24 +16,40 @@ export interface ScreeningReviewPage {
   failed: boolean;
 }
 
-/** Whole case batches may overflow the hit target, avoiding offsets inside mutable screenings. */
+export interface ScreeningReviewPageOptions {
+  inboxId?: string;
+  filter?: ScreeningReviewFilter;
+  /** Matched against case names, which hold the customer's name. */
+  name?: string;
+}
+
+const OPEN_CASE_STATUSES: CaseStatus[] = ['pending', 'investigating', 'waiting_for_action'];
+
+/**
+ * Whole case batches may overflow the hit target, avoiding offsets inside mutable screenings.
+ * The target counts the hits that match the filter. Every hit of a read case is returned, so the
+ * page can count the other filters from what it loaded.
+ */
 export async function readScreeningReviewPage(
   repository: Pick<CaseRepository, 'listCases' | 'getCase' | 'updateCase'>,
   userId: string,
   limit: number,
   cursor: string | null,
-  inboxId = MY_INBOX_ID,
+  { inboxId = MY_INBOX_ID, filter = 'to_review', name }: ScreeningReviewPageOptions = {},
 ): Promise<ScreeningReviewPage> {
   const items: ScreeningReviewItem[] = [];
+  // Closed cases pile up over time, so To review never reads them.
+  const includeClosed = filter !== 'to_review';
   let offsetId = cursor;
-  let pendingCount = 0;
+  let matchingCount = 0;
   while (true) {
     let page;
     try {
       page = await repository.listCases({
         assigneeId: userId,
         ...(inboxId !== MY_INBOX_ID ? { inboxIds: [inboxId] } : {}),
-        statuses: ['pending', 'investigating', 'waiting_for_action'],
+        statuses: includeClosed ? [...OPEN_CASE_STATUSES, 'closed'] : OPEN_CASE_STATUSES,
+        ...(name ? { name } : {}),
         snoozed: false,
         limit,
         order: 'DESC',
@@ -55,15 +73,15 @@ export async function readScreeningReviewPage(
           if (
             detail.assignedTo !== userId ||
             (inboxId !== MY_INBOX_ID && detail.inboxId !== inboxId) ||
-            detail.status === 'closed' ||
+            (detail.status === 'closed' && !includeClosed) ||
             detail.status === 'snoozed' ||
             (detail.snoozedUntil && Date.parse(detail.snoozedUntil) > Date.now())
           )
             return [];
           // A closure that failed after the last review is retried here; its hits are done either way.
           if (needsFalsePositiveClosure(detail)) {
-            await closeFalsePositiveCase(repository, detail);
-            return [];
+            const closed = await closeFalsePositiveCase(repository, detail);
+            return includeClosed ? buildScreeningReviewItems([closed ? { ...detail, status: 'closed' } : detail]) : [];
           }
           return buildScreeningReviewItems([detail]);
         }),
@@ -72,12 +90,12 @@ export async function readScreeningReviewPage(
         // Retry the same page on failure. Never advance a cursor beyond missing data.
         if (result.status === 'rejected') return { items, nextCursor: null, failed: true };
         items.push(...result.value);
-        pendingCount += result.value.filter(isPendingReviewItem).length;
+        matchingCount += result.value.filter((item) => matchesScreeningReviewFilter(item, filter)).length;
       }
       const last = batch.at(-1);
       if (!last || last.id === offsetId) throw new Error('Case pagination did not advance');
       offsetId = last.id;
-      if (pendingCount >= limit) {
+      if (matchingCount >= limit) {
         const more = index + batch.length < page.items.length || page.hasNextPage;
         return { items, nextCursor: more ? offsetId : null, failed: false };
       }

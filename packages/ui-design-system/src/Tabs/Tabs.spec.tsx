@@ -145,6 +145,26 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'Account' })).not.toHaveClass('bg-purple-background');
   });
 
+  it('applies the pills variant to the tablist and its tabs, with counts beside the labels', () => {
+    render(
+      <Tabs variant="pills" value="all">
+        <Tabs.Button value="all">All</Tabs.Button>
+        <Tabs.Button value="to_review">
+          To review <Tabs.Count>18</Tabs.Count>
+        </Tabs.Button>
+      </Tabs>,
+    );
+
+    const tablist = screen.getByRole('tablist');
+    expect(tablist).toHaveClass('flex-wrap', 'bg-transparent');
+    expect(tablist).not.toHaveClass('bg-purple-background', 'p-xs');
+    const tab = screen.getByRole('tab', { name: 'To review 18' });
+    expect(tab).toHaveClass('rounded-full', 'h-5', 'bg-purple-background');
+    expect(tab).not.toHaveClass('rounded-sm', 'h-8');
+    expect(screen.getByRole('tab', { name: 'All' })).toHaveAttribute('data-status', 'active');
+    expect(screen.getByText('18')).toHaveClass('rounded-full', 'bg-surface-card');
+  });
+
   it('links each button to its panel when the tabs have an id', () => {
     render(
       <>

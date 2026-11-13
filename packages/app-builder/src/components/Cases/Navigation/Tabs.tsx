@@ -48,7 +48,7 @@ export function CasesNavigationTabs({
             <Tabs.Link asChild>
               <Link
                 to="/cases/screening-review"
-                search={{ inboxId, limit: 50, cursors: [] }}
+                search={{ inboxId, filter: 'to_review', limit: 50, cursors: [] }}
                 activeOptions={{ includeSearch: false }}
               >
                 {t('cases:screening_review.title')}

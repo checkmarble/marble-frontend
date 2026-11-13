@@ -1,7 +1,7 @@
 import { isNewToastMessage, type ToastMessage } from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment';
 import { useEffect } from 'react';
-import { ToastBar, Toaster, toast } from 'react-hot-toast';
+import { resolveValue, ToastBar, Toaster, toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
@@ -42,27 +42,32 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: ToastMessage })
         },
       }}
     >
-      {(currentToast) => (
-        <ToastBar
-          toast={currentToast}
-          style={{
-            background: 'var(--color-surface-card)',
-            color: 'var(--color-grey-primary)',
-          }}
-        >
-          {({ icon, message }) => (
-            <>
-              {icon}
-              {message}
-              {currentToast.type !== 'loading' ? (
-                <button onClick={() => toast.dismiss(currentToast.id)} aria-label="Close" className="shrink-0">
-                  <Icon icon="cross" className="size-6 shrink-0" />
-                </button>
-              ) : null}
-            </>
-          )}
-        </ToastBar>
-      )}
+      {(currentToast) =>
+        // A custom toast draws itself, as react-hot-toast does without a render function.
+        currentToast.type === 'custom' ? (
+          <>{resolveValue(currentToast.message, currentToast)}</>
+        ) : (
+          <ToastBar
+            toast={currentToast}
+            style={{
+              background: 'var(--color-surface-card)',
+              color: 'var(--color-grey-primary)',
+            }}
+          >
+            {({ icon, message }) => (
+              <>
+                {icon}
+                {message}
+                {currentToast.type !== 'loading' ? (
+                  <button onClick={() => toast.dismiss(currentToast.id)} aria-label="Close" className="shrink-0">
+                    <Icon icon="cross" className="size-6 shrink-0" />
+                  </button>
+                ) : null}
+              </>
+            )}
+          </ToastBar>
+        )
+      }
     </Toaster>
   );
 }

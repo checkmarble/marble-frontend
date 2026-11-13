@@ -103,3 +103,26 @@ export const Fluid: StoryFn<typeof Tabs> = () => {
     </div>
   );
 };
+
+export const Pills: StoryFn<typeof Tabs> = () => {
+  const [activeTab, setActiveTab] = useState('all');
+  const filters = [
+    { value: 'all', label: 'All' },
+    { value: 'to_review', label: 'To review', count: 18 },
+    { value: 'awaiting_validation', label: 'Awaiting validation', count: 2 },
+    { value: 'validated', label: 'Validated', count: 1 },
+  ];
+
+  return (
+    <div className="max-w-[270px]">
+      <Tabs variant="pills" value={activeTab} onValueChange={setActiveTab}>
+        {filters.map(({ value, label, count }) => (
+          <Tabs.Button key={value} value={value}>
+            {label}
+            {count !== undefined ? <Tabs.Count>{count}</Tabs.Count> : null}
+          </Tabs.Button>
+        ))}
+      </Tabs>
+    </div>
+  );
+};
