@@ -52,7 +52,10 @@ export const SCREENING_REVIEW_SHORTCUT_HELP = [
   {
     group: 'list',
     // Brackets are reserved for physical key codes in hotkey strings.
-    rows: [{ name: 'toggle_list', hotkeys: [{ key: '[' }, { key: '(' }] }],
+    rows: [
+      { name: 'toggle_list', hotkeys: [{ key: '[' }, { key: '(' }] },
+      { name: 'unstack_restack', hotkeys: [{ key: '+' }, { key: '-' }] },
+    ],
   },
   {
     group: 'more_information',
@@ -107,7 +110,8 @@ export function useScreeningReviewShortcuts(shortcuts: readonly ScreeningReviewS
     definitions.push({ hotkey: shortcut.hotkey, callback, options });
     if (shortcut.hotkey === '?') {
       // The beta's letter fallback works for J/K, but Arabic ؟ needs an explicit punctuation alias.
-      definitions.push({ hotkey: 'Shift+[Slash]', callback, options });
+      // It names the character, not the key: French Mac layouts type + on that key.
+      definitions.push({ hotkey: { key: '؟' }, callback, options });
     }
   }
   useHotkeys(definitions, {
