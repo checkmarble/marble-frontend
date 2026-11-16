@@ -9,7 +9,6 @@ import {
   type NavigationOption,
   TableModel,
 } from '@app-builder/models';
-import { isEnumField } from '@app-builder/models/enum-values';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { createColumnHelper, flexRender, useTable as useTanStackTable } from '@tanstack/react-table';
@@ -24,7 +23,8 @@ import { Button, cn, MenuCommand, marbleTableFeatures, Popover } from 'ui-design
 import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
-import { EnumTag } from '../Data/EnumTag';
+import { DataFieldValue } from '../Data/DataVisualisation/DataField';
+import { resolveFieldCurrency } from '../Data/DataVisualisation/DataFields';
 import { FormatData } from '../FormatData';
 import { Spinner } from '../Spinner';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
@@ -192,18 +192,11 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
     .exhaustive();
 }
 
-function DataTableCell({ field, value }: { field: DataModelField; value: unknown }) {
-  const { t } = useTranslation(['common']);
-
+function DataTableCell({ field, value, currency }: { field: DataModelField; value: unknown; currency?: string }) {
   if (value === null || value === undefined || value === '') {
     return <span className="text-grey-secondary">-</span>;
   }
-  if (typeof value === 'boolean') {
-    return <span>{value ? t('common:true') : t('common:false')}</span>;
-  }
-  if (isEnumField(field) && (typeof value === 'string' || typeof value === 'number')) {
-    return <EnumTag field={field} value={value} />;
-  }
+  // A row has no room for the full-size id button, and a foreign key must show its value.
   if (typeof value === 'string' && isIdField(field)) {
     return (
       <CopyToClipboardButton toCopy={value} size="sm" className="bg-surface-card font-mono text-2xs">
@@ -211,10 +204,19 @@ function DataTableCell({ field, value }: { field: DataModelField; value: unknown
       </CopyToClipboardButton>
     );
   }
+  // DataFieldValue draws a full map for coordinates and only takes primitive values.
+  const isPrimitive = typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+  if (!isPrimitive || field.dataType === 'Coords' || field.dataType === 'IpAddress') {
+    return (
+      <span className="line-clamp-1">
+        <FormatData compact type={field.dataType} data={parseUnknownData(value)} />
+      </span>
+    );
+  }
   return (
-    <span className={cn('line-clamp-1', typeof value === 'number' && 'text-end')}>
-      <FormatData compact type={field.dataType} data={parseUnknownData(value)} />
-    </span>
+    <div className={cn('min-w-0 truncate', typeof value === 'number' && 'text-end')}>
+      <DataFieldValue field={field} value={value} currency={currency} />
+    </div>
   );
 }
 
@@ -287,11 +289,13 @@ function DataTable({
           header: () => fieldByName.get(name)?.alias || name,
           cell: (info) => {
             const field = fieldByName.get(name);
-            return field ? <DataTableCell field={field} value={info.getValue()} /> : null;
+            if (!field) return null;
+            const currency = resolveFieldCurrency(field, table.fields, info.row.original);
+            return <DataTableCell field={field} value={info.getValue()} currency={currency} />;
           },
         }),
       ),
-    [prefs.visible, fieldByName],
+    [prefs.visible, fieldByName, table.fields],
   );
 
   const columnWidthVars = useMemo(

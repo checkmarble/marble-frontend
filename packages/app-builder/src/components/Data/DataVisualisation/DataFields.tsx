@@ -196,7 +196,7 @@ function filterFieldsByPreset(
   }
 }
 
-function resolveFieldCurrency(
+export function resolveFieldCurrency(
   field: DataModelField | undefined,
   allFields: DataModelField[] | undefined,
   data: Record<string, unknown> | undefined,
