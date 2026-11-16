@@ -1,4 +1,4 @@
-import { type ScreeningProviders } from '@app-builder/models/screening';
+import { type ScreeningCategory, type ScreeningProviders } from '@app-builder/models/screening';
 import { createSharpFactory } from 'sharpstate';
 
 export type ListAndTopicDatasetConfigurationMode = 'view' | 'edit' | 'create';
@@ -18,6 +18,7 @@ export const ListAndTopicDatasetConfiguration = createSharpFactory({
     mode: params.mode,
     provider: params.provider,
     variant: params.variant ?? 'default',
+    requiredSectionKey: null as ScreeningCategory | null,
   }),
 }).withActions({
   setMode(api, mode: ListAndTopicDatasetConfigurationMode) {

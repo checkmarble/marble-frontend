@@ -164,16 +164,23 @@ export function isSectionEnabled(datasets: Record<string, boolean>, sectionKey: 
   return !!datasets[sectionKey];
 }
 
+export function getRequiredLexisNexisSection(
+  filters: ListConfigFilters,
+  provider: ScreeningProviders,
+): ScreeningCategory | null {
+  if (provider !== 'lexisnexis') return null;
+  const sectionKeys = getAvailableSectionKeys(filters);
+  return sectionKeys.length === 1 ? (sectionKeys[0] ?? null) : null;
+}
+
 /** Persists the mandatory LexisNexis section flag so UI state and wire payload stay aligned. */
 export function applyUniqueLexisNexisSectionDefault(
   datasets: Record<string, boolean>,
   filters: ListConfigFilters,
   provider: ScreeningProviders,
 ): void {
-  if (provider !== 'lexisnexis') return;
-  const sectionKeys = getAvailableSectionKeys(filters);
-  const sectionKey = sectionKeys[0];
-  if (sectionKeys.length !== 1 || !sectionKey) return;
+  const sectionKey = getRequiredLexisNexisSection(filters, provider);
+  if (!sectionKey) return;
   datasets[sectionKey] = true;
 }
 
@@ -214,13 +221,15 @@ export function applyAliveDeceasedDefaults(
   }
 }
 
-/** Keeps the bare section flag aligned with whether any leaf item in the section is selected. */
+/** Keeps the section enabled when required or when any leaf item is selected. */
 export function syncSectionEnabledFromLeaves(
   datasets: Record<string, boolean>,
   sectionKey: ScreeningCategory,
   section: SelectableSection,
+  requiredSectionKey?: ScreeningCategory | null,
 ): void {
-  datasets[sectionKey] = getSelectableSectionLeafKeys(sectionKey, section).some((key) => datasets[key]);
+  datasets[sectionKey] =
+    sectionKey === requiredSectionKey || getSelectableSectionLeafKeys(sectionKey, section).some((key) => datasets[key]);
 }
 
 function getSelectableSectionLeafKeys(sectionKey: ScreeningCategory, section: SelectableSection): string[] {
