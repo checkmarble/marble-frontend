@@ -617,25 +617,69 @@ export function groupScreeningReviewItems(
     .sort((a, b) => b.newestCase.localeCompare(a.newestCase) || a.key.localeCompare(b.key))
     .map((group) => ({
       ...group,
-      items: group.items.sort(
-        (a, b) => topicPriority(a) - topicPriority(b) || b.score - a.score || a.id.localeCompare(b.id),
-      ),
+      // Each stack's hits follow one another, from where its first hit sorts.
+      items: stackScreeningReviewItems(
+        group.items.sort(
+          (a, b) => topicPriority(a) - topicPriority(b) || b.score - a.score || a.id.localeCompare(b.id),
+        ),
+      ).flat(),
     }));
 }
 
+/** Identifies a stack: one customer's hits on one list record. */
+export function screeningReviewStackKey(item: ScreeningReviewItem) {
+  return JSON.stringify([item.customer.key, item.listRecord.id]);
+}
+
+/**
+ * Splits hits into stacks: one customer's hits on one list record, from several screenings or cases.
+ * The list shows a stack as one card, and a decision on it applies to all its pending hits. Stacks
+ * keep the order of their first hit. The stacks in `unstacked` split into one stack per hit.
+ */
+export function stackScreeningReviewItems<T extends ScreeningReviewItem>(
+  items: readonly T[],
+  unstacked: ReadonlySet<string> = new Set(),
+): T[][] {
+  const stacks = new Map<string, T[]>();
+  for (const item of items) {
+    const key = screeningReviewStackKey(item);
+    const stack = stacks.get(key);
+    if (stack) stack.push(item);
+    else stacks.set(key, [item]);
+  }
+  return [...stacks].flatMap(([key, stack]) => (unstacked.has(key) ? stack.map((item) => [item]) : [stack]));
+}
+
+/** The listed stack holding `itemId`, or none. Unstacked or not, it holds all the stack's hits. */
+export function screeningReviewStack(groups: readonly ScreeningReviewGroup[], itemId: string | undefined) {
+  const group = groups.find((candidate) => candidate.items.some((item) => item.id === itemId));
+  return stackScreeningReviewItems(group?.items ?? []).find((stack) => stack.some((item) => item.id === itemId)) ?? [];
+}
+
+/** The hit a stack opens on: its first pending hit, else its first hit. */
+export function screeningReviewStackLead<T extends ScreeningReviewItem>(stack: readonly T[]): T | undefined {
+  return stack.find(isPendingReviewItem) ?? stack[0];
+}
+
+/**
+ * The next or previous stack's lead, or the next or previous customer's first lead. The hits of an
+ * unstacked stack are visited one by one.
+ */
 export function adjacentScreeningReviewItem(
   groups: readonly ScreeningReviewGroup[],
   activeId: string | undefined,
   direction: -1 | 1,
   byCustomer = false,
+  unstacked: ReadonlySet<string> = new Set(),
 ) {
   if (byCustomer) {
     const index = groups.findIndex((group) => group.items.some((item) => item.id === activeId));
-    return groups[index + direction]?.items[0];
+    const group = groups[index + direction];
+    return group ? screeningReviewStackLead(stackScreeningReviewItems(group.items, unstacked)[0] ?? []) : undefined;
   }
-  const items = groups.flatMap((group) => group.items);
-  const index = items.findIndex((item) => item.id === activeId);
-  return items[index + direction];
+  const stacks = groups.flatMap((group) => stackScreeningReviewItems(group.items, unstacked));
+  const index = stacks.findIndex((stack) => stack.some((item) => item.id === activeId));
+  return screeningReviewStackLead(stacks[index + direction] ?? []);
 }
 
 /** How long a customer's hits stay listed after their case closes. */

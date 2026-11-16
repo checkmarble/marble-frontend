@@ -1697,3 +1697,163 @@ describe('screening review list rail', () => {
     expect(list().className).not.toContain('absolute');
   });
 });
+
+describe('screening review stacks', () => {
+  // Alice matches both list records in two cases: two stacks of two hits.
+  const one = '55555555-5555-4555-8555-555555555555';
+  const two = '66666666-6666-4666-8666-666666666666';
+  const stackItems = buildScreeningReviewItems([
+    reviewCase(one, [objectReviewScreening('one')]),
+    reviewCase(two, [objectReviewScreening('two')]),
+  ]);
+  const hitCards = () => document.querySelectorAll('[data-review-hit-card]');
+  const panel = () => screen.getByRole('complementary', { name: 'cases:screening_review.panel.label' });
+  const stackButton = (label: string) =>
+    within(within(panel()).getByRole('group', { name: 'cases:screening_review.stack.navigation' })).getByRole(
+      'button',
+      { name: label },
+    );
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation((query: string) => ({ matches: false, media: query })),
+    );
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: stackItems, nextCursor: null, failed: false });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it('shows each stack as one card with its count, and moves from stack to stack', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    expect(hitCards()).toHaveLength(2);
+    expect(activeCard()?.textContent).toContain('×2');
+    press('j', 'KeyJ');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
+    press('k', 'KeyK');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-high`));
+  });
+
+  it('switches between the stack’s cases with numbered buttons in the case panel', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    press('h', 'KeyH');
+    expect(stackButton(`1 · Case ${one}`).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(stackButton(`2 · Case ${two}`));
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+    expect(stackButton(`2 · Case ${two}`).getAttribute('aria-pressed')).toBe('true');
+    expect(within(panel()).getByRole('heading', { level: 2 }).textContent).toBe(`Case ${two}`);
+    // The same card stays under the cursor.
+    expect(hitCards()).toHaveLength(2);
+    expect(activeCard()?.textContent).toContain('List record A');
+  });
+
+  it('records a decision on every pending hit of the stack, with one undo', async () => {
+    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue({
+      ok: true,
+      screeningStatus: 'in_review',
+      caseClosed: false,
+    });
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('n', 'KeyN');
+    expect(screen.getByText('cases:screening_review.dock.stack_note')).toBeTruthy();
+    press('Enter', 'Enter');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+    expect(screen.getAllByRole('button', { name: /screening_review\.undo\.action/ })).toHaveLength(1);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(SCREENING_REVIEW_UNDO_DELAY_MS);
+    });
+    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
+    for (const [caseId, screeningId] of [
+      [one, 'one'],
+      [two, 'two'],
+    ]) {
+      expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith({
+        data: { caseId, screeningId, matchId: `${screeningId}-high`, status: 'no_hit' },
+      });
+    }
+  });
+
+  const stackToggle = (label: 'unstack' | 'restack') =>
+    screen.getAllByRole('button', { name: `cases:screening_review.stack.${label}` });
+
+  it('unstacks with + or the ×N button, then moves hit by hit, and restacks with - or the − button', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    expect(stackToggle('unstack')[0]!.textContent).toBe('×2');
+    expect(stackToggle('unstack')[0]!.getAttribute('aria-expanded')).toBe('false');
+    press('+', 'Equal', true);
+    expect(hitCards()).toHaveLength(3);
+    expect(stackToggle('restack').map((button) => button.textContent)).toEqual(['−', '−']);
+    expect(stackToggle('restack')[0]!.getAttribute('aria-expanded')).toBe('true');
+    press('j', 'KeyJ');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+    press('-', 'Minus');
+    expect(hitCards()).toHaveLength(2);
+    // The stack's card still shows the hit under the cursor.
+    expect(activeCard()?.textContent).toContain('List record A');
+
+    fireEvent.click(stackToggle('unstack')[1]!);
+    expect(hitCards()).toHaveLength(3);
+    fireEvent.click(stackToggle('restack')[1]!);
+    expect(hitCards()).toHaveLength(2);
+    press('+', 'Equal', true);
+    press('+', 'Equal', true);
+    expect(hitCards()).toHaveLength(2);
+  });
+
+  it('unstacks with + typed where US layouts have /, as on a French Mac, without opening the help', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    press('+', 'Slash', true);
+    expect(hitCards()).toHaveLength(3);
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('selects and decides each hit of an unstacked stack on its own', async () => {
+    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue({
+      ok: true,
+      screeningStatus: 'in_review',
+      caseClosed: false,
+    });
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('+', 'Equal', true);
+    press('x', 'KeyX');
+    const checkedCards = () =>
+      document.querySelectorAll('[data-review-hit-card] ~ [role="checkbox"][aria-checked="true"]').length;
+    expect(checkedCards()).toBe(1);
+    press('x', 'KeyX');
+    expect(checkedCards()).toBe(0);
+
+    press('n', 'KeyN');
+    expect(screen.queryByText('cases:screening_review.dock.stack_note')).toBeNull();
+    press('Enter', 'Enter');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(SCREENING_REVIEW_UNDO_DELAY_MS);
+    });
+    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
+    expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith({
+      data: { caseId: one, screeningId: 'one', matchId: 'one-high', status: 'no_hit' },
+    });
+  });
+
+  it('selects the whole stack with X and lists it once in the batch summary', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    press('x', 'KeyX');
+    const stackCheckbox = activeCard()!.parentElement!.querySelector('[role="checkbox"]')!;
+    expect(stackCheckbox.getAttribute('aria-checked')).toBe('true');
+    const summary = screen.getByRole('region', { name: 'cases:screening_review.batch.title' });
+    expect(within(summary).getAllByRole('listitem')).toHaveLength(1);
+    expect(within(summary).getByText('×2')).toBeTruthy();
+    press('x', 'KeyX');
+    expect(stackCheckbox.getAttribute('aria-checked')).toBe('false');
+  });
+});

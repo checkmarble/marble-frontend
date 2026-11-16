@@ -194,22 +194,33 @@ export function useReviewDecisions({
     new Set(closed.values()).forEach(hideCaseLater);
   }, [closedCaseIds]);
 
-  /** Records the drafted decision on `item`. */
-  const submit = (item: ScreeningReviewItem) => {
-    const draftBefore = drafts[item.id];
+  /**
+   * Records the decision drafted under `draftId` on `items`: the cursor's hit first, then the other
+   * pending hits of its stack. One undo covers them all.
+   */
+  const submit = (items: readonly ScreeningReviewItem[], draftId: string) => {
+    const [item] = items;
+    const draftBefore = drafts[draftId];
     const decision = draftBefore?.decision;
-    if (!draftBefore || !decision) return;
+    if (!item || !draftBefore || !decision) return;
     const comment = draftBefore.comment.trim() || undefined;
+    const ids = items.map((other) => other.id);
     const isCurrent = isCurrentGeneration();
-    const restore = () => {
-      updateSession((current) => withoutDecided(current, [item.id]));
-      setDraft(item.id, draftBefore);
+    const restore = (restoredIds: readonly string[]) => {
+      updateSession((current) => withoutDecided(current, restoredIds));
+      setDraft(draftId, draftBefore);
     };
     setNotice(undefined);
-    setDraft(item.id, undefined);
+    setDraft(draftId, undefined);
     openNextPending(
       item.id,
-      updateSession((current) => withDecided(current, [[item, comment]], decision)),
+      updateSession((current) =>
+        withDecided(
+          current,
+          items.map((other) => [other, comment]),
+          decision,
+        ),
+      ),
     );
     pendingDecision.schedule({
       message: t(
@@ -219,39 +230,43 @@ export function useReviewDecisions({
       undoneMessage: t('cases:screening_review.undo.recalled', { name: item.customer.name }),
       undo: () => {
         if (!isCurrent()) return;
-        restore();
+        restore(ids);
         navigate(item.id);
       },
       write: async (writeItems) => {
-        const outcome = (
-          await writeItems([item], (_, { keepalive }) => writeDecision(item, decision, comment, keepalive, isCurrent))
-        ).get(item)!;
-        if (outcome.status === 'rejected') {
-          if (!isCurrent()) {
-            toast.error(t('cases:screening_review.decision_failed'));
-            return;
+        const results = await writeItems(items, (other, { keepalive }) =>
+          writeDecision(other, decision, comment, keepalive, isCurrent),
+        );
+        const failed: ScreeningReviewItem[] = [];
+        let rejection: ScreeningReviewRejection | undefined;
+        for (const other of items) {
+          const outcome = results.get(other);
+          // A redirect already navigates away.
+          if (outcome?.status === 'fulfilled' && !outcome.value) return;
+          if (outcome?.status !== 'fulfilled') failed.push(other);
+          else if (outcome.value && !outcome.value.ok) {
+            failed.push(other);
+            rejection ??= outcome.value.reason;
           }
-          // Back to the hit with its decision and comment, so the analyst can try again.
-          restore();
-          setNotice({ reason: 'decision_failed' });
-          navigate(item.id);
-          return;
         }
-        const result = outcome.value;
-        // A redirect already navigates away.
-        if (!result) return;
         void refreshPage();
         if (!isCurrent()) {
-          if (!result.ok) toast.error(t(`cases:screening_review.rejection.${result.reason}`));
+          if (rejection) toast.error(t(`cases:screening_review.rejection.${rejection}`));
+          else if (failed.length) toast.error(t('cases:screening_review.decision_failed'));
           return;
         }
-        if (!result.ok) {
+        if (!failed.length) return;
+        const failedIds = failed.map((other) => other.id);
+        if (rejection) {
           // Show what changed, then return to the server's state.
-          updateSession((current) => withoutDecided(current, [item.id]));
-          setNotice({ reason: result.reason });
-          navigate(item.id);
-          return;
+          updateSession((current) => withoutDecided(current, failedIds));
+          setNotice({ reason: rejection });
+        } else {
+          // Back to the hit with its decision and comment, so the analyst can try again.
+          restore(failedIds);
+          setNotice({ reason: 'decision_failed' });
         }
+        navigate(failedIds[0]!);
       },
     });
   };

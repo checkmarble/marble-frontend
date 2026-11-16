@@ -16,6 +16,8 @@ import {
   screeningReviewCustomerPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
+  screeningReviewStack,
+  screeningReviewStackKey,
 } from '@app-builder/models/screening-review';
 import { useScreeningReviewPageQuery } from '@app-builder/queries/cases/screening-review-page';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -28,7 +30,7 @@ import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
 import { ActionDock, DecisionTag, ReadOnlyDock, StepTag } from './ActionDock';
 import { BatchPanel } from './BatchSummary';
-import { emptyBatchSelection, toggleSelected, withoutSelected, withSelected } from './batch-selection';
+import { emptyBatchSelection, withoutSelected, withSelected } from './batch-selection';
 import { DETAILS_PANEL_TABS, DetailsPanel, type DetailsPanelTab } from './DetailsPanel';
 import { HitList } from './HitList';
 import { useMappedProperties } from './MatchedFieldChips';
@@ -206,6 +208,8 @@ function ReviewStream({
   // Wide and narrow pages keep their own list state: collapsed by choice, or open over the hit.
   const [listCollapsed, setListCollapsed] = useState(false);
   const [listOverlayOpen, setListOverlayOpen] = useState(false);
+  // The stacks shown as one card per hit, each selected and decided on its own.
+  const [unstacked, setUnstacked] = useState<ReadonlySet<string>>(() => new Set());
   const mainRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const [unavailable, setUnavailable] = useState(false);
@@ -254,9 +258,19 @@ function ReviewStream({
   const selectedItems = items.filter((item) => selection.has(item.id) && isPendingReviewItem(item));
   const batchMode = selectedItems.length > 0;
   const reviewable = !!active && isPendingReviewItem(active);
+  const activeStack = useMemo(() => screeningReviewStack(groups, active?.id), [groups, active?.id]);
+  const activeStackKey = active ? screeningReviewStackKey(active) : undefined;
+  const activeUnstacked = !!activeStackKey && unstacked.has(activeStackKey);
+  // The cursor's card: its whole stack, or the hit alone once the stack is unstacked. A decision
+  // applies to the card's pending hits, the cursor's first, under one draft.
+  const activeCardHits = activeUnstacked && active ? [active] : activeStack;
+  const activeDecided = active
+    ? [active, ...activeCardHits.filter((item) => item.id !== active.id && isPendingReviewItem(item))]
+    : [];
+  const draftId = activeCardHits[0]?.id ?? active?.id;
   // The end of the queue: nothing left to decide on the first and only page.
   const allReviewed = ready && !hasMore && !search.cursors.length && search.filter !== 'validated' && !counts.to_review;
-  const activeDraft = decisions.draftFor(active?.id);
+  const activeDraft = decisions.draftFor(draftId);
 
   useEffect(() => {
     // Wait for fresh data before declaring a bookmarked hit unavailable.
@@ -280,22 +294,34 @@ function ReviewStream({
     onSearchChange({ ...search, hit: item.id });
   };
   const move = (direction: -1 | 1, byCustomer = false) =>
-    select(adjacentScreeningReviewItem(groups, active?.id, direction, byCustomer));
+    select(adjacentScreeningReviewItem(groups, active?.id, direction, byCustomer, unstacked));
   const changeDraft = (next: Parameters<typeof decisions.changeDraft>[1]) => {
-    if (active) decisions.changeDraft(active.id, next);
+    if (draftId) decisions.changeDraft(draftId, next);
   };
   const submit = () => {
-    if (!active || !reviewable) return;
+    if (!draftId || !reviewable) return;
     setUnavailable(false);
-    decisions.submit(active);
+    decisions.submit(activeDecided, draftId);
   };
   const submitBatch = () => {
     setUnavailable(false);
     decisions.submitBatch(selectedItems, active?.id);
   };
+  /** Selects the cursor's card, or clears it when all its pending hits are selected. */
   const toggleActive = () => {
-    if (active) setSelection((current) => toggleSelected(current, active.id));
+    const ids = activeCardHits.filter(isPendingReviewItem).map((item) => item.id);
+    setSelection((current) =>
+      ids.every((id) => current.has(id)) ? withoutSelected(current, ids) : withSelected(current, ids),
+    );
   };
+  /** Shows a stack as one card per hit, or as one card again. */
+  const toggleStack = (key: string, stack: boolean) =>
+    setUnstacked((current) => {
+      const next = new Set(current);
+      if (stack) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   const activeGroup = () => groups.find((group) => group.items.some((item) => item.id === active?.id));
 
   const openActiveCase = () => {
@@ -372,6 +398,16 @@ function ReviewStream({
     })),
     { hotkey: { key: '[' }, action: toggleList, enabled: canNavigate },
     { hotkey: { key: '(' }, action: toggleList, enabled: canNavigate },
+    {
+      hotkey: { key: '+' },
+      action: () => activeStackKey && toggleStack(activeStackKey, activeUnstacked),
+      enabled: canNavigate && activeStack.length > 1,
+    },
+    {
+      hotkey: { key: '-' },
+      action: () => activeStackKey && toggleStack(activeStackKey, true),
+      enabled: canNavigate && activeUnstacked,
+    },
     { hotkey: '?', action: () => setHelpOpen(true) },
     {
       hotkey: 'Escape',
@@ -480,6 +516,8 @@ function ReviewStream({
                     ready={ready}
                     selection={selection}
                     onSelectionChange={setSelection}
+                    unstacked={unstacked}
+                    onToggleStack={(key) => toggleStack(key, unstacked.has(key))}
                     onActivate={select}
                   />
                 </div>
@@ -489,6 +527,7 @@ function ReviewStream({
             {batchMode ? (
               <BatchPanel
                 items={selectedItems}
+                unstacked={unstacked}
                 selection={selection}
                 onSelectionChange={setSelection}
                 onSubmit={submitBatch}
@@ -534,7 +573,16 @@ function ReviewStream({
                     onDraftChange={changeDraft}
                     onSubmit={submit}
                     onCancel={() => changeDraft({ decision: undefined, comment: '' })}
-                    skippedCount={screeningReviewHitsSkippedBy(reviewItems, active).length}
+                    skippedCount={
+                      new Set(
+                        activeDecided.flatMap((item) =>
+                          screeningReviewHitsSkippedBy(reviewItems, item)
+                            .filter((other) => !activeDecided.some((item) => item.id === other.id))
+                            .map((other) => other.id),
+                        ),
+                      ).size
+                    }
+                    decidedCount={activeDecided.length}
                     commentRef={commentRef}
                   />
                 ) : (
@@ -542,7 +590,7 @@ function ReviewStream({
                     item={active}
                     state={screeningReviewScreeningState(reviewItems, active, session)}
                     sessionComment={session.decided[active.id]?.comment}
-                    canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1) && canNavigate}
+                    canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1, false, unstacked) && canNavigate}
                     onNext={() => move(1)}
                     onMatchesLoaded={decisions.refreshPage}
                   />
@@ -570,9 +618,11 @@ function ReviewStream({
             {panelOpen && panelTab && active ? (
               <DetailsPanel
                 item={active}
+                stack={activeStack}
                 tab={panelTab}
                 inboxes={inboxes}
                 onTabChange={setPanelTab}
+                onSelect={select}
                 onClose={() => setPanelTab(undefined)}
                 className={PANEL_PLACEMENT}
               />

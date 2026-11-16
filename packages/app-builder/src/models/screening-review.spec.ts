@@ -21,7 +21,10 @@ import {
   screeningReviewCustomerPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
+  screeningReviewStack,
+  screeningReviewStackKey,
   screeningReviewTopicFamilies,
+  stackScreeningReviewItems,
 } from './screening-review';
 import stagingObjectAddedDto from './screening-review.staging-object-added.json';
 import { datasetReviewScreening, objectReviewScreening, reviewCase } from './screening-review.test-helpers';
@@ -137,6 +140,45 @@ describe('screening review stream', () => {
     );
     expect(groups.map((group) => group.customer.name)).toEqual(['Bob', 'Alice']);
     expect(groups[1]?.items.map((item) => item.matchId)).toEqual(['screening-1-low', 'screening-1-high']);
+  });
+
+  it('stacks a customer’s hits on one list record across cases, keeps each stack together and moves by stack', () => {
+    const later = objectReviewScreening('two');
+    // Alone, this hit would sort after the other list record's hits.
+    later.matches[0]!.payload.score = 0.7;
+    const items = buildScreeningReviewItems([
+      reviewCase('one', [objectReviewScreening('one')]),
+      reviewCase('two', [later]),
+      reviewCase('bob', [objectReviewScreening('bob', 'bob')]),
+    ]);
+    const groups = groupScreeningReviewItems(items);
+    const alice = groups.find((group) => group.customer.objectId === 'alice')!;
+    expect(alice.items.map((item) => item.matchId)).toEqual(['one-high', 'two-high', 'one-low', 'two-low']);
+    expect(stackScreeningReviewItems(alice.items).map((stack) => stack.map((item) => item.matchId))).toEqual([
+      ['one-high', 'two-high'],
+      ['one-low', 'two-low'],
+    ]);
+    // Another customer's hits on the same list records stack apart.
+    expect(stackScreeningReviewItems(items)).toHaveLength(4);
+    expect(screeningReviewStack(groups, alice.items[1]!.id).map((item) => item.matchId)).toEqual([
+      'one-high',
+      'two-high',
+    ]);
+    expect(screeningReviewStack(groups, 'missing')).toEqual([]);
+    expect(adjacentScreeningReviewItem(groups, alice.items[1]!.id, 1)?.matchId).toBe('one-low');
+    expect(adjacentScreeningReviewItem(groups, alice.items[3]!.id, -1)?.matchId).toBe('one-high');
+
+    // An unstacked stack is visited hit by hit.
+    const unstacked = new Set([screeningReviewStackKey(alice.items[0]!)]);
+    expect(stackScreeningReviewItems(alice.items, unstacked)).toHaveLength(3);
+    expect(adjacentScreeningReviewItem(groups, alice.items[0]!.id, 1, false, unstacked)?.matchId).toBe('two-high');
+    expect(adjacentScreeningReviewItem(groups, alice.items[2]!.id, -1, false, unstacked)?.matchId).toBe('two-high');
+
+    // A stack opens on its first pending hit.
+    const decided = items.map((item) => (item.matchId === 'one-high' ? { ...item, status: 'no_hit' as const } : item));
+    const listed = groupScreeningReviewItems(decided, false, () => true);
+    const listedAlice = listed.find((group) => group.customer.objectId === 'alice')!;
+    expect(adjacentScreeningReviewItem(listed, listedAlice.items[2]!.id, -1)?.matchId).toBe('two-high');
   });
 
   it('uses all request queries for the snapshot name and a stable fallback if none exists', () => {
