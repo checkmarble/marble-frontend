@@ -7,8 +7,8 @@ const kbdClassName = cva('inline-flex shrink-0 items-center justify-center borde
   variants: {
     variant: {
       default: 'min-h-6 min-w-6 rounded-md border-b-2 border-grey-disabled bg-grey-background',
-      // Outline key cap that sits inside a button without growing it.
-      small: 'h-4 min-w-4 rounded-sm border-grey-border bg-transparent px-xs text-xs/none',
+      // Outline key cap that sits inside a button without growing it, tinted with the label's colour.
+      small: 'h-4 min-w-4 rounded-sm border-current/60 bg-transparent px-xs text-xs/none',
     },
   },
   defaultVariants: {

@@ -35,6 +35,8 @@ export interface ScreeningReviewItem {
   score: number;
   topics: string[];
   status: ScreeningMatchStatus;
+  /** The user who decided the hit, as last loaded. */
+  reviewedBy?: string;
   screeningStatus: ContinuousScreening['status'];
   comments: ScreeningMatchComment[];
   partial: boolean;
@@ -110,6 +112,7 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
           score: match.payload.score,
           topics: screening.opensanctionEntityPayload.properties['topics'] ?? [],
           status: match.status,
+          reviewedBy: match.reviewedBy,
           comments: match.comments,
           signals: matchSignals(match.payload),
         }));
@@ -132,6 +135,7 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
         score: match.payload.score,
         topics: match.payload.properties['topics'] ?? [],
         status: match.status,
+        reviewedBy: match.reviewedBy,
         comments: match.comments,
         signals: matchSignals(match.payload),
       }));
@@ -159,8 +163,13 @@ function topicFamily(topic: string): ScreeningCategory | undefined {
 
 /** One entry per topic family, for the hit card's topic dots. */
 export function screeningReviewTopicFamilies(topics: readonly string[]): ScreeningCategory[] {
-  const families = new Set(topics.map(topicFamily));
-  return TOPIC_FAMILY_ORDER.filter((family) => families.has(family));
+  return orderScreeningCategories(topics.map(topicFamily).filter((family) => family !== undefined));
+}
+
+/** Sanctions, PEPs, adverse media, then the other categories, each once. */
+export function orderScreeningCategories(categories: Iterable<ScreeningCategory>): ScreeningCategory[] {
+  const present = new Set(categories);
+  return TOPIC_FAMILY_ORDER.filter((category) => present.has(category));
 }
 
 export type ScreeningReviewFieldState = 'same' | 'close' | 'different' | 'missing';

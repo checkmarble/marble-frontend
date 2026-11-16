@@ -3,15 +3,13 @@ import {
   isPendingReviewItem,
   type ScreeningReviewGroup,
   type ScreeningReviewItem,
-  type ScreeningReviewScreeningState,
   type ScreeningReviewSession,
-  screeningReviewScreeningState,
   screeningReviewTopicFamilies,
 } from '@app-builder/models/screening-review';
 import { type Ref, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Checkbox, cn, Tag, Typo } from 'ui-design-system';
-import { DecisionTag, OpenCaseLink } from './ActionDock';
+import { DecisionTag } from './ActionDock';
 import { type BatchSelection, toggleSelected, withoutSelected, withSelected } from './batch-selection';
 import { type MappedProperties, MatchedFieldChips, useMappedProperties } from './MatchedFieldChips';
 import { CustomerTypeTag } from './ScreeningReviewHit';
@@ -63,7 +61,6 @@ export function HitList({
             key={group.key}
             group={group}
             active={group.items.some((item) => item.id === activeId)}
-            notes={<GroupScreeningNotes items={reviewItems} listed={group.items} session={session} />}
             ready={ready}
             selection={selection}
             onSelectionChange={onSelectionChange}
@@ -91,7 +88,6 @@ export function HitList({
 function CustomerGroup({
   group,
   active,
-  notes,
   ready,
   selection,
   onSelectionChange,
@@ -100,7 +96,6 @@ function CustomerGroup({
   group: ScreeningReviewGroup;
   /** Holds the hit under the cursor. */
   active: boolean;
-  notes: React.ReactNode;
   ready: boolean;
   selection: BatchSelection;
   onSelectionChange: SelectionUpdate;
@@ -117,12 +112,12 @@ function CustomerGroup({
       : 'cases:screening_review.batch.select_customer_hits',
   );
   return (
-    <Card as="li" className="flex min-w-0 flex-col gap-sm p-3">
+    <Card as="li" className={cn('flex min-w-0 flex-col gap-sm p-3', active && 'border-purple-primary')}>
       <div className="flex flex-col gap-xs">
+        <Typo as="h2" variant="subtitle2" className={cn('min-w-0', active && 'text-purple-primary')}>
+          <bdi>{group.customer.name}</bdi>
+        </Typo>
         <div className="flex min-w-0 items-center gap-xs">
-          <Typo as="h2" variant="subtitle2" className={cn('min-w-0 truncate', active && 'text-purple-primary')}>
-            <bdi>{group.customer.name}</bdi>
-          </Typo>
           <CustomerTypeTag customer={group.customer} />
           {pendingIds.length > 0 ? (
             <label
@@ -168,7 +163,6 @@ function CustomerGroup({
             {group.incomplete ? '+' : ''}
           </span>
         </p>
-        {notes}
       </div>
       <ul className="flex flex-col gap-xs">{children}</ul>
     </Card>
@@ -217,9 +211,11 @@ function HitCard({
           </bdi>
           <TopicDots topics={item.topics} />
           <bdi className="shrink-0 text-2xs text-grey-secondary">{Math.round(item.score * 100)}%</bdi>
+          <span className="ms-auto">
+            <DecisionTag status={item.status} />
+          </span>
         </span>
         <span className="flex flex-wrap items-center gap-xs empty:hidden">
-          <DecisionTag status={item.status} />
           <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
         </span>
       </Card>
@@ -266,35 +262,5 @@ function TopicDots({ topics }: { topics: string[] }) {
         );
       })}
     </span>
-  );
-}
-
-/** Notes for a customer's screenings that need something besides a decision. */
-function GroupScreeningNotes({
-  items,
-  listed,
-  session,
-}: {
-  items: readonly ScreeningReviewItem[];
-  listed: readonly ScreeningReviewItem[];
-  session: ScreeningReviewSession;
-}) {
-  const { t } = useTranslation(['cases']);
-  const notes = new Map<string, { item: ScreeningReviewItem; state: ScreeningReviewScreeningState }>();
-  for (const item of listed) {
-    if (notes.has(item.screeningId)) continue;
-    const state = screeningReviewScreeningState(items, item, session);
-    if (state !== 'in_review') notes.set(item.screeningId, { item, state });
-  }
-  if (!notes.size) return null;
-  return (
-    <ul className="flex flex-col gap-2xs text-xs text-grey-secondary">
-      {[...notes.values()].map(({ item, state }) => (
-        <li key={item.screeningId} className="flex flex-wrap items-center gap-xs">
-          <span>{t(`cases:screening_review.group_state.${state}`)}</span>
-          {state === 'confirmed_hit' ? <OpenCaseLink caseId={item.caseId} /> : null}
-        </li>
-      ))}
-    </ul>
   );
 }

@@ -15,6 +15,6 @@ describe('Kbd', () => {
     render(<Kbd variant="small">H</Kbd>);
     const kbd = screen.getByText('H');
     expect(kbd).toHaveClass('h-4');
-    expect(kbd).toHaveClass('border-grey-border');
+    expect(kbd).toHaveClass('border-current/60');
   });
 });

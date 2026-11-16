@@ -32,9 +32,9 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
   return (
     <Card>
       <Collapsible.Root defaultOpen={screening.matches.length === 1} className="overflow-hidden group/collapsible">
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-md">
           <Collapsible.Trigger asChild>
-            <div className="flex gap-sm items-center">
+            <div className="flex gap-sm items-center min-w-0">
               <Icon
                 icon="caret-down"
                 className="self-start mt-xs size-4 group-radix-state-open/collapsible:rotate-180 transition-transform duration-200"
@@ -61,7 +61,7 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
               </div>
             </div>
           </Collapsible.Trigger>
-          <div>
+          <div className="shrink-0">
             {match(screeningMatch.status)
               .with('confirmed_hit', () => <Tag color="red">{t('screenings:match.status.confirmed_hit')}</Tag>)
               .with('no_hit', () => <Tag color="green">{t('screenings:match.status.no_hit')}</Tag>)

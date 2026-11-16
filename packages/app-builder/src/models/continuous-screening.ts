@@ -369,6 +369,8 @@ export type ContinuousScreeningMatchBase = {
   continuousScreeningId: string;
   status: ContinuousScreeningMatchBaseDto['status'];
   payload: ContinuousScreeningMatchPayload;
+  /** The user who decided the match. */
+  reviewedBy?: string;
   comments: ScreeningMatchComment[];
 };
 
@@ -439,6 +441,7 @@ function adaptContinuousScreeningMatchBase(dto: ContinuousScreeningMatchBaseDto)
       target: dto.payload.target,
       datasets: dto.payload.datasets,
     },
+    reviewedBy: dto.reviewed_by,
     comments: adaptScreeningMatchComments(dto.comments),
   };
 }
