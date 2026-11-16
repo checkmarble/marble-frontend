@@ -107,7 +107,7 @@ export function ClientDocumentsPopover({
               </button>
               {field.state.value.length > 0 ? (
                 <div className="flex items-center justify-between gap-xl">
-                  <div className="flex items-center gap-xs">
+                  <div className="flex min-w-0 max-h-40 flex-1 flex-wrap items-center gap-xs overflow-y-auto">
                     {field.state.value.map((file) => (
                       <div
                         key={file.name}
@@ -128,7 +128,13 @@ export function ClientDocumentsPopover({
                   </div>
                   <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                     {([canSubmit, isSubmitting]) => (
-                      <Button type="submit" mode="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
+                      <Button
+                        type="submit"
+                        mode="icon"
+                        variant="primary"
+                        className="shrink-0"
+                        disabled={!canSubmit || isSubmitting}
+                      >
                         <Icon
                           icon={isSubmitting ? 'spinner' : 'send'}
                           className={clsx('size-4', { 'animate-spin': isSubmitting })}
