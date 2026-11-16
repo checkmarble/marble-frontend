@@ -1,4 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { rateLimitIpFunctionMiddleware } from '@app-builder/middlewares/rate-limit';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import {
   discoverTenantOidc,
@@ -51,8 +52,12 @@ export type DiscoverSignInResult =
   | { type: 'redirect'; href: string }
   | { type: 'error'; error: 'unknown_domain' | 'discovery_failed' };
 
+// Discovery tells which email domains have single sign-on: one call per second per client IP.
+// Not in `discoverTenantOidc`, which the organization switch of a signed-in user also calls.
+const discoveryRateLimit = rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 });
+
 export const discoverSignInFn = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
+  .middleware([discoveryRateLimit, servicesMiddleware])
   .validator(z.object({ email: z.email(), redirectTo: z.string().optional(), signedOut: z.boolean() }))
   .handler(async ({ context, data }): Promise<DiscoverSignInResult> => {
     const request = getRequest();
