@@ -362,7 +362,7 @@ describe('screening review pages and restoration', () => {
     const hit = secondPageItems[1]!.id;
     renderPage({ filter: 'to_review', limit: 25, cursors: [pageTwoCursor], inboxId: selectedInboxId, hit });
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
-    expect(screen.getByRole('button', { name: 'cases:case.inbox: Screening alerts' })).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Screening alerts' })).not.toBeNull();
     expect(listScreeningReviewPageFn).toHaveBeenCalledWith({
       data: { filter: 'to_review', limit: 25, cursor: pageTwoCursor, inboxId: selectedInboxId },
     });
@@ -375,7 +375,7 @@ describe('screening review pages and restoration', () => {
       .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
     renderPage({ filter: 'to_review', limit: 50, cursors: [pageTwoCursor] });
     await screen.findByText('cases:screening_review.empty.empty.title');
-    fireEvent.click(screen.getByRole('button', { name: 'cases:case.inbox: cases:inbox.my-inbox.link' }));
+    fireEvent.click(screen.getByRole('button', { name: 'cases:inbox.my-inbox.link' }));
     fireEvent.click(await screen.findByRole('option', { name: 'Screening alerts' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
@@ -422,7 +422,7 @@ describe('screening review pages and restoration', () => {
       .mockReturnValueOnce(nextPage.promise);
     renderPage();
     await waitFor(() => expect(activeCard()).not.toBeNull());
-    fireEvent.click(screen.getByRole('button', { name: 'cases:case.inbox: cases:inbox.my-inbox.link' }));
+    fireEvent.click(screen.getByRole('button', { name: 'cases:inbox.my-inbox.link' }));
     fireEvent.click(await screen.findByRole('option', { name: 'Screening alerts' }));
     await waitFor(() =>
       expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({
@@ -438,7 +438,7 @@ describe('screening review pages and restoration', () => {
   it('leaves keys to the open inbox selector without changing the active hit', async () => {
     renderPage();
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(firstId));
-    fireEvent.click(screen.getByRole('button', { name: 'cases:case.inbox: cases:inbox.my-inbox.link' }));
+    fireEvent.click(screen.getByRole('button', { name: 'cases:inbox.my-inbox.link' }));
     await screen.findByRole('option', { name: 'Screening alerts' });
     const field = document.activeElement;
     expect(field?.tagName).toBe('INPUT');
@@ -726,24 +726,23 @@ describe('screening review decisions', () => {
     press('m', 'KeyM');
     expect(screen.getByRole('note').textContent).toBe('cases:screening_review.dock.skip_warning');
     fireEvent.click(validateButton());
-    // The skip and the screening's result show during the undo delay.
+    // The skip shows during the undo delay.
     await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
     expect(card('List record B')?.textContent).toContain('cases:screening_review.decision.skipped');
-    expect(screen.getByText('cases:screening_review.group_state.confirmed_hit')).toBeTruthy();
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() =>
       expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith(written('screening-1-high', 'confirmed_hit')),
     );
     expect(card('List record B')?.textContent).toContain('cases:screening_review.decision.skipped');
-    const link = screen.getAllByRole('link', { name: 'cases:screening_review.open_case' })[0]!;
-    expect(link.getAttribute('href')).toBe(caseHref);
-    expect(link.getAttribute('target')).toBe('_blank');
 
     // A list-update Hit doesn't warn: the other customers' hits stay independent.
     press('m', 'KeyM');
     expect(screen.queryByRole('note')).toBeNull();
     press('k', 'KeyK');
     await screen.findByText('cases:screening_review.screening_state.confirmed_hit');
+    const link = screen.getByRole('link', { name: 'cases:screening_review.open_case' });
+    expect(link.getAttribute('href')).toBe(caseHref);
+    expect(link.getAttribute('target')).toBe('_blank');
   });
 
   it('shows the closure during the undo delay, closes the case on write, then removes its hits', async () => {
@@ -762,8 +761,7 @@ describe('screening review decisions', () => {
     press('Enter', 'Enter');
     // The second decision writes the first one at once.
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
-    await screen.findByText('cases:screening_review.group_state.case_closed');
-    expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
+    await screen.findByText('cases:screening_review.screening_state.case_closed');
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
     expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
@@ -845,7 +843,6 @@ describe('screening review decisions', () => {
     press('n', 'KeyN');
     press('Enter', 'Enter');
     await screen.findByText('cases:screening_review.screening_state.load_more');
-    expect(screen.getByText('cases:screening_review.group_state.load_more')).toBeTruthy();
     const calls = vi.mocked(listScreeningReviewPageFn).mock.calls.length;
     fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.load_more' }));
     await waitFor(() =>
@@ -1048,7 +1045,11 @@ describe('screening review decisions', () => {
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
       press('m', 'KeyM');
       press('Enter', 'Enter');
-      fireEvent.click(screen.getAllByRole('link', { name: 'cases:screening_review.open_case' })[0]!);
+      // Back on the decided hit, its dock links to its case.
+      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+      press('j', 'KeyJ');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+      fireEvent.click(screen.getByRole('link', { name: 'cases:screening_review.open_case' }));
       expect(open).toHaveBeenLastCalledWith('', '_blank');
       await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
       await waitFor(() => expect(tab.location.href).toBe(new URL(caseHref, window.location.href).href));
@@ -1069,7 +1070,10 @@ describe('screening review decisions', () => {
       press('o', 'KeyO');
       expect(open).toHaveBeenLastCalledWith('', '_blank');
 
-      const link = screen.getAllByRole('link', { name: 'cases:screening_review.open_case' })[0]!;
+      // The decided hit's dock links to its case.
+      press('k', 'KeyK');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      const link = screen.getByRole('link', { name: 'cases:screening_review.open_case' });
       expect(fireEvent.click(link, { metaKey: true })).toBe(false);
       expect(fireEvent.click(link, { ctrlKey: true, shiftKey: true })).toBe(false);
       expect(fireEvent(link, new MouseEvent('auxclick', { button: 1, bubbles: true, cancelable: true }))).toBe(false);
