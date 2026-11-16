@@ -44,40 +44,44 @@ export function AddComment({ caseId }: { caseId: string }) {
       form.validate('change');
     },
   });
-  const hasContent = useStore(form.store, (s) => s.values.comment.length > 0);
+  const hasContent = useStore(form.store, (s) => s.values.comment.length > 0 || s.values.files.length > 0);
 
   return (
     <form onSubmit={handleSubmit(form)} className="bg-surface-elevated border-grey-border gap-md border-t p-md">
       <div
-        className="grid grid-cols-[auto_1fr_auto] gap-sm items-start group/comment-form"
+        className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-sm items-start group/comment-form"
         data-has-content={hasContent}
       >
         <form.Field name="files">
           {(field) => (
-            <div>
+            <div className="contents invisible group-focus-within/comment-form:visible group-data-[has-content='true']/comment-form:visible">
               <input {...getInputProps()} />
-              <div className="flex items-center gap-sm invisible group-focus-within/comment-form:visible group-data-[has-content='true']/comment-form:visible">
-                <Button type="button" variant="secondary" mode="icon" {...getRootProps()}>
-                  <Icon icon="attachment" className="text-grey-secondary size-3.5" />
-                </Button>
-                {field.state.value.map((file) => (
-                  <div
-                    key={file.name}
-                    className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs py-2xs"
-                  >
-                    <span className="text-xs font-medium">{file.name}</span>
-                    <Icon
-                      icon="cross"
-                      className="text-grey-secondary hover:text-grey-primary size-4 cursor-pointer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        field.handleChange((prev) => toggle(prev, file));
-                        form.validate('change');
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
+              <Button type="button" variant="secondary" mode="icon" {...getRootProps()}>
+                <Icon icon="attachment" className="text-grey-secondary size-3.5" />
+              </Button>
+              {field.state.value.length > 0 ? (
+                <div className="col-span-full row-start-2 flex max-h-40 min-w-0 flex-wrap items-center gap-sm overflow-y-auto">
+                  {field.state.value.map((file) => (
+                    <div
+                      key={file.name}
+                      className="border-grey-border flex min-w-0 max-w-full items-center gap-xs rounded-sm border px-2xs py-2xs"
+                    >
+                      <span className="truncate text-xs font-medium" title={file.name}>
+                        {file.name}
+                      </span>
+                      <Icon
+                        icon="cross"
+                        className="text-grey-secondary hover:text-grey-primary size-4 shrink-0 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          field.handleChange((prev) => toggle(prev, file));
+                          form.validate('change');
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
           )}
         </form.Field>
