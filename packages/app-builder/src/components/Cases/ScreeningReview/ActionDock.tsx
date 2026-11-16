@@ -1,11 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import type { ScreeningMatchComment, ScreeningMatchStatus } from '@app-builder/models/screening';
-import type {
-  ScreeningReviewDecision,
-  ScreeningReviewItem,
-  ScreeningReviewScreeningState,
+import {
+  isPendingReviewItem,
+  type ScreeningReviewDecision,
+  type ScreeningReviewItem,
+  type ScreeningReviewScreeningState,
 } from '@app-builder/models/screening-review';
 import { useLoadMoreContinuousScreeningMatchesMutation } from '@app-builder/queries/continuous-screening/load-more-matches';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { useFormatDateTime } from '@app-builder/utils/format';
@@ -13,37 +15,58 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
 import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, cn, Tag, type TagProps, TextArea } from 'ui-design-system';
+import { Button, Card, cn, Tag, TextArea } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { useFlushPendingDecision, useOpenCaseInNewTab } from './pending-decision';
-import { ShortcutKeys } from './ShortcutHelp';
+import { ShortcutButton } from './ShortcutButton';
 
 export interface ScreeningReviewDraft {
   decision?: ScreeningReviewDecision;
   comment: string;
 }
 
-const DECISION_COLORS: Record<Exclude<ScreeningMatchStatus, 'pending'>, TagProps['color']> = {
-  confirmed_hit: 'red',
-  no_hit: 'green',
-  skipped: 'grey',
+const DECISION_STYLES: Record<Exclude<ScreeningMatchStatus, 'pending'>, string> = {
+  confirmed_hit: 'border-red-primary bg-red-primary text-grey-white',
+  no_hit: 'border-green-hover bg-green-hover text-grey-white',
+  skipped: 'border-grey-placeholder text-grey-placeholder',
 };
 
 export function DecisionTag({ status }: { status: ScreeningMatchStatus }) {
   const { t } = useTranslation(['cases']);
   if (status === 'pending') return null;
   return (
-    <Tag size="xs" color={DECISION_COLORS[status]} className="h-5 shrink-0 px-sm">
+    <Tag size="xs" className={cn('h-5 shrink-0 gap-2xs px-sm', DECISION_STYLES[status])}>
       {t(`cases:screening_review.decision.${status}`)}
+      {status !== 'skipped' ? <Icon icon="tick" aria-hidden className="size-3" /> : null}
     </Tag>
   );
 }
 
-/** The review step. The second iteration adds validation steps beside these. */
-export function StepTag({ pending }: { pending: boolean }) {
+/** The step of the hit and who acts on it. The second iteration adds the validation step. */
+export function StepTag({ item, decidedThisVisit }: { item: ScreeningReviewItem; decidedThisVisit: boolean }) {
   const { t } = useTranslation(['cases']);
+  const { currentUser } = useOrganizationDetails();
+  const { getOrgUserById } = useOrganizationUsers();
+  const you = t('cases:screening_review.step.you');
+  if (isPendingReviewItem(item)) {
+    return (
+      <Tag color="purple" className="shrink-0">
+        {t('cases:screening_review.step.to_review', { actor: you })}
+      </Tag>
+    );
+  }
+  // A pending hit of a closed screening has no step left.
+  if (item.status === 'pending') return null;
+  const currentUserId = currentUser.actorIdentity.userId;
+  // A decision made this visit is missing from the snapshot until the next refetch.
+  const reviewerId = decidedThisVisit ? currentUserId : item.reviewedBy;
+  const reviewer = reviewerId ? getOrgUserById(reviewerId) : undefined;
+  const actor = reviewerId && reviewerId === currentUserId ? you : reviewer ? getFullName(reviewer) : undefined;
   return (
-    <Tag size="xs" color={pending ? 'orange' : 'grey'} className="h-5 shrink-0 px-sm">
-      {t(pending ? 'cases:screening_review.step.to_review' : 'cases:screening_review.step.validated')}
+    <Tag color="green" className="shrink-0">
+      {actor
+        ? t('cases:screening_review.step.validated', { actor })
+        : t('cases:screening_review.step.validated_no_actor')}
     </Tag>
   );
 }
@@ -123,19 +146,15 @@ export function ActionDock({
           {decisions.map(({ value, hotkey }) => {
             const selected = draft.decision === value;
             return (
-              <Button
+              <ShortcutButton
                 key={value}
-                variant="secondary"
+                tone={selected ? `picked_${value === 'confirmed_hit' ? 'hit' : 'no_hit'}` : 'neutral'}
+                hotkeys={[hotkey]}
                 aria-pressed={selected}
                 onClick={() => onDraftChange({ ...draft, decision: value })}
-                className={cn(
-                  selected && value === 'confirmed_hit' && 'border-red-primary text-red-primary',
-                  selected && value === 'no_hit' && 'border-green-primary text-green-primary',
-                )}
               >
                 {t(`cases:screening_review.decision.${value}`)}
-                <ShortcutKeys hotkeys={[hotkey]} variant="small" />
-              </Button>
+              </ShortcutButton>
             );
           })}
         </div>
@@ -165,13 +184,12 @@ export function ActionDock({
         />
       </div>
       <div className="flex shrink-0 flex-wrap items-center justify-end gap-sm">
-        <Button variant="secondary" onClick={onCancel}>
+        <ShortcutButton tone="ghost" hotkeys={['Escape']} onClick={onCancel}>
           {t('cases:screening_review.dock.cancel')}
-        </Button>
-        <Button variant="primary" disabled={!draft.decision} onClick={onSubmit}>
+        </ShortcutButton>
+        <ShortcutButton tone="primary" hotkeys={['Enter']} disabled={!draft.decision} onClick={onSubmit}>
           {t('cases:screening_review.dock.validate')}
-          <ShortcutKeys hotkeys={['Enter']} variant="small" />
-        </Button>
+        </ShortcutButton>
       </div>
     </Card>
   );
@@ -273,10 +291,9 @@ export function ReadOnlyDock({
                 decision: t(`cases:screening_review.decision.${item.status}`),
               })}
         </span>
-        <Button variant="secondary" disabled={!canMoveNext} onClick={onNext}>
+        <ShortcutButton tone="neutral" hotkeys={['J']} disabled={!canMoveNext} onClick={onNext}>
           {t('cases:screening_review.dock.next_hit')}
-          <ShortcutKeys hotkeys={['J']} variant="small" />
-        </Button>
+        </ShortcutButton>
       </div>
       <div className="flex min-h-0 flex-col gap-sm overflow-y-auto overscroll-y-contain empty:hidden">
         <ScreeningStateNote item={item} state={state} onMatchesLoaded={onMatchesLoaded} />
@@ -332,14 +349,12 @@ export function BatchDock({
         }}
       />
       <div className="flex flex-wrap items-center justify-end gap-sm">
-        <Button variant="secondary" onClick={onClear}>
+        <ShortcutButton tone="ghost" hotkeys={['Escape']} onClick={onClear}>
           {t('cases:screening_review.batch.clear')}
-          <ShortcutKeys hotkeys={['Escape']} variant="small" />
-        </Button>
-        <Button variant="primary" onClick={onSubmit}>
+        </ShortcutButton>
+        <ShortcutButton tone="primary" hotkeys={['Enter']} onClick={onSubmit}>
           {t('cases:screening_review.batch.no_hit', { count })}
-          <ShortcutKeys hotkeys={['Enter']} variant="small" />
-        </Button>
+        </ShortcutButton>
       </div>
     </Card>
   );

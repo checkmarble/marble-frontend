@@ -10,14 +10,16 @@ import {
 } from '@app-builder/constants/screening-entity';
 import { isMaxRiskLevelInRange } from '@app-builder/models/scoring';
 import {
-  SCREENING_CATEGORY_COLORS,
+  SCREENING_CATEGORY_I18N_KEY_MAP,
   type ScreeningCategory,
   type ScreeningSanctionEntity,
 } from '@app-builder/models/screening';
-import type {
-  ScreeningReviewFieldComparison,
-  ScreeningReviewFieldState,
-  ScreeningReviewItem,
+import {
+  orderScreeningCategories,
+  type ScreeningReviewFieldComparison,
+  type ScreeningReviewFieldState,
+  type ScreeningReviewItem,
+  screeningReviewTopicFamilies,
 } from '@app-builder/models/screening-review';
 import { useRiskLevelLatestQuery } from '@app-builder/queries/scoring/get-risk-level-latest';
 import { useGetScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
@@ -75,7 +77,7 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, 
             <bdi>{item.customer.name}</bdi>
           </Typo>
           <CustomerTypeTag customer={item.customer} />
-          {tags}
+          <div className="ms-auto flex min-w-0 items-center gap-sm">{tags}</div>
         </div>
         <p className="text-s text-grey-secondary">{t('cases:screening_review.case_name', { name: item.caseName })}</p>
         {actions ? <div className="flex flex-wrap items-center gap-xs">{actions}</div> : null}
@@ -156,11 +158,26 @@ function IdentitySummary({ properties }: { properties: Record<string, unknown> }
   );
 }
 
-function IdentityCard({ label, children, borderColor }: { label: string; children: ReactNode; borderColor?: string }) {
+// Customer: a grey stripe and source tag. List record: purple.
+const IDENTITY_SIDE_CLASSES = {
+  customer: { stripe: 'border-l-grey-placeholder', source: 'border-grey-placeholder text-grey-placeholder' },
+  list_record: { stripe: 'border-l-purple-primary', source: 'border-purple-primary text-purple-primary' },
+};
+
+function IdentityCard({
+  side,
+  source,
+  children,
+}: {
+  side: keyof typeof IDENTITY_SIDE_CLASSES;
+  source: string;
+  children: ReactNode;
+}) {
+  const classes = IDENTITY_SIDE_CLASSES[side];
   return (
-    <Card className={cn('flex min-w-0 flex-col gap-sm p-md border-l-3', borderColor)}>
-      <Tag color="grey" size="xs" className="self-start">
-        {label}
+    <Card className={cn('flex min-w-0 flex-col gap-sm p-md border-l-3', classes.stripe)}>
+      <Tag size="xs" className={cn('h-5 self-start px-sm', classes.source)}>
+        {source}
       </Tag>
       {children}
     </Card>
@@ -170,7 +187,7 @@ function IdentityCard({ label, children, borderColor }: { label: string; childre
 function CustomerCard({ item, canViewRiskLevel }: { item: ScreeningReviewItem; canViewRiskLevel: boolean }) {
   const { t } = useTranslation(['cases']);
   return (
-    <IdentityCard label={t('cases:screening_review.customer')} borderColor="border-l-grey-placeholder">
+    <IdentityCard side="customer" source={t('cases:screening_review.identity_source.customer')}>
       <Typo variant="subtitle1" className="min-w-0 truncate">
         <bdi>{item.customer.name}</bdi>
       </Typo>
@@ -199,13 +216,18 @@ function ListRecordCard({ item }: { item: ScreeningReviewItem }) {
   const { t } = useTranslation(['cases']);
   const properties = item.listRecord.properties;
   const aliases = listRecordAliasCount(item);
+  const listTitles = useListRecordListTitles(item.listRecord.datasets ?? []);
+  const source =
+    listTitles.length === 1
+      ? t('cases:screening_review.identity_source.list_record_named', { list: listTitles[0] })
+      : t('cases:screening_review.identity_source.list_record');
   return (
-    <IdentityCard label={t('cases:screening_review.list_record')} borderColor="border-l-purple-primary">
+    <IdentityCard side="list_record" source={source}>
       <div className="flex min-w-0 flex-wrap items-center gap-sm">
         <Typo variant="subtitle1" className="min-w-0 truncate">
           <bdi>{item.listRecord.caption || item.listRecord.id}</bdi>
         </Typo>
-        <TopicsDisplay entity={{ id: item.listRecord.id, properties: { topics: item.topics } }} />
+        <ListCategoryTags item={item} />
         <span className="text-xs text-grey-secondary">{Math.round(item.score * 100)}%</span>
       </div>
       <IdentitySummary properties={properties} />
@@ -346,6 +368,50 @@ export function useListRecordListTitles(datasets: readonly string[]) {
   );
 }
 
+// The list tags colour adverse media orange, as the hit list's topic dots do.
+const LIST_CATEGORY_COLORS: Record<ScreeningCategory, { tag: TagProps['color']; count: string }> = {
+  sanctions: { tag: 'red', count: 'bg-red-background-light' },
+  peps: { tag: 'blue', count: 'bg-blue-96' },
+  'adverse-media': { tag: 'orange', count: 'bg-orange-background-light' },
+  'third-parties': { tag: 'grey', count: 'bg-grey-background-light' },
+  custom: { tag: 'grey', count: 'bg-grey-background-light' },
+  global: { tag: 'green', count: 'bg-green-background-light' },
+};
+const MAX_LIST_CATEGORY_TAGS = 3;
+
+/** One tag per list type, from its topics and lists, with the number of lists when several hit. */
+function ListCategoryTags({ item }: { item: ScreeningReviewItem }) {
+  const { t } = useTranslation(['scenarios']);
+  const listConfigQuery = useListConfigQuery('continuous_monitoring');
+  const listCounts = new Map<ScreeningCategory, number>();
+  for (const name of item.listRecord.datasets ?? []) {
+    const category = findDataset(listConfigQuery.data?.filters, name)?.category;
+    if (category) listCounts.set(category, (listCounts.get(category) ?? 0) + 1);
+  }
+  const categories = orderScreeningCategories([
+    ...screeningReviewTopicFamilies(item.topics),
+    ...listCounts.keys(),
+  ]).slice(0, MAX_LIST_CATEGORY_TAGS);
+  return categories.map((category) => {
+    const count = listCounts.get(category) ?? 0;
+    return (
+      <Tag key={category} size="xs" color={LIST_CATEGORY_COLORS[category].tag} className="h-5 shrink-0 px-sm">
+        {t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[category]}`)}
+        {count > 1 ? (
+          <span
+            className={cn(
+              'flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-2xs font-semibold',
+              LIST_CATEGORY_COLORS[category].count,
+            )}
+          >
+            {count}
+          </span>
+        ) : null}
+      </Tag>
+    );
+  });
+}
+
 function ListRecordLists({ datasets }: { datasets: string[] }) {
   const listConfigQuery = useListConfigQuery('continuous_monitoring');
   const { formatItemName } = useDatasetTitle();
@@ -355,7 +421,12 @@ function ListRecordLists({ datasets }: { datasets: string[] }) {
       {datasets.map((name) => {
         const found = findDataset(listConfigQuery.data?.filters, name);
         return (
-          <Tag key={name} size="small" color={found ? SCREENING_CATEGORY_COLORS[found.category] : 'grey'}>
+          <Tag
+            key={name}
+            size="xs"
+            color={found ? LIST_CATEGORY_COLORS[found.category].tag : 'grey'}
+            className="h-5 px-sm"
+          >
             {formatItemName({ name, title: found?.title })}
           </Tag>
         );

@@ -29,6 +29,9 @@ vi.mock('@app-builder/server-fns/screening-review', () => ({
   reviewScreeningReviewMatchFn: vi.fn(),
 }));
 vi.mock('@app-builder/server-fns/continuous-screening', () => ({ loadMoreContinuousScreeningMatchesFn: vi.fn() }));
+vi.mock('@app-builder/services/organization/organization-detail', () => ({
+  useOrganizationDetails: () => ({ currentUser: { actorIdentity: { userId: 'user-1' } } }),
+}));
 vi.mock('@app-builder/services/organization/organization-users', () => ({
   useOrganizationUsers: () => ({ getOrgUserById: () => undefined }),
 }));
@@ -707,7 +710,7 @@ describe('screening review decisions', () => {
     expect(validateButton().hasAttribute('disabled')).toBe(true);
     fireEvent.click(decisionButton('no_hit'));
     fireEvent.change(commentBox(), { target: { value: 'note' } });
-    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.dock.cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: /screening_review\.dock\.cancel/ }));
     expect(commentBox().value).toBe('');
     expect(validateButton().hasAttribute('disabled')).toBe(true);
   });

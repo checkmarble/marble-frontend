@@ -37,6 +37,7 @@ import { openInNewTabAfter, PendingDecisionProvider } from './pending-decision';
 import { QueueFilters } from './QueueFilters';
 import { type ScreeningReviewNotice, useReviewDecisions } from './review-decisions';
 import { ScreeningReviewHit } from './ScreeningReviewHit';
+import { ShortcutButton } from './ShortcutButton';
 import { ShortcutHelp, ShortcutKeys } from './ShortcutHelp';
 import { ScreeningReviewShortcutProvider, useScreeningReviewShortcuts } from './shortcuts';
 
@@ -502,29 +503,27 @@ function ReviewStream({
                   canViewRiskLevel={canViewRiskLevel}
                   tags={
                     <>
-                      <StepTag pending={reviewable} />
+                      <StepTag item={active} decidedThisVisit={!!session.decided[active.id]} />
                       <DecisionTag status={active.status} />
                     </>
                   }
                   actions={
                     <>
                       {DETAILS_PANEL_TABS.map(({ tab, hotkey }) => (
-                        <Button
+                        <ShortcutButton
                           key={tab}
-                          variant="secondary"
-                          size="small"
+                          tone="neutral"
+                          hotkeys={[hotkey]}
                           aria-pressed={panelTab === tab}
                           aria-keyshortcuts={hotkey}
                           onClick={() => togglePanel(tab)}
                         >
                           {t(`cases:screening_review.panel.tab.${tab}`)}
-                          <ShortcutKeys hotkeys={[hotkey]} variant="small" />
-                        </Button>
+                        </ShortcutButton>
                       ))}
-                      <Button variant="secondary" size="small" aria-keyshortcuts="O" onClick={openActiveCase}>
+                      <ShortcutButton tone="neutral" hotkeys={['O']} aria-keyshortcuts="O" onClick={openActiveCase}>
                         {t('cases:screening_review.open_case')}
-                        <ShortcutKeys hotkeys={['O']} variant="small" />
-                      </Button>
+                      </ShortcutButton>
                     </>
                   }
                 />
