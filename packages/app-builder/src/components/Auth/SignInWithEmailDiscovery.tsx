@@ -1,3 +1,4 @@
+import { isTooManyRequestsError } from '@app-builder/models/http-errors';
 import { type DiscoverSignInResult, discoverSignInFn } from '@app-builder/server-fns/auth';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
@@ -17,11 +18,12 @@ const emailDiscoveryFormSchema = z.object({
   email: z.email(),
 });
 
-type DiscoveryError = Extract<DiscoverSignInResult, { type: 'error' }>['error'];
+type DiscoveryError = Extract<DiscoverSignInResult, { type: 'error' }>['error'] | 'too_many_requests';
 
 const discoveryErrorLabels = {
   unknown_domain: 'auth:sign_in.discovery.errors.unknown_domain',
   discovery_failed: 'auth:sign_in.discovery.errors.discovery_failed',
+  too_many_requests: 'common:errors.too_many_requests',
 } as const satisfies Record<DiscoveryError, string>;
 
 export function SignInWithEmailDiscovery({
@@ -41,6 +43,9 @@ export function SignInWithEmailDiscovery({
 
   const discoverMutation = useMutation({
     mutationFn: (email: string) => discoverSignIn({ data: { email, redirectTo: redirectTo ?? undefined, signedOut } }),
+    // The server allows one discovery per second per IP (server-fns/auth.ts). The default delays
+    // (1s, 2s, 4s) are never shorter than that window, so a retry is not refused by the same window.
+    retry: (failureCount, error) => isTooManyRequestsError(error) && failureCount < 3,
     onSuccess: (result) => {
       if (result.type === 'error') {
         setDiscoveryError(result.error);
@@ -49,7 +54,7 @@ export function SignInWithEmailDiscovery({
       setRedirecting(true);
       window.location.assign(result.href);
     },
-    onError: () => setDiscoveryError('discovery_failed'),
+    onError: (error) => setDiscoveryError(isTooManyRequestsError(error) ? 'too_many_requests' : 'discovery_failed'),
   });
 
   const form = useForm({

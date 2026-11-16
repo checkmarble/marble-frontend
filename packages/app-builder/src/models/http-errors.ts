@@ -56,6 +56,13 @@ export function isRequestTimeoutError(error: unknown): boolean {
   return error instanceof Error && error.message === REQUEST_TIMEOUT_ERROR_MESSAGE;
 }
 
+/** Message of the error a rate-limited server function throws, alongside its HTTP 429 status. */
+export const TOO_MANY_REQUESTS_ERROR_MESSAGE = 'too_many_requests';
+
+export function isTooManyRequestsError(error: unknown): boolean {
+  return error instanceof Error && error.message === TOO_MANY_REQUESTS_ERROR_MESSAGE;
+}
+
 const marbleErrorSchema = z.object({
   error_code: z.string().optional(),
   message: z.string(),

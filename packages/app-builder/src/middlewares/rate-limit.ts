@@ -1,3 +1,4 @@
+import { TOO_MANY_REQUESTS_ERROR_MESSAGE } from '@app-builder/models/http-errors';
 import { createRateLimiter, perUserRateLimitKey, type RateLimitOptions } from '@app-builder/utils/rate-limiter.server';
 import { createMiddleware } from '@tanstack/react-start';
 import { getRequest, setResponseStatus } from '@tanstack/react-start/server';
@@ -50,8 +51,26 @@ export function rateLimitFunctionMiddleware({ scope = 'user', ...options }: Rate
       const result = check(key);
       if (!result.allowed) {
         setResponseStatus(429);
-        throw new Error('Too many requests');
+        throw new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE);
       }
       return next();
     });
+}
+
+// Function middleware keyed by client IP, for server functions called before sign-in:
+//   createServerFn({ method: 'POST' }).middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 }), servicesMiddleware])
+// List it first: a refused call then skips the next middlewares and their backend calls.
+// The browser only receives the error message: match it with `isTooManyRequestsError`.
+// ponytail: X-Real-IP / X-Forwarded-For are spoofable unless the proxy in front overwrites them, and
+// requests without either share the 'unknown' budget. Key on a proxy-set header if abuse shows up.
+export function rateLimitIpFunctionMiddleware(options: RateLimitOptions) {
+  const check = createRateLimiter(options);
+
+  return createMiddleware({ type: 'function' }).server(async ({ next }) => {
+    if (!check(getClientIp(getRequest())).allowed) {
+      setResponseStatus(429);
+      throw new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE);
+    }
+    return next();
+  });
 }
