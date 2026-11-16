@@ -135,6 +135,28 @@ export function DataField({ field, value, linkedTo, metaData, currency }: DataFi
   );
 }
 
+/** The value of a field without its label, for layouts that bring their own (a table cell). */
+export function DataFieldValue({ field, value, currency }: Pick<DataFieldProps, 'field' | 'value' | 'currency'>) {
+  const fieldType = adaptFieldType(
+    field?.dataType,
+    field?.name,
+    field?.semanticType,
+    field?.semanticSubType,
+    field?.booleanDisplay,
+    field?.isInteger,
+  );
+  const contextValue = useMemo(
+    () => ({ field, value, metaData: undefined, fieldType, currency }),
+    [field, value, fieldType, currency],
+  );
+
+  return (
+    <DataFieldProvider value={contextValue}>
+      {isNonNullish(value) ? <FieldRenderer /> : <EmptyValue />}
+    </DataFieldProvider>
+  );
+}
+
 function FieldRenderer() {
   const { fieldType, field, value } = useDataField();
   if (field && isEnumField(field) && (typeof value === 'string' || typeof value === 'number'))
