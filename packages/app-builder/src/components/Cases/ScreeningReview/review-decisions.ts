@@ -8,13 +8,16 @@ import {
   type ScreeningReviewDecision,
   type ScreeningReviewItem,
   type ScreeningReviewSession,
+  screeningReviewScreeningsToLoad,
 } from '@app-builder/models/screening-review';
 import { useScreeningReviewDecisionMutation } from '@app-builder/queries/cases/screening-review-decision';
+import { loadMoreContinuousScreeningMatchesFn } from '@app-builder/server-fns/continuous-screening';
 import type {
   ScreeningReviewDecisionResult,
   ScreeningReviewRejection,
 } from '@app-builder/services/screening-review-decision';
 import { useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -117,6 +120,22 @@ export function useReviewDecisions({
   };
   const navigate = (itemId: string) => latest.current.onNavigate(itemId);
   const refreshPage = () => queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
+
+  // A partial screening whose loaded hits are all decided loads its next matches once, then the page
+  // refreshes. A failure leaves the Load more button on its hits.
+  const loadMoreMatches = useServerFn(loadMoreContinuousScreeningMatchesFn);
+  const loadRequested = useRef(new Set<string>());
+  const toLoad = screeningReviewScreeningsToLoad(applyScreeningReviewSession(serverItems, session), session);
+  useEffect(() => {
+    for (const screeningId of toLoad) {
+      if (loadRequested.current.has(screeningId)) continue;
+      loadRequested.current.add(screeningId);
+      loadMoreMatches({ data: { screeningId } }).then(
+        () => void refreshPage(),
+        () => undefined,
+      );
+    }
+  });
 
   /** After a decision, open the next pending hit, read from the latest server data. */
   const openNextPending = (fromId: string, next: ScreeningReviewSession) => {

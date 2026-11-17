@@ -879,6 +879,26 @@ export function screeningReviewScreeningState(
   return item.partial && !pending ? 'load_more' : 'in_review';
 }
 
+/**
+ * The partial screenings decided this visit whose loaded hits are all decided and written: their
+ * next matches load on their own, so the case can go on, or close once none are left.
+ */
+export function screeningReviewScreeningsToLoad(
+  items: readonly ScreeningReviewItem[],
+  session: ScreeningReviewSession,
+): string[] {
+  const decided = new Set(Object.values(session.decided).map(({ item }) => item.screeningId));
+  const ids = new Set(items.map((item) => item.screeningId).filter((id) => decided.has(id)));
+  return [...ids].filter((screeningId) => {
+    const hits = items.filter((item) => item.screeningId === screeningId);
+    return (
+      hits.some((item) => item.partial) &&
+      hits.every((item) => item.screeningStatus === 'in_review' && item.status !== 'pending') &&
+      !isAwaitingWrite(session, screeningId)
+    );
+  });
+}
+
 /** The pending hits of the active hit's group, which A selects. */
 export function screeningReviewGroupPendingItems(groups: readonly ScreeningReviewGroup[], activeId: string) {
   const group = groups.find((candidate) => candidate.items.some((item) => item.id === activeId));
