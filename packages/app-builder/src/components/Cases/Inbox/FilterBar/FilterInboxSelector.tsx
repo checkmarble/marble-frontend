@@ -27,7 +27,7 @@ export const FilterInboxSelector = ({
       <MenuCommand.Trigger>
         <Button variant={variant} size="medium" disabled={disabled} className={variant === 'secondary' ? 'w-full' : ''}>
           <span className={variant === 'secondary' ? 'flex-1' : ''}>
-            {variant === 'primary' ? t('cases:case.inbox') + ':' : ''}
+            {variant === 'primary' ? `${t('cases:case.inbox')}: ` : ''}
             {selectedInbox.name}
           </span>
           {selectedInbox.casesCount !== undefined ? (
