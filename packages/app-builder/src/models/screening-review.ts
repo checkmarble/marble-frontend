@@ -592,9 +592,11 @@ function isSetAside(item: ScreeningReviewItem) {
 }
 
 /**
- * Groups items by case, then by customer. `isListed` picks the items shown in the list; every item
- * counts toward the group's total, and only pending ones toward `remaining`. Once a listed hit is a
- * Hit, the group keeps it and its pending hits, and counts the No hit and skipped ones in `setAside`.
+ * Groups items by case, then by customer. `isListed` picks the items that put a group in the list,
+ * and a listed group also shows its decided hits, so a partly reviewed case loads with its No hit
+ * stack. Every item counts toward the group's total, and only pending ones toward `remaining`. Once a
+ * hit is a Hit, the group keeps it and its pending hits, and counts the No hit and skipped ones in
+ * `setAside`.
  */
 export function groupScreeningReviewItems(
   items: readonly ScreeningReviewItem[],
@@ -630,8 +632,9 @@ export function groupScreeningReviewItems(
     .filter((group) => group.items.length > 0)
     .sort((a, b) => b.newestCase.localeCompare(a.newestCase) || a.key.localeCompare(b.key))
     .map(({ all, ...group }): ScreeningReviewGroup => {
-      const confirmed = group.items.some((item) => item.status === 'confirmed_hit');
-      const listed = confirmed ? group.items.filter((item) => !isSetAside(item)) : group.items;
+      const shown = [...group.items, ...all.filter((item) => item.status !== 'pending' && !group.items.includes(item))];
+      const confirmed = shown.some((item) => item.status === 'confirmed_hit');
+      const listed = confirmed ? shown.filter((item) => !isSetAside(item)) : shown;
       return {
         ...group,
         items: listed.sort(

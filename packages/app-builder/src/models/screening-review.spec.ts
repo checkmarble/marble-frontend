@@ -104,13 +104,17 @@ describe('screening review stream', () => {
     expect(groupScreeningReviewItems(buildScreeningReviewItems([reviewCase('case', [first, second])]))).toHaveLength(2);
   });
 
-  it('counts reviewed hits but navigates only pending hits; partial groups and unscanned pages have incomplete counts', () => {
+  it('lists a group by its pending hits and shows its decided ones; partial groups and unscanned pages have incomplete counts', () => {
     const screening = objectReviewScreening();
     screening.matches[0]!.status = 'no_hit';
     screening.partial = true;
     const groups = groupScreeningReviewItems(buildScreeningReviewItems([reviewCase('case', [screening])]));
     expect(groups[0]).toMatchObject({ remaining: 1, total: 2, incomplete: true });
-    expect(groups[0]?.items.map((item) => item.matchId)).toEqual(['screening-1-low']);
+    // A partly reviewed case loads with its No hit hits.
+    expect(groups[0]?.items.map((item) => [item.matchId, item.status])).toEqual([
+      ['screening-1-high', 'no_hit'],
+      ['screening-1-low', 'pending'],
+    ]);
     expect(groupScreeningReviewItems(buildScreeningReviewItems([reviewCase('case')]), true)[0]?.incomplete).toBe(true);
     screening.status = 'confirmed_hit';
     expect(groupScreeningReviewItems(buildScreeningReviewItems([reviewCase('case', [screening])]))).toEqual([]);
