@@ -13,11 +13,9 @@ import {
   matchesScreeningReviewFilter,
   type ScreeningReviewFilter,
   type ScreeningReviewItem,
-  screeningReviewCustomerPendingItems,
+  screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
-  screeningReviewStack,
-  screeningReviewStackKey,
 } from '@app-builder/models/screening-review';
 import { useScreeningReviewPageQuery } from '@app-builder/queries/cases/screening-review-page';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -179,10 +177,6 @@ function ListRail({
   );
 }
 
-function prefersReducedMotion() {
-  return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
-}
-
 function ReviewStream({
   search,
   onSearchChange,
@@ -208,12 +202,11 @@ function ReviewStream({
   // Wide and narrow pages keep their own list state: collapsed by choice, or open over the hit.
   const [listCollapsed, setListCollapsed] = useState(false);
   const [listOverlayOpen, setListOverlayOpen] = useState(false);
-  // The stacks shown as one card per hit, each selected and decided on its own.
-  const [unstacked, setUnstacked] = useState<ReadonlySet<string>>(() => new Set());
+  // The groups whose No hit hits show one card each instead of one stack.
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
   const mainRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const [unavailable, setUnavailable] = useState(false);
-  const activeRef = useRef<HTMLButtonElement>(null);
   const commentRef = useRef<HTMLTextAreaElement>(null);
   const hasMore = !!query.data?.nextCursor || !!query.data?.failed;
   const ready = !!query.data && !query.isPlaceholderData;
@@ -258,16 +251,7 @@ function ReviewStream({
   const selectedItems = items.filter((item) => selection.has(item.id) && isPendingReviewItem(item));
   const batchMode = selectedItems.length > 0;
   const reviewable = !!active && isPendingReviewItem(active);
-  const activeStack = useMemo(() => screeningReviewStack(groups, active?.id), [groups, active?.id]);
-  const activeStackKey = active ? screeningReviewStackKey(active) : undefined;
-  const activeUnstacked = !!activeStackKey && unstacked.has(activeStackKey);
-  // The cursor's card: its whole stack, or the hit alone once the stack is unstacked. A decision
-  // applies to the card's pending hits, the cursor's first, under one draft.
-  const activeCardHits = activeUnstacked && active ? [active] : activeStack;
-  const activeDecided = active
-    ? [active, ...activeCardHits.filter((item) => item.id !== active.id && isPendingReviewItem(item))]
-    : [];
-  const draftId = activeCardHits[0]?.id ?? active?.id;
+  const draftId = active?.id;
   // The end of the queue: nothing left to decide on the first and only page.
   const allReviewed = ready && !hasMore && !search.cursors.length && search.filter !== 'validated' && !counts.to_review;
   const activeDraft = decisions.draftFor(draftId);
@@ -280,46 +264,37 @@ function ReviewStream({
     if (active?.id !== search.hit) onSearchChange({ ...search, hit: active?.id });
   }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange, viewSession.hiddenCases]);
 
-  useEffect(() => {
-    activeRef.current?.scrollIntoView({
-      block: 'nearest',
-      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-    });
-  }, [active?.id]);
-
   const select = (item: ScreeningReviewItem | undefined) => {
     if (!item || !ready) return;
     setUnavailable(false);
     decisions.clearNotice();
     onSearchChange({ ...search, hit: item.id });
   };
-  const move = (direction: -1 | 1, byCustomer = false) =>
-    select(adjacentScreeningReviewItem(groups, active?.id, direction, byCustomer, unstacked));
+  const move = (direction: -1 | 1, byGroup = false) =>
+    select(adjacentScreeningReviewItem(groups, active?.id, direction, byGroup, expanded));
   const changeDraft = (next: Parameters<typeof decisions.changeDraft>[1]) => {
     if (draftId) decisions.changeDraft(draftId, next);
   };
   const submit = () => {
     if (!draftId || !reviewable) return;
     setUnavailable(false);
-    decisions.submit(activeDecided, draftId);
+    decisions.submit(active, draftId);
   };
   const submitBatch = () => {
     setUnavailable(false);
     decisions.submitBatch(selectedItems, active?.id);
   };
-  /** Selects the cursor's card, or clears it when all its pending hits are selected. */
+  /** Selects the cursor's hit, or clears it when it is selected. */
   const toggleActive = () => {
-    const ids = activeCardHits.filter(isPendingReviewItem).map((item) => item.id);
-    setSelection((current) =>
-      ids.every((id) => current.has(id)) ? withoutSelected(current, ids) : withSelected(current, ids),
-    );
+    if (!active || !isPendingReviewItem(active)) return;
+    const ids = [active.id];
+    setSelection((current) => (current.has(active.id) ? withoutSelected(current, ids) : withSelected(current, ids)));
   };
-  /** Shows a stack as one card per hit, or as one card again. */
-  const toggleStack = (key: string, stack: boolean) =>
-    setUnstacked((current) => {
+  /** Shows a group's No hit hits one card each, or stacked again. */
+  const toggleNoHitStack = (groupKey: string) =>
+    setExpanded((current) => {
       const next = new Set(current);
-      if (stack) next.delete(key);
-      else next.add(key);
+      if (!next.delete(groupKey)) next.add(groupKey);
       return next;
     });
   const activeGroup = () => groups.find((group) => group.items.some((item) => item.id === active?.id));
@@ -371,7 +346,7 @@ function ReviewStream({
       hotkey: 'A',
       action: () => {
         if (!active) return;
-        const ids = screeningReviewCustomerPendingItems(groups, active.id).map((item) => item.id);
+        const ids = screeningReviewGroupPendingItems(groups, active.id).map((item) => item.id);
         setSelection((current) => withSelected(current, ids));
       },
       enabled: canNavigate && !!active,
@@ -398,16 +373,6 @@ function ReviewStream({
     })),
     { hotkey: { key: '[' }, action: toggleList, enabled: canNavigate },
     { hotkey: { key: '(' }, action: toggleList, enabled: canNavigate },
-    {
-      hotkey: { key: '+' },
-      action: () => activeStackKey && toggleStack(activeStackKey, activeUnstacked),
-      enabled: canNavigate && activeStack.length > 1,
-    },
-    {
-      hotkey: { key: '-' },
-      action: () => activeStackKey && toggleStack(activeStackKey, true),
-      enabled: canNavigate && activeUnstacked,
-    },
     { hotkey: '?', action: () => setHelpOpen(true) },
     {
       hotkey: 'Escape',
@@ -509,15 +474,12 @@ function ReviewStream({
                 <div className="relative min-h-0 flex-1">
                   <HitList
                     groups={groups}
-                    reviewItems={reviewItems}
-                    session={session}
                     activeId={active?.id}
-                    activeRef={activeRef}
                     ready={ready}
                     selection={selection}
                     onSelectionChange={setSelection}
-                    unstacked={unstacked}
-                    onToggleStack={(key) => toggleStack(key, unstacked.has(key))}
+                    expanded={expanded}
+                    onToggleNoHitStack={toggleNoHitStack}
                     onActivate={select}
                   />
                 </div>
@@ -527,7 +489,6 @@ function ReviewStream({
             {batchMode ? (
               <BatchPanel
                 items={selectedItems}
-                unstacked={unstacked}
                 selection={selection}
                 onSelectionChange={setSelection}
                 onSubmit={submitBatch}
@@ -573,16 +534,7 @@ function ReviewStream({
                     onDraftChange={changeDraft}
                     onSubmit={submit}
                     onCancel={() => changeDraft({ decision: undefined, comment: '' })}
-                    skippedCount={
-                      new Set(
-                        activeDecided.flatMap((item) =>
-                          screeningReviewHitsSkippedBy(reviewItems, item)
-                            .filter((other) => !activeDecided.some((item) => item.id === other.id))
-                            .map((other) => other.id),
-                        ),
-                      ).size
-                    }
-                    decidedCount={activeDecided.length}
+                    skippedCount={screeningReviewHitsSkippedBy(reviewItems, active).length}
                     commentRef={commentRef}
                   />
                 ) : (
@@ -590,7 +542,7 @@ function ReviewStream({
                     item={active}
                     state={screeningReviewScreeningState(reviewItems, active, session)}
                     sessionComment={session.decided[active.id]?.comment}
-                    canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1, false, unstacked) && canNavigate}
+                    canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1, false, expanded) && canNavigate}
                     onNext={() => move(1)}
                     onMatchesLoaded={decisions.refreshPage}
                   />
@@ -618,11 +570,9 @@ function ReviewStream({
             {panelOpen && panelTab && active ? (
               <DetailsPanel
                 item={active}
-                stack={activeStack}
                 tab={panelTab}
                 inboxes={inboxes}
                 onTabChange={setPanelTab}
-                onSelect={select}
                 onClose={() => setPanelTab(undefined)}
                 className={PANEL_PLACEMENT}
               />
