@@ -6,15 +6,18 @@ import {
   listOrganizationFeatures,
   listOrganizationsQueryOptions,
   listOrganizationUsersQueryOptions,
+  updateOrganizationEnvironment,
 } from '@bo/data/organization';
 import { groupOrganizationsByTenant, listTenantsQueryOptions } from '@bo/data/tenants';
 import { OVERRIDABLE_FEATURES } from '@bo/schemas/features';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { OrganizationDto } from 'marble-api';
+import { OrganizationDto, type OrganizationEnvironmentDto } from 'marble-api';
 import { FeatureAccessDto } from 'marble-api/generated/backoffice-api';
 import { type ReactNode, useState } from 'react';
-import { Button, cn, Tag, Typo } from 'ui-design-system';
+import toast from 'react-hot-toast';
+import * as R from 'remeda';
+import { Button, cn, Tag, Typo, tagClassName } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 export function OrganizationOverviewPage({ orgId }: { orgId: string }) {
@@ -127,11 +130,60 @@ function NotSet() {
 
 /* ------------------------------ Configuration ------------------------------ */
 
-const ENVIRONMENT_LABELS: Record<string, string> = {
+const ENVIRONMENT_LABELS: Record<OrganizationEnvironmentDto, string> = {
   production: 'Production',
   staging: 'Staging',
   demo: 'Demo',
 };
+
+function EnvironmentPicker({ organization }: { organization: OrganizationDto }) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    ...updateOrganizationEnvironment(),
+    // Applied before the refetch so the selection does not jump back while it loads.
+    onSuccess: (_data, { orgId, environment }) => {
+      queryClient.setQueryData(
+        getOrganizationQueryOptions(orgId).queryKey,
+        (current) => current && { ...current, environment },
+      );
+    },
+    onError: () => toast.error('Could not change the environment'),
+  });
+  const selectedEnvironment = mutation.isPending ? mutation.variables.environment : organization.environment;
+
+  return (
+    <dd>
+      <div role="group" aria-label="Environment" className="flex flex-wrap gap-xs">
+        {R.entries(ENVIRONMENT_LABELS).map(([environment, label]) => {
+          const selected = environment === selectedEnvironment;
+          return (
+            <button
+              key={environment}
+              type="button"
+              aria-pressed={selected}
+              disabled={mutation.isPending}
+              onClick={() => {
+                if (!selected) {
+                  mutation.mutate({ orgId: organization.id, environment });
+                }
+              }}
+              className={cn(
+                tagClassName({ color: selected ? 'purple' : 'grey', size: 'small' }),
+                'transition-colors disabled:cursor-wait',
+                // Purple only marks the saved value: hovering another badge stays grey.
+                selected
+                  ? 'bg-purple-background-light'
+                  : 'enabled:hover:border-grey-primary enabled:hover:text-grey-primary',
+              )}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </dd>
+  );
+}
 
 const PROVIDER_LABELS: Record<string, string> = {
   opensanctions: 'OpenSanctions',
@@ -157,11 +209,8 @@ function ConfigurationFields({ organization }: { organization: OrganizationDto }
       </div>
       <div className="flex flex-col gap-xs">
         <FieldLabel>Environment</FieldLabel>
-        <dd>
-          <Tag color={organization.environment === 'staging' ? 'purple' : 'grey'} size="small">
-            {ENVIRONMENT_LABELS[organization.environment] ?? organization.environment}
-          </Tag>
-        </dd>
+        {/* Keyed: a save still running for one organization must not show on the next one. */}
+        <EnvironmentPicker key={organization.id} organization={organization} />
       </div>
       <div className="flex flex-col gap-xs sm:col-span-2">
         <FieldLabel>Tenant</FieldLabel>

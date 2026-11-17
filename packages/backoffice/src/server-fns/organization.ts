@@ -170,9 +170,12 @@ export const createOrganizationUserFn = createServerFn({ method: 'POST' })
 
 export const organizationEnvironmentSchema = z.enum(['production', 'staging']);
 
+// Organizations are created in production or staging, but an existing one can also be moved to demo.
+const editableOrganizationEnvironmentSchema = z.enum(['production', 'staging', 'demo']);
+
 const updateOrganizationEnvironment = (
   orgId: string,
-  environment: z.infer<typeof organizationEnvironmentSchema>,
+  environment: z.infer<typeof editableOrganizationEnvironmentSchema>,
   authFetch: typeof fetch,
 ) =>
   marblecoreApi.updateOrganization(
@@ -186,10 +189,9 @@ const updateOrganizationEnvironment = (
 
 export const updateOrganizationEnvironmentFnInputSchema = z.object({
   orgId: z.uuid(),
-  environment: organizationEnvironmentSchema,
+  environment: editableOrganizationEnvironmentSchema,
 });
 
-/** Retry path for a creation whose environment update failed after the organization existed. */
 export const updateOrganizationEnvironmentFn = createServerFn({ method: 'POST' })
   .middleware([needAuth])
   .validator(updateOrganizationEnvironmentFnInputSchema)
