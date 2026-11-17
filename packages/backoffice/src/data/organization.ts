@@ -18,6 +18,7 @@ import {
 } from '@bo/server-fns/organization';
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+import type { OrganizationEnvironmentDto } from 'marble-api';
 
 // ------- Queries -------
 
@@ -114,7 +115,7 @@ export const importOrganization = () =>
 
 export const updateOrganizationEnvironment = () =>
   mutationOptions({
-    mutationFn: (payload: { orgId: string; environment: 'production' | 'staging' }) =>
+    mutationFn: (payload: { orgId: string; environment: OrganizationEnvironmentDto }) =>
       updateOrganizationEnvironmentFn({ data: payload }),
     meta: {
       invalidates: () => [['organizations']],
