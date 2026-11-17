@@ -11,6 +11,7 @@ import {
   groupScreeningReviewItems,
   isListedInScreeningReviewSession,
   isPendingReviewItem,
+  isSettledScreeningReviewGroup,
   matchesScreeningReviewFilter,
   needsFalsePositiveClosure,
   nextPendingScreeningReviewItem,
@@ -110,10 +111,10 @@ describe('screening review stream', () => {
     screening.partial = true;
     const groups = groupScreeningReviewItems(buildScreeningReviewItems([reviewCase('case', [screening])]));
     expect(groups[0]).toMatchObject({ remaining: 1, total: 2, incomplete: true });
-    // A partly reviewed case loads with its No hit hits.
+    // A partly reviewed case loads with its No hit hits, last.
     expect(groups[0]?.items.map((item) => [item.matchId, item.status])).toEqual([
-      ['screening-1-high', 'no_hit'],
       ['screening-1-low', 'pending'],
+      ['screening-1-high', 'no_hit'],
     ]);
     expect(groupScreeningReviewItems(buildScreeningReviewItems([reviewCase('case')]), true)[0]?.incomplete).toBe(true);
     screening.status = 'confirmed_hit';
@@ -147,7 +148,7 @@ describe('screening review stream', () => {
     expect(groups[1]?.items.map((item) => item.matchId)).toEqual(['screening-1-low', 'screening-1-high']);
   });
 
-  it('stacks two No hit hits or more where the first sorts, as one stop, unless expanded', () => {
+  it('stacks two No hit hits or more at the end of their group, as one stop, unless expanded', () => {
     const screening = objectReviewScreening();
     screening.matches.push(
       { ...screening.matches[0]!, id: 'third', opensanctionEntityId: 'record-3', status: 'no_hit' },
@@ -163,12 +164,12 @@ describe('screening review stream', () => {
     const cards = screeningReviewCards(group!);
     expect(
       cards.map((card) => (card.kind === 'hit' ? card.item.matchId : card.items.map((item) => item.matchId))),
-    ).toEqual([['fourth', 'screening-1-high', 'third'], 'screening-1-low']);
+    ).toEqual(['screening-1-low', ['fourth', 'screening-1-high', 'third']]);
     const byMatch = (matchId: string) => group!.items.find((item) => item.matchId === matchId)!.id;
     // The stack is one stop, on its first hit.
-    expect(adjacentScreeningReviewItem(groups, byMatch('screening-1-low'), -1)?.matchId).toBe('fourth');
-    expect(adjacentScreeningReviewItem(groups, byMatch('third'), 1)?.matchId).toBe('screening-1-low');
-    expect(adjacentScreeningReviewItem(groups, byMatch('fourth'), -1)).toBeUndefined();
+    expect(adjacentScreeningReviewItem(groups, byMatch('screening-1-low'), 1)?.matchId).toBe('fourth');
+    expect(adjacentScreeningReviewItem(groups, byMatch('third'), -1)?.matchId).toBe('screening-1-low');
+    expect(adjacentScreeningReviewItem(groups, byMatch('fourth'), 1)).toBeUndefined();
 
     const expanded = new Set([group!.key]);
     expect(screeningReviewCards(group!, expanded).every((card) => card.kind === 'hit')).toBe(true);
@@ -667,6 +668,31 @@ describe('screening review session', () => {
     expect(alice).toMatchObject({ remaining: 1, total: 3, setAside: 1 });
     expect(listedGroups(decide(byMatch('screening-1-high'), 'no_hit'))[0]).toMatchObject({ setAside: 0 });
     expect(listedGroups(emptyScreeningReviewSession).flatMap((group) => group.items)).toHaveLength(4);
+  });
+
+  it('settles a group without a Hit once nothing is left to decide and its decisions are written', () => {
+    const [high, low] = buildScreeningReviewItems([reviewCase('case', [objectReviewScreening()])]);
+    const both = (written: boolean, decision: 'no_hit' | 'confirmed_hit' = 'no_hit'): ScreeningReviewSession => ({
+      decided: {
+        [high!.id]: { item: high!, decision, written: true },
+        [low!.id]: { item: low!, decision: 'no_hit', written },
+      },
+      screenings: {},
+      hiddenCases: [],
+    });
+    const settled = (session: ScreeningReviewSession, source = [high!, low!]) =>
+      groupScreeningReviewItems(applyScreeningReviewSession(source, session), false, (item) =>
+        isListedInScreeningReviewSession(item, session),
+      ).map((group) => isSettledScreeningReviewGroup(group, session));
+    expect(settled(emptyScreeningReviewSession)).toEqual([false]);
+    // Still undoable: the stack stays.
+    expect(settled(both(false))).toEqual([false]);
+    expect(settled(both(true))).toEqual([true]);
+    // A Hit keeps the group.
+    expect(settled(both(true, 'confirmed_hit'))).toEqual([false]);
+    // So do matches still to load.
+    const partial = [high!, low!].map((item) => ({ ...item, partial: true }));
+    expect(settled(both(true), partial)).toEqual([false]);
   });
 
   it('opens the same customer’s next pending hit first, then the next customer, wrapping around', () => {

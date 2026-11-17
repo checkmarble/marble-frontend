@@ -748,8 +748,12 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(listScreeningReviewPageFn).toHaveBeenCalledTimes(2));
     expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
 
-    press('k', 'KeyK');
+    // The No hit hit moved to the end of its group.
+    press('j', 'KeyJ');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+    press('j', 'KeyJ');
     await screen.findByText('cases:screening_review.dock.validated');
+    expect(activeCard()?.textContent).toContain('List record A');
     expect(screen.getByText('cases:screening_review.step.validated')).toBeTruthy();
     expect(screen.queryByRole('textbox', { name: 'cases:screening_review.dock.comment' })).toBeNull();
     press('n', 'KeyN');
@@ -847,7 +851,7 @@ describe('screening review decisions', () => {
     expect(link.getAttribute('target')).toBe('_blank');
   });
 
-  it('shows the closure during the undo delay, closes the case on write, then removes its hits', async () => {
+  it('shows the closure during the undo delay, then drops the group once its decisions are written', async () => {
     const items = buildScreeningReviewItems([reviewCase(caseId, [objectReviewScreening()])]);
     vi.mocked(reviewScreeningReviewMatchFn)
       .mockResolvedValueOnce(inReview)
@@ -864,19 +868,17 @@ describe('screening review decisions', () => {
     // The second decision writes the first one at once.
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
     await screen.findByText('cases:screening_review.screening_state.case_closed');
-    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
-    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
-    // Both No hit hits stack, under the cursor and with no name.
+    // During the undo delay, both No hit hits stack, under the cursor and with no name.
     expect(noHitStack()?.getAttribute('aria-current')).toBe('true');
     expect(noHitStack()?.textContent).not.toContain('List record');
     expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
-    expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
-    // The decided hits stay listed under a notice until the case is hidden.
     expect(screen.getByText('cases:screening_review.empty.all_reviewed.title')).toBeTruthy();
     expect(screen.queryByText('cases:screening_review.empty.all_reviewed.description')).toBeNull();
-    await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-    // Hits decided during the visit end on the all-reviewed state, not the empty queue.
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
+    // Written, the group leaves at once. The visit ends on the all-reviewed state, not the empty queue.
     await screen.findByText('cases:screening_review.empty.all_reviewed.description');
+    expect(noHitStack()).toBeNull();
     expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
   });
 
@@ -931,8 +933,9 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
     await screen.findByText('cases:screening_review.screening_state.case_closed');
     await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-    expect(card('List record A')).toBeTruthy();
-    expect(card('List record B')).toBeTruthy();
+    // Both No hit hits stay, stacked.
+    expect(noHitStack()).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
     expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
   });
 
@@ -1062,8 +1065,8 @@ describe('screening review decisions', () => {
       press('Enter', 'Enter');
       await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
       // Moving doesn't write.
-      press('k', 'KeyK');
       press('j', 'KeyJ');
+      press('k', 'KeyK');
       expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
       press('n', 'KeyN');
       press('Enter', 'Enter');
@@ -1441,11 +1444,13 @@ describe('screening review decisions', () => {
 
     it('keeps a newer screening result when an earlier batch finishes on a slower case', async () => {
       const slower = Promise.withResolvers<typeof inReview>();
+      // The fast case's other screening keeps its group listed once fast is decided.
       const items = buildScreeningReviewItems([
-        reviewCase(caseId, [objectReviewScreening('fast')]),
+        reviewCase(caseId, [objectReviewScreening('fast'), objectReviewScreening('extra')]),
         reviewCase('44444444-4444-4444-8444-444444444444', [objectReviewScreening('slow', 'bob')]),
       ]).map((item) => ({
         ...item,
+        score: item.screeningId === 'extra' ? 0.1 : item.score,
         listRecord: { ...item.listRecord, caption: item.matchId },
       }));
       vi.mocked(reviewScreeningReviewMatchFn).mockImplementation((async ({ data }: { data: { matchId: string } }) => {

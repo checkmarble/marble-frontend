@@ -10,9 +10,11 @@ import {
   groupScreeningReviewItems,
   isListedInScreeningReviewSession,
   isPendingReviewItem,
+  isSettledScreeningReviewGroup,
   matchesScreeningReviewFilter,
   type ScreeningReviewFilter,
   type ScreeningReviewItem,
+  screeningReviewGroupKey,
   screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
@@ -232,16 +234,18 @@ function ReviewStream({
     () => applyScreeningReviewSession(query.data?.items ?? [], viewSession),
     [query.data, viewSession],
   );
-  const groups = useMemo(
-    () =>
-      groupScreeningReviewItems(reviewItems, hasMore, (item) =>
-        // To review keeps this visit's decisions listed, so the analyst sees them land.
-        search.filter === 'to_review'
-          ? isListedInScreeningReviewSession(item, session)
-          : matchesScreeningReviewFilter(item, search.filter),
-      ),
-    [reviewItems, hasMore, session, search.filter],
-  );
+  const groups = useMemo(() => {
+    if (search.filter !== 'to_review') {
+      return groupScreeningReviewItems(reviewItems, hasMore, (item) =>
+        matchesScreeningReviewFilter(item, search.filter),
+      );
+    }
+    // To review keeps this visit's decisions listed, so the analyst sees them land, until a group
+    // without a Hit has nothing left to decide and its decisions are written.
+    return groupScreeningReviewItems(reviewItems, hasMore, (item) =>
+      isListedInScreeningReviewSession(item, session),
+    ).filter((group) => !isSettledScreeningReviewGroup(group, session));
+  }, [reviewItems, hasMore, session, search.filter]);
   const counts = useMemo(() => countScreeningReviewFilters(reviewItems), [reviewItems]);
   // Counts cover this page only, and To review never reads closed cases.
   const isCountPartial = (filter: ScreeningReviewFilter) =>
@@ -259,7 +263,10 @@ function ReviewStream({
   useEffect(() => {
     // Wait for fresh data before declaring a bookmarked hit unavailable.
     if (!ready || query.isFetching || query.data?.failed) return;
-    const hidden = viewSession.hiddenCases.some((caseId) => search.hit?.startsWith(`${caseId}:`));
+    // A hit decided this visit leaves with its case or its settled group, not because it vanished.
+    const hidden =
+      (!!search.hit && !!session.decided[search.hit]) ||
+      viewSession.hiddenCases.some((caseId) => search.hit?.startsWith(`${caseId}:`));
     if (search.hit && !hidden && !items.some((item) => item.id === search.hit)) setUnavailable(true);
     if (active?.id !== search.hit) onSearchChange({ ...search, hit: active?.id });
   }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange, viewSession.hiddenCases]);
@@ -275,13 +282,24 @@ function ReviewStream({
   const changeDraft = (next: Parameters<typeof decisions.changeDraft>[1]) => {
     if (draftId) decisions.changeDraft(draftId, next);
   };
+  /** A decision stacks its groups' No hit hits again. */
+  const collapse = (decided: readonly ScreeningReviewItem[]) =>
+    setExpanded((current) => {
+      const keys = decided.map(screeningReviewGroupKey).filter((key) => current.has(key));
+      if (!keys.length) return current;
+      const next = new Set(current);
+      for (const key of keys) next.delete(key);
+      return next;
+    });
   const submit = () => {
     if (!draftId || !reviewable) return;
     setUnavailable(false);
+    collapse([active]);
     decisions.submit(active, draftId);
   };
   const submitBatch = () => {
     setUnavailable(false);
+    collapse(selectedItems);
     decisions.submitBatch(selectedItems, active?.id);
   };
   /** Selects the cursor's hit, or clears it when it is selected. */
