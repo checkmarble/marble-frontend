@@ -167,6 +167,10 @@ function renderPage(
 function activeCard() {
   return document.querySelector('button[aria-current="true"]');
 }
+/** The small card of a No hit stack, which names none of its hits. */
+function noHitStack() {
+  return screen.queryByRole('button', { name: 'cases:screening_review.stack.label' });
+}
 function press(key: string, code: string, shiftKey = false, target: Element | Document = document) {
   fireEvent.keyDown(target, { key, code, shiftKey });
   fireEvent.keyUp(target, { key, code, shiftKey });
@@ -862,8 +866,9 @@ describe('screening review decisions', () => {
     await screen.findByText('cases:screening_review.screening_state.case_closed');
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
-    // Both No hit hits stack, on the cursor's hit.
-    expect(card('List record B')?.textContent).toContain('cases:screening_review.decision.no_hit');
+    // Both No hit hits stack, under the cursor and with no name.
+    expect(noHitStack()?.getAttribute('aria-current')).toBe('true');
+    expect(noHitStack()?.textContent).not.toContain('List record');
     expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
     expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
     // The decided hits stay listed under a notice until the case is hidden.
@@ -1353,9 +1358,8 @@ describe('screening review decisions', () => {
       fireEvent.change(commentBox(), { target: { value: 'Different person' } });
       press('Enter', 'Enter');
       // The customer's three No hit hits stack.
-      await waitFor(() =>
-        expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit'),
-      );
+      await waitFor(() => expect(noHitStack()?.textContent).toContain('cases:screening_review.decision.no_hit'));
+      expect(card('List record A')).toBeUndefined();
       expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×3');
       expect(checked()).toBe(0);
       expect(screen.getByText('cases:screening_review.undo.batch_validated')).toBeTruthy();
@@ -1388,7 +1392,8 @@ describe('screening review decisions', () => {
       expect((await screen.findByRole('alert')).textContent).toBe('cases:screening_review.batch.failed');
       expect(checked()).toBe(1);
       expect(checkbox('List record B').getAttribute('aria-checked')).toBe('true');
-      expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
+      // A and the shared record stack; B is pending again.
+      expect(noHitStack()).toBeTruthy();
       expect(card('List record B')?.textContent).not.toContain('cases:screening_review.decision.no_hit');
       expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3);
     });
@@ -1460,8 +1465,8 @@ describe('screening review decisions', () => {
       await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
       await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
       await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3));
-      // fast-high and fast-low stack, on fast-high.
-      fireEvent.click(card('fast-high')!);
+      // fast-high and fast-low stack; the stack opens on fast-high.
+      fireEvent.click(noHitStack()!);
       await screen.findByText('cases:screening_review.screening_state.case_closed');
 
       await act(async () => {
@@ -1665,7 +1670,7 @@ describe('screening review queue tools', () => {
       .mockResolvedValueOnce({ items: closedItems, nextCursor: pageTwoCursor, failed: false })
       .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
     renderPage({ filter: 'validated', q: 'Bob', limit: 50, cursors: [] });
-    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    await waitFor(() => expect(noHitStack()?.getAttribute('aria-current')).toBe('true'));
     fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }));
     press('j', 'KeyJ');
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
@@ -1902,8 +1907,8 @@ describe('screening review case groups', () => {
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
     fireEvent.click(stackToggle('restack')[1]!);
     expect(hitCards()).toHaveLength(3);
-    // The stack shows the hit under the cursor.
-    expect(activeCard()?.textContent).toContain('List record B');
+    // The stack keeps the cursor, without naming its hit.
+    expect(activeCard()).toBe(noHitStack());
   });
 
   it('shows the No hit stack under the cursor one by one with +, and stacks it again with -', async () => {

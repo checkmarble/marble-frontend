@@ -51,8 +51,20 @@ export function HitList({
   }, [activeId, groups, expanded]);
 
   const card = (group: ScreeningReviewGroup, entry: ScreeningReviewCard) => {
-    const items = entry.kind === 'hit' ? [entry.item] : entry.items;
-    const item = items.find((member) => member.id === activeId) ?? screeningReviewCardLead(entry);
+    if (entry.kind === 'no_hit_stack') {
+      const item = entry.items.find((member) => member.id === activeId) ?? screeningReviewCardLead(entry);
+      return (
+        <NoHitStackCard
+          key={entry.key}
+          size={entry.items.length}
+          active={item.id === activeId}
+          ready={ready}
+          onActivate={() => onActivate(item)}
+          onUnstack={() => onToggleNoHitStack(group.key)}
+        />
+      );
+    }
+    const { item } = entry;
     const noHitCount = group.items.filter((member) => member.status === 'no_hit').length;
     return (
       <HitCard
@@ -63,20 +75,14 @@ export function HitList({
         selectable={isPendingReviewItem(item)}
         selected={selection.has(item.id)}
         mappedProperties={mappedProperties}
-        stack={
-          entry.kind === 'no_hit_stack'
-            ? { size: entry.items.length, stacked: true }
-            : item.status === 'no_hit' && noHitCount > 1
-              ? { size: noHitCount, stacked: false }
-              : undefined
-        }
+        restackSize={item.status === 'no_hit' && noHitCount > 1 ? noHitCount : undefined}
         onActivate={() => onActivate(item)}
         onToggle={() =>
           onSelectionChange((current) =>
             selection.has(item.id) ? withoutSelected(current, [item.id]) : withSelected(current, [item.id]),
           )
         }
-        onToggleStack={() => onToggleNoHitStack(group.key)}
+        onRestack={() => onToggleNoHitStack(group.key)}
       />
     );
   };
@@ -211,9 +217,68 @@ function CaseGroup({
 }
 
 /**
- * One hit. A No hit stack shows its first hit with the cards behind it peeking out, and its tag
- * shows the stack's hits one by one. Their tag stacks them again.
+ * Several No hit hits stacked as one small card, with the cards behind it peeking out. It names no
+ * hit: its tag shows them one by one.
  */
+function NoHitStackCard({
+  size,
+  active,
+  ready,
+  onActivate,
+  onUnstack,
+}: {
+  size: number;
+  active: boolean;
+  ready: boolean;
+  onActivate: () => void;
+  onUnstack: () => void;
+}) {
+  const { t } = useTranslation(['cases']);
+  const layered = size > 2;
+  const unstackLabel = t('cases:screening_review.stack.unstack', { count: size });
+  return (
+    <li data-review-hit className={cn('relative', layered ? 'pb-2' : 'pb-1')}>
+      {layered ? <StackLayer className="inset-x-2 bottom-0" /> : null}
+      <StackLayer className={cn('inset-x-1', layered ? 'bottom-1' : 'bottom-0')} />
+      <div className="relative">
+        <Card
+          as="button"
+          type="button"
+          data-review-hit-card
+          aria-current={active ? 'true' : undefined}
+          aria-label={t('cases:screening_review.stack.label', { count: size })}
+          disabled={!ready}
+          onClick={onActivate}
+          className={cn(
+            'flex w-full min-w-0 cursor-pointer items-center gap-xs px-3 py-1.5 text-start focus-visible:outline-2 focus-visible:outline-purple-primary',
+            active && 'border-purple-primary bg-purple-background-light',
+          )}
+        >
+          <DecisionTag status="no_hit" />
+          {/* Keeps room for the unstack button, which can't sit inside the card's button. */}
+          <Tag size="xs" aria-hidden className="invisible ms-auto tabular-nums">
+            ×{size}
+          </Tag>
+        </Card>
+        <button
+          type="button"
+          aria-expanded={false}
+          aria-keyshortcuts="+"
+          aria-label={unstackLabel}
+          title={unstackLabel}
+          onClick={onUnstack}
+          className="absolute inset-y-0 end-3 my-auto h-fit cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-purple-primary"
+        >
+          <Tag size="xs" className="tabular-nums">
+            ×{size}
+          </Tag>
+        </button>
+      </div>
+    </li>
+  );
+}
+
+/** One hit. A hit of a shown No hit stack has a − tag that stacks the group's No hit hits again. */
 function HitCard({
   item,
   active,
@@ -221,10 +286,10 @@ function HitCard({
   selectable,
   selected,
   mappedProperties,
-  stack,
+  restackSize,
   onActivate,
   onToggle,
-  onToggleStack,
+  onRestack,
 }: {
   item: ScreeningReviewItem;
   active: boolean;
@@ -232,24 +297,17 @@ function HitCard({
   selectable: boolean;
   selected: boolean;
   mappedProperties: MappedProperties;
-  /** The group's No hit hits, when there are several. */
-  stack: { size: number; stacked: boolean } | undefined;
+  /** How many No hit hits the group stacks again, on one of them. */
+  restackSize: number | undefined;
   onActivate: () => void;
   onToggle: () => void;
-  onToggleStack: () => void;
+  onRestack: () => void;
 }) {
   const { t } = useTranslation(['cases']);
-  const showLayers = !!stack?.stacked;
-  const stackLabel = stack ? (stack.stacked ? `×${stack.size}` : '−') : undefined;
-  const layered = showLayers && stack.size > 2;
+  const restackLabel =
+    restackSize === undefined ? undefined : t('cases:screening_review.stack.restack', { count: restackSize });
   return (
-    <li data-review-hit className={cn('group/hit relative', showLayers && (layered ? 'pb-2' : 'pb-1'))}>
-      {showLayers ? (
-        <>
-          {layered ? <StackLayer className="inset-x-2 bottom-0" /> : null}
-          <StackLayer className={cn('inset-x-1', layered ? 'bottom-1' : 'bottom-0')} />
-        </>
-      ) : null}
+    <li data-review-hit className="group/hit relative">
       <Card
         as="button"
         type="button"
@@ -275,38 +333,25 @@ function HitCard({
         </span>
         <span className="flex w-full flex-wrap items-center gap-xs empty:hidden">
           <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
-          {stackLabel ? (
-            // Keeps room for the stack button, which can't sit inside the card's button.
-            <Tag size="xs" aria-hidden className="invisible ms-auto tabular-nums">
-              {stackLabel}
+          {restackLabel ? (
+            // Keeps room for the restack button, which can't sit inside the card's button.
+            <Tag size="xs" aria-hidden className="invisible ms-auto">
+              −
             </Tag>
           ) : null}
         </span>
       </Card>
-      {stack && stackLabel ? (
+      {restackLabel ? (
         <button
           type="button"
-          aria-expanded={!stack.stacked}
-          aria-keyshortcuts={stack.stacked ? '+' : '+ -'}
-          aria-label={t(
-            stack.stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack',
-            {
-              count: stack.size,
-            },
-          )}
-          title={t(stack.stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack', {
-            count: stack.size,
-          })}
-          onClick={onToggleStack}
-          className={cn(
-            'absolute end-3 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-purple-primary',
-            // Level with the card's bottom row, above the layers' padding.
-            showLayers ? (layered ? 'bottom-4.5' : 'bottom-3.5') : 'bottom-2.5',
-          )}
+          aria-expanded
+          aria-keyshortcuts="+ -"
+          aria-label={restackLabel}
+          title={restackLabel}
+          onClick={onRestack}
+          className="absolute end-3 bottom-2.5 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-purple-primary"
         >
-          <Tag size="xs" className="tabular-nums">
-            {stackLabel}
-          </Tag>
+          <Tag size="xs">−</Tag>
         </button>
       ) : null}
       {selectable ? (
