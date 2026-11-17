@@ -193,6 +193,11 @@ export interface ScreeningReviewFieldComparison {
   listRecordValues: string[];
   /** The list record alias that matched the customer name, when no main name did as well. */
   viaAlias?: string;
+  /**
+   * The list record value, from another country property, that matched the customer country, when
+   * no value of the row's own properties did as well. Motiva compares every country property at once.
+   */
+  viaProperty?: { property: string; value: string };
 }
 
 const STATE_RANK: Record<ScreeningReviewFieldState, number> = { missing: 0, different: 1, close: 2, same: 3 };
@@ -415,6 +420,19 @@ function customerNames(properties: Record<string, string[]>) {
   return fullName ? [fullName] : [];
 }
 
+/** Values the row also compares against, behind its own: name aliases, or the other country properties. */
+function fallbackValues(listProperties: Record<string, unknown>, row: ComparedRow) {
+  if (row.kind === 'name') {
+    return propertyValues(listProperties, NAME_ALIAS_PROPERTIES).map((value) => ({ value, property: 'alias' }));
+  }
+  if (row.kind === 'country') {
+    return [...COUNTRY_PROPERTIES]
+      .filter((property) => !row.properties.includes(property))
+      .flatMap((property) => propertyValues(listProperties, [property]).map((value) => ({ value, property })));
+  }
+  return [];
+}
+
 function compareRow(item: ScreeningReviewItem, row: ComparedRow): ScreeningReviewFieldComparison | undefined {
   const listProperties = item.listRecord.properties as Record<string, unknown>;
   const customerValues =
@@ -422,33 +440,41 @@ function compareRow(item: ScreeningReviewItem, row: ComparedRow): ScreeningRevie
       ? customerNames(item.customer.properties)
       : propertyValues(item.customer.properties, row.properties);
   const listRecordValues = propertyValues(listProperties, row.properties);
-  const aliases = row.kind === 'name' ? propertyValues(listProperties, NAME_ALIAS_PROPERTIES) : [];
-  if (!customerValues.length && !listRecordValues.length && !aliases.length) return undefined;
+  const fallbacks = fallbackValues(listProperties, row);
+  if (!customerValues.length && !listRecordValues.length && !fallbacks.length) return undefined;
 
-  // The best pair decides. On a tie, a main name beats an alias, whichever customer value it pairs with.
-  let best: { state: Exclude<ScreeningReviewFieldState, 'missing'>; customer: string; listRecord: string } | undefined;
+  // The best pair decides. On a tie, the row's own value beats a fallback, whichever customer value it pairs with.
+  const candidates = [...listRecordValues.map((value) => ({ value, property: undefined })), ...fallbacks];
+  type Best = {
+    state: Exclude<ScreeningReviewFieldState, 'missing'>;
+    customer: string;
+    listRecord: string;
+    property: string | undefined;
+  };
+  let best: Best | undefined;
   for (const customer of customerValues) {
-    for (const listRecord of [...listRecordValues, ...aliases]) {
+    for (const { value: listRecord, property } of candidates) {
       const state = compareValues(row.kind, customer, listRecord);
       if (!state) continue;
       const beatsBest =
         !best ||
         STATE_RANK[state] > STATE_RANK[best.state] ||
-        (STATE_RANK[state] === STATE_RANK[best.state] &&
-          listRecordValues.includes(listRecord) &&
-          !listRecordValues.includes(best.listRecord));
-      if (beatsBest) best = { state, customer, listRecord };
+        (STATE_RANK[state] === STATE_RANK[best.state] && !property && !!best.property);
+      if (beatsBest) best = { state, customer, listRecord, property };
     }
   }
-  const viaAlias = best && !listRecordValues.includes(best.listRecord) ? best.listRecord : undefined;
+  const viaFallback = best?.property ? best : undefined;
   return {
     field: row.field,
     kind: row.kind,
     state: best?.state ?? 'missing',
     source: 'browser',
     customerValues: withFirst(customerValues, best?.customer),
-    listRecordValues: viaAlias ? listRecordValues : withFirst(listRecordValues, best?.listRecord),
-    ...(viaAlias ? { viaAlias } : {}),
+    listRecordValues: viaFallback ? listRecordValues : withFirst(listRecordValues, best?.listRecord),
+    ...(viaFallback && row.kind === 'name' ? { viaAlias: viaFallback.listRecord } : {}),
+    ...(viaFallback?.property && row.kind === 'country'
+      ? { viaProperty: { property: viaFallback.property, value: viaFallback.listRecord } }
+      : {}),
   };
 }
 
@@ -534,7 +560,7 @@ function motivaFired({ features, explanations }: ScreeningReviewSignals, signal:
   return value > 0;
 }
 
-export type ScreeningReviewChipField = 'birthDate' | 'nationality' | 'identifier';
+export type ScreeningReviewChipField = 'birthDate' | 'nationality' | 'country' | 'identifier';
 
 /** Fields that light up on the hit card: strong agreement only, and never the name. */
 export function screeningReviewChipFields(
@@ -544,10 +570,11 @@ export function screeningReviewChipFields(
     comparisons.flatMap((row): ScreeningReviewChipField[] => {
       if (row.state !== 'same') return [];
       if (row.field === 'birthDate' || row.field === 'nationality') return [row.field];
+      if (row.kind === 'country') return ['country'];
       return row.kind === 'identifier' ? ['identifier'] : [];
     }),
   );
-  return (['birthDate', 'nationality', 'identifier'] as const).filter((field) => fields.has(field));
+  return (['birthDate', 'nationality', 'country', 'identifier'] as const).filter((field) => fields.has(field));
 }
 
 /** A hit still to decide. A case closed by other means takes no more decisions. */
