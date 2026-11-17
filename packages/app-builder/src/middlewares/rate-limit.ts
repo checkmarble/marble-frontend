@@ -8,6 +8,12 @@ function getClientIp(request: Request): string {
   return request.headers.get('x-real-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 }
 
+// The status and the message are the contract with the browser: see TOO_MANY_REQUESTS_ERROR_MESSAGE.
+function rejectTooManyRequests(): never {
+  setResponseStatus(429);
+  throw new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE);
+}
+
 // Request middleware keyed by client IP, for server routes (`routes/ressources/*`):
 //   server: { middleware: [rateLimitRequestMiddleware({ max: 5, windowMs: 60_000 })], handlers: { ... } }
 // Each call creates its own store; reuse the returned middleware to share a budget across routes.
@@ -48,11 +54,7 @@ export function rateLimitFunctionMiddleware({ scope = 'user', ...options }: Rate
         throw new Error('Missing user identity');
       }
 
-      const result = check(key);
-      if (!result.allowed) {
-        setResponseStatus(429);
-        throw new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE);
-      }
+      if (!check(key).allowed) rejectTooManyRequests();
       return next();
     });
 }
@@ -60,17 +62,13 @@ export function rateLimitFunctionMiddleware({ scope = 'user', ...options }: Rate
 // Function middleware keyed by client IP, for server functions called before sign-in:
 //   createServerFn({ method: 'POST' }).middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 }), servicesMiddleware])
 // List it first: a refused call then skips the next middlewares and their backend calls.
-// The browser only receives the error message: match it with `isTooManyRequestsError`.
 // ponytail: X-Real-IP / X-Forwarded-For are spoofable unless the proxy in front overwrites them, and
 // requests without either share the 'unknown' budget. Key on a proxy-set header if abuse shows up.
 export function rateLimitIpFunctionMiddleware(options: RateLimitOptions) {
   const check = createRateLimiter(options);
 
   return createMiddleware({ type: 'function' }).server(async ({ next }) => {
-    if (!check(getClientIp(getRequest())).allowed) {
-      setResponseStatus(429);
-      throw new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE);
-    }
+    if (!check(getClientIp(getRequest())).allowed) rejectTooManyRequests();
     return next();
   });
 }

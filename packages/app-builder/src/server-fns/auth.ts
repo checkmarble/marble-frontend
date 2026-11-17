@@ -52,12 +52,11 @@ export type DiscoverSignInResult =
   | { type: 'redirect'; href: string }
   | { type: 'error'; error: 'unknown_domain' | 'discovery_failed' };
 
-// Discovery tells which email domains have single sign-on: one call per second per client IP.
+// Discovery tells which email domains have single sign-on, so it is rate limited per client IP.
 // Not in `discoverTenantOidc`, which the organization switch of a signed-in user also calls.
-const discoveryRateLimit = rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 });
-
+// SignInWithEmailDiscovery retries after 1s, 2s and 4s: keep the window at most 1s.
 export const discoverSignInFn = createServerFn({ method: 'POST' })
-  .middleware([discoveryRateLimit, servicesMiddleware])
+  .middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 }), servicesMiddleware])
   .validator(z.object({ email: z.email(), redirectTo: z.string().optional(), signedOut: z.boolean() }))
   .handler(async ({ context, data }): Promise<DiscoverSignInResult> => {
     const request = getRequest();
