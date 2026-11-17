@@ -287,6 +287,7 @@ function HitCard({
         <button
           type="button"
           aria-expanded={!stack.stacked}
+          aria-keyshortcuts={stack.stacked ? '+' : '+ -'}
           aria-label={t(
             stack.stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack',
             {

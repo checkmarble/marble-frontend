@@ -656,6 +656,7 @@
   "screening_review.shortcuts.title": "Keyboard shortcuts",
   "screening_review.shortcuts.toggle_list": "Hide / show the list",
   "screening_review.shortcuts.undo": "Undo the last action",
+  "screening_review.shortcuts.unstack_restack": "Unstack / restack the No hit hits",
   "screening_review.shortcuts.validate": "Validate",
   "screening_review.signal.country_mismatch": "no common country",
   "screening_review.signal.dob_day_disjoint": "different birth day",
