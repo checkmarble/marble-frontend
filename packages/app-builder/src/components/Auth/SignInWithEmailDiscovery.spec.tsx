@@ -17,7 +17,7 @@ vi.mock('react-i18next', () => ({
   Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
 }));
 
-const tooManyRequests = () => Promise.reject(new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE));
+const tooManyRequests = new Error(TOO_MANY_REQUESTS_ERROR_MESSAGE);
 
 beforeEach(() => {
   mocks.discoverSignIn.mockReset();
@@ -40,8 +40,8 @@ async function submitEmail() {
 describe('SignInWithEmailDiscovery', () => {
   it('retries a rate-limited discovery and redirects once it goes through', async () => {
     mocks.discoverSignIn
-      .mockImplementationOnce(tooManyRequests)
-      .mockImplementationOnce(tooManyRequests)
+      .mockRejectedValueOnce(tooManyRequests)
+      .mockRejectedValueOnce(tooManyRequests)
       // A hash change is the only navigation jsdom performs.
       .mockResolvedValueOnce({ type: 'redirect', href: '#idp' });
 
@@ -53,7 +53,7 @@ describe('SignInWithEmailDiscovery', () => {
   });
 
   it('shows the too many requests message once the retries run out', async () => {
-    mocks.discoverSignIn.mockImplementation(tooManyRequests);
+    mocks.discoverSignIn.mockRejectedValue(tooManyRequests);
 
     await submitEmail();
 

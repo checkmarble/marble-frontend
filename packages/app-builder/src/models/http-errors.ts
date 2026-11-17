@@ -56,7 +56,10 @@ export function isRequestTimeoutError(error: unknown): boolean {
   return error instanceof Error && error.message === REQUEST_TIMEOUT_ERROR_MESSAGE;
 }
 
-/** Message of the error a rate-limited server function throws, alongside its HTTP 429 status. */
+/**
+ * Message of the error the rate-limit function middlewares throw with HTTP 429 (only the message
+ * reaches the browser): match it with `isTooManyRequestsError`.
+ */
 export const TOO_MANY_REQUESTS_ERROR_MESSAGE = 'too_many_requests';
 
 export function isTooManyRequestsError(error: unknown): boolean {
