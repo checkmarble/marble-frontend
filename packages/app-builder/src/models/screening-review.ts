@@ -637,12 +637,31 @@ export function groupScreeningReviewItems(
       const listed = confirmed ? shown.filter((item) => !isSetAside(item)) : shown;
       return {
         ...group,
+        // No hit hits last, then by topic, score and identity.
         items: listed.sort(
-          (a, b) => topicPriority(a) - topicPriority(b) || b.score - a.score || a.id.localeCompare(b.id),
+          (a, b) =>
+            Number(a.status === 'no_hit') - Number(b.status === 'no_hit') ||
+            topicPriority(a) - topicPriority(b) ||
+            b.score - a.score ||
+            a.id.localeCompare(b.id),
         ),
         setAside: confirmed ? all.filter(isSetAside).length : 0,
       };
     });
+}
+
+/**
+ * A group with nothing left to do here: no pending hit, no Hit, and no decision waiting for its
+ * write. To review drops it. A partial screening keeps it, for its matches still to load.
+ */
+export function isSettledScreeningReviewGroup(group: ScreeningReviewGroup, session: ScreeningReviewSession) {
+  return group.items.every(
+    (item) =>
+      item.status !== 'pending' &&
+      item.status !== 'confirmed_hit' &&
+      !(item.partial && item.screeningStatus === 'in_review') &&
+      session.decided[item.id]?.written !== false,
+  );
 }
 
 /** A card of the hit list: one hit, or a group's No hit hits stacked behind one another. */
@@ -651,8 +670,8 @@ export type ScreeningReviewCard =
   | { kind: 'no_hit_stack'; key: string; items: ScreeningReviewItem[] };
 
 /**
- * A group's cards. Two No hit hits or more stack as one card, where the first of them sorts, unless
- * the group is in `expanded`.
+ * A group's cards, its No hit hits last. Two No hit hits or more stack as one card, unless the group
+ * is in `expanded`.
  */
 export function screeningReviewCards(
   group: ScreeningReviewGroup,
