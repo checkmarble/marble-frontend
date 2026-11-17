@@ -298,6 +298,16 @@ function ReviewStream({
       return next;
     });
   const activeGroup = () => groups.find((group) => group.items.some((item) => item.id === active?.id));
+  // The No hit stack under the cursor, which + and - show one by one or stack again.
+  const activeStackGroup =
+    active?.status === 'no_hit'
+      ? groups.find(
+          (group) =>
+            group.items.some((item) => item.id === active.id) &&
+            group.items.filter((item) => item.status === 'no_hit').length > 1,
+        )
+      : undefined;
+  const activeStackExpanded = !!activeStackGroup && expanded.has(activeStackGroup.key);
 
   const openActiveCase = () => {
     if (!active) return;
@@ -373,6 +383,16 @@ function ReviewStream({
     })),
     { hotkey: { key: '[' }, action: toggleList, enabled: canNavigate },
     { hotkey: { key: '(' }, action: toggleList, enabled: canNavigate },
+    {
+      hotkey: { key: '+' },
+      action: () => activeStackGroup && toggleNoHitStack(activeStackGroup.key),
+      enabled: canNavigate && !!activeStackGroup,
+    },
+    {
+      hotkey: { key: '-' },
+      action: () => activeStackGroup && toggleNoHitStack(activeStackGroup.key),
+      enabled: canNavigate && activeStackExpanded,
+    },
     { hotkey: '?', action: () => setHelpOpen(true) },
     {
       hotkey: 'Escape',

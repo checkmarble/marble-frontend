@@ -1901,4 +1901,38 @@ describe('screening review case groups', () => {
     // The stack shows the hit under the cursor.
     expect(activeCard()?.textContent).toContain('List record B');
   });
+
+  it('shows the No hit stack under the cursor one by one with +, and stacks it again with -', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    // Nothing to unstack yet.
+    press('+', 'Equal', true);
+    expect(hitCards()).toHaveLength(4);
+    for (const next of [`${one}:one:one-low`, `${two}:two:two-high`]) {
+      press('n', 'KeyN');
+      press('Enter', 'Enter');
+      await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(next));
+    }
+    expect(hitCards()).toHaveLength(3);
+    // Only on the stack: the cursor is on another case's pending hit.
+    press('+', 'Equal', true);
+    expect(hitCards()).toHaveLength(3);
+
+    press('k', 'KeyK');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-high`));
+    expect(stackToggle('unstack')[0]!.getAttribute('aria-keyshortcuts')).toBe('+');
+    press('+', 'Equal', true);
+    expect(hitCards()).toHaveLength(4);
+    expect(stackToggle('restack')[0]!.getAttribute('aria-keyshortcuts')).toBe('+ -');
+    press('-', 'Minus');
+    expect(hitCards()).toHaveLength(3);
+    press('-', 'Minus');
+    expect(hitCards()).toHaveLength(3);
+    // + typed where US layouts have /, as on a French Mac, without opening the help.
+    press('+', 'Slash', true);
+    expect(hitCards()).toHaveLength(4);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    press('+', 'Equal', true);
+    expect(hitCards()).toHaveLength(3);
+  });
 });

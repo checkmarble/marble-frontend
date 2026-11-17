@@ -656,6 +656,7 @@
   "screening_review.shortcuts.title": "اختصارات لوحة المفاتيح",
   "screening_review.shortcuts.toggle_list": "إخفاء / إظهار القائمة",
   "screening_review.shortcuts.undo": "التراجع عن آخر إجراء",
+  "screening_review.shortcuts.unstack_restack": "فصل / تجميع تطابقات «لا تطابق»",
   "screening_review.shortcuts.validate": "تحقّق",
   "screening_review.signal.country_mismatch": "لا يوجد بلد مشترك",
   "screening_review.signal.dob_day_disjoint": "يوم ميلاد مختلف",
