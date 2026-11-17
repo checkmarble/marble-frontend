@@ -971,8 +971,12 @@ describe('screening review decisions', () => {
       press('Enter', 'Enter');
       await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
       expect((await screen.findByRole('alert')).textContent).toBe(`cases:screening_review.rejection.${reason}`);
-      await waitFor(() => expect(card('List record A')).toBeUndefined());
-      await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(hitId('dataset-1-alice')));
+      // The hit shows the server's decision, read-only, under the cursor.
+      await waitFor(() =>
+        expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit'),
+      );
+      expect(onSearchChange.mock.lastCall?.[0].hit).toBe(hitId('screening-1-high'));
+      expect(screen.queryByRole('group', { name: 'cases:screening_review.dock.title' })).toBeNull();
       expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
     },
   );
@@ -1934,5 +1938,36 @@ describe('screening review case groups', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
     press('+', 'Equal', true);
     expect(hitCards()).toHaveLength(3);
+  });
+
+  it('loads a partly reviewed case with its No hit stack, and a confirmed one with its Hit only', async () => {
+    const reviewed = objectReviewScreening('one');
+    reviewed.matches.push({ ...reviewed.matches[1]!, id: 'one-third', opensanctionEntityId: 'record-third' });
+    reviewed.matches[0]!.status = 'no_hit';
+    reviewed.matches[1]!.status = 'no_hit';
+    const confirmed = objectReviewScreening('two');
+    confirmed.status = 'confirmed_hit';
+    confirmed.matches[0]!.status = 'confirmed_hit';
+    confirmed.matches[1]!.status = 'skipped';
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: buildScreeningReviewItems([
+        reviewCase(one, [reviewed]),
+        reviewCase(two, [
+          confirmed,
+          { ...objectReviewScreening('three'), matches: objectReviewScreening('three').matches.slice(1) },
+        ]),
+      ]),
+      nextCursor: null,
+      failed: false,
+    });
+    renderPage();
+    // The cursor opens on the first pending hit.
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-third`));
+    const [first, second] = [...document.querySelectorAll<HTMLElement>('[data-review-group]')];
+    expect(within(first!).getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
+    expect(first!.querySelectorAll('[data-review-hit-card]')).toHaveLength(2);
+    expect(second!.querySelectorAll('[data-review-hit-card]')).toHaveLength(2);
+    expect(second!.textContent).toContain('cases:screening_review.decision.confirmed_hit');
+    expect(within(second!).getByText('cases:screening_review.set_aside')).toBeTruthy();
   });
 });
