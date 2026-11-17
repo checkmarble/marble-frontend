@@ -17,14 +17,12 @@ import {
   type ScreeningReviewItem,
   type ScreeningReviewSession,
   type ScreeningReviewSignals,
+  screeningReviewCards,
   screeningReviewChipFields,
-  screeningReviewCustomerPendingItems,
+  screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
-  screeningReviewStack,
-  screeningReviewStackKey,
   screeningReviewTopicFamilies,
-  stackScreeningReviewItems,
 } from './screening-review';
 import stagingObjectAddedDto from './screening-review.staging-object-added.json';
 import { datasetReviewScreening, objectReviewScreening, reviewCase } from './screening-review.test-helpers';
@@ -84,17 +82,20 @@ describe('screening review stream', () => {
     expect(items.every((item) => item.listRecord.caption !== item.customer.name)).toBe(true);
   });
 
-  it('reads every screening and groups the same customer across cases and trigger types', () => {
+  it('reads every screening and groups by case, then by customer, newest case first', () => {
     const groups = groupScreeningReviewItems(
       buildScreeningReviewItems([
         reviewCase('older', [objectReviewScreening('one'), objectReviewScreening('two')]),
         reviewCase('newer', [datasetReviewScreening()], { createdAt: '2026-11-03T10:00:00Z' }),
       ]),
     );
-    expect(groups).toHaveLength(2);
-    expect(groups.find((group) => group.customer.objectId === 'alice')?.items).toHaveLength(5);
+    // The same customer gets a group in each of its cases.
+    expect(groups.map((group) => [group.caseId, group.customer.objectId, group.items.length])).toEqual([
+      ['newer', 'alice', 1],
+      ['newer', 'bob', 1],
+      ['older', 'alice', 4],
+    ]);
     expect(new Set(groups.flatMap((group) => group.items.map((item) => item.id))).size).toBe(6);
-    expect(groups[0]?.items.some((item) => item.caseId === 'older')).toBe(true);
   });
 
   it('separates identical object IDs from different object types', () => {
@@ -129,7 +130,7 @@ describe('screening review stream', () => {
     },
   );
 
-  it('orders customers by newest case and hits by topic, score, then identity', () => {
+  it('orders groups by newest case and hits by topic, score, then identity', () => {
     const screening = objectReviewScreening();
     screening.matches[0]!.payload.properties['topics'] = ['role.pep'];
     const groups = groupScreeningReviewItems(
@@ -142,43 +143,43 @@ describe('screening review stream', () => {
     expect(groups[1]?.items.map((item) => item.matchId)).toEqual(['screening-1-low', 'screening-1-high']);
   });
 
-  it('stacks a customer’s hits on one list record across cases, keeps each stack together and moves by stack', () => {
-    const later = objectReviewScreening('two');
-    // Alone, this hit would sort after the other list record's hits.
-    later.matches[0]!.payload.score = 0.7;
-    const items = buildScreeningReviewItems([
-      reviewCase('one', [objectReviewScreening('one')]),
-      reviewCase('two', [later]),
-      reviewCase('bob', [objectReviewScreening('bob', 'bob')]),
-    ]);
-    const groups = groupScreeningReviewItems(items);
-    const alice = groups.find((group) => group.customer.objectId === 'alice')!;
-    expect(alice.items.map((item) => item.matchId)).toEqual(['one-high', 'two-high', 'one-low', 'two-low']);
-    expect(stackScreeningReviewItems(alice.items).map((stack) => stack.map((item) => item.matchId))).toEqual([
-      ['one-high', 'two-high'],
-      ['one-low', 'two-low'],
-    ]);
-    // Another customer's hits on the same list records stack apart.
-    expect(stackScreeningReviewItems(items)).toHaveLength(4);
-    expect(screeningReviewStack(groups, alice.items[1]!.id).map((item) => item.matchId)).toEqual([
-      'one-high',
-      'two-high',
-    ]);
-    expect(screeningReviewStack(groups, 'missing')).toEqual([]);
-    expect(adjacentScreeningReviewItem(groups, alice.items[1]!.id, 1)?.matchId).toBe('one-low');
-    expect(adjacentScreeningReviewItem(groups, alice.items[3]!.id, -1)?.matchId).toBe('one-high');
+  it('stacks two No hit hits or more where the first sorts, as one stop, unless expanded', () => {
+    const screening = objectReviewScreening();
+    screening.matches.push(
+      { ...screening.matches[0]!, id: 'third', opensanctionEntityId: 'record-3', status: 'no_hit' },
+      { ...screening.matches[0]!, id: 'fourth', opensanctionEntityId: 'record-4', status: 'no_hit' },
+    );
+    screening.matches[0]!.status = 'no_hit';
+    const groups = groupScreeningReviewItems(
+      buildScreeningReviewItems([reviewCase('case', [screening])]),
+      false,
+      () => true,
+    );
+    const [group] = groups;
+    const cards = screeningReviewCards(group!);
+    expect(
+      cards.map((card) => (card.kind === 'hit' ? card.item.matchId : card.items.map((item) => item.matchId))),
+    ).toEqual([['fourth', 'screening-1-high', 'third'], 'screening-1-low']);
+    const byMatch = (matchId: string) => group!.items.find((item) => item.matchId === matchId)!.id;
+    // The stack is one stop, on its first hit.
+    expect(adjacentScreeningReviewItem(groups, byMatch('screening-1-low'), -1)?.matchId).toBe('fourth');
+    expect(adjacentScreeningReviewItem(groups, byMatch('third'), 1)?.matchId).toBe('screening-1-low');
+    expect(adjacentScreeningReviewItem(groups, byMatch('fourth'), -1)).toBeUndefined();
 
-    // An unstacked stack is visited hit by hit.
-    const unstacked = new Set([screeningReviewStackKey(alice.items[0]!)]);
-    expect(stackScreeningReviewItems(alice.items, unstacked)).toHaveLength(3);
-    expect(adjacentScreeningReviewItem(groups, alice.items[0]!.id, 1, false, unstacked)?.matchId).toBe('two-high');
-    expect(adjacentScreeningReviewItem(groups, alice.items[2]!.id, -1, false, unstacked)?.matchId).toBe('two-high');
+    const expanded = new Set([group!.key]);
+    expect(screeningReviewCards(group!, expanded).every((card) => card.kind === 'hit')).toBe(true);
+    expect(adjacentScreeningReviewItem(groups, byMatch('fourth'), 1, false, expanded)?.matchId).toBe(
+      'screening-1-high',
+    );
 
-    // A stack opens on its first pending hit.
-    const decided = items.map((item) => (item.matchId === 'one-high' ? { ...item, status: 'no_hit' as const } : item));
-    const listed = groupScreeningReviewItems(decided, false, () => true);
-    const listedAlice = listed.find((group) => group.customer.objectId === 'alice')!;
-    expect(adjacentScreeningReviewItem(listed, listedAlice.items[2]!.id, -1)?.matchId).toBe('two-high');
+    // A single No hit hit stays a card of its own.
+    screening.matches.splice(2);
+    const single = groupScreeningReviewItems(
+      buildScreeningReviewItems([reviewCase('case', [screening])]),
+      false,
+      () => true,
+    );
+    expect(screeningReviewCards(single[0]!).map((card) => card.kind)).toEqual(['hit', 'hit']);
   });
 
   it('uses all request queries for the snapshot name and a stable fallback if none exists', () => {
@@ -654,12 +655,13 @@ describe('screening review session', () => {
   it('lists the hits of screenings decided this visit, and counts only pending hits as remaining', () => {
     const session = decide(byMatch('screening-1-high'), 'confirmed_hit', { status: 'confirmed_hit' });
     const alice = listedGroups(session)[0]!;
+    // After a Hit, the skipped and No hit hits are only counted.
     expect(alice.items.map((item) => [item.matchId, item.status])).toEqual([
       ['screening-1-high', 'confirmed_hit'],
       ['dataset-1-alice', 'pending'],
-      ['screening-1-low', 'skipped'],
     ]);
-    expect(alice).toMatchObject({ remaining: 1, total: 3 });
+    expect(alice).toMatchObject({ remaining: 1, total: 3, setAside: 1 });
+    expect(listedGroups(decide(byMatch('screening-1-high'), 'no_hit'))[0]).toMatchObject({ setAside: 0 });
     expect(listedGroups(emptyScreeningReviewSession).flatMap((group) => group.items)).toHaveLength(4);
   });
 
@@ -776,14 +778,14 @@ describe('screening review session', () => {
       expect(state(session, 'screening-1-low', objectOnly)).toBe('case_closed');
     });
 
-    it('selects the pending hits of the active hit’s customer', () => {
+    it('selects the pending hits of the active hit’s group', () => {
       const groups = listedGroups(unwritten([[byMatch('screening-1-high'), 'no_hit']]));
       const alice = groups[0]!.items.find((item) => item.matchId === 'dataset-1-alice')!;
-      expect(screeningReviewCustomerPendingItems(groups, alice.id).map((item) => item.matchId)).toEqual([
+      expect(screeningReviewGroupPendingItems(groups, alice.id).map((item) => item.matchId)).toEqual([
         'dataset-1-alice',
         'screening-1-low',
       ]);
-      expect(screeningReviewCustomerPendingItems(groups, 'missing')).toEqual([]);
+      expect(screeningReviewGroupPendingItems(groups, 'missing')).toEqual([]);
     });
   });
 

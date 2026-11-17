@@ -37,20 +37,16 @@ const CASE_EVENT_TYPES: CaseEventType[] = [
 
 export function DetailsPanel({
   item,
-  stack,
   tab,
   inboxes,
   onTabChange,
-  onSelect,
   onClose,
   className,
 }: {
   item: ScreeningReviewItem;
-  stack: readonly ScreeningReviewItem[];
   tab: DetailsPanelTab;
   inboxes: InboxMetadata[];
   onTabChange: (tab: DetailsPanelTab) => void;
-  onSelect: (item: ScreeningReviewItem) => void;
   onClose: () => void;
   className?: string;
 }) {
@@ -116,7 +112,6 @@ export function DetailsPanel({
           </div>
         ) : (
           <div className="flex flex-col gap-md">
-            {stack.length > 1 ? <StackNavigation stack={stack} activeId={item.id} onSelect={onSelect} /> : null}
             <CaseAndHistory item={item} inboxes={inboxes} />
           </div>
         )}
@@ -131,42 +126,6 @@ export function DetailsPanel({
         <span>{t('cases:screening_review.panel.close_hint')}</span>
       </footer>
     </Card>
-  );
-}
-
-/** One numbered button per hit of the stack, each opening its case. */
-function StackNavigation({
-  stack,
-  activeId,
-  onSelect,
-}: {
-  stack: readonly ScreeningReviewItem[];
-  activeId: string;
-  onSelect: (item: ScreeningReviewItem) => void;
-}) {
-  const { t } = useTranslation(['cases']);
-  const label = t('cases:screening_review.stack.navigation');
-  return (
-    <div role="group" aria-label={label} className="flex flex-wrap items-center gap-xs">
-      <span className="me-xs text-xs text-grey-secondary">{label}</span>
-      {stack.map((member, index) => {
-        const current = member.id === activeId;
-        return (
-          <Button
-            key={member.id}
-            variant={current ? 'primary' : 'secondary'}
-            mode="icon"
-            className="tabular-nums"
-            aria-pressed={current}
-            aria-label={`${index + 1} · ${member.caseName}`}
-            title={member.caseName}
-            onClick={() => onSelect(member)}
-          >
-            {index + 1}
-          </Button>
-        );
-      })}
-    </div>
   );
 }
 

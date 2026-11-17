@@ -53,14 +53,18 @@ function matchSignals({ features, explanations }: ScreeningReviewSignals): Scree
   return { ...(features ? { features } : {}), ...(explanations ? { explanations } : {}) };
 }
 
+/** One customer's hits in one case. A customer with several cases has one group per case. */
 export interface ScreeningReviewGroup {
   key: string;
+  caseId: string;
   customer: ScreeningReviewItem['customer'];
   items: ScreeningReviewItem[];
   remaining: number;
   total: number;
   incomplete: boolean;
   newestCase: string;
+  /** The No hit and skipped hits left out of `items` once one of them is a Hit. */
+  setAside: number;
 }
 
 function customerReference(
@@ -579,107 +583,113 @@ function topicPriority(item: ScreeningReviewItem) {
   );
 }
 
+export function screeningReviewGroupKey(item: ScreeningReviewItem) {
+  return JSON.stringify([item.caseId, item.customer.key]);
+}
+
+function isSetAside(item: ScreeningReviewItem) {
+  return item.status === 'no_hit' || item.status === 'skipped';
+}
+
 /**
- * Groups items by customer. `isListed` picks the items shown in the list; every item counts toward
- * the customer's total, and only pending ones toward `remaining`.
+ * Groups items by case, then by customer. `isListed` picks the items shown in the list; every item
+ * counts toward the group's total, and only pending ones toward `remaining`. Once a listed hit is a
+ * Hit, the group keeps it and its pending hits, and counts the No hit and skipped ones in `setAside`.
  */
 export function groupScreeningReviewItems(
   items: readonly ScreeningReviewItem[],
   hasMore = false,
   isListed: (item: ScreeningReviewItem) => boolean = isPendingReviewItem,
 ) {
-  const groups = new Map<string, ScreeningReviewGroup>();
+  const groups = new Map<string, ScreeningReviewGroup & { all: ScreeningReviewItem[] }>();
   for (const item of items) {
-    let group = groups.get(item.customer.key);
+    const key = screeningReviewGroupKey(item);
+    let group = groups.get(key);
     if (!group) {
       group = {
-        key: item.customer.key,
+        key,
+        caseId: item.caseId,
         customer: item.customer,
         items: [],
+        all: [],
         remaining: 0,
         total: 0,
         incomplete: hasMore,
         newestCase: item.caseCreatedAt,
+        setAside: 0,
       };
-      groups.set(group.key, group);
+      groups.set(key, group);
     }
     group.total += 1;
+    group.all.push(item);
     group.incomplete ||= item.partial;
-    if (item.caseCreatedAt > group.newestCase) {
-      group.newestCase = item.caseCreatedAt;
-      group.customer = item.customer;
-    }
     if (isPendingReviewItem(item)) group.remaining += 1;
     if (isListed(item)) group.items.push(item);
   }
   return [...groups.values()]
     .filter((group) => group.items.length > 0)
     .sort((a, b) => b.newestCase.localeCompare(a.newestCase) || a.key.localeCompare(b.key))
-    .map((group) => ({
-      ...group,
-      // Each stack's hits follow one another, from where its first hit sorts.
-      items: stackScreeningReviewItems(
-        group.items.sort(
+    .map(({ all, ...group }): ScreeningReviewGroup => {
+      const confirmed = group.items.some((item) => item.status === 'confirmed_hit');
+      const listed = confirmed ? group.items.filter((item) => !isSetAside(item)) : group.items;
+      return {
+        ...group,
+        items: listed.sort(
           (a, b) => topicPriority(a) - topicPriority(b) || b.score - a.score || a.id.localeCompare(b.id),
         ),
-      ).flat(),
-    }));
+        setAside: confirmed ? all.filter(isSetAside).length : 0,
+      };
+    });
 }
 
-/** Identifies a stack: one customer's hits on one list record. */
-export function screeningReviewStackKey(item: ScreeningReviewItem) {
-  return JSON.stringify([item.customer.key, item.listRecord.id]);
-}
+/** A card of the hit list: one hit, or a group's No hit hits stacked behind one another. */
+export type ScreeningReviewCard =
+  | { kind: 'hit'; key: string; item: ScreeningReviewItem }
+  | { kind: 'no_hit_stack'; key: string; items: ScreeningReviewItem[] };
 
 /**
- * Splits hits into stacks: one customer's hits on one list record, from several screenings or cases.
- * The list shows a stack as one card, and a decision on it applies to all its pending hits. Stacks
- * keep the order of their first hit. The stacks in `unstacked` split into one stack per hit.
+ * A group's cards. Two No hit hits or more stack as one card, where the first of them sorts, unless
+ * the group is in `expanded`.
  */
-export function stackScreeningReviewItems<T extends ScreeningReviewItem>(
-  items: readonly T[],
-  unstacked: ReadonlySet<string> = new Set(),
-): T[][] {
-  const stacks = new Map<string, T[]>();
-  for (const item of items) {
-    const key = screeningReviewStackKey(item);
-    const stack = stacks.get(key);
-    if (stack) stack.push(item);
-    else stacks.set(key, [item]);
-  }
-  return [...stacks].flatMap(([key, stack]) => (unstacked.has(key) ? stack.map((item) => [item]) : [stack]));
+export function screeningReviewCards(
+  group: ScreeningReviewGroup,
+  expanded: ReadonlySet<string> = new Set(),
+): ScreeningReviewCard[] {
+  const noHit = group.items.filter((item) => item.status === 'no_hit');
+  const stacked = noHit.length > 1 && !expanded.has(group.key);
+  return group.items.flatMap((item): ScreeningReviewCard[] => {
+    if (!stacked || item.status !== 'no_hit') return [{ kind: 'hit', key: item.id, item }];
+    return item === noHit[0] ? [{ kind: 'no_hit_stack', key: `${group.key}:no_hit`, items: noHit }] : [];
+  });
 }
 
-/** The listed stack holding `itemId`, or none. Unstacked or not, it holds all the stack's hits. */
-export function screeningReviewStack(groups: readonly ScreeningReviewGroup[], itemId: string | undefined) {
-  const group = groups.find((candidate) => candidate.items.some((item) => item.id === itemId));
-  return stackScreeningReviewItems(group?.items ?? []).find((stack) => stack.some((item) => item.id === itemId)) ?? [];
-}
-
-/** The hit a stack opens on: its first pending hit, else its first hit. */
-export function screeningReviewStackLead<T extends ScreeningReviewItem>(stack: readonly T[]): T | undefined {
-  return stack.find(isPendingReviewItem) ?? stack[0];
+/** The hit a card opens on. */
+export function screeningReviewCardLead(card: ScreeningReviewCard) {
+  return card.kind === 'hit' ? card.item : card.items[0]!;
 }
 
 /**
- * The next or previous stack's lead, or the next or previous customer's first lead. The hits of an
- * unstacked stack are visited one by one.
+ * The next or previous card's hit, or the next or previous group's first card. A No hit stack is
+ * one stop, unless its group is in `expanded`.
  */
 export function adjacentScreeningReviewItem(
   groups: readonly ScreeningReviewGroup[],
   activeId: string | undefined,
   direction: -1 | 1,
-  byCustomer = false,
-  unstacked: ReadonlySet<string> = new Set(),
+  byGroup = false,
+  expanded: ReadonlySet<string> = new Set(),
 ) {
-  if (byCustomer) {
+  const holds = (card: ScreeningReviewCard) =>
+    card.kind === 'hit' ? card.item.id === activeId : card.items.some((item) => item.id === activeId);
+  if (byGroup) {
     const index = groups.findIndex((group) => group.items.some((item) => item.id === activeId));
     const group = groups[index + direction];
-    return group ? screeningReviewStackLead(stackScreeningReviewItems(group.items, unstacked)[0] ?? []) : undefined;
+    const first = group ? screeningReviewCards(group, expanded)[0] : undefined;
+    return first ? screeningReviewCardLead(first) : undefined;
   }
-  const stacks = groups.flatMap((group) => stackScreeningReviewItems(group.items, unstacked));
-  const index = stacks.findIndex((stack) => stack.some((item) => item.id === activeId));
-  return screeningReviewStackLead(stacks[index + direction] ?? []);
+  const cards = groups.flatMap((group) => screeningReviewCards(group, expanded));
+  const card = cards[cards.findIndex(holds) + direction];
+  return card ? screeningReviewCardLead(card) : undefined;
 }
 
 /** How long a customer's hits stay listed after their case closes. */
@@ -847,8 +857,8 @@ export function screeningReviewScreeningState(
   return item.partial && !pending ? 'load_more' : 'in_review';
 }
 
-/** The pending hits of the active hit's customer, which A selects. */
-export function screeningReviewCustomerPendingItems(groups: readonly ScreeningReviewGroup[], activeId: string) {
+/** The pending hits of the active hit's group, which A selects. */
+export function screeningReviewGroupPendingItems(groups: readonly ScreeningReviewGroup[], activeId: string) {
   const group = groups.find((candidate) => candidate.items.some((item) => item.id === activeId));
   return group?.items.filter(isPendingReviewItem) ?? [];
 }

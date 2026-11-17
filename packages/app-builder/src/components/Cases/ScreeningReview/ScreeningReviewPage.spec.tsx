@@ -307,19 +307,111 @@ describe('screening review keyboard navigation', () => {
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).not.toBe(firstId));
   });
 
+  /**
+   * Lays out the hit list: a 400px list scrolled to `scrollTop`, and boxes at content offsets. jsdom
+   * has no layout, so each box is given as [top, height] from the top of the list's content.
+   */
+  function layOut(scrollTop: number, boxes: [HTMLElement, number, number][], headerHeight = 0) {
+    const nav = screen.getByRole('navigation', { name: 'cases:screening_review.hit_list' });
+    const spies = [
+      vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 200, 400)),
+      vi.spyOn(nav, 'clientHeight', 'get').mockReturnValue(400),
+      vi.spyOn(nav, 'scrollTop', 'get').mockReturnValue(scrollTop),
+      ...boxes.map(([element, top, height]) =>
+        vi.spyOn(element, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, top - scrollTop, 200, height)),
+      ),
+      ...[...nav.querySelectorAll<HTMLElement>('[data-review-group-header]')].map((header) =>
+        vi.spyOn(header, 'offsetHeight', 'get').mockReturnValue(headerHeight),
+      ),
+    ];
+    const scrollTo = vi.fn();
+    nav.scrollTo = scrollTo;
+    return { scrollTo, restore: () => spies.forEach((spy) => spy.mockRestore()) };
+  }
+  const groups = () => [...document.querySelectorAll<HTMLElement>('[data-review-group]')];
+  const hitBox = (group: HTMLElement, index: number) =>
+    group.querySelectorAll<HTMLElement>('[data-review-hit]')[index]!;
+
   it('scrolls the hit list smoothly until the selected hit is fully visible', async () => {
     renderPage();
     await waitFor(() => expect(activeCard()).not.toBeNull());
-    const list = screen.getByRole('navigation', { name: 'cases:screening_review.hit_list' });
-    expect(list.className).toContain('absolute');
-    expect(list.className).toContain('overflow-y-auto');
-    vi.mocked(Element.prototype.scrollIntoView).mockClear();
+    const nav = screen.getByRole('navigation', { name: 'cases:screening_review.hit_list' });
+    expect(nav.className).toContain('absolute');
+    expect(nav.className).toContain('overflow-y-auto');
+    const [alice] = groups();
+    const { scrollTo, restore } = layOut(0, [
+      [alice!, 0, 800],
+      [hitBox(alice!, 1), 700, 40],
+    ]);
+    try {
+      press('j', 'KeyJ');
+      // 8px below the hit.
+      await waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 348, behavior: 'smooth' }));
+    } finally {
+      restore();
+    }
+  });
 
+  it('shows the whole group when its first hit is selected', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
     press('j', 'KeyJ');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+    const [alice] = groups();
+    const { scrollTo, restore } = layOut(0, [
+      [alice!, 600, 180],
+      [hitBox(alice!, 0), 660, 40],
+    ]);
+    try {
+      press('k', 'KeyK');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      expect(scrollTo).toHaveBeenCalledWith({ top: 380, behavior: 'smooth' });
+    } finally {
+      restore();
+    }
+  });
 
-    await waitFor(() =>
-      expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', behavior: 'smooth' }),
+  it('keeps a long group’s header stuck and shows each hit below it', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    const [alice] = groups();
+    expect(alice!.querySelector('[data-review-group-header]')?.className).toContain('sticky');
+    press('j', 'KeyJ');
+    press('j', 'KeyJ');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+    // Scrolled into the group: its header covers the top 60px of the list.
+    const { scrollTo, restore } = layOut(
+      300,
+      [
+        [alice!, 0, 900],
+        [hitBox(alice!, 1), 330, 40],
+      ],
+      60,
     );
+    try {
+      press('k', 'KeyK');
+      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+      expect(scrollTo).toHaveBeenCalledWith({ top: 262, behavior: 'smooth' });
+    } finally {
+      restore();
+    }
+  });
+
+  it('brings an off-screen group taller than the list in from its top', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    const bob = groups()[1]!;
+    const { scrollTo, restore } = layOut(0, [
+      [bob, 900, 500],
+      [hitBox(bob, 0), 960, 48],
+    ]);
+    try {
+      press('J', 'KeyJ', true);
+      await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe('case:dataset-1:dataset-1-bob'));
+      expect(scrollTo).toHaveBeenCalledWith({ top: 900, behavior: 'smooth' });
+    } finally {
+      restore();
+    }
   });
 
   it('scrolls the hit list instantly when reduced motion is requested', async () => {
@@ -334,14 +426,18 @@ describe('screening review keyboard navigation', () => {
     );
     renderPage();
     await waitFor(() => expect(activeCard()).not.toBeNull());
-    vi.mocked(Element.prototype.scrollIntoView).mockClear();
-
-    press('j', 'KeyJ');
-
-    await waitFor(() =>
-      expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', behavior: 'auto' }),
-    );
-    vi.unstubAllGlobals();
+    const [alice] = groups();
+    const { scrollTo, restore } = layOut(0, [
+      [alice!, 0, 800],
+      [hitBox(alice!, 1), 700, 40],
+    ]);
+    try {
+      press('j', 'KeyJ');
+      await waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 348, behavior: 'auto' }));
+    } finally {
+      restore();
+      vi.unstubAllGlobals();
+    }
   });
 
   it('unregisters all page shortcuts on unmount', async () => {
@@ -726,14 +822,16 @@ describe('screening review decisions', () => {
     press('m', 'KeyM');
     expect(screen.getByRole('note').textContent).toBe('cases:screening_review.dock.skip_warning');
     fireEvent.click(validateButton());
-    // The skip shows during the undo delay.
+    // The skipped hit leaves the list during the undo delay, counted beside the Hit.
     await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
-    expect(card('List record B')?.textContent).toContain('cases:screening_review.decision.skipped');
+    expect(card('List record B')).toBeUndefined();
+    expect(screen.getByText('cases:screening_review.set_aside')).toBeTruthy();
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() =>
       expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith(written('screening-1-high', 'confirmed_hit')),
     );
-    expect(card('List record B')?.textContent).toContain('cases:screening_review.decision.skipped');
+    expect(card('List record B')).toBeUndefined();
+    expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.confirmed_hit');
 
     // A list-update Hit doesn't warn: the other customers' hits stay independent.
     press('m', 'KeyM');
@@ -764,7 +862,9 @@ describe('screening review decisions', () => {
     await screen.findByText('cases:screening_review.screening_state.case_closed');
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
-    expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit');
+    // Both No hit hits stack, on the cursor's hit.
+    expect(card('List record B')?.textContent).toContain('cases:screening_review.decision.no_hit');
+    expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
     expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
     // The decided hits stay listed under a notice until the case is hidden.
     expect(screen.getByText('cases:screening_review.empty.all_reviewed.title')).toBeTruthy();
@@ -1248,9 +1348,11 @@ describe('screening review decisions', () => {
       press('a', 'KeyA');
       fireEvent.change(commentBox(), { target: { value: 'Different person' } });
       press('Enter', 'Enter');
-      for (const name of ['List record A', 'List record B']) {
-        await waitFor(() => expect(card(name)?.textContent).toContain('cases:screening_review.decision.no_hit'));
-      }
+      // The customer's three No hit hits stack.
+      await waitFor(() =>
+        expect(card('List record A')?.textContent).toContain('cases:screening_review.decision.no_hit'),
+      );
+      expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×3');
       expect(checked()).toBe(0);
       expect(screen.getByText('cases:screening_review.undo.batch_validated')).toBeTruthy();
 
@@ -1354,7 +1456,8 @@ describe('screening review decisions', () => {
       await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
       await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
       await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3));
-      fireEvent.click(card('fast-low')!);
+      // fast-high and fast-low stack, on fast-high.
+      fireEvent.click(card('fast-high')!);
       await screen.findByText('cases:screening_review.screening_state.case_closed');
 
       await act(async () => {
@@ -1497,8 +1600,10 @@ describe('screening review queue tools', () => {
       .getAllByRole('button')
       .filter((button) => button.hasAttribute('data-review-hit-card'))
       .map((button) => button.textContent);
-    expect(listed).toHaveLength(2);
-    expect(listed.every((text) => text?.includes('cases:screening_review.decision.no_hit'))).toBe(true);
+    // The case's two No hit hits stack as one card.
+    expect(listed).toHaveLength(1);
+    expect(listed[0]).toContain('cases:screening_review.decision.no_hit');
+    expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
     expect(screen.getByText('cases:screening_review.dock.validated')).toBeTruthy();
     expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
     // Decided hits can't be decided again.
@@ -1557,6 +1662,7 @@ describe('screening review queue tools', () => {
       .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
     renderPage({ filter: 'validated', q: 'Bob', limit: 50, cursors: [] });
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }));
     press('j', 'KeyJ');
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
     // The last hit of the page: J stays, it doesn't load the next page.
@@ -1698,21 +1804,25 @@ describe('screening review list rail', () => {
   });
 });
 
-describe('screening review stacks', () => {
-  // Alice matches both list records in two cases: two stacks of two hits.
+describe('screening review case groups', () => {
+  // Alice matches both list records in two cases: one group per case, under the same name.
   const one = '55555555-5555-4555-8555-555555555555';
   const two = '66666666-6666-4666-8666-666666666666';
-  const stackItems = buildScreeningReviewItems([
+  const caseItems = buildScreeningReviewItems([
     reviewCase(one, [objectReviewScreening('one')]),
     reviewCase(two, [objectReviewScreening('two')]),
   ]);
   const hitCards = () => document.querySelectorAll('[data-review-hit-card]');
-  const panel = () => screen.getByRole('complementary', { name: 'cases:screening_review.panel.label' });
-  const stackButton = (label: string) =>
-    within(within(panel()).getByRole('group', { name: 'cases:screening_review.stack.navigation' })).getByRole(
-      'button',
-      { name: label },
-    );
+  const groupHeadings = () =>
+    within(screen.getByRole('navigation', { name: 'cases:screening_review.hit_list' }))
+      .getAllByRole('heading', { level: 2 })
+      .map((heading) => heading.textContent);
+  const stackToggle = (label: 'unstack' | 'restack') =>
+    screen.getAllByRole('button', { name: `cases:screening_review.stack.${label}` });
+  const elapse = (ms: number) =>
+    act(async () => {
+      await vi.advanceTimersByTimeAsync(ms);
+    });
 
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -1720,140 +1830,75 @@ describe('screening review stacks', () => {
       'matchMedia',
       vi.fn().mockImplementation((query: string) => ({ matches: false, media: query })),
     );
-    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: stackItems, nextCursor: null, failed: false });
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: caseItems, nextCursor: null, failed: false });
+    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue({
+      ok: true,
+      screeningStatus: 'in_review',
+      caseClosed: false,
+    });
   });
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
   });
 
-  it('shows each stack as one card with its count, and moves from stack to stack', async () => {
+  it('shows one group per case, repeating the customer name, and moves hit by hit', async () => {
     renderPage();
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-    expect(hitCards()).toHaveLength(2);
-    expect(activeCard()?.textContent).toContain('×2');
+    expect(groupHeadings()).toEqual(['Alice', 'Alice']);
+    expect(hitCards()).toHaveLength(4);
     press('j', 'KeyJ');
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
-    press('k', 'KeyK');
-    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-high`));
-  });
-
-  it('switches between the stack’s cases with numbered buttons in the case panel', async () => {
-    renderPage();
-    await waitFor(() => expect(activeCard()).not.toBeNull());
-    press('h', 'KeyH');
-    expect(stackButton(`1 · Case ${one}`).getAttribute('aria-pressed')).toBe('true');
-    fireEvent.click(stackButton(`2 · Case ${two}`));
+    press('J', 'KeyJ', true);
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
-    expect(stackButton(`2 · Case ${two}`).getAttribute('aria-pressed')).toBe('true');
-    expect(within(panel()).getByRole('heading', { level: 2 }).textContent).toBe(`Case ${two}`);
-    // The same card stays under the cursor.
-    expect(hitCards()).toHaveLength(2);
-    expect(activeCard()?.textContent).toContain('List record A');
   });
 
-  it('records a decision on every pending hit of the stack, with one undo', async () => {
-    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue({
-      ok: true,
-      screeningStatus: 'in_review',
-      caseClosed: false,
-    });
+  it('decides and selects one hit at a time, even on a list record another case shares', async () => {
     renderPage();
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-    press('n', 'KeyN');
-    expect(screen.getByText('cases:screening_review.dock.stack_note')).toBeTruthy();
-    press('Enter', 'Enter');
-    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
-    expect(screen.getAllByRole('button', { name: /screening_review\.undo\.action/ })).toHaveLength(1);
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(SCREENING_REVIEW_UNDO_DELAY_MS);
-    });
-    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
-    for (const [caseId, screeningId] of [
-      [one, 'one'],
-      [two, 'two'],
-    ]) {
-      expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith({
-        data: { caseId, screeningId, matchId: `${screeningId}-high`, status: 'no_hit' },
-      });
-    }
-  });
-
-  const stackToggle = (label: 'unstack' | 'restack') =>
-    screen.getAllByRole('button', { name: `cases:screening_review.stack.${label}` });
-
-  it('unstacks with + or the ×N button, then moves hit by hit, and restacks with - or the − button', async () => {
-    renderPage();
-    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-    expect(stackToggle('unstack')[0]!.textContent).toBe('×2');
-    expect(stackToggle('unstack')[0]!.getAttribute('aria-expanded')).toBe('false');
-    press('+', 'Equal', true);
-    expect(hitCards()).toHaveLength(3);
-    expect(stackToggle('restack').map((button) => button.textContent)).toEqual(['−', '−']);
-    expect(stackToggle('restack')[0]!.getAttribute('aria-expanded')).toBe('true');
-    press('j', 'KeyJ');
-    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
-    press('-', 'Minus');
-    expect(hitCards()).toHaveLength(2);
-    // The stack's card still shows the hit under the cursor.
-    expect(activeCard()?.textContent).toContain('List record A');
-
-    fireEvent.click(stackToggle('unstack')[1]!);
-    expect(hitCards()).toHaveLength(3);
-    fireEvent.click(stackToggle('restack')[1]!);
-    expect(hitCards()).toHaveLength(2);
-    press('+', 'Equal', true);
-    press('+', 'Equal', true);
-    expect(hitCards()).toHaveLength(2);
-  });
-
-  it('unstacks with + typed where US layouts have /, as on a French Mac, without opening the help', async () => {
-    renderPage();
-    await waitFor(() => expect(activeCard()).not.toBeNull());
-    press('+', 'Slash', true);
-    expect(hitCards()).toHaveLength(3);
-    expect(screen.queryByRole('dialog')).toBeNull();
-  });
-
-  it('selects and decides each hit of an unstacked stack on its own', async () => {
-    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue({
-      ok: true,
-      screeningStatus: 'in_review',
-      caseClosed: false,
-    });
-    renderPage();
-    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-    press('+', 'Equal', true);
     press('x', 'KeyX');
-    const checkedCards = () =>
-      document.querySelectorAll('[data-review-hit-card] ~ [role="checkbox"][aria-checked="true"]').length;
-    expect(checkedCards()).toBe(1);
+    const summary = screen.getByRole('region', { name: 'cases:screening_review.batch.title' });
+    expect(within(summary).getAllByRole('listitem')).toHaveLength(1);
     press('x', 'KeyX');
-    expect(checkedCards()).toBe(0);
 
     press('n', 'KeyN');
-    expect(screen.queryByText('cases:screening_review.dock.stack_note')).toBeNull();
     press('Enter', 'Enter');
-    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(SCREENING_REVIEW_UNDO_DELAY_MS);
-    });
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
     expect(reviewScreeningReviewMatchFn).toHaveBeenCalledWith({
       data: { caseId: one, screeningId: 'one', matchId: 'one-high', status: 'no_hit' },
     });
   });
 
-  it('selects the whole stack with X and lists it once in the batch summary', async () => {
+  it('stacks a group’s No hit hits as one stop, shown separately with ×N and stacked again with −', async () => {
     renderPage();
-    await waitFor(() => expect(activeCard()).not.toBeNull());
-    press('x', 'KeyX');
-    const stackCheckbox = activeCard()!.parentElement!.querySelector('[role="checkbox"]')!;
-    expect(stackCheckbox.getAttribute('aria-checked')).toBe('true');
-    const summary = screen.getByRole('region', { name: 'cases:screening_review.batch.title' });
-    expect(within(summary).getAllByRole('listitem')).toHaveLength(1);
-    expect(within(summary).getByText('×2')).toBeTruthy();
-    press('x', 'KeyX');
-    expect(stackCheckbox.getAttribute('aria-checked')).toBe('false');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('n', 'KeyN');
+    press('Enter', 'Enter');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
+    press('n', 'KeyN');
+    press('Enter', 'Enter');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+    expect(hitCards()).toHaveLength(3);
+    expect(stackToggle('unstack')[0]!.textContent).toBe('×2');
+    expect(stackToggle('unstack')[0]!.getAttribute('aria-expanded')).toBe('false');
+    // The stack has no checkbox, and K stops on it once.
+    expect(stackToggle('unstack')[0]!.parentElement!.querySelector('[role="checkbox"]')).toBeNull();
+    press('k', 'KeyK');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-high`));
+    expect(activeCard()?.textContent).toContain('cases:screening_review.decision.no_hit');
+    press('j', 'KeyJ');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+
+    fireEvent.click(stackToggle('unstack')[0]!);
+    expect(hitCards()).toHaveLength(4);
+    expect(stackToggle('restack').map((button) => button.textContent)).toEqual(['−', '−']);
+    press('k', 'KeyK');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
+    fireEvent.click(stackToggle('restack')[1]!);
+    expect(hitCards()).toHaveLength(3);
+    // The stack shows the hit under the cursor.
+    expect(activeCard()?.textContent).toContain('List record B');
   });
 });

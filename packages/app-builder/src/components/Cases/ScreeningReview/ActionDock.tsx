@@ -1,4 +1,4 @@
-import { Callout, CalloutV2 } from '@app-builder/components/Callout';
+import { Callout } from '@app-builder/components/Callout';
 import type { ScreeningMatchComment, ScreeningMatchStatus } from '@app-builder/models/screening';
 import {
   isPendingReviewItem,
@@ -114,7 +114,6 @@ interface ActionDockProps {
   onSubmit: () => void;
   onCancel: () => void;
   skippedCount: number;
-  decidedCount: number;
   commentRef: Ref<HTMLTextAreaElement>;
 }
 
@@ -126,7 +125,6 @@ export function ActionDock({
   onSubmit,
   onCancel,
   skippedCount,
-  decidedCount,
   commentRef,
 }: ActionDockProps) {
   const { t } = useTranslation(['cases']);
@@ -163,9 +161,6 @@ export function ActionDock({
           <Callout role="note" color="orange" icon="warning">
             {t('cases:screening_review.dock.skip_warning', { count: skippedCount })}
           </Callout>
-        ) : null}
-        {draft.decision && decidedCount > 1 ? (
-          <CalloutV2 role="note">{t('cases:screening_review.dock.stack_note', { count: decidedCount })}</CalloutV2>
         ) : null}
         <TextArea
           ref={commentRef}

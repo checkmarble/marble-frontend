@@ -1,15 +1,14 @@
 import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import {
   isPendingReviewItem,
+  type ScreeningReviewCard,
   type ScreeningReviewGroup,
   type ScreeningReviewItem,
-  type ScreeningReviewSession,
-  screeningReviewStackKey,
-  screeningReviewStackLead,
+  screeningReviewCardLead,
+  screeningReviewCards,
   screeningReviewTopicFamilies,
-  stackScreeningReviewItems,
 } from '@app-builder/models/screening-review';
-import { type Ref, useId } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Checkbox, cn, Tag, Typo } from 'ui-design-system';
 import { DecisionTag } from './ActionDock';
@@ -20,66 +19,70 @@ import { ShortcutKeys } from './ShortcutHelp';
 
 type SelectionUpdate = (update: (current: BatchSelection) => BatchSelection) => void;
 
-/** The page's hits, grouped by customer. Clicking a card moves the cursor; checkboxes select for a batch. */
+/** The page's hits, grouped by case. Clicking a card moves the cursor; checkboxes select for a batch. */
 export function HitList({
   groups,
-  reviewItems,
-  session,
   activeId,
-  activeRef,
   ready,
   selection,
   onSelectionChange,
-  unstacked,
-  onToggleStack,
+  expanded,
+  onToggleNoHitStack,
   onActivate,
 }: {
   groups: readonly ScreeningReviewGroup[];
-  /** Every hit of the page, to tell what each screening needs besides a decision. */
-  reviewItems: readonly ScreeningReviewItem[];
-  session: ScreeningReviewSession;
   activeId: string | undefined;
-  activeRef: Ref<HTMLButtonElement>;
   ready: boolean;
   selection: BatchSelection;
   onSelectionChange: SelectionUpdate;
-  /** The keys of the stacks shown as one card per hit. */
-  unstacked: ReadonlySet<string>;
-  onToggleStack: (key: string) => void;
+  /** The groups whose No hit hits show one card each. */
+  expanded: ReadonlySet<string>;
+  onToggleNoHitStack: (groupKey: string) => void;
   onActivate: (item: ScreeningReviewItem) => void;
 }) {
   const { t } = useTranslation(['cases']);
   const mappedProperties = useMappedProperties();
-  /** One card for `items`: a whole stack, or one hit of an unstacked stack. */
-  const card = (items: readonly ScreeningReviewItem[], stack: readonly ScreeningReviewItem[], key: string) => {
-    const item = items.find((member) => member.id === activeId) ?? screeningReviewStackLead(items)!;
-    const pendingIds = items.filter(isPendingReviewItem).map((member) => member.id);
-    const selectedCount = pendingIds.filter((id) => selection.has(id)).length;
-    const allSelected = pendingIds.length > 0 && selectedCount === pendingIds.length;
+  const navRef = useRef<HTMLElement>(null);
+  const shownGroup = useRef<string | null>(null);
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (nav) shownGroup.current = revealActiveHit(nav, shownGroup.current);
+  }, [activeId, groups, expanded]);
+
+  const card = (group: ScreeningReviewGroup, entry: ScreeningReviewCard) => {
+    const items = entry.kind === 'hit' ? [entry.item] : entry.items;
+    const item = items.find((member) => member.id === activeId) ?? screeningReviewCardLead(entry);
+    const noHitCount = group.items.filter((member) => member.status === 'no_hit').length;
     return (
       <HitCard
-        key={items.length > 1 ? key : item.id}
+        key={entry.key}
         item={item}
-        stackSize={stack.length}
-        stacked={items.length > 1}
         active={item.id === activeId}
-        activeRef={activeRef}
         ready={ready}
-        selectable={pendingIds.length > 0}
-        selected={allSelected ? true : selectedCount > 0 ? 'indeterminate' : false}
+        selectable={isPendingReviewItem(item)}
+        selected={selection.has(item.id)}
         mappedProperties={mappedProperties}
+        stack={
+          entry.kind === 'no_hit_stack'
+            ? { size: entry.items.length, stacked: true }
+            : item.status === 'no_hit' && noHitCount > 1
+              ? { size: noHitCount, stacked: false }
+              : undefined
+        }
         onActivate={() => onActivate(item)}
         onToggle={() =>
           onSelectionChange((current) =>
-            allSelected ? withoutSelected(current, pendingIds) : withSelected(current, pendingIds),
+            selection.has(item.id) ? withoutSelected(current, [item.id]) : withSelected(current, [item.id]),
           )
         }
-        onToggleStack={() => onToggleStack(key)}
+        onToggleStack={() => onToggleNoHitStack(group.key)}
       />
     );
   };
   return (
     <nav
+      ref={navRef}
       aria-label={t('cases:screening_review.hit_list')}
       className="absolute inset-0 overflow-y-auto overscroll-y-contain"
       onClick={(event) => {
@@ -93,7 +96,7 @@ export function HitList({
     >
       <ul className="flex flex-col gap-sm">
         {groups.map((group) => (
-          <CustomerGroup
+          <CaseGroup
             key={group.key}
             group={group}
             active={group.items.some((item) => item.id === activeId)}
@@ -101,18 +104,16 @@ export function HitList({
             selection={selection}
             onSelectionChange={onSelectionChange}
           >
-            {stackScreeningReviewItems(group.items).flatMap((stack) => {
-              const key = screeningReviewStackKey(stack[0]!);
-              return unstacked.has(key) ? stack.map((item) => card([item], stack, key)) : [card(stack, stack, key)];
-            })}
-          </CustomerGroup>
+            {screeningReviewCards(group, expanded).map((entry) => card(group, entry))}
+          </CaseGroup>
         ))}
       </ul>
     </nav>
   );
 }
 
-function CustomerGroup({
+/** One customer's hits in one case. Its header sticks to the top of the list while its hits scroll. */
+function CaseGroup({
   group,
   active,
   ready,
@@ -139,8 +140,16 @@ function CustomerGroup({
       : 'cases:screening_review.batch.select_customer_hits',
   );
   return (
-    <Card as="li" className={cn('flex min-w-0 flex-col gap-sm p-3', active && 'border-purple-primary')}>
-      <div className="flex flex-col gap-xs">
+    <Card
+      as="li"
+      data-review-group={group.key}
+      className={cn('flex min-w-0 flex-col gap-sm p-3', active && 'border-purple-primary')}
+    >
+      <div
+        data-review-group-header
+        // Covers the card's padding, so hits scrolling under the stuck header stay hidden.
+        className="sticky top-0 z-10 -mx-3 -mt-3 flex flex-col gap-xs rounded-t-md bg-surface-card px-3 pt-3"
+      >
         <Typo as="h2" variant="subtitle2" className={cn('min-w-0', active && 'text-purple-primary')}>
           <bdi>{group.customer.name}</bdi>
         </Typo>
@@ -176,7 +185,7 @@ function CustomerGroup({
             </label>
           ) : null}
         </div>
-        <p className="flex items-center gap-xs text-xs text-grey-secondary">
+        <p className="flex flex-wrap items-center gap-xs text-xs text-grey-secondary">
           <Tag
             color="orange"
             size="xs"
@@ -189,6 +198,11 @@ function CustomerGroup({
             / {group.total}
             {group.incomplete ? '+' : ''}
           </span>
+          {group.setAside > 0 ? (
+            <Tag color="grey" size="xs" className="ms-auto">
+              {t('cases:screening_review.set_aside', { count: group.setAside })}
+            </Tag>
+          ) : null}
         </p>
       </div>
       <ul className="flex flex-col gap-xs">{children}</ul>
@@ -197,58 +211,54 @@ function CustomerGroup({
 }
 
 /**
- * One card: a whole stack, with the cards behind it peeking out when it holds several hits, or one
- * hit of an unstacked stack. A stack's tag unstacks it, and an unstacked hit's tag stacks it again.
+ * One hit. A No hit stack shows its first hit with the cards behind it peeking out, and its tag
+ * shows the stack's hits one by one. Their tag stacks them again.
  */
 function HitCard({
   item,
-  stackSize,
-  stacked,
   active,
-  activeRef,
   ready,
   selectable,
   selected,
   mappedProperties,
+  stack,
   onActivate,
   onToggle,
   onToggleStack,
 }: {
   item: ScreeningReviewItem;
-  stackSize: number;
-  stacked: boolean;
   active: boolean;
-  activeRef: Ref<HTMLButtonElement>;
   ready: boolean;
   selectable: boolean;
-  selected: boolean | 'indeterminate';
+  selected: boolean;
   mappedProperties: MappedProperties;
+  /** The group's No hit hits, when there are several. */
+  stack: { size: number; stacked: boolean } | undefined;
   onActivate: () => void;
   onToggle: () => void;
   onToggleStack: () => void;
 }) {
   const { t } = useTranslation(['cases']);
-  const hasStack = stackSize > 1;
-  const showLayers = hasStack && stacked;
-  const stackLabel = hasStack ? (stacked ? `×${stackSize}` : '−') : undefined;
+  const showLayers = !!stack?.stacked;
+  const stackLabel = stack ? (stack.stacked ? `×${stack.size}` : '−') : undefined;
+  const layered = showLayers && stack.size > 2;
   return (
-    <li className={cn('group/hit relative', showLayers && (stackSize > 2 ? 'pb-2' : 'pb-1'))}>
+    <li data-review-hit className={cn('group/hit relative', showLayers && (layered ? 'pb-2' : 'pb-1'))}>
       {showLayers ? (
         <>
-          {stackSize > 2 ? <StackLayer className="inset-x-2 bottom-0" /> : null}
-          <StackLayer className={cn('inset-x-1', stackSize > 2 ? 'bottom-1' : 'bottom-0')} />
+          {layered ? <StackLayer className="inset-x-2 bottom-0" /> : null}
+          <StackLayer className={cn('inset-x-1', layered ? 'bottom-1' : 'bottom-0')} />
         </>
       ) : null}
       <Card
         as="button"
         type="button"
         data-review-hit-card
-        ref={active ? activeRef : undefined}
         aria-current={active ? 'true' : undefined}
         disabled={!ready}
         onClick={onActivate}
         className={cn(
-          'relative flex w-full min-w-0 scroll-my-sm cursor-pointer flex-col gap-xs px-3 py-2.5 text-start text-small focus-visible:outline-2 focus-visible:outline-purple-primary',
+          'relative flex w-full min-w-0 cursor-pointer flex-col gap-xs px-3 py-2.5 text-start text-small focus-visible:outline-2 focus-visible:outline-purple-primary',
           active && 'border-purple-primary bg-purple-background-light',
           selected && 'bg-purple-background-light',
         )}
@@ -273,22 +283,24 @@ function HitCard({
           ) : null}
         </span>
       </Card>
-      {stackLabel ? (
+      {stack && stackLabel ? (
         <button
           type="button"
-          aria-expanded={!stacked}
-          aria-keyshortcuts={stacked ? '+' : '+ -'}
-          aria-label={t(stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack', {
-            count: stackSize,
-          })}
-          title={t(stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack', {
-            count: stackSize,
+          aria-expanded={!stack.stacked}
+          aria-label={t(
+            stack.stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack',
+            {
+              count: stack.size,
+            },
+          )}
+          title={t(stack.stacked ? 'cases:screening_review.stack.unstack' : 'cases:screening_review.stack.restack', {
+            count: stack.size,
           })}
           onClick={onToggleStack}
           className={cn(
             'absolute end-3 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-purple-primary',
             // Level with the card's bottom row, above the layers' padding.
-            showLayers ? (stackSize > 2 ? 'bottom-4.5' : 'bottom-3.5') : 'bottom-2.5',
+            showLayers ? (layered ? 'bottom-4.5' : 'bottom-3.5') : 'bottom-2.5',
           )}
         >
           <Tag size="xs" className="tabular-nums">
@@ -300,7 +312,7 @@ function HitCard({
         // Overlaps the card's corner. Shown on hover or keyboard focus, and kept while checked.
         <Checkbox
           size="small"
-          className="absolute -start-1.5 top-2.5 opacity-0 transition-opacity group-hover/hit:opacity-100 group-has-[:focus-visible]/hit:opacity-100 radix-state-checked:opacity-100 radix-state-indeterminate:opacity-100"
+          className="absolute -start-1.5 top-2.5 opacity-0 transition-opacity group-hover/hit:opacity-100 group-has-[:focus-visible]/hit:opacity-100 radix-state-checked:opacity-100"
           checked={selected}
           disabled={!ready}
           onCheckedChange={onToggle}
@@ -331,6 +343,59 @@ const DOT_COLOR_CLASSES: Record<ScreeningCategory, string> = {
   custom: 'bg-grey-placeholder',
   global: 'bg-green-primary',
 };
+
+/** Room kept between the active hit and the list's edges, or the stuck header. */
+const REVEAL_GAP = 8;
+
+function prefersReducedMotion() {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+}
+
+/**
+ * Scrolls the hit list to the active hit, and returns the group it belongs to. On a group's first
+ * hit, or on entering another group, the whole group shows when it fits, else from its top. Inside a
+ * group, the hit shows below the group's stuck header.
+ */
+function revealActiveHit(nav: HTMLElement, shownGroup: string | null) {
+  const hit = nav.querySelector<HTMLElement>('[data-review-hit-card][aria-current="true"]');
+  const group = hit?.closest<HTMLElement>('[data-review-group]');
+  const header = group?.querySelector<HTMLElement>('[data-review-group-header]');
+  if (!hit || !group || !header) return shownGroup;
+  const groupKey = group.getAttribute('data-review-group');
+  const entering = groupKey !== shownGroup || hit === group.querySelector('[data-review-hit-card]');
+
+  const view = nav.getBoundingClientRect();
+  const top = (element: HTMLElement) => element.getBoundingClientRect().top - view.top + nav.scrollTop;
+  const bottom = (element: HTMLElement) => element.getBoundingClientRect().bottom - view.top + nav.scrollTop;
+  const viewTop = nav.scrollTop;
+  const viewBottom = viewTop + nav.clientHeight;
+  const groupTop = top(group);
+  const groupBottom = bottom(group);
+  // The hit's whole <li>, so a stack's layers show too.
+  const hitBox = hit.closest<HTMLElement>('[data-review-hit]') ?? hit;
+  const hitTop = top(hitBox);
+  const hitBottom = bottom(hitBox);
+
+  let next = viewTop;
+  if (entering && groupBottom - groupTop <= nav.clientHeight) {
+    // The whole group, moving as little as possible.
+    if (groupTop < viewTop) next = groupTop;
+    else if (groupBottom > viewBottom) next = groupBottom - nav.clientHeight;
+  } else if (entering && (groupTop > viewTop || hitBottom > viewBottom)) {
+    // Taller than the list: from its top, unless the hit would fall below.
+    next = hitBottom - groupTop + REVEAL_GAP <= nav.clientHeight ? groupTop : hitBottom + REVEAL_GAP - nav.clientHeight;
+  } else {
+    // Under the header, which sticks once the group's top scrolls away.
+    const covered = header.offsetHeight + REVEAL_GAP;
+    if (hitTop - covered < viewTop) next = Math.max(groupTop, hitTop - covered);
+    else if (hitBottom + REVEAL_GAP > viewBottom) next = hitBottom + REVEAL_GAP - nav.clientHeight;
+  }
+  next = Math.max(0, Math.round(next));
+  if (Math.abs(next - viewTop) >= 1) {
+    nav.scrollTo({ top: next, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  }
+  return groupKey;
+}
 
 function TopicDots({ topics }: { topics: string[] }) {
   const { t } = useTranslation(['scenarios']);

@@ -194,15 +194,12 @@ export function useReviewDecisions({
     new Set(closed.values()).forEach(hideCaseLater);
   }, [closedCaseIds]);
 
-  /**
-   * Records the decision drafted under `draftId` on `items`: the cursor's hit first, then the other
-   * pending hits of its stack. One undo covers them all.
-   */
-  const submit = (items: readonly ScreeningReviewItem[], draftId: string) => {
-    const [item] = items;
+  /** Records the decision drafted under `draftId` on `item`. */
+  const submit = (item: ScreeningReviewItem, draftId: string) => {
     const draftBefore = drafts[draftId];
     const decision = draftBefore?.decision;
-    if (!item || !draftBefore || !decision) return;
+    if (!draftBefore || !decision) return;
+    const items = [item];
     const comment = draftBefore.comment.trim() || undefined;
     const ids = items.map((other) => other.id);
     const isCurrent = isCurrentGeneration();

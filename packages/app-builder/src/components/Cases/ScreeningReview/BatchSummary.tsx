@@ -1,8 +1,8 @@
 import { TopicsDisplay } from '@app-builder/components/Screenings/TopicsDisplay';
-import { type ScreeningReviewItem, stackScreeningReviewItems } from '@app-builder/models/screening-review';
+import type { ScreeningReviewItem } from '@app-builder/models/screening-review';
 import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Checkbox, Tag, Typo } from 'ui-design-system';
+import { Card, Checkbox, Typo } from 'ui-design-system';
 import { BatchDock } from './ActionDock';
 import {
   type BatchSelection,
@@ -17,7 +17,6 @@ import { listRecordAliasCount, SchemaTag, useListRecordListTitles } from './Scre
 /** Replaces the comparison view while hits are selected: the selected hits, then No hit for all of them. */
 export function BatchPanel({
   items,
-  unstacked,
   selection,
   onSelectionChange,
   onSubmit,
@@ -25,8 +24,6 @@ export function BatchPanel({
 }: {
   /** The selected hits that are still pending. */
   items: readonly ScreeningReviewItem[];
-  /** The stacks the list shows as one card per hit. */
-  unstacked: ReadonlySet<string>;
   selection: BatchSelection;
   onSelectionChange: (update: (current: BatchSelection) => BatchSelection) => void;
   onSubmit: () => void;
@@ -37,17 +34,9 @@ export function BatchPanel({
     <div className="flex min-h-0 min-w-0 flex-col gap-md">
       <BatchSummary
         items={items}
-        unstacked={unstacked}
         // Each hit shows the comment it keeps when they differ.
         comments={comment === undefined ? selection : undefined}
-        onDeselect={(stack) =>
-          onSelectionChange((current) =>
-            withoutSelected(
-              current,
-              stack.map((item) => item.id),
-            ),
-          )
-        }
+        onDeselect={(item) => onSelectionChange((current) => withoutSelected(current, [item.id]))}
       />
       <BatchDock
         count={items.length}
@@ -64,14 +53,12 @@ export function BatchPanel({
 
 function BatchSummary({
   items,
-  unstacked,
   comments,
   onDeselect,
 }: {
   items: readonly ScreeningReviewItem[];
-  unstacked: ReadonlySet<string>;
   comments: BatchSelection | undefined;
-  onDeselect: (stack: readonly ScreeningReviewItem[]) => void;
+  onDeselect: (item: ScreeningReviewItem) => void;
 }) {
   const mappedProperties = useMappedProperties();
   const { t } = useTranslation(['cases']);
@@ -88,11 +75,11 @@ function BatchSummary({
         <p className="text-s text-grey-secondary">{t('cases:screening_review.batch.description')}</p>
       </div>
       <ul className="flex min-h-0 flex-col gap-xs overflow-y-auto overscroll-y-contain">
-        {stackScreeningReviewItems(items, unstacked).map((stack) => (
+        {items.map((item) => (
           <BatchSummaryRow
-            key={stack[0]!.id}
-            stack={stack}
-            comment={comments?.get(stack[0]!.id)?.trim()}
+            key={item.id}
+            item={item}
+            comment={comments?.get(item.id)?.trim()}
             mappedProperties={mappedProperties}
             onDeselect={onDeselect}
           />
@@ -102,20 +89,19 @@ function BatchSummary({
   );
 }
 
-/** One selected stack: its first hit, with how many hits the stack holds. */
+/** One selected hit. */
 function BatchSummaryRow({
-  stack,
+  item,
   comment,
   mappedProperties,
   onDeselect,
 }: {
-  stack: readonly ScreeningReviewItem[];
+  item: ScreeningReviewItem;
   comment: string | undefined;
   mappedProperties: MappedProperties;
-  onDeselect: (stack: readonly ScreeningReviewItem[]) => void;
+  onDeselect: (item: ScreeningReviewItem) => void;
 }) {
   const { t } = useTranslation(['cases']);
-  const item = stack[0]!;
   const name = item.listRecord.caption || item.listRecord.id;
   const aliases = listRecordAliasCount(item);
   const lists = useListRecordListTitles(item.listRecord.datasets ?? []);
@@ -125,7 +111,7 @@ function BatchSummaryRow({
       <Checkbox
         size="small"
         checked
-        onCheckedChange={() => onDeselect(stack)}
+        onCheckedChange={() => onDeselect(item)}
         aria-label={t('cases:screening_review.batch.deselect_hit', { name })}
       />
       <div className="flex min-w-0 flex-1 flex-col gap-xs">
@@ -136,12 +122,6 @@ function BatchSummaryRow({
           <SchemaTag schema={item.listRecord.schema} />
           <TopicsDisplay entity={{ id: item.listRecord.id, properties: { topics: item.topics } }} />
           <bdi className="shrink-0 text-xs text-grey-secondary">{Math.round(item.score * 100)}%</bdi>
-          {stack.length > 1 ? (
-            <Tag size="xs" className="tabular-nums">
-              <span aria-hidden>×{stack.length}</span>
-              <span className="sr-only">{t('cases:screening_review.stack.count', { count: stack.length })}</span>
-            </Tag>
-          ) : null}
         </div>
         {details.length ? <p className="truncate text-xs text-grey-secondary">{details.join(' · ')}</p> : null}
         {comment ? (
