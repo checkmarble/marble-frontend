@@ -1664,7 +1664,15 @@ describe('screening review queue tools', () => {
     expect(listed).toHaveLength(1);
     expect(listed[0]).toContain('cases:screening_review.decision.no_hit');
     expect(screen.getByRole('button', { name: 'cases:screening_review.stack.unstack' }).textContent).toBe('×2');
-    expect(screen.getByText('cases:screening_review.dock.validated')).toBeTruthy();
+    // The stack under the cursor lists its hits, each with its decision, and its case's state.
+    const summary = screen.getByRole('region', { name: 'cases:screening_review.stack.label' });
+    expect(
+      within(summary)
+        .getAllByRole('listitem')
+        .map((row) => row.textContent),
+    ).toEqual([expect.stringContaining('List record A'), expect.stringContaining('List record B')]);
+    expect(within(summary).getAllByText('cases:screening_review.decision.no_hit')).toHaveLength(2);
+    expect(within(summary).queryByRole('checkbox')).toBeNull();
     expect(screen.getByText('cases:screening_review.screening_state.case_closed')).toBeTruthy();
     // Decided hits can't be decided again.
     press('m', 'KeyM');

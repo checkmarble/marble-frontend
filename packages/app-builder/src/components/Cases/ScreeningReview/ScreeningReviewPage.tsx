@@ -14,6 +14,8 @@ import {
   matchesScreeningReviewFilter,
   type ScreeningReviewFilter,
   type ScreeningReviewItem,
+  type ScreeningReviewScreeningState,
+  screeningReviewCards,
   screeningReviewGroupKey,
   screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
@@ -28,8 +30,8 @@ import { Button, cn, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
-import { ActionDock, DecisionTag, ReadOnlyDock, StepTag } from './ActionDock';
-import { BatchPanel } from './BatchSummary';
+import { ActionDock, DecisionTag, ReadOnlyDock, ScreeningStateNote, StepTag } from './ActionDock';
+import { BatchPanel, NoHitStackSummary } from './BatchSummary';
 import { emptyBatchSelection, withoutSelected, withSelected } from './batch-selection';
 import { DETAILS_PANEL_TABS, DetailsPanel, type DetailsPanelTab } from './DetailsPanel';
 import { HitList } from './HitList';
@@ -326,6 +328,12 @@ function ReviewStream({
         )
       : undefined;
   const activeStackExpanded = !!activeStackGroup && expanded.has(activeStackGroup.key);
+  // The stacked No hit hits under the cursor, shown as a list instead of the cursor's hit.
+  const activeStack = activeStackGroup
+    ? screeningReviewCards(activeStackGroup, expanded).find(
+        (card) => card.kind === 'no_hit_stack' && card.items.some((item) => item.id === active?.id),
+      )
+    : undefined;
 
   const openActiveCase = () => {
     if (!active) return;
@@ -335,6 +343,18 @@ function ReviewStream({
     });
     if (pendingDecision.hasUnsaved()) openInNewTabAfter(href, pendingDecision.flush);
     else window.open(href, '_blank', 'noopener');
+  };
+
+  /** One note per state of the stack's screenings, and one per screening with matches to load. */
+  const stackStateNotes = (stack: readonly ScreeningReviewItem[]) => {
+    const notes = new Map<string, [ScreeningReviewItem, ScreeningReviewScreeningState]>();
+    for (const item of stack) {
+      const state = screeningReviewScreeningState(reviewItems, item, session);
+      if (state === 'in_review') continue;
+      const key = state === 'load_more' ? `${state}:${item.screeningId}` : state;
+      if (!notes.has(key)) notes.set(key, [item, state]);
+    }
+    return [...notes.values()];
   };
 
   const canNavigate = ready && !helpOpen;
@@ -532,6 +552,17 @@ function ReviewStream({
                 onSubmit={submitBatch}
                 commentRef={commentRef}
               />
+            ) : activeStack?.kind === 'no_hit_stack' ? (
+              <NoHitStackSummary items={activeStack.items}>
+                {stackStateNotes(activeStack.items).map(([item, state]) => (
+                  <ScreeningStateNote
+                    key={`${item.screeningId}:${state}`}
+                    item={item}
+                    state={state}
+                    onMatchesLoaded={decisions.refreshPage}
+                  />
+                ))}
+              </NoHitStackSummary>
             ) : active ? (
               <div className="flex min-h-0 min-w-0 flex-col gap-md">
                 <ScreeningReviewHit
