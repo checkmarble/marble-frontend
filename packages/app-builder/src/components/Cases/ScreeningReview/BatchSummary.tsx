@@ -1,9 +1,9 @@
 import { TopicsDisplay } from '@app-builder/components/Screenings/TopicsDisplay';
 import type { ScreeningReviewItem } from '@app-builder/models/screening-review';
-import type { Ref } from 'react';
+import type { ReactNode, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Checkbox, Typo } from 'ui-design-system';
-import { BatchDock } from './ActionDock';
+import { BatchDock, DecisionTag } from './ActionDock';
 import {
   type BatchSelection,
   emptyBatchSelection,
@@ -11,7 +11,7 @@ import {
   withBatchComment,
   withoutSelected,
 } from './batch-selection';
-import { type MappedProperties, MatchedFieldChips, useMappedProperties } from './MatchedFieldChips';
+import { MatchedFieldChips, useMappedProperties } from './MatchedFieldChips';
 import { listRecordAliasCount, SchemaTag, useListRecordListTitles } from './ScreeningReviewHit';
 
 /** Replaces the comparison view while hits are selected: the selected hits, then No hit for all of them. */
@@ -63,43 +63,83 @@ function BatchSummary({
   const mappedProperties = useMappedProperties();
   const { t } = useTranslation(['cases']);
   return (
-    <Card
-      as="section"
-      aria-label={t('cases:screening_review.batch.title', { count: items.length })}
-      className="flex min-h-0 flex-1 flex-col gap-md overflow-hidden p-md"
+    <HitSummary
+      title={t('cases:screening_review.batch.title', { count: items.length })}
+      description={t('cases:screening_review.batch.description')}
     >
-      <div className="flex flex-col gap-xs">
-        <Typo as="h2" variant="title2">
-          {t('cases:screening_review.batch.title', { count: items.length })}
-        </Typo>
-        <p className="text-s text-grey-secondary">{t('cases:screening_review.batch.description')}</p>
-      </div>
-      <ul className="flex min-h-0 flex-col gap-xs overflow-y-auto overscroll-y-contain">
-        {items.map((item) => (
-          <BatchSummaryRow
+      {items.map((item) => {
+        const name = item.listRecord.caption || item.listRecord.id;
+        return (
+          <HitSummaryRow
             key={item.id}
             item={item}
             comment={comments?.get(item.id)?.trim()}
-            mappedProperties={mappedProperties}
-            onDeselect={onDeselect}
+            start={
+              <Checkbox
+                size="small"
+                checked
+                onCheckedChange={() => onDeselect(item)}
+                aria-label={t('cases:screening_review.batch.deselect_hit', { name })}
+              />
+            }
+            end={<MatchedFieldChips item={item} mappedProperties={mappedProperties} />}
           />
+        );
+      })}
+    </HitSummary>
+  );
+}
+
+/** Replaces the comparison view while a No hit stack is under the cursor: its hits, each with its decision. */
+export function NoHitStackSummary({
+  items,
+  children,
+}: {
+  items: readonly ScreeningReviewItem[];
+  /** What happens next for their screenings. */
+  children?: ReactNode;
+}) {
+  const { t } = useTranslation(['cases']);
+  return (
+    <div className="flex min-h-0 min-w-0 flex-col gap-md">
+      <HitSummary
+        title={t('cases:screening_review.stack.label', { count: items.length })}
+        description={t('cases:screening_review.stack.description')}
+      >
+        {items.map((item) => (
+          <HitSummaryRow key={item.id} item={item} end={<DecisionTag status={item.status} />} />
         ))}
-      </ul>
+      </HitSummary>
+      {children ? <Card className="flex shrink-0 flex-col gap-sm p-md">{children}</Card> : null}
+    </div>
+  );
+}
+
+function HitSummary({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+  return (
+    <Card as="section" aria-label={title} className="flex min-h-0 flex-1 flex-col gap-md overflow-hidden p-md">
+      <div className="flex flex-col gap-xs">
+        <Typo as="h2" variant="title2">
+          {title}
+        </Typo>
+        <p className="text-s text-grey-secondary">{description}</p>
+      </div>
+      <ul className="flex min-h-0 flex-col gap-xs overflow-y-auto overscroll-y-contain">{children}</ul>
     </Card>
   );
 }
 
-/** One selected hit. */
-function BatchSummaryRow({
+/** One hit of a summary: its list record, between `start` and `end`. */
+function HitSummaryRow({
   item,
   comment,
-  mappedProperties,
-  onDeselect,
+  start,
+  end,
 }: {
   item: ScreeningReviewItem;
-  comment: string | undefined;
-  mappedProperties: MappedProperties;
-  onDeselect: (item: ScreeningReviewItem) => void;
+  comment?: string;
+  start?: ReactNode;
+  end: ReactNode;
 }) {
   const { t } = useTranslation(['cases']);
   const name = item.listRecord.caption || item.listRecord.id;
@@ -108,12 +148,7 @@ function BatchSummaryRow({
   const details = [...(aliases ? [t('cases:screening_review.aliases_count', { count: aliases })] : []), ...lists];
   return (
     <Card as="li" className="flex min-w-0 items-center gap-sm px-md py-sm">
-      <Checkbox
-        size="small"
-        checked
-        onCheckedChange={() => onDeselect(item)}
-        aria-label={t('cases:screening_review.batch.deselect_hit', { name })}
-      />
+      {start}
       <div className="flex min-w-0 flex-1 flex-col gap-xs">
         <div className="flex min-w-0 flex-wrap items-center gap-sm">
           <Typo variant="subtitle1" className="min-w-0 truncate">
@@ -130,7 +165,7 @@ function BatchSummaryRow({
           </p>
         ) : null}
       </div>
-      <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
+      {end}
     </Card>
   );
 }

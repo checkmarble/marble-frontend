@@ -672,6 +672,7 @@
   "screening_review.signal.weak_alias_match": "تطابق اسم مستعار ضعيف",
   "screening_review.source.browser": "تمت المقارنة في المتصفح",
   "screening_review.source.motiva": "Motiva: {{signal}}",
+  "screening_review.stack.description": "تمت مراجعة هذه التطابقات. اضغط + لعرضها بشكل منفصل وفتح أحدها.",
   "screening_review.stack.label_few": "{{count}} تطابقات «لا تطابق»",
   "screening_review.stack.label_many": "{{count}} تطابقًا «لا تطابق»",
   "screening_review.stack.label_one": "تطابق «لا تطابق» واحد",
