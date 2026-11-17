@@ -962,6 +962,52 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(vi.mocked(listScreeningReviewPageFn).mock.calls.length).toBeGreaterThan(calls));
   });
 
+  it('loads a partial screening’s next matches on its own once its loaded hits are written as No hit', async () => {
+    const screening = objectReviewScreening();
+    screening.partial = true;
+    const items = buildScreeningReviewItems([reviewCase(caseId, [screening])]);
+    vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue(inReview);
+    vi.mocked(loadMoreContinuousScreeningMatchesFn).mockResolvedValue(undefined);
+    renderDecisionPage(items);
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('a', 'KeyA');
+    press('Enter', 'Enter');
+    // Not while the decisions can still be undone.
+    expect(loadMoreContinuousScreeningMatchesFn).not.toHaveBeenCalled();
+    // The server keeps the screening partial until its next matches load, which brings a new one.
+    const decided = objectReviewScreening();
+    decided.partial = true;
+    decided.matches = decided.matches.map((match) => ({ ...match, status: 'no_hit' as const }));
+    const more = objectReviewScreening();
+    more.partial = false;
+    more.matches = [
+      ...more.matches.map((match) => ({ ...match, status: 'no_hit' as const })),
+      {
+        ...more.matches[0]!,
+        id: 'screening-1-next',
+        opensanctionEntityId: 'record-next',
+        payload: { ...more.matches[0]!.payload, caption: 'List record C' },
+      },
+    ];
+    vi.mocked(listScreeningReviewPageFn).mockImplementation(async () => ({
+      items: buildScreeningReviewItems([
+        reviewCase(caseId, [vi.mocked(loadMoreContinuousScreeningMatchesFn).mock.calls.length ? more : decided]),
+      ]),
+      nextCursor: null,
+      failed: false,
+    }));
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    await waitFor(() =>
+      expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledWith({ data: { screeningId: 'screening-1' } }),
+    );
+    expect(vi.mocked(reviewScreeningReviewMatchFn).mock.invocationCallOrder.at(-1)).toBeLessThan(
+      vi.mocked(loadMoreContinuousScreeningMatchesFn).mock.invocationCallOrder[0]!,
+    );
+    await waitFor(() => expect(card('List record C')?.textContent).not.toContain('decision'));
+    expect(noHitStack()).toBeTruthy();
+    expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledOnce();
+  });
+
   it.each(['already_reviewed', 'reassigned', 'not_in_review', 'forbidden', 'unavailable'] as const)(
     'explains a rejected write (%s), refetches and returns to the server state',
     async (reason) => {

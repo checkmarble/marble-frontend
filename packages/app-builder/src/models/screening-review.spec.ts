@@ -23,6 +23,7 @@ import {
   screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
+  screeningReviewScreeningsToLoad,
   screeningReviewTopicFamilies,
 } from './screening-review';
 import stagingObjectAddedDto from './screening-review.staging-object-added.json';
@@ -693,6 +694,34 @@ describe('screening review session', () => {
     // So do matches still to load.
     const partial = [high!, low!].map((item) => ({ ...item, partial: true }));
     expect(settled(both(true), partial)).toEqual([false]);
+  });
+
+  it('loads the next matches of a partial screening decided this visit once its hits are decided and written', () => {
+    const partial = buildScreeningReviewItems([reviewCase('case', [objectReviewScreening()])]).map((item) => ({
+      ...item,
+      partial: true,
+    }));
+    const [high, low] = partial;
+    const decided = (written: boolean, ...decidedItems: ScreeningReviewItem[]): ScreeningReviewSession => ({
+      decided: Object.fromEntries(
+        decidedItems.map((item) => [item.id, { item, decision: 'no_hit' as const, written }]),
+      ),
+      screenings: {},
+      hiddenCases: [],
+    });
+    const toLoad = (session: ScreeningReviewSession, source = partial) =>
+      screeningReviewScreeningsToLoad(applyScreeningReviewSession(source, session), session);
+    expect(toLoad(emptyScreeningReviewSession)).toEqual([]);
+    expect(toLoad(decided(true, high!))).toEqual([]);
+    expect(toLoad(decided(false, high!, low!))).toEqual([]);
+    expect(toLoad(decided(true, high!, low!))).toEqual(['screening-1']);
+    // A complete screening ends on its own.
+    expect(
+      toLoad(
+        decided(true, high!, low!),
+        partial.map((item) => ({ ...item, partial: false })),
+      ),
+    ).toEqual([]);
   });
 
   it('opens the same customer’s next pending hit first, then the next customer, wrapping around', () => {
