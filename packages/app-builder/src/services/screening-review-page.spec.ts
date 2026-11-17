@@ -1,4 +1,5 @@
 import type { Case } from '@app-builder/models/cases';
+import { isPendingReviewItem } from '@app-builder/models/screening-review';
 import {
   datasetReviewScreening,
   objectReviewScreening,
@@ -6,7 +7,7 @@ import {
 } from '@app-builder/models/screening-review.test-helpers';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { describe, expect, it, vi } from 'vitest';
-import { readScreeningReviewPage } from './screening-review-page';
+import { MAX_SCANNED_CASES, readScreeningReviewPage } from './screening-review-page';
 
 describe('assigned screening review page reader', () => {
   it('scopes every scanned case page to the selected inbox while retaining analyst assignment', async () => {
@@ -100,6 +101,25 @@ describe('assigned screening review page reader', () => {
     };
     expect((await readScreeningReviewPage(repository, 'analyst', 50, null)).items).toHaveLength(4);
     expect(repository.listCases).toHaveBeenCalledTimes(2);
+  });
+
+  it('stops after the scan cap and returns a cursor to continue from', async () => {
+    const reviewed = Array.from({ length: 2 * MAX_SCANNED_CASES }, (_, index) =>
+      reviewCase(`reviewed-${index}`, [{ ...objectReviewScreening(), status: 'no_hit' }]),
+    );
+    const repository = {
+      listCases: vi.fn<CaseRepository['listCases']>().mockImplementation(async ({ offsetId }) => {
+        const start = offsetId ? reviewed.findIndex((item) => item.id === offsetId) + 1 : 0;
+        return { items: reviewed.slice(start, start + 25), hasNextPage: true };
+      }),
+      getCase: vi
+        .fn<CaseRepository['getCase']>()
+        .mockImplementation(async ({ caseId }) => reviewed.find((item) => item.id === caseId)!),
+    };
+    const result = await readScreeningReviewPage(repository, 'analyst', 50, null);
+    expect(result.items.filter(isPendingReviewItem)).toEqual([]);
+    expect(result).toMatchObject({ nextCursor: `reviewed-${MAX_SCANNED_CASES - 1}`, failed: false });
+    expect(repository.getCase).toHaveBeenCalledTimes(MAX_SCANNED_CASES);
   });
 
   it('keeps whole cases and advances by the last scanned raw case, with bounded concurrency', async () => {

@@ -12,6 +12,12 @@ export interface ScreeningReviewPage {
   failed: boolean;
 }
 
+/**
+ * Caps the cases one request scans, so a queue whose cases are all reviewed cannot chain hundreds of
+ * backend calls. A request that reaches it returns what it found with a cursor for the next page.
+ */
+export const MAX_SCANNED_CASES = 100;
+
 /** Whole case batches may overflow the hit target, avoiding offsets inside mutable screenings. */
 export async function readScreeningReviewPage(
   repository: Pick<CaseRepository, 'listCases' | 'getCase'>,
@@ -23,6 +29,7 @@ export async function readScreeningReviewPage(
   const items: ScreeningReviewItem[] = [];
   let offsetId = cursor;
   let pendingCount = 0;
+  let scannedCount = 0;
   while (true) {
     let page;
     try {
@@ -70,7 +77,8 @@ export async function readScreeningReviewPage(
       const last = batch.at(-1);
       if (!last || last.id === offsetId) throw new Error('Case pagination did not advance');
       offsetId = last.id;
-      if (pendingCount >= limit) {
+      scannedCount += batch.length;
+      if (pendingCount >= limit || scannedCount >= MAX_SCANNED_CASES) {
         const more = index + batch.length < page.items.length || page.hasNextPage;
         return { items, nextCursor: more ? offsetId : null, failed: false };
       }
