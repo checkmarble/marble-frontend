@@ -297,6 +297,21 @@ function StatePill({ comparison }: { comparison: ScreeningReviewFieldComparison 
   );
 }
 
+function ViaProperty({ property, value }: { property: string; value: string }) {
+  const { t } = useTranslation(['cases', 'screenings']);
+  const PropertyValue = usePropertyValue();
+  return (
+    <span className="flex flex-wrap items-center gap-x-xs text-xs text-grey-secondary">
+      {t('cases:screening_review.via_property', {
+        property: t(`screenings:entity.property.${property}`, { defaultValue: property }),
+      })}
+      <bdi>
+        <PropertyValue property={property} value={value} />
+      </bdi>
+    </span>
+  );
+}
+
 function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldComparison[] }) {
   const { t } = useTranslation(['cases']);
   return (
@@ -334,6 +349,7 @@ function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldCom
                     <bdi>{t('cases:screening_review.via_alias', { alias: comparison.viaAlias })}</bdi>
                   </span>
                 ) : null}
+                {comparison.viaProperty ? <ViaProperty {...comparison.viaProperty} /> : null}
               </td>
               <td className="px-md py-sm">
                 <StatePill comparison={comparison} />

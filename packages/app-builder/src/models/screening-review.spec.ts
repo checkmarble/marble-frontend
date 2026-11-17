@@ -236,6 +236,14 @@ describe('screening review stream', () => {
     expect(compare({ nationality: ['EG'] }, { citizenship: ['eg'] })).toEqual(['nationality']);
     expect(compare({ nationality: ['France'] }, { nationality: ['eg'] })).toEqual([]);
     expect(compare({ nationality: [''] }, { nationality: [''] })).toEqual([]);
+    expect(compare({ country: ['US'] }, { country: ['us'] })).toEqual(['country']);
+    expect(compare({ country: ['US'] }, { citizenship: ['us'] })).toEqual(['country']);
+    expect(compare({ birthCountry: ['France'] }, { birthCountry: ['fr'] })).toEqual(['country']);
+    expect(compare({ country: ['US'] }, { country: ['bs'] })).toEqual([]);
+    expect(compare({ nationality: ['EG'], country: ['US'] }, { nationality: ['eg'], country: ['us'] })).toEqual([
+      'nationality',
+      'country',
+    ]);
     expect(compare({}, { birthDate: ['1991-05-01'], nationality: ['eg'] })).toEqual([]);
     expect(compare({ birthDate: ['1991-05-01'], nationality: ['eg'] }, {})).toEqual([]);
     expect(
@@ -328,6 +336,45 @@ describe('screening review stream', () => {
         customerValues: ['1991-05-01', '1980-01-01'],
         listRecordValues: ['1991-05-01', '1975'],
       });
+    });
+
+    it('compares a country row against the list record’s other country properties, as Motiva does', () => {
+      const viaCitizenship = compareScreeningReviewFields(
+        reviewItem(trigger, { name: ['Sam Fried'], country: ['US'] }, { name: ['Sam Fried'], citizenship: ['us'] }),
+        ['name', 'country'],
+      ).find((row) => row.field === 'country');
+      expect(viaCitizenship).toMatchObject({
+        state: 'same',
+        source: 'browser',
+        customerValues: ['US'],
+        listRecordValues: [],
+        viaProperty: { property: 'citizenship', value: 'us' },
+      });
+      // A matching value beats a differing one of the row's own property.
+      const overOwnValue = compareScreeningReviewFields(
+        reviewItem(
+          trigger,
+          { name: ['Sam Fried'], country: ['US'] },
+          { name: ['Sam Fried'], country: ['bs'], citizenship: ['us'] },
+        ),
+        ['name', 'country'],
+      ).find((row) => row.field === 'country');
+      expect(overOwnValue).toMatchObject({
+        state: 'same',
+        listRecordValues: ['bs'],
+        viaProperty: { property: 'citizenship', value: 'us' },
+      });
+      // The row's own value wins a tie.
+      const ownValue = compareScreeningReviewFields(
+        reviewItem(
+          trigger,
+          { name: ['Sam Fried'], country: ['US'] },
+          { name: ['Sam Fried'], country: ['us'], citizenship: ['us'] },
+        ),
+        ['name', 'country'],
+      ).find((row) => row.field === 'country');
+      expect(ownValue).toMatchObject({ state: 'same', listRecordValues: ['us'] });
+      expect(ownValue?.viaProperty).toBeUndefined();
     });
 
     it('marks a name matched through an alias, and prefers the main name on a tie', () => {
