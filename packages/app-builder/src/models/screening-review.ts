@@ -1,5 +1,6 @@
 import { toOrderedTopic, topicCategoryPriority } from '@app-builder/components/Screenings/TopicsDisplay';
 import { FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
+import * as countryCatalog from 'country-flag-emojis/flags';
 import type { CaseDetail } from './cases';
 import type { ContinuousScreening, OpenSanctionEntityPayload } from './continuous-screening';
 import {
@@ -271,10 +272,33 @@ function parseDate(value: string) {
 }
 
 // List records use ISO country codes, while customer data can hold a code or an English name.
-const countryNames = new Intl.DisplayNames(['en'], { type: 'region' });
+const COUNTRY_ALIASES: Record<string, string[]> = {
+  CZ: ['Czech Republic'],
+  GB: ['Great Britain', 'UK'],
+  KR: ['Republic of Korea'],
+  TR: ['Türkiye'],
+  US: ['United States of America', 'USA'],
+};
+function countryKey(value: string) {
+  return normalizeText(value)
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+let countryIndex: Map<string, string> | undefined;
+function getCountryIndex() {
+  if (countryIndex) return countryIndex;
+  const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+  countryIndex = new Map();
+  for (const { isoAlpha2, isoAlpha3, nameEnglish } of Object.values(countryCatalog)) {
+    if (!/^[A-Z]{2}$/.test(isoAlpha2)) continue;
+    const names = [isoAlpha2, isoAlpha3, nameEnglish, regionNames.of(isoAlpha2), ...(COUNTRY_ALIASES[isoAlpha2] ?? [])];
+    for (const name of names) if (name) countryIndex.set(countryKey(name), isoAlpha2);
+  }
+  return countryIndex;
+}
+/** The ISO alpha-2 code of a country code or English name, or `undefined` when it is not recognised. */
 function normalizeCountry(value: string) {
-  const text = value.trim();
-  return normalizeText(/^[A-Za-z]{2}$/.test(text) ? (countryNames.of(text.toUpperCase()) ?? text) : text);
+  return getCountryIndex().get(countryKey(value));
 }
 
 function normalizeIdentifier(value: string) {
