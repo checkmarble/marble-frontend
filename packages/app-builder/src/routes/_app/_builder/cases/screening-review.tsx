@@ -28,6 +28,8 @@ const loader = createServerFn()
     const inboxes = await inbox.listInboxes();
     return {
       canViewAdminSections: isAdmin(user) || inboxes.some((item) => isInboxAdmin(user, item)),
+      // The backend gives the dismiss permission to admins only.
+      canDismissScreenings: isAdmin(user),
       inboxes: inboxes.map(({ id, name }) => ({ id, name })),
     };
   });
@@ -40,7 +42,7 @@ export const Route = createFileRoute('/_app/_builder/cases/screening-review')({
 
 function ScreeningReviewRoute() {
   const search = Route.useSearch();
-  const { canViewAdminSections, inboxes } = Route.useLoaderData();
+  const { canViewAdminSections, canDismissScreenings, inboxes } = Route.useLoaderData();
   // Analysts are restricted to no user scoring access by the layout loader.
   const { featuresAccess } = useLoaderData({ from: '/_app/_builder' });
   const navigate = Route.useNavigate();
@@ -51,6 +53,7 @@ function ScreeningReviewRoute() {
       canViewRiskLevel={isAccessible(featuresAccess.userScoring)}
       // Every decision is written as final until the validation step exists.
       canValidate
+      canDismissScreenings={canDismissScreenings}
       inboxes={inboxes}
       onSearchChange={(next) => {
         void navigate({ search: next, replace: true, resetScroll: false });

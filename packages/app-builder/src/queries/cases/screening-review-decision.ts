@@ -1,5 +1,7 @@
-import { reviewScreeningReviewMatchFn } from '@app-builder/server-fns/screening-review';
+import { reviewScreeningReviewMatchesFn, reviewScreeningReviewMatchFn } from '@app-builder/server-fns/screening-review';
 import type {
+  ScreeningReviewBatchInput,
+  ScreeningReviewBatchResult,
   ScreeningReviewDecisionInput,
   ScreeningReviewDecisionResult,
 } from '@app-builder/services/screening-review-decision';
@@ -23,6 +25,21 @@ export function useScreeningReviewDecisionMutation() {
       input: ScreeningReviewDecisionInput;
       keepalive?: boolean;
     }): Promise<ScreeningReviewDecisionResult | undefined> =>
+      review({ data: input, ...(keepalive ? { fetch: keepaliveFetch } : {}) }),
+  });
+}
+
+/** Writes several decisions of one case in one request. Resolves `undefined` after a redirect. */
+export function useScreeningReviewBatchDecisionMutation() {
+  const review = useServerFn(reviewScreeningReviewMatchesFn);
+  return useMutation({
+    mutationFn: async ({
+      input,
+      keepalive = false,
+    }: {
+      input: ScreeningReviewBatchInput;
+      keepalive?: boolean;
+    }): Promise<ScreeningReviewBatchResult | undefined> =>
       review({ data: input, ...(keepalive ? { fetch: keepaliveFetch } : {}) }),
   });
 }

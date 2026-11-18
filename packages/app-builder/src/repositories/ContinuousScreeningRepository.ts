@@ -45,6 +45,10 @@ export interface ContinuousScreeningRepository {
   }): Promise<void>;
   deleteObject(payload: { objectType: string; objectId: string; configStableId: string }): Promise<void>;
   updateMatchStatus(payload: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }): Promise<any>;
+  /** Reviews each match on its own: the result of each match comes back in the order of `matches`. */
+  reviewMatches(
+    matches: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }[],
+  ): Promise<{ matchId: string; statusCode: number; message?: string }[]>;
   dismiss(id: string): Promise<void>;
   loadMoreMatches(id: string): Promise<void>;
 }
@@ -142,6 +146,16 @@ export function makeGetContinuousScreeningRepository() {
         status,
         comment,
       });
+    },
+    reviewMatches: async (matches) => {
+      const { results } = await marbleCoreApiClient.reviewContinuousScreeningMatches({
+        matches: matches.map(({ matchId, status, comment }) => ({ match_id: matchId, status, comment })),
+      });
+      return results.map(({ match_id, status_code, message }) => ({
+        matchId: match_id,
+        statusCode: status_code,
+        ...(message ? { message } : {}),
+      }));
     },
     dismiss: async (id: string) => {
       await marbleCoreApiClient.dismissContinuousScreening(id);
