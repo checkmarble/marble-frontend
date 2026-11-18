@@ -585,6 +585,9 @@ export function isPendingReviewItem(item: ScreeningReviewItem) {
 /** The queue filters. To review reads open cases only; the others also read closed cases. */
 export const SCREENING_REVIEW_FILTERS = ['all', 'to_review', 'validated'] as const;
 
+/** The longest comment a decision can carry. */
+export const SCREENING_REVIEW_COMMENT_MAX = 5000;
+
 /** The longest name search the queue accepts. */
 export const SCREENING_REVIEW_SEARCH_MAX = 200;
 export type ScreeningReviewFilter = (typeof SCREENING_REVIEW_FILTERS)[number];
@@ -614,8 +617,14 @@ export function screeningReviewGroupKey(item: ScreeningReviewItem) {
   return JSON.stringify([item.caseId, item.customer.key]);
 }
 
+/** A hit of a partial screening still in review on an open case, whose next matches wait for Load more. */
+export function awaitsMoreMatches(item: ScreeningReviewItem) {
+  return item.partial && item.screeningStatus === 'in_review' && item.caseStatus !== 'closed';
+}
+
+/** Behind a Hit, No hit and skipped hits are only counted, unless their screening has matches to load. */
 function isSetAside(item: ScreeningReviewItem) {
-  return item.status === 'no_hit' || item.status === 'skipped';
+  return (item.status === 'no_hit' || item.status === 'skipped') && !awaitsMoreMatches(item);
 }
 
 /**
@@ -861,10 +870,14 @@ function applyScreeningReviewDecisions(
     });
 }
 
-/** Pending hits, plus every hit of a screening decided during this visit, written or not. */
+/**
+ * Pending hits, every hit of a screening decided during this visit, written or not, and every hit of
+ * a partial screening still in review, whose next matches wait for Load more.
+ */
 export function isListedInScreeningReviewSession(item: ScreeningReviewItem, session: ScreeningReviewSession) {
   return (
     isPendingReviewItem(item) ||
+    awaitsMoreMatches(item) ||
     !!session.decided[item.id] ||
     !!session.screenings[item.screeningId] ||
     Object.values(session.decided).some((decided) => decided.item.screeningId === item.screeningId)

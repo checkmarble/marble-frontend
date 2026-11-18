@@ -625,7 +625,7 @@
   "screening_review.previous_page": "Previous page",
   "screening_review.rejection.already_reviewed": "This hit was already reviewed. The list was refreshed.",
   "screening_review.rejection.forbidden": "You no longer have access to this case. The list was refreshed.",
-  "screening_review.rejection.not_closable": "This case has hits left to review. The list was refreshed.",
+  "screening_review.rejection.not_closable": "This case can’t be closed: it still has hits to review or a confirmed hit. The list was refreshed.",
   "screening_review.rejection.not_in_review": "This screening was finished elsewhere. The list was refreshed.",
   "screening_review.rejection.reassigned": "This case is now assigned to someone else. The list was refreshed.",
   "screening_review.rejection.unavailable": "This hit or its case no longer exists. The list was refreshed.",

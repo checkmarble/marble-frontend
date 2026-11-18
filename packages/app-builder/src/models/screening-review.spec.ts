@@ -695,6 +695,22 @@ describe('screening review session', () => {
     ]);
   });
 
+  it('keeps a partial screening with matches to load listed behind a Hit on the same customer', () => {
+    const withHit = objectReviewScreening();
+    withHit.matches = withHit.matches.slice(0, 1).map((match) => ({ ...match, status: 'confirmed_hit' as const }));
+    const partial = { ...objectReviewScreening(), id: 'screening-2', partial: true };
+    partial.matches = partial.matches
+      .slice(0, 1)
+      .map((match) => ({ ...match, id: `${match.id}-2`, status: 'no_hit' as const }));
+    const source = buildScreeningReviewItems([reviewCase('case', [withHit, partial])]);
+    const [group] = listedGroups(emptyScreeningReviewSession, source);
+    expect(group?.items.map((item) => [item.screeningId, item.status])).toEqual([
+      [withHit.id, 'confirmed_hit'],
+      ['screening-2', 'no_hit'],
+    ]);
+    expect(group?.setAside).toBe(0);
+  });
+
   it('keeps decided hits listed after their case leaves the server data, until the case is hidden', () => {
     const decided = byMatch('screening-1-high');
     const session = decide(decided, 'no_hit', { status: 'no_hit', caseClosed: true });

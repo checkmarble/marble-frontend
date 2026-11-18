@@ -1,6 +1,10 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { SCREENING_REVIEW_FILTERS, SCREENING_REVIEW_SEARCH_MAX } from '@app-builder/models/screening-review';
+import {
+  SCREENING_REVIEW_COMMENT_MAX,
+  SCREENING_REVIEW_FILTERS,
+  SCREENING_REVIEW_SEARCH_MAX,
+} from '@app-builder/models/screening-review';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import {
   closeScreeningReviewCase,
@@ -38,7 +42,7 @@ export const reviewScreeningReviewMatchFn = createServerFn({ method: 'POST' })
       screeningId: z.uuid(),
       matchId: z.uuid(),
       status: z.enum(['confirmed_hit', 'no_hit']),
-      comment: z.string().max(5000).optional(),
+      comment: z.string().max(SCREENING_REVIEW_COMMENT_MAX).optional(),
     }),
   )
   .handler(async ({ context, data }) => {
@@ -59,7 +63,7 @@ export const reviewScreeningReviewMatchesFn = createServerFn({ method: 'POST' })
             screeningId: z.uuid(),
             matchId: z.uuid(),
             status: z.enum(['confirmed_hit', 'no_hit']),
-            comment: z.string().max(5000).optional(),
+            comment: z.string().max(SCREENING_REVIEW_COMMENT_MAX).optional(),
           }),
         )
         .min(1)

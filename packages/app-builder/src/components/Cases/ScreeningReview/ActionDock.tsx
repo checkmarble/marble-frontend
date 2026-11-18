@@ -2,6 +2,7 @@ import { Callout } from '@app-builder/components/Callout';
 import type { ScreeningMatchComment, ScreeningMatchStatus } from '@app-builder/models/screening';
 import {
   isPendingReviewItem,
+  SCREENING_REVIEW_COMMENT_MAX,
   type ScreeningReviewDecision,
   type ScreeningReviewItem,
   type ScreeningReviewScreeningState,
@@ -166,6 +167,7 @@ export function ActionDock({
         ) : null}
         <TextArea
           ref={commentRef}
+          maxLength={SCREENING_REVIEW_COMMENT_MAX}
           aria-label={t('cases:screening_review.dock.comment')}
           placeholder={t('cases:screening_review.dock.comment')}
           value={draft.comment}
@@ -223,7 +225,8 @@ export interface ScreeningStateActions {
   onMatchesLoaded: () => Promise<unknown>;
   /** Close case is offered when this screening is the case's last open one and the user may dismiss it. */
   canCloseCase: (item: ScreeningReviewItem) => boolean;
-  onCaseClosed: (item: ScreeningReviewItem, result: ScreeningReviewDecisionResult | undefined) => void;
+  /** Called when Close case starts; the callback it returns receives the outcome. */
+  onCaseClosed: (item: ScreeningReviewItem) => (result: ScreeningReviewDecisionResult | undefined) => void;
 }
 
 type ScreeningStateAction = 'load_more' | 'close_case';
@@ -264,14 +267,12 @@ function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions
           <Button
             disabled={!!running}
             // Ends the screening at No hit without loading its other matches, which closes the case.
-            onClick={() =>
+            onClick={() => {
+              const onClosed = actions.onCaseClosed(item);
               afterFlush('close_case', () =>
-                closeCase.mutate(
-                  { caseId: item.caseId, screeningId: item.screeningId },
-                  { onSuccess: (result) => actions.onCaseClosed(item, result) },
-                ),
-              )
-            }
+                closeCase.mutate({ caseId: item.caseId, screeningId: item.screeningId }, { onSuccess: onClosed }),
+              );
+            }}
           >
             {running === 'close_case' ? spinner : null}
             {t('cases:screening_review.close_case')}
@@ -383,6 +384,7 @@ export function BatchDock({
     >
       <TextArea
         ref={commentRef}
+        maxLength={SCREENING_REVIEW_COMMENT_MAX}
         aria-label={t('cases:screening_review.batch.comment')}
         placeholder={t(
           mixedComments ? 'cases:screening_review.batch.mixed_comments' : 'cases:screening_review.batch.comment',

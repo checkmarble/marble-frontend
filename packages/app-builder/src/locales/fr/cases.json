@@ -625,7 +625,7 @@
   "screening_review.previous_page": "Page précédente",
   "screening_review.rejection.already_reviewed": "Cette correspondance a déjà été examinée. La liste a été actualisée.",
   "screening_review.rejection.forbidden": "Vous n’avez plus accès à ce dossier. La liste a été actualisée.",
-  "screening_review.rejection.not_closable": "Ce dossier a encore des correspondances à examiner. La liste a été actualisée.",
+  "screening_review.rejection.not_closable": "Impossible de clôturer ce dossier : il a encore des correspondances à examiner ou une correspondance confirmée. La liste a été actualisée.",
   "screening_review.rejection.not_in_review": "Ce criblage a été terminé ailleurs. La liste a été actualisée.",
   "screening_review.rejection.reassigned": "Ce dossier est maintenant assigné à quelqu’un d’autre. La liste a été actualisée.",
   "screening_review.rejection.unavailable": "Cette correspondance ou son dossier n’existe plus. La liste a été actualisée.",

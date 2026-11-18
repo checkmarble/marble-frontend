@@ -413,14 +413,18 @@ export function useReviewDecisions({
   };
 
   /**
-   * After Close case on `item`'s screening: shows its outcome like a written decision, or the reason it
-   * was refused. `undefined` means a redirect already navigates away.
+   * Called when Close case starts on `item`'s screening. The returned callback shows its outcome like a
+   * written decision, or the reason it was refused, but only on the page that started it. `undefined`
+   * means a redirect already navigates away.
    */
-  const caseClosed = (item: ScreeningReviewItem, result: ScreeningReviewDecisionResult | undefined) => {
-    if (!result) return;
-    void refreshPage();
-    if (result.ok) markWritten([[item, result]]);
-    else setNotice({ reason: result.reason });
+  const caseClosed = (item: ScreeningReviewItem) => {
+    const isCurrent = isCurrentGeneration();
+    return (result: ScreeningReviewDecisionResult | undefined) => {
+      if (!result || !isCurrent()) return;
+      // A dismissal always ends the screening at No hit, even when reading it back failed.
+      if (result.ok) markWritten([[item, { ...result, screeningStatus: result.screeningStatus ?? 'no_hit' }]]);
+      else setNotice({ reason: result.reason });
+    };
   };
 
   /** Decisions belong to the page they were made on. A pending one is written first. */
