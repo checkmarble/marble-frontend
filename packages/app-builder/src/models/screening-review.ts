@@ -537,12 +537,16 @@ export function screeningReviewChipFields(
   return (['birthDate', 'nationality', 'identifier'] as const).filter((field) => fields.has(field));
 }
 
+/** A hit still to decide. A case closed by other means takes no more decisions. */
 export function isPendingReviewItem(item: ScreeningReviewItem) {
-  return item.status === 'pending' && item.screeningStatus === 'in_review';
+  return item.status === 'pending' && item.screeningStatus === 'in_review' && item.caseStatus !== 'closed';
 }
 
 /** The queue filters. To review reads open cases only; the others also read closed cases. */
 export const SCREENING_REVIEW_FILTERS = ['all', 'to_review', 'validated'] as const;
+
+/** The longest name search the queue accepts. */
+export const SCREENING_REVIEW_SEARCH_MAX = 200;
 export type ScreeningReviewFilter = (typeof SCREENING_REVIEW_FILTERS)[number];
 
 /** Validated holds every hit that no longer waits for a decision, so decided hits show read-only. */
@@ -780,9 +784,12 @@ export function screeningReviewScreeningState(
     // The case closes once every one of its screenings ends at no_hit.
     const caseClosed = predicted
       ? items.every((other) => other.caseId !== item.caseId || other.screeningStatus === 'no_hit')
-      : (result?.caseClosed ?? item.caseStatus === 'closed');
+      : // A refresh that finds the case closed supersedes an earlier failed closure.
+        !!result?.caseClosed || item.caseStatus === 'closed';
     return caseClosed ? 'case_closed' : 'closure_pending';
   }
+  // A case closed by other means takes no more decisions, so it isn't offered more matches either.
+  if (item.caseStatus === 'closed') return 'in_review';
   const pending = items.some((other) => other.screeningId === item.screeningId && isPendingReviewItem(other));
   return item.partial && !pending ? 'load_more' : 'in_review';
 }

@@ -562,6 +562,8 @@
   "screening_review.empty.no_results.title": "لا توجد تطابقات لهذا البحث",
   "screening_review.empty.no_validated.description": "تظهر هنا التطابقات التي تتخذ قرارًا بشأنها، بما في ذلك تطابقات الحالات المغلقة.",
   "screening_review.empty.no_validated.title": "لا توجد تطابقات تم التحقق منها",
+  "screening_review.empty.page_empty.description": "لا تزال هناك حالات أخرى. انتقل إلى الصفحة التالية لمواصلة البحث.",
+  "screening_review.empty.page_empty.title": "لا توجد تطابقات في هذه الصفحة",
   "screening_review.filter.all": "الكل",
   "screening_review.filter.to_review": "للمراجعة",
   "screening_review.filter.validated": "تم التحقق",

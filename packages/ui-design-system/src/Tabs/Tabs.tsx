@@ -44,7 +44,8 @@ const tabClassName = cva(
     },
     compoundVariants: [
       // The tinted purple background turns near-white in dark mode, where pills have no tablist behind them.
-      { color: 'purple', variant: 'pills', className: 'dark:bg-purple-background-light' },
+      // Lighter text keeps unselected pills readable on it.
+      { color: 'purple', variant: 'pills', className: 'dark:bg-purple-background-light dark:text-grey-secondary' },
     ],
     defaultVariants: {
       color: 'purple',

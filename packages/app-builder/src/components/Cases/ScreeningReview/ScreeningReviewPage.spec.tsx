@@ -3,6 +3,7 @@ import { adaptContinuousScreening } from '@app-builder/models/continuous-screeni
 import {
   buildScreeningReviewItems,
   SCREENING_REVIEW_HIDE_DELAY_MS,
+  SCREENING_REVIEW_SEARCH_MAX,
   SCREENING_REVIEW_UNDO_DELAY_MS,
 } from '@app-builder/models/screening-review';
 import stagingObjectAddedDto from '@app-builder/models/screening-review.staging-object-added.json';
@@ -786,6 +787,28 @@ describe('screening review decisions', () => {
     await screen.findByText('cases:screening_review.empty_title');
   });
 
+  it('keeps a closed case in All after its last hit is decided', async () => {
+    const items = buildScreeningReviewItems([reviewCase(caseId, [objectReviewScreening()])]);
+    vi.mocked(reviewScreeningReviewMatchFn)
+      .mockResolvedValueOnce(inReview)
+      .mockResolvedValueOnce({ ok: true, screeningStatus: 'no_hit', caseClosed: true });
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+    renderPage({ filter: 'all', limit: 50, cursors: [] });
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    press('n', 'KeyN');
+    press('Enter', 'Enter');
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
+    press('n', 'KeyN');
+    press('Enter', 'Enter');
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
+    await screen.findByText('cases:screening_review.screening_state.case_closed');
+    await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
+    expect(card('List record A')).toBeTruthy();
+    expect(card('List record B')).toBeTruthy();
+    expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
+  });
+
   it('writes the pending decision before loading more matches on its partial screening', async () => {
     const screening = objectReviewScreening();
     screening.partial = true;
@@ -853,6 +876,16 @@ describe('screening review decisions', () => {
   });
 
   describe('undo', () => {
+    it('takes the undo toast down as soon as Undo is pressed', async () => {
+      renderDecisionPage();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('n', 'KeyN');
+      press('Enter', 'Enter');
+      fireEvent.click(await undoButton());
+      await screen.findByText('cases:screening_review.undo.recalled');
+      expect(screen.queryByRole('button', { name: /screening_review\.undo\.action/ })).toBeNull();
+    });
+
     it('undoes with the toast or U, restoring the hit, its decision and its comment without a write', async () => {
       renderDecisionPage();
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
@@ -1378,6 +1411,32 @@ describe('screening review queue tools', () => {
     expect(filterTab('validated').textContent).toMatch(/2\+$/);
     expect(filterTab('all').textContent).toBe('cases:screening_review.filter.all');
     expect(filterTab('to_review').getAttribute('data-status')).toBe('active');
+  });
+
+  it('shows + on every count on a later page', async () => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: [...initialItems, ...closedItems],
+      nextCursor: null,
+      failed: false,
+    });
+    renderPage({ filter: 'all', limit: 50, cursors: [pageTwoCursor] });
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(filterTab('to_review').textContent).toMatch(/4\+$/);
+  });
+
+  it('says the page is empty, not the search, while more cases remain to read', async () => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: pageTwoCursor, failed: false });
+    renderPage({ filter: 'to_review', limit: 50, cursors: [], q: 'Nobody' });
+    await screen.findByText('cases:screening_review.empty.page_empty.title');
+    expect(screen.queryByText('cases:screening_review.empty.no_results.title')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'cases:screening_review.search.clear' })).toBeNull();
+  });
+
+  it('stops the search field at the length the route accepts', async () => {
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: initialItems, nextCursor: null, failed: false });
+    renderPage();
+    await waitFor(() => expect(activeCard()).not.toBeNull());
+    expect(searchBox().getAttribute('maxLength')).toBe(String(SCREENING_REVIEW_SEARCH_MAX));
   });
 
   it('shows + on every count while another page exists', async () => {
