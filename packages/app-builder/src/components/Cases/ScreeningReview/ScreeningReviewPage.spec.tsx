@@ -961,6 +961,24 @@ describe('screening review decisions', () => {
     expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
   });
 
+  it('takes no decision while the previous search’s page still shows', async () => {
+    renderDecisionPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    vi.mocked(listScreeningReviewPageFn).mockImplementation(() => new Promise(() => undefined));
+    const search = screen.getByRole('textbox', { name: 'cases:screening_review.search.label' });
+    fireEvent.change(search, { target: { value: 'Bob' } });
+    fireEvent.keyDown(search, { key: 'Enter', code: 'Enter' });
+    await waitFor(() =>
+      expect(listScreeningReviewPageFn).toHaveBeenLastCalledWith({ data: expect.objectContaining({ name: 'Bob' }) }),
+    );
+    expect(activeCard()?.textContent).toContain('List record A');
+    fireEvent.click(decisionButton('no_hit'));
+    fireEvent.click(validateButton());
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
+    expect(reviewScreeningReviewMatchesFn).not.toHaveBeenCalled();
+  });
+
   it('writes the pending decision before loading more matches on its partial screening', async () => {
     const screening = objectReviewScreening();
     screening.partial = true;

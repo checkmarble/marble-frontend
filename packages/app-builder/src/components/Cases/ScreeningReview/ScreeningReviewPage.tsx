@@ -311,13 +311,15 @@ function ReviewStream({
       for (const key of keys) next.delete(key);
       return next;
     });
+  // While the previous search's page still shows, its hits take no decision.
   const submit = () => {
-    if (!draftId || !reviewable) return;
+    if (!ready || !draftId || !reviewable) return;
     setUnavailable(false);
     collapse([active]);
     decisions.submit(active, draftId);
   };
   const submitBatch = () => {
+    if (!ready) return;
     setUnavailable(false);
     collapse(selectedItems);
     decisions.submitBatch(selectedItems, active?.id);
