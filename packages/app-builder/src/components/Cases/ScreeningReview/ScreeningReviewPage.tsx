@@ -339,6 +339,7 @@ function ReviewStream({
           </div>
           {active ? (
             <ScreeningReviewHit
+              key={active.id}
               item={active}
               comparisons={compareScreeningReviewFields(active, mappedProperties(active.customer.objectType))}
               canViewRiskLevel={canViewRiskLevel}

@@ -500,10 +500,17 @@ export function cleanUrl(url: string) {
  * birth dates
  */
 
+/** Classifies a birth date, or returns `null` for any value that is not a real calendar date. */
 export function classifyBirthDate(value: string): BirthDateKind | null {
-  if (FULL_BIRTH_DATE_PATTERN.test(value)) return 'full';
-  if (YEAR_ONLY_BIRTH_DATE_PATTERN.test(value)) return 'year';
-  return null;
+  const kind = FULL_BIRTH_DATE_PATTERN.test(value) ? 'full' : YEAR_ONLY_BIRTH_DATE_PATTERN.test(value) ? 'year' : null;
+  if (!kind) return null;
+  try {
+    toBirthDate(value, kind);
+    return kind;
+  } catch {
+    // Customer data can hold impossible dates such as 1991-02-30.
+    return null;
+  }
 }
 
 export function toBirthDate(value: string, kind: BirthDateKind): Temporal.PlainDate {

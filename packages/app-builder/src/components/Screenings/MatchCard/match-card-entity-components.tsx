@@ -140,7 +140,10 @@ export function BirthdDateAverage({ values }: { values: string[] }) {
 
   if (classified.length === 0) {
     const fallback = values[0];
-    return fallback ? DateBirthdateComponent({ value: fallback }) : null;
+    if (!fallback) return null;
+    // Timestamps still render as dates. Anything else, an impossible day included, shows as written.
+    const isTimestamp = !/^\d{4}-\d{2}-\d{2}$/.test(fallback) && !Number.isNaN(Date.parse(fallback));
+    return isTimestamp ? DateBirthdateComponent({ value: fallback }) : <span>{fallback}</span>;
   }
 
   if (classified.length === 1) {

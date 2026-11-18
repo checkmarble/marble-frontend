@@ -227,9 +227,14 @@ describe('screening review stream', () => {
       { field: 'birthDate', customer: ['1991-02-30'], list: ['1991-02-28'], state: 'missing' },
       { field: 'birthDate', customer: ['unknown'], list: ['1991-02-28'], state: 'missing' },
       { field: 'birthDate', customer: ['1991-05-01'], list: [], state: 'missing' },
-      // Nationality: ISO codes or English names, no Close.
+      // Nationality: ISO alpha-2 or alpha-3 codes or English names, no Close.
       { field: 'nationality', customer: ['Egypt'], list: ['eg'], state: 'same' },
+      { field: 'nationality', customer: ['FRA'], list: ['fr'], state: 'same' },
+      { field: 'nationality', customer: ['Turkey'], list: ['tr'], state: 'same' },
+      { field: 'nationality', customer: ['Czech Republic'], list: ['cz'], state: 'same' },
+      { field: 'nationality', customer: ["Cote d'Ivoire"], list: ['ci'], state: 'same' },
       { field: 'nationality', customer: ['France'], list: ['eg'], state: 'different' },
+      { field: 'nationality', customer: ['French'], list: ['fr'], state: 'missing' },
       { field: 'nationality', customer: [''], list: ['eg'], state: 'missing' },
       // Identifiers: separators and case ignored, no Close.
       { field: 'idNumber', customer: ['AB-123 456'], list: ['ab123456'], state: 'same' },
