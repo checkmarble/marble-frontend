@@ -5363,6 +5363,30 @@ export function updateContinuousScreeningMatch(id: string, updateScreeningMatchD
     })));
 }
 /**
+ * Review several continuous screening matches
+ */
+export function reviewContinuousScreeningMatches(body: {
+    matches: (UpdateScreeningMatchDto & {
+        match_id: string;
+    })[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            results: {
+                match_id: string;
+                /** The status the single match update would have answered */
+                status_code: number;
+                message?: string;
+            }[];
+        };
+    }>("/continuous-screenings/matches/review", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List continuous screenings for organization
  */
 export function listContinuousScreenings({ limit, order, sortBy }: {

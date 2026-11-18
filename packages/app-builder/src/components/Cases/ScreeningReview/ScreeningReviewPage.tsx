@@ -8,6 +8,7 @@ import {
   compareScreeningReviewFields,
   countScreeningReviewFilters,
   groupScreeningReviewItems,
+  isLastOpenScreeningOfCase,
   isListedInScreeningReviewSession,
   isPendingReviewItem,
   isSettledScreeningReviewGroup,
@@ -30,7 +31,14 @@ import { Button, cn, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
-import { ActionDock, DecisionTag, ReadOnlyDock, ScreeningStateNote, StepTag } from './ActionDock';
+import {
+  ActionDock,
+  DecisionTag,
+  ReadOnlyDock,
+  type ScreeningStateActions,
+  ScreeningStateNote,
+  StepTag,
+} from './ActionDock';
 import { BatchPanel, NoHitStackSummary } from './BatchSummary';
 import { emptyBatchSelection, withoutSelected, withSelected } from './batch-selection';
 import { DETAILS_PANEL_TABS, DetailsPanel, type DetailsPanelTab } from './DetailsPanel';
@@ -62,6 +70,8 @@ interface ScreeningReviewPageProps {
   canViewRiskLevel: boolean;
   /** The analyst's decisions are final. Otherwise they go to a validator. */
   canValidate: boolean;
+  /** Ending a screening without loading its other matches needs the dismiss permission. */
+  canDismissScreenings: boolean;
   inboxes: InboxMetadata[];
 }
 
@@ -187,6 +197,7 @@ function ReviewStream({
   canViewAdminSections,
   canViewRiskLevel,
   canValidate,
+  canDismissScreenings,
   inboxes,
 }: ScreeningReviewPageProps) {
   const { t } = useTranslation(['cases', 'common']);
@@ -355,6 +366,12 @@ function ReviewStream({
       if (!notes.has(key)) notes.set(key, [item, state]);
     }
     return [...notes.values()];
+  };
+
+  const stateActions: ScreeningStateActions = {
+    onMatchesLoaded: decisions.refreshPage,
+    canCloseCase: (item) => canDismissScreenings && isLastOpenScreeningOfCase(reviewItems, item),
+    onCaseClosed: decisions.caseClosed,
   };
 
   const canNavigate = ready && !helpOpen;
@@ -559,7 +576,7 @@ function ReviewStream({
                     key={`${item.screeningId}:${state}`}
                     item={item}
                     state={state}
-                    onMatchesLoaded={decisions.refreshPage}
+                    actions={stateActions}
                   />
                 ))}
               </NoHitStackSummary>
@@ -613,7 +630,7 @@ function ReviewStream({
                     sessionComment={session.decided[active.id]?.comment}
                     canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1, false, expanded) && canNavigate}
                     onNext={() => move(1)}
-                    onMatchesLoaded={decisions.refreshPage}
+                    actions={stateActions}
                   />
                 )}
               </div>

@@ -1,5 +1,5 @@
 import { FormatContext } from '@app-builder/contexts/FormatContext';
-import { adaptContinuousScreening } from '@app-builder/models/continuous-screening';
+import { adaptContinuousScreening, type ContinuousScreening } from '@app-builder/models/continuous-screening';
 import {
   buildScreeningReviewItems,
   SCREENING_REVIEW_HIDE_DELAY_MS,
@@ -13,7 +13,12 @@ import {
   reviewCase,
 } from '@app-builder/models/screening-review.test-helpers';
 import { loadMoreContinuousScreeningMatchesFn } from '@app-builder/server-fns/continuous-screening';
-import { listScreeningReviewPageFn, reviewScreeningReviewMatchFn } from '@app-builder/server-fns/screening-review';
+import {
+  closeScreeningReviewCaseFn,
+  listScreeningReviewPageFn,
+  reviewScreeningReviewMatchesFn,
+  reviewScreeningReviewMatchFn,
+} from '@app-builder/server-fns/screening-review';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
@@ -27,6 +32,8 @@ import { ScreeningReviewPage, type ScreeningReviewSearch } from './ScreeningRevi
 vi.mock('@app-builder/server-fns/screening-review', () => ({
   listScreeningReviewPageFn: vi.fn(),
   reviewScreeningReviewMatchFn: vi.fn(),
+  reviewScreeningReviewMatchesFn: vi.fn(),
+  closeScreeningReviewCaseFn: vi.fn(),
 }));
 vi.mock('@app-builder/server-fns/continuous-screening', () => ({ loadMoreContinuousScreeningMatchesFn: vi.fn() }));
 vi.mock('@app-builder/services/organization/organization-detail', () => ({
@@ -115,6 +122,21 @@ const onSearchChange = vi.fn<(search: ScreeningReviewSearch) => void>();
 beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn();
   vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: initialItems, nextCursor: null, failed: false });
+  // The batch write reviews each match on its own, like the backend: through the single write's mock.
+  vi.mocked(reviewScreeningReviewMatchesFn).mockImplementation(async ({ data: { caseId, decisions }, ...options }) => {
+    const results = [];
+    for (const decision of decisions) {
+      try {
+        const result = await reviewScreeningReviewMatchFn({ data: { caseId, ...decision }, ...options });
+        // A redirect ends the whole request: `useServerFn` resolves with nothing.
+        if (!result) return undefined as never;
+        results.push(result);
+      } catch {
+        results.push(null);
+      }
+    }
+    return results;
+  });
 });
 afterEach(() => {
   cleanup();
@@ -126,6 +148,7 @@ function renderPage(
   initial: ScreeningReviewSearch = { filter: 'to_review', limit: 50, cursors: [] },
   canViewRiskLevel = false,
   canValidate = true,
+  canDismissScreenings = false,
 ) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
   function Harness() {
@@ -136,6 +159,7 @@ function renderPage(
           canViewAdminSections={false}
           canViewRiskLevel={canViewRiskLevel}
           canValidate={canValidate}
+          canDismissScreenings={canDismissScreenings}
           inboxes={inboxes}
           search={search}
           onSearchChange={(next) => {
@@ -960,7 +984,98 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(vi.mocked(listScreeningReviewPageFn).mock.calls.length).toBeGreaterThan(calls));
   });
 
-  it('loads a partial screening’s next matches on its own once its loaded hits are written as No hit', async () => {
+  describe('close case instead of loading more matches', () => {
+    /** A partial screening whose one loaded hit is already No hit. */
+    function decidedPartial() {
+      const screening = objectReviewScreening();
+      screening.partial = true;
+      screening.matches = screening.matches.slice(0, 1).map((match) => ({ ...match, status: 'no_hit' as const }));
+      return screening;
+    }
+    const closeButton = () => screen.queryByRole('button', { name: 'cases:screening_review.close_case' });
+    /** Its decided hits list under All, opened on the partial screening's hit. */
+    function renderClosable(screenings: ContinuousScreening[], canDismissScreenings = true) {
+      const items = buildScreeningReviewItems([reviewCase(caseId, screenings)]);
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+      const hit = items.find((item) => item.screeningId === 'screening-1')!.id;
+      return renderPage({ filter: 'all', limit: 50, cursors: [], hit }, false, true, canDismissScreenings);
+    }
+
+    it('ends the screening at No hit and shows the case closed', async () => {
+      vi.mocked(closeScreeningReviewCaseFn).mockResolvedValue({
+        ok: true,
+        screeningStatus: 'no_hit',
+        caseClosed: true,
+      });
+      renderClosable([decidedPartial()]);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      fireEvent.click(closeButton()!);
+      await waitFor(() =>
+        expect(closeScreeningReviewCaseFn).toHaveBeenCalledWith({ data: { caseId, screeningId: 'screening-1' } }),
+      );
+      await screen.findByText('cases:screening_review.screening_state.case_closed');
+      expect(loadMoreContinuousScreeningMatchesFn).not.toHaveBeenCalled();
+    });
+
+    it('writes the pending batch in one request before closing the case', async () => {
+      const screening = objectReviewScreening();
+      screening.partial = true;
+      let finishWrites: () => void = () => undefined;
+      const writes = new Promise<void>((resolve) => {
+        finishWrites = resolve;
+      });
+      vi.mocked(reviewScreeningReviewMatchesFn).mockImplementation(async ({ data }) => {
+        await writes;
+        return data.decisions.map(() => inReview);
+      });
+      vi.mocked(closeScreeningReviewCaseFn).mockResolvedValue({
+        ok: true,
+        screeningStatus: 'no_hit',
+        caseClosed: true,
+      });
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+        items: buildScreeningReviewItems([reviewCase(caseId, [screening])]),
+        nextCursor: null,
+        failed: false,
+      });
+      renderPage(undefined, false, true, true);
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      press('a', 'KeyA');
+      press('Enter', 'Enter');
+      fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.close_case' }));
+      await waitFor(() => expect(reviewScreeningReviewMatchesFn).toHaveBeenCalledOnce());
+      expect(closeButton()?.hasAttribute('disabled')).toBe(true);
+      expect(closeScreeningReviewCaseFn).not.toHaveBeenCalled();
+      finishWrites();
+      await waitFor(() => expect(closeScreeningReviewCaseFn).toHaveBeenCalledOnce());
+      expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
+      // Settled, the group leaves To review.
+      await screen.findByText('cases:screening_review.empty.all_reviewed.title');
+    });
+
+    it('explains a refused closure', async () => {
+      vi.mocked(closeScreeningReviewCaseFn).mockResolvedValue({ ok: false, reason: 'not_closable' });
+      renderClosable([decidedPartial()]);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      fireEvent.click(closeButton()!);
+      expect((await screen.findByRole('alert')).textContent).toBe('cases:screening_review.rejection.not_closable');
+    });
+
+    it('is not offered without the dismiss permission', async () => {
+      renderClosable([decidedPartial()], false);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      expect(closeButton()).toBeNull();
+    });
+
+    it('is not offered while another screening of the case is open', async () => {
+      renderClosable([decidedPartial(), datasetReviewScreening()]);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      expect(screen.getByRole('button', { name: 'cases:screening_review.load_more' })).toBeTruthy();
+      expect(closeButton()).toBeNull();
+    });
+  });
+
+  it('waits for Load more before loading a partial screening’s next matches, even once its hits are written', async () => {
     const screening = objectReviewScreening();
     screening.partial = true;
     const items = buildScreeningReviewItems([reviewCase(caseId, [screening])]);
@@ -970,40 +1085,26 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
     press('a', 'KeyA');
     press('Enter', 'Enter');
-    // Not while the decisions can still be undone.
-    expect(loadMoreContinuousScreeningMatchesFn).not.toHaveBeenCalled();
-    // The server keeps the screening partial until its next matches load, which brings a new one.
+    // The server keeps the screening partial, its loaded hits now No hit.
     const decided = objectReviewScreening();
     decided.partial = true;
     decided.matches = decided.matches.map((match) => ({ ...match, status: 'no_hit' as const }));
-    const more = objectReviewScreening();
-    more.partial = false;
-    more.matches = [
-      ...more.matches.map((match) => ({ ...match, status: 'no_hit' as const })),
-      {
-        ...more.matches[0]!,
-        id: 'screening-1-next',
-        opensanctionEntityId: 'record-next',
-        payload: { ...more.matches[0]!.payload, caption: 'List record C' },
-      },
-    ];
-    vi.mocked(listScreeningReviewPageFn).mockImplementation(async () => ({
-      items: buildScreeningReviewItems([
-        reviewCase(caseId, [vi.mocked(loadMoreContinuousScreeningMatchesFn).mock.calls.length ? more : decided]),
-      ]),
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: buildScreeningReviewItems([reviewCase(caseId, [decided])]),
       nextCursor: null,
       failed: false,
-    }));
+    });
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
+    await screen.findByText('cases:screening_review.screening_state.load_more');
+    await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+    expect(loadMoreContinuousScreeningMatchesFn).not.toHaveBeenCalled();
+    fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.load_more' }));
     await waitFor(() =>
-      expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledWith({ data: { screeningId: 'screening-1' } }),
+      expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledExactlyOnceWith({
+        data: { screeningId: 'screening-1' },
+      }),
     );
-    expect(vi.mocked(reviewScreeningReviewMatchFn).mock.invocationCallOrder.at(-1)).toBeLessThan(
-      vi.mocked(loadMoreContinuousScreeningMatchesFn).mock.invocationCallOrder[0]!,
-    );
-    await waitFor(() => expect(card('List record C')?.textContent).not.toContain('decision'));
-    expect(noHitStack()).toBeTruthy();
-    expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledOnce();
   });
 
   it.each(['already_reviewed', 'reassigned', 'not_in_review', 'forbidden', 'unavailable'] as const)(
@@ -1286,7 +1387,8 @@ describe('screening review decisions', () => {
       press('a', 'KeyA');
       press('Enter', 'Enter');
       await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
-      await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(3));
+      // The batch is one request, which the redirect ends.
+      await waitFor(() => expect(reviewScreeningReviewMatchesFn).toHaveBeenCalledOnce());
       await elapse(0);
       expect(screen.queryByRole('alert')).toBeNull();
       open.mockRestore();

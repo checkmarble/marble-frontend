@@ -6,14 +6,16 @@ import {
   type ScreeningReviewItem,
   type ScreeningReviewScreeningState,
 } from '@app-builder/models/screening-review';
+import { useCloseScreeningReviewCaseMutation } from '@app-builder/queries/cases/screening-review-close-case';
 import { useLoadMoreContinuousScreeningMatchesMutation } from '@app-builder/queries/continuous-screening/load-more-matches';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import type { ScreeningReviewDecisionResult } from '@app-builder/services/screening-review-decision';
 import { getFullName } from '@app-builder/services/user';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
-import type { Ref } from 'react';
+import { type Ref, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, cn, Tag, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -216,23 +218,74 @@ export function OpenCaseLink({ caseId, className }: { caseId: string; className?
   );
 }
 
-function LoadMoreMatches({ screeningId, onLoaded }: { screeningId: string; onLoaded: () => Promise<unknown> }) {
+/** What the page does once a screening's next matches are loaded, or its case is closed. */
+export interface ScreeningStateActions {
+  onMatchesLoaded: () => Promise<unknown>;
+  /** Close case is offered when this screening is the case's last open one and the user may dismiss it. */
+  canCloseCase: (item: ScreeningReviewItem) => boolean;
+  onCaseClosed: (item: ScreeningReviewItem, result: ScreeningReviewDecisionResult | undefined) => void;
+}
+
+type ScreeningStateAction = 'load_more' | 'close_case';
+
+function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions: ScreeningStateActions }) {
   const { t } = useTranslation(['cases']);
-  const loadMore = useLoadMoreContinuousScreeningMatchesMutation(screeningId);
+  const loadMore = useLoadMoreContinuousScreeningMatchesMutation(item.screeningId);
+  const closeCase = useCloseScreeningReviewCaseMutation();
   const flush = useFlushPendingDecision();
+  // The action waiting for the decisions on screen to be written.
+  const [flushingFor, setFlushingFor] = useState<ScreeningStateAction>();
+  const running: ScreeningStateAction | undefined =
+    flushingFor ?? (loadMore.isPending ? 'load_more' : closeCase.isPending ? 'close_case' : undefined);
+  // A pending decision may be on this screening: write it before acting on the screening.
+  const afterFlush = (action: ScreeningStateAction, then: () => void) => {
+    setFlushingFor(action);
+    void flush().then(() => {
+      setFlushingFor(undefined);
+      then();
+    });
+  };
+  const spinner = <Icon icon="spinner" aria-hidden className="size-4 animate-spin" />;
   return (
     <>
       <Button
         variant="secondary"
-        disabled={loadMore.isPending}
-        // A pending decision may be on this screening: write it before loading more matches.
-        onClick={() => void flush().then(() => loadMore.mutate(undefined, { onSuccess: () => void onLoaded() }))}
+        disabled={!!running}
+        onClick={() =>
+          afterFlush('load_more', () => loadMore.mutate(undefined, { onSuccess: () => void actions.onMatchesLoaded() }))
+        }
       >
+        {running === 'load_more' ? spinner : null}
         {t('cases:screening_review.load_more')}
       </Button>
+      {actions.canCloseCase(item) ? (
+        <>
+          <span>{t('cases:screening_review.or')}</span>
+          <Button
+            disabled={!!running}
+            // Ends the screening at No hit without loading its other matches, which closes the case.
+            onClick={() =>
+              afterFlush('close_case', () =>
+                closeCase.mutate(
+                  { caseId: item.caseId, screeningId: item.screeningId },
+                  { onSuccess: (result) => actions.onCaseClosed(item, result) },
+                ),
+              )
+            }
+          >
+            {running === 'close_case' ? spinner : null}
+            {t('cases:screening_review.close_case')}
+          </Button>
+        </>
+      ) : null}
       {loadMore.isError ? (
         <p role="alert" className="text-s text-red-primary">
           {t('cases:screening_review.load_more_error')}
+        </p>
+      ) : null}
+      {closeCase.isError ? (
+        <p role="alert" className="text-s text-red-primary">
+          {t('cases:screening_review.close_case_error')}
         </p>
       ) : null}
     </>
@@ -243,11 +296,11 @@ function LoadMoreMatches({ screeningId, onLoaded }: { screeningId: string; onLoa
 export function ScreeningStateNote({
   item,
   state,
-  onMatchesLoaded,
+  actions,
 }: {
   item: ScreeningReviewItem;
   state: ScreeningReviewScreeningState;
-  onMatchesLoaded: () => Promise<unknown>;
+  actions: ScreeningStateActions;
 }) {
   const { t } = useTranslation(['cases']);
   if (state === 'in_review') return null;
@@ -255,7 +308,7 @@ export function ScreeningStateNote({
     <div role="status" className="flex flex-wrap items-center gap-sm text-s">
       <span>{t(`cases:screening_review.screening_state.${state}`)}</span>
       {state === 'confirmed_hit' ? <OpenCaseLink caseId={item.caseId} /> : null}
-      {state === 'load_more' ? <LoadMoreMatches screeningId={item.screeningId} onLoaded={onMatchesLoaded} /> : null}
+      {state === 'load_more' ? <LoadMoreMatches item={item} actions={actions} /> : null}
     </div>
   );
 }
@@ -267,14 +320,14 @@ export function ReadOnlyDock({
   sessionComment,
   canMoveNext,
   onNext,
-  onMatchesLoaded,
+  actions,
 }: {
   item: ScreeningReviewItem;
   state: ScreeningReviewScreeningState;
   sessionComment?: string;
   canMoveNext: boolean;
   onNext: () => void;
-  onMatchesLoaded: () => Promise<unknown>;
+  actions: ScreeningStateActions;
 }) {
   const { t } = useTranslation(['cases']);
   return (
@@ -295,7 +348,7 @@ export function ReadOnlyDock({
         </ShortcutButton>
       </div>
       <div className="flex min-h-0 flex-col gap-sm overflow-y-auto overscroll-y-contain empty:hidden">
-        <ScreeningStateNote item={item} state={state} onMatchesLoaded={onMatchesLoaded} />
+        <ScreeningStateNote item={item} state={state} actions={actions} />
         <HitComments comments={item.comments} sessionComment={sessionComment} />
       </div>
     </section>

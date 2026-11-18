@@ -2,7 +2,11 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { SCREENING_REVIEW_FILTERS, SCREENING_REVIEW_SEARCH_MAX } from '@app-builder/models/screening-review';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
-import { reviewScreeningReviewMatch } from '@app-builder/services/screening-review-decision';
+import {
+  closeScreeningReviewCase,
+  reviewScreeningReviewMatch,
+  reviewScreeningReviewMatches,
+} from '@app-builder/services/screening-review-decision';
 import { readScreeningReviewPage } from '@app-builder/services/screening-review-page';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -41,4 +45,38 @@ export const reviewScreeningReviewMatchFn = createServerFn({ method: 'POST' })
     const { cases, continuousScreening, user, entitlements } = context.authInfo;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
     return reviewScreeningReviewMatch({ cases, continuousScreening }, user.actorIdentity.userId, data);
+  });
+
+/** The decisions of one case, written in one request. */
+export const reviewScreeningReviewMatchesFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      caseId: z.uuid(),
+      decisions: z
+        .array(
+          z.object({
+            screeningId: z.uuid(),
+            matchId: z.uuid(),
+            status: z.enum(['confirmed_hit', 'no_hit']),
+            comment: z.string().max(5000).optional(),
+          }),
+        )
+        .min(1)
+        .max(1000),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
+    return reviewScreeningReviewMatches({ cases, continuousScreening }, user.actorIdentity.userId, data);
+  });
+
+export const closeScreeningReviewCaseFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(z.object({ caseId: z.uuid(), screeningId: z.uuid() }))
+  .handler(async ({ context, data }) => {
+    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
+    return closeScreeningReviewCase({ cases, continuousScreening }, user.actorIdentity.userId, data);
   });

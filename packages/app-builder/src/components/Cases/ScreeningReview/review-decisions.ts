@@ -8,22 +8,22 @@ import {
   type ScreeningReviewDecision,
   type ScreeningReviewItem,
   type ScreeningReviewSession,
-  screeningReviewScreeningsToLoad,
 } from '@app-builder/models/screening-review';
-import { useScreeningReviewDecisionMutation } from '@app-builder/queries/cases/screening-review-decision';
-import { loadMoreContinuousScreeningMatchesFn } from '@app-builder/server-fns/continuous-screening';
+import {
+  useScreeningReviewBatchDecisionMutation,
+  useScreeningReviewDecisionMutation,
+} from '@app-builder/queries/cases/screening-review-decision';
 import type {
   ScreeningReviewDecisionResult,
   ScreeningReviewRejection,
 } from '@app-builder/services/screening-review-decision';
 import { useQueryClient } from '@tanstack/react-query';
-import { useServerFn } from '@tanstack/react-start';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import type { ScreeningReviewDraft } from './ActionDock';
 import { type BatchSelection, emptyBatchSelection, withRestored } from './batch-selection';
-import { usePendingDecision } from './pending-decision';
+import { usePendingDecision, type WriteItems } from './pending-decision';
 
 export type ScreeningReviewNotice =
   | { reason: ScreeningReviewRejection | 'decision_failed' }
@@ -32,6 +32,26 @@ export type ScreeningReviewNotice =
 type ScreeningReviewWriteSuccess = Extract<ScreeningReviewDecisionResult, { ok: true }>;
 
 const EMPTY_DRAFT: ScreeningReviewDraft = { comment: '' };
+
+/** Decisions per batch request: small enough for a keepalive request body, sent when the page unloads. */
+const BATCH_WRITE_SIZE = 200;
+
+interface CaseChunk {
+  caseId: string;
+  items: ScreeningReviewItem[];
+}
+
+/** `items` by case, in their order, in chunks of `size` at most. */
+function caseChunks(items: readonly ScreeningReviewItem[], size: number): CaseChunk[] {
+  const byCase = new Map<string, ScreeningReviewItem[]>();
+  for (const item of items) byCase.set(item.caseId, [...(byCase.get(item.caseId) ?? []), item]);
+  return [...byCase].flatMap(([caseId, caseItems]) =>
+    Array.from({ length: Math.ceil(caseItems.length / size) }, (_, index) => ({
+      caseId,
+      items: caseItems.slice(index * size, (index + 1) * size),
+    })),
+  );
+}
 
 function withDecided(
   session: ScreeningReviewSession,
@@ -77,6 +97,7 @@ export function useReviewDecisions({
   const { t } = useTranslation(['cases']);
   const queryClient = useQueryClient();
   const decisionMutation = useScreeningReviewDecisionMutation();
+  const batchDecisionMutation = useScreeningReviewBatchDecisionMutation();
   const pendingDecision = usePendingDecision({ undoLabel: t('cases:screening_review.undo.action') });
   const [session, setSession] = useState<ScreeningReviewSession>(emptyScreeningReviewSession);
   const [drafts, setDrafts] = useState<Readonly<Record<string, ScreeningReviewDraft>>>({});
@@ -121,22 +142,6 @@ export function useReviewDecisions({
   const navigate = (itemId: string) => latest.current.onNavigate(itemId);
   const refreshPage = () => queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
 
-  // A partial screening whose loaded hits are all decided loads its next matches once, then the page
-  // refreshes. A failure leaves the Load more button on its hits.
-  const loadMoreMatches = useServerFn(loadMoreContinuousScreeningMatchesFn);
-  const loadRequested = useRef(new Set<string>());
-  const toLoad = screeningReviewScreeningsToLoad(applyScreeningReviewSession(serverItems, session), session);
-  useEffect(() => {
-    for (const screeningId of toLoad) {
-      if (loadRequested.current.has(screeningId)) continue;
-      loadRequested.current.add(screeningId);
-      loadMoreMatches({ data: { screeningId } }).then(
-        () => void refreshPage(),
-        () => undefined,
-      );
-    }
-  });
-
   /** After a decision, open the next pending hit, read from the latest server data. */
   const openNextPending = (fromId: string, next: ScreeningReviewSession) => {
     const nextGroups = groupScreeningReviewItems(
@@ -169,6 +174,64 @@ export function useReviewDecisions({
     // could let a slower case make its older results overwrite a newer decision on another case.
     if (result?.ok && isCurrent()) markWritten([[item, result]]);
     return result;
+  };
+
+  /**
+   * Writes No hit on `items` with one request per case chunk, and settles each item like a single
+   * write: `undefined` after a redirect, rejected when its write failed.
+   */
+  const writeNoHits = async (
+    writeItems: WriteItems,
+    items: readonly ScreeningReviewItem[],
+    commentOf: (item: ScreeningReviewItem) => string | undefined,
+    isCurrent: () => boolean,
+  ) => {
+    const chunks = caseChunks(items, BATCH_WRITE_SIZE);
+    const settled = await writeItems(chunks, async (chunk, { keepalive }) => {
+      const results = await batchDecisionMutation.mutateAsync({
+        input: {
+          caseId: chunk.caseId,
+          decisions: chunk.items.map((item) => {
+            const comment = commentOf(item);
+            return {
+              screeningId: item.screeningId,
+              matchId: item.matchId,
+              status: 'no_hit' as const,
+              ...(comment ? { comment } : {}),
+            };
+          }),
+        },
+        keepalive,
+      });
+      // As with a single write: apply the outcome before this case's next chunk starts.
+      if (results && isCurrent()) {
+        markWritten(
+          chunk.items.flatMap((item, index) => {
+            const result = results[index];
+            return result?.ok ? [[item, result] as const] : [];
+          }),
+        );
+      }
+      return results;
+    });
+    const outcomes = new Map<ScreeningReviewItem, PromiseSettledResult<ScreeningReviewDecisionResult | undefined>>();
+    for (const chunk of chunks) {
+      const outcome = settled.get(chunk);
+      chunk.items.forEach((item, index) => {
+        if (outcome?.status !== 'fulfilled') {
+          outcomes.set(item, { status: 'rejected', reason: outcome?.reason });
+        } else if (!outcome.value) {
+          outcomes.set(item, { status: 'fulfilled', value: undefined });
+        } else {
+          const result = outcome.value[index];
+          outcomes.set(
+            item,
+            result ? { status: 'fulfilled', value: result } : { status: 'rejected', reason: new Error('write failed') },
+          );
+        }
+      });
+    }
+    return outcomes;
   };
 
   /** Keeps written decisions, and starts hiding the cases they closed. */
@@ -323,9 +386,7 @@ export function useReviewDecisions({
         setSelection((current) => withRestored(current, selectionBefore));
       },
       write: async (writeItems) => {
-        const results = await writeItems(items, (item, { keepalive }) =>
-          writeDecision(item, 'no_hit', commentOf(item), keepalive, isCurrent),
-        );
+        const results = await writeNoHits(writeItems, items, commentOf, isCurrent);
         const failed: ScreeningReviewItem[] = [];
         for (const item of items) {
           const outcome = results.get(item);
@@ -349,6 +410,17 @@ export function useReviewDecisions({
         navigate(failedIds[0]!);
       },
     });
+  };
+
+  /**
+   * After Close case on `item`'s screening: shows its outcome like a written decision, or the reason it
+   * was refused. `undefined` means a redirect already navigates away.
+   */
+  const caseClosed = (item: ScreeningReviewItem, result: ScreeningReviewDecisionResult | undefined) => {
+    if (!result) return;
+    void refreshPage();
+    if (result.ok) markWritten([[item, result]]);
+    else setNotice({ reason: result.reason });
   };
 
   /** Decisions belong to the page they were made on. A pending one is written first. */
@@ -377,6 +449,7 @@ export function useReviewDecisions({
     submitBatch,
     reset,
     refreshPage,
+    caseClosed,
     pendingDecision,
   };
 }
