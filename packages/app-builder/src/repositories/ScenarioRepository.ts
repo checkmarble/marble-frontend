@@ -61,7 +61,6 @@ export interface ScenarioRepository {
   getScenarioIterationWithoutRules(args: { iterationId: string }): Promise<ScenarioIterationWithoutRules>;
   listScenarioIterations(args: { scenarioId: string }): Promise<ScenarioIteration[]>;
   listScenarioIterationsMetadata(args: { scenarioId: string }): Promise<ScenarioIterationSummary[]>;
-  listOrganizationScenarioIterationsMetadata(): Promise<ScenarioIterationSummary[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
   validateTrigger(args: { iterationId: string; trigger: AstNode }): Promise<ScenarioValidation['trigger']>;
   validateRule(args: {
@@ -163,10 +162,6 @@ export function makeGetScenarioRepository() {
       const dtos = await marbleCoreApiClient.listScenarioIterationsMetadata({
         scenarioId,
       });
-      return dtos.map(adaptScenarioIterationSummary);
-    },
-    listOrganizationScenarioIterationsMetadata: async () => {
-      const dtos = await marbleCoreApiClient.listScenarioIterationsMetadata({});
       return dtos.map(adaptScenarioIterationSummary);
     },
     validate: async ({ iterationId }) => {

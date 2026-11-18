@@ -9,7 +9,6 @@ import { getFormattedVersion } from '@app-builder/components/Scenario/Iteration/
 import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Scenario } from '@app-builder/models/scenario';
-import { groupVersionsByScenario } from '@app-builder/models/scenario/iteration';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -28,18 +27,11 @@ import { Icon } from 'ui-icons';
 const scenariosLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function scenariosLoader({ context }) {
-    const [scenarios, iterations] = await Promise.all([
-      context.authInfo.scenario.listScenarios(),
-      context.authInfo.scenario.listOrganizationScenarioIterationsMetadata(),
-    ]);
+    const scenarios = await context.authInfo.scenario.listScenarios();
 
     return {
       isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
       scenarios,
-      scenarioMetadataMap: groupVersionsByScenario(
-        scenarios.map((s) => s.id),
-        iterations,
-      ),
     };
   });
 
@@ -56,41 +48,43 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/')({
 
 function DetectionScenariosPage() {
   const { t } = useTranslation(['scenarios', 'navigation']);
-  const { scenarios, isEditScenarioAvailable, scenarioMetadataMap } = Route.useLoaderData();
+  const { scenarios, isEditScenarioAvailable } = Route.useLoaderData();
   const hydrated = useHydrated();
   const formatDateTime = useFormatDateTime();
   const isLargeScreen = useMediaQuery('xl');
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived, id: row.id }), {
-        id: 'status',
-        header: t('scenarios:list.column.status'),
-        size: 100,
-        cell: ({ getValue }) => {
-          const { liveVersionId, archived, id } = getValue();
-          if (archived) {
+      columnHelper.accessor(
+        (row) => ({ liveVersionId: row.liveVersionId, archived: row.archived, latestVersion: row.latestVersion }),
+        {
+          id: 'status',
+          header: t('scenarios:list.column.status'),
+          size: 100,
+          cell: ({ getValue }) => {
+            const { liveVersionId, archived, latestVersion } = getValue();
+            if (archived) {
+              return (
+                <Tag size="small" color="grey" className="capitalize">
+                  {t('scenarios:archived')}
+                </Tag>
+              );
+            }
+            if (liveVersionId) {
+              return (
+                <Tag size="small" color="purple" className="capitalize">
+                  {t('scenarios:live')}
+                </Tag>
+              );
+            }
             return (
               <Tag size="small" color="grey" className="capitalize">
-                {t('scenarios:archived')}
+                {getFormattedVersion({ version: latestVersion ?? null }, t as TFunction<['scenarios']>)}
               </Tag>
             );
-          }
-          if (liveVersionId) {
-            return (
-              <Tag size="small" color="purple" className="capitalize">
-                {t('scenarios:live')}
-              </Tag>
-            );
-          }
-          const latestVersion = getLatestVersion(scenarioMetadataMap[id]?.versions);
-          return (
-            <Tag size="small" color="grey" className="capitalize">
-              {getFormattedVersion({ version: latestVersion }, t as TFunction<['scenarios']>)}
-            </Tag>
-          );
+          },
         },
-      }),
+      ),
       columnHelper.accessor('name', {
         id: 'name',
         header: t('scenarios:list.column.name'),
@@ -225,13 +219,4 @@ function DetectionScenariosPage() {
       </Page.Content>
     </Page.Main>
   );
-}
-
-function getLatestVersion(versions: (number | null)[] = []) {
-  if (versions.length === 0) return null;
-  const latestVersion = versions.reduce<number | null>(
-    (max, v) => (v !== null && (max === null || v > max) ? v : max),
-    null,
-  );
-  return latestVersion;
 }

@@ -9,6 +9,8 @@ export interface Scenario {
   deduplicateBatchObjects: boolean;
   description: string;
   liveVersionId?: string;
+  /** Only set when listing scenarios, and only once an iteration has a version. */
+  latestVersion?: number;
   name: string;
   organizationId: string;
   triggerObjectType: string;
@@ -22,6 +24,7 @@ export function adaptScenario(dto: ScenarioDto): Scenario {
     deduplicateBatchObjects: dto.deduplicate_batch_objects,
     description: dto.description,
     liveVersionId: dto.live_version_id,
+    latestVersion: dto.latest_version,
     name: dto.name,
     organizationId: dto.organization_id,
     triggerObjectType: dto.trigger_object_type,

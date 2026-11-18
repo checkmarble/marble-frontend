@@ -928,6 +928,8 @@ export type ScenarioDto = {
     deduplicate_batch_objects: boolean;
     description: string;
     live_version_id?: string;
+    /** Highest version among the scenario's iterations. Only returned when listing scenarios, and only once an iteration has a version. */
+    latest_version?: number;
     name: string;
     organization_id: string;
     trigger_object_type: string;

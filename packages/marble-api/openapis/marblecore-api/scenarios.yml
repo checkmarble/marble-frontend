@@ -366,6 +366,9 @@ components:
         live_version_id:
           type: string
           format: uuid
+        latest_version:
+          type: integer
+          description: Highest version among the scenario's iterations. Only returned when listing scenarios, and only once an iteration has a version.
         name:
           type: string
         organization_id:
