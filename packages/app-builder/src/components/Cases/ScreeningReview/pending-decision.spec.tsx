@@ -146,6 +146,29 @@ describe('usePendingDecision', () => {
     expect(result.current.hasUnsaved()).toBe(false);
   });
 
+  it('asks before the page unloads only while a decision is unsaved', async () => {
+    const request = Promise.withResolvers<void>();
+    const write = vi.fn(async () => {
+      await request.promise;
+    });
+    const unload = () => {
+      const event = new Event('beforeunload', { cancelable: true });
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+    const { result } = renderPendingDecision();
+    expect(unload()).toBe(false);
+    act(() => result.current.schedule({ message: 'Decided', undoneMessage: 'Undone', undo: vi.fn(), write }));
+    // Undoable, then being written.
+    expect(unload()).toBe(true);
+    expect(write).not.toHaveBeenCalled();
+    const flush = result.current.flush();
+    expect(unload()).toBe(true);
+    request.resolve();
+    await act(() => flush);
+    expect(unload()).toBe(false);
+  });
+
   it('holds one undoable decision: a new one writes the previous at once, undo drops only the latest', async () => {
     const first = { message: 'First', undoneMessage: 'Undone', undo: vi.fn(), write: vi.fn(() => Promise.resolve()) };
     const second = { message: 'Second', undoneMessage: 'Undone', undo: vi.fn(), write: vi.fn(() => Promise.resolve()) };
