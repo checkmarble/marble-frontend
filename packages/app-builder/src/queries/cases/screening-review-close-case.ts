@@ -13,7 +13,11 @@ export function useCloseScreeningReviewCaseMutation() {
   return useMutation({
     mutationFn: async (input: ScreeningReviewCloseCaseInput): Promise<ScreeningReviewDecisionResult | undefined> =>
       close({ data: input }),
-    // Runs even when the dock that started it has unmounted, unlike a per-call `onSuccess`.
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] }),
+    // Runs even when the dock that started it has unmounted, unlike a per-call `onSuccess`. On an error
+    // too: the dismissal can commit before the response fails. Not awaited, so the caller sees the
+    // result before the refreshed page replaces the dock.
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
+    },
   });
 }

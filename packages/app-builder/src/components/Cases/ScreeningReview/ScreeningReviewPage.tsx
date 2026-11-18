@@ -379,7 +379,12 @@ function ReviewStream({
 
   const stateActions: ScreeningStateActions = {
     onMatchesLoaded: decisions.refreshPage,
-    canCloseCase: (item) => canDismissScreenings && isLastOpenScreeningOfCase(reviewItems, item),
+    // Not on the previous search's page, nor on a screening that holds a Hit.
+    canCloseCase: (item) =>
+      ready &&
+      canDismissScreenings &&
+      isLastOpenScreeningOfCase(reviewItems, item) &&
+      !reviewItems.some((other) => other.screeningId === item.screeningId && other.status === 'confirmed_hit'),
     onCaseClosed: decisions.caseClosed,
   };
 
