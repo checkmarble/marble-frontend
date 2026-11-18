@@ -114,7 +114,8 @@ const TOAST_POSITION: ToastOptions['position'] = 'bottom-center';
 
 /**
  * Holds at most one undoable decision for the undo delay, then writes it. A new decision, `flush`,
- * the page unmounting and `pagehide` write it early. `undo` drops it without writing.
+ * the page unmounting and `pagehide` write it early. `undo` drops it without writing. While anything
+ * is unsaved, the browser asks before the page is closed or reloaded.
  *
  * Writes outlive the undo window: `flush` resolves once the undoable decision and every write
  * already started have settled, outcome included.
@@ -181,19 +182,30 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
   };
 
   useEffect(() => {
+    // Writes sent on unload can be dropped: browsers cap keepalive bodies at 64 KiB in total. So the
+    // browser asks first, only while something is unsaved. Nothing is written here: a write started
+    // now would be cancelled by the unload, and `pagehide` still sends what is left with keepalive.
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hasUnsaved()) return;
+      event.preventDefault();
+      // Older browsers ask only when `returnValue` is set.
+      event.returnValue = '';
+    };
     // `pagehide` rather than `visibilitychange`: switching tabs keeps the undo window open.
     const onPageHide = () => {
       queue.unload();
       void flush();
     };
+    window.addEventListener('beforeunload', onBeforeUnload);
     window.addEventListener('pagehide', onPageHide);
     window.addEventListener('pageshow', queue.resume);
     return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
       window.removeEventListener('pagehide', onPageHide);
       window.removeEventListener('pageshow', queue.resume);
       void flush();
     };
-  }, [flush, queue]);
+  }, [flush, queue, hasUnsaved]);
 
   return { undoable, schedule, flush, undo, hasUnsaved };
 }
