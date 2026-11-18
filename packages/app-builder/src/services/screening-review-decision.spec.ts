@@ -258,6 +258,17 @@ describe('screening review case closure', () => {
     ['not_in_review', reviewCase('case', [{ ...decidedPartial(), status: 'confirmed_hit' }])],
     ['not_closable', reviewCase('case', [objectReviewScreening()])],
     ['not_closable', reviewCase('case', [decidedPartial(), openOther])],
+    [
+      'not_closable',
+      reviewCase('case', [
+        {
+          ...decidedPartial(),
+          matches: decidedPartial().matches.map((match, index) =>
+            index === 0 ? { ...match, status: 'confirmed_hit' as const } : match,
+          ),
+        },
+      ]),
+    ],
   ] as const)('refuses before dismissing: %s', async (reason, before) => {
     const repos = closeRepositories(before);
     expect(await closeScreeningReviewCase(repos, 'analyst', closeInput)).toEqual({ ok: false, reason });

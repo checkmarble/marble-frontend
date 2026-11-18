@@ -254,8 +254,14 @@ function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions
       <Button
         variant="secondary"
         disabled={!!running}
+        // The promise, unlike a per-call `onSuccess`, still settles once this dock unmounts.
         onClick={() =>
-          afterFlush('load_more', () => loadMore.mutate(undefined, { onSuccess: () => void actions.onMatchesLoaded() }))
+          afterFlush('load_more', () =>
+            loadMore.mutateAsync().then(
+              () => void actions.onMatchesLoaded(),
+              () => undefined,
+            ),
+          )
         }
       >
         {running === 'load_more' ? spinner : null}
@@ -270,7 +276,9 @@ function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions
             onClick={() => {
               const onClosed = actions.onCaseClosed(item);
               afterFlush('close_case', () =>
-                closeCase.mutate({ caseId: item.caseId, screeningId: item.screeningId }, { onSuccess: onClosed }),
+                closeCase
+                  .mutateAsync({ caseId: item.caseId, screeningId: item.screeningId })
+                  .then(onClosed, () => undefined),
               );
             }}
           >

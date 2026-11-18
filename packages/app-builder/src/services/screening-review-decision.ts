@@ -97,6 +97,8 @@ function rejectionBeforeClose(
   if (!screening) return 'unavailable';
   if (screening.status !== 'in_review') return 'not_in_review';
   if (screening.matches.some((match) => match.status === 'pending')) return 'not_closable';
+  // A partial screening stays in review after a Hit; dismissing it would close the case as a false positive.
+  if (screening.matches.some((match) => match.status === 'confirmed_hit')) return 'not_closable';
   const othersOpen = caseDetail.continuousScreenings.some(
     ({ id, status }) => id !== input.screeningId && status !== 'no_hit',
   );

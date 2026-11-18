@@ -1106,6 +1106,65 @@ describe('screening review decisions', () => {
       expect(closeButton()).toBeNull();
     });
 
+    it('is not offered on a partial screening that holds a Hit', async () => {
+      const screening = objectReviewScreening();
+      screening.partial = true;
+      screening.matches = screening.matches.map((match, index) => ({
+        ...match,
+        status: index === 0 ? ('confirmed_hit' as const) : ('no_hit' as const),
+      }));
+      renderClosable([screening]);
+      await screen.findByRole('button', { name: 'cases:screening_review.load_more' });
+      expect(closeButton()).toBeNull();
+    });
+
+    /** The closable case, and another customer's case with pending hits to move to. */
+    function renderWithAnotherCase() {
+      const items = buildScreeningReviewItems([
+        reviewCase(caseId, [decidedPartial()]),
+        reviewCase('other-case', [objectReviewScreening('screening-9', 'bob')]),
+      ]);
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+      const hit = items.find((item) => item.caseId === caseId)!.id;
+      renderPage({ filter: 'all', limit: 50, cursors: [], hit }, false, true, true);
+    }
+
+    it('shows a refused closure even once the analyst has moved to another hit', async () => {
+      const response = Promise.withResolvers<{ ok: false; reason: 'not_closable' }>();
+      vi.mocked(closeScreeningReviewCaseFn).mockReturnValue(response.promise);
+      renderWithAnotherCase();
+      fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.close_case' }));
+      await waitFor(() => expect(closeScreeningReviewCaseFn).toHaveBeenCalledOnce());
+      fireEvent.click(card('List record B')!);
+      await waitFor(() => expect(closeButton()).toBeNull());
+      response.resolve({ ok: false, reason: 'not_closable' });
+      expect((await screen.findByRole('alert')).textContent).toBe('cases:screening_review.rejection.not_closable');
+    });
+
+    it('refreshes the queue after Load more even once the analyst has moved to another hit', async () => {
+      const response = Promise.withResolvers<undefined>();
+      vi.mocked(loadMoreContinuousScreeningMatchesFn).mockReturnValue(response.promise);
+      renderWithAnotherCase();
+      fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.load_more' }));
+      await waitFor(() => expect(loadMoreContinuousScreeningMatchesFn).toHaveBeenCalledOnce());
+      fireEvent.click(card('List record B')!);
+      await waitFor(() =>
+        expect(screen.queryByRole('button', { name: 'cases:screening_review.load_more' })).toBeNull(),
+      );
+      const reads = vi.mocked(listScreeningReviewPageFn).mock.calls.length;
+      response.resolve(undefined);
+      await waitFor(() => expect(vi.mocked(listScreeningReviewPageFn).mock.calls.length).toBeGreaterThan(reads));
+    });
+
+    it('refreshes the queue when the closure request fails, since the dismissal may have committed', async () => {
+      vi.mocked(closeScreeningReviewCaseFn).mockRejectedValue(new Error('hydration failed'));
+      renderClosable([decidedPartial()]);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      const reads = vi.mocked(listScreeningReviewPageFn).mock.calls.length;
+      fireEvent.click(closeButton()!);
+      await waitFor(() => expect(vi.mocked(listScreeningReviewPageFn).mock.calls.length).toBeGreaterThan(reads));
+    });
+
     it('is not offered while another screening of the case is open', async () => {
       renderClosable([decidedPartial(), datasetReviewScreening()]);
       await screen.findByText('cases:screening_review.screening_state.load_more');
