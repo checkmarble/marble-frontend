@@ -562,6 +562,8 @@
   "screening_review.empty.no_results.title": "No hits match this search",
   "screening_review.empty.no_validated.description": "Hits you decide show here, including those of closed cases.",
   "screening_review.empty.no_validated.title": "No validated hits",
+  "screening_review.empty.page_empty.description": "More cases remain. Go to the next page to keep looking.",
+  "screening_review.empty.page_empty.title": "No hits on this page",
   "screening_review.filter.all": "All",
   "screening_review.filter.to_review": "To review",
   "screening_review.filter.validated": "Validated",

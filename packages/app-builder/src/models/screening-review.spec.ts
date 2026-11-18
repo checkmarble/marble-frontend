@@ -10,6 +10,7 @@ import {
   emptyScreeningReviewSession,
   groupScreeningReviewItems,
   isListedInScreeningReviewSession,
+  isPendingReviewItem,
   matchesScreeningReviewFilter,
   needsFalsePositiveClosure,
   nextPendingScreeningReviewItem,
@@ -792,5 +793,27 @@ describe('screening review filters', () => {
       reviewCase('open-ended', [{ ...objectReviewScreening(), status: 'no_hit' }]),
     ]);
     expect(screeningReviewScreeningState([open!], open!, emptyScreeningReviewSession)).toBe('closure_pending');
+  });
+
+  it('lets a refresh that finds the case closed supersede an earlier failed closure', () => {
+    const [item] = closed;
+    const failedClosure = {
+      ...emptyScreeningReviewSession,
+      screenings: { [item!.screeningId]: { status: 'no_hit' as const, caseClosed: false } },
+    };
+    expect(screeningReviewScreeningState(closed, item!, failedClosure)).toBe('case_closed');
+  });
+
+  it('takes no decision on a pending hit of a case closed by other means', () => {
+    const [item] = buildScreeningReviewItems([
+      reviewCase('closed-by-hand', [objectReviewScreening()], { status: 'closed' }),
+    ]);
+    expect(item?.status).toBe('pending');
+    expect(isPendingReviewItem(item!)).toBe(false);
+    // Nor are more of its matches offered.
+    const partial = buildScreeningReviewItems([
+      reviewCase('closed-partial', [{ ...objectReviewScreening(), partial: true }], { status: 'closed' }),
+    ]);
+    expect(screeningReviewScreeningState(partial, partial[0]!, emptyScreeningReviewSession)).toBe('in_review');
   });
 });

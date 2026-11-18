@@ -151,7 +151,8 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
     const decision = take();
     if (!decision) return;
     decision.undo();
-    toast.custom(<ReviewToast message={decision.undoneMessage} />, {
+    // react-hot-toast keeps drawing a dismissed custom toast until it removes it, so hide it on dismissal.
+    toast.custom((current) => (current.visible ? <ReviewToast message={decision.undoneMessage} /> : null), {
       id: UNDONE_TOAST_ID,
       duration: UNDONE_TOAST_DURATION_MS,
       position: TOAST_POSITION,
@@ -168,11 +169,15 @@ export function usePendingDecision({ undoLabel }: { undoLabel: string }) {
     timerRef.current = window.setTimeout(() => void flush(), SCREENING_REVIEW_UNDO_DELAY_MS);
     toast.dismiss(UNDONE_TOAST_ID);
     // The timer above decides when the write happens, so the toast doesn't expire on its own.
-    toast.custom(<ReviewToast message={decision.message} undoLabel={undoLabel} onUndo={undo} />, {
-      id: UNDO_TOAST_ID,
-      duration: Number.POSITIVE_INFINITY,
-      position: TOAST_POSITION,
-    });
+    toast.custom(
+      (current) =>
+        current.visible ? <ReviewToast message={decision.message} undoLabel={undoLabel} onUndo={undo} /> : null,
+      {
+        id: UNDO_TOAST_ID,
+        duration: Number.POSITIVE_INFINITY,
+        position: TOAST_POSITION,
+      },
+    );
   };
 
   useEffect(() => {

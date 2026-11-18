@@ -141,9 +141,14 @@ function ReviewStream({
     onNavigate: (itemId) => onSearchChange({ ...latestSearch.current, hit: itemId }),
   });
   const { session, selection, setSelection, pendingDecision } = decisions;
+  // Only To review lets a closed case go. All and Validated read closed cases, so they keep it.
+  const viewSession = useMemo(
+    () => (search.filter === 'to_review' ? session : { ...session, hiddenCases: [] }),
+    [session, search.filter],
+  );
   const reviewItems = useMemo(
-    () => applyScreeningReviewSession(query.data?.items ?? [], session),
-    [query.data, session],
+    () => applyScreeningReviewSession(query.data?.items ?? [], viewSession),
+    [query.data, viewSession],
   );
   const groups = useMemo(
     () =>
@@ -156,9 +161,9 @@ function ReviewStream({
     [reviewItems, hasMore, session, search.filter],
   );
   const counts = useMemo(() => countScreeningReviewFilters(reviewItems), [reviewItems]);
-  // To review never reads closed cases, so the other counts can't be complete there.
+  // Counts cover this page only, and To review never reads closed cases.
   const isCountPartial = (filter: ScreeningReviewFilter) =>
-    hasMore || (search.filter === 'to_review' && filter !== 'to_review');
+    hasMore || search.cursors.length > 0 || (search.filter === 'to_review' && filter !== 'to_review');
   const items = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const active = items.find((item) => item.id === search.hit) ?? items.find(isPendingReviewItem) ?? items[0];
   const selectedItems = items.filter((item) => selection.has(item.id) && isPendingReviewItem(item));
@@ -171,10 +176,10 @@ function ReviewStream({
   useEffect(() => {
     // Wait for fresh data before declaring a bookmarked hit unavailable.
     if (!ready || query.isFetching || query.data?.failed) return;
-    const hidden = session.hiddenCases.some((caseId) => search.hit?.startsWith(`${caseId}:`));
+    const hidden = viewSession.hiddenCases.some((caseId) => search.hit?.startsWith(`${caseId}:`));
     if (search.hit && !hidden && !items.some((item) => item.id === search.hit)) setUnavailable(true);
     if (active?.id !== search.hit) onSearchChange({ ...search, hit: active?.id });
-  }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange, session.hiddenCases]);
+  }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange, viewSession.hiddenCases]);
 
   useEffect(() => {
     activeRef.current?.scrollIntoView({
@@ -392,13 +397,16 @@ function ReviewStream({
               <EmptyQueue
                 inboxId={selectedInbox.id}
                 state={
-                  search.q
-                    ? 'no_results'
-                    : search.filter === 'validated'
-                      ? 'no_validated'
-                      : allReviewed && Object.keys(session.decided).length
-                        ? 'all_reviewed'
-                        : 'empty'
+                  // A request scans a bounded number of cases, so a page can come back empty with more to read.
+                  hasMore
+                    ? 'page_empty'
+                    : search.q
+                      ? 'no_results'
+                      : search.filter === 'validated'
+                        ? 'no_validated'
+                        : allReviewed && Object.keys(session.decided).length
+                          ? 'all_reviewed'
+                          : 'empty'
                 }
                 onClearSearch={() => changeSearch({ q: undefined, cursors: [] })}
                 onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })}
@@ -441,7 +449,7 @@ function ReviewNotices({ notice, unavailable }: { notice: ScreeningReviewNotice 
   );
 }
 
-type EmptyQueueState = 'empty' | 'all_reviewed' | 'no_validated' | 'no_results';
+type EmptyQueueState = 'empty' | 'all_reviewed' | 'no_validated' | 'no_results' | 'page_empty';
 
 function EmptyQueue({
   inboxId,
@@ -467,7 +475,7 @@ function EmptyQueue({
         <Button variant="secondary" onClick={onShowValidated}>
           {t('cases:screening_review.all_reviewed.show_validated')}
         </Button>
-      ) : (
+      ) : state === 'page_empty' ? null : (
         <Link
           to="/cases/inboxes/$inboxId"
           params={{ inboxId: inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId) }}

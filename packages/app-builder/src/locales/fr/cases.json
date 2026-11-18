@@ -562,6 +562,8 @@
   "screening_review.empty.no_results.title": "Aucune correspondance pour cette recherche",
   "screening_review.empty.no_validated.description": "Les correspondances que vous décidez s’affichent ici, y compris celles des dossiers clôturés.",
   "screening_review.empty.no_validated.title": "Aucune correspondance validée",
+  "screening_review.empty.page_empty.description": "D’autres dossiers restent à parcourir. Passez à la page suivante pour continuer.",
+  "screening_review.empty.page_empty.title": "Aucune correspondance sur cette page",
   "screening_review.filter.all": "Toutes",
   "screening_review.filter.to_review": "À examiner",
   "screening_review.filter.validated": "Validées",

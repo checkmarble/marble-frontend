@@ -1,6 +1,6 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { SCREENING_REVIEW_FILTERS } from '@app-builder/models/screening-review';
+import { SCREENING_REVIEW_FILTERS, SCREENING_REVIEW_SEARCH_MAX } from '@app-builder/models/screening-review';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { reviewScreeningReviewMatch } from '@app-builder/services/screening-review-decision';
 import { readScreeningReviewPage } from '@app-builder/services/screening-review-page';
@@ -16,7 +16,7 @@ export const listScreeningReviewPageFn = createServerFn({ method: 'POST' })
       cursor: z.uuid().nullable(),
       inboxId: z.union([z.literal(MY_INBOX_ID), z.uuid()]).default(MY_INBOX_ID),
       filter: z.enum(SCREENING_REVIEW_FILTERS).default('to_review'),
-      name: z.string().trim().max(200).optional(),
+      name: z.string().trim().max(SCREENING_REVIEW_SEARCH_MAX).optional(),
     }),
   )
   .handler(async ({ context, data }) => {

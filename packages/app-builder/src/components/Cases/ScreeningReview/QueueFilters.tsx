@@ -1,4 +1,8 @@
-import { SCREENING_REVIEW_FILTERS, type ScreeningReviewFilter } from '@app-builder/models/screening-review';
+import {
+  SCREENING_REVIEW_FILTERS,
+  SCREENING_REVIEW_SEARCH_MAX,
+  type ScreeningReviewFilter,
+} from '@app-builder/models/screening-review';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchInput, Tabs } from 'ui-design-system';
@@ -81,6 +85,7 @@ function QueueSearch({
     <SearchInput
       aria-label={t('cases:screening_review.search.label')}
       placeholder={t('cases:screening_review.search.placeholder')}
+      maxLength={SCREENING_REVIEW_SEARCH_MAX}
       value={text}
       onChange={setText}
       onEnterKeyDown={(value) => writeQuery(latest.current, value)}
