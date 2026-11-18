@@ -625,7 +625,7 @@
   "screening_review.previous_page": "الصفحة السابقة",
   "screening_review.rejection.already_reviewed": "تمت مراجعة هذا التطابق بالفعل. تم تحديث القائمة.",
   "screening_review.rejection.forbidden": "لم تعد لديك صلاحية الوصول إلى هذه الحالة. تم تحديث القائمة.",
-  "screening_review.rejection.not_closable": "لا تزال في هذه الحالة تطابقات للمراجعة. تم تحديث القائمة.",
+  "screening_review.rejection.not_closable": "تعذّر إغلاق هذه الحالة: لا تزال فيها تطابقات للمراجعة أو تطابق مؤكد. تم تحديث القائمة.",
   "screening_review.rejection.not_in_review": "تم إنهاء هذا الفحص في مكان آخر. تم تحديث القائمة.",
   "screening_review.rejection.reassigned": "هذه الحالة مسندة الآن إلى شخص آخر. تم تحديث القائمة.",
   "screening_review.rejection.unavailable": "لم يعد هذا التطابق أو حالته موجودًا. تم تحديث القائمة.",

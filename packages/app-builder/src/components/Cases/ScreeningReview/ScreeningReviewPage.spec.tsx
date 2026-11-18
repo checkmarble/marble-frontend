@@ -1053,6 +1053,27 @@ describe('screening review decisions', () => {
       await screen.findByText('cases:screening_review.empty.all_reviewed.title');
     });
 
+    it('shows the screening at No hit when reading it back after the closure fails', async () => {
+      vi.mocked(closeScreeningReviewCaseFn).mockResolvedValue({ ok: true, screeningStatus: null, caseClosed: false });
+      renderClosable([decidedPartial()]);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      fireEvent.click(closeButton()!);
+      await screen.findByText('cases:screening_review.screening_state.closure_pending');
+      expect(closeButton()).toBeNull();
+    });
+
+    it('keeps a partial screening with no pending hit in To review after a reload', async () => {
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+        items: buildScreeningReviewItems([reviewCase(caseId, [decidedPartial()])]),
+        nextCursor: null,
+        failed: false,
+      });
+      renderPage(undefined, false, true, true);
+      await screen.findByText('cases:screening_review.screening_state.load_more');
+      expect(screen.getByRole('button', { name: 'cases:screening_review.load_more' })).toBeTruthy();
+      expect(screen.queryByText('cases:screening_review.empty.all_reviewed.title')).toBeNull();
+    });
+
     it('explains a refused closure', async () => {
       vi.mocked(closeScreeningReviewCaseFn).mockResolvedValue({ ok: false, reason: 'not_closable' });
       renderClosable([decidedPartial()]);

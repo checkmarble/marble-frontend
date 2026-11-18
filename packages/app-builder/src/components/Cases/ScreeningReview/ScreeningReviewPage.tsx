@@ -5,6 +5,7 @@ import type { InboxMetadata } from '@app-builder/models/inbox';
 import {
   adjacentScreeningReviewItem,
   applyScreeningReviewSession,
+  awaitsMoreMatches,
   compareScreeningReviewFields,
   countScreeningReviewFilters,
   groupScreeningReviewItems,
@@ -270,7 +271,13 @@ function ReviewStream({
   const reviewable = !!active && isPendingReviewItem(active);
   const draftId = active?.id;
   // The end of the queue: nothing left to decide on the first and only page.
-  const allReviewed = ready && !hasMore && !search.cursors.length && search.filter !== 'validated' && !counts.to_review;
+  const allReviewed =
+    ready &&
+    !hasMore &&
+    !search.cursors.length &&
+    search.filter !== 'validated' &&
+    !counts.to_review &&
+    !reviewItems.some(awaitsMoreMatches);
   const activeDraft = decisions.draftFor(draftId);
 
   useEffect(() => {
