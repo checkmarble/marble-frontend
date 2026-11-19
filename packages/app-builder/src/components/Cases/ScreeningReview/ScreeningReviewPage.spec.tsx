@@ -793,7 +793,7 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
     await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
-    await screen.findByText('cases:screening_review.group_state.closure_pending');
+    await screen.findByText('cases:screening_review.screening_state.closure_pending');
     vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
       items: [],
       nextCursor: null,
@@ -803,8 +803,8 @@ describe('screening review decisions', () => {
     await act(async () => {
       await queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
     });
-    await screen.findByText('cases:screening_review.group_state.case_closed');
-    expect(screen.queryByText('cases:screening_review.group_state.closure_pending')).toBeNull();
+    await screen.findByText('cases:screening_review.screening_state.case_closed');
+    expect(screen.queryByText('cases:screening_review.screening_state.closure_pending')).toBeNull();
     await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
     await screen.findByText('cases:screening_review.empty.all_reviewed.description');
   });
