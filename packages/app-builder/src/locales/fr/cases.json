@@ -600,7 +600,7 @@
   "screening_review.loading": "Chargement…",
   "screening_review.matched_field.birthDate": "DDN",
   "screening_review.matched_field.birthDate_description": "La date de naissance correspond",
-  "screening_review.matched_field.country": "PAY",
+  "screening_review.matched_field.country": "PAYS",
   "screening_review.matched_field.country_description": "Le pays correspond",
   "screening_review.matched_field.identifier": "ID",
   "screening_review.matched_field.identifier_description": "L’identifiant correspond",
