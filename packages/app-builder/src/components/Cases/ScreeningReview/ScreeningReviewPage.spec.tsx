@@ -784,7 +784,7 @@ describe('screening review decisions', () => {
     await screen.findByText('cases:screening_review.group_state.case_closed');
     expect(screen.queryByText('cases:screening_review.group_state.closure_pending')).toBeNull();
     await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-    await screen.findByText('cases:screening_review.empty_title');
+    await screen.findByText('cases:screening_review.empty.all_reviewed.description');
   });
 
   it('keeps a closed case in All after its last hit is decided', async () => {
