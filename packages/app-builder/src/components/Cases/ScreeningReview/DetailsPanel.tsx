@@ -90,6 +90,7 @@ export function DetailsPanel({
             const next = DETAILS_PANEL_TABS.find((candidate) => candidate.tab === value);
             if (next) onTabChange(next.tab);
           }}
+          variant="pills"
         >
           {DETAILS_PANEL_TABS.map(({ tab: value, hotkey }) => (
             <Tabs.Button key={value} value={value} className="gap-xs">

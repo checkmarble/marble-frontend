@@ -159,6 +159,9 @@ export function ActionDock({
               </ShortcutButton>
             );
           })}
+          <ShortcutButton tone="ghost" hotkeys={['C']}>
+            {t('cases:screening_review.shortcuts.comment')}
+          </ShortcutButton>
         </div>
         {draft.decision === 'confirmed_hit' && skippedCount > 0 ? (
           <Callout role="note" color="orange" icon="warning">
