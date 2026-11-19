@@ -25,6 +25,8 @@ export const CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING = {
     'entity_annotated',
     'entity_added',
     'entity_removed',
+    'screening_match_reviewed',
+    'sanction_check_reviewed',
   ],
 } as const satisfies Record<CaseEventCategory, CaseEventType[]>;
 

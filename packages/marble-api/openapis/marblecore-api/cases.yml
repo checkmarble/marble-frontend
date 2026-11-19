@@ -1524,6 +1524,8 @@ components:
           entity_annotated: "#/components/schemas/EntityAnnotatedEventDto"
           entity_added: "#/components/schemas/CaseEntityAddedEventDto"
           entity_removed: "#/components/schemas/CaseEntityRemovedEventDto"
+          screening_match_reviewed: "#/components/schemas/ScreeningMatchReviewedEventDto"
+          sanction_check_reviewed: "#/components/schemas/ScreeningReviewedEventDto"
       required:
         - id
         - case_id
@@ -2161,6 +2163,60 @@ components:
             new_value: '{"table_name":"customers","object_id":"customer-123"}'
             resource_type: case_manual_entity
             resource_id: 7a563824-c8e7-461e-bfc0-b73cb568a8cb
+    ScreeningMatchReviewedEventDto:
+      allOf:
+        - $ref: "#/components/schemas/CaseEventDto"
+        - type: object
+          required:
+            - new_value
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+              nullable: true
+            new_value:
+              type: string
+              description: The new status of the continuous screening match
+              enum: ["pending", "confirmed_hit", "no_hit", "skipped"]
+            previous_value:
+              type: string
+              description: The previous status of the continuous screening match
+            resource_type:
+              type: string
+              enum: ["continuous_screening_match"]
+            resource_id:
+              type: string
+              format: uuid
+              description: The id of the continuous screening match
+    ScreeningReviewedEventDto:
+      allOf:
+        - $ref: "#/components/schemas/CaseEventDto"
+        - type: object
+          required:
+            - new_value
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+              nullable: true
+            new_value:
+              type: string
+              description: The final status of the screening
+              enum: ["confirmed_hit", "no_hit"]
+            previous_value:
+              type: string
+              description: The previous status of the screening, for continuous screenings
+            resource_type:
+              type: string
+              description: A decision for a decision screening, or the continuous screening
+              enum: ["decision", "continuous_screening"]
+            resource_id:
+              type: string
+              format: uuid
     CaseEntityRemovedEventDto:
       allOf:
         - $ref: "#/components/schemas/CaseEventDto"

@@ -101,6 +101,10 @@ CaseEntityAddedEventDto:
   $ref: cases.yml#/components/schemas/CaseEntityAddedEventDto
 CaseEntityRemovedEventDto:
   $ref: cases.yml#/components/schemas/CaseEntityRemovedEventDto
+ScreeningMatchReviewedEventDto:
+  $ref: cases.yml#/components/schemas/ScreeningMatchReviewedEventDto
+ScreeningReviewedEventDto:
+  $ref: cases.yml#/components/schemas/ScreeningReviewedEventDto
 CaseCreatedEventDto:
   $ref: cases.yml#/components/schemas/CaseCreatedEventDto
 CaseStatusUpdatedEventDto:

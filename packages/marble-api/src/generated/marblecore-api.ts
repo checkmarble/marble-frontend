@@ -558,7 +558,31 @@ export type CaseEntityRemovedEventDto = {
     /** UUID of the manual link, not the client object_id */
     resource_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto | CaseEntityAddedEventDto | CaseEntityRemovedEventDto;
+export type ScreeningMatchReviewedEventDto = {
+    event_type: "screening_match_reviewed";
+} & CaseEventDtoBase & {
+    user_id?: string | null;
+    /** The new status of the continuous screening match */
+    new_value: "pending" | "confirmed_hit" | "no_hit" | "skipped";
+    /** The previous status of the continuous screening match */
+    previous_value?: string;
+    resource_type: "continuous_screening_match";
+    /** The id of the continuous screening match */
+    resource_id: string;
+};
+export type ScreeningReviewedEventDto = {
+    event_type: "sanction_check_reviewed";
+} & CaseEventDtoBase & {
+    user_id?: string | null;
+    /** The final status of the screening */
+    new_value: "confirmed_hit" | "no_hit";
+    /** The previous status of the screening, for continuous screenings */
+    previous_value?: string;
+    /** A decision for a decision screening, or the continuous screening */
+    resource_type: "decision" | "continuous_screening";
+    resource_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto | CaseEntityAddedEventDto | CaseEntityRemovedEventDto | ScreeningMatchReviewedEventDto | ScreeningReviewedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
