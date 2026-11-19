@@ -8,6 +8,7 @@ import { EntityDatasetsList } from '../MatchCard/match-card-entity-components';
 import { MatchDetails } from '../MatchDetails';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicsDisplay } from '../TopicsDisplay';
+import { EntityAISummary } from './EntityAISummary';
 
 interface FreeformMatchCardProps {
   entity: ScreeningMatchPayload;
@@ -26,15 +27,18 @@ export function FreeformMatchCard({
 }: FreeformMatchCardProps) {
   const { t } = useTranslation(screeningsI18n);
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
+  // Shares its cache with the card content: the summary appears once the card has been opened
+  const enrichedData = useGetEnrichedDataQuery({ entityId: entity.id }, isOpen);
 
   const entitySchema = entity.schema.toLowerCase();
+  const backgroundClassName = cn(
+    background === 'grey' && 'bg-grey-background-light',
+    background === 'card' && 'bg-surface-card',
+  );
 
   return (
     <Collapsible.Container defaultOpen={defaultOpen} onOpenChange={setIsOpen}>
-      <Collapsible.Title
-        iconPosition="left"
-        className={cn(background === 'grey' && 'bg-grey-background-light', background === 'card' && 'bg-surface-card')}
-      >
+      <Collapsible.Title iconPosition="left" className={backgroundClassName}>
         <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1 flex-1">
           <span className="font-semibold">{entity.caption}</span>
 
@@ -52,9 +56,12 @@ export function FreeformMatchCard({
         </div>
       </Collapsible.Title>
 
-      <Collapsible.Content
-        className={cn(background === 'grey' && 'bg-grey-background-light', background === 'card' && 'bg-surface-card')}
-      >
+      <EntityAISummary
+        entity={enrichedData.data}
+        className={cn('px-md pb-md lg:px-lg lg:pb-lg', backgroundClassName)}
+      />
+
+      <Collapsible.Content className={backgroundClassName}>
         <div className="text-s flex flex-col gap-lg p-md">
           {entitySchema === 'person' && entity.datasets?.length ? (
             <div className="grid grid-cols-[146px_1fr] gap-sm">
@@ -84,12 +91,14 @@ export function FreeFormMatchCardDataContent({
   isOpen,
   withTopics = false,
   withExploreButton = true,
+  withAISummarizer = false,
 }: {
   entityId: string;
   searchTerm?: string;
   isOpen: boolean;
   withTopics?: boolean;
   withExploreButton?: boolean;
+  withAISummarizer?: boolean;
 }) {
   const { t } = useTranslation(screeningsI18n);
   const enrichedData = useGetEnrichedDataQuery({ entityId }, isOpen);
@@ -100,6 +109,7 @@ export function FreeFormMatchCardDataContent({
   return (
     <div className="text-s flex flex-col gap-lg p-md">
       {withTopics && <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-xs font-normal" />}
+      {withAISummarizer && <EntityAISummary entity={entity} />}
       <MatchDetails entity={entity} highlightText={searchTerm} withExploreButton={withExploreButton} />
     </div>
   );
