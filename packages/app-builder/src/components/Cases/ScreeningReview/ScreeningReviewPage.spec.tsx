@@ -882,19 +882,19 @@ describe('screening review decisions', () => {
     expect(screen.queryByText('cases:screening_review.unavailable')).toBeNull();
   });
 
-  it('treats a case the page read closed as closed, and hides its hits after the delay', async () => {
+  it('treats a case the page read closed as closed', async () => {
+    // To review drops the group once its decisions are written, so the closure shows in All.
     const items = buildScreeningReviewItems([reviewCase(caseId, [objectReviewScreening()])]);
     vi.mocked(reviewScreeningReviewMatchFn)
       .mockResolvedValueOnce(inReview)
-      // The write couldn't close the case; the next page read retries the closure and leaves it out.
+      // The write couldn't close the case; the next page read retries the closure.
       .mockResolvedValueOnce({ ok: true, screeningStatus: 'no_hit', caseClosed: false });
-    const { queryClient } = renderDecisionPage(items);
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+    const { queryClient } = renderPage({ filter: 'all', limit: 50, cursors: [] });
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
     press('n', 'KeyN');
     press('Enter', 'Enter');
     await waitFor(() => expect(activeCard()?.textContent).toContain('List record B'));
-    // The first retry fails too: the case is left out, and its hit still waits for closure.
-    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: null, failed: false });
     press('n', 'KeyN');
     press('Enter', 'Enter');
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(1));
@@ -902,7 +902,7 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(reviewScreeningReviewMatchFn).toHaveBeenCalledTimes(2));
     await screen.findByText('cases:screening_review.screening_state.closure_pending');
     vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
-      items: [],
+      items,
       nextCursor: null,
       failed: false,
       closedCaseIds: [caseId],
@@ -912,8 +912,6 @@ describe('screening review decisions', () => {
     });
     await screen.findByText('cases:screening_review.screening_state.case_closed');
     expect(screen.queryByText('cases:screening_review.screening_state.closure_pending')).toBeNull();
-    await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-    await screen.findByText('cases:screening_review.empty.all_reviewed.description');
   });
 
   it('keeps a closed case in All after its last hit is decided', async () => {
