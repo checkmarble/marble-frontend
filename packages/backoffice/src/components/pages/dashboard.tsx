@@ -1,210 +1,258 @@
 import { makeQueryErrorComponent } from '@bo/components/common/ErrorComponent';
 import { SuspenseQuery } from '@bo/components/core/SuspenseQuery';
 import { CreateOrganizationPanel } from '@bo/components/organisms/CreateOrganizationPanel';
-import { listOrganizationsQueryOptions } from '@bo/data/organization';
-import { useRouter } from '@tanstack/react-router';
-import { type ReactNode, useState } from 'react';
-import { Button, Command, CommandEmpty, CommandInput, CommandItem, CommandList, Kbd, Typo } from 'ui-design-system';
+import {
+  groupMembersByOrganization,
+  type MembersByOrganization,
+} from '@bo/components/organisms/TenantUsersPanel/tenant-users';
+import {
+  listOrganizationsQueryOptions,
+  ORGANIZATION_ENVIRONMENT_LABELS,
+  ORGANIZATION_ENVIRONMENT_TAG_COLORS,
+} from '@bo/data/organization';
+import { listUsersQueryOptions } from '@bo/data/users';
+import { useQuery } from '@tanstack/react-query';
+import { Link, useRouter } from '@tanstack/react-router';
+import type { OrganizationDto } from 'marble-api';
+import { type ReactNode, useMemo, useState } from 'react';
+import { Button, cn, Input, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const ErrorComponent = makeQueryErrorComponent(<span>Something went wrong while fetching organizations</span>);
+const OrganizationsError = makeQueryErrorComponent(
+  <span className="text-grey-secondary text-s">Could not load organizations.</span>,
+);
+
+// Header and rows are subgrids of the table, so the `auto` columns line up across rows.
+const ORGANIZATION_TABLE_COLUMNS = 'grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-x-xl';
+const ORGANIZATION_TABLE_ROW = 'col-span-full grid grid-cols-subgrid';
 
 export function DashboardPage() {
   const [isCreatingOrg, setIsCreatingOrg] = useState(false);
   const openCreate = () => setIsCreatingOrg(true);
 
   return (
-    <>
+    <div className="flex flex-col gap-lg pb-xl">
+      <div className="flex flex-wrap items-end justify-between gap-md">
+        <div className="flex max-w-2xl flex-col gap-xs">
+          <Typo variant="title1">Organizations</Typo>
+          <p className="text-grey-secondary text-s">Jump to an organization or provision a new one.</p>
+        </div>
+        <Button variant="primary" onClick={openCreate}>
+          <Icon icon="plus" className="size-4" />
+          Create organization
+        </Button>
+      </div>
+
       <SuspenseQuery
         query={listOrganizationsQueryOptions()}
-        fallback={
-          <LaunchpadColumn>
-            <LaunchpadHeader onCreate={openCreate} />
-            <LaunchpadSkeleton />
-          </LaunchpadColumn>
-        }
-        errorComponent={ErrorComponent}
+        fallback={<OrganizationsSkeleton />}
+        errorComponent={OrganizationsError}
       >
-        {(organizations) =>
-          organizations.length === 0 ? (
-            <div className="animate-launchpad-rise flex min-h-[70vh] items-center justify-center">
-              <EmptyState onCreate={openCreate} />
-            </div>
-          ) : (
-            <LaunchpadColumn>
-              <LaunchpadHeader onCreate={openCreate} />
-              <OrganizationLauncher organizations={organizations} onCreate={openCreate} />
-            </LaunchpadColumn>
-          )
-        }
+        {(organizations) => <OrganizationsContent organizations={organizations} onCreate={openCreate} />}
       </SuspenseQuery>
 
       <CreateOrganizationPanel open={isCreatingOrg} onOpenChange={setIsCreatingOrg} />
-    </>
-  );
-}
-
-function LaunchpadColumn({ children }: { children: ReactNode }) {
-  return <div className="animate-launchpad-rise mx-auto flex w-full max-w-3xl flex-col gap-lg py-xl">{children}</div>;
-}
-
-function LaunchpadHeader({ onCreate }: { onCreate: () => void }) {
-  return (
-    <header className="flex items-end justify-between gap-lg">
-      <div className="flex flex-col gap-xs">
-        <Typo variant="title1">Organizations</Typo>
-        <span className="text-m text-grey-secondary">Jump to an organization or provision a new one.</span>
-      </div>
-      <Button variant="primary" size="large" onClick={onCreate}>
-        <Icon icon="plus" className="size-5" />
-        Create organization
-      </Button>
-    </header>
-  );
-}
-
-type Organization = { id: string; name: string };
-
-function OrganizationLauncher({ organizations, onCreate }: { organizations: Organization[]; onCreate: () => void }) {
-  const router = useRouter();
-  const [query, setQuery] = useState('');
-
-  const openOrganization = (orgId: string) => {
-    router.navigate({ to: '/organizations/$orgId', params: { orgId } });
-  };
-
-  const sorted = [...organizations].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-  const hasQuery = query.trim().length > 0;
-
-  return (
-    <Command
-      loop
-      className="rounded-xl border-grey-border bg-surface-card p-0 shadow-[0px_8px_24px_-8px_rgba(0,0,0,0.12)]"
-    >
-      <div className="flex items-center gap-sm border-b border-grey-border px-lg">
-        <Icon icon="search" className="size-5 shrink-0 text-grey-secondary" />
-        <CommandInput
-          autoFocus
-          value={query}
-          onValueChange={setQuery}
-          placeholder="Search organizations by name or ID…"
-          className="text-h1 h-14 w-full"
-        />
-        {query.length > 0 ? (
-          <button
-            type="button"
-            onClick={() => setQuery('')}
-            className="text-xs text-grey-secondary transition-colors hover:text-grey-primary"
-          >
-            Clear
-          </button>
-        ) : null}
-      </div>
-
-      <CommandList className="max-h-105 p-xs">
-        {hasQuery ? (
-          <CommandEmpty className="w-full">
-            <div className="flex w-full flex-col items-center gap-sm px-md py-xl text-center">
-              <span className="text-s text-grey-primary">No organization matches your search.</span>
-              <Button variant="secondary" size="medium" onClick={onCreate}>
-                <Icon icon="plus" className="size-4" />
-                Create “{query.trim()}”
-              </Button>
-            </div>
-          </CommandEmpty>
-        ) : null}
-
-        {sorted.map((organization) => (
-          <CommandItem
-            key={organization.id}
-            value={`${organization.name} ${organization.id}`}
-            onSelect={() => openOrganization(organization.id)}
-            className="group gap-md rounded-lg px-md py-sm data-[selected=true]:bg-purple-background-light"
-          >
-            <span
-              aria-hidden
-              className="grid size-9 shrink-0 place-content-center rounded-md bg-purple-background text-s font-semibold text-purple-primary"
-            >
-              {organization.name.charAt(0).toUpperCase()}
-            </span>
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate text-s font-medium text-grey-primary">{organization.name}</span>
-              <span className="truncate font-mono text-xs text-grey-secondary" title={organization.id}>
-                {organization.id}
-              </span>
-            </span>
-            <Icon
-              icon="arrow-right"
-              className="size-5 shrink-0 -translate-x-1 text-purple-primary opacity-0 transition-all group-data-[selected=true]:translate-x-0 group-data-[selected=true]:opacity-100"
-            />
-          </CommandItem>
-        ))}
-      </CommandList>
-
-      <div className="flex items-center justify-between border-t border-grey-border px-lg py-sm">
-        <div className="flex items-center gap-md text-xs text-grey-secondary">
-          <span className="flex items-center gap-xs">
-            <Kbd className="text-xs px-xs">↑</Kbd>
-            <Kbd className="text-xs px-xs">↓</Kbd>
-            to navigate
-          </span>
-          <span className="flex items-center gap-xs">
-            <Kbd className="text-xs px-xs">↵</Kbd>
-            to open
-          </span>
-        </div>
-        <span className="text-xs text-grey-secondary">
-          {organizations.length} {organizations.length === 1 ? 'organization' : 'organizations'}
-        </span>
-      </div>
-    </Command>
-  );
-}
-
-function EmptyState({ onCreate }: { onCreate: () => void }) {
-  return (
-    <div className="flex w-full max-w-md flex-col items-center gap-md rounded-xl border border-dashed border-grey-border bg-surface-card px-lg py-3xl text-center">
-      <span
-        aria-hidden
-        className="grid size-14 place-content-center rounded-xl bg-purple-background text-purple-primary"
-      >
-        <Icon icon="plus" className="size-7" />
-      </span>
-      <div className="flex flex-col gap-xs">
-        <Typo variant="title2">No organizations yet</Typo>
-        <span className="text-m text-grey-secondary">Provision your first customer organization to get started.</span>
-      </div>
-      <Button variant="primary" size="large" onClick={onCreate} className="mt-sm">
-        <Icon icon="plus" className="size-5" />
-        Create organization
-      </Button>
     </div>
   );
 }
 
-function LaunchpadSkeleton() {
+function OrganizationsContent({ organizations, onCreate }: { organizations: OrganizationDto[]; onCreate: () => void }) {
+  const router = useRouter();
+  const usersQuery = useQuery(listUsersQueryOptions());
+  const [search, setSearch] = useState('');
+
+  const membersByOrganization = useMemo(
+    () => (usersQuery.data ? groupMembersByOrganization(usersQuery.data) : null),
+    [usersQuery.data],
+  );
+
+  const filteredOrganizations = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    const sorted = [...organizations].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    if (!term) return sorted;
+
+    return sorted.filter(
+      (organization) => organization.name.toLowerCase().includes(term) || organization.id.includes(term),
+    );
+  }, [organizations, search]);
+
+  if (organizations.length === 0) {
+    return (
+      <EmptyState title="No organizations yet" body="Provision your first customer organization to get started.">
+        <Button variant="primary" onClick={onCreate}>
+          <Icon icon="plus" className="size-4" />
+          Create organization
+        </Button>
+      </EmptyState>
+    );
+  }
+
+  const openFirstMatch = () => {
+    const [firstMatch] = filteredOrganizations;
+    if (!firstMatch) return;
+    router.navigate({ to: '/organizations/$orgId', params: { orgId: firstMatch.id } });
+  };
+
   return (
-    <div className="overflow-hidden rounded-xl border border-grey-border bg-surface-card">
-      <div className="flex items-center gap-sm border-b border-grey-border px-lg">
-        <Icon icon="search" className="size-5 shrink-0 text-grey-disabled" />
-        <div className="h-14 flex-1" />
+    <div className="flex flex-col gap-md">
+      <div className="flex flex-wrap items-center gap-md">
+        <div className="w-100 max-w-full">
+          <Input
+            autoFocus
+            startAdornment="search"
+            endAdornment={search ? 'cross' : undefined}
+            onEndAdornmentClick={() => setSearch('')}
+            placeholder="Search by name or ID"
+            value={search}
+            onChange={(event) => setSearch(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && search.trim()) openFirstMatch();
+            }}
+            aria-label="Search organizations"
+          />
+        </div>
+        <span className="text-grey-secondary text-s">
+          {organizations.length} {organizations.length === 1 ? 'organization' : 'organizations'}
+        </span>
       </div>
-      <div className="flex flex-col gap-xs p-xs">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="flex items-center gap-md rounded-lg px-md py-sm">
-            <div className="size-9 shrink-0 animate-pulse rounded-md bg-grey-background-light" />
-            <div className="flex flex-1 flex-col gap-xs">
-              <div
-                className="h-3.5 animate-pulse rounded bg-grey-background-light"
-                style={{ width: `${45 + ((index * 13) % 35)}%` }}
+
+      {filteredOrganizations.length === 0 ? (
+        <EmptyState title="No matches" body={`No organization matches “${search.trim()}”.`}>
+          <Button variant="secondary" onClick={onCreate}>
+            <Icon icon="plus" className="size-4" />
+            Create organization
+          </Button>
+        </EmptyState>
+      ) : (
+        <div
+          className={cn(
+            'border-grey-border bg-surface-card overflow-hidden rounded-lg border',
+            ORGANIZATION_TABLE_COLUMNS,
+          )}
+        >
+          <div
+            className={cn(
+              'border-grey-border text-grey-secondary border-b px-md py-sm text-xs font-semibold uppercase tracking-wider',
+              ORGANIZATION_TABLE_ROW,
+            )}
+          >
+            <span>Organization</span>
+            <span>Environment</span>
+            <span>Users</span>
+            {/* `sr-only` is absolutely positioned and would not take a grid cell on its own. */}
+            <span>
+              <span className="sr-only">Open</span>
+            </span>
+          </div>
+          <ul className={cn('divide-grey-border divide-y', ORGANIZATION_TABLE_ROW)}>
+            {filteredOrganizations.map((organization) => (
+              <OrganizationRow
+                key={organization.id}
+                organization={organization}
+                membersByOrganization={membersByOrganization}
+                isUsersError={usersQuery.isError}
               />
-              <div className="h-2.5 w-1/3 animate-pulse rounded bg-grey-background-light" />
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrganizationRow({
+  organization,
+  membersByOrganization,
+  isUsersError,
+}: {
+  organization: OrganizationDto;
+  membersByOrganization: MembersByOrganization | null;
+  isUsersError: boolean;
+}) {
+  return (
+    <li className={ORGANIZATION_TABLE_ROW}>
+      <Link
+        to="/organizations/$orgId"
+        params={{ orgId: organization.id }}
+        className={cn(
+          'group items-center px-md py-md outline-hidden hover:bg-surface-row-hover focus-visible:bg-surface-row-hover',
+          ORGANIZATION_TABLE_ROW,
+        )}
+      >
+        <span className="flex min-w-0 flex-col gap-2xs">
+          <span className="text-grey-primary truncate text-s font-medium">{organization.name}</span>
+          <span className="text-grey-placeholder truncate font-mono text-2xs">{organization.id}</span>
+        </span>
+        <span>
+          <Tag color={ORGANIZATION_ENVIRONMENT_TAG_COLORS[organization.environment]} size="small">
+            {ORGANIZATION_ENVIRONMENT_LABELS[organization.environment]}
+          </Tag>
+        </span>
+        <UsersCount
+          organizationId={organization.id}
+          membersByOrganization={membersByOrganization}
+          isError={isUsersError}
+        />
+        <Icon
+          icon="arrow-right"
+          className="text-grey-placeholder group-hover:text-purple-primary group-focus-visible:text-purple-primary size-5"
+        />
+      </Link>
+    </li>
+  );
+}
+
+function UsersCount({
+  organizationId,
+  membersByOrganization,
+  isError,
+}: {
+  organizationId: string;
+  membersByOrganization: MembersByOrganization | null;
+  isError: boolean;
+}) {
+  if (isError) {
+    return <span className="text-grey-placeholder text-s">—</span>;
+  }
+  if (!membersByOrganization) {
+    return <span className="bg-grey-background-light h-5 w-10 animate-pulse rounded" />;
+  }
+
+  const count = membersByOrganization.get(organizationId)?.length ?? 0;
+
+  return (
+    <span className="text-grey-primary flex items-center gap-xs text-s">
+      <Icon icon="users" className="text-grey-secondary size-4" />
+      {count}
+    </span>
+  );
+}
+
+function EmptyState({ title, body, children }: { title: string; body: string; children?: ReactNode }) {
+  return (
+    <div className="border-grey-border bg-surface-card flex flex-col items-center gap-xs rounded-lg border border-dashed p-2xl text-center">
+      <Typo variant="subtitle1">{title}</Typo>
+      <p className="text-grey-secondary text-s">{body}</p>
+      {children ? <div className="pt-sm">{children}</div> : null}
+    </div>
+  );
+}
+
+function OrganizationsSkeleton() {
+  return (
+    <div className="flex flex-col gap-md">
+      <div className="bg-grey-background-light h-10 w-100 max-w-full animate-pulse rounded-md" />
+      <div className="border-grey-border bg-surface-card divide-grey-border flex flex-col divide-y overflow-hidden rounded-lg border">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index} className="flex items-center gap-md p-md">
+            <div className="flex flex-1 flex-col gap-xs">
+              <div className="bg-grey-background-light h-3.5 w-48 animate-pulse rounded" />
+              <div className="bg-grey-background-light h-2.5 w-72 animate-pulse rounded" />
             </div>
+            <div className="bg-grey-background-light h-6 w-20 animate-pulse rounded-full" />
+            <div className="bg-grey-background-light h-5 w-10 animate-pulse rounded" />
           </div>
         ))}
-      </div>
-      <div className="border-t border-grey-border px-lg py-sm">
-        <div className="h-3 w-24 animate-pulse rounded bg-grey-background-light" />
       </div>
     </div>
   );

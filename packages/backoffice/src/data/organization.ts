@@ -19,6 +19,19 @@ import {
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import type { OrganizationEnvironmentDto } from 'marble-api';
+import type { TagProps } from 'ui-design-system';
+
+export const ORGANIZATION_ENVIRONMENT_LABELS: Record<OrganizationEnvironmentDto, string> = {
+  production: 'Production',
+  staging: 'Staging',
+  demo: 'Demo',
+};
+
+export const ORGANIZATION_ENVIRONMENT_TAG_COLORS: Record<OrganizationEnvironmentDto, TagProps['color']> = {
+  production: 'green',
+  staging: 'orange',
+  demo: 'blue',
+};
 
 // ------- Queries -------
 
