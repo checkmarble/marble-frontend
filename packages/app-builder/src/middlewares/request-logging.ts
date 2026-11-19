@@ -51,7 +51,7 @@ export const requestLoggingMiddleware = createMiddleware().server(async ({ next 
   }
 
   const requestId = resolveRequestId(request);
-  const ip = request.headers.get('x-real-ip');
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
 
   const child = logger.child({ request_id: requestId });
   const start = performance.now();
