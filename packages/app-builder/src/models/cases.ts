@@ -160,6 +160,8 @@ export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'entity_annotated',
   'entity_added',
   'entity_removed',
+  'screening_match_reviewed',
+  'sanction_check_reviewed',
 ]);
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -282,6 +284,18 @@ export interface CaseEntityRemovedEvent extends CaseEventBase<'entity_removed'> 
   objectId?: string;
 }
 
+export interface ScreeningMatchReviewedEvent extends CaseEventBase<'screening_match_reviewed'> {
+  userId?: string | null;
+  status: 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
+  matchId: string;
+}
+
+/** A screening reached its final status, for a decision or a continuous screening. */
+export interface ScreeningReviewedEvent extends CaseEventBase<'sanction_check_reviewed'> {
+  userId?: string | null;
+  status: 'confirmed_hit' | 'no_hit';
+}
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -303,7 +317,9 @@ export type CaseEvent =
   | SarFileUploadedEvent
   | EntityAnnotatedEvent
   | CaseEntityAddedEvent
-  | CaseEntityRemovedEvent;
+  | CaseEntityRemovedEvent
+  | ScreeningMatchReviewedEvent
+  | ScreeningReviewedEvent;
 
 export async function adaptCaseEventDto(
   caseEventDto: CaseEventDto,
@@ -444,6 +460,19 @@ export async function adaptCaseEventDto(
       userId: dto.user_id,
       entityId: dto.resource_id,
       ...parseCaseEntityRef(dto.previous_value),
+    }))
+    .with({ event_type: 'screening_match_reviewed' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      status: dto.new_value,
+      matchId: dto.resource_id,
+    }))
+    .with({ event_type: 'sanction_check_reviewed' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      status: dto.new_value,
     }))
     .with({ event_type: 'entity_annotated' }, async (dto) => {
       const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);

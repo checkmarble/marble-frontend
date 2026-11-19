@@ -15,6 +15,10 @@ import { SarCreatedDetail } from '@app-builder/components/Cases/Events/SarCreate
 import { SarDeletedDetail } from '@app-builder/components/Cases/Events/SarDeleted';
 import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarFileUploaded';
 import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
+import {
+  ScreeningMatchReviewedDetail,
+  ScreeningReviewedDetail,
+} from '@app-builder/components/Cases/Events/ScreeningReviewed';
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
 import { EventTimeSuffixContext } from '@app-builder/components/Cases/Events/Time';
@@ -60,6 +64,8 @@ export function CaseEventDetail({
     .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
     .with({ eventType: 'entity_added' }, (e) => <CaseEntityAddedDetail event={e} />)
     .with({ eventType: 'entity_removed' }, (e) => <CaseEntityRemovedDetail event={e} />)
+    .with({ eventType: 'screening_match_reviewed' }, (e) => <ScreeningMatchReviewedDetail event={e} />)
+    .with({ eventType: 'sanction_check_reviewed' }, (e) => <ScreeningReviewedDetail event={e} />)
     .exhaustive();
 
   return (

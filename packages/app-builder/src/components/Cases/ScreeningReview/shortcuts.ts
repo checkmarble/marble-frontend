@@ -11,6 +11,8 @@ export interface ScreeningReviewShortcut {
   action: () => void;
   enabled?: boolean;
   allowInModal?: boolean;
+  /** Leave the key to a focused button or link, such as Enter on Cancel. Hit cards don't count. */
+  yieldToControls?: boolean;
 }
 
 type ShortcutHotkey = Extract<RegisterableHotkey, string | { key: string }>;
@@ -75,6 +77,13 @@ export function useScreeningReviewShortcuts(shortcuts: readonly ScreeningReviewS
         target.closest(
           'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"], [role="listbox"]',
         )
+      )
+        return;
+      if (
+        shortcut.yieldToControls &&
+        target instanceof Element &&
+        target.closest('button, a[href], [role="button"]') &&
+        !target.closest('[data-review-hit-card]')
       )
         return;
       if (

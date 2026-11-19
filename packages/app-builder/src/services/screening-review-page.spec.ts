@@ -17,6 +17,7 @@ describe('assigned screening review page reader', () => {
         .fn<CaseRepository['listCases']>()
         .mockResolvedValueOnce({ items: [reviewCase('decision', [], { type: 'decision' })], hasNextPage: true })
         .mockResolvedValueOnce({ items: [detail], hasNextPage: false }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(detail),
     };
     const result = await readScreeningReviewPage(repository, 'analyst', 50, null, 'selected-inbox');
@@ -36,6 +37,7 @@ describe('assigned screening review page reader', () => {
     const second = reviewCase('second', undefined, { inboxId: 'second-inbox' });
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [first, second], hasNextPage: false }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi
         .fn<CaseRepository['getCase']>()
         .mockImplementation(async ({ caseId }) => (caseId === first.id ? first : second)),
@@ -50,6 +52,7 @@ describe('assigned screening review page reader', () => {
     const result = await readScreeningReviewPage(
       {
         listCases: async () => ({ items: [summary], hasNextPage: false }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: async () => ({ ...summary, inboxId: 'other-inbox' }),
       },
       'analyst',
@@ -69,6 +72,7 @@ describe('assigned screening review page reader', () => {
           .fn<CaseRepository['listCases']>()
           .mockResolvedValueOnce({ items: [reviewCase('decision', [], { type: 'decision' })], hasNextPage: true })
           .mockResolvedValueOnce({ items: [detail], hasNextPage: false }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(detail),
       };
       const result = await readScreeningReviewPage(repository, 'analyst', 50, null);
@@ -88,19 +92,48 @@ describe('assigned screening review page reader', () => {
   );
 
   it('continues past monitoring cases with no pending hits', async () => {
-    const reviewed = reviewCase('reviewed', [{ ...objectReviewScreening(), status: 'no_hit' }]);
+    const reviewed = reviewCase('reviewed', [{ ...objectReviewScreening(), status: 'confirmed_hit' }]);
     const pending = reviewCase('pending');
     const repository = {
       listCases: vi
         .fn<CaseRepository['listCases']>()
         .mockResolvedValueOnce({ items: [reviewed], hasNextPage: true })
         .mockResolvedValueOnce({ items: [pending], hasNextPage: false }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi
         .fn<CaseRepository['getCase']>()
         .mockImplementation(async ({ caseId }) => (caseId === reviewed.id ? reviewed : pending)),
     };
     expect((await readScreeningReviewPage(repository, 'analyst', 50, null)).items).toHaveLength(4);
     expect(repository.listCases).toHaveBeenCalledTimes(2);
+  });
+
+  it('retries a failed closure, leaves the case out, and reports only the cases it closed', async () => {
+    const noHit = { ...objectReviewScreening(), status: 'no_hit' as const };
+    const closes = reviewCase('closes', [noHit]);
+    const staysOpen = reviewCase('stays-open', [noHit]);
+    const repository = {
+      listCases: vi
+        .fn<CaseRepository['listCases']>()
+        .mockResolvedValue({ items: [closes, staysOpen], hasNextPage: false }),
+      updateCase: vi.fn<CaseRepository['updateCase']>().mockImplementation(async ({ caseId }) => {
+        if (caseId === staysOpen.id) throw new Error('closure failed');
+        return closes;
+      }),
+      getCase: vi
+        .fn<CaseRepository['getCase']>()
+        .mockImplementation(async ({ caseId }) => (caseId === closes.id ? closes : staysOpen)),
+    };
+    expect(await readScreeningReviewPage(repository, 'analyst', 50, null)).toEqual({
+      items: [],
+      nextCursor: null,
+      failed: false,
+      closedCaseIds: [closes.id],
+    });
+    expect(repository.updateCase).toHaveBeenCalledWith({
+      caseId: closes.id,
+      body: { status: 'closed', outcome: 'false_positive' },
+    });
   });
 
   it('stops after the scan cap and returns a cursor to continue from', async () => {
@@ -115,6 +148,7 @@ describe('assigned screening review page reader', () => {
       getCase: vi
         .fn<CaseRepository['getCase']>()
         .mockImplementation(async ({ caseId }) => reviewed.find((item) => item.id === caseId)!),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
     };
     const result = await readScreeningReviewPage(repository, 'analyst', 50, null);
     expect(result.items.filter(isPendingReviewItem)).toEqual([]);
@@ -128,6 +162,7 @@ describe('assigned screening review page reader', () => {
     let maximum = 0;
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: cases, hasNextPage: true }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockImplementation(async ({ caseId }) => {
         concurrent += 1;
         maximum = Math.max(maximum, concurrent);
@@ -153,6 +188,7 @@ describe('assigned screening review page reader', () => {
     const result = await readScreeningReviewPage(
       {
         listCases: async () => ({ items: [summary], hasNextPage: false }),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: async () => ({ ...summary, ...overrides }),
       },
       'analyst',
@@ -168,6 +204,7 @@ describe('assigned screening review page reader', () => {
     let fail = true;
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [first, second], hasNextPage: false }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockImplementation(async ({ caseId }) => {
         if (fail && caseId === second.id) throw new Error('temporary');
         return caseId === first.id ? first : second;
@@ -191,17 +228,20 @@ describe('assigned screening review page reader', () => {
         .fn<CaseRepository['listCases']>()
         .mockRejectedValueOnce(new Error('offline'))
         .mockResolvedValueOnce({ items: [] satisfies Case[], hasNextPage: false }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>(),
     };
     expect(await readScreeningReviewPage(repository, 'analyst', 50, null)).toEqual({
       items: [],
       nextCursor: null,
       failed: true,
+      closedCaseIds: [],
     });
     expect(await readScreeningReviewPage(repository, 'analyst', 50, null)).toEqual({
       items: [],
       nextCursor: null,
       failed: false,
+      closedCaseIds: [],
     });
   });
 });

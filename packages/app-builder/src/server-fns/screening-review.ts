@@ -1,6 +1,7 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import { reviewScreeningReviewMatch } from '@app-builder/services/screening-review-decision';
 import { readScreeningReviewPage } from '@app-builder/services/screening-review-page';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -19,4 +20,21 @@ export const listScreeningReviewPageFn = createServerFn({ method: 'POST' })
     const { cases, user, entitlements } = context.authInfo;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
     return readScreeningReviewPage(cases, user.actorIdentity.userId, data.limit, data.cursor, data.inboxId);
+  });
+
+export const reviewScreeningReviewMatchFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      caseId: z.uuid(),
+      screeningId: z.uuid(),
+      matchId: z.uuid(),
+      status: z.enum(['confirmed_hit', 'no_hit']),
+      comment: z.string().max(5000).optional(),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
+    return reviewScreeningReviewMatch({ cases, continuousScreening }, user.actorIdentity.userId, data);
   });

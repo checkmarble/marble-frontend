@@ -9,6 +9,7 @@ type FilterInboxSelectorProps = {
   selectedInbox: PartialInbox;
   onSelectInbox: (inbox: PartialInbox) => void;
   variant?: 'primary' | 'secondary';
+  disabled?: boolean;
 };
 
 export const FilterInboxSelector = ({
@@ -16,6 +17,7 @@ export const FilterInboxSelector = ({
   selectedInbox,
   onSelectInbox,
   variant = 'primary',
+  disabled,
 }: FilterInboxSelectorProps) => {
   const { t } = useTranslation(['cases']);
   const [open, setOpen] = useState(false);
@@ -23,7 +25,7 @@ export const FilterInboxSelector = ({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant={variant} size="medium" className={variant === 'secondary' ? 'w-full' : ''}>
+        <Button variant={variant} size="medium" disabled={disabled} className={variant === 'secondary' ? 'w-full' : ''}>
           <span className={variant === 'secondary' ? 'flex-1' : ''}>
             {t('cases:case.inbox')}: {selectedInbox.name}
           </span>
