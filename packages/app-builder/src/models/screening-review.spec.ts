@@ -4,6 +4,7 @@ import { adaptContinuousScreening } from './continuous-screening';
 import {
   adjacentScreeningReviewItem,
   applyScreeningReviewSession,
+  awaitsMoreMatches,
   buildScreeningReviewItems,
   compareScreeningReviewFields,
   countScreeningReviewFilters,
@@ -952,5 +953,6 @@ describe('screening review filters', () => {
       reviewCase('closed-partial', [{ ...objectReviewScreening(), partial: true }], { status: 'closed' }),
     ]);
     expect(screeningReviewScreeningState(partial, partial[0]!, emptyScreeningReviewSession)).toBe('in_review');
+    expect(awaitsMoreMatches(partial[0]!)).toBe(false);
   });
 });
