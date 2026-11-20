@@ -15,6 +15,7 @@ import {
   type ColumnFilterValue,
   getColumnFilterKind,
   getEnumFilterField,
+  getFilterCatalog,
   getMaxEnumPicks,
   getNumberFilterScale,
   isColumnFilterActive,
@@ -80,8 +81,9 @@ export function ColumnFilterPopover({
                 <EnumValueMenu
                   field={getEnumFilterField(field)}
                   multiple
-                  // Stored values are not always in the catalog (e.g. "UK" in a country column): they stay searchable.
-                  allowCustomValues
+                  // A country or currency column may store values outside the catalog (e.g. "UK"): they stay searchable.
+                  // Other closed lists (colour-keyed enums) hold exactly their values.
+                  allowCustomValues={getFilterCatalog(field) !== undefined}
                   maxSelected={maxPicks}
                   selectedValues={selectedValues}
                   onChange={(values) => commit(toEnumFilter(field, values))}
