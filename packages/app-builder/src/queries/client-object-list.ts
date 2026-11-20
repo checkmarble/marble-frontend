@@ -2,8 +2,9 @@ import { isRequestTimeoutError } from '@app-builder/models';
 import { type ClientDataListResponse } from '@app-builder/models/data-model';
 import { type ListObjectsInput } from '@app-builder/schemas/data';
 import { listObjectsFn } from '@app-builder/server-fns/data';
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { type InfiniteData, keepPreviousData, type QueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+import { type GroupedAnnotations } from 'marble-api';
 
 export type DataTableObjectListResource = {
   clientDataListResponse: ClientDataListResponse;
@@ -40,4 +41,46 @@ export function useClientObjectListQuery(params: UseClientObjectListQueryParams)
     refetchOnWindowFocus: false,
     enabled: !!params.tableName,
   });
+}
+
+/**
+ * Writes the fresh annotations of one object into its rows in every cached list of its table.
+ * Refetching the list instead would reload every loaded page, one after the other, before the change shows.
+ */
+export async function setClientObjectListAnnotations(
+  queryClient: QueryClient,
+  tableName: string,
+  objectId: string,
+  annotations: GroupedAnnotations,
+) {
+  const lists = { queryKey: ['resources', 'data-list-object', tableName] };
+  const write = () =>
+    queryClient.setQueriesData<InfiniteData<DataTableObjectListResource, string | number | null>>(
+      lists,
+      (list) =>
+        list && {
+          ...list,
+          pages: list.pages.map(({ clientDataListResponse }) => ({
+            clientDataListResponse: {
+              ...clientDataListResponse,
+              data: clientDataListResponse.data.map((row) =>
+                row.data.object_id === objectId ? { ...row, annotations } : row,
+              ),
+            },
+          })),
+        },
+    );
+
+  write();
+  // A list fetch already in flight (Load more, new filters) stores the pages it read before this write: write again
+  // once the fetches are over.
+  if (queryClient.isFetching(lists) === 0) return;
+  await new Promise<void>((resolve) => {
+    const unsubscribe = queryClient.getQueryCache().subscribe(() => {
+      if (queryClient.isFetching(lists) > 0) return;
+      unsubscribe();
+      resolve();
+    });
+  });
+  write();
 }

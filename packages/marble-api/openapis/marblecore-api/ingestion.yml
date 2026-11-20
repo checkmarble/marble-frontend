@@ -314,7 +314,7 @@ components:
           maxItems: 100
           description:
             A single value for every operator except 'in'. Numbers for number fields, strings otherwise
-            (RFC 3339 for timestamps).
+            (RFC 3339 for timestamps, 'true' or 'false' for booleans).
           items:
             oneOf:
               - type: string

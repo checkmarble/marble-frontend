@@ -290,6 +290,7 @@
   "data_explorer.column_settings.title": "إعدادات الأعمدة",
   "data_explorer.filters.filter_column": "تصفية العمود",
   "data_explorer.filters.max": "الحد الأقصى",
+  "data_explorer.filters.max_values": "{{count}} قيمة كحد أقصى",
   "data_explorer.filters.min": "الحد الأدنى",
   "data_explorer.filters.no_match": "لا توجد بيانات تطابق هذه الفلاتر.",
   "data_explorer.filters.text_placeholder": "يحتوي على…",

@@ -36,6 +36,11 @@ export function resolveCountry(value: string) {
   return countries.find((country) => (code.length === 3 ? country.isoAlpha3 : country.isoAlpha2) === code);
 }
 
+/** Accepts an ISO 4217 code in any case, or a numeric code. */
+export function resolveCurrency(value: string) {
+  return cc.code(value.toUpperCase()) ?? cc.number(value);
+}
+
 function normalizeMcc(value: string) {
   return /^\d{1,4}$/.test(value) ? value.padStart(4, '0') : value;
 }
@@ -128,7 +133,7 @@ export function resolveEnumDisplay(field: EnumField, value: EnumValue, language:
       : { label: raw, neutral: true };
   }
   if (field.semanticSubType === 'currency') {
-    const currency = cc.code(raw.toUpperCase()) ?? cc.number(raw);
+    const currency = resolveCurrency(raw);
     if (!currency) return { label: raw };
     const format = field.currencyCodeFormat ?? (/^\d+$/.test(raw) ? 'Number' : 'ISO 4217');
     const code = format === 'Number' ? currency.number : currency.code;
