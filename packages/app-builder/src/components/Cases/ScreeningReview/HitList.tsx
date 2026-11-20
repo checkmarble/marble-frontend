@@ -14,7 +14,7 @@ import { Card, Checkbox, cn, Tag, Typo } from 'ui-design-system';
 import { DecisionTag } from './ActionDock';
 import { type BatchSelection, withoutSelected, withSelected } from './batch-selection';
 import { type MappedProperties, MatchedFieldChips, useMappedProperties } from './MatchedFieldChips';
-import { CustomerTypeTag } from './ScreeningReviewHit';
+import { CustomerTypeTag, SimilarityScore } from './ScreeningReviewHit';
 import { ShortcutKeys } from './ShortcutHelp';
 
 type SelectionUpdate = (update: (current: BatchSelection) => BatchSelection) => void;
@@ -29,16 +29,17 @@ export function HitList({
   expanded,
   onToggleNoHitStack,
   onActivate,
+  footer,
 }: {
   groups: readonly ScreeningReviewGroup[];
   activeId: string | undefined;
   ready: boolean;
   selection: BatchSelection;
   onSelectionChange: SelectionUpdate;
-  /** The groups whose No hit hits show one card each. */
   expanded: ReadonlySet<string>;
   onToggleNoHitStack: (groupKey: string) => void;
   onActivate: (item: ScreeningReviewItem) => void;
+  footer?: React.ReactNode;
 }) {
   const { t } = useTranslation(['cases']);
   const mappedProperties = useMappedProperties();
@@ -114,6 +115,7 @@ export function HitList({
           </CaseGroup>
         ))}
       </ul>
+      {footer}
     </nav>
   );
 }
@@ -140,6 +142,8 @@ function CaseGroup({
   const pendingIds = group.items.filter(isPendingReviewItem).map((item) => item.id);
   const selectedCount = pendingIds.filter((id) => selection.has(id)).length;
   const hasSelected = selectedCount > 0;
+  // One hit: its own checkbox selects it, and the counter would only say 1 / 1, or 1 / 1+.
+  const single = group.total === 1;
   const selectionLabel = t(
     hasSelected
       ? 'cases:screening_review.batch.deselect_customer_hits'
@@ -161,7 +165,7 @@ function CaseGroup({
         </Typo>
         <div className="flex min-w-0 items-center gap-xs">
           <CustomerTypeTag customer={group.customer} />
-          {pendingIds.length > 0 ? (
+          {pendingIds.length > 1 ? (
             <label
               htmlFor={selectionId}
               className={cn(
@@ -191,19 +195,23 @@ function CaseGroup({
             </label>
           ) : null}
         </div>
-        <p className="flex flex-wrap items-center gap-xs text-xs text-grey-secondary">
-          <Tag
-            color="orange"
-            size="xs"
-            className="border-transparent bg-orange-background-light font-semibold text-orange-hover"
-          >
-            {group.remaining}
-          </Tag>
-          <span>{t('cases:screening_review.group_hits_to_review', { count: group.remaining })}</span>
-          <span>
-            / {group.total}
-            {group.incomplete ? '+' : ''}
-          </span>
+        <p className="flex flex-wrap items-center gap-xs text-xs text-grey-secondary empty:hidden">
+          {single ? null : (
+            <>
+              <Tag
+                color="orange"
+                size="xs"
+                className="border-transparent bg-orange-background-light font-semibold text-orange-hover"
+              >
+                {group.remaining}
+              </Tag>
+              <span>{t('cases:screening_review.group_hits_to_review', { count: group.remaining })}</span>
+              <span>
+                / {group.total}
+                {group.incomplete ? '+' : ''}
+              </span>
+            </>
+          )}
           {group.setAside > 0 ? (
             <Tag color="grey" size="xs" className="ms-auto">
               {t('cases:screening_review.set_aside', { count: group.setAside })}
@@ -326,7 +334,7 @@ function HitCard({
             {item.listRecord.caption || item.listRecord.id}
           </bdi>
           <TopicDots topics={item.topics} />
-          <bdi className="shrink-0 text-2xs text-grey-secondary">{Math.round(item.score * 100)}%</bdi>
+          <SimilarityScore score={item.score} />
           <span className="ms-auto">
             <DecisionTag status={item.status} />
           </span>

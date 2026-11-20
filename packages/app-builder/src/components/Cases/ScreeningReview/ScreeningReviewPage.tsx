@@ -44,8 +44,8 @@ import { BatchPanel, NoHitStackSummary } from './BatchSummary';
 import { emptyBatchSelection, withoutSelected, withSelected } from './batch-selection';
 import { DETAILS_PANEL_TABS, DetailsPanel, type DetailsPanelTab } from './DetailsPanel';
 import { HitList } from './HitList';
+import { LoadMoreCases } from './LoadMoreCases';
 import { useMappedProperties } from './MatchedFieldChips';
-import { PaginationFooter, type ScreeningReviewPageSize } from './PaginationFooter';
 import { openInNewTabAfter, PendingDecisionProvider } from './pending-decision';
 import { QueueFilters } from './QueueFilters';
 import { type ScreeningReviewNotice, useReviewDecisions } from './review-decisions';
@@ -59,8 +59,6 @@ export interface ScreeningReviewSearch {
   filter: ScreeningReviewFilter;
   /** Matched against case names. */
   q?: string;
-  limit: ScreeningReviewPageSize;
-  cursors: string[];
   hit?: string;
 }
 
@@ -206,8 +204,6 @@ function ReviewStream({
   const allInboxes = [{ id: MY_INBOX_ID, name: t('cases:inbox.my-inbox.link') }, ...inboxes];
   const selectedInbox = allInboxes.find((inbox) => inbox.id === search.inboxId) ?? allInboxes[0]!;
   const query = useScreeningReviewPageQuery({
-    limit: search.limit,
-    cursor: search.cursors.at(-1) ?? null,
     inboxId: selectedInbox.id,
     filter: search.filter,
     name: search.q,
@@ -224,17 +220,34 @@ function ReviewStream({
   const listId = useId();
   const [unavailable, setUnavailable] = useState(false);
   const commentRef = useRef<HTMLTextAreaElement>(null);
-  const hasMore = !!query.data?.nextCursor || !!query.data?.failed;
+  const pages = query.data?.pages;
+  // A failed read ends the stream, and Retry reads that page again.
+  const failed = !!pages?.at(-1)?.failed;
+  const serverItems = useMemo(() => {
+    // A case read again by a later page, after the queue moved, is listed once.
+    const seen = new Set<string>();
+    return (pages ?? []).flatMap((page) =>
+      page.items.filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      }),
+    );
+  }, [pages]);
+  const closedCaseIds = useMemo(() => pages?.flatMap((page) => page.closedCaseIds ?? []), [pages]);
+  const hasMore = query.hasNextPage || failed;
   const ready = !!query.data && !query.isPlaceholderData;
   // The latest search, read when a delayed write moves the cursor.
   const latestSearch = useRef(search);
   useEffect(() => {
     latestSearch.current = search;
   });
+  // The hits listed when Load more was clicked, until the next ones arrive.
+  const [loadedBeforeMore, setLoadedBeforeMore] = useState<ReadonlySet<string>>();
   const decisions = useReviewDecisions({
-    serverItems: query.data?.items ?? [],
+    serverItems,
     hasMore,
-    closedCaseIds: ready && !query.isFetching ? query.data?.closedCaseIds : undefined,
+    closedCaseIds: ready && !query.isFetching ? closedCaseIds : undefined,
     canValidate,
     onNavigate: (itemId) => onSearchChange({ ...latestSearch.current, hit: itemId }),
   });
@@ -244,10 +257,7 @@ function ReviewStream({
     () => (search.filter === 'to_review' ? session : { ...session, hiddenCases: [] }),
     [session, search.filter],
   );
-  const reviewItems = useMemo(
-    () => applyScreeningReviewSession(query.data?.items ?? [], viewSession),
-    [query.data, viewSession],
-  );
+  const reviewItems = useMemo(() => applyScreeningReviewSession(serverItems, viewSession), [serverItems, viewSession]);
   const groups = useMemo(() => {
     if (search.filter !== 'to_review') {
       return groupScreeningReviewItems(reviewItems, hasMore, (item) =>
@@ -261,35 +271,39 @@ function ReviewStream({
     ).filter((group) => !isSettledScreeningReviewGroup(group, session));
   }, [reviewItems, hasMore, session, search.filter]);
   const counts = useMemo(() => countScreeningReviewFilters(reviewItems), [reviewItems]);
-  // Counts cover this page only, and To review never reads closed cases.
+  // Counts cover the loaded hits only, and To review never reads closed cases.
   const isCountPartial = (filter: ScreeningReviewFilter) =>
-    hasMore || search.cursors.length > 0 || (search.filter === 'to_review' && filter !== 'to_review');
+    hasMore || (search.filter === 'to_review' && filter !== 'to_review');
   const items = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const active = items.find((item) => item.id === search.hit) ?? items.find(isPendingReviewItem) ?? items[0];
   const selectedItems = items.filter((item) => selection.has(item.id) && isPendingReviewItem(item));
   const batchMode = selectedItems.length > 0;
   const reviewable = !!active && isPendingReviewItem(active);
   const draftId = active?.id;
-  // The end of the queue: nothing left to decide on the first and only page.
+  // The end of the queue: nothing left to decide, and nothing left to load.
   const allReviewed =
-    ready &&
-    !hasMore &&
-    !search.cursors.length &&
-    search.filter !== 'validated' &&
-    !counts.to_review &&
-    !reviewItems.some(awaitsMoreMatches);
+    ready && !hasMore && search.filter !== 'validated' && !counts.to_review && !reviewItems.some(awaitsMoreMatches);
   const activeDraft = decisions.draftFor(draftId);
 
   useEffect(() => {
     // Wait for fresh data before declaring a bookmarked hit unavailable.
-    if (!ready || query.isFetching || query.data?.failed) return;
+    if (!ready || query.isFetching || failed) return;
     // A hit decided this visit leaves with its case or its settled group, not because it vanished.
     const hidden =
       (!!search.hit && !!session.decided[search.hit]) ||
       viewSession.hiddenCases.some((caseId) => search.hit?.startsWith(`${caseId}:`));
     if (search.hit && !hidden && !items.some((item) => item.id === search.hit)) setUnavailable(true);
     if (active?.id !== search.hit) onSearchChange({ ...search, hit: active?.id });
-  }, [ready, query.isFetching, query.data?.failed, items, active?.id, search, onSearchChange, viewSession.hiddenCases]);
+  }, [ready, query.isFetching, failed, items, active?.id, search, onSearchChange, viewSession.hiddenCases]);
+
+  useEffect(() => {
+    if (!loadedBeforeMore) return;
+    setLoadedBeforeMore(undefined);
+    // The cursor moves to the first new hit, so the list scrolls down to it rather than back up.
+    const added = items.filter((item) => !loadedBeforeMore.has(item.id));
+    const first = added.find(isPendingReviewItem) ?? added[0];
+    if (first) onSearchChange({ ...latestSearch.current, hit: first.id });
+  }, [loadedBeforeMore, items, onSearchChange]);
 
   const select = (item: ScreeningReviewItem | undefined) => {
     if (!item || !ready) return;
@@ -410,7 +424,12 @@ function ReviewStream({
     { hotkey: 'Shift+K', action: () => move(-1, true), enabled: canNavigate },
     { hotkey: 'M', action: () => changeDraft({ decision: 'confirmed_hit' }), enabled: canDecide },
     { hotkey: 'N', action: () => changeDraft({ decision: 'no_hit' }), enabled: canDecide },
-    { hotkey: 'C', action: () => commentRef.current?.focus(), enabled: canDecide || (canNavigate && batchMode) },
+    {
+      hotkey: 'C',
+      action: () => commentRef.current?.focus(),
+      // The comment waits for a decision, except in a batch, which is No hit.
+      enabled: (canDecide && !!activeDraft.decision) || (canNavigate && batchMode),
+    },
     {
       hotkey: 'Enter',
       action: batchMode ? submitBatch : submit,
@@ -492,7 +511,7 @@ function ReviewStream({
             <CasesNavigationTabs showAdminSections={canViewAdminSections} inboxId={selectedInbox.id} />
           </div>
           <ReviewNotices notice={decisions.notice} unavailable={unavailable} />
-          {query.isError || query.data?.failed ? (
+          {query.isError || failed ? (
             <div role="alert" className="flex shrink-0 items-center gap-md rounded border border-grey-border p-md">
               <p>{t('cases:screening_review.load_error')}</p>
               <Button variant="secondary" disabled={query.isFetching} onClick={() => void query.refetch()}>
@@ -531,7 +550,7 @@ function ReviewStream({
                         inboxes={allInboxes}
                         selectedInbox={selectedInbox}
                         onSelectInbox={(inbox) => {
-                          if (inbox.id !== selectedInbox.id) changeSearch({ inboxId: inbox.id, cursors: [] });
+                          if (inbox.id !== selectedInbox.id) changeSearch({ inboxId: inbox.id });
                         }}
                         variant="secondary"
                       />
@@ -553,11 +572,11 @@ function ReviewStream({
                     counts={counts}
                     isCountPartial={isCountPartial}
                     query={search.q}
-                    onFilterChange={(filter) => changeSearch({ filter, cursors: [] })}
-                    onQueryChange={(q) => changeSearch({ q, cursors: [] })}
+                    onFilterChange={(filter) => changeSearch({ filter })}
+                    onQueryChange={(q) => changeSearch({ q })}
                   />
                   {allReviewed && items.length ? (
-                    <AllReviewedNotice onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })} />
+                    <AllReviewedNotice onShowValidated={() => changeSearch({ filter: 'validated' })} />
                   ) : null}
                 </div>
                 <div className="relative min-h-0 flex-1">
@@ -570,6 +589,19 @@ function ReviewStream({
                     expanded={expanded}
                     onToggleNoHitStack={toggleNoHitStack}
                     onActivate={select}
+                    footer={
+                      ready && query.hasNextPage ? (
+                        <LoadMoreCases
+                          loading={query.isFetchingNextPage}
+                          // A refetch reads every loaded page again, and Load more would cancel it.
+                          disabled={query.isFetching}
+                          onLoadMore={() => {
+                            const loaded = new Set(items.map((item) => item.id));
+                            void query.fetchNextPage().then(() => setLoadedBeforeMore(loaded));
+                          }}
+                        />
+                      ) : null
+                    }
                   />
                 </div>
                 <ShortcutHint onOpenHelp={() => setHelpOpen(true)} />
@@ -648,11 +680,11 @@ function ReviewStream({
                   />
                 )}
               </div>
-            ) : ready && !query.data?.failed && !items.length ? (
+            ) : ready && !failed && !items.length ? (
               <EmptyQueue
                 inboxId={selectedInbox.id}
                 state={
-                  // A request scans a bounded number of cases, so a page can come back empty with more to read.
+                  // A request scans a bounded number of cases, so it can come back empty with more to read.
                   hasMore
                     ? 'page_empty'
                     : search.q
@@ -663,8 +695,8 @@ function ReviewStream({
                           ? 'all_reviewed'
                           : 'empty'
                 }
-                onClearSearch={() => changeSearch({ q: undefined, cursors: [] })}
-                onShowValidated={() => changeSearch({ filter: 'validated', cursors: [] })}
+                onClearSearch={() => changeSearch({ q: undefined })}
+                onShowValidated={() => changeSearch({ filter: 'validated' })}
               />
             ) : null}
             {panelOpen && panelTab && active ? (
@@ -678,14 +710,6 @@ function ReviewStream({
               />
             ) : null}
           </div>
-          <PaginationFooter
-            limit={search.limit}
-            cursors={search.cursors}
-            nextCursor={ready && !query.data?.failed ? (query.data?.nextCursor ?? undefined) : undefined}
-            count={items.length}
-            isFetching={query.isFetching}
-            onChange={(limit, cursors) => changeSearch({ limit, cursors })}
-          />
         </Page.Content>
         <ShortcutHelp open={helpOpen} onOpenChange={setHelpOpen} />
       </Page.Main>

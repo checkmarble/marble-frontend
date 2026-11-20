@@ -62,8 +62,7 @@ export interface ScreeningReviewGroup {
   remaining: number;
   total: number;
   incomplete: boolean;
-  newestCase: string;
-  /** The No hit and skipped hits left out of `items` once one of them is a Hit. */
+  caseCreatedAt: string;
   setAside: number;
 }
 
@@ -653,7 +652,7 @@ export function groupScreeningReviewItems(
         remaining: 0,
         total: 0,
         incomplete: hasMore,
-        newestCase: item.caseCreatedAt,
+        caseCreatedAt: item.caseCreatedAt,
         setAside: 0,
       };
       groups.set(key, group);
@@ -666,7 +665,7 @@ export function groupScreeningReviewItems(
   }
   return [...groups.values()]
     .filter((group) => group.items.length > 0)
-    .sort((a, b) => b.newestCase.localeCompare(a.newestCase) || a.key.localeCompare(b.key))
+    .sort((a, b) => a.caseCreatedAt.localeCompare(b.caseCreatedAt) || a.key.localeCompare(b.key))
     .map(({ all, ...group }): ScreeningReviewGroup => {
       const shown = [...group.items, ...all.filter((item) => item.status !== 'pending' && !group.items.includes(item))];
       const confirmed = shown.some((item) => item.status === 'confirmed_hit');

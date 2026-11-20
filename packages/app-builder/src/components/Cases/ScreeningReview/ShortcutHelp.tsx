@@ -13,19 +13,21 @@ export function ShortcutKeys({
   return (
     <span dir="ltr" className="inline-flex items-center gap-xs">
       {hotkeys.map((hotkey) => {
-        const labels = keyLabels(hotkey);
+        const label = comboLabel(keyLabels(hotkey));
+        // A combination takes one key cap, such as ⇧J, so its keys don't read as separate shortcuts.
         return (
-          <span key={labels.join('+')} className="inline-flex items-center gap-2xs">
-            {labels.map((label) => (
-              <Kbd key={label} variant={variant}>
-                {label}
-              </Kbd>
-            ))}
-          </span>
+          <Kbd key={label} variant={variant}>
+            {label}
+          </Kbd>
         );
       })}
     </span>
   );
+}
+
+/** `⇧J` from symbols, `Shift J` from named keys. */
+function comboLabel(labels: readonly string[]) {
+  return labels.join(labels.some((label) => label.length > 1) ? ' ' : '');
 }
 
 export function ShortcutHelp({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
