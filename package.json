@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "@vitejs/plugin-react": "6.1.2",
+    "@vitejs/plugin-react": "6.2.1",
     "@vitest/coverage-v8": "5.0.5",
     "@vitest/ui": "5.0.5",
     "lefthook": "^2.1.14",
