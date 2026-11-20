@@ -2,7 +2,7 @@ import type { DataModelField, TableModel } from '@app-builder/models/data-model'
 import { cleanup, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { ColumnFilterChips, ColumnFilterPopover } from './ColumnFilter';
 import type { ColumnFilterValue } from './column-filters';
 
@@ -13,6 +13,10 @@ vi.mock('@app-builder/utils/format', async (importOriginal) => ({
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 mockResizeObserver();
+beforeAll(() => {
+  // Not implemented by jsdom, used by the menu's list.
+  Element.prototype.scrollIntoView = vi.fn();
+});
 afterEach(cleanup);
 
 const field = (partial: Partial<DataModelField>) =>
@@ -49,6 +53,37 @@ describe('boolean column filter', () => {
       ['data:yes', 'false'],
       ['data:no', 'false'],
     ]);
+  });
+});
+
+describe('enum column filter', () => {
+  async function search(definition: DataModelField, text: string) {
+    render(
+      <ColumnFilterPopover field={definition} value={undefined} onChange={vi.fn()}>
+        <button type="button">open</button>
+      </ColumnFilterPopover>,
+    );
+    await userEvent.click(screen.getByText('open'));
+    await userEvent.click(screen.getByRole('button', { name: 'scenarios:value_switch.select_values' }));
+    await userEvent.type(screen.getByPlaceholderText('scenarios:value_switch.search_values'), text);
+  }
+
+  it('offers a value outside the catalog on a country column', async () => {
+    await search(field({ name: 'country', semanticType: 'country' }), 'UK');
+    expect(screen.getByText('scenarios:value_switch.use_custom_value')).toBeTruthy();
+  });
+
+  it('offers no value outside the list on a colour-keyed enum', async () => {
+    const paymentMethod = field({
+      name: 'payment_method',
+      isEnum: true,
+      semanticType: 'enum',
+      semanticSubType: 'key_color_value',
+      enumValues: [{ key: 'CARD', color: 'var(--color-enum-teal)' }],
+    });
+    await search(paymentMethod, 'car');
+    expect(screen.queryByText('scenarios:value_switch.use_custom_value')).toBeNull();
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['CARD']);
   });
 });
 
