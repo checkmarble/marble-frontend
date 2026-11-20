@@ -15,8 +15,6 @@ const searchSchema = z.object({
     .catch(undefined),
   filter: z.enum(SCREENING_REVIEW_FILTERS).catch('to_review'),
   q: z.string().trim().max(SCREENING_REVIEW_SEARCH_MAX).optional().catch(undefined),
-  limit: z.union([z.literal(25), z.literal(50), z.literal(100)]).catch(50),
-  cursors: z.array(z.uuid()).catch([]),
   hit: z.string().max(200).optional(),
 });
 

@@ -4,7 +4,8 @@ import type { ShortcutHotkey } from './shortcuts';
 
 // The design's shortcut button styles on the DS Button. The key cap takes the label's colour.
 const TONES = {
-  primary: { variant: 'primary', className: undefined },
+  // The DS disabled purple is close to the enabled one, more so in dark mode: dimmed text tells them apart.
+  primary: { variant: 'primary', className: 'disabled:text-white/60 dark:disabled:text-grey-primary/50' },
   neutral: { variant: 'secondary', className: 'text-grey-secondary' },
   ghost: { variant: 'secondary', className: 'border-transparent bg-transparent text-grey-secondary shadow-none' },
   picked_hit: { variant: 'secondary', className: 'border-red-primary text-red-primary' },

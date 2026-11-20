@@ -76,6 +76,9 @@ export function useScreeningReviewShortcuts(shortcuts: readonly ScreeningReviewS
     const callback = (event: KeyboardEvent) => {
       const target = event.target;
       if (event.isComposing || event.defaultPrevented) return;
+      // A character key fires on that character only. The library also matches the key at its US
+      // position, so French layouts would toggle the list with ^, which sits where [ does.
+      if (typeof shortcut.hotkey === 'object' && 'key' in shortcut.hotkey && event.key !== shortcut.hotkey.key) return;
       if (
         target instanceof Element &&
         target.closest(

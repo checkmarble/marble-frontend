@@ -12,7 +12,7 @@ import {
   withoutSelected,
 } from './batch-selection';
 import { MatchedFieldChips, useMappedProperties } from './MatchedFieldChips';
-import { listRecordAliasCount, SchemaTag, useListRecordListTitles } from './ScreeningReviewHit';
+import { listRecordAliasCount, SchemaTag, SimilarityScore, useListRecordListTitles } from './ScreeningReviewHit';
 
 /** Replaces the comparison view while hits are selected: the selected hits, then No hit for all of them. */
 export function BatchPanel({
@@ -117,14 +117,17 @@ export function NoHitStackSummary({
 
 function HitSummary({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
-    <Card as="section" aria-label={title} className="flex min-h-0 flex-1 flex-col gap-md overflow-hidden p-md">
+    // Sized to its hits: the list scrolls only once they overflow the column.
+    <Card as="section" aria-label={title} className="flex min-h-0 flex-col gap-md overflow-hidden p-md">
       <div className="flex flex-col gap-xs">
         <Typo as="h2" variant="title2">
           {title}
         </Typo>
         <p className="text-s text-grey-secondary">{description}</p>
       </div>
-      <ul className="flex min-h-0 flex-col gap-xs overflow-y-auto overscroll-y-contain">{children}</ul>
+      <ul className="flex min-h-0 flex-col gap-xs overflow-x-hidden overflow-y-auto overscroll-y-contain">
+        {children}
+      </ul>
     </Card>
   );
 }
@@ -156,7 +159,7 @@ function HitSummaryRow({
           </Typo>
           <SchemaTag schema={item.listRecord.schema} />
           <TopicsDisplay entity={{ id: item.listRecord.id, properties: { topics: item.topics } }} />
-          <bdi className="shrink-0 text-xs text-grey-secondary">{Math.round(item.score * 100)}%</bdi>
+          <SimilarityScore score={item.score} />
         </div>
         {details.length ? <p className="truncate text-xs text-grey-secondary">{details.join(' · ')}</p> : null}
         {comment ? (

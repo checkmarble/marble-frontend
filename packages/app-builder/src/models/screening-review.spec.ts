@@ -84,7 +84,7 @@ describe('screening review stream', () => {
     expect(items.every((item) => item.listRecord.caption !== item.customer.name)).toBe(true);
   });
 
-  it('reads every screening and groups by case, then by customer, newest case first', () => {
+  it('reads every screening and groups by case, then by customer, oldest case first', () => {
     const groups = groupScreeningReviewItems(
       buildScreeningReviewItems([
         reviewCase('older', [objectReviewScreening('one'), objectReviewScreening('two')]),
@@ -93,9 +93,9 @@ describe('screening review stream', () => {
     );
     // The same customer gets a group in each of its cases.
     expect(groups.map((group) => [group.caseId, group.customer.objectId, group.items.length])).toEqual([
+      ['older', 'alice', 4],
       ['newer', 'alice', 1],
       ['newer', 'bob', 1],
-      ['older', 'alice', 4],
     ]);
     expect(new Set(groups.flatMap((group) => group.items.map((item) => item.id))).size).toBe(6);
   });
@@ -136,7 +136,7 @@ describe('screening review stream', () => {
     },
   );
 
-  it('orders groups by newest case and hits by topic, score, then identity', () => {
+  it('orders groups by oldest case and hits by topic, score, then identity', () => {
     const screening = objectReviewScreening();
     screening.matches[0]!.payload.properties['topics'] = ['role.pep'];
     const groups = groupScreeningReviewItems(
@@ -145,8 +145,8 @@ describe('screening review stream', () => {
         reviewCase('new', [objectReviewScreening('new-screening', 'bob')], { createdAt: '2026-11-03T10:00:00Z' }),
       ]),
     );
-    expect(groups.map((group) => group.customer.name)).toEqual(['Bob', 'Alice']);
-    expect(groups[1]?.items.map((item) => item.matchId)).toEqual(['screening-1-low', 'screening-1-high']);
+    expect(groups.map((group) => group.customer.name)).toEqual(['Alice', 'Bob']);
+    expect(groups[0]?.items.map((item) => item.matchId)).toEqual(['screening-1-low', 'screening-1-high']);
   });
 
   it('stacks two No hit hits or more at the end of their group, as one stop, unless expanded', () => {

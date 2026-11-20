@@ -97,6 +97,16 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, 
   );
 }
 
+/** The list record's similarity score to the customer, from Motiva. */
+export function SimilarityScore({ score }: { score: number }) {
+  const { t } = useTranslation(['cases']);
+  return (
+    <Tag size="xs" title={t('cases:screening_review.similarity_score')} className="shrink-0 font-semibold tabular-nums">
+      <bdi>{Math.round(score * 100)}%</bdi>
+    </Tag>
+  );
+}
+
 export function CustomerTypeTag({ customer }: { customer: ScreeningReviewItem['customer'] }) {
   return <SchemaTag schema={customer.schema} fallback={customer.objectType} />;
 }
@@ -228,7 +238,7 @@ function ListRecordCard({ item }: { item: ScreeningReviewItem }) {
           <bdi>{item.listRecord.caption || item.listRecord.id}</bdi>
         </Typo>
         <ListCategoryTags item={item} />
-        <span className="text-xs text-grey-secondary">{Math.round(item.score * 100)}%</span>
+        <SimilarityScore score={item.score} />
       </div>
       <IdentitySummary properties={properties} />
       <p className="flex flex-wrap gap-x-sm text-xs text-grey-secondary">
@@ -328,7 +338,7 @@ function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldCom
             <th scope="col" className="px-md py-sm text-start font-normal">
               {t('cases:screening_review.list_record')}
             </th>
-            <th scope="col" className="w-28 px-md py-sm text-start font-normal">
+            <th scope="col" className="w-36 px-md py-sm text-start font-normal">
               {t('cases:screening_review.column.match')}
             </th>
           </tr>

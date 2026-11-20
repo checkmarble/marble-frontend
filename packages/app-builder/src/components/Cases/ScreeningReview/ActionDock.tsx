@@ -159,7 +159,7 @@ export function ActionDock({
               </ShortcutButton>
             );
           })}
-          <ShortcutButton tone="ghost" hotkeys={['C']}>
+          <ShortcutButton tone="ghost" hotkeys={['C']} disabled={!draft.decision}>
             {t('cases:screening_review.shortcuts.comment')}
           </ShortcutButton>
         </div>
@@ -172,7 +172,11 @@ export function ActionDock({
           ref={commentRef}
           maxLength={SCREENING_REVIEW_COMMENT_MAX}
           aria-label={t('cases:screening_review.dock.comment')}
-          placeholder={t('cases:screening_review.dock.comment')}
+          // The comment goes with a decision, so it waits for one.
+          disabled={!draft.decision}
+          placeholder={t(
+            draft.decision ? 'cases:screening_review.dock.comment' : 'cases:screening_review.dock.comment_disabled',
+          )}
           value={draft.comment}
           // The field grows with its text, and scrolls past this height.
           className="max-h-40 [&_textarea]:overflow-y-auto"

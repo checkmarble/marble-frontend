@@ -62,7 +62,8 @@ export async function readScreeningReviewPage(
         ...(name ? { name } : {}),
         snoozed: false,
         limit,
-        order: 'DESC',
+        // Oldest first, so cases created since the last read come at the end.
+        order: 'ASC',
         ...(offsetId ? { offsetId } : {}),
         type: ['continuous_screening'],
       });
