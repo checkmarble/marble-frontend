@@ -7,6 +7,7 @@ import { Tabs, Typo } from 'ui-design-system';
 const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
   api: 'settings:api',
   users: 'settings:users',
+  custom_roles: 'settings:custom_roles',
   scenarios: 'settings:scenarios',
   case_manager: 'settings:case_manager',
   audit: 'settings:audit',

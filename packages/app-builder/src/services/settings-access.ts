@@ -1,6 +1,6 @@
 import { type AppConfig } from '@app-builder/models/app-config';
 import { type Inbox } from '@app-builder/models/inbox';
-import { type CurrentUser, isAdmin } from '@app-builder/models/user';
+import { type CurrentUser, isAdmin, isAnalyst } from '@app-builder/models/user';
 import {
   canAccessInboxesSettings,
   isReadApiKeyAvailable,
@@ -22,6 +22,7 @@ export type Section = {
 export type Sections = {
   api: Section;
   users: Section;
+  custom_roles: Section;
   scenarios: Section;
   case_manager: Section;
   audit: Section;
@@ -42,6 +43,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
     users: {
       icon: 'users',
       settings: [...(isReadUserAvailable(user) ? [{ title: 'users', to: '/settings/users' }] : [])],
+    },
+    custom_roles: {
+      icon: 'users',
+      settings: user.permissions.canManageRoles ? [{ title: 'custom_roles', to: '/settings/roles' }] : [],
     },
     scenarios: {
       icon: 'world',
@@ -76,5 +81,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
     },
   };
 
+  if (isAnalyst(user)) {
+    for (const [key, section] of Object.entries(sections)) {
+      if (key !== 'custom_roles') section.settings = [];
+    }
+  }
   return sections;
 }

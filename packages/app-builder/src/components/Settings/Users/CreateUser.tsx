@@ -1,6 +1,6 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Nudge } from '@app-builder/components/Nudge';
-import { UserRoleSelector } from '@app-builder/components/Settings/Users/UserRoleSelector';
+import { type UserRoleOption, UserRoleSelector } from '@app-builder/components/Settings/Users/UserRoleSelector';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   CreateUserPayload,
@@ -27,7 +27,7 @@ export function CreateUser({
 }: {
   orgId: string;
   access: FeatureAccessLevelDto;
-  userRoles: readonly [string, ...string[]];
+  userRoles: readonly UserRoleOption[];
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const isLoading = useRouterState({ select: (s) => s.status === 'pending' });
@@ -61,7 +61,7 @@ function CreateUserContent({
   onSuccess,
 }: {
   orgId: string;
-  userRoles: readonly [string, ...string[]];
+  userRoles: readonly UserRoleOption[];
   access: FeatureAccessLevelDto;
   onSuccess: () => void;
 }) {
