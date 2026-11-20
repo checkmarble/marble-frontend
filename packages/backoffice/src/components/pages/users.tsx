@@ -107,6 +107,7 @@ function UsersList({
     <div className="flex flex-col gap-md">
       <div className="max-w-100">
         <Input
+          autoFocus
           startAdornment="search"
           endAdornment={search ? 'cross' : undefined}
           onEndAdornmentClick={() => setSearch('')}
