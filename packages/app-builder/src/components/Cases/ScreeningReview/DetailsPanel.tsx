@@ -64,7 +64,7 @@ export function DetailsPanel({
       aria-label={t('cases:screening_review.panel.label')}
       className={cn('flex min-h-0 min-w-0 flex-col overflow-hidden', className)}
     >
-      <header className="flex shrink-0 flex-col gap-sm border-b border-grey-border">
+      <header className="flex shrink-0 flex-col gap-sm border-b border-grey-border pb-md">
         <div className="flex items-start gap-sm">
           <div className="flex min-w-0 flex-col">
             <span className="text-xs text-grey-secondary">{t(`cases:screening_review.panel.heading.${tab}`)}</span>
@@ -90,7 +90,6 @@ export function DetailsPanel({
             const next = DETAILS_PANEL_TABS.find((candidate) => candidate.tab === value);
             if (next) onTabChange(next.tab);
           }}
-          variant="pills"
         >
           {DETAILS_PANEL_TABS.map(({ tab: value, hotkey }) => (
             <Tabs.Button key={value} value={value} className="gap-xs">
