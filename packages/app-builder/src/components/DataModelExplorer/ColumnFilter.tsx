@@ -3,23 +3,23 @@ import { EnumValueMenu } from '@app-builder/components/Data/EnumValueMenu';
 import { ClearAllFiltersButton } from '@app-builder/components/Filters/ClearAllFilters';
 import { DateRangeFilter } from '@app-builder/components/Filters/DateRangeFilter';
 import { FilterItem, FilterPopover, filterItemTriggerClassName } from '@app-builder/components/Filters/FilterPopover';
-import {
-  CLIENT_DATA_LIST_MAX_FILTER_VALUES,
-  type DataModelField,
-  type TableModel,
-} from '@app-builder/models/data-model';
+import { type DataModelField, type TableModel } from '@app-builder/models/data-model';
 import { formatDuration, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { sub } from 'date-fns/sub';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Input, Separator } from 'ui-design-system';
+import { Button, cn, Input, RadioGroup, RadioGroupItem, Separator } from 'ui-design-system';
 import {
   type ColumnFilters,
   type ColumnFilterValue,
   getColumnFilterKind,
+  getEnumFilterField,
+  getMaxEnumPicks,
+  getNumberFilterScale,
   isColumnFilterActive,
   setColumnFilter,
+  toEnumFilter,
 } from './column-filters';
 
 export function ColumnFilterPopover({
@@ -53,7 +53,7 @@ export function ColumnFilterPopover({
       onChange={(e) => {
         // An emptied input clears its bound instead of turning into 0.
         const raw = e.currentTarget.value;
-        commit({ ...numberValue, [bound]: raw === '' ? undefined : Number(raw) });
+        commit({ ...numberValue, [bound]: raw === '' ? undefined : Number(raw), scale: getNumberFilterScale(field) });
       }}
     />
   );
@@ -72,24 +72,59 @@ export function ColumnFilterPopover({
               onChange={(e) => commit({ type: 'text', value: e.currentTarget.value })}
             />
           ))
-          .with('enum', () => (
-            <div className="w-72 p-md">
-              <EnumValueMenu
-                field={field}
-                multiple
-                selectedValues={value?.type === 'enum' ? value.values : []}
-                onChange={(values) =>
-                  commit({ type: 'enum', values: values.slice(0, CLIENT_DATA_LIST_MAX_FILTER_VALUES) })
-                }
-              />
-            </div>
-          ))
+          .with('enum', () => {
+            const selectedValues = value?.type === 'enum' ? value.values : [];
+            const maxPicks = getMaxEnumPicks(field);
+            return (
+              <div className="flex w-72 flex-col gap-sm p-md">
+                <EnumValueMenu
+                  field={getEnumFilterField(field)}
+                  multiple
+                  // Stored values are not always in the catalog (e.g. "UK" in a country column): they stay searchable.
+                  allowCustomValues
+                  maxSelected={maxPicks}
+                  selectedValues={selectedValues}
+                  onChange={(values) => commit(toEnumFilter(field, values))}
+                />
+                {selectedValues.length >= maxPicks ? (
+                  <span className="text-small text-grey-secondary">
+                    {t('cases:data_explorer.filters.max_values', { count: maxPicks })}
+                  </span>
+                ) : null}
+              </div>
+            );
+          })
           .with('number', () => (
             <div className="flex w-72 gap-sm p-md">
               {numberBound('min', t('cases:data_explorer.filters.min'))}
               {numberBound('max', t('cases:data_explorer.filters.max'))}
             </div>
           ))
+          .with('boolean', () => {
+            const picked = value?.type === 'boolean' ? String(value.value) : '';
+            return (
+              <div className="p-md">
+                <RadioGroup
+                  aria-label={label}
+                  value={picked}
+                  onValueChange={(next) => onChange({ type: 'boolean', value: next === 'true' })}
+                >
+                  {['true', 'false'].map((option) => (
+                    <RadioGroupItem
+                      key={option}
+                      value={option}
+                      onClick={() => {
+                        // Radix does not report a click on the checked radio: picking it again removes the filter.
+                        if (option === picked) onChange(undefined);
+                      }}
+                    >
+                      <BooleanLabel field={field} value={option === 'true'} />
+                    </RadioGroupItem>
+                  ))}
+                </RadioGroup>
+              </div>
+            );
+          })
           .with('date', () => (
             <DateRangeFilter.Root
               dateRangeFilter={value?.type === 'date' ? value.range : undefined}
@@ -180,15 +215,19 @@ function ColumnFilterSummary({ field, value }: { field: DataModelField; value: C
   switch (value?.type) {
     case 'text':
       return <span className="max-w-40 truncate">{value.value}</span>;
-    case 'enum':
+    case 'enum': {
+      const enumField = getEnumFilterField(field);
       return (
         <>
           {value.values.slice(0, 2).map((enumValue) => (
-            <EnumTag key={enumValue} field={field} value={enumValue} />
+            <EnumTag key={enumValue} field={enumField} value={enumValue} />
           ))}
           {value.values.length > 2 ? <span>+{value.values.length - 2}</span> : null}
         </>
       );
+    }
+    case 'boolean':
+      return <BooleanLabel field={field} value={value.value} />;
     case 'number':
       return formatBounds(
         value.min === undefined ? undefined : formatNumber(value.min, { language }),
@@ -206,4 +245,11 @@ function ColumnFilterSummary({ field, value }: { field: DataModelField; value: C
     default:
       return null;
   }
+}
+
+/** Worded like the cells of the column (see DataField). */
+function BooleanLabel({ field, value }: { field: DataModelField; value: boolean }) {
+  const { t } = useTranslation(['common', 'data']);
+  if (field.booleanDisplay === 'yes_no') return t(value ? 'data:yes' : 'data:no');
+  return t(value ? 'common:true' : 'common:false');
 }

@@ -860,7 +860,7 @@ export type ClientDataListFilterDto = {
     field_name: string;
     /** 'contains' is a case-insensitive substring match (text fields). 'in' matches any of the values. The comparison operators apply to numbers and timestamps. */
     operator: "contains" | "in" | ">=" | "<=" | "<";
-    /** A single value for every operator except 'in'. Numbers for number fields, strings otherwise (RFC 3339 for timestamps). */
+    /** A single value for every operator except 'in'. Numbers for number fields, strings otherwise (RFC 3339 for timestamps, 'true' or 'false' for booleans). */
     values: (string | number)[];
 };
 export type ClientDataListRequestBody = {

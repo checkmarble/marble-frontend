@@ -290,6 +290,7 @@
   "data_explorer.column_settings.title": "Column settings",
   "data_explorer.filters.filter_column": "Filter column",
   "data_explorer.filters.max": "Max",
+  "data_explorer.filters.max_values": "At most {{count}} values",
   "data_explorer.filters.min": "Min",
   "data_explorer.filters.no_match": "No data matches these filters.",
   "data_explorer.filters.text_placeholder": "Contains…",
