@@ -1,5 +1,8 @@
+import { setClientObjectListAnnotations } from '@app-builder/queries/client-object-list';
+import { getAnnotationsFn } from '@app-builder/server-fns/data';
 import { useCallbackRef } from '@marble/shared';
 import { useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { type GroupedAnnotations } from 'marble-api';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +35,19 @@ export function ClientObjectAnnotationPopover({
   const tagsAnnotations = annotations?.tags ?? [];
   const { t } = useTranslation(['cases']);
 
-  const handleAnnotateSuccess = useCallbackRef(() => {
-    queryClient.invalidateQueries({ queryKey: ['resources', 'data-list-object', tableName] });
+  const getAnnotations = useServerFn(getAnnotationsFn);
+
+  const handleAnnotateSuccess = useCallbackRef(async () => {
+    // Other open views of this object read its annotations under this key.
+    queryClient.invalidateQueries({ queryKey: ['annotations', tableName, objectId] });
+    // Undefined after a redirect (e.g. to sign-in).
+    const result = await getAnnotations({ data: { objectType: tableName, objectId } }).catch(() => undefined);
+    if (result) {
+      await setClientObjectListAnnotations(queryClient, tableName, objectId, result.annotations);
+    } else {
+      // The change is saved: reloading the list still shows it, only later.
+      queryClient.invalidateQueries({ queryKey: ['resources', 'data-list-object', tableName] });
+    }
   });
 
   return (
