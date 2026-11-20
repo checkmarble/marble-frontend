@@ -48,7 +48,7 @@ function GrantAccessContent({ userId, userRoles, access, onSuccess }: GrantAcces
     if (!role) return;
 
     grantAccessMutation
-      .mutateAsync({ userId, role })
+      .mutateAsync({ userId, roles: [{ role }] })
       .then(() => {
         toast.success(t('settings:users.grant_access.success'));
         onSuccess();

@@ -7,8 +7,7 @@ import {
   type OrganizationUpdateInput,
   type UserOrganization,
 } from '@app-builder/models/organization';
-import { type OrganizationGrantRole } from '@app-builder/schemas/settings';
-import { type Tag, type UserDto } from 'marble-api';
+import { type RoleBinding, type Tag, type UserDto } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
@@ -18,7 +17,7 @@ export interface OrganizationRepository {
   importOrganizationFromFile(file: Blob): Promise<{ org_id: string }>;
   listUsers(args?: { withTfa?: boolean }): Promise<User[]>;
   listTenantUsersWithoutAccess(): Promise<TenantUser[]>;
-  grantAccess(args: { tenantId: string; userId: string; role: OrganizationGrantRole }): Promise<void>;
+  grantAccess(args: { tenantId: string; userId: string; roles: RoleBinding[] }): Promise<void>;
   revokeAccess(args: { tenantId: string; userId: string }): Promise<void>;
   updateUserName(args: { userId: string; firstName?: string; lastName?: string }): Promise<void>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
@@ -63,8 +62,8 @@ export function makeGetOrganizationRepository() {
         lastName: user.last_name,
       }));
     },
-    grantAccess: async ({ tenantId, userId, role }) => {
-      await marbleCoreApiClient.replaceOrganizationGrant(tenantId, userId, { role }, { organizationId });
+    grantAccess: async ({ tenantId, userId, roles }) => {
+      await marbleCoreApiClient.replaceOrganizationGrant(tenantId, userId, { roles }, { organizationId });
     },
     revokeAccess: async ({ tenantId, userId }) => {
       await marbleCoreApiClient.revokeOrganizationGrant(tenantId, userId, { organizationId });
