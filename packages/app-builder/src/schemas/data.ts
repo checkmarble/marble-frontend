@@ -43,6 +43,12 @@ export const createLinksValuesSchema = z.object({
   link_type: z.enum(linkRelationTypes),
 });
 
+export const tableLifecycleSchema = z.object({
+  enabled: z.boolean(),
+  delete_stale_rows_after: z.string().nullable().optional(),
+  delete_active_rows_after: z.string().nullable().optional(),
+});
+
 export const createTableValueSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
     error: 'Table/name: Only lower case alphanumeric and _, must start with a letter',
@@ -55,6 +61,7 @@ export const createTableValueSchema = z.object({
   fields: z.array(createFieldValuesSchema),
   links: z.array(createLinksValuesSchema),
   primary_ordering_field: z.string(),
+  lifecycle: tableLifecycleSchema,
 });
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
 
@@ -170,6 +177,7 @@ export const editSemanticTablePayloadSchema = z.object({
   fields: z.array(fieldOperationSchema).optional(),
   links: z.array(linkOperationSchema).optional(),
   metadata: z.record(z.string(), z.string().optional()).optional(),
+  lifecycle: tableLifecycleSchema.optional(),
 });
 
 export type EditSemanticTablePayload = z.infer<typeof editSemanticTablePayloadSchema>;
