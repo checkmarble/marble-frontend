@@ -240,6 +240,11 @@ const columnHelper = createColumnHelper<MarbleTableFeatures, Record<string, unkn
 // Hidden until the header (or the row) is hovered or holds the keyboard focus.
 const revealOnHeaderClassName =
   'opacity-0 group-hover/th:opacity-100 group-focus-within/th:opacity-100 data-[state=open]:opacity-100';
+// In a column narrowed by the user, the hidden buttons also give their room back to the column name. They stay
+// reachable with the keyboard, and in place while the filter popover is open. Only used when no button of the
+// header stays visible: revealing one would push a visible button away from under the pointer.
+const collapseOnHeaderClassName =
+  '[[data-sized]:not(:hover):not(:focus-within):not(:has([data-state=open]))_&]:sr-only';
 
 // A resized column is given its width through a CSS variable set on the table and read by its cells:
 // a drag updates the variable, without rendering the table on every move.
@@ -371,6 +376,10 @@ function DataTable({
                     const field = fieldByName.get(name);
                     const pinnedCell = getPinnedCell(name);
                     const isFiltered = isColumnFilterActive(filters[name]);
+                    const hiddenButtonClassName = cn(
+                      revealOnHeaderClassName,
+                      !isFiltered && !pinnedCell.isPinned && collapseOnHeaderClassName,
+                    );
 
                     return (
                       <th
@@ -389,6 +398,9 @@ function DataTable({
                           ...getColumnWidthStyle(name, getHeaderStyle(fieldStatistics[name])?.minWidth),
                           ...pinnedCell.style,
                         }}
+                        data-sized={prefs.widths[name] !== undefined || undefined}
+                        // On the cell rather than the name: in a narrow column, the name has no room while hovered.
+                        title={field?.alias || name}
                         onMouseEnter={() => setHoveredColumn(name)}
                         onMouseLeave={() => setHoveredColumn(null)}
                       >
@@ -411,7 +423,7 @@ function DataTable({
                                 aria-label={t('cases:data_explorer.filters.filter_column')}
                                 className={cn(
                                   'shrink-0 enabled:hover:text-purple-primary',
-                                  isFiltered ? 'text-purple-primary' : ['text-grey-primary', revealOnHeaderClassName],
+                                  isFiltered ? 'text-purple-primary' : ['text-grey-primary', hiddenButtonClassName],
                                 )}
                               >
                                 <Icon icon="filters" className="size-5" />
@@ -432,7 +444,7 @@ function DataTable({
                               'shrink-0',
                               pinnedCell.isPinned
                                 ? 'text-purple-primary'
-                                : ['text-grey-secondary', revealOnHeaderClassName],
+                                : ['text-grey-secondary', hiddenButtonClassName],
                             )}
                             onClick={() => setPrefs({ ...prefs, pinned: toggle(prefs.pinned, name) })}
                           >
