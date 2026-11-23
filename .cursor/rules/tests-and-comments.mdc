@@ -1,0 +1,7 @@
+---
+description: Read before adding a comment or a test in TypeScript — a comment only for what the code cannot say, a test only when it would catch a real failure
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+Before editing files matching this rule, read `.claude/rules/tests-and-comments.md` and follow it.
