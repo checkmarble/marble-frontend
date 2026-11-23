@@ -26,6 +26,7 @@ export const EventTime = ({ time }: { time: string }) => {
             {formatDateTime(date, {
               timeStyle: is6daysOld ? 'short' : undefined,
               dateStyle: is6daysOld ? undefined : 'short',
+              fullYear: true,
             })}
           </span>
         </TooltipV2.TooltipContent>

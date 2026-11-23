@@ -115,9 +115,10 @@ function ShortcutHint({ onOpenHelp }: { onOpenHelp: () => void }) {
 }
 
 /*
- * Breakpoints on the page area, which leaves out the collapsed 56px sidebar: the design's 1100px
- * and 1350px windows. Below 1044px the list collapses to a rail and opens over the hit. From 1294px
- * the details panel docks; below that, it floats over the hit.
+ * Breakpoints on the page area, which leaves out the collapsed 56px sidebar: 1100px and 1650px
+ * windows. Below 1044px the list collapses to a rail and opens over the hit. From 1594px the
+ * details panel docks; below that, it floats over the hit, since docking it beside the list would
+ * leave the hit a column too narrow to compare.
  */
 const WIDE_PAGE_WIDTH = 1044;
 
@@ -128,8 +129,8 @@ function gridColumns(listCollapsed: boolean, panelOpen: boolean) {
     !listCollapsed && '@min-[1044px]/review:grid-cols-[270px_minmax(0,1fr)]',
     panelOpen &&
       (listCollapsed
-        ? '@min-[1294px]/review:grid-cols-[2.5rem_minmax(0,1fr)_480px]'
-        : '@min-[1294px]/review:grid-cols-[270px_minmax(0,1fr)_480px]'),
+        ? '@min-[1594px]/review:grid-cols-[2.5rem_minmax(0,1fr)_480px]'
+        : '@min-[1594px]/review:grid-cols-[270px_minmax(0,1fr)_480px]'),
   );
 }
 
@@ -144,7 +145,7 @@ function listPlacement(listCollapsed: boolean, overlayOpen: boolean) {
 }
 
 const PANEL_PLACEMENT =
-  'absolute inset-y-0 end-0 z-10 w-[min(480px,100%)] shadow-lg @min-[1294px]/review:static @min-[1294px]/review:w-auto @min-[1294px]/review:shadow-none';
+  'absolute inset-y-0 end-0 z-10 w-[min(480px,100%)] shadow-lg @min-[1594px]/review:static @min-[1594px]/review:w-auto @min-[1594px]/review:shadow-none';
 
 /** The collapsed list: a button that opens it, with the hits left to review. */
 function ListRail({
