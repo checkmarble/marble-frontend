@@ -49,6 +49,6 @@ From `@tanstack/react-router`: `const hydrated = useHydrated()` then `disabled={
 
 ## New ui-design-system component
 
-- Add `src/Name/Name.tsx`, `Name.stories.tsx` and `Name.spec.tsx`, plus `export * from './Name/Name';` in `src/index.ts`. Imports inside the package follow `.claude/rules/styling.md`.
+- Add `src/Name/Name.tsx` and `Name.stories.tsx`, plus `export * from './Name/Name';` in `src/index.ts`. Imports inside the package follow `.claude/rules/styling.md`.
 - Text comes from `useI18n().t`.
 - The package's `useFormatting()` and `useFormatLanguage()` return `'en'` defaults unless a `FormattingProvider` is mounted, and only `routes/_app/_builder/detection/analytics/$scenarioId.tsx` mounts one. For locale-dependent output, take the formatted value or the locale as a prop. The app-builder caller gets the locale from `useFormatLanguage()` in `@app-builder/utils/format`, not from the same-named export of `ui-design-system`.
