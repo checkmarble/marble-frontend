@@ -1,14 +1,14 @@
 import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { type DataModel, type DataModelField, type NavigationOption, type TableModel } from '@app-builder/models';
+import { NewFuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { adaptNodeDto } from '@app-builder/models/astNode/ast-node';
 import { getDefaultSemanticType } from '@app-builder/models/semantic-types';
 import {
-  addCustomerKpiFilter,
   createCustomerKpiAggregation,
-  setCustomerKpiFilterOperator,
   setCustomerKpiFilterValue,
   setCustomerKpiNavigationOption,
 } from './customer-kpis-ast';
+import { addUserFilter } from './customer-kpis-ast.test-helpers';
 import '@app-builder/tests/setup/i18next';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
@@ -200,10 +200,7 @@ describe('CustomerKpisConfigurationPopover', () => {
     setCustomerKpiNavigationOption(aggregation, navigationOption);
     aggregation.namedChildren.label.constant = 'Transaction count';
     aggregation.namedChildren.fieldName.constant = 'id';
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-    filter.namedChildren.fieldName.constant = 'occurred_at';
+    addUserFilter(aggregation, { fieldName: 'occurred_at' });
 
     render(
       <I18nextProvider i18n={i18next}>
@@ -244,10 +241,7 @@ describe('CustomerKpisConfigurationPopover', () => {
     setCustomerKpiNavigationOption(aggregation, navigationOption);
     aggregation.namedChildren.label.constant = 'Transaction count';
     aggregation.namedChildren.fieldName.constant = 'id';
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-    filter.namedChildren.fieldName.constant = 'occurred_at';
+    addUserFilter(aggregation, { fieldName: 'occurred_at' });
 
     render(
       <I18nextProvider i18n={i18next}>
@@ -286,11 +280,11 @@ describe('CustomerKpisConfigurationPopover', () => {
     setCustomerKpiNavigationOption(aggregation, navigationOption);
     aggregation.namedChildren.label.constant = 'Transaction count';
     aggregation.namedChildren.fieldName.constant = 'id';
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-    filter.namedChildren.fieldName.constant = 'status';
-    setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
+    const filter = addUserFilter(aggregation, {
+      fieldName: 'status',
+      operator: 'FuzzyMatch',
+      value: NewFuzzyMatchFilterOptionsAstNode(),
+    });
     setCustomerKpiFilterValue(filter, 'matched value');
 
     render(

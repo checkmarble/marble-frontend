@@ -129,7 +129,6 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
   const values = useMemo(() => {
     const rawData = data ?? [];
     if (!rawData.length) return [];
-    // return rawData;
     const lastPoint = rawData[rawData.length - 1];
     if (!lastPoint) return rawData;
     if (bucketSize === 0) return rawData;

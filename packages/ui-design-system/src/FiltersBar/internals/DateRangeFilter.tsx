@@ -49,13 +49,11 @@ const useDateRangeFilterContext = () => {
 function DateRangeFilterRoot({
   dateRangeFilter,
   setDateRangeFilter,
-  locale,
   children,
   className,
 }: {
   dateRangeFilter: DateRangeFilterType;
   setDateRangeFilter: (dateRangeFilter: DateRangeFilterType) => void;
-  locale: Locale;
   children: React.ReactNode;
   className?: string;
 }) {

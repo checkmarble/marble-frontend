@@ -1,9 +1,7 @@
-import { type CommitIterationPayload, commitIterationPayloadSchema } from '@app-builder/schemas/scenarios';
+import { type CommitIterationPayload } from '@app-builder/schemas/scenarios';
 import { commitIterationFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type CommitIterationPayload, commitIterationPayloadSchema };
 
 export const useCommitIterationMutation = (scenarioId: string, iterationId: string) => {
   const commitIteration = useServerFn(commitIterationFn);

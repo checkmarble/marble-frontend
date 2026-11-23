@@ -8,8 +8,6 @@ import { Button, Input, MenuCommand } from 'ui-design-system';
 import { ApiKeyFilterMenu } from './ApiKeyFilter';
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';
-// TODO: Import TableFilterMenu when we have an endpoint to list available tables
-// import { TableFilterMenu } from './TableFilter';
 import { UserFilterMenu } from './UserFilter';
 
 type DisplayAuditFilterMenuItemProps = {
@@ -61,12 +59,7 @@ export const DisplayAuditFilterMenuItem = ({ filterName, onSelect, apiKeys }: Di
           <ApiKeyFilterMenu apiKeys={apiKeys} onSelect={(value) => onSelect({ [filterName]: value })} />
         </MenuCommand.SubMenu>
       ))
-      // TODO: Add 'table' filter when we have an endpoint to list available tables
-      // .with('table', () => (
-      //   <MenuCommand.SubMenu arrow={false} hover={false} trigger={<span><AuditEventsFilterLabel name={filterName} /></span>}>
-      //     <TableFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
-      //   </MenuCommand.SubMenu>
-      // ))
+      // TODO: Add a 'table' filter menu when we have an endpoint to list available tables
       .with('entityId', () => (
         <MenuCommand.SubMenu
           arrow={false}

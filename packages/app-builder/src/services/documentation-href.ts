@@ -16,8 +16,6 @@ export const executeAScenarioDocHref = 'https://docs.checkmarble.com/docs/execut
 
 export const ingestingDataByCsvDocHref = 'https://docs.checkmarble.com/docs/ingesting-data#by-batch-csv-files';
 
-export const workflowsDocHref = 'https://docs.checkmarble.com/docs/introduction-5';
-
 export const scenarioDecisionDocHref = 'https://docs.checkmarble.com/docs/decision-1';
 
 export const webhooksSetupDocHref = 'https://docs.checkmarble.com/docs/setting-up-the-webhooks';
@@ -25,5 +23,3 @@ export const webhooksSetupDocHref = 'https://docs.checkmarble.com/docs/setting-u
 export const webhooksEventsDocHref = 'https://docs.checkmarble.com/docs/available-events-and-webhooks-format';
 
 export const ruleSnoozesDocHref = 'https://docs.checkmarble.com/docs/rule-snoozes';
-
-export const blockingReviewDocHref = 'https://docs.checkmarble.com/docs/blocking-review';

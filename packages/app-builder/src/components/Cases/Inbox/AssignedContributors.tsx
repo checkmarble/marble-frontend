@@ -40,7 +40,7 @@ type AvatarWithTooltipProps = {
   className?: string;
 };
 
-export const AvatarWithTooltip = ({ user, className }: AvatarWithTooltipProps) => {
+const AvatarWithTooltip = ({ user, className }: AvatarWithTooltipProps) => {
   const { t } = useTranslation(['cases']);
   const avatar = <Avatar key={user?.userId} size="s" firstName={user?.firstName} lastName={user?.lastName} />;
 

@@ -127,10 +127,6 @@ function FieldNodeReferences({
 
 type FieldNodeReferencesProps = Omit<Parameters<typeof FieldNodeReferences>[0], 'output' | 'value'>;
 
-export function FieldNodeConcat(props: FieldNodeReferencesProps & { value?: StringConcatAstNode }) {
-  return <FieldNodeReferences {...props} value={props.value} output="StringConcat" />;
-}
-
 export function FieldNodeList(props: FieldNodeReferencesProps & { value?: ListAstNode }) {
   return <FieldNodeReferences {...props} value={props.value} output="List" />;
 }

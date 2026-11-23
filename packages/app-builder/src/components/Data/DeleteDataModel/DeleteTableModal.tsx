@@ -25,7 +25,7 @@ interface DeleteTableModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-export type DeleteDataModelEntityType = 'table' | 'field' | 'link' | 'pivot';
+type DeleteDataModelEntityType = 'table' | 'field' | 'link' | 'pivot';
 
 export function DeleteTableModal({ table, onDeleted, children, open, onOpenChange }: DeleteTableModalProps) {
   const { t } = useTranslation(dataI18n);
@@ -100,9 +100,9 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
         {report ? (
           <div className="flex flex-col gap-md overflow-y-auto p-lg">
             {isBlocked ? (
-              <BlockedDeletionContent report={report} entityType={'table'} entityName={table.name} t={t} />
+              <BlockedDeletionContent report={report} entityName={table.name} t={t} />
             ) : hasArchivedIterations ? (
-              <DraftDeletionContent report={report} entityType={'table'} entityName={table.name} t={t} />
+              <DraftDeletionContent report={report} entityName={table.name} t={t} />
             ) : (
               <SimpleDeletionContent entityType={'table'} entityName={table.name} t={t} />
             )}
@@ -161,12 +161,10 @@ function SimpleDeletionContent({
 
 function DraftDeletionContent({
   report,
-  entityType,
   entityName,
   t,
 }: {
   report: DestroyDataModelReport;
-  entityType: DeleteDataModelEntityType;
   entityName: string;
   t: TFunction;
 }) {
@@ -187,12 +185,10 @@ function DraftDeletionContent({
 
 function BlockedDeletionContent({
   report,
-  entityType,
   entityName,
   t,
 }: {
   report: DestroyDataModelReport;
-  entityType: DeleteDataModelEntityType;
   entityName: string;
   t: TFunction;
 }) {
@@ -360,7 +356,6 @@ function ScenarioLink({ item }: { item: DestroyDataModelReportRef }) {
     return null;
   }
 
-  // Convert UUID to short UUID for URL-friendly format
   const shortId = fromUUIDtoSUUID(item.id);
 
   return (

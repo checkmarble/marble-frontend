@@ -66,5 +66,3 @@ export const PrintResultCard: FunctionComponent<PrintResultCardProps> = ({ entit
     </div>
   );
 };
-
-export default PrintResultCard;

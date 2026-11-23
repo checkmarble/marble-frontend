@@ -19,7 +19,6 @@ interface PayloadEvaluationConditionProps {
   onChange: (condition: any) => void;
 }
 
-// Helper function to create a default simple expression for workflow payload evaluation
 // This creates a binary expression with undefined operands to show operator and right operand
 function createDefaultSimpleExpression(): AstNode {
   return {
@@ -34,7 +33,6 @@ function createDefaultSimpleExpression(): AstNode {
 export function PayloadEvaluationCondition({ condition, onChange, scenario }: PayloadEvaluationConditionProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Get the current expression or create a default simple expression
   const currentExpression = useMemo(() => {
     return condition.params?.expression || createDefaultSimpleExpression();
   }, [condition.params?.expression]);
@@ -70,7 +68,6 @@ export function PayloadEvaluationCondition({ condition, onChange, scenario }: Pa
                 }
               };
 
-              // Set up polling to check for changes
               intervalRef.current = setInterval(checkForChanges, 100);
             } else {
               if (intervalRef.current) {

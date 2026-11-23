@@ -62,13 +62,6 @@ export const createWorkflowRuleFn = createServerFn({ method: 'POST' })
     return action;
   });
 
-export const getWorkflowRuleFn = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .validator(z.object({ ruleId: z.string() }))
-  .handler(async ({ context, data }) => {
-    return context.authInfo.scenario.getWorkflowRule({ ruleId: data.ruleId });
-  });
-
 export const updateWorkflowRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(ruleSchema)
@@ -81,24 +74,4 @@ export const deleteWorkflowRuleFn = createServerFn({ method: 'POST' })
   .validator(z.object({ ruleId: z.string() }))
   .handler(async ({ context, data }) => {
     await context.authInfo.scenario.deleteWorkflowRule({ ruleId: data.ruleId });
-  });
-
-export const renameWorkflowRuleFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .validator(z.object({ ruleId: z.string(), name: z.string(), fallthrough: z.boolean() }))
-  .handler(async ({ context, data }) => {
-    await context.authInfo.apiClient.updateWorkflowRule(data.ruleId, {
-      name: data.name,
-      fallthrough: data.fallthrough,
-    });
-  });
-
-export const deleteWorkflowConditionFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .validator(z.object({ ruleId: z.string(), conditionId: z.string() }))
-  .handler(async ({ context, data }) => {
-    await context.authInfo.scenario.deleteWorkflowCondition({
-      ruleId: data.ruleId,
-      conditionId: data.conditionId,
-    });
   });

@@ -1,9 +1,7 @@
-import { type UpdateInboxUserPayload, updateInboxUserPayloadSchema } from '@app-builder/schemas/settings';
+import { type UpdateInboxUserPayload } from '@app-builder/schemas/settings';
 import { updateInboxUserFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type UpdateInboxUserPayload, updateInboxUserPayloadSchema };
 
 export const useUpdateInboxUserMutation = () => {
   const updateInboxUser = useServerFn(updateInboxUserFn);

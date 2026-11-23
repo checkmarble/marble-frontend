@@ -29,5 +29,3 @@ export const PrintSection: FunctionComponent<PrintSectionProps> = ({ title, chil
     </div>
   );
 };
-
-export default PrintSection;

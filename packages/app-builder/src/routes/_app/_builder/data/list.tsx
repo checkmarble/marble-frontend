@@ -12,28 +12,20 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { ClientOnly, createFileRoute } from '@tanstack/react-router';
-import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const Route = createFileRoute('/_app/_builder/data/list')({
-  staticData: {
-    i18n: dataI18n satisfies Namespace,
-  },
   component: DataList,
   head: () => ({
     links: [{ rel: 'stylesheet', href: dataModelFlowStyles }],
   }),
 });
 
-export const handle = {
-  i18n: dataI18n satisfies Namespace,
-};
-
 function DataList() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(dataI18n);
   const dataModel = useDataModel();
   const { isGraphExplorationAvailable } = useDataModelFeatureAccess();
   const revalidate = useLoaderRevalidator();
@@ -144,7 +136,7 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
 }
 
 function DataListEmptyState({ onCreateTable }: { onCreateTable: () => void }) {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(dataI18n);
   const { isApplyArchetypeAvailable, isImportOrgAvailable, isCreateDataModelTableAvailable } =
     useDataModelFeatureAccess();
   const hasAnyAction = isApplyArchetypeAvailable || isImportOrgAvailable || isCreateDataModelTableAvailable;

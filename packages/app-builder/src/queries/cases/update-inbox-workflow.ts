@@ -1,9 +1,7 @@
-import { type UpdateInboxWorkflowPayload, updateInboxWorkflowPayloadSchema } from '@app-builder/schemas/cases';
+import { type UpdateInboxWorkflowPayload } from '@app-builder/schemas/cases';
 import { updateInboxWorkflowFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type UpdateInboxWorkflowPayload, updateInboxWorkflowPayloadSchema };
 
 export const useUpdateInboxWorkflowMutation = () => {
   const updateInboxWorkflow = useServerFn(updateInboxWorkflowFn);

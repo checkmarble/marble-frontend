@@ -8,7 +8,7 @@ import { enUS } from 'date-fns/locale/en-US';
 import { fr } from 'date-fns/locale/fr';
 import { type InitOptions } from 'i18next';
 
-export const defaultNS = 'common';
+const defaultNS = 'common';
 
 // When adding a new supported lng, add corresponding cronstrue locale above too
 export const supportedLngs = ['en-GB', 'en-US', 'fr', 'ar'] as const;

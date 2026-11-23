@@ -15,15 +15,7 @@ export const ErrorComponent = ({ message }: ErrorComponentProps) => {
   );
 };
 
-export function QueryErrorComponent({
-  error: _error,
-  reset,
-  children,
-}: {
-  error: any;
-  reset: () => void;
-  children: ReactNode;
-}) {
+function QueryErrorComponent({ reset, children }: { reset: () => void; children: ReactNode }) {
   return (
     <div className="col-span-full p-lg flex flex-col gap-md items-center">
       {children}

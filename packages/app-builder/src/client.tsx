@@ -77,11 +77,6 @@ function isBrowserExtensionError(exception: unknown): boolean {
 async function hydrate() {
   await initSentry();
 
-  // Initialize the global i18next singleton before hydrateRoot so useTranslation()
-  // works immediately on first render. The App() component in __root.tsx falls back
-  // to this singleton on the client (getSSRInstance returns undefined client-side).
-  // const i18n = await i18nextClientService.getI18nextClientInstance();
-
   startTransition(() => {
     hydrateRoot(
       document,

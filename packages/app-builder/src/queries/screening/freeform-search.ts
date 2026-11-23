@@ -72,7 +72,7 @@ export const useGetFreeformSearchQuery = (id: string) => {
   });
 };
 
-export const freeformSearchPresetsQueryKey = ['screening', 'freeform-search', 'presets'] as const;
+const freeformSearchPresetsQueryKey = ['screening', 'freeform-search', 'presets'] as const;
 
 export const useListFreeFormSearchPresetsQuery = (enabled = true) => {
   const getListFFS = useServerFn(getListFreeFormSearchPresetsFn);

@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-import * as React from 'react';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
@@ -64,7 +62,6 @@ export function getParentPath(path: Path) {
   }
   return undefined;
 }
-export type ParentPath = ReturnType<typeof getParentPath>;
 
 function getAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment): Tree<T> | undefined {
   switch (pathSegment.type) {
@@ -91,7 +88,7 @@ export function getAtPath<T>(tree: Tree<T>, path: Path): Tree<T> | undefined {
   return getAtPath(child, restPath);
 }
 
-export function setAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment, value: Tree<T>): Tree<T> {
+function setAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment, value: Tree<T>): Tree<T> {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;
@@ -164,19 +161,4 @@ export function removeAtPath<T>(tree: Tree<T>, path: Path, emptyTree?: Tree<T>):
   }
   const newChild = removeAtPath(child, restPath);
   return setAtPathSegment(tree, pathSegment, newChild);
-}
-
-export function useChildrenArray<C, T extends { children: C[] }>(
-  stringPath: string,
-  tree: T,
-): { child: T['children'][number]; key: string; treePath: string }[] {
-  return React.useMemo(
-    () =>
-      tree.children.map((child, index) => ({
-        key: nanoid(),
-        child,
-        treePath: `${stringPath}.children.${index}`,
-      })),
-    [stringPath, tree.children],
-  );
 }

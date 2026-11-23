@@ -1,4 +1,3 @@
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { SendEmailVerification } from '@app-builder/components/Auth/SendEmailVerification';
 import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { useClientServices } from '@app-builder/services/init-client';
@@ -28,7 +27,6 @@ const emailVerificationLoader = createServerFn()
 
 export const Route = createFileRoute('/_app/_auth/email-verification')({
   staticData: {
-    i18n: authI18n,
     alignment: 'reverse',
   },
   loader: () => emailVerificationLoader(),

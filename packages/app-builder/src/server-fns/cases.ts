@@ -28,7 +28,6 @@ import {
   closeCasePayloadSchema,
   editAssigneePayloadSchema,
   editInboxPayloadSchema,
-  editNamePayloadSchema,
   editSuspicionPayloadSchema,
   editTagsPayloadSchema,
   escalateCasePayloadSchema,
@@ -154,13 +153,6 @@ export const editInboxFn = createServerFn({ method: 'POST' })
   .validator(editInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { inboxId: data.inboxId } });
-  });
-
-export const editNameFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .validator(editNamePayloadSchema)
-  .handler(async ({ context, data }) => {
-    await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { name: data.name } });
   });
 
 export const editTagsFn = createServerFn({ method: 'POST' })

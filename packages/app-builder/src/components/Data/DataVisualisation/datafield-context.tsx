@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react';
 import { DataFieldsProps } from './DataFields';
 import { type MetadataType, type TYPE_DATA_TABLE_VISUALISATION_PRESET, type VALID_DATA_TYPE } from './data-type';
 
-export type DataVisualisationOptions = DataFieldsProps['options'];
+type DataVisualisationOptions = DataFieldsProps['options'];
 
 type POSSIBLE_PRESET = TYPE_DATA_TABLE_VISUALISATION_PRESET | 'custom' | undefined;
 
@@ -30,20 +30,8 @@ export function useCurrency() {
   return useContext(DataVisualisationContext).currency;
 }
 
-export function useDetectedCountry() {
-  return useContext(DataVisualisationContext).country;
-}
-
-export function usePreset() {
-  return useContext(DataVisualisationContext).preset;
-}
-
 export function useOptions() {
   return useContext(DataVisualisationContext).options;
-}
-
-export function useTable() {
-  return useContext(DataVisualisationContext).table;
 }
 
 // Per-field context — set by DataField, consumed by render functions
@@ -79,10 +67,6 @@ export function useFieldMetaData() {
 
 export function useField() {
   return useContext(DataFieldContext).field;
-}
-
-export function useFieldType() {
-  return useContext(DataFieldContext).fieldType;
 }
 
 export function useFieldCurrency() {

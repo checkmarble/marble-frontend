@@ -28,7 +28,7 @@ export async function getToastForPage(request: Request): Promise<ToastMessage | 
   return getToast();
 }
 
-export async function getToast(): Promise<ToastMessage | undefined> {
+async function getToast(): Promise<ToastMessage | undefined> {
   const session = await useToastSession();
   const raw = session.data.toastMessage;
   if (raw === undefined) return undefined;

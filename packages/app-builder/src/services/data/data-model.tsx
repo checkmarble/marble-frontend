@@ -43,8 +43,4 @@ export function DataModelContextProvider({
 }
 
 export const useDataModel = DataModelContext.useValue;
-
-export function getLinksToSingleMap(dataModel: DataModel) {
-  return new Map(dataModel.flatMap((table) => table.linksToSingle).map((link) => [link.id, link]));
-}
 export const useDataModelFeatureAccess = DataModelFeatureAccessContext.useValue;

@@ -6,13 +6,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { Input, NumberInput } from './Input';
 
 describe('Input', () => {
-  it('should render successfully', () => {
-    render(<Input aria-label="input" />);
-
-    const input = screen.getByLabelText('input');
-    expect(input).toBeInTheDocument();
-  });
-
   it('should be editable', async () => {
     render(<Input aria-label="input" placeholder="placeholder" />);
 

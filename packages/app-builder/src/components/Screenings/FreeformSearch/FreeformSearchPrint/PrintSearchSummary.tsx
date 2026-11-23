@@ -6,7 +6,7 @@ import { Tag } from 'ui-design-system';
 
 import { screeningsI18n } from '../../screenings-i18n';
 
-export interface PrintSearchInputs {
+interface PrintSearchInputs {
   entityType: SearchableSchema;
   fields: Record<string, string>;
   datasets: string[];
@@ -24,7 +24,6 @@ export const PrintSearchSummary: FunctionComponent<PrintSearchSummaryProps> = ({
   const { t } = useTranslation(screeningsI18n);
   const entityTypeKey = searchInputs.entityType.toLowerCase() as Lowercase<SearchableSchema>;
 
-  // Get non-empty fields
   const activeFields = Object.entries(searchInputs.fields).filter(([, value]) => value && value.trim() !== '');
 
   return (
@@ -77,5 +76,3 @@ export const PrintSearchSummary: FunctionComponent<PrintSearchSummaryProps> = ({
     </PrintSection>
   );
 };
-
-export default PrintSearchSummary;

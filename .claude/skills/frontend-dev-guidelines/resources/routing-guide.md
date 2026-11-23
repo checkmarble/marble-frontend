@@ -16,7 +16,7 @@ File routes in `packages/app-builder/src/routes/`. File name → URL and route I
 
 - Data from the route's `beforeLoad`: `Route.useRouteContext()` (`detection/scenarios/$scenarioId.tsx`, `detection/scenarios/$scenarioId/i/$iterationId.tsx`).
 - One array shared by several routes: type it `FunctionComponent<BreadCrumbProps<T>>[]`, read `data`, and make each route's loader return `T` (`caseDetailBreadcrumbs` in `components/CaseManager/case-detail-breadcrumbs.tsx`, used by `cases/_detail/s.$caseId.tsx` and `m.$caseId/index.tsx`).
-- Translate inside the component with `useTranslation([...])`. `staticData.i18n` and exported `handle = { i18n }` objects are Remix leftovers nothing reads: don't add them.
+- Translate inside the component with `useTranslation([...])`.
 
 ## Navigation
 

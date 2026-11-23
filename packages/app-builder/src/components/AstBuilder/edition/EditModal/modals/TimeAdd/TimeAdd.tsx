@@ -19,7 +19,7 @@ import { type OperandEditModalProps } from '../../EditModal';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { adaptDurationAndUnitFromTemporalDuration } from './helpers';
 
-export const defaultISO8601Duration = 'PT0S';
+const defaultISO8601Duration = 'PT0S';
 function getTemporalDuration(duration: number, durationUnit: DurationUnit) {
   return Temporal.Duration.from({ [durationUnit]: duration }).toString();
 }

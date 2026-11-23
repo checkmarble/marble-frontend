@@ -16,7 +16,6 @@ import { useOrganizationDetails } from '@app-builder/services/organization/organ
 import * as Sentry from '@sentry/react';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { type Namespace } from 'i18next';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -31,9 +30,6 @@ const screeningSearchLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/screening-search/')({
-  staticData: {
-    i18n: ['common', 'screenings', 'navigation'] satisfies Namespace,
-  },
   loader: () => screeningSearchLoader(),
   errorComponent: ({ error }) => {
     Sentry.captureException(error);

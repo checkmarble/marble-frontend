@@ -3,22 +3,21 @@ import {
   isBinaryAggregationFilter,
   isComplexAggregationFilter,
   isFuzzyMatchFilterOptionsAstNode,
-  isUnaryAggregationFilter,
+  NewFuzzyMatchFilterOptionsAstNode,
+  NewTimestampExtractFilterOptionsAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import { NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { describe, expect, it } from 'vitest';
 import {
-  addCustomerKpiFilter,
   createCustomerKpiAggregation,
   getCustomerKpiNavigationOption,
   isCustomerKpiAggregationComplete,
-  setCustomerKpiFilterField,
-  setCustomerKpiFilterOperator,
   setCustomerKpiFilterValue,
   setCustomerKpiNavigationOption,
 } from './customer-kpis-ast';
+import { addUserFilter } from './customer-kpis-ast.test-helpers';
 
 const navigationOption: NavigationOption = {
   id: 'customer-transactions',
@@ -69,11 +68,7 @@ describe('customer KPI aggregation AST', () => {
     setCustomerKpiNavigationOption(aggregation, navigationOption);
     aggregation.namedChildren.fieldName.constant = 'id';
 
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-    filter.namedChildren.fieldName.constant = 'status';
-    setCustomerKpiFilterOperator(filter, '=');
+    const filter = addUserFilter(aggregation, { fieldName: 'status', operator: '=' });
     setCustomerKpiFilterValue(filter, 'completed');
 
     expect(getCustomerKpiNavigationOption(aggregation, 'customers', dataModel)).toEqual(navigationOption);
@@ -102,53 +97,6 @@ describe('customer KPI aggregation AST', () => {
     expect(aggregation.namedChildren.fieldName.constant).toBe('object_id');
   });
 
-  it('preserves operand transitions for unary, binary, list, and fuzzy-match filters', () => {
-    const aggregation = createCustomerKpiAggregation();
-    setCustomerKpiNavigationOption(aggregation, navigationOption);
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-
-    setCustomerKpiFilterOperator(filter, 'IsEmpty');
-    expect(isUnaryAggregationFilter(filter)).toBe(true);
-
-    setCustomerKpiFilterOperator(filter, '=');
-    expect(isBinaryAggregationFilter(filter)).toBe(true);
-    if (!isBinaryAggregationFilter(filter)) throw new Error('Expected a binary filter');
-    expect(filter.namedChildren.value.name).toBe('Undefined');
-
-    setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
-    expect(isComplexAggregationFilter(filter)).toBe(true);
-    if (!isComplexAggregationFilter(filter)) throw new Error('Expected a complex filter');
-    expect(isFuzzyMatchFilterOptionsAstNode(filter.namedChildren.value)).toBe(true);
-    expect(filter.namedChildren.value.namedChildren.value.name).toBe('Undefined');
-
-    setCustomerKpiFilterOperator(filter, 'IsInList');
-    expect(isBinaryAggregationFilter(filter)).toBe(true);
-    if (!isBinaryAggregationFilter(filter)) throw new Error('Expected a binary filter');
-    setCustomerKpiFilterValue(filter, { type: 'stringList', values: ['completed'] });
-    expect(filter.namedChildren.value).toMatchObject({ constant: ['completed'] });
-  });
-
-  it('resets a filter operator and value when its field changes', () => {
-    const aggregation = createCustomerKpiAggregation();
-    setCustomerKpiNavigationOption(aggregation, navigationOption);
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-
-    filter.namedChildren.fieldName.constant = 'status';
-    setCustomerKpiFilterOperator(filter, '=');
-    setCustomerKpiFilterValue(filter, 'completed');
-    setCustomerKpiFilterField(aggregation, 0, 'id');
-
-    const resetFilter = aggregation.namedChildren.filters.children[3];
-    if (!resetFilter || !isBinaryAggregationFilter(resetFilter)) throw new Error('Expected a binary filter');
-    expect(resetFilter.namedChildren.fieldName.constant).toBe('id');
-    expect(resetFilter.namedChildren.operator.constant).toBeNull();
-    expect(resetFilter.namedChildren.value.name).toBe('Undefined');
-  });
-
   it('rejects incompatible aggregate and filter field types', () => {
     const aggregation = createCustomerKpiAggregation();
     aggregation.namedChildren.label.constant = 'Average status';
@@ -158,11 +106,11 @@ describe('customer KPI aggregation AST', () => {
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
 
     aggregation.namedChildren.fieldName.constant = 'id';
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-    filter.namedChildren.fieldName.constant = 'id';
-    setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
+    addUserFilter(aggregation, {
+      fieldName: 'id',
+      operator: 'FuzzyMatch',
+      value: NewFuzzyMatchFilterOptionsAstNode(),
+    });
 
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
   });
@@ -172,11 +120,7 @@ describe('customer KPI aggregation AST', () => {
     aggregation.namedChildren.label.constant = 'Transactions';
     setCustomerKpiNavigationOption(aggregation, navigationOption);
     aggregation.namedChildren.fieldName.constant = 'id';
-    addCustomerKpiFilter(aggregation);
-    const filter = aggregation.namedChildren.filters.children[3];
-    if (!filter) throw new Error('Expected a user filter');
-    filter.namedChildren.fieldName.constant = 'status';
-    setCustomerKpiFilterOperator(filter, '=');
+    const filter = addUserFilter(aggregation, { fieldName: 'status', operator: '=' });
     if (!isBinaryAggregationFilter(filter)) throw new Error('Expected a binary filter');
 
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
@@ -191,11 +135,18 @@ describe('customer KPI aggregation AST', () => {
     filter.namedChildren.value = NewUndefinedAstNode();
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(false);
 
-    setCustomerKpiFilterOperator(filter, 'FuzzyMatch');
-    if (!isComplexAggregationFilter(filter) || !isFuzzyMatchFilterOptionsAstNode(filter.namedChildren.value)) {
+    aggregation.namedChildren.filters.children.splice(3, 1);
+    const fuzzyFilter = addUserFilter(aggregation, {
+      fieldName: 'status',
+      operator: 'FuzzyMatch',
+      value: NewFuzzyMatchFilterOptionsAstNode({ value: NewConstantAstNode({ constant: 'completed' }) }),
+    });
+    if (
+      !isComplexAggregationFilter(fuzzyFilter) ||
+      !isFuzzyMatchFilterOptionsAstNode(fuzzyFilter.namedChildren.value)
+    ) {
       throw new Error('Expected a fuzzy-match filter');
     }
-    filter.namedChildren.value.namedChildren.value = NewConstantAstNode({ constant: 'completed' });
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
   });
 
@@ -205,20 +156,20 @@ describe('customer KPI aggregation AST', () => {
     setCustomerKpiNavigationOption(aggregation, navigationOption);
     aggregation.namedChildren.fieldName.constant = 'id';
 
-    addCustomerKpiFilter(aggregation);
-    const multipleOfFilter = aggregation.namedChildren.filters.children[3];
-    if (!multipleOfFilter) throw new Error('Expected a user filter');
-    multipleOfFilter.namedChildren.fieldName.constant = 'id';
-    setCustomerKpiFilterOperator(multipleOfFilter, 'IsMultipleOf');
+    addUserFilter(aggregation, {
+      fieldName: 'id',
+      operator: 'IsMultipleOf',
+      value: NewConstantAstNode({ constant: 10 }),
+    });
 
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
 
     aggregation.namedChildren.filters.children.splice(3, 1);
-    addCustomerKpiFilter(aggregation);
-    const timestampExtractFilter = aggregation.namedChildren.filters.children[3];
-    if (!timestampExtractFilter) throw new Error('Expected a user filter');
-    timestampExtractFilter.namedChildren.fieldName.constant = 'occurred_at';
-    setCustomerKpiFilterOperator(timestampExtractFilter, 'TimestampExtract');
+    addUserFilter(aggregation, {
+      fieldName: 'occurred_at',
+      operator: 'TimestampExtract',
+      value: NewTimestampExtractFilterOptionsAstNode({ part: 'month', ranges: [[1, 1]] }),
+    });
 
     expect(isCustomerKpiAggregationComplete(aggregation, 'customers', dataModel)).toBe(true);
   });

@@ -50,7 +50,6 @@ export const useResizeObserver = <T extends HTMLElement = HTMLDivElement>(
     const element = elementRef.current;
     if (!element) return;
 
-    // Create ResizeObserver to watch for size changes
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;

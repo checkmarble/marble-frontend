@@ -4,7 +4,7 @@ import { listScreeningReviewPageFn } from '@app-builder/server-fns/screening-rev
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export const SCREENING_REVIEW_PAGE_SIZE = 50;
+const SCREENING_REVIEW_PAGE_SIZE = 50;
 
 export interface ScreeningReviewPageParams {
   inboxId?: string;

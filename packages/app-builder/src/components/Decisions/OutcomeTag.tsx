@@ -62,7 +62,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   );
 }
 
-export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
+const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
       sm: 'gap-xs rounded-full px-xs py-2xs text-xs font-normal',

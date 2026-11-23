@@ -12,7 +12,7 @@ import {
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 
 // return just an array of error from a recursive evaluation
-export function flattenNodeEvaluationErrors(evaluation: NodeEvaluation): EvaluationError[] {
+function flattenNodeEvaluationErrors(evaluation: NodeEvaluation): EvaluationError[] {
   return [
     ...(evaluation.errors ?? []),
     ...evaluation.children.flatMap(flattenNodeEvaluationErrors),
@@ -33,7 +33,7 @@ export function findRuleValidation(validation: ScenarioValidation, ruleId: strin
   return ruleValidation;
 }
 
-export function countNodeEvaluationErrors(evaluation: NodeEvaluation): number {
+function countNodeEvaluationErrors(evaluation: NodeEvaluation): number {
   return flattenNodeEvaluationErrors(evaluation).length;
 }
 
@@ -296,17 +296,6 @@ export function collectScreeningValidationIssues(
   );
 
   return issues;
-}
-
-export function collectScreeningValidationMessages(
-  screening: ScreeningConfigValidation,
-  getScenarioErrorMessage: (code: ScenarioValidationErrorCodeDto) => string,
-  labels: ScreeningValidationSectionLabels,
-  options?: ScreeningValidationOptions,
-): string[] {
-  return collectScreeningValidationIssues(screening, getScenarioErrorMessage, labels, options).map(
-    (issue) => issue.message,
-  );
 }
 
 export function collectRuleValidationMessages(

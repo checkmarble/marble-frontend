@@ -3,7 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
-export const databaseAccessAstNodeName = 'DatabaseAccess';
+const databaseAccessAstNodeName = 'DatabaseAccess';
 export interface DatabaseAccessAstNode {
   id: string;
   name: typeof databaseAccessAstNodeName;
@@ -37,7 +37,7 @@ export function NewDatabaseAccessAstNode(args: {
   };
 }
 
-export const payloadAstNodeName = 'Payload';
+const payloadAstNodeName = 'Payload';
 export interface PayloadAstNode {
   id: string;
   name: typeof payloadAstNodeName;

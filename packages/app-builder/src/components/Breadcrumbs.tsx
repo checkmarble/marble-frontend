@@ -8,7 +8,7 @@ export type BreadCrumbProps<T = unknown> = {
   data: T;
 };
 
-export type HandleWithBreadCrumbs = {
+type HandleWithBreadCrumbs = {
   BreadCrumbs?: FunctionComponent<BreadCrumbProps>[];
 };
 

@@ -25,7 +25,7 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
   );
 }
 
-export function PivotDescription({ pivot }: { pivot: Pivot }) {
+function PivotDescription({ pivot }: { pivot: Pivot }) {
   const { t } = useTranslation(dataI18n);
   if (pivot.type === 'link') {
     return (

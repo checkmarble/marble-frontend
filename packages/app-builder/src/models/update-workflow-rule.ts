@@ -1,11 +1,10 @@
-import { Rule, WorkflowAction, WorkflowCondition } from '@app-builder/models/scenario/workflow';
+import { Rule, WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import * as R from 'remeda';
 import { z } from 'zod/v4';
 
-export type ConditionsMap = Map<string, WorkflowCondition>;
-export type ActionsMap = Map<string, WorkflowAction>;
+type ConditionsMap = Map<string, WorkflowCondition>;
 
 const astNodeSchema: z.ZodTypeAny = z.object({
   id: z.string().optional(),
@@ -79,7 +78,7 @@ export const ruleSchema = z.object({
   conditions: protectArray(z.array(workflowConditionSchema)),
   actions: protectArray(z.array(workflowActionSchema).length(1, 'Exactly one action is required')),
 });
-export function validateUpdateWorkflowRuleRequest(data: unknown): Rule {
+function validateUpdateWorkflowRuleRequest(data: unknown): Rule {
   return ruleSchema.parse(data) as Rule;
 }
 
@@ -109,7 +108,6 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   // First get the rule from the API
   const originalRule = await scenario.getWorkflowRule({ ruleId: rule.id });
 
-  // Handle conditions
   const originalConditions: ConditionsMap = new Map(
     originalRule.conditions.map((condition) => [condition.id, condition]),
   );
@@ -128,7 +126,6 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   );
   await Promise.all(deleteMissingConditionsPromises);
 
-  // Create new conditions
   const createNewConditionsPromises = Array.from(getNewItems(originalConditions, modifiedConditions).values()).map(
     (condition) =>
       scenario.createWorkflowCondition({
@@ -138,7 +135,6 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   );
   await Promise.all(createNewConditionsPromises);
 
-  // Update modified conditions
   const updateModifiedConditionsPromises = Array.from(
     getModifiedItems(originalConditions, modifiedConditions).values(),
   ).map((condition) =>
@@ -150,7 +146,6 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   );
   await Promise.all(updateModifiedConditionsPromises);
 
-  // Update action
   // We currently support only one action per rule
   // A rule always has an action
   const originalAction = originalRule.actions[0];
@@ -171,9 +166,6 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
     });
   }
 
-  // Update rule name
-
-  // Update rule name
   if (originalRule.name !== modifiedRule.name || originalRule.fallthrough !== modifiedRule.fallthrough) {
     await scenario.updateWorkflowRule({
       ruleId: rule.id,
@@ -181,13 +173,4 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
       fallthrough: modifiedRule.fallthrough,
     });
   }
-
-  // Update rule fallthrough
-  // For future use
-  // if (originalRule.fallthrough !== modifiedRule.fallthrough) {
-  //   scenario.updateWorkflowRule({
-  //     ruleId: rule.id,
-  //     fallthrough: modifiedRule.fallthrough,
-  //   });
-  // }
 }

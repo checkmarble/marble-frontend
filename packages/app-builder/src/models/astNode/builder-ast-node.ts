@@ -40,8 +40,6 @@ export type EditableAstNode =
 
 /**
  * Check if the node is editable in a dedicated modal
- * @param node
- * @returns
  */
 export function isEditableAstNode(node: AstNode): node is EditableAstNode {
   return (
@@ -62,8 +60,6 @@ type LeafOperandAstNode = EditableAstNode | TimeNowAstNode;
 
 /**
  * Check if the node is considered as leaf operand
- * @param node
- * @returns
  */
 export function isLeafOperandAstNode(node: AstNode): node is LeafOperandAstNode {
   return isEditableAstNode(node) || isTimeNow(node);
@@ -78,8 +74,6 @@ export type KnownOperandAstNode =
 
 /**
  * Check if the node is handled in the Operand UI
- * @param node
- * @returns
  */
 export function isKnownOperandAstNode(node: AstNode): node is KnownOperandAstNode {
   return (

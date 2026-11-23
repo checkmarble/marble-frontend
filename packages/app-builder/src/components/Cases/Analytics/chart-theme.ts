@@ -24,13 +24,6 @@ export function formatChartNumber(value: number, language: string): string {
   }).format(value);
 }
 
-/**
- * Vertical space (in px) reserved at the bottom of a bar chart to fit the
- * x-axis tick labels and the legend strip below. Used as both `margin.bottom`
- * and `legend.translateY` to keep the two values coupled.
- */
-export const CHART_LEGEND_OFFSET = 40;
-
 export const CASE_ANALYTICS_COLORS = {
   primary: 'var(--color-purple-primary)',
   primaryLight: 'var(--color-purple-secondary)',

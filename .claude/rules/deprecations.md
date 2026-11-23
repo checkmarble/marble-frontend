@@ -10,10 +10,8 @@ The `@deprecated` tag is the source of truth and usually names its replacement â
 tag and follow it. Migrate to the replacement's own API rather than forcing the old
 markup or props onto it.
 
-A `V2` suffix says nothing on its own: `CaseStatusBadgeV2` replaces the `@deprecated`
-`CaseStatusBadge`, while `Tooltip`/`TooltipV2` are both live with no tag, and `ScrollArea`
-has no tag but no consumers outside its spec/stories (use `ScrollAreaV2`). Check the tag
-and current usage before picking.
+A `V2` suffix says nothing on its own: `Tooltip`/`TooltipV2` are both live with no tag.
+Check the tag and current usage before picking.
 
 Defaults for new code:
 

@@ -8,7 +8,7 @@ import { useClientServices } from '@app-builder/services/init-client';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { ClientOnly, useHydrated } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 
 function SendEmailVerificationButton({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) {
@@ -62,31 +62,6 @@ export function SendEmailVerification() {
       fallback={<SendEmailVerificationButton>{t('auth:email-verification.resend')}</SendEmailVerificationButton>}
     >
       <ClientSendEmailVerificationButton />
-    </ClientOnly>
-  );
-}
-
-function ClientSendEmailVerificationDescription() {
-  const { t } = useTranslation(['auth']);
-  const clientServices = useClientServices();
-
-  const { isFirebaseEmulator } = clientServices.authenticationClientService.authenticationClientRepository;
-
-  return (
-    <Trans
-      t={t}
-      i18nKey={
-        isFirebaseEmulator ? 'auth:email-verification.emulator_description' : 'auth:email-verification.description'
-      }
-    />
-  );
-}
-
-export function SendEmailVerificationDescription() {
-  const { t } = useTranslation(['auth']);
-  return (
-    <ClientOnly fallback={<Trans t={t} i18nKey="auth:email-verification.description" />}>
-      <ClientSendEmailVerificationDescription />
     </ClientOnly>
   );
 }

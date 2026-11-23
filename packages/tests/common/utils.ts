@@ -11,7 +11,7 @@ import type { Locator, Page } from '@playwright/test';
  *
  * Park the cursor against the right edge so the sidebar stays collapsed.
  */
-export const parkMouse = async (page: Page) => {
+const parkMouse = async (page: Page) => {
   const viewport = page.viewportSize();
   if (!viewport) return;
 

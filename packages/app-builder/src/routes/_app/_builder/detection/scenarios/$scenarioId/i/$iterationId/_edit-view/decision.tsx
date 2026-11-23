@@ -34,7 +34,7 @@ const conflictingWithSchemaValidationErrors: string[] = [
   'SCORE_THRESHOLD_MISSING',
 ] satisfies ScenarioValidationErrorCodeDto[];
 
-function getFormSchema(t: TFunction<typeof handle.i18n>) {
+function getFormSchema(t: TFunction<typeof decisionPageI18n>) {
   return z
     .object({
       scoreReviewThreshold: z.coerce
@@ -107,9 +107,7 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
     });
 }
 
-const handle = {
-  i18n: [...decisionsI18n, ...scenarioI18n, 'common'] as const,
-};
+const decisionPageI18n = [...decisionsI18n, ...scenarioI18n, 'common'] as const;
 
 type SaveDecisionResult = { status: 'success' | 'error'; errors: any };
 
@@ -158,7 +156,7 @@ export const Route = createFileRoute(
 });
 
 function Decision() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(decisionPageI18n);
 
   const editorMode = useEditorMode();
 
@@ -198,7 +196,7 @@ function ViewScoreThresholds() {
 }
 
 function EditScoreThresholds() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(decisionPageI18n);
   const params = Route.useParams();
   const { scenarioIteration, scenarioValidation } = useDetectionScenarioIterationData();
   const revalidate = useLoaderRevalidator();

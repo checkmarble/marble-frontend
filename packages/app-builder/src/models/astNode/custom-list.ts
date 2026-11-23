@@ -3,7 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
-export const customListAccessAstNodeName = 'CustomListAccess';
+const customListAccessAstNodeName = 'CustomListAccess';
 export interface CustomListAccessAstNode {
   id: string;
   name: typeof customListAccessAstNodeName;

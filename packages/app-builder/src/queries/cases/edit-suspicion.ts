@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { serialize } from 'object-to-formdata';
 
-export { type EditSuspicionPayload, type EditSuspicionResponse, editSuspicionPayloadSchema };
+export { type EditSuspicionPayload, editSuspicionPayloadSchema };
 
 export const useEditSuspicionMutation = () => {
   const editSuspicion = useServerFn(editSuspicionFn);

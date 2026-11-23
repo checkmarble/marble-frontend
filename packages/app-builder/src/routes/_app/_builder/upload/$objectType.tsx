@@ -14,7 +14,7 @@ import { ClientOnly, createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Namespace, type ParseKeys } from 'i18next';
+import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
@@ -55,9 +55,6 @@ const uploadLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/upload/$objectType')({
-  staticData: {
-    i18n: ['common', 'upload'] satisfies Namespace,
-  },
   loader: ({ params }) => uploadLoader({ data: { params } }),
   component: Upload,
 });

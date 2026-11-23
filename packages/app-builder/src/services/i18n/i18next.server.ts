@@ -74,5 +74,3 @@ export function makeI18nextServerService() {
     setLanguage,
   };
 }
-
-export type I18nextServerService = ReturnType<typeof makeI18nextServerService>;

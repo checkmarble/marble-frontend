@@ -30,13 +30,6 @@ export interface EvaluationError {
   argumentName?: string;
 }
 
-export function isUndefinedFunctionError(evaluationError: {
-  error: string;
-  message: string;
-}): evaluationError is { error: 'UNDEFINED_FUNCTION'; message: string } {
-  return evaluationError.error === 'UNDEFINED_FUNCTION';
-}
-
 export interface NodeEvaluation {
   returnValue: ReturnValue;
   errors: EvaluationError[];

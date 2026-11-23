@@ -18,7 +18,7 @@ const secondaryPriority: Record<string, Record<string, number>> = {
   adverse_media: { kind: 0, category: 1 },
 };
 
-export function sortTopics(topicA: string, topicB: string): number {
+function sortTopics(topicA: string, topicB: string): number {
   const aParts = topicA.split('.');
   const bParts = topicB.split('.');
   const aPrefix = aParts[0] ?? '';
@@ -42,7 +42,7 @@ interface TopicsDisplayProps {
   containerClassName?: string;
 }
 
-export const TOPIC_ORDER: Record<ScreeningCategory, keyof typeof topicCategoryPriority | ''> = {
+const TOPIC_ORDER: Record<ScreeningCategory, keyof typeof topicCategoryPriority | ''> = {
   sanctions: 'sanctions',
   peps: 'pep',
   'adverse-media': 'adverse_media',

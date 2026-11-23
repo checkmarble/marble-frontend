@@ -20,7 +20,7 @@ export interface FuzzyMatchAstNode {
   };
 }
 
-export function NewFuzzyMatchAstNode({
+function NewFuzzyMatchAstNode({
   config,
   left = NewUndefinedAstNode(),
   right = NewUndefinedAstNode(),
@@ -53,7 +53,7 @@ export interface FuzzyMatchAnyOfAstNode {
   };
 }
 
-export function NewFuzzyMatchAnyOfAstNode({
+function NewFuzzyMatchAnyOfAstNode({
   config,
   left = NewUndefinedAstNode(),
   right = NewUndefinedAstNode(),
@@ -122,13 +122,11 @@ export function NewFuzzyMatchComparatorAstNode({
   };
 }
 
-export function isFuzzyMatch(node: IdLessAstNode | AstNode): node is CheckNodeId<FuzzyMatchAstNode, typeof node> {
+function isFuzzyMatch(node: IdLessAstNode | AstNode): node is CheckNodeId<FuzzyMatchAstNode, typeof node> {
   return node.name === fuzzyMatchAstNodeName;
 }
 
-export function isFuzzyMatchAnyOf(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<FuzzyMatchAnyOfAstNode, typeof node> {
+function isFuzzyMatchAnyOf(node: IdLessAstNode | AstNode): node is CheckNodeId<FuzzyMatchAnyOfAstNode, typeof node> {
   return node.name === fuzzyMatchAnyOfAstNodeName;
 }
 
@@ -155,7 +153,7 @@ export function isFuzzyMatchComparator(
 export const STRING_TEMPLATE_VARIABLE_REGEXP = /%([a-z0-9_]+)%/gim;
 export const STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP = /(%[a-z0-9_]+%)/gim;
 
-export const stringTemplateAstNodeName = 'StringTemplate';
+const stringTemplateAstNodeName = 'StringTemplate';
 export interface StringTemplateAstNode {
   id: string;
   name: typeof stringTemplateAstNodeName;
@@ -187,7 +185,7 @@ export function isStringTemplateAstNode(
 // String Concat     ///
 ////////////////////////
 
-export const stringConcatAstNodeName = 'StringConcat';
+const stringConcatAstNodeName = 'StringConcat';
 export interface StringConcatAstNode {
   id: string;
   name: typeof stringConcatAstNodeName;

@@ -1,6 +1,5 @@
 import { type CurrentUser } from '@app-builder/models';
 import { type Organization, type UserOrganization } from '@app-builder/models/organization';
-// import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useMemo } from 'react';
 

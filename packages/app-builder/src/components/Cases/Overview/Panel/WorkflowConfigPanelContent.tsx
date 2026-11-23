@@ -64,7 +64,6 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
       const currentSettings = workflowState.get(inbox.id);
       if (!currentSettings) continue;
 
-      // Check if settings changed
       const hasChanged =
         currentSettings.caseReviewManual !== inbox.caseReviewManual ||
         currentSettings.caseReviewOnCaseCreated !== inbox.caseReviewOnCaseCreated ||

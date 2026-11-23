@@ -7,11 +7,6 @@ export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSe
 
 export type RateLimiter = (key: string) => RateLimitResult;
 
-// User id, otherwise email. Undefined when both are absent.
-export function perUserRateLimitKey(actorIdentity: { userId?: string; email?: string }): string | undefined {
-  return actorIdentity.userId ?? actorIdentity.email;
-}
-
 // Fixed-window, in-memory limiter. Each limiter owns its own store, so two routes with
 // separate limiters never share a budget. Counts are per process: with N instances the
 // effective limit is N * max. The default clock is monotonic (`performance.now`, called

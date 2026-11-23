@@ -145,7 +145,6 @@ export function ConditionSelector({
     (condition?.function && condition.function !== 'always' && condition.function !== 'never') ?? false;
   const selectedCondition = condition?.function;
 
-  // Render condition line with common structure
   const renderConditionLine = () => {
     // Special case for payload_evaluates with custom rendering
     if (selectedCondition === 'payload_evaluates' && triggerObjectType && dataModel) {

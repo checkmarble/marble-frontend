@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { customerAggregatesQueryKey } from './get-customer-aggregates';
 
-export type UpdateCustomerAggregatePayload = {
+type UpdateCustomerAggregatePayload = {
   recordType: string;
   aggregateId: string;
   customerId: string;

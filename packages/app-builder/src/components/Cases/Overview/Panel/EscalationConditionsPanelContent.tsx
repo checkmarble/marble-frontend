@@ -66,7 +66,6 @@ export const EscalationConditionsPanelContent = ({
   );
 
   const handleSave = () => {
-    // Get original conditions to detect changes
     const originalConditions = new Map(
       inboxes.filter((inbox) => inbox.escalationInboxId).map((inbox) => [inbox.id, inbox.escalationInboxId]),
     );
@@ -78,7 +77,6 @@ export const EscalationConditionsPanelContent = ({
 
     const updates: { inboxId: string; escalationInboxId: string | null }[] = [];
 
-    // Find removed escalations (were in original but not in current)
     for (const [sourceId] of originalConditions) {
       if (!currentConditions.has(sourceId)) {
         updates.push({ inboxId: sourceId, escalationInboxId: null });

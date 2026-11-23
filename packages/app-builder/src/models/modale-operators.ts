@@ -19,19 +19,19 @@ export function isAggregatorOperator(value: string): value is AggregatorOperator
   return (aggregatorOperators as ReadonlyArray<string>).includes(value);
 }
 
-export const aggregatorsWithParams = ['PCTILE'] as const;
+const aggregatorsWithParams = ['PCTILE'] as const;
 
 export function aggregatorHasParams(aggregator: AggregatorOperator): boolean {
   return (aggregatorsWithParams as ReadonlyArray<AggregatorOperator>).includes(aggregator);
 }
 
-export const restrictedAggregators = ['STDDEV', 'PCTILE', 'MEDIAN'] as const;
+const restrictedAggregators = ['STDDEV', 'PCTILE', 'MEDIAN'] as const;
 
 export function isRestrictedAggregator(aggregator: AggregatorOperator): boolean {
   return (restrictedAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);
 }
 
-export const performanceHeavyAggregators = ['PCTILE', 'MEDIAN'] as const;
+const performanceHeavyAggregators = ['PCTILE', 'MEDIAN'] as const;
 
 export function isPerformanceHeavyAggregator(aggregator: AggregatorOperator): boolean {
   return (performanceHeavyAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);

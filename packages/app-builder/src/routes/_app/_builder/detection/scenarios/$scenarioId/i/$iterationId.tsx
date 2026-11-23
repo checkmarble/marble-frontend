@@ -5,12 +5,11 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
-import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
+import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { EditorMode, EditorModeContextProvider } from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
-import { findRuleValidation } from '@app-builder/services/validation';
 import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
@@ -54,12 +53,6 @@ const iterationLayoutLoader = createServerFn()
       screeningsConfigs: scenarioIteration.screeningConfigs,
     };
   });
-
-export const useCurrentRuleValidationRule = () => {
-  const ruleId = useParam('ruleId');
-  const { scenarioValidation } = useDetectionScenarioIterationData();
-  return findRuleValidation(scenarioValidation, ruleId);
-};
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId')({
   beforeLoad: ({ params }) => iterationLayoutLoader({ data: { params } }),

@@ -16,7 +16,7 @@ const copyScenarioFormSchema = z.object({
   name: z.string(),
 });
 
-export function CopyScenario({
+function CopyScenario({
   children,
   scenarioId,
   scenarioName,

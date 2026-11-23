@@ -1,7 +1,7 @@
 import * as z from 'zod/v4';
 
 const protocolWhitelist = ['http:', 'https:'];
-export const urlDataTypeSchema = z.string().refine((value) => {
+const urlDataTypeSchema = z.string().refine((value) => {
   try {
     const url = new URL(value);
     return protocolWhitelist.includes(url.protocol);

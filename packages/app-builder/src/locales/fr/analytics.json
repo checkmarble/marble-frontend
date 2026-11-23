@@ -25,7 +25,6 @@
   "filters.custom_filters.title": "Configuration du filtre",
   "filters.custom_filters.undelete_filter": "Restaurer le filtre",
   "filters.select_comparison_date_range.placeholder": "Ajouter une période à comparer",
-  "legacy-analytics-link": "Voir les métriques sur les investigations",
   "no_data": "Aucun donnée disponible",
   "rule_hits.columns.false_positive_ratio": "% faux positifs parmi les activations",
   "rule_hits.columns.false_positive_ratio.tooltip": "Pourcentage d'activations marquées comme faux positifs après investigation",

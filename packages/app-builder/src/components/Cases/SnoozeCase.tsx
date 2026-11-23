@@ -26,7 +26,6 @@ import { Icon } from 'ui-icons';
 
 type Durations = 'tomorrow' | 'oneWeek' | 'oneMonth' | 'nextMonday';
 
-// Set all dates to 9:00 AM
 const setTo9AM = (date: Date) => {
   const d = new Date(date);
   d.setHours(9, 0, 0, 0);

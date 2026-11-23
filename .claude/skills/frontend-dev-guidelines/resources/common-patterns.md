@@ -21,7 +21,6 @@ Entitlement levels are `FeatureAccessLevelDto` (`'allowed' | 'test' | 'restricte
 
 - `t()` keys are **not** type-checked, because `services/i18n/i18next.d.ts` types them against `resources['en']`, which doesn't exist (locales are `en-GB`, `en-US`, `fr`, `ar`). Check that the key exists in `locales/en/<file>.json`.
 - Namespace ids are the camelCase keys in `services/i18n/resources/en.ts`, so `continuousScreening` maps to `continuous-screening.json`. Adding keys or namespaces: `.claude/rules/i18n.md`.
-- Don't add `export const handle = { i18n }` (Remix-era).
 - On the server (server fn handler or function middleware): `const t = await context.services.i18nextService.getFixedT(getRequest(), ['common', 'cases'])`, with `getRequest` from `@tanstack/react-start/server` (`addRuleSnoozeFn` in `server-fns/cases.ts`).
 
 ## Icons
@@ -51,4 +50,4 @@ Helpers are in `@app-builder/utils/format`.
 
 - Locale: `useFormatLanguage()`, set by the root loader so SSR and hydration agree; never `i18n.language`, `navigator.language` or `toLocale*()` in render (old code does). It is a plain string: don't switch exhaustively on it.
 - In components, `useFormatDateTime()` applies the user's locale **and timezone**. `formatDateTimeWithoutPresets(ts, { language, … })` ignores the timezone unless you pass `timeZone: useFormatTimezone()`.
-- `formatNumber`, `formatPercentage`, `formatDuration` and `formatDateRelative` take the `language`. `formatCurrency` takes a Dinero currency object, not an ISO code. For date-fns, pass `locale: getDateFnsLocale(language)` (`services/i18n/i18n-config`).
+- `formatNumber`, `formatPercentage`, `formatDuration` and `formatDateRelative` take the `language`. For date-fns, pass `locale: getDateFnsLocale(language)` (`services/i18n/i18n-config`).

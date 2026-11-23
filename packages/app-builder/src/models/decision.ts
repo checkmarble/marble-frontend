@@ -61,7 +61,7 @@ export interface ScheduledExecution {
   manifestRowsProcessed: number;
 }
 
-export const scheduledExecutionInProgressByStatus = {
+const scheduledExecutionInProgressByStatus = {
   pending: true,
   processing: true,
   success: false,
@@ -71,7 +71,7 @@ export const scheduledExecutionInProgressByStatus = {
   cancelled: false,
 } as const satisfies Record<ScheduledExecution['status'], boolean>;
 
-export function isScheduledExecutionInProgress(status: ScheduledExecution['status']) {
+function isScheduledExecutionInProgress(status: ScheduledExecution['status']) {
   return scheduledExecutionInProgressByStatus[status];
 }
 
@@ -111,10 +111,6 @@ interface RuleExecutionCore {
 
 export interface RuleExecutionNoHit extends RuleExecutionCore {
   outcome: 'no_hit';
-}
-
-export function isRuleExecutionNoHit(ruleExecution: RuleExecution): ruleExecution is RuleExecutionNoHit {
-  return ruleExecution.outcome === 'no_hit';
 }
 
 export interface RuleExecutionHit extends RuleExecutionCore {

@@ -22,12 +22,16 @@ type AiReviewPanelProps = {
 export function AiReviewPanel({ caseId, canManuallyReview, open, onOpenChange, reviews }: AiReviewPanelProps) {
   return (
     <Panel.Root open={open} onOpenChange={onOpenChange}>
-      <AiReviewPanelContent {...{ caseId, canManuallyReview, open, onOpenChange, reviews }} />
+      <AiReviewPanelContent {...{ caseId, canManuallyReview, reviews }} />
     </Panel.Root>
   );
 }
 
-function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews }: AiReviewPanelProps) {
+function AiReviewPanelContent({
+  caseId,
+  canManuallyReview,
+  reviews,
+}: Omit<AiReviewPanelProps, 'open' | 'onOpenChange'>) {
   const { t } = useTranslation(['cases', 'common']);
   const formatDateTime = useFormatDateTime();
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();

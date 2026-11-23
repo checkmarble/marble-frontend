@@ -23,7 +23,7 @@ function getMatchTopicPriority(entity: ScreeningMatchPayload): number {
   return minPriority;
 }
 
-export function sortPayloadsByTopics(a: ScreeningMatchPayload, b: ScreeningMatchPayload): number {
+function sortPayloadsByTopics(a: ScreeningMatchPayload, b: ScreeningMatchPayload): number {
   const aPriority = getMatchTopicPriority(a);
   const bPriority = getMatchTopicPriority(b);
 

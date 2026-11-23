@@ -3,7 +3,7 @@ import { updateInboxFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { type UpdateInboxPayload, updateInboxPayloadSchema };
+export { updateInboxPayloadSchema };
 
 export const useUpdateInboxMutation = () => {
   const updateInbox = useServerFn(updateInboxFn);

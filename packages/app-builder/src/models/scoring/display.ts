@@ -40,15 +40,3 @@ export function scoringLevelEntries(map: ScoringLevelMap): Array<[number, string
 export function isMaxRiskLevelInRange(maxRiskLevel: number): maxRiskLevel is MaxRiskLevel {
   return (MAX_RISK_LEVELS as readonly number[]).includes(maxRiskLevel);
 }
-
-export function formatCooldown(seconds: number): string | null {
-  if (!seconds) return null;
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  if (days > 0 && hours > 0) return `${days}j ${hours}h`;
-  if (days > 0) return `${days}j`;
-  if (hours > 0) return `${hours}h`;
-  const minutes = Math.floor((seconds % 3600) / 60);
-  if (minutes > 0) return `${minutes}min`;
-  return `${seconds}s`;
-}

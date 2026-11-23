@@ -13,7 +13,7 @@ export type KycCaseEnrichment = {
   citations: GroundingCitation[];
 };
 
-export function adaptGroundingCitation(dto: GroundingCitationDto): GroundingCitation {
+function adaptGroundingCitation(dto: GroundingCitationDto): GroundingCitation {
   return {
     title: dto.title,
     domain: dto.domain,

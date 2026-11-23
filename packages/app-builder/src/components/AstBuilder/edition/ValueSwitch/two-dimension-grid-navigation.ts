@@ -1,13 +1,13 @@
 export type TwoDimensionGridNavigationKey = 'ArrowDown' | 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'Enter';
 
-export const VALUE_SWITCH_GRID_CELL_ATTRIBUTE = 'data-value-switch-cell';
+const VALUE_SWITCH_GRID_CELL_ATTRIBUTE = 'data-value-switch-cell';
 
 type GridPosition = {
   rowIndex: number;
   columnIndex: number;
 };
 
-export function getValueSwitchGridCellSelector(rowIndex: number, columnIndex: number) {
+function getValueSwitchGridCellSelector(rowIndex: number, columnIndex: number) {
   return `[${VALUE_SWITCH_GRID_CELL_ATTRIBUTE}="${rowIndex}:${columnIndex}"]`;
 }
 

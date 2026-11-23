@@ -20,11 +20,7 @@ import { Icon } from 'ui-icons';
 import { GraphSpinnerOverlay } from './GraphSpinnerOverlay';
 import { OutcomeFilter } from './OutcomeFilter';
 
-export type DateRange = {
-  start: string;
-  end: string;
-};
-export type DecisionsPerOutcome = {
+type DecisionsPerOutcome = {
   rangeId: RangeId;
   date: string;
   approve: number;
@@ -97,43 +93,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
       return setGroupDate('weekly');
     }
   }, [data?.metadata.totalDecisions, isDailyViewAvailable]);
-
-  // for future use
-
-  //   interface ScenarioVersionsXMarker {
-  //     axis: 'x';
-  //     legend: string;
-  //     legendOrientation: 'horizontal';
-  //     value: string;
-  //     lineStyle: {
-  //       stroke: string;
-  //       strokeWidth: number;
-  //     };
-  //   }
-
-  //   const getVersionsXValues = (
-  //     values: DecisionsPerOutcome[],
-  //     scenarioVersions: { version: number; createdAt: string }[],
-  //   ): ScenarioVersionsXMarker[] => {
-  //     // Find the closest date for each scenario version and override the scenario version creation date with the date of the closest date
-  //     return scenarioVersions
-  //       .map(({ version, createdAt }) => {
-  //         const closestDate = values.find((value) => value.date >= createdAt);
-  //         return !closestDate
-  //           ? undefined
-  //           : {
-  //               axis: 'x' as const,
-  //               value: closestDate.date,
-  //               lineStyle: {
-  //                 stroke: 'rgba(0, 0, 0, .35)',
-  //                 strokeWidth: 2,
-  //               },
-  //               legend: `v${version}`,
-  //               legendOrientation: 'horizontal' as const,
-  //             };
-  //       })
-  //       .filter((v) => v !== undefined);
-  //   };
 
   const padding = useMemo(() => {
     if (scale !== 'symlog') {
@@ -411,7 +370,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               axisBottom={{
                 tickValues: getXTickValues(),
                 format: (value: string) => {
-                  // Convert the ISO string to a Date object and format it
                   const date = new Date(value);
                   return date.toLocaleDateString(language, {
                     year: !isSameYear ? 'numeric' : undefined,

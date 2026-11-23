@@ -24,7 +24,6 @@ export const AuditEventsFiltersBar = ({
   const { t } = useTranslation(['filters']);
   const [open, setOpen] = useState(false);
 
-  // Filter out already active filters from available filters
   const activeFilterNames = filters.map(([name]) => name);
   const remainingFilters = availableFilters.filter((name) => !activeFilterNames.includes(name));
 

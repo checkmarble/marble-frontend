@@ -13,9 +13,7 @@
     "@types/node": "26.6.5",
     "oazapfts": "^7.5.0",
     "ora": "^9.4.1",
-    "swagger-cli": "^4.0.4",
-    "tailwind-preset": "^1.0.8",
-    "tsx": "^4.22.4"
+    "swagger-cli": "^4.0.4"
   },
   "dependencies": {
     "@oazapfts/runtime": "^1.0.4"

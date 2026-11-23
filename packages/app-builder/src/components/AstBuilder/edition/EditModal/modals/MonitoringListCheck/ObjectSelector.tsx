@@ -48,7 +48,6 @@ export const ObjectSelector = ({
     while (queue.length > 0) {
       const { table, path, pathSegments } = queue.shift()!;
 
-      // Add this table as an option
       options.push({
         tableName: table.name,
         path,
@@ -57,7 +56,6 @@ export const ObjectSelector = ({
         activeMonitorings: getActiveMonitorings(table.name),
       });
 
-      // Add all linked parent tables to the queue
       for (const link of table.linksToSingle) {
         // Track by tableName + linkName to allow different paths to the same table
         // while preventing cycles through the same link

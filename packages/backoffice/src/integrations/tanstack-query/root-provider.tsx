@@ -1,26 +1,5 @@
-import { TRPCProvider } from '@bo/integrations/trpc/react';
-import type { TRPCRouter } from '@bo/integrations/trpc/router';
 import { MutationCache, matchQuery, QueryClient } from '@tanstack/react-query';
-import { createTRPCClient, httpBatchStreamLink } from '@trpc/client';
-import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
 import superjson from 'superjson';
-
-function getUrl() {
-  const base = (() => {
-    if (typeof window !== 'undefined') return '';
-    return `http://localhost:${process.env['PORT'] ?? 3000}`;
-  })();
-  return `${base}/api/trpc`;
-}
-
-export const trpcClient = createTRPCClient<TRPCRouter>({
-  links: [
-    httpBatchStreamLink({
-      transformer: superjson,
-      url: getUrl(),
-    }),
-  ],
-});
 
 export function getContext() {
   const queryClient = new QueryClient({
@@ -59,26 +38,5 @@ export function getContext() {
     }),
   });
 
-  const serverHelpers = createTRPCOptionsProxy({
-    client: trpcClient,
-    queryClient: queryClient,
-  });
-  return {
-    queryClient,
-    trpc: serverHelpers,
-  };
-}
-
-export function Provider({
-  children,
-  queryClient,
-}: {
-  children: Parameters<typeof TRPCProvider>[0]['children'];
-  queryClient: QueryClient;
-}) {
-  return (
-    <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
-      {children}
-    </TRPCProvider>
-  );
+  return { queryClient };
 }

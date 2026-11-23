@@ -4,7 +4,6 @@ import { isAnalyst } from '@app-builder/models';
 import { isUserScoringAvailable } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { type Namespace } from 'i18next';
 
 const userScoringLayoutLoader = createServerFn()
   .middleware([authMiddleware])
@@ -25,9 +24,6 @@ const userScoringLayoutLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/user-scoring')({
-  staticData: {
-    i18n: ['common', 'user-scoring'] satisfies Namespace,
-  },
   loader: () => userScoringLayoutLoader(),
   component: UserScoringSectionLayout,
 });

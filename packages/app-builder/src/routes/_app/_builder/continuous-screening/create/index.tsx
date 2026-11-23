@@ -28,7 +28,6 @@ export const Route = createFileRoute('/_app/_builder/continuous-screening/create
     return createConfigurationLoader({ data: { name: deps.name, description: deps.description } });
   },
   staticData: {
-    i18n: ['continuousScreening'],
     BreadCrumbs: [
       (_: BreadCrumbProps) => {
         const { t } = useTranslation(['continuousScreening']);

@@ -261,5 +261,3 @@ export const orgImportSpecSchema = z.looseObject({
 });
 
 export type OrgImportSpec = z.infer<typeof orgImportSpecSchema>;
-/** Use when typing a value *before* parsing (collections still accept `null`). */
-export type OrgImportSpecInput = z.input<typeof orgImportSpecSchema>;

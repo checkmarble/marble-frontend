@@ -72,18 +72,11 @@ export const createTestRunPayloadSchema = z.object({
 });
 export type CreateTestRunPayload = z.infer<typeof createTestRunPayloadSchema>;
 
-const generateRuleBodySchema = z.object({
-  rule_id: z.string().uuid(),
-  instruction: z.string().min(1),
-});
-export type GenerateRuleBody = z.infer<typeof generateRuleBodySchema>;
-
 export const generateRuleInputSchema = z.object({
   scenarioId: z.string(),
   ruleId: z.string().uuid(),
   instruction: z.string().min(1),
 });
-export type GenerateRuleInput = z.infer<typeof generateRuleInputSchema>;
 
 export const toggleScenarioDeduplicationPayloadSchema = z.object({
   scenarioId: z.uuid(),

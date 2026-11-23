@@ -1,4 +1,3 @@
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { type AutoSignInFailure, OnboardingAutoSignIn } from '@app-builder/components/Auth/OnboardingAutoSignIn';
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
@@ -37,9 +36,6 @@ const onboardingLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/onboarding')({
-  staticData: {
-    i18n: authI18n,
-  },
   beforeLoad: async ({ context }) => {
     await context.i18n.loadNamespaces(['common', 'auth']);
   },

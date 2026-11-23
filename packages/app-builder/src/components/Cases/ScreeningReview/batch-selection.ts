@@ -27,10 +27,6 @@ export function withoutSelected(selection: BatchSelection, ids: readonly string[
   return next;
 }
 
-export function toggleSelected(selection: BatchSelection, id: string): BatchSelection {
-  return selection.has(id) ? withoutSelected(selection, [id]) : withSelected(selection, [id]);
-}
-
 export function withBatchComment(selection: BatchSelection, comment: string): BatchSelection {
   return new Map([...selection.keys()].map((id) => [id, comment]));
 }

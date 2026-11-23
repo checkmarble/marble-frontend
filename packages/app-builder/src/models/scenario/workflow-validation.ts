@@ -6,9 +6,6 @@ import { isBinaryMainAstOperatorFunction } from '../astNode/builder-ast-node-nod
 import { knownOutcomes } from '../outcome';
 import { type Rule, type WorkflowAction, type WorkflowCondition } from './workflow';
 
-// OutcomeDto validation schema
-const outcomeSchema = z.enum(['approve', 'review', 'decline', 'block_and_review', 'unknown'] as const);
-
 // Enhanced node schema for AST nodes with recursive validation
 const baseNodeSchema = z.object({
   id: z.string(),
@@ -18,78 +15,13 @@ const baseNodeSchema = z.object({
   namedChildren: z.record(z.string(), z.unknown()).optional(),
 });
 
-// Create a recursive schema for complete AST node validation
 const nodeSchema: z.ZodType<any> = baseNodeSchema.extend({
   children: z.lazy(() => protectArray(z.array(nodeSchema))).optional(),
   namedChildren: z.lazy(() => z.record(z.string(), nodeSchema)).optional(),
 });
 
-// Specific schema for binary expression validation
-const binaryExpressionSchema = z.object({
-  id: z.string(),
-  name: z
-    .string()
-    .refine((name) => name !== null && name !== undefinedAstNodeName && isBinaryMainAstOperatorFunction(name), {
-      error: 'A valid operator must be selected',
-    }),
-  constant: z.undefined(),
-  children: protectArray(
-    z
-      .array(
-        z.looseObject({
-          id: z.string(),
-          name: z
-            .string()
-            .nullable()
-            .refine((name) => name !== undefinedAstNodeName, {
-              error: 'Operand cannot be empty',
-            }),
-        }),
-      )
-      .length(2, 'Binary expression must have exactly 2 operands'),
-  ),
-  namedChildren: z.record(z.string(), z.unknown()).optional(),
-});
-
-// Workflow condition schemas
-const alwaysConditionSchema = z.object({
-  function: z.literal('always'),
-});
-
-const neverConditionSchema = z.object({
-  function: z.literal('never'),
-});
-
-const outcomeInConditionSchema = z.object({
-  function: z.literal('outcome_in'),
-  params: protectArray(z.array(outcomeSchema).min(1, 'At least one outcome must be selected')),
-});
-
-const ruleHitConditionSchema = z.object({
-  function: z.literal('rule_hit'),
-  params: z.object({
-    ruleIds: protectArray(z.array(z.string()).min(1, 'At least one rule must be selected')),
-  }),
-});
-
-const payloadEvaluatesConditionSchema = z.object({
-  function: z.literal('payload_evaluates'),
-  params: z.object({
-    expression: binaryExpressionSchema,
-  }),
-});
-
-// Union of all condition types - keeping for potential future use
-export const workflowConditionDetailSchema = z.discriminatedUnion('function', [
-  alwaysConditionSchema,
-  neverConditionSchema,
-  outcomeInConditionSchema,
-  ruleHitConditionSchema,
-  payloadEvaluatesConditionSchema,
-]);
-
 // Rule validation schema - more flexible approach
-export const ruleValidationSchema = z.looseObject({
+const ruleValidationSchema = z.looseObject({
   id: z.string(),
   name: z.string().min(1, ''),
   fallthrough: z.boolean(),
@@ -101,7 +33,6 @@ export const ruleValidationSchema = z.looseObject({
       }),
     ),
   ),
-  // .min(1, t('workflows:condition.error.atLeastOneCondition')),
   actions: protectArray(
     z
       .array(
@@ -114,7 +45,6 @@ export const ruleValidationSchema = z.looseObject({
   ),
 }); // Allow additional fields that might exist in the actual data
 
-// Helper function to validate payload_evaluates conditions
 function validatePayloadEvaluatesCondition(
   condition: any,
   conditionIndex: number,
@@ -136,14 +66,12 @@ function validatePayloadEvaluatesCondition(
 
   const expression = condition.params.expression;
 
-  // Check if operator is selected (name should not be null, undefined, or "Undefined")
   if (!expression.name || expression.name === undefinedAstNodeName) {
     errors.push(`Condition ${conditionIndex}: Must have a valid operator`);
   } else if (!isBinaryMainAstOperatorFunction(expression.name)) {
     errors.push(`Condition ${conditionIndex}: Must have a valid operator`);
   }
 
-  // Check if both operands are defined
   if (!Array.isArray(expression.children) || expression.children.length !== 2) {
     errors.push(`Condition ${conditionIndex}: Must have exactly two operands`);
   } else {
@@ -159,7 +87,7 @@ function validatePayloadEvaluatesCondition(
 }
 
 // More specific validation functions for better error messages
-export function validateRuleConditions(conditions: WorkflowCondition[]): {
+function validateRuleConditions(conditions: WorkflowCondition[]): {
   isValid: boolean;
   errors: string[];
 } {
@@ -190,7 +118,7 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
   return { isValid: errors.length === 0, errors };
 }
 
-export function validateRuleAction(actions: WorkflowAction[]): {
+function validateRuleAction(actions: WorkflowAction[]): {
   isValid: boolean;
   errors: string[];
 } {
@@ -235,7 +163,6 @@ export function validateRuleEnhanced(rule: Rule): {
 
       return { success: true };
     } else {
-      // Map Zod issues to our format (Zod v4)
       const mappedErrors = zodResult.error.issues.map((issue) => ({
         message: issue.message,
         path: issue.path.map((p) => String(p)),
@@ -259,15 +186,6 @@ export function validateRuleEnhanced(rule: Rule): {
   }
 }
 
-// Type for validation errors
-export type RuleValidationError = z.ZodError<z.output<typeof ruleValidationSchema>>;
-
-// Helper function to validate a rule (legacy support)
-export function validateRule(rule: unknown) {
-  return ruleValidationSchema.safeParse(rule);
-}
-
-// Helper function to check if outcomes are valid
 export function validateOutcomes(outcomes: OutcomeDto[]): boolean {
   return (
     outcomes.length > 0 &&
@@ -275,18 +193,4 @@ export function validateOutcomes(outcomes: OutcomeDto[]): boolean {
       (outcome) => knownOutcomes.includes(outcome as (typeof knownOutcomes)[number]) || outcome === 'unknown',
     )
   );
-}
-
-export function validateScenarioRules(ruleIds: string[]): boolean {
-  return ruleIds.length > 0;
-}
-// Helper function to get validation errors for a specific field
-export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
-  return error.issues.filter((issue) => issue.path.join('.') === fieldPath).map((issue) => issue.message);
-}
-
-// Helper function to check if a rule has validation errors
-export function hasValidationErrors(rule: Rule): boolean {
-  const result = validateRuleEnhanced(rule);
-  return !result.success;
 }

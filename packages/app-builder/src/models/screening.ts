@@ -1,4 +1,3 @@
-import { SearchableSchema } from '@app-builder/constants/screening-entity';
 import {
   type listScreeningAvailableFilters,
   ScreeningAvailableFilters,
@@ -29,7 +28,7 @@ export const matchEntitySchemas = [
   'MembershipMember',
 ] as const;
 const sanctionEntitySchemas = ['Sanction'] as const;
-export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
+const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
 
 export type ScreeningStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
 export type ScreeningMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
@@ -265,7 +264,7 @@ function adaptQueries(dto: ScreeningRequestDto['search_input']['queries']) {
   });
 }
 
-export function adaptScreeningRequest(dto: ScreeningRequestDto): ScreeningRequest {
+function adaptScreeningRequest(dto: ScreeningRequestDto): ScreeningRequest {
   return {
     threshold: dto.threshold,
     limit: dto.limit,
@@ -483,7 +482,7 @@ export function lexisTopicIgnoreDisplay(topic: LexisTopic): boolean {
   return false;
 }
 
-export const OS_TOPICS_KEYS = [
+const OS_TOPICS_KEYS = [
   'sanction',
   'sanction.linked',
   'sanction.counter',
@@ -661,8 +660,6 @@ export function getCategoryForTopic(topic: string): ScreeningCategory | undefine
   return undefined;
 }
 
-// export function screeningRiskTag
-
 /**
  * Maps ScreeningCategory to i18n key suffix.
  * ScreeningCategory uses hyphens, i18n keys use underscores.
@@ -689,7 +686,6 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
 
   const categories = new Set<ScreeningCategory>();
   for (const value of topicFilters) {
-    // Check if it's already a category
     if (RISK_TAG_CATEGORIES.includes(value as RiskTagCategory)) {
       categories.add(value as ScreeningCategory);
     } else {
@@ -703,34 +699,11 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
   return Array.from(categories);
 }
 
-const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
-  sanctions: 1,
-  'adverse-media': 2,
-  peps: 3,
-  'third-parties': 4,
-  other: 5,
-  custom: 6,
-  global: 7,
-};
-
-export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {
-  const categories = R.map(topics, (topic) => getCategoryForTopic(topic) ?? 'other');
-  return R.firstBy(categories, (category) => SCREENING_CATEGORY_RANKING[category]);
-};
-
 export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
   conditional_filters?: { key: string; name: string; topics: { name: string; key?: string; title: string }[] }[];
 };
 
 export type ScreeningProviders = ScreeningAvailableFilters['provider'];
-
-export interface SavedScreeningSearchInputs {
-  entityType: SearchableSchema;
-  fields: Record<string, string>;
-  datasets: string[];
-  threshold?: number;
-  limit?: number;
-}
 
 export type SavedScreeningSearch = ScreeningFreeformSearchDto;
 

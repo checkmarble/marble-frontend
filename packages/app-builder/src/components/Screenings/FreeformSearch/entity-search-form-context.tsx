@@ -32,7 +32,7 @@ type EntitySearchSubscribeProps = {
   children: (values: readonly [boolean, boolean]) => ReactNode;
 };
 
-export type EntitySearchFormInstance = {
+type EntitySearchFormInstance = {
   store: unknown;
   setFieldValue: (field: 'entityType' | 'fields' | `fields.${string}`, value: unknown) => void;
   state: { values: EntitySearchFormValues };
@@ -40,7 +40,7 @@ export type EntitySearchFormInstance = {
   Subscribe: ComponentType<EntitySearchSubscribeProps>;
 };
 
-export const EntitySearchFormContext = createSimpleContext<EntitySearchFormInstance>('EntitySearchForm');
+const EntitySearchFormContext = createSimpleContext<EntitySearchFormInstance>('EntitySearchForm');
 
 export function EntitySearchFormProvider({ form, children }: { form: unknown; children: ReactNode }) {
   return (
