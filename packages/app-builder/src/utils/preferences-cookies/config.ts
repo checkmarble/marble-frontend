@@ -17,13 +17,13 @@ function isValidTimezone(timezone: string): boolean {
 
 const timezoneSchema = z.string().refine(isValidTimezone, { message: 'Invalid IANA timezone identifier' });
 
-const themeSchema = z.enum(['light', 'dark']);
-export type Theme = z.infer<typeof themeSchema>;
+const themeSchema = z.enum(['light', 'dark', 'system']);
+export type ThemePreference = z.infer<typeof themeSchema>;
 
 export type PreferencesCookie = {
   favInbox?: string;
   timezone?: string;
-  theme?: Theme;
+  theme?: ThemePreference;
 };
 export const PreferencesCookieSchema = z.object({
   favInbox: z.string().optional(),

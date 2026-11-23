@@ -1,16 +1,17 @@
+import { type ThemePreference } from '@app-builder/utils/preferences-cookies/config';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
-import Cookie from 'js-cookie';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { cn } from 'ui-design-system';
 
 export type Theme = 'light' | 'dark';
+export type { ThemePreference };
 
 interface ThemeContextValue {
+  /** The theme in effect: the preference, with 'system' resolved from the OS setting. */
   theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
+  themePreference: ThemePreference;
+  setThemePreference: (preference: ThemePreference) => void;
 }
-
-const COOKIE_NAME = 'u-prefs';
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 ThemeContext.displayName = 'Theme';
@@ -27,88 +28,67 @@ export function useTheme(): ThemeContextValue {
   return context;
 }
 
+const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
+
 /**
- * Get the initial theme from cookie or default to 'light'.
- * This runs only on the client side.
+ * Inline `<head>` script for the 'system' preference. The server cannot know the OS setting and
+ * renders the light theme, so this adds the `dark` class before the first paint.
  */
-function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') {
-    return 'light';
-  }
+export const SYSTEM_THEME_SCRIPT = `if (window.matchMedia && window.matchMedia('${DARK_SCHEME_QUERY}').matches) document.documentElement.classList.add('dark');`;
 
-  try {
-    const raw = Cookie.get(COOKIE_NAME);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed.theme === 'dark' || parsed.theme === 'light') {
-        return parsed.theme;
-      }
-    }
-  } catch {
-    // ignore parse errors
-  }
+function subscribeToColorScheme(onChange: () => void) {
+  const mediaQuery = window.matchMedia?.(DARK_SCHEME_QUERY);
+  mediaQuery?.addEventListener('change', onChange);
+  return () => mediaQuery?.removeEventListener('change', onChange);
+}
 
-  return 'light';
+function getSystemPrefersDark() {
+  return window.matchMedia?.(DARK_SCHEME_QUERY).matches ?? false;
+}
+
+// Matches the server render, so hydration sees the same theme before switching to the OS setting.
+function getServerPrefersDark() {
+  return false;
 }
 
 /**
- * Apply the theme by adding/removing the 'dark' class on the document element.
- */
-function applyTheme(theme: Theme): void {
-  if (typeof document === 'undefined') return;
-
-  if (theme === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-}
-
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  /** Optional initial theme. If not provided, reads from cookie or defaults to 'light'. */
-  defaultTheme?: Theme;
-}
-
-/**
- * Provider component for theme context.
- * Handles theme state, persistence to cookie, and applying the dark class.
+ * Render `ThemedHtml` inside it to apply the `dark` class.
  *
- * Usage:
  * ```tsx
- * <ThemeProvider>
- *   <App />
+ * <ThemeProvider preference={preferenceFromCookie}>
+ *   <ThemedHtml>…</ThemedHtml>
  * </ThemeProvider>
  * ```
  */
-export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(() => defaultTheme ?? getInitialTheme());
+export function ThemeProvider({ children, preference }: { children: React.ReactNode; preference: ThemePreference }) {
+  const [themePreference, setThemePreference] = useState(preference);
+  const systemPrefersDark = useSyncExternalStore(subscribeToColorScheme, getSystemPrefersDark, getServerPrefersDark);
+  const theme: Theme = themePreference === 'system' ? (systemPrefersDark ? 'dark' : 'light') : themePreference;
 
-  // Apply theme on mount and when it changes
   useEffect(() => {
-    applyTheme(theme);
-    setPreferencesCookie('theme', theme);
-  }, [theme]);
+    setPreferencesCookie('theme', themePreference);
+  }, [themePreference]);
 
   // Keyboard shortcut (Ctrl+Shift+D) to toggle theme for QA testing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         e.preventDefault();
-        setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
+        setThemePreference(theme === 'light' ? 'dark' : 'light');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [theme]);
 
-  const setTheme = useCallback((newTheme: Theme) => {
-    setThemeState(newTheme);
-  }, []);
+  const value = useMemo(() => ({ theme, themePreference, setThemePreference }), [theme, themePreference]);
 
-  const toggleTheme = useCallback(() => {
-    setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
-  }, []);
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>{children}</ThemeContext.Provider>;
+/** The document's `<html>`, carrying the `dark` class of the theme in effect. */
+export function ThemedHtml({ className, ...props }: React.ComponentProps<'html'>) {
+  const { theme } = useTheme();
+  // SYSTEM_THEME_SCRIPT may add `dark` before hydration, while the server rendered it without
+  return <html suppressHydrationWarning className={cn(className, theme === 'dark' && 'dark')} {...props} />;
 }

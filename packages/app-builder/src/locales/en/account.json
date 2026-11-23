@@ -32,6 +32,7 @@
   "profile": "Account info",
   "theme.dark": "Dark",
   "theme.light": "Light",
+  "theme.system": "System",
   "usage_tracking.description": "Allow Marble to collect backend telemetry. This setting applies to all users and organizations on this instance.",
   "usage_tracking.enabled": "Backend telemetry",
   "usage_tracking.privacy_policy": "Privacy policy",
