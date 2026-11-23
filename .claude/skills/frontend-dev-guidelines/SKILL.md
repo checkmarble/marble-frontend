@@ -21,7 +21,6 @@ Repo conventions for `packages/app-builder` and `packages/ui-design-system`; pat
 - **Layout data is already loaded**: under `_builder`, read `useOrganizationDetails`, `useOrganizationUsers`, `useOrganizationTags`, `useOrganizationObjectTags` (`services/organization/`) and `useBuilderLayoutData` (`hooks/routes-layout-data.ts`) instead of fetching again.
 - **Permission gating**: compute flags in the loader with predicates from `services/feature-access.ts` and return them (`routes/_app/_builder/detection/lists/$listId.tsx`, for its loader flags and `Page.*` layout only: the rest of that file is legacy). Add new predicates there, not inline in components.
 - **Page shell**: `<Page.Main>` contains an optional sticky `<Page.Header>` and a `<Page.Content>` as siblings, often inside `<Page.Container>` (`lists/$listId.tsx`). JSDoc in `components/Page.tsx` lists the `width`, `padding` and `centered` options.
-- **Tests**: colocated `*.spec.ts(x)` (vitest + Testing Library), run with `bun run -F <pkg> unit-tests`. New `ui-design-system` components need a `*.stories.tsx`.
 
 ## Topic Guides
 
