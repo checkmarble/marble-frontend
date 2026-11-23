@@ -5,7 +5,7 @@ import { BackendUsageTrackingSettings } from '@app-builder/components/Settings/B
 import { TwoFactorAuthSettings } from '@app-builder/components/Settings/TwoFactorAuth/TwoFactorAuthSettings';
 import { UserAvailabilityStatus } from '@app-builder/components/Settings/UserAvailabilityStatus';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
-import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
+import { type ThemePreference, useTheme } from '@app-builder/contexts/ThemeContext';
 import { useBuilderLayoutData } from '@app-builder/hooks/routes-layout-data';
 import { tKeyForUserRole } from '@app-builder/models/user';
 import { logoutFn } from '@app-builder/server-fns/auth';
@@ -41,7 +41,7 @@ function AccountPage() {
   const { currentUser, org } = useOrganizationDetails();
   const logout = useServerFn(logoutFn);
 
-  const { theme, setTheme } = useTheme();
+  const { themePreference, setThemePreference } = useTheme();
   const appConfig = AppConfigContext.useValue();
   const { versions } = appConfig;
   const isFirebaseAuth = appConfig.auth.providers.includes('firebase');
@@ -95,12 +95,18 @@ function AccountPage() {
                 </div>
                 <div className="flex flex-col gap-sm">
                   <span className="text-s">{t('account:dark_mode')}</span>
-                  <Radio.Root value={theme} onValueChange={(value) => setTheme(value as Theme)}>
+                  <Radio.Root
+                    value={themePreference}
+                    onValueChange={(value) => setThemePreference(value as ThemePreference)}
+                  >
                     <Radio.Item value="light">
                       <span className="text-s">{t('account:theme.light')}</span>
                     </Radio.Item>
                     <Radio.Item value="dark">
                       <span className="text-s">{t('account:theme.dark')}</span>
+                    </Radio.Item>
+                    <Radio.Item value="system">
+                      <span className="text-s">{t('account:theme.system')}</span>
                     </Radio.Item>
                   </Radio.Root>
                 </div>
