@@ -41,7 +41,6 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
 
-  ENABLE_GRAPH_EXPLORATION: z.string().optional(),
   AI_RULE_CATALOG_ENABLED: z.string().optional(),
 
   // Probo cookie consent banner. When both are set, the banner is rendered and
@@ -125,7 +124,6 @@ interface ServerEnvVars {
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
-  ENABLE_GRAPH_EXPLORATION?: string;
   AI_RULE_CATALOG_ENABLED?: string;
   PROBO_BANNER_ID?: string;
   PROBO_BANNER_BASE_URL?: string;
@@ -149,7 +147,6 @@ interface ClientEnvVars {
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
-  ENABLE_GRAPH_EXPLORATION?: string;
   AI_RULE_CATALOG_ENABLED?: string;
   PROBO_BANNER_ID?: string;
   PROBO_BANNER_BASE_URL?: string;
@@ -161,7 +158,6 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
-    ENABLE_GRAPH_EXPLORATION: getServerEnv('ENABLE_GRAPH_EXPLORATION'),
     AI_RULE_CATALOG_ENABLED: getServerEnv('AI_RULE_CATALOG_ENABLED'),
     PROBO_BANNER_ID: getServerEnv('PROBO_BANNER_ID'),
     PROBO_BANNER_BASE_URL: getServerEnv('PROBO_BANNER_BASE_URL'),

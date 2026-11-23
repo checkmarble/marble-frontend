@@ -152,15 +152,10 @@ export const isGraphExplorationAvailable = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.graphExploration);
 
 export type GraphExplorationAccess = {
-  isGraphExplorationEnabled: boolean;
   isGraphExplorationAvailable: boolean;
 };
 
-export function getGraphExplorationDisplay({
-  isGraphExplorationEnabled,
-  isGraphExplorationAvailable,
-}: GraphExplorationAccess) {
-  if (!isGraphExplorationEnabled) return 'hidden' as const;
+export function getGraphExplorationDisplay({ isGraphExplorationAvailable }: GraphExplorationAccess) {
   if (!isGraphExplorationAvailable) return 'placeholder' as const;
   return 'graph' as const;
 }

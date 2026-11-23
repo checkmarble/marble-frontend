@@ -1,15 +1,10 @@
 import { getGraphEligibleClients } from '@app-builder/components/CaseManager/graph-pivots';
 import { CommentContext } from '@app-builder/components/CaseManager/hooks/comment-context';
 import { PivotTabs } from '@app-builder/components/CaseManager/PivotTabs';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/links')({
-  beforeLoad: ({ context }) => {
-    if (!context.dataModelFeatureAccess.isGraphExplorationEnabled) {
-      throw redirect({ from: '/cases/s/$caseId/', to: './principal' });
-    }
-  },
   component: RouteComponent,
 });
 
