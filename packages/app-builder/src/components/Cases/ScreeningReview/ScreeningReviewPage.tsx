@@ -247,7 +247,7 @@ function ReviewStream({
     latestStream.current = stream;
   });
   // The hits listed when Load more was clicked, until the next ones arrive.
-  const [loadedBeforeMore, setLoadedBeforeMore] = useState<ReadonlySet<string>>();
+  const [loadedBeforeMore, setLoadedBeforeMore] = useState<{ stream: string; ids: ReadonlySet<string> }>();
   const decisions = useReviewDecisions({
     serverItems,
     hasMore,
@@ -303,11 +303,13 @@ function ReviewStream({
   useEffect(() => {
     if (!loadedBeforeMore) return;
     setLoadedBeforeMore(undefined);
+    // Cases read for an earlier inbox, filter or name move no cursor.
+    if (loadedBeforeMore.stream !== stream) return;
     // The cursor moves to the first new hit, so the list scrolls down to it rather than back up.
-    const added = items.filter((item) => !loadedBeforeMore.has(item.id));
+    const added = items.filter((item) => !loadedBeforeMore.ids.has(item.id));
     const first = added.find(isPendingReviewItem) ?? added[0];
     if (first) onSearchChange({ ...latestSearch.current, hit: first.id });
-  }, [loadedBeforeMore, items, onSearchChange]);
+  }, [loadedBeforeMore, stream, items, onSearchChange]);
 
   const select = (item: ScreeningReviewItem | undefined) => {
     if (!item || !ready) return;
@@ -600,11 +602,10 @@ function ReviewStream({
                           // A refetch reads every loaded page again, and Load more would cancel it.
                           disabled={query.isFetching}
                           onLoadMore={() => {
-                            const loaded = new Set(items.map((item) => item.id));
-                            const origin = stream;
+                            const loaded = { stream, ids: new Set(items.map((item) => item.id)) };
                             void query.fetchNextPage().then(() => {
-                              // Cases read for an earlier inbox, filter or name move no cursor.
-                              if (latestStream.current === origin) setLoadedBeforeMore(loaded);
+                              // A completion for an earlier query leaves the current query's snapshot alone.
+                              if (latestStream.current === loaded.stream) setLoadedBeforeMore(loaded);
                             });
                           }}
                         />
