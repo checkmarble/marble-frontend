@@ -239,8 +239,12 @@ function ReviewStream({
   const ready = !!query.data && !query.isPlaceholderData;
   // The latest search, read when a delayed write moves the cursor.
   const latestSearch = useRef(search);
+  // The query the list reads, as its key names it, so a Load more for another one is told apart.
+  const stream = `${selectedInbox.id}\n${search.filter}\n${search.q ?? ''}`;
+  const latestStream = useRef(stream);
   useEffect(() => {
     latestSearch.current = search;
+    latestStream.current = stream;
   });
   // The hits listed when Load more was clicked, until the next ones arrive.
   const [loadedBeforeMore, setLoadedBeforeMore] = useState<ReadonlySet<string>>();
@@ -597,7 +601,11 @@ function ReviewStream({
                           disabled={query.isFetching}
                           onLoadMore={() => {
                             const loaded = new Set(items.map((item) => item.id));
-                            void query.fetchNextPage().then(() => setLoadedBeforeMore(loaded));
+                            const origin = stream;
+                            void query.fetchNextPage().then(() => {
+                              // Cases read for an earlier inbox, filter or name move no cursor.
+                              if (latestStream.current === origin) setLoadedBeforeMore(loaded);
+                            });
                           }}
                         />
                       ) : null

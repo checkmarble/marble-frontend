@@ -541,6 +541,25 @@ describe('screening review stream and restoration', () => {
     expect(onSearchChange.mock.calls.some(([search]) => 'cursors' in search || 'limit' in search)).toBe(false);
   });
 
+  it('keeps the cursor when Load more completes after the inbox changed', async () => {
+    const nextPage = Promise.withResolvers<{ items: typeof initialItems; nextCursor: null; failed: boolean }>();
+    vi.mocked(listScreeningReviewPageFn)
+      .mockResolvedValueOnce({ items: initialItems, nextCursor: pageTwoCursor, failed: false })
+      .mockReturnValueOnce(nextPage.promise)
+      .mockResolvedValue({ items: secondPageItems, nextCursor: null, failed: false });
+    renderPage();
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(firstId));
+    fireEvent.click(screen.getByRole('button', { name: 'cases:screening_review.load_more_cases' }));
+    fireEvent.click(screen.getByRole('button', { name: 'cases:inbox.my-inbox.link' }));
+    fireEvent.click(await screen.findByRole('option', { name: 'Screening alerts' }));
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(secondPageItems[0]!.id));
+    press('j', 'KeyJ');
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(secondPageItems[1]!.id));
+    nextPage.resolve({ items: secondPageItems, nextCursor: null, failed: false });
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+    expect(onSearchChange.mock.lastCall?.[0].hit).toBe(secondPageItems[1]!.id);
+  });
+
   it('hides the previous inbox’s hits while the newly selected inbox loads', async () => {
     const nextPage = Promise.withResolvers<{ items: typeof initialItems; nextCursor: null; failed: boolean }>();
     vi.mocked(listScreeningReviewPageFn)
