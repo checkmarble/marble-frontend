@@ -12,6 +12,8 @@ Write a comment only for something a reader cannot deduce from the code, and tha
 
 A comment that earns its place is readable in one pass. State the fact in plain words, in the order a reader needs it. A comment that paraphrases the next line hides the ones that matter and goes stale the moment the code moves.
 
+A comment ALWAYS describes the code it sits next to, as that code is now. It NEVER describes the diff: not what this change did, not what the previous line did, not why the PR touches it. The history lives in git. A reader later has only the code and the comment, and a note about the change is noise the moment the change lands.
+
 ## Tests
 
 Add a test when it would catch a problem or a regression the code can hide: an edge the types do not cover, a behavior a later edit would break without anyone noticing.
