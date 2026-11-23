@@ -349,11 +349,18 @@ function FormattedValue({
   return match(format)
     .with('monospace', () => <StringCodeComponent value={value} />)
     .with('date', () => (
-      <time dateTime={value}>{formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short' })}</time>
+      <time dateTime={value}>
+        {formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short', fullYear: true })}
+      </time>
     ))
     .with('dateTime', () => (
       <time dateTime={value}>
-        {formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short', timeStyle: 'short' })}
+        {formatDateTimeWithoutPresets(value, {
+          language: locale,
+          dateStyle: 'short',
+          timeStyle: 'short',
+          fullYear: true,
+        })}
       </time>
     ))
     .with('dateOfBirth', () => <DateBirthdateComponent value={value} />)

@@ -17,7 +17,7 @@ export const CommentLine = ({ comment }: { comment: ScreeningMatchComment }) => 
         <span className="flex items-baseline gap-xs">
           {fullName}
           <time className="text-grey-secondary text-xs" dateTime={comment.createdAt}>
-            {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
+            {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short', fullYear: true })}
           </time>
         </span>
       </div>

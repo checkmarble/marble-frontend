@@ -1530,9 +1530,10 @@ describe('screening review decisions', () => {
       press('x', 'KeyX');
       expect(checked()).toBe(1);
       expect(screen.getByRole('heading', { name: 'cases:screening_review.batch.title' })).toBeTruthy();
-      // The dock offers No hit only.
+      // The dock offers No hit only, already chosen, and Validate records it.
       expect(screen.queryByRole('button', { name: /screening_review\.decision\.confirmed_hit/ })).toBeNull();
-      expect(screen.getByRole('button', { name: /screening_review\.batch\.no_hit/ })).toBeTruthy();
+      expect(decisionButton('no_hit').getAttribute('aria-pressed')).toBe('true');
+      expect(validateButton()).toBeTruthy();
       press('x', 'KeyX');
       expect(checked()).toBe(0);
       expect(decisionButton('confirmed_hit')).toBeTruthy();
@@ -2149,6 +2150,29 @@ describe('screening review case groups', () => {
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
     press('J', 'KeyJ', true);
     await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+  });
+
+  it('moves the cursor to a case’s first hit on a click on its card, and leaves hits and Select all their own click', async () => {
+    renderPage();
+    await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+    const [first, second] = document.querySelectorAll<HTMLElement>('[data-review-group]');
+    const hits = (group: HTMLElement) => group.querySelectorAll<HTMLElement>('[data-review-hit-card]');
+
+    fireEvent.click(hits(second!)[1]!);
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-low`));
+    fireEvent.click(within(second!).getByRole('heading', { level: 2 }));
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${two}:two:two-high`));
+    fireEvent.click(hits(first!)[1]!);
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-low`));
+    // The card's padding, below its last hit.
+    fireEvent.click(first!);
+    await waitFor(() => expect(onSearchChange.mock.lastCall?.[0].hit).toBe(`${one}:one:one-high`));
+
+    onSearchChange.mockClear();
+    fireEvent.click(within(second!).getByRole('checkbox', { name: /screening_review\.batch\.select_customer_hits/ }));
+    expect(second!.querySelectorAll('[data-review-hit-card] ~ [role="checkbox"][aria-checked="true"]')).toHaveLength(2);
+    expect(onSearchChange).not.toHaveBeenCalled();
+    expect(activeCard()?.closest('[data-review-group]')).toBe(first);
   });
 
   it('decides and selects one hit at a time, even on a list record another case shares', async () => {

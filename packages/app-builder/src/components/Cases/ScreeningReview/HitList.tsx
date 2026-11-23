@@ -102,31 +102,41 @@ export function HitList({
       }}
     >
       <ul className="flex flex-col gap-sm">
-        {groups.map((group) => (
-          <CaseGroup
-            key={group.key}
-            group={group}
-            active={group.items.some((item) => item.id === activeId)}
-            ready={ready}
-            selection={selection}
-            onSelectionChange={onSelectionChange}
-          >
-            {screeningReviewCards(group, expanded).map((entry) => card(group, entry))}
-          </CaseGroup>
-        ))}
+        {groups.map((group) => {
+          const cards = screeningReviewCards(group, expanded);
+          const first = cards[0];
+          const firstHit = first && (first.kind === 'no_hit_stack' ? screeningReviewCardLead(first) : first.item);
+          return (
+            <CaseGroup
+              key={group.key}
+              group={group}
+              active={group.items.some((item) => item.id === activeId)}
+              ready={ready}
+              selection={selection}
+              onSelectionChange={onSelectionChange}
+              onActivate={firstHit ? () => onActivate(firstHit) : undefined}
+            >
+              {cards.map((entry) => card(group, entry))}
+            </CaseGroup>
+          );
+        })}
       </ul>
       {footer}
     </nav>
   );
 }
 
-/** One customer's hits in one case. Its header sticks to the top of the list while its hits scroll. */
+/**
+ * One customer's hits in one case. Its header sticks to the top of the list while its hits scroll.
+ * A click on the card outside its hits and controls moves the cursor to its first hit.
+ */
 function CaseGroup({
   group,
   active,
   ready,
   selection,
   onSelectionChange,
+  onActivate,
   children,
 }: {
   group: ScreeningReviewGroup;
@@ -135,6 +145,8 @@ function CaseGroup({
   ready: boolean;
   selection: BatchSelection;
   onSelectionChange: SelectionUpdate;
+  /** Moves the cursor to the group's first hit. */
+  onActivate: (() => void) | undefined;
   children: React.ReactNode;
 }) {
   const { t } = useTranslation(['cases']);
@@ -153,7 +165,19 @@ function CaseGroup({
     <Card
       as="li"
       data-review-group={group.key}
-      className={cn('flex min-w-0 flex-col gap-sm p-3', active && 'border-purple-primary')}
+      // A mouse shortcut: the keyboard moves the cursor with J and K, so the card takes no focus.
+      onClick={(event) => {
+        if (!ready || !onActivate) return;
+        // Hits, Select all and the stack tags keep their own click.
+        const control = event.target instanceof Element ? event.target.closest('button, label, a, input') : null;
+        if (control && event.currentTarget.contains(control)) return;
+        onActivate();
+      }}
+      className={cn(
+        'flex min-w-0 flex-col gap-sm p-3',
+        ready && onActivate && 'cursor-pointer',
+        active && 'border-purple-primary',
+      )}
     >
       <div
         data-review-group-header

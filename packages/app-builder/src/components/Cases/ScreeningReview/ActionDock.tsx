@@ -94,7 +94,7 @@ function HitComments({ comments, sessionComment }: { comments: ScreeningMatchCom
             <li key={comment.id} className="flex flex-col rounded-md bg-grey-background-light px-sm py-xs text-s">
               <span className="text-2xs text-grey-secondary">
                 {author ? `${getFullName(author)} · ` : ''}
-                {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
+                {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short', fullYear: true })}
               </span>
               <span className="whitespace-pre-wrap">{comment.comment}</span>
             </li>
@@ -371,9 +371,8 @@ export function ReadOnlyDock({
   );
 }
 
-/** No hit for every selected hit, with one comment recorded on each. */
+/** No hit for every selected hit, with one comment recorded on each. No hit is the only batch decision. */
 export function BatchDock({
-  count,
   comment,
   mixedComments,
   onCommentChange,
@@ -381,7 +380,6 @@ export function BatchDock({
   onClear,
   commentRef,
 }: {
-  count: number;
   comment: string;
   /** The selected hits keep different comments: typing replaces them all. */
   mixedComments: boolean;
@@ -397,6 +395,12 @@ export function BatchDock({
       aria-label={t('cases:screening_review.dock.title')}
       className="flex shrink-0 flex-col gap-sm p-md"
     >
+      <div role="group" aria-label={t('cases:screening_review.dock.title')} className="flex flex-wrap gap-sm">
+        {/* Already chosen, as the single dock shows a picked decision, so Validate reads as No hit. */}
+        <ShortcutButton tone="picked_no_hit" hotkeys={['N']} aria-pressed>
+          {t('cases:screening_review.decision.no_hit')}
+        </ShortcutButton>
+      </div>
       <TextArea
         ref={commentRef}
         maxLength={SCREENING_REVIEW_COMMENT_MAX}
@@ -422,7 +426,7 @@ export function BatchDock({
           {t('cases:screening_review.batch.clear')}
         </ShortcutButton>
         <ShortcutButton tone="primary" hotkeys={['Enter']} onClick={onSubmit}>
-          {t('cases:screening_review.batch.no_hit', { count })}
+          {t('cases:screening_review.dock.validate')}
         </ShortcutButton>
       </div>
     </Card>

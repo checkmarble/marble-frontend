@@ -26,7 +26,7 @@ export const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
           components={{ Style: <span className="font-bold capitalize" /> }}
           values={{
             actor: user ? getFullName(user) : 'Marble',
-            date: formatDateTime(event.snoozeUntil, { dateStyle: 'short', timeStyle: 'short' }),
+            date: formatDateTime(event.snoozeUntil, { dateStyle: 'short', timeStyle: 'short', fullYear: true }),
           }}
         />
       </span>

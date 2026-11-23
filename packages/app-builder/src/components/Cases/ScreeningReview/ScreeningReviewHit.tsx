@@ -67,7 +67,10 @@ interface ScreeningReviewHitProps {
 export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, actions }: ScreeningReviewHitProps) {
   const { t } = useTranslation(['cases']);
   return (
-    <section aria-labelledby="screening-review-active-title" className="flex min-h-0 min-w-0 flex-1 flex-col gap-md">
+    <section
+      aria-labelledby="screening-review-active-title"
+      className="@container/review-hit flex min-h-0 min-w-0 flex-1 flex-col gap-md"
+    >
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {item.customer.name} · {item.listRecord.caption || item.listRecord.id}
       </p>
@@ -87,7 +90,8 @@ export function ScreeningReviewHit({ item, comparisons, canViewRiskLevel, tags, 
         <CustomerCard item={item} canViewRiskLevel={canViewRiskLevel} />
         <ListRecordCard item={item} />
       </div>
-      <Card className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-lg">
+      {/* Sized by the hit's column, which the list and the docked panel narrow, not by the page. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-md @min-[760px]/review-hit:p-lg">
         <div className="flex flex-col gap-lg">
           <ComparisonTable comparisons={comparisons} />
           <AllHitInformation item={item} comparisons={comparisons} />
@@ -322,6 +326,10 @@ function ViaProperty({ property, value }: { property: string; value: string }) {
   );
 }
 
+// Below 760px, which the hit's column reaches beside the list on 1100–1200px windows, the cells
+// and the Match column, which only holds a pill, give their room to the compared values.
+const COMPARISON_CELL = 'px-sm py-sm @min-[760px]/review-hit:px-md';
+
 function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldComparison[] }) {
   const { t } = useTranslation(['cases']);
   return (
@@ -329,16 +337,23 @@ function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldCom
       <table className="w-full table-fixed text-s">
         <thead className="bg-grey-background-light text-start text-grey-secondary">
           <tr>
-            <th scope="col" className="w-1/6 px-md py-sm text-start font-normal">
+            <th scope="col" className={cn('w-1/6 text-start font-normal', COMPARISON_CELL)}>
               {t('cases:screening_review.column.field')}
             </th>
-            <th scope="col" className="px-md py-sm text-start font-normal">
+            <th scope="col" className={cn('text-start font-normal', COMPARISON_CELL)}>
               {t('cases:screening_review.customer')}
             </th>
-            <th scope="col" className="px-md py-sm text-start font-normal">
+            <th scope="col" className={cn('text-start font-normal', COMPARISON_CELL)}>
               {t('cases:screening_review.list_record')}
             </th>
-            <th scope="col" className="w-36 px-md py-sm text-start font-normal">
+            <th
+              scope="col"
+              // A long label, as in French, hyphenates in the narrow column.
+              className={cn(
+                'w-24 text-start font-normal hyphens-auto wrap-break-word @min-[760px]/review-hit:w-36',
+                COMPARISON_CELL,
+              )}
+            >
               {t('cases:screening_review.column.match')}
             </th>
           </tr>
@@ -346,13 +361,13 @@ function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldCom
         <tbody>
           {comparisons.map((comparison) => (
             <tr key={comparison.field} className="border-t border-grey-border align-top">
-              <th scope="row" className="px-md py-sm text-start font-normal text-grey-secondary">
+              <th scope="row" className={cn('text-start font-normal text-grey-secondary', COMPARISON_CELL)}>
                 <FieldLabel field={comparison.field} />
               </th>
-              <td className="px-md py-sm wrap-break-word">
+              <td className={cn('wrap-break-word', COMPARISON_CELL)}>
                 <FieldValues field={comparison.field} values={comparison.customerValues} />
               </td>
-              <td className="px-md py-sm wrap-break-word">
+              <td className={cn('wrap-break-word', COMPARISON_CELL)}>
                 <FieldValues field={comparison.field} values={comparison.listRecordValues} />
                 {comparison.viaAlias ? (
                   <span className="block text-xs text-grey-secondary">
@@ -361,7 +376,7 @@ function ComparisonTable({ comparisons }: { comparisons: ScreeningReviewFieldCom
                 ) : null}
                 {comparison.viaProperty ? <ViaProperty {...comparison.viaProperty} /> : null}
               </td>
-              <td className="px-md py-sm">
+              <td className={COMPARISON_CELL}>
                 <StatePill comparison={comparison} />
               </td>
             </tr>

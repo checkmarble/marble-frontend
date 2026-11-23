@@ -31,6 +31,29 @@ export function useFormatTimezone() {
   return FormatContext.useValue().timezone;
 }
 
+export type DateTimeFormatOptions = Intl.DateTimeFormatOptions & {
+  /**
+   * Writes the year out in full. `dateStyle: 'short'` gives en-US a 2-digit year ("1/1/00"), which
+   * reads as 1900 as well as 2000. Other locales already show 4 digits, and keep their format.
+   */
+  fullYear?: boolean;
+};
+
+function formatTimestamp(locale: string, timestamp: string | Date, { fullYear, ...options }: DateTimeFormatOptions) {
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  const format = Intl.DateTimeFormat(locale, options);
+  if (!fullYear) return format.format(date);
+  // `dateStyle` can't be mixed with `year`, so only the year part is formatted again.
+  const { locale: resolved, timeZone, calendar, numberingSystem } = format.resolvedOptions();
+  const year = Intl.DateTimeFormat(resolved, { timeZone, calendar, numberingSystem, year: 'numeric' })
+    .formatToParts(date)
+    .find((part) => part.type === 'year')?.value;
+  return format
+    .formatToParts(date)
+    .map((part) => (part.type === 'year' && year ? year : part.value))
+    .join('');
+}
+
 /**
  * Hook that returns a pre-configured date/time formatting function.
  *
@@ -41,25 +64,23 @@ export function useFormatTimezone() {
  * const formatDateTime = useFormatDateTime();
  * formatDateTime(date, { dateStyle: 'short' });
  * formatDateTime(date, { dateStyle: 'long', timeStyle: 'short' });
+ * formatDateTime(date, { dateStyle: 'short', fullYear: true });
  */
 export function useFormatDateTime() {
   const { locale, timezone } = FormatContext.useValue();
 
   return useCallback(
-    (timestamp: string | Date, options?: Omit<Intl.DateTimeFormatOptions, 'timeZone'>) => {
-      return Intl.DateTimeFormat(locale, { timeZone: timezone, ...options }).format(
-        typeof timestamp === 'string' ? new Date(timestamp) : timestamp,
-      );
-    },
+    (timestamp: string | Date, options?: Omit<DateTimeFormatOptions, 'timeZone'>) =>
+      formatTimestamp(locale, timestamp, { timeZone: timezone, ...options }),
     [locale, timezone],
   );
 }
 
 export function formatDateTimeWithoutPresets(
   timestamp: string | Date,
-  { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,
+  { language, ...options }: { language: string } & DateTimeFormatOptions,
 ) {
-  return Intl.DateTimeFormat(language, options).format(typeof timestamp === 'string' ? new Date(timestamp) : timestamp);
+  return formatTimestamp(language, timestamp, options);
 }
 
 export function formatNumber(

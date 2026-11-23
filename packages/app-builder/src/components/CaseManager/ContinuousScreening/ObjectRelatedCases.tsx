@@ -50,7 +50,7 @@ export function ObjectRelatedCases({
               {cases.map((caseObj) => {
                 return (
                   <Fragment key={caseObj.id}>
-                    <div>{formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}</div>
+                    <div>{formatDateTime(caseObj.createdAt, { dateStyle: 'short', fullYear: true })}</div>
                     <div className="flex gap-sm items-center">
                       <span>{caseObj.name}</span>
                       <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" outcome={caseObj.outcome} />

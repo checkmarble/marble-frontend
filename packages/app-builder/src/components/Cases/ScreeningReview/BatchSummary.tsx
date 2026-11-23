@@ -39,7 +39,6 @@ export function BatchPanel({
         onDeselect={(item) => onSelectionChange((current) => withoutSelected(current, [item.id]))}
       />
       <BatchDock
-        count={items.length}
         comment={comment ?? ''}
         mixedComments={comment === undefined}
         onCommentChange={(next) => onSelectionChange((current) => withBatchComment(current, next))}

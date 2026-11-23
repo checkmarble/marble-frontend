@@ -450,7 +450,7 @@ export function DateBirthdateComponent({ value, compact = false }: { value: stri
     <span className="inline-flex items-center gap-xs">
       <span className="text-grey-secondary text-xs">{age}</span>
       <span className={codeClassName(`text-sm ${compact ? 'py-0' : ''}`)}>
-        {formatDateTime(date, { dateStyle: 'short' })}
+        {formatDateTime(date, { dateStyle: 'short', fullYear: true })}
       </span>
     </span>
   );
@@ -499,7 +499,7 @@ export function DateDatetimeComponent({
   const date = new Date(value);
   return (
     <span className={monospaced ? codeClassName(className) : className}>
-      {formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined })}
+      {formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined, fullYear: true })}
     </span>
   );
 }
