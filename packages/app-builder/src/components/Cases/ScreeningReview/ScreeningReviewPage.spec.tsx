@@ -604,6 +604,20 @@ describe('screening review stream and restoration', () => {
     expect(onSearchChange).not.toHaveBeenCalled();
   });
 
+  it('falls back to the first pending hit when a bookmarked hit was beyond the first page', async () => {
+    // The URL names no page, so a reload reads the first one only, and a later hit is not looked for.
+    vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
+      items: initialItems,
+      nextCursor: pageTwoCursor,
+      failed: false,
+    });
+    renderPage({ filter: 'to_review', hit: secondPageItems[1]!.id });
+    await screen.findByText('cases:screening_review.unavailable');
+    expect(onSearchChange.mock.lastCall?.[0].hit).toBe(firstId);
+    expect(listScreeningReviewPageFn).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: 'cases:screening_review.load_more_cases' })).not.toBeNull();
+  });
+
   it('explains stale selection and falls back to the first pending hit', async () => {
     renderPage({ filter: 'to_review', hit: 'no-longer-eligible' });
     await screen.findByText('cases:screening_review.unavailable');
