@@ -100,6 +100,9 @@ export function NoHitStackSummary({
   children?: ReactNode;
 }) {
   const { t } = useTranslation(['cases']);
+  let hasChildren = children !== undefined;
+  if (Array.isArray(children)) hasChildren = children.length > 0;
+
   return (
     <div className="flex min-h-0 min-w-0 flex-col gap-md">
       <HitSummary
@@ -110,7 +113,7 @@ export function NoHitStackSummary({
           <HitSummaryRow key={item.id} item={item} end={<DecisionTag status={item.status} />} />
         ))}
       </HitSummary>
-      {children ? <Card className="flex shrink-0 flex-col gap-sm p-md">{children}</Card> : null}
+      {hasChildren ? <Card className="flex shrink-0 flex-col gap-sm p-md">{children}</Card> : null}
     </div>
   );
 }
