@@ -200,12 +200,12 @@ export const ClientDetailPage = ({
                     </div>
                     <MainLinksGraph objectType={objectType} objectId={objectId} dataModel={dataModel} />
                   </div>
-                ) : graphDisplay === 'placeholder' ? (
+                ) : (
                   <div className={cn('flex flex-1 flex-col gap-sm', mainLinksGraphMinHeight)}>
                     <Typo variant="title2">{t('cases:manager.clients.main_links_title')}</Typo>
                     <GraphAccessPlaceholder />
                   </div>
-                ) : null}
+                )}
               </div>
             </div>
 

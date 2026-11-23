@@ -35,7 +35,7 @@ export const handle = {
 function DataList() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
-  const { isGraphExplorationEnabled, isGraphExplorationAvailable } = useDataModelFeatureAccess();
+  const { isGraphExplorationAvailable } = useDataModelFeatureAccess();
   const revalidate = useLoaderRevalidator();
   const createTableMutation = useCreateTableMutation();
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
@@ -89,7 +89,7 @@ function DataList() {
           }
         }}
       />
-      {isGraphExplorationEnabled && isGraphExplorationAvailable ? (
+      {isGraphExplorationAvailable ? (
         <CreateRelationsPanel open={isCreateRelationsOpen} onClose={() => setIsCreateRelationsOpen(false)} />
       ) : null}
     </div>

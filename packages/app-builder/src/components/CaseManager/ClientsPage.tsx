@@ -65,7 +65,7 @@ export function CaseManagerClientsPage({
   const client360Table = client360Tables.find((table) => table.name === client.tableName);
   const entityName = client360Table?.alias || client360Table?.name || client.tableName;
   const clientName = getObjectName(dataModel, client.tableName, client.object.data, client.objectId ?? '');
-  const showMainLinks = graphDisplay !== 'hidden' && isGraphEligibleClient(client, dataModel);
+  const showMainLinks = isGraphEligibleClient(client, dataModel);
 
   return (
     <div className={cn('grid grid-cols-1 lg:grid-cols-2', pageLayoutGutter.gap)}>

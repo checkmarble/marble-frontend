@@ -19,7 +19,6 @@ import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotation
 import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import type { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
-import { getGraphExplorationDisplay } from '@app-builder/services/feature-access';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -65,7 +64,6 @@ export function CaseManagerPageLayout({
   const params = useParams({ strict: false });
   const currentPivotValue = typeof params.pivotValue === 'string' ? params.pivotValue : undefined;
   const eligibleClients = getGraphEligibleClients(caseClients, dataModel);
-  const graphDisplay = getGraphExplorationDisplay(dataModelFeatureAccess);
   const clientsPivotValue =
     currentPivotValue && caseClients.some((c) => c.key === currentPivotValue) ? currentPivotValue : undefined;
   const linksPivotValue =
@@ -157,26 +155,24 @@ export function CaseManagerPageLayout({
                   </Link>
                 </Tabs.Link>
               )}
-              {graphDisplay !== 'hidden' ? (
-                defaultLinksPivotValue ? (
-                  <Tabs.Link asChild>
-                    <Link
-                      from="/cases/s/$caseId"
-                      to="./links/$pivotValue"
-                      params={{ pivotValue: defaultLinksPivotValue }}
-                      preload="render"
-                    >
-                      {t('cases:manager.tab.links_to_other')}
-                    </Link>
-                  </Tabs.Link>
-                ) : (
-                  <Tabs.Link asChild>
-                    <Link disabled from="/cases/s/$caseId" to="./links" preload={false}>
-                      {t('cases:manager.tab.links_to_other')}
-                    </Link>
-                  </Tabs.Link>
-                )
-              ) : null}
+              {defaultLinksPivotValue ? (
+                <Tabs.Link asChild>
+                  <Link
+                    from="/cases/s/$caseId"
+                    to="./links/$pivotValue"
+                    params={{ pivotValue: defaultLinksPivotValue }}
+                    preload="render"
+                  >
+                    {t('cases:manager.tab.links_to_other')}
+                  </Link>
+                </Tabs.Link>
+              ) : (
+                <Tabs.Link asChild>
+                  <Link disabled from="/cases/s/$caseId" to="./links" preload={false}>
+                    {t('cases:manager.tab.links_to_other')}
+                  </Link>
+                </Tabs.Link>
+              )}
             </Tabs.Nav>
             <ActionBar>
               {isSarCompleted && hasSarFile && sarReport ? (
