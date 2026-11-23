@@ -1,5 +1,4 @@
 {
-  "active_screenings": "Activate screening:",
   "download_template_cta": "Download template .csv",
   "drop_file_cta": "Drop your filled .csv here",
   "errors.request_timeout": "The request timed out. Please try again, or try to cut your file into smaller parts.",

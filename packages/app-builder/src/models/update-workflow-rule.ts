@@ -1,4 +1,4 @@
-import { Rule, WorkflowCondition } from '@app-builder/models/scenario/workflow';
+import { type Rule, type WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import * as R from 'remeda';
