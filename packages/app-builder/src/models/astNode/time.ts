@@ -12,7 +12,7 @@ import {
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
 
-export const timeAddAstNodeName = 'TimeAdd';
+const timeAddAstNodeName = 'TimeAdd';
 export interface TimeAddAstNode {
   id: string;
   name: typeof timeAddAstNodeName;
@@ -47,7 +47,7 @@ export function NewTimeAddAstNode(
   };
 }
 
-export const timeNowAstNodeName = 'TimeNow';
+const timeNowAstNodeName = 'TimeNow';
 export interface TimeNowAstNode {
   id: string;
   name: typeof timeNowAstNodeName;
@@ -86,7 +86,7 @@ export function isTimeNow(node: IdLessAstNode | AstNode): node is CheckNodeId<Ti
   return node.name === timeNowAstNodeName;
 }
 
-export const timestampExtractAstNodeName = 'TimestampExtract';
+const timestampExtractAstNodeName = 'TimestampExtract';
 export const validTimestampExtractParts = ['year', 'month', 'day_of_month', 'day_of_week', 'hour'] as const;
 export type ValidTimestampExtractParts = (typeof validTimestampExtractParts)[number];
 

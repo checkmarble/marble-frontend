@@ -62,7 +62,7 @@ export interface WebhookSecret {
   value: string;
 }
 
-export function adaptWebhookSecret(dto: WebhookSecretDto): WebhookSecret {
+function adaptWebhookSecret(dto: WebhookSecretDto): WebhookSecret {
   invariant(dto.id, 'Webhook secret id is required');
   invariant(dto.created_at, 'Webhook secret created_at is required');
   invariant(dto.value, 'Webhook secret value is required');

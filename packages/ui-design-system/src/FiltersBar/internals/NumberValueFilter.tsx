@@ -41,7 +41,6 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
   }, [isOpen, filter.selectedValue]);
 
   const onOperatorChange = (operator: string) => {
-    // Check if operator is a valid NumberOperator value
     if (!NUMBER_OPERATORS.has(operator as NumberOperator)) throw new Error(`Invalid operator: ${operator}`);
 
     setLocalValue({ op: operator as NumberOperator, value: localValue.value });

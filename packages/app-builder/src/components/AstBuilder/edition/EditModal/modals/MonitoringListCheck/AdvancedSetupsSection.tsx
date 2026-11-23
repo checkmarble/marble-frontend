@@ -96,7 +96,6 @@ export const AdvancedSetupsSection = ({
 }: AdvancedSetupsSectionProps) => {
   const { t } = useTranslation(['scenarios']);
 
-  // Get tables that are under monitoring
   const monitoredTableNames = useMemo(() => {
     return new Set(screeningConfigs.flatMap((config) => config.objectTypes));
   }, [screeningConfigs]);
@@ -202,12 +201,10 @@ export const AdvancedSetupsSection = ({
 
     if (enabled) {
       if (existingCheck) {
-        // Update existing
         onLinkedObjectChecksChange(
           linkedObjectChecks.map((c) => (checkMatchesOption(c, option) ? { ...c, enabled: true } : c)),
         );
       } else {
-        // Add new check
         const newCheck: LinkedObjectCheck = {
           tableName: option.tableName,
           fieldPath: option.fieldPath,

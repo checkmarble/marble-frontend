@@ -78,7 +78,6 @@ const Comments = ({ comments: _comments, root }: CommentsProps) => {
     const items = Array.from(container.children);
 
     let callback = () => {
-      // Reset counts
       let itemsBeforeVisible = 0;
       let itemsAfterVisible = 0;
 

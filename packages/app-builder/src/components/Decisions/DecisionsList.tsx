@@ -9,7 +9,7 @@ import { getTableSelectColumn } from '@app-builder/utils/table-selection';
 import { Link } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
 import { Table, Tooltip, useTable } from 'ui-design-system';
@@ -46,22 +46,6 @@ type DecisionsListProps = {
   decisions: DecisionViewModel[];
   columnVisibility?: Partial<Record<Column, boolean>>;
 } & SelectionProps<DecisionViewModel>;
-
-export function useSelectedDecisionIds() {
-  const [rowSelection, setRowSelection] = useState({});
-  const getSelectedDecisionsRef = useRef<() => DecisionViewModel[]>(() => []);
-  const getSelectedDecisions = useCallback(() => getSelectedDecisionsRef.current(), []);
-
-  return {
-    hasSelection: Object.keys(rowSelection).length > 0,
-    getSelectedDecisions,
-    selectionProps: {
-      rowSelection,
-      setRowSelection,
-      getSelectedDecisionsRef,
-    },
-  };
-}
 
 const columnHelper = createColumnHelper<MarbleTableFeatures, DecisionViewModel>();
 

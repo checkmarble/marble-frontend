@@ -62,5 +62,3 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
     ))
     .exhaustive();
 };
-
-export default FreeformSearchResults;

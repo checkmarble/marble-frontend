@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function ArchiveScenario({
+function ArchiveScenario({
   children,
   scenarioId,
   scenarioName,

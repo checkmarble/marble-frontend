@@ -1,4 +1,4 @@
-import type { DataModelField } from '@app-builder/models';
+import { type DataModelField, getDeclaredSemanticType } from '@app-builder/models';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
 import type { TableField } from '../Shared/semanticData-types';
 
@@ -25,7 +25,7 @@ export function adaptFieldToTableField(field: DataModelField): TableField {
         ? 'unique_id'
         : field.name === 'updated_at'
           ? 'last_update'
-          : (field.semanticType ?? (field.isEnum ? 'enum' : fallbackSemanticType)),
+          : (getDeclaredSemanticType(field) ?? fallbackSemanticType),
     semanticSubType: field.name === 'object_id' ? 'opaque_id' : (field.semanticSubType ?? fallbackSemanticSubType),
     currencyExponent: field.currencyExponent,
     decimalPrecision: field.decimalPrecision,

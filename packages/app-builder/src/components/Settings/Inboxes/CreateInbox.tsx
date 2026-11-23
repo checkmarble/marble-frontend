@@ -43,7 +43,7 @@ export function CreateInbox({
   );
 }
 
-export function CreateInboxContent({
+function CreateInboxContent({
   setOpen,
   onInboxCreated,
 }: {

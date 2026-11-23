@@ -206,13 +206,13 @@ function Field({ label, children }: FieldProps) {
   );
 }
 
-export type EntitySelectProps = {
+type EntitySelectProps = {
   name: string;
   value: SearchableSchema | '';
   onChange: (value: SearchableSchema) => void;
 };
 
-export function EntitySelect({ name, value, onChange }: EntitySelectProps) {
+function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   const { t } = useTranslation(screeningsI18n);
   const schemas = R.keys(SEARCH_ENTITIES);
   const lowerCasedSchema = value?.toLowerCase() as Lowercase<typeof value>;

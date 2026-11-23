@@ -41,7 +41,7 @@ type StepperComponentProps = {
   getStepLabel: (stepName: string) => string;
 };
 
-export const StepperComponent = ({
+const StepperComponent = ({
   steps,
   startAt,
   currentStep,

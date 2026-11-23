@@ -20,7 +20,6 @@ import {
   type NavigationOptionDto,
   type PivotDto,
   type TableDto,
-  UpdateTableBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
@@ -46,7 +45,6 @@ export const primitiveTypes = ['Bool', 'Int', 'Float', 'String', 'Timestamp', 'I
 export type PrimitiveTypes = (typeof primitiveTypes)[number];
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
-export const UniqueDataTypes = ['Float', 'Int', 'String'];
 export type UnicityConstraintType = 'no_unicity_constraint' | 'pending_unique_constraint' | 'active_unique_constraint';
 export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other'] as const;
 export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
@@ -235,7 +233,7 @@ export type NavigationOption = {
 };
 
 /** Build a stable id from the fields that uniquely identify a navigation option. */
-export function getNavigationOptionId(
+function getNavigationOptionId(
   o: Pick<NavigationOption, 'sourceFieldId' | 'targetTableId' | 'filterFieldId' | 'orderingFieldId'>,
 ): string {
   return [o.sourceFieldId, o.targetTableId, o.filterFieldId, o.orderingFieldId].join('|');
@@ -286,7 +284,7 @@ export interface TableModel {
  * Maps API `semantic_type` (create table / data model) back to UI entity type + person sub-entity.
  * Inverse of `getEntityType` in create-table-types.
  */
-export function apiSemanticTypeToFormEntity(apiType: string): {
+function apiSemanticTypeToFormEntity(apiType: string): {
   entityType: FtmEntityV2 | null;
   subEntity: FtmEntityPersonOption | null;
 } {
@@ -472,12 +470,6 @@ export function findDataModelField({ table, fieldName }: { table: TableModel; fi
   }
 
   return field;
-}
-
-export function getEnumValues(dataModel: DataModel, tableName: string, fieldName: string): EnumValue[] {
-  const table = findDataModelTableByName({ dataModel, tableName });
-  const field = findDataModelField({ table, fieldName });
-  return field.values ?? [];
 }
 
 export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
@@ -676,7 +668,7 @@ export type ClientDataListResponse = {
 };
 
 /** Returns undefined for a type the API spec does not know yet, instead of failing the whole list. */
-export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics | undefined {
+function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics | undefined {
   return match(dto)
     .with({ type: 'String' }, ({ max_length, format }) => ({
       type: 'String' as const,
@@ -948,24 +940,6 @@ export function adaptDestroyDataModelReport(dto: DestroyDataModelReportDto): Des
     performed: dto.performed,
     conflicts: adaptDestroyDataModelReportConflicts(dto.conflicts),
     archivedIterations: dto.archived_iterations.map(adaptDestroyDataModelReportRef),
-  };
-}
-
-export type UpdateTableBody = {
-  description?: string;
-  ftmEntity?: FtmEntity;
-  semanticType?: 'person' | 'company';
-  captionField?: string;
-  alias?: string;
-};
-
-export function adaptUpdateTableBodyDto(model: UpdateTableBody): UpdateTableBodyDto {
-  return {
-    description: model.description,
-    ftm_entity: model.ftmEntity,
-    semantic_type: model.semanticType,
-    caption_field: model.captionField,
-    alias: model.alias,
   };
 }
 

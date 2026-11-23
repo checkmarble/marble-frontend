@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areNodesAdjacent, buildGraphIndex, EMPTY_GRAPH_INDEX } from './graph-index';
+import { areNodesAdjacent, buildGraphIndex } from './graph-index';
 
 function edge(source: string, target: string, id = `${source}->${target}`) {
   return { id, source, target };
@@ -33,6 +33,6 @@ describe('buildGraphIndex', () => {
 
   it('answers false for nodes it has never seen', () => {
     expect(areNodesAdjacent(buildGraphIndex([edge('a', 'b')]), 'a', 'zzz')).toBe(false);
-    expect(areNodesAdjacent(EMPTY_GRAPH_INDEX, 'a', 'b')).toBe(false);
+    expect(areNodesAdjacent(buildGraphIndex([]), 'a', 'b')).toBe(false);
   });
 });

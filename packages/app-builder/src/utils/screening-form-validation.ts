@@ -39,7 +39,7 @@ export function getScreeningQueryFieldLabel(fieldKey: string, t: TFunction): str
   return labelKey ? t(labelKey) : fieldKey;
 }
 
-export function screeningValidationSourceKey(source: ScreeningValidationSource): string {
+function screeningValidationSourceKey(source: ScreeningValidationSource): string {
   return source.type === 'field' ? `field:${source.field}` : `section:${source.section}`;
 }
 
@@ -171,15 +171,4 @@ export function collectFormValidationIssues<
   }
 
   return issues;
-}
-
-/** @deprecated Prefer {@link collectFormValidationIssues} for highlight support. */
-export function collectFormValidationMessages<
-  T extends {
-    name: string;
-    entityType?: ScreeningEntityType;
-    query: Record<string, unknown>;
-  },
->(values: T, schema: z.ZodType<T>, t: TFunction): string[] {
-  return collectFormValidationIssues(values, schema, t).map((issue) => issue.message);
 }

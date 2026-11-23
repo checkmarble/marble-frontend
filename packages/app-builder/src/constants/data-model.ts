@@ -29,4 +29,3 @@ export const semanticFieldForBack: FieldSemanticType[] = [
   'monetary_amount',
   'percentage',
 ];
-export type SemanticFieldForBack = FieldSemanticType;

@@ -11,17 +11,12 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useHydrated } from '@tanstack/react-router';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { TriggerObjectTag } from './TriggerObjectTag';
-
-export const handle = {
-  i18n: ['common', 'scenarios'] satisfies Namespace,
-};
 
 type ScenarioHeaderProps = {
   isEditScenarioAvailable: boolean;
@@ -30,7 +25,7 @@ type ScenarioHeaderProps = {
 
 export function ScenarioHeader({ isEditScenarioAvailable, scenario }: ScenarioHeaderProps) {
   const hydrated = useHydrated();
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   return (
     <div className="flex flex-row items-center gap-md">
@@ -59,7 +54,7 @@ export function ScenarioDescriptionEditable({
   scenario: Scenario;
 }) {
   const hydrated = useHydrated();
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   return (
     <EditableScenarioField
@@ -79,7 +74,7 @@ export function ScenarioDescriptionEditable({
   );
 }
 
-export function EditableScenarioField({
+function EditableScenarioField({
   scenarioId,
   name,
   description,

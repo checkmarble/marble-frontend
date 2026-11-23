@@ -1,11 +1,5 @@
 import type { DecisionsScoreDistributionResponseDto } from 'marble-api';
 
-export type DecisionsScoreDistributionPoint = {
-  score: number;
-  decisions: number;
-  outcome?: 'approve' | 'review' | 'blockAndReview' | 'decline';
-};
-
 export type DecisionsScoreDistribution = Array<{ x: number; y: number }>;
 
 export const adaptDecisionsScoreDistribution = (

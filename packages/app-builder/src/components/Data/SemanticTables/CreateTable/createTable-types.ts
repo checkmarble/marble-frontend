@@ -36,7 +36,7 @@ export type ValidationResult = { ok: true } | { ok: false; errors: ValidationErr
 export type ValidationScope = 'all' | 'table' | 'fields' | 'links';
 type ValidationTableModel = Pick<TableModel, 'id' | 'semanticType' | 'belongsToTableId' | 'linksToSingle'>;
 
-export const defaultCreateTableFields: TableField[] = [
+const defaultCreateTableFields: TableField[] = [
   {
     id: 'default_object_id',
     name: 'object_id',
@@ -94,7 +94,7 @@ const tableEntityStepCommonShape = {
   belongsToTableId: z.string(),
 };
 
-export const createTableEntityStepSchema = z
+const createTableEntityStepSchema = z
   .object({
     ...tableEntityStepCommonShape,
     name: z.string().min(1).regex(dataModelNameRegex, {
@@ -146,10 +146,6 @@ const editTableEntityStepSchema = z
 
 export function requiresLink(entityType: FtmEntityV2 | ''): entityType is EntityTypeRequiringLink {
   return entityTypesRequiringLink.includes(entityType as EntityTypeRequiringLink);
-}
-
-export function canProceedToStep2(values: SemanticTableFormValues): boolean {
-  return createTableEntityStepSchema.safeParse(values).success;
 }
 
 export function adaptSemanticField(
@@ -532,5 +528,3 @@ export function validateValues(
 
   return errors.length > 0 ? { ok: false, errors } : { ok: true };
 }
-
-export { apiSemanticTypeToFormEntity } from '@app-builder/models';

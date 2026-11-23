@@ -1,10 +1,7 @@
 import {
-  type Connection,
   ControlButton,
   type Edge,
   type FitViewOptions,
-  getIncomers,
-  getOutgoers,
   type Node,
   useNodesInitialized,
   useReactFlow,
@@ -22,7 +19,7 @@ type LayoutElements<NodeType extends Node, EdgeType extends Edge> = (
   edges: EdgeType[];
 };
 
-export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>({
+function useLayoutElements<NodeType extends Node, EdgeType extends Edge>({
   layoutElements,
   fitViewOptions = graphFitViewOptions,
 }: {
@@ -87,50 +84,5 @@ export function AutoLayoutControlButton<NodeType extends Node, EdgeType extends 
     >
       <Icon icon="tree-schema" />
     </ControlButton>
-  );
-}
-
-export function useIsValidConnection({
-  singleOutgoer,
-  singleIncomer,
-  noCycle,
-}: {
-  singleOutgoer: boolean;
-  singleIncomer: boolean;
-  noCycle: boolean;
-}) {
-  const { getNodes, getEdges } = useReactFlow();
-  return useCallback(
-    (connection: Connection): boolean => {
-      const nodes = getNodes();
-      const edges = getEdges();
-
-      const target = nodes.find((node) => node.id === connection.target);
-      if (!target) return false;
-
-      const source = nodes.find((node) => node.id === connection.source);
-      if (!source) return false;
-
-      if (singleOutgoer && getOutgoers(source, nodes, edges).length >= 1) return false;
-
-      if (singleIncomer && getIncomers(target, nodes, edges).length >= 1) return false;
-
-      if (noCycle) {
-        if (target.id === connection.source) return false;
-        const hasCycle = (node: Node, visited = new Set()) => {
-          if (visited.has(node.id)) return false;
-
-          visited.add(node.id);
-
-          for (const outgoer of getOutgoers(node, nodes, edges)) {
-            if (outgoer.id === connection.source) return true;
-            if (hasCycle(outgoer, visited)) return true;
-          }
-        };
-        return !hasCycle(target);
-      }
-      return true;
-    },
-    [getNodes, getEdges, singleOutgoer, singleIncomer, noCycle],
   );
 }

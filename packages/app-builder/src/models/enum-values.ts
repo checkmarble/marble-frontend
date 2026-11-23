@@ -63,7 +63,7 @@ export function resolveCountryCodeFormat(field: EnumField, currentValues: EnumVa
   return formats.size === 1 ? [...formats][0]! : 'alpha2';
 }
 
-export function resolveCurrencyCodeFormat(field: EnumField, currentValues: EnumValue[] = []): CurrencyCodeFormat {
+function resolveCurrencyCodeFormat(field: EnumField, currentValues: EnumValue[] = []): CurrencyCodeFormat {
   if (field.currencyCodeFormat) return field.currencyCodeFormat;
   const formats = new Set(
     [...(field.values ?? []), ...currentValues].flatMap((value) => {

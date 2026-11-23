@@ -37,7 +37,6 @@ const configurationsLoader = createServerFn()
 
 export const Route = createFileRoute('/_app/_builder/continuous-screening/configurations')({
   staticData: {
-    i18n: ['navigation', 'continuousScreening'],
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
         const { t } = useTranslation(['navigation']);

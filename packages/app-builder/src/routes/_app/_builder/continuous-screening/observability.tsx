@@ -50,7 +50,6 @@ const observabilityLoader = createServerFn()
 
 export const Route = createFileRoute('/_app/_builder/continuous-screening/observability')({
   staticData: {
-    i18n: ['navigation', 'continuousScreening', 'screenings'],
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
         const { t } = useTranslation(['screenings']);

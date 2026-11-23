@@ -1,7 +1,5 @@
 export type FilterBarLevel = 'main' | 'additional';
 
-export type CommittedDynamicValues = Record<string, unknown>;
-
 export interface BaseFilter<T> {
   name: string;
   placeholder: string;
@@ -18,22 +16,14 @@ export type NumberOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in';
 
 export type TextOperator = 'in';
 
-// Number filters use a single ComparisonFilter with a single number value
 export interface NumberComparisonFilter {
   op: NumberOperator;
   value: number;
 }
 
-// Text filters use a single ComparisonFilter object with an array of string values
 export interface TextComparisonFilter {
   op: TextOperator;
   value: string[];
-}
-
-// Legacy type kept for backward compatibility - prefer NumberComparisonFilter or TextComparisonFilter
-export interface ComparisonFilter<T> {
-  op: NumberOperator | TextOperator;
-  value: T | T[];
 }
 
 export interface StaticDateRangeFilterType {

@@ -6,7 +6,7 @@ type OnDropFn = <T extends File>(acceptedFiles: T[], fileRejections: FileRejecti
 export const MAX_FILE_SIZE_MB = 20;
 export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-export const DEFAULT_ACCEPT = {
+const DEFAULT_ACCEPT = {
   'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
   'application/pdf': ['.pdf'],
   'application/zip': ['.zip'],

@@ -90,44 +90,6 @@ interface AuthenticatedInfo {
   userScoring: UserScoringRepository;
 }
 
-export interface AuthenticationServerService {
-  authenticate(
-    request: Request,
-    payload: { idToken: string; csrf: string },
-    options: {
-      successRedirect: string;
-      failureRedirect: string;
-    },
-  ): Promise<{ redirectTo: string }>;
-
-  refresh(
-    request: Request,
-    payload: { idToken?: string; csrf: string; newOrganizationId?: string },
-    options: {
-      failureRedirect: string;
-      preserveSessionOnFailure?: boolean;
-    },
-  ): Promise<void>;
-
-  changeOrganization(
-    request: Request,
-    payload: { csrf: string; newOrganizationId: string; idToken?: string },
-  ): Promise<OrganizationChangeResult>;
-
-  isAuthenticated(
-    request: Request,
-    options?: { successRedirect?: never; failureRedirect?: never },
-  ): Promise<AuthenticatedInfo | null>;
-  isAuthenticated(request: Request, options: { successRedirect: string; failureRedirect?: never }): Promise<null>;
-  isAuthenticated(
-    request: Request,
-    options: { successRedirect?: never; failureRedirect: string },
-  ): Promise<AuthenticatedInfo>;
-  isAuthenticated(request: Request, options: { successRedirect: string; failureRedirect: string }): Promise<null>;
-
-  logout(request: Request, options: { redirectTo: string }): Promise<{ redirectTo: string }>;
-}
-
 // Sliding idle timeout: a session is logged out after this much inactivity,
 // independently of the absolute lifetime enforced by the session cookie maxAge.
 const DEFAULT_SESSION_IDLE_TIMEOUT = 60 * 60 * 24; // 24h, in seconds

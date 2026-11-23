@@ -54,7 +54,7 @@ export const createLicenseFn = createServerFn({ method: 'POST' })
     return license;
   });
 
-export const updateLicenseFnInputSchema = z.object({
+const updateLicenseFnInputSchema = z.object({
   licenseId: z.uuid(),
   payload: licensePayloadSchema.extend({
     suspend: z.boolean().optional(),

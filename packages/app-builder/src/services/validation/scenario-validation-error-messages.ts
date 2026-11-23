@@ -107,28 +107,6 @@ export function adaptEvaluationErrorViewModels(evaluationErrors: EvaluationError
   return evaluationErrorVMs;
 }
 
-export function useGetNodeEvaluationErrorMessage() {
-  const { t } = useTranslation(['scenarios']);
-
-  return useCallback((evaluationError: EvaluationErrorViewModel) => commonErrorMessages(t)(evaluationError), [t]);
-}
-
-export function useGetOrAndNodeEvaluationErrorMessage() {
-  const { t } = useTranslation(['scenarios']);
-
-  return useCallback(
-    (evaluationError: EvaluationErrorViewModel) => {
-      switch (evaluationError.error) {
-        case 'WRONG_NUMBER_OF_ARGUMENTS':
-          return t('scenarios:validation.decision.rule_formula_required');
-        default:
-          return commonErrorMessages(t)(evaluationError);
-      }
-    },
-    [t],
-  );
-}
-
 export const commonErrorMessages = (t: TFunction<['scenarios']>) => (evaluationError: EvaluationErrorViewModel) => {
   switch (evaluationError.error) {
     case 'UNDEFINED_FUNCTION':

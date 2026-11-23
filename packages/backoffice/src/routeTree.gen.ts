@@ -15,7 +15,6 @@ import { Route as AppPrivateRouteImport } from './routes/_app/_private'
 import { Route as AppPublicRouteImport } from './routes/_app/_public'
 import { Route as AppPrivateDashboardRouteImport } from './routes/_app/_private/dashboard'
 import { Route as AppPublicSignInRouteImport } from './routes/_app/_public/sign-in'
-import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 import { Route as AppPrivateLicensesIndexRouteImport } from './routes/_app/_private/licenses/index'
 import { Route as AppPrivateOrganizationsOrgIdRouteImport } from './routes/_app/_private/organizations/$orgId'
 import { Route as AppPrivateTenantsIndexRouteImport } from './routes/_app/_private/tenants/index'
@@ -52,11 +51,6 @@ const AppPublicSignInRoute = AppPublicSignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
   getParentRoute: () => AppPublicRoute,
-} as any)
-const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
-  id: '/api/trpc/$',
-  path: '/api/trpc/$',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AppPrivateLicensesIndexRoute = AppPrivateLicensesIndexRouteImport.update({
   id: '/licenses/',
@@ -114,7 +108,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AppPrivateDashboardRoute
   '/sign-in': typeof AppPublicSignInRoute
-  '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/organizations/$orgId': typeof AppPrivateOrganizationsOrgIdRouteWithChildren
   '/licenses/': typeof AppPrivateLicensesIndexRoute
   '/tenants/': typeof AppPrivateTenantsIndexRoute
@@ -129,7 +122,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AppPrivateDashboardRoute
   '/sign-in': typeof AppPublicSignInRoute
-  '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/licenses': typeof AppPrivateLicensesIndexRoute
   '/tenants': typeof AppPrivateTenantsIndexRoute
   '/users': typeof AppPrivateUsersIndexRoute
@@ -147,7 +139,6 @@ export interface FileRoutesById {
   '/_app/_public': typeof AppPublicRouteWithChildren
   '/_app/_private/dashboard': typeof AppPrivateDashboardRoute
   '/_app/_public/sign-in': typeof AppPublicSignInRoute
-  '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/_app/_private/organizations/$orgId': typeof AppPrivateOrganizationsOrgIdRouteWithChildren
   '/_app/_private/licenses/': typeof AppPrivateLicensesIndexRoute
   '/_app/_private/tenants/': typeof AppPrivateTenantsIndexRoute
@@ -164,7 +155,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/sign-in'
-    | '/api/trpc/$'
     | '/organizations/$orgId'
     | '/licenses/'
     | '/tenants/'
@@ -179,7 +169,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/sign-in'
-    | '/api/trpc/$'
     | '/licenses'
     | '/tenants'
     | '/users'
@@ -196,7 +185,6 @@ export interface FileRouteTypes {
     | '/_app/_public'
     | '/_app/_private/dashboard'
     | '/_app/_public/sign-in'
-    | '/api/trpc/$'
     | '/_app/_private/organizations/$orgId'
     | '/_app/_private/licenses/'
     | '/_app/_private/tenants/'
@@ -211,7 +199,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -257,13 +244,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/sign-in'
       preLoaderRoute: typeof AppPublicSignInRouteImport
       parentRoute: typeof AppPublicRoute
-    }
-    '/api/trpc/$': {
-      id: '/api/trpc/$'
-      path: '/api/trpc/$'
-      fullPath: '/api/trpc/$'
-      preLoaderRoute: typeof ApiTrpcSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_app/_private/licenses/': {
       id: '/_app/_private/licenses/'
@@ -406,7 +386,6 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

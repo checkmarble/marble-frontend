@@ -19,11 +19,8 @@ export class AccountExistsWithDifferentCredential extends Error {}
 export class PopupBlockedByClient extends Error {}
 export class NetworkRequestFailed extends Error {}
 export class EmailUnverified extends Error {}
-export class UserNotFoundError extends Error {}
 export class WrongPasswordError extends Error {}
 export class InvalidLoginCredentials extends Error {}
-export class EmailExistsError extends Error {}
-export class WeakPasswordError extends Error {}
 export class TooManyRequest extends Error {}
 export class InvalidVerificationCode extends Error {}
 export class RequiresRecentLogin extends Error {}
@@ -250,34 +247,6 @@ export function useResolveMfaTotpSignIn({ authenticationClientRepository }: Auth
       return { idToken, refreshToken, csrf };
     } catch (error) {
       throwMappedMfaError(error);
-    }
-  };
-}
-
-export function useEmailAndPasswordSignUp({ authenticationClientRepository }: AuthenticationClientService) {
-  const {
-    i18n: { language },
-  } = useTranslation();
-  const csrf = useCsrfToken();
-
-  return async (email: string, password: string) => {
-    try {
-      const idToken = await authenticationClientRepository.emailAndPassswordSignUp(language, email, password);
-      return { idToken, csrf };
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
-          case AuthErrorCodes.EMAIL_EXISTS:
-            throw new EmailExistsError();
-          case AuthErrorCodes.WEAK_PASSWORD:
-            throw new WeakPasswordError();
-          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
-            throw new NetworkRequestFailed();
-          case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
-            throw new TooManyRequest();
-        }
-      }
-      throw error;
     }
   };
 }

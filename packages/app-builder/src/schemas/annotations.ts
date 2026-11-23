@@ -2,7 +2,7 @@ import { RISK_TAG_CATEGORIES } from '@app-builder/models/screening';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
-export const baseCreateAnnotationSchema = z.object({
+const baseCreateAnnotationSchema = z.object({
   tableName: z.string(),
   objectId: z.string(),
   caseId: z.uuid().optional(),

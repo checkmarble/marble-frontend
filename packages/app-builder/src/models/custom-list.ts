@@ -1,10 +1,4 @@
-import {
-  type CreateCustomListBodyDto,
-  type CustomListDto,
-  type CustomListValueDto,
-  type CustomListWithValuesDto,
-  type UpdateCustomListBodyDto,
-} from 'marble-api';
+import { type CustomListDto, type CustomListValueDto, type CustomListWithValuesDto } from 'marble-api';
 
 export type CustomListValuesCount = {
   count: number;
@@ -68,20 +62,5 @@ export function adaptCustomListWithValues(dto: CustomListWithValuesDto): CustomL
   return {
     ...adaptCustomList(dto),
     values: dto.values.map(adaptCustomListValue),
-  };
-}
-
-export function adaptCreateCustomListBody(body: CreateCustomListBodyDto): CreateCustomListBody {
-  return {
-    name: body.name,
-    description: body.description,
-    kind: body.kind,
-  };
-}
-
-export function adaptUpdateCustomListBody(body: UpdateCustomListBody): UpdateCustomListBodyDto {
-  return {
-    name: body.name,
-    description: body.description,
   };
 }

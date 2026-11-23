@@ -195,16 +195,6 @@ export const listArchetypesFn = createServerFn({ method: 'GET' })
     return archetypes;
   });
 
-// ---- Data model mutations - OLD ----
-
-export class TableMutationError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
-
 export const createTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createTableValueSchema)
@@ -266,7 +256,7 @@ export const applyArchetypeFn = createServerFn({ method: 'POST' })
     }
   });
 
-// ---- Data model mutation - NEW ----
+// ---- Data model mutations ----
 
 export const editSemanticTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])

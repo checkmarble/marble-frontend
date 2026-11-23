@@ -46,7 +46,7 @@ export interface CaseContributor {
   createdAt: string;
 }
 
-export function adaptCaseContributor(dto: CaseContributorDto): CaseContributor {
+function adaptCaseContributor(dto: CaseContributorDto): CaseContributor {
   return {
     id: dto.id,
     caseId: dto.case_id,
@@ -62,7 +62,7 @@ export interface CaseTag {
   createdAt: string;
 }
 
-export function adaptCaseTag(dto: CaseTagDto): CaseTag {
+function adaptCaseTag(dto: CaseTagDto): CaseTag {
   return {
     id: dto.id,
     caseId: dto.case_id,
@@ -75,7 +75,6 @@ export type CaseStatus = CaseStatusDto;
 export const caseStatuses: CaseStatus[] = ['pending', 'investigating', 'closed', 'waiting_for_action', 'snoozed'];
 
 export type CaseOutcome = Outcome;
-export const caseOutcomes: CaseOutcome[] = ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset'];
 
 export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
 export const finalOutcomes = exhaustiveUnionList<FinalOutcome>()([
@@ -85,7 +84,7 @@ export const finalOutcomes = exhaustiveUnionList<FinalOutcome>()([
 ]);
 
 // AI review levels from case review
-export const caseReviewLevels = ['probable_false_positive', 'investigate', 'escalate'] as const;
+const caseReviewLevels = ['probable_false_positive', 'investigate', 'escalate'] as const;
 export type CaseReviewLevel = (typeof caseReviewLevels)[number];
 
 // Qualification levels combine review_level and outcome for filtering
@@ -138,7 +137,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
 //
 
 export type CaseEventType = CaseEventDto['event_type'];
-export const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
+const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'case_created',
   'status_updated',
   'outcome_updated',
@@ -321,10 +320,7 @@ export type CaseEvent =
   | ScreeningMatchReviewedEvent
   | ScreeningReviewedEvent;
 
-export async function adaptCaseEventDto(
-  caseEventDto: CaseEventDto,
-  marbleCoreApiClient: MarbleCoreApi,
-): Promise<CaseEvent> {
+async function adaptCaseEventDto(caseEventDto: CaseEventDto, marbleCoreApiClient: MarbleCoreApi): Promise<CaseEvent> {
   const baseEvent = {
     eventType: caseEventDto.event_type,
     id: caseEventDto.id,
@@ -513,7 +509,7 @@ export interface CaseFile {
   createdAt: string;
 }
 
-export function adaptCaseFile(dto: CaseFileDto): CaseFile {
+function adaptCaseFile(dto: CaseFileDto): CaseFile {
   return {
     id: dto.id,
     caseId: dto.case_id,
@@ -692,9 +688,7 @@ export type PivotObject = {
  * can share the same id or value string (e.g. a User "123" and a Merchant "123" under
  * polymorphic belongs_to) and must not be merged. Falls back to the value when the id is absent.
  */
-export function getPivotObjectKey(
-  pivotObject: Pick<PivotObject, 'pivotObjectName' | 'pivotObjectId' | 'pivotValue'>,
-): string {
+function getPivotObjectKey(pivotObject: Pick<PivotObject, 'pivotObjectName' | 'pivotObjectId' | 'pivotValue'>): string {
   return pivotObject.pivotObjectId
     ? getEntityKey({ tableName: pivotObject.pivotObjectName, objectId: pivotObject.pivotObjectId })
     : pivotObject.pivotValue;
@@ -716,11 +710,11 @@ export type CaseClient = {
   object: DataModelObject;
 } & ({ kind: 'pivot'; pivotObject: PivotObject } | { kind: 'entity'; entity: CaseEntity });
 
-export function getEntityKey(entity: Pick<CaseEntity, 'tableName' | 'objectId'>): string {
+function getEntityKey(entity: Pick<CaseEntity, 'tableName' | 'objectId'>): string {
   return `${entity.tableName}:${entity.objectId}`;
 }
 
-export function adaptPivotClient(pivotObject: PivotObject): CaseClient {
+function adaptPivotClient(pivotObject: PivotObject): CaseClient {
   const validFrom = pivotObject.pivotObjectData.metadata.validFrom;
   return {
     kind: 'pivot',
@@ -736,7 +730,7 @@ export function adaptPivotClient(pivotObject: PivotObject): CaseClient {
   };
 }
 
-export function adaptEntityClient(entity: CaseEntity): CaseClient {
+function adaptEntityClient(entity: CaseEntity): CaseClient {
   return {
     kind: 'entity',
     key: getEntityKey(entity),
@@ -805,7 +799,7 @@ export type CaseReview = {
   review: CaseReviewContent | null;
 };
 
-export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
+function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
   return {
     id: dto.id,
     type: dto.type,
@@ -814,7 +808,7 @@ export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
   };
 }
 
-export function adaptCaseReviewContent(dto: CaseReviewContentDto): CaseReviewContent {
+function adaptCaseReviewContent(dto: CaseReviewContentDto): CaseReviewContent {
   const base = {
     version: dto.version,
     output: dto.output,

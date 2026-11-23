@@ -20,8 +20,8 @@ import { z } from 'zod/v4';
 import { type CreatableOrganizationEnvironment, EnvironmentField } from './EnvironmentField';
 import { OrganizationCreationFlow } from './types';
 
-export const MAX_FILE_SIZE_MB = 20;
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_FILE_SIZE_MB = 20;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 type MethodKey = 'upload' | 'archetype' | 'empty';
 

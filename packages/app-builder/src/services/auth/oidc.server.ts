@@ -63,7 +63,7 @@ async function requestTokens(tokenEndpoint: string, body: URLSearchParams): Prom
   return new CompatOAuth2Tokens(data);
 }
 
-export const OAUTH2_COOKIE_MAX_AGE = 60 * 10;
+const OAUTH2_COOKIE_MAX_AGE = 60 * 10;
 
 export const oauth2CookieSchema = z.object({
   state: z.string(),

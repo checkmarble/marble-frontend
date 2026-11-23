@@ -28,7 +28,7 @@ export type VALID_DATA_TYPE = {
   [Key in MAIN_DATA_TYPE]: `${Key}-${(typeof SEMANTIC_DATA_TYPE)[Key][number]}`;
 }[MAIN_DATA_TYPE];
 
-export const DATA_TABLE_VISUALISATION_PRESET = ['essentials', 'advanced', 'full'] as const;
+const DATA_TABLE_VISUALISATION_PRESET = ['essentials', 'advanced', 'full'] as const;
 export type TYPE_DATA_TABLE_VISUALISATION_PRESET = (typeof DATA_TABLE_VISUALISATION_PRESET)[number];
 
 export type MetadataType = ReturnType<typeof parseUnknownData>;

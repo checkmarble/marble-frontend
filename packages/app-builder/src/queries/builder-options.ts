@@ -3,8 +3,6 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export type { BuilderOptionsResource };
-
 type UseBuilderOptionsQueryParams = {
   scenarioId: string;
   initialData?: BuilderOptionsResource;

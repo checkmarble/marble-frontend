@@ -11,7 +11,7 @@ export type AstValidation = {
   evaluation: NodeEvaluation;
 };
 
-export function adaptScenarioValidationErrorCode(
+function adaptScenarioValidationErrorCode(
   code: ScenarioValidationErrorCodeDto,
   returnType?: ReturnValueType,
 ): ScenarioValidationErrorCode {

@@ -5,7 +5,7 @@ import { type Dispatch, type ReactNode, type SetStateAction, useState } from 're
  * Counts only `GraphImpl` can compute, since the toolbar and settings panel are
  * its siblings and never see the node/edge arrays.
  */
-export type GraphStats = {
+type GraphStats = {
   /** Nodes currently removed by the hidden set, including cascade orphans. */
   hiddenCount: number;
   /** Extra nodes that would be orphaned by hiding the current selection. */

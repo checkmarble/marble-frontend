@@ -5,7 +5,7 @@ import { type ReactNode, useCallback, useMemo, useState } from 'react';
  * Session tag ids for person nodes. Payload metadata is static, so the canvas
  * reads these on top of it after bulk-tag or settings-panel edits.
  */
-export type GraphAnnotations = {
+type GraphAnnotations = {
   /** Full lists, replacing the payload's (settings panel). */
   nodeTagIdOverrides: ReadonlyMap<string, readonly string[]>;
   /**
@@ -16,7 +16,7 @@ export type GraphAnnotations = {
   addedNodeTagIds: ReadonlyMap<string, readonly string[]>;
 };
 
-export type GraphAnnotationsActions = {
+type GraphAnnotationsActions = {
   setNodeTagIds: (nodeId: string, tagIds: readonly string[]) => void;
   addTagsToNodes: (updates: ReadonlyArray<{ nodeId: string; tagIds: readonly string[] }>) => void;
 };

@@ -13,7 +13,6 @@ interface RuleContextValue {
   isError: boolean;
   error?: Error;
 
-  // State
   isModified: boolean;
   validationErrors: string[];
 
@@ -28,7 +27,6 @@ interface RuleContextValue {
   saveRule: () => Promise<void>;
   cancelChanges: () => Promise<void>;
 
-  // Helper functions
   hasValidationErrors: () => boolean;
   getValidationErrors: () => string[];
 }
@@ -47,12 +45,10 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
   // Mutations
   const updateRuleMutation = useUpdateRuleMutation();
 
-  // State
   const [localRule, setLocalRule] = useState<Rule>(rule);
   const [isModified, setIsModified] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  // Initialize local rule when prop changes
   useEffect(() => {
     setLocalRule(rule);
     setIsModified(false);
@@ -66,7 +62,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     }
   }, [isModified, rule.id, setEditingRuleId]);
 
-  // Validate rule in real-time when it changes
   useEffect(() => {
     if (localRule && isModified) {
       const validationResult = validateRuleEnhanced(localRule);
@@ -196,7 +191,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     }
   };
 
-  // Helper functions
   const hasValidationErrors = (): boolean => {
     return validationErrors.length > 0;
   };
@@ -213,7 +207,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     isError: false,
     error: undefined,
 
-    // State
     isModified,
     validationErrors,
 
@@ -228,7 +221,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     saveRule,
     cancelChanges,
 
-    // Helper functions
     hasValidationErrors,
     getValidationErrors,
   };

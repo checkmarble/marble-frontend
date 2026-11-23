@@ -6,8 +6,6 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export type { AstValidationPayload, AstValidationReturnType };
-
 type UseValidateAstMutationParams = {
   scenarioId: string | undefined;
 };

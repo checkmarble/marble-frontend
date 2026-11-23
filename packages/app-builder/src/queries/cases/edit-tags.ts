@@ -3,7 +3,7 @@ import { editTagsFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { type EditTagsPayload, editTagsPayloadSchema };
+export { editTagsPayloadSchema };
 
 export const useEditTagsMutation = () => {
   const editTags = useServerFn(editTagsFn);

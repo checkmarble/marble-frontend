@@ -14,10 +14,10 @@ import type { MarbleTableFeatures } from 'ui-design-system';
 import { Button, CtaV2ClassName, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const MAX_FILE_SIZE_MB = 32;
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_FILE_SIZE_MB = 32;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-export const generateCsvTemplateLink = (table: TableModel): string => {
+const generateCsvTemplateLink = (table: TableModel): string => {
   const csvContent = table.fields.map((field) => field.name).join(',') + '\n';
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8,' });
   return URL.createObjectURL(blob);
@@ -38,7 +38,7 @@ export function DownloadCsvTemplate({ tableModel, objectType }: { tableModel: Ta
   );
 }
 
-export const getStatusIcon = (status: string) => {
+const getStatusIcon = (status: string) => {
   if (status === 'success') {
     return <Icon icon="tick" className="text-green-primary size-6" />;
   }
@@ -48,7 +48,7 @@ export const getStatusIcon = (status: string) => {
   return <Icon icon="restart-alt" className="text-grey-secondary size-6" />;
 };
 
-export const getStatusTKey = (status: string): ParseKeys<['upload']> => {
+const getStatusTKey = (status: string): ParseKeys<['upload']> => {
   if (status === 'success') {
     return 'upload:status_success';
   }
@@ -67,7 +67,7 @@ type ModalContent = {
   error?: string;
 };
 
-export const ResultModal = ({
+const ResultModal = ({
   onOpenChange,
   isOpen,
   modalContent,
@@ -334,7 +334,7 @@ export const UploadForm = ({
   );
 };
 
-export const UploadFormLoading = ({ className }: { className?: string }) => {
+const UploadFormLoading = ({ className }: { className?: string }) => {
   const { t } = useTranslation(['common']);
   return (
     <div

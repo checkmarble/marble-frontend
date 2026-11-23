@@ -1,10 +1,8 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type UnarchiveScenarioPayload, unarchiveScenarioPayloadSchema } from '@app-builder/schemas/scenarios';
+import { type UnarchiveScenarioPayload } from '@app-builder/schemas/scenarios';
 import { unarchiveScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type UnarchiveScenarioPayload, unarchiveScenarioPayloadSchema };
 
 export const useUnarchiveScenarioMutation = () => {
   const unarchiveScenario = useServerFn(unarchiveScenarioFn);

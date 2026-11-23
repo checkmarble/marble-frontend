@@ -2,7 +2,7 @@ import type { OutcomeDto, RuleVsDecisionOutcomeResponseDto } from 'marble-api';
 import * as R from 'remeda';
 import { type Outcome } from './index';
 
-export type DecisionOutcomesEntry = {
+type DecisionOutcomesEntry = {
   total: number;
   approve: number;
   review: number;
@@ -28,8 +28,6 @@ const OutcomesMap = new Map<OutcomeDto, Outcome | 'unknown'>([
   ['block_and_review', 'blockAndReview'],
   ['unknown', 'unknown'],
 ]);
-
-export type RuleVsDecisionOutcomeEntry = Map<string, DecisionOutcomesEntry>;
 
 export const adaptRuleVsDecisionOutcome = (val: RuleVsDecisionOutcomeResponseDto[]): RuleVsDecisionOutcome[] => {
   const grouped = R.pipe(

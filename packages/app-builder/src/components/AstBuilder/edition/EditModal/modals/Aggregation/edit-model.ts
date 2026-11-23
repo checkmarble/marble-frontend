@@ -280,7 +280,7 @@ export function createStandardFilterEditModel(
   };
 }
 
-export function getFilterOperand(filter: AggregationFilterAstNode): KnownOperandAstNode {
+function getFilterOperand(filter: AggregationFilterAstNode): KnownOperandAstNode {
   if (isBinaryAggregationFilter(filter)) return filter.namedChildren.value;
   if (isComplexAggregationFilter(filter) && isFuzzyMatchFilterOptionsAstNode(filter.namedChildren.value)) {
     return filter.namedChildren.value.namedChildren.value;

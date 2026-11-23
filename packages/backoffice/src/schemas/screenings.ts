@@ -5,7 +5,7 @@ export const CLIENT_OBJECT_FORBIDDEN_ERROR = 'client-object-forbidden';
 export const CLIENT_OBJECT_FETCH_ERROR = 'client-object-fetch-failed';
 
 export const SCREENING_PROVIDERS = ['opensanctions', 'lexisnexis'] as const;
-export const screeningProviderSchema = z.enum(SCREENING_PROVIDERS);
+const screeningProviderSchema = z.enum(SCREENING_PROVIDERS);
 
 export const organizationScreeningsSearchSchema = z.object({
   provider: screeningProviderSchema.optional().catch(undefined),
@@ -22,9 +22,9 @@ export const organizationClientObjectInputSchema = organizationDataModelInputSch
   objectId: z.string().trim().min(1),
 });
 
-export const motivaPropertiesSchema = z.record(z.string().min(1), z.array(z.string()));
+const motivaPropertiesSchema = z.record(z.string().min(1), z.array(z.string()));
 
-export const motivaQuerySchema = z.object({
+const motivaQuerySchema = z.object({
   queries: z.record(
     z.string().min(1),
     z.object({
@@ -49,7 +49,7 @@ const motivaExplanationSchema = looseJsonObject({
   detail: z.string().optional(),
 });
 
-export const motivaMatchResultSchema = looseJsonObject({
+const motivaMatchResultSchema = looseJsonObject({
   id: z.string(),
   caption: z.string(),
   schema: z.string(),

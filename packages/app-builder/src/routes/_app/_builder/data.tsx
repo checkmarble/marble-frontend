@@ -21,9 +21,6 @@ const dataLayoutLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/data')({
-  staticData: {
-    i18n: ['navigation', 'data'],
-  },
   loader: () => dataLayoutLoader(),
   component: DataLayout,
 });

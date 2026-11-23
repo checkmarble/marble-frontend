@@ -25,7 +25,7 @@ type Mapping<T extends string> = Record<
   }
 >;
 
-export function Hamburger<T extends string>({
+function Hamburger<T extends string>({
   version,
   summary,
   type,

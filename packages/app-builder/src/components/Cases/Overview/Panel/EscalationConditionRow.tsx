@@ -33,12 +33,10 @@ export const EscalationConditionRow = ({
   const sourceInbox = allInboxesMetadata.find((i) => i.id === condition.sourceInboxId);
   const targetInbox = allInboxesMetadata.find((i) => i.id === condition.targetInboxId);
 
-  // Filter out already used source inboxes and the target inbox
   const availableSourceInboxes = allInboxesMetadata.filter(
     (i) => !usedSourceIds.includes(i.id) && i.id !== condition.targetInboxId,
   );
 
-  // Filter out the source inbox from target options
   const availableTargetInboxes = allInboxesMetadata.filter((i) => i.id !== condition.sourceInboxId);
 
   return (

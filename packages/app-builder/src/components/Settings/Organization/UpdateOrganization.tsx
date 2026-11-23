@@ -66,7 +66,7 @@ export function UpdateOrganizationSettings({
   );
 }
 
-export function UpdateOrganizationSettingsContents({
+function UpdateOrganizationSettingsContents({
   organizationId,
   autoAssignQueueLimit,
   closeModal,

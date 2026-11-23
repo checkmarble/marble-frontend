@@ -82,7 +82,7 @@ export const CaseAlerts = ({ caseDecisionsQuery, dataModel }: CaseAlertsProps) =
     });
 };
 
-export const AlertCard = ({
+const AlertCard = ({
   dataModel,
   decision,
   triggerObjectFields,

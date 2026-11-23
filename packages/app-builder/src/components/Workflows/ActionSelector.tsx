@@ -65,14 +65,12 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
     },
   ] as const;
 
-  // Helper function to create a proper default title template
   const createDefaultTitleTemplate = (): StringTemplateAstNode => {
     return NewStringTemplateAstNode('Case %object_id%', {
       object_id: NewPayloadAstNode('object_id'),
     });
   };
 
-  // Helper function to ensure AST node has proper structure
   const ensureValidAstNode = (node: AstNode): AstNode => {
     return {
       ...node,
@@ -190,7 +188,6 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
       // Ensure the node has proper structure
       const safeNode = ensureValidAstNode(astNode);
 
-      // Check if it's a StringTemplateAstNode and return it, otherwise return default
       return isStringTemplateAstNode(safeNode) ? safeNode : createDefaultTitleTemplate();
     } catch (error) {
       console.warn('Error processing title template, using default:', error);

@@ -16,7 +16,7 @@ export const languages = new Map([
   ['es', 'Spanish'],
 ]);
 
-export const languageCodeSchema = z.enum(Array.from(languages.keys()));
+const languageCodeSchema = z.enum(Array.from(languages.keys()));
 
 const httpUrlValidationSchema = z.string().superRefine((val, ctx) => {
   const url = val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`;
@@ -49,34 +49,33 @@ const httpUrlValidationSchema = z.string().superRefine((val, ctx) => {
 
 const httpUrlSchema = httpUrlValidationSchema;
 
-// Helper function to extract domain from URL
 const extractDomain = (val: string): string => {
   const url = val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`;
   const urlObj = new URL(url);
   return urlObj.hostname;
 };
 
-export const caseReviewSettingDtoSchema = z.object({
+const caseReviewSettingDtoSchema = z.object({
   language: languageCodeSchema,
   structure: z.string().nullable(),
   org_description: z.string().nullable(),
   additional_case_review_instruction: z.string().optional().nullable(),
 });
 
-export const caseReviewSettingSchema = z.object({
+const caseReviewSettingSchema = z.object({
   language: languageCodeSchema,
   structure: z.string(),
   orgDescription: z.string(),
   additionalCaseReviewInstruction: z.string(),
 });
 
-export const kycEnrichmentSettingDtoSchema = z.object({
+const kycEnrichmentSettingDtoSchema = z.object({
   enabled: z.boolean(),
   custom_instructions: z.string().optional().nullable(),
   domain_filter: protectArray(z.array(z.string())),
 });
 
-export const kycEnrichmentSettingSchema = z.object({
+const kycEnrichmentSettingSchema = z.object({
   enabled: z.boolean(),
   customInstructions: z.string(),
   domainsFilter: protectArray(uniqueBy(z.array(httpUrlSchema), (s) => s).max(10)),
@@ -87,7 +86,7 @@ export const aiSettingSchema = z.object({
   kycEnrichmentSetting: kycEnrichmentSettingSchema,
 });
 
-export const aiSettingDtoSchema = z.object({
+const aiSettingDtoSchema = z.object({
   case_review_setting: caseReviewSettingDtoSchema,
   kyc_enrichment_setting: kycEnrichmentSettingDtoSchema,
 });
@@ -123,7 +122,4 @@ export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingS
 
 export type CaseReviewSetting = z.infer<typeof caseReviewSettingSchema>;
 export type KYCEnrichmentSetting = z.infer<typeof kycEnrichmentSettingSchema>;
-export type CaseReviewSettingDto = z.infer<typeof caseReviewSettingDtoSchema>;
-export type KYCEnrichmentSettingDto = z.infer<typeof kycEnrichmentSettingDtoSchema>;
-export type AiSettingDtoSchema = z.infer<typeof aiSettingDtoSchema>;
 export type AiSettingSchema = z.infer<typeof aiSettingSchema>;

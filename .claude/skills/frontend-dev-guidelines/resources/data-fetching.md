@@ -61,9 +61,8 @@ Unauthenticated repositories (app config, onboarding, feature access) go on `con
 | `authMiddleware` | Authenticated handlers. Chains `servicesMiddleware`, redirects to `/sign-in`, provides `context.authInfo` |
 | `servicesMiddleware` | Alone, for handlers without a session: `context.services`, `context.appConfig` |
 | `caseDetailMiddleware` | Case-detail loaders. Reads `data.params.caseId`, adds `context.case` (`{ detail, inbox }`) and `context.inboxes`, and redirects away if the case can't be loaded (`routes/_app/_builder/cases/$caseId/index.tsx`) |
-| `rateLimitFunctionMiddleware({ max, windowMs, scope? })` | Per-user (default) or `'organization'` limit for a server fn. Chains `authMiddleware`. Server routes use `rateLimitRequestMiddleware({ max, windowMs })` |
 | `rateLimitIpFunctionMiddleware({ max, windowMs })` | Per-client-IP limit for a server fn called before sign-in, listed before `servicesMiddleware` (`discoverSignInFn`) |
 
-Both function-middleware limiters reject with HTTP 429 and `TOO_MANY_REQUESTS_ERROR_MESSAGE`; match it client-side with `isTooManyRequestsError`.
+The limiter rejects with HTTP 429 and `TOO_MANY_REQUESTS_ERROR_MESSAGE`; match it client-side with `isTooManyRequestsError`.
 
 Never add `servicesMiddleware` next to `authMiddleware`. List middleware that chains `authMiddleware` after it (`[authMiddleware, caseDetailMiddleware]`); TanStack dedupes it.

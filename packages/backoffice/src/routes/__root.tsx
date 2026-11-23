@@ -1,6 +1,5 @@
 import { Toaster } from '@bo/components/common/Toaster';
 import { env } from '@bo/env';
-import type { TRPCRouter } from '@bo/integrations/trpc/router';
 import { getUserPreferencesFn } from '@bo/server-fns/core';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
@@ -8,14 +7,11 @@ import type { QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
 import { ClientOnly, createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-import type { TRPCOptionsProxy } from '@trpc/tanstack-react-query';
 import { cn } from 'ui-design-system';
 import appCss from '../styles.css?url';
 
 interface MyRouterContext {
   queryClient: QueryClient;
-
-  trpc: TRPCOptionsProxy<TRPCRouter>;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({

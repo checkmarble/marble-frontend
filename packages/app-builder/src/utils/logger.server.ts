@@ -86,10 +86,6 @@ export function runWithLogger<T>(child: Logger, fn: () => T): T {
   return loggerStorage.run({ logger: child }, fn);
 }
 
-export function getLogger(): Logger {
-  return loggerStorage.getStore()?.logger ?? logger;
-}
-
 export function setRequestUserEmail(email: string | undefined): void {
   const store = loggerStorage.getStore();
   if (store && email) store.user = email;

@@ -1,7 +1,7 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { freeformSearchPresetSchema } from '@app-builder/models/freeform-search-preset';
 import { isStatusConflictHttpError, marbleApiErrorMessage } from '@app-builder/models/http-errors';
-import { availableFeatures, type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { availableFeatures, type Screening } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getScreeningFileUploadEndpoint } from '@app-builder/utils/files';
@@ -51,7 +51,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
 
 export type RefineSearchInput = z.infer<typeof refineSearchSchema>;
 
-export const freeformSearchSchema = z.discriminatedUnion('entityType', [
+const freeformSearchSchema = z.discriminatedUnion('entityType', [
   z.object({
     entityType: z.literal('Thing'),
     fields: z.object({
@@ -98,7 +98,7 @@ export const freeformSearchSchema = z.discriminatedUnion('entityType', [
   }),
 ]);
 
-export const getEnrichedDataInputSchema = z.object({
+const getEnrichedDataInputSchema = z.object({
   entityId: z.string(),
 });
 export type GetEnrichedDataInput = z.infer<typeof getEnrichedDataInputSchema>;
@@ -112,19 +112,10 @@ const savedSearchFiltersSchema = z.object({
   apiKeyId: z.string().optional(),
   isSaved: z.boolean().optional(),
 });
-export type SavedSearchFiltersInput = z.infer<typeof savedSearchFiltersSchema>;
 
 export type FreeformSearchInput = z.infer<typeof freeformSearchSchema>;
-export type SearchActionResponse =
-  | { success: true; data: ScreeningMatchPayload[] }
-  | { success: false; error: unknown };
 
-export type RefineActionResponse = { success: true; data: Screening } | { success: false; error: unknown };
-
-export const getAvailableFiltersSchema = z.object({ feature: z.enum(availableFeatures) });
-export type GetAvailableFiltersInput = z.infer<typeof getAvailableFiltersSchema>;
-
-/** Server functions */
+const getAvailableFiltersSchema = z.object({ feature: z.enum(availableFeatures) });
 
 export const getListConfigFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -168,13 +159,6 @@ export const enrichMatchFn = createServerFn({ method: 'POST' })
       }
       throw new Error('Failed to enrich match');
     }
-  });
-
-export const getScreeningDatasetsFn = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    const datasets = await context.authInfo.screening.listDatasets();
-    return { datasets };
   });
 
 export const searchScreeningMatchesFn = createServerFn({ method: 'POST' })

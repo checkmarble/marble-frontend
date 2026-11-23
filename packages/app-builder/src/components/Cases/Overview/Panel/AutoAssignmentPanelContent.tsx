@@ -42,7 +42,6 @@ export const AutoAssignmentPanelContent = ({
   // Check if user is a member of the inbox (any role)
   const isInboxMember = (inbox: InboxWithCasesCount) => inbox.users.some((u) => u.userId === currentUserId);
 
-  // Check if user is admin of the inbox
   const isInboxAdmin = (inbox: InboxWithCasesCount) =>
     inbox.users.some((u) => u.userId === currentUserId && u.role === 'admin');
 

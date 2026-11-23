@@ -25,7 +25,6 @@
   "filters.custom_filters.title": "Filter configuration",
   "filters.custom_filters.undelete_filter": "Restore filter",
   "filters.select_comparison_date_range.placeholder": "Add period to compare",
-  "legacy-analytics-link": "View investigations analytics",
   "no_data": "No data available",
   "rule_hits.columns.false_positive_ratio": "% false pos. among hits",
   "rule_hits.columns.false_positive_ratio.tooltip": "Percentage of hits that were marked as false positive in the case manager, out of all hits",

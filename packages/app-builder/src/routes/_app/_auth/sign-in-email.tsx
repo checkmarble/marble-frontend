@@ -1,5 +1,4 @@
 import { AuthError } from '@app-builder/components/Auth/AuthError';
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { MfaChallenge } from '@app-builder/components/Auth/MfaChallenge';
 import { SignInFirstConnection } from '@app-builder/components/Auth/SignInFirstConnection';
 import {
@@ -101,9 +100,6 @@ const signInEmailLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_auth/sign-in-email')({
-  staticData: {
-    i18n: authI18n,
-  },
   validateSearch: signInEmailPageSearch,
   loaderDeps: ({ search }) => ({ signedOut: search.signedOut === 1 }),
   loader: ({ deps }) => signInEmailLoader({ data: deps }),

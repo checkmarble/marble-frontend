@@ -9,7 +9,7 @@ import * as z from 'zod/v4';
 
 import { type TestRunFilterName, testRunsFilterNames } from './filters';
 
-export const testRunsFiltersSchema = z.object({
+const testRunsFiltersSchema = z.object({
   statuses: protectArray(z.array(z.enum(testRunStatuses))).optional(),
   startedAfter: z.date().optional(),
   creators: protectArray(z.array(z.string())).optional(),
@@ -21,7 +21,7 @@ export type TestRunsFilters = z.infer<typeof testRunsFiltersSchema>;
 
 export type TestRunsFiltersForm = TestRunsFilters;
 
-export const emptyTestRunsFilters: TestRunsFiltersForm = {
+const emptyTestRunsFilters: TestRunsFiltersForm = {
   statuses: [],
   creators: [],
   ref_versions: [],

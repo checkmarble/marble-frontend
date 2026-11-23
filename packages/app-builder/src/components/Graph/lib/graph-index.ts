@@ -19,8 +19,6 @@ export type GraphIndex = {
   edges: readonly GraphEdgeLike[];
 };
 
-export const EMPTY_GRAPH_INDEX: GraphIndex = { neighbors: new Map(), edges: [] };
-
 export function buildGraphIndex(edges: readonly GraphEdgeLike[]): GraphIndex {
   const neighbors = new Map<string, Set<string>>();
   const add = (from: string, to: string) => {

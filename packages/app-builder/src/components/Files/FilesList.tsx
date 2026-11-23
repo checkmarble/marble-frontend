@@ -46,7 +46,7 @@ export function FilesList({ files, downloadEndpoint, uploadEndpoint }: FilesList
   return <FilesListTable downloadEndpoint={downloadEndpoint} files={files} />;
 }
 
-export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps, 'uploadEndpoint'>) {
+function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps, 'uploadEndpoint'>) {
   const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
 

@@ -1,9 +1,7 @@
-import { type UpdateAutoAssignPayload, updateAutoAssignPayloadSchema } from '@app-builder/schemas/cases';
+import { type UpdateAutoAssignPayload } from '@app-builder/schemas/cases';
 import { updateAutoAssignFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type UpdateAutoAssignPayload, updateAutoAssignPayloadSchema };
 
 export function useUpdateAutoAssignMutation() {
   const updateAutoAssign = useServerFn(updateAutoAssignFn);

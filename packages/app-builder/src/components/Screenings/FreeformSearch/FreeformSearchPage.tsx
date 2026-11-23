@@ -64,5 +64,3 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
     </div>
   );
 };
-
-export default FreeformSearchPage;

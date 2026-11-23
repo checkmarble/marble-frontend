@@ -72,7 +72,6 @@ export function OperatorSelect<Op extends string>({
   const isCurrentRestricted = _value ? (isOperatorRestricted?.(_value) ?? false) : false;
   const showTriggerNudge = isCurrentRestricted && isRestricted && featureAccess;
 
-  // Get tooltip key for currently selected operator
   const currentTooltipKey = _value ? mappedOptions.find((op) => op.value === _value)?.tooltipKey : undefined;
 
   return (

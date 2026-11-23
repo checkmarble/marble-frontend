@@ -3,7 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { type AstNode } from './ast-node';
 import { isKnownOperandAstNode, type KnownOperandAstNode } from './builder-ast-node';
 
-export const listAstNodeName = 'List';
+const listAstNodeName = 'List';
 
 export interface ListAstNode<Child extends AstNode = KnownOperandAstNode> {
   id: string;

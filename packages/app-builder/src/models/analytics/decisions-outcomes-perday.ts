@@ -66,12 +66,6 @@ export interface DecisionOutcomesPerPeriod {
 
 //TODO group by week and month server side
 
-// export const triggerFilter = z.object({
-//   field: z.uuidv4(),
-//   op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
-//   values: z.array(z.union([z.string(), z.number(), z.boolean()])),
-// });
-
 export const triggerFilter = z.object({
   name: z.string(),
   op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
@@ -202,9 +196,6 @@ const getRatio = (item: DecisionOutcomesAbsolute): DecisionOutcomes => ({
 });
 
 export const adaptDecisionOutcomesPerDay = (val: DecisionOutcomesPerDayEntity[]): DecisionOutcomesPerPeriod => {
-  // if (!val) {
-  //   return null;
-  // }
   const start = new Date(val[0]!.date);
   const end = new Date(val[val.length - 1]!.date);
 

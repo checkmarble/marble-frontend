@@ -25,7 +25,6 @@
   "filters.custom_filters.title": "تكوين الفلتر",
   "filters.custom_filters.undelete_filter": "استعادة المرشح",
   "filters.select_comparison_date_range.placeholder": "أضف فترة للمقارنة",
-  "legacy-analytics-link": "عرض تحليلات التحقيقات",
   "no_data": "لا توجد بيانات متاحة",
   "rule_hits.columns.false_positive_ratio": "% الخطأ المطبق",
   "rule_hits.columns.false_positive_ratio.tooltip": "النسبة المئوية للتفعيلات التي كانت خطئة، من بين جميع التفعيلات",

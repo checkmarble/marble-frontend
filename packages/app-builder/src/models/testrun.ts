@@ -15,7 +15,6 @@ export type TestRunStatus = TestRunStatusDto;
 export const testRunStatuses = ['up', 'down', 'pending', 'unknown'] as const;
 
 export type TestRunRuleStatus = TestRunRuleExecutionDataDto['status'];
-export const testRunRuleStatuses = ['hit', 'no_hit', 'error', 'snoozed'] as const;
 
 export interface TestRunRuleExecutionCount {
   version: string;

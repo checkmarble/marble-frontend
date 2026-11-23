@@ -61,7 +61,7 @@ function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInp
   });
 }
 
-export type ManualSearchFormInstance = ReturnType<typeof useManualSearchForm>;
+type ManualSearchFormInstance = ReturnType<typeof useManualSearchForm>;
 
 const ManualSearchFormContext = createContext<ManualSearchFormInstance | null>(null);
 
@@ -413,5 +413,3 @@ function FreeformSearchFormInner({
     </ManualSearchFormContext.Provider>
   );
 }
-
-export default FreeformSearchForm;

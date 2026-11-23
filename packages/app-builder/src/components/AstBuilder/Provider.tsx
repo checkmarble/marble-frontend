@@ -4,7 +4,7 @@ import { type BuilderOptionsResource } from '@app-builder/server-fns/scenarios';
 import { type ReactNode, type RefObject, useEffect } from 'react';
 import { createSharpFactory, type InferSharpApi } from 'sharpstate';
 
-export type AstBuilderMode = 'edit' | 'view';
+type AstBuilderMode = 'edit' | 'view';
 
 export const AstBuilderDataSharpFactory = createSharpFactory({
   name: 'AstBuilderData',

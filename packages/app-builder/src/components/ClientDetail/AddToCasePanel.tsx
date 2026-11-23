@@ -15,7 +15,7 @@ import { subEntityIcon } from '../Graph/GraphComponents';
 import { createGraphTypeHelpers } from '../Graph/lib/data-model-map';
 import { Spinner } from '../Spinner';
 
-export interface CaseObjectRef {
+interface CaseObjectRef {
   objectType: string;
   objectId: string;
   label?: string;

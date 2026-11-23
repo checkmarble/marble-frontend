@@ -26,7 +26,7 @@ export function personListItemKey(item: PersonListItem) {
   return item.id;
 }
 
-export function personRefFromData(data: PersonRfData): GraphObjectRef {
+function personRefFromData(data: PersonRfData): GraphObjectRef {
   return {
     objectType: data.objectType,
     objectId: data.objectId,
@@ -42,7 +42,7 @@ export function personRefFromRfNode(node: Extract<GraphRfNode, { type: 'person' 
 }
 
 /** Same fields PivotNode shows: relation name as `label`, matched value as `objectId`. */
-export function pivotRefFromData(data: PivotRfData): GraphObjectRef {
+function pivotRefFromData(data: PivotRfData): GraphObjectRef {
   return {
     objectType: data.objectType,
     objectId: data.value,
@@ -70,7 +70,7 @@ export function personListItemsFromMemberIds(memberIds: readonly string[], allNo
   return items;
 }
 
-export function toPersonListItem(node: GraphRfNode, allNodes: readonly GraphRfNode[]): PersonListItem | null {
+function toPersonListItem(node: GraphRfNode, allNodes: readonly GraphRfNode[]): PersonListItem | null {
   if (node.type === 'person') return { type: 'person', id: node.id, ref: personRefFromData(node.data) };
   if (node.type !== 'cluster') return null;
   return {

@@ -73,10 +73,7 @@ function hasOtherDecisionFilters(params: DecisionsListQueryParams) {
   );
 }
 
-export const buildQueryParams = (
-  filters: DecisionFilters,
-  paginationParams?: PaginationParams,
-): DecisionsListQueryParams => {
+const buildQueryParams = (filters: DecisionFilters, paginationParams?: PaginationParams): DecisionsListQueryParams => {
   return {
     ...getDecisionFilters(filters),
     offsetId: paginationParams?.offsetId,

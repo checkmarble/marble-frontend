@@ -572,5 +572,3 @@ export const validTimezones = [
   'Etc/GMT-8',
   'Etc/GMT-9',
 ];
-
-export type ValidTimezone = (typeof validTimezones)[number];

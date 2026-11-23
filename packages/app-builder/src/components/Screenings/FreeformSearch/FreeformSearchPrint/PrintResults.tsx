@@ -36,5 +36,3 @@ export const PrintResults: FunctionComponent<PrintResultsProps> = ({ results }) 
     ))
     .exhaustive();
 };
-
-export default PrintResults;

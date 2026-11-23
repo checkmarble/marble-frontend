@@ -15,7 +15,3 @@ export function setLocalStorageItem<T>(key: string, value: T): void {
     // Quota exceeded or storage blocked (private mode): the value stays in memory only.
   }
 }
-
-export function removeLocalStorageItem(key: string): void {
-  localStorage.removeItem(key);
-}

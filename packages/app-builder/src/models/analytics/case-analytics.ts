@@ -69,17 +69,6 @@ export interface FalsePositiveRate {
   closedCount: number;
 }
 
-export interface CaseAnalyticsResponse {
-  sarTotalCompleted: number;
-  sarDelayByPeriod: PeriodDuration[];
-  sarDelayDistribution: BucketCount[];
-  alertCountByPeriod: PeriodCount[];
-  falsePositiveRateByPeriod: FalsePositiveRate[];
-  caseDurationByPeriod: PeriodDuration[];
-  openCasesByAge: BucketCount[];
-  caseSlaStatusByDate: CaseSlaStatusByDate[];
-}
-
 /**
  * Share of `part` in `total`, as a percentage rounded to one decimal. Returns 0 when `total` is 0.
  */

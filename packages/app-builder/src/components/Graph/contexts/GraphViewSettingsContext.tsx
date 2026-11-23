@@ -30,7 +30,7 @@ export type ControlledGraphSettings = {
  * How the graph is drawn. Changing any of these is a deliberate user action from
  * the settings panel, never a side effect of pointing at the canvas.
  */
-export type GraphViewSettings = {
+type GraphViewSettings = {
   showRiskScore: boolean;
   setShowRiskScore: (value: boolean) => void;
   /** Org scoring settings; loaded once when risk scores are shown. */
