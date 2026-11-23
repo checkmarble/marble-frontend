@@ -18,7 +18,6 @@ import {
   isImportOrgAvailable,
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
-import { getServerEnv, isFlagActive } from '@app-builder/utils/environment';
 
 export function dataModelFeatureAccessLoader(user: CurrentUser, entitlements: FeatureAccesses) {
   return {
@@ -37,7 +36,6 @@ export function dataModelFeatureAccessLoader(user: CurrentUser, entitlements: Fe
     isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
     isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
     isIpGpsAvailable: hasAnyEntitlement(entitlements),
-    isGraphExplorationEnabled: isFlagActive(getServerEnv('ENABLE_GRAPH_EXPLORATION'), user.organizationId),
     isGraphExplorationAvailable: isGraphExplorationAvailable(entitlements),
   };
 }

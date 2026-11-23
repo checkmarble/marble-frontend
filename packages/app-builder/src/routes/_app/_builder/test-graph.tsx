@@ -6,7 +6,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { getGraphExplorationDisplay } from '@app-builder/services/feature-access';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 const testGraphLayoutLoader = createServerFn()
@@ -14,10 +14,6 @@ const testGraphLayoutLoader = createServerFn()
   .handler(async function testGraphLayoutLoader({ context }) {
     const { user, dataModelRepository, entitlements } = context.authInfo;
     const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
-
-    if (!dataModelFeatureAccess.isGraphExplorationEnabled) {
-      throw redirect({ to: '/' });
-    }
 
     const dataModel = await dataModelRepository.getDataModel();
     return {

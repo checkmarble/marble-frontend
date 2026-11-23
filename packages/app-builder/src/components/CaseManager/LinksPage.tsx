@@ -13,7 +13,6 @@ interface CaseManagerLinksPageProps {
 export function CaseManagerLinksPage({ objectType, objectId }: CaseManagerLinksPageProps) {
   const graphDisplay = getGraphExplorationDisplay(useDataModelFeatureAccess());
 
-  if (graphDisplay === 'hidden') return null;
   if (graphDisplay !== 'graph') {
     return (
       <div className="flex min-h-0 flex-1 flex-col">

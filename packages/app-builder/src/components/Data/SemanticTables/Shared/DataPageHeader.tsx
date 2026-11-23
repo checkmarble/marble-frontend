@@ -12,12 +12,8 @@ export function DataPageHeader({
   handleCreateRelations: () => void;
 }) {
   const { t } = useTranslation(['navigation']);
-  const {
-    isCreateDataModelTableAvailable,
-    isExportOrgAvailable,
-    isGraphExplorationEnabled,
-    isGraphExplorationAvailable,
-  } = useDataModelFeatureAccess();
+  const { isCreateDataModelTableAvailable, isExportOrgAvailable, isGraphExplorationAvailable } =
+    useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();
 
   return (
@@ -39,7 +35,7 @@ export function DataPageHeader({
             {t('data:export_org.button')}
           </Button>
         ) : null}
-        {isCreateDataModelTableAvailable && isGraphExplorationEnabled && isGraphExplorationAvailable ? (
+        {isCreateDataModelTableAvailable && isGraphExplorationAvailable ? (
           <Button variant="primary" appearance="stroked" onClick={handleCreateRelations}>
             <Icon icon="filters" className="size-5" />
             {t('data:create_relations.title')}
