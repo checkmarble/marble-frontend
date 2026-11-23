@@ -8,7 +8,8 @@ import { pageLayoutGutter } from './Page/page-layout';
 import { PageStickyFooter } from './Page/StickyFooter';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
-  return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;
+  // `isolate` keeps page z-indexes local, so no page content can paint over the app sidebar
+  return <main className={cn('relative isolate bg-surface-page flex flex-1 flex-col', className)} {...props} />;
 }
 
 function PageHeader({ className, children, color, ...props }: React.ComponentProps<'div'>) {
