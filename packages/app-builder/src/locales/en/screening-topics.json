@@ -149,9 +149,5 @@
   "os.sanction": "Sanctioned entity",
   "os.sanction.counter": "Counter-sanctioned entity",
   "os.sanction.linked": "Sanction-linked entity",
-  "os.wanted": "Wanted",
-  "screening_case.category.adverse-media": "Adverse media",
-  "screening_case.category.peps": "PEP",
-  "screening_case.category.sanctions": "Sanction",
-  "screening_case.category.third-parties": "Third parties"
+  "os.wanted": "Wanted"
 }

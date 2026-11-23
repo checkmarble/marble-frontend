@@ -256,8 +256,6 @@ export const applyArchetypeFn = createServerFn({ method: 'POST' })
     }
   });
 
-// ---- Data model mutations ----
-
 export const editSemanticTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editSemanticTablePayloadSchema)

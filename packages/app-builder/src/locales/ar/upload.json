@@ -1,5 +1,4 @@
 {
-  "active_screenings": "تفعيل الفحص:",
   "download_template_cta": "تنزيل قالب ‎.csv‎",
   "drop_file_cta": "أسقط ملف ‎.csv‎ المكتمل هنا",
   "errors.request_timeout": "انتهت مهلة الطلب. يُرجى المحاولة مجددًا أو تقسيم الملف إلى أجزاء أصغر.",

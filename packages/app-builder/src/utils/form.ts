@@ -1,4 +1,4 @@
-import { AnyFormApi } from '@tanstack/react-form';
+import { type AnyFormApi } from '@tanstack/react-form';
 import { select } from 'radash';
 import type { FormEvent } from 'react';
 

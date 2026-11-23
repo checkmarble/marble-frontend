@@ -149,9 +149,5 @@
   "os.sanction": "Entité sous sanctions",
   "os.sanction.counter": "Entité sous contre-sanctions",
   "os.sanction.linked": "Entité liée à des sanctions",
-  "os.wanted": "Personne recherchée",
-  "screening_case.category.adverse-media": "Informations négatives",
-  "screening_case.category.peps": "PPE",
-  "screening_case.category.sanctions": "Sanctions",
-  "screening_case.category.third-parties": "Tiers"
+  "os.wanted": "Personne recherchée"
 }

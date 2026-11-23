@@ -149,9 +149,5 @@
   "os.sanction": "كيان خاضع للعقوبات",
   "os.sanction.counter": "كيان خاضع لعقوبات مضادة",
   "os.sanction.linked": "كيان مرتبط بالعقوبات",
-  "os.wanted": "مطلوب",
-  "screening_case.category.adverse-media": "معلومات سلبية",
-  "screening_case.category.peps": "شخصيات سياسية بارزة",
-  "screening_case.category.sanctions": "عقوبات",
-  "screening_case.category.third-parties": "أطراف ثالثة"
+  "os.wanted": "مطلوب"
 }

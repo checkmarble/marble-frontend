@@ -51,8 +51,6 @@ import { getRequest } from '@tanstack/react-start/server';
 import * as R from 'remeda';
 import { z } from 'zod/v4';
 
-// ---- AST validation types ----
-
 export type AstValidationPayload = {
   node: AstNode;
   expectedReturnType?: ReturnValueType;
@@ -168,8 +166,6 @@ export function generateFlatEvaluation(
 
   return [currentNodeEvaluation, ...childrenEvaluations, ...namedChildrenEvaluations];
 }
-
-// ---- Builder options types ----
 
 export type BuilderOptionsResource = {
   customLists: CustomList[];

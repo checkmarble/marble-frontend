@@ -146,9 +146,7 @@ export function PanelAddCsv({
                 />
               ) : null}
             </div>
-            {selectedObjectType ? (
-              <PastUploads objectType={selectedObjectType} configsPerObjectType={configsPerObjectType} />
-            ) : null}
+            {selectedObjectType ? <PastUploads objectType={selectedObjectType} /> : null}
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
@@ -340,13 +338,7 @@ function RemovableConfigTag({ label, onRemove }: { label: string; onRemove: () =
   );
 }
 
-function PastUploads({
-  objectType,
-  configsPerObjectType,
-}: {
-  objectType: string;
-  configsPerObjectType: Map<string, ContinuousScreeningConfiguration[]>;
-}) {
+function PastUploads({ objectType }: { objectType: string }) {
   const { t } = useTranslation('upload');
   const formatDateTime = useFormatDateTime();
 
@@ -380,17 +372,7 @@ function PastUploads({
               </div>
               <TagStatus status={uploadLog.status} />
             </div>
-            {/* TODO: uncomment when the back send relevant data
-            configsPerObjectType.has(objectType) && (
-              <div className="flex gap-sm flex-wrap items-center">
-                <p className="text-sm text-grey-secondary">{t('upload:active_screenings')}</p>
-                {Array.from(configsPerObjectType.get(objectType)!).map((config) => (
-                  <Tag key={config.id} color="white" size="medium">
-                    {config.name}
-                  </Tag>
-                ))}
-              </div>
-            )*/}
+            {/* TODO: list the configurations screening this object type once the backend sends them */}
           </Card>
         ))}
     </div>

@@ -1,4 +1,4 @@
-import { UpdateInboxesSlaPayload } from '@app-builder/schemas/cases';
+import { type UpdateInboxesSlaPayload } from '@app-builder/schemas/cases';
 import { updateInboxesSlaFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';

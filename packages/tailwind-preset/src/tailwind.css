@@ -464,22 +464,6 @@
   animation: overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.animate-slideLeftAndFadeIn {
-  animation: slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideRightAndFadeIn {
-  animation: slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideDown {
-  animation: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.animate-slideUp {
-  animation: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-
 /* Scrollbar styling */
 * {
   --scrollbar-color-thumb: rgb(193, 192, 200);
