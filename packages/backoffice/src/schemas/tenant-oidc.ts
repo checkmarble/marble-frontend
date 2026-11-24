@@ -27,6 +27,13 @@ export const deleteTenantOidcDomainPayloadSchema = z.object({
 });
 export type DeleteTenantOidcDomainPayload = z.infer<typeof deleteTenantOidcDomainPayloadSchema>;
 
+export const updateTenantOidcDomainPayloadSchema = z.object({
+  tenantId: z.uuid(),
+  domainId: z.uuid(),
+  verified: z.boolean(),
+});
+export type UpdateTenantOidcDomainPayload = z.infer<typeof updateTenantOidcDomainPayloadSchema>;
+
 /**
  * Error code thrown by `putTenantOidcConfigurationFn` when the deployment license does not include
  * SSO, which the backend requires to save a configuration.
@@ -39,5 +46,8 @@ export const TENANT_OIDC_LICENSE_REQUIRED_ERROR = 'tenant_oidc_license_required'
  */
 export const TENANT_OIDC_NOT_FOUND_ERROR = 'tenant_oidc_not_found';
 
-/** Error code thrown by `createTenantOidcDomainFn` when another tenant already claims the domain. */
+/**
+ * Error code thrown by `createTenantOidcDomainFn` and `updateTenantOidcDomainFn` when the backend
+ * answers 409: the tenant already lists the domain, or another tenant has it verified.
+ */
 export const TENANT_OIDC_DOMAIN_CONFLICT_ERROR = 'tenant_oidc_domain_conflict';

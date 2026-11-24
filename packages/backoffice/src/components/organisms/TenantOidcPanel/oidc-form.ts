@@ -1,5 +1,6 @@
 import type { TenantOidcConfiguration } from '@bo/data/tenants';
 import type { PutTenantOidcConfigurationPayload } from '@bo/schemas/tenant-oidc';
+import { formatExtraParams, formatScopes, isClientSecretRequired, parseExtraParams, parseScopes } from '@marble/shared';
 import { z } from 'zod/v4';
 
 /** Scopes and extra parameters are edited as text: space-separated scopes, one `key=value` per line. */
@@ -17,35 +18,14 @@ export const toTenantOidcFormValues = (config: TenantOidcConfiguration | null): 
   issuer: config?.issuer ?? '',
   clientId: config?.client_id ?? '',
   clientSecret: '',
-  scopes: config?.scopes.join(' ') ?? '',
-  extraParams: Object.entries(config?.extra_params ?? {})
-    .map(([key, value]) => `${key}=${value}`)
-    .join('\n'),
+  scopes: config ? formatScopes(config.scopes) : '',
+  extraParams: formatExtraParams(config?.extra_params ?? {}),
   emailClaim: config?.email_claim ?? '',
   ssoEnabled: config?.sso_enabled ?? true,
 });
 
-export const parseScopes = (scopes: string) => scopes.split(/[\s,]+/).filter(Boolean);
-
-/** Returns `null` when a non-blank line is not a `key=value` pair with a key. */
-export const parseExtraParams = (extraParams: string): Record<string, string> | null => {
-  const params: Record<string, string> = {};
-  for (const line of extraParams.split('\n')) {
-    if (!line.trim()) continue;
-    const separator = line.indexOf('=');
-    const key = line.slice(0, separator).trim();
-    if (separator === -1 || !key) return null;
-    params[key] = line.slice(separator + 1).trim();
-  }
-  return params;
-};
-
-/**
- * The backend keeps the stored client secret when none is sent, but only while the issuer and
- * client ID stay the same: a new configuration, or a new identity provider, needs one.
- */
-export const isClientSecretRequired = (values: TenantOidcFormValues, config: TenantOidcConfiguration | null) =>
-  !config || values.issuer.trim() !== config.issuer || values.clientId.trim() !== config.client_id;
+export const toSavedOidcClient = (config: TenantOidcConfiguration | null) =>
+  config && { issuer: config.issuer, clientId: config.client_id };
 
 export const makeTenantOidcFormSchema = (config: TenantOidcConfiguration | null) =>
   z
@@ -59,7 +39,7 @@ export const makeTenantOidcFormSchema = (config: TenantOidcConfiguration | null)
       ssoEnabled: z.boolean(),
     })
     .superRefine((values, context) => {
-      if (values.clientSecret.trim() || !isClientSecretRequired(values, config)) return;
+      if (values.clientSecret.trim() || !isClientSecretRequired(toSavedOidcClient(config), values)) return;
       context.addIssue({
         code: 'custom',
         path: ['clientSecret'],

@@ -1,12 +1,6 @@
 import type { TenantOidcConfiguration } from '@bo/data/tenants';
 import { describe, expect, it } from 'vitest';
-import {
-  makeTenantOidcFormSchema,
-  parseExtraParams,
-  parseScopes,
-  toPutTenantOidcConfigurationPayload,
-  toTenantOidcFormValues,
-} from './oidc-form';
+import { makeTenantOidcFormSchema, toPutTenantOidcConfigurationPayload, toTenantOidcFormValues } from './oidc-form';
 
 const TENANT_ID = '01a139c0-e32d-76b2-a410-82f6eaa3ee98';
 
@@ -46,24 +40,6 @@ describe('toTenantOidcFormValues', () => {
       extraParams: 'prompt=login',
       ssoEnabled: false,
     });
-  });
-});
-
-describe('parseScopes', () => {
-  it('splits on spaces and commas', () => {
-    expect(parseScopes(' openid,profile  email ')).toEqual(['openid', 'profile', 'email']);
-    expect(parseScopes('')).toEqual([]);
-  });
-});
-
-describe('parseExtraParams', () => {
-  it('reads one key=value per line, skipping blank lines', () => {
-    expect(parseExtraParams('prompt = login\n\nhd=example.com=x')).toEqual({ prompt: 'login', hd: 'example.com=x' });
-  });
-
-  it('rejects lines without a key', () => {
-    expect(parseExtraParams('prompt')).toBeNull();
-    expect(parseExtraParams('=login')).toBeNull();
   });
 });
 
