@@ -108,7 +108,7 @@ export function ScoringRuleEditPanel({
 
   return (
     <AstBuilder.StaticProvider data={builderOptionsData} mode="edit">
-      <Panel.Container size="small">
+      <Panel.Container size="medium">
         <Panel.Content>
           <Panel.Header className="flex items-center">
             <div className="flex flex-1 flex-col">
