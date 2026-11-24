@@ -4,7 +4,7 @@
   get:
     tags: [Admin]
     summary: Get a tenant OIDC configuration
-    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    description: Requires the TENANT_OIDC_CONFIG_UPDATE permission on the tenant (tenant admins, OIDC_CONFIG_EDITOR API keys, Marble admins). Returns 404 when the tenant has no configuration. Available when tenant OIDC is configured.
     operationId: getTenantOidcConfiguration
     security:
       - bearerAuth: []
@@ -26,7 +26,9 @@
   put:
     tags: [Admin]
     summary: Save a tenant OIDC configuration
-    description: Requires tenant update permission and an SSO license. Available when tenant OIDC is configured.
+    description: >-
+      Full replace: omitted fields are reset to their defaults (sso_enabled to true), except client_secret which is kept. Requires the TENANT_OIDC_CONFIG_UPDATE permission on the tenant (tenant admins, OIDC_CONFIG_EDITOR API keys, Marble admins).
+      Returns 403 without an SSO license. Available when tenant OIDC is configured.
     operationId: putTenantOidcConfiguration
     security:
       - bearerAuth: []
@@ -50,7 +52,9 @@
   delete:
     tags: [Admin]
     summary: Delete a tenant OIDC configuration
-    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    description: >-
+      Destroys the stored client secret; domains are kept. Returns 204 even when nothing was configured.
+      Requires the TENANT_OIDC_CONFIG_UPDATE permission on the tenant (tenant admins, OIDC_CONFIG_EDITOR API keys, Marble admins). Available when tenant OIDC is configured.
     operationId: deleteTenantOidcConfiguration
     security:
       - bearerAuth: []
@@ -71,7 +75,7 @@
   get:
     tags: [Admin]
     summary: List a tenant's OIDC domains
-    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    description: Ordered by domain. Requires the TENANT_OIDC_CONFIG_UPDATE permission on the tenant (tenant admins, OIDC_CONFIG_EDITOR API keys, Marble admins). Available when tenant OIDC is configured.
     operationId: listTenantOidcDomains
     security:
       - bearerAuth: []
@@ -93,7 +97,10 @@
   post:
     tags: [Admin]
     summary: Add a tenant OIDC domain
-    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    description: >-
+      Requires the TENANT_OIDC_CONFIG_UPDATE permission on the tenant (tenant admins, OIDC_CONFIG_EDITOR API keys, Marble admins). Creating a domain already verified is reserved to Marble admins.
+      Returns 409 when the tenant already lists the domain, or when the domain is created verified
+      and another tenant already has it verified. Available when tenant OIDC is configured.
     operationId: createTenantOidcDomain
     security:
       - bearerAuth: []
@@ -107,6 +114,10 @@
             properties:
               domain:
                 type: string
+              verified:
+                type: boolean
+                default: false
+                description: Create the domain already verified. Marble admins only (403 otherwise).
     responses:
       '201':
         description: Created domain
@@ -133,10 +144,43 @@
       schema:
         type: string
         format: uuid
+  patch:
+    tags: [Admin]
+    summary: Verify or unverify a tenant OIDC domain
+    description: >-
+      Marble admins only. Verifying is idempotent (keeps the first verification date); unverifying
+      makes the domain pending again. Returns 404 when the domain does not belong to the tenant and
+      409 when another tenant already has the domain verified. Available when tenant OIDC is configured.
+    operationId: updateTenantOidcDomain
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [verified]
+            properties:
+              verified:
+                type: boolean
+    responses:
+      '204':
+        description: Domain updated
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        $ref: 'components.yml#/responses/409'
   delete:
     tags: [Admin]
     summary: Delete a tenant OIDC domain
-    description: Requires tenant update permission. Available when tenant OIDC is configured.
+    description: Marble admins only. Returns 204 even when nothing matched. Available when tenant OIDC is configured.
     operationId: deleteTenantOidcDomain
     security:
       - bearerAuth: []
@@ -230,6 +274,8 @@ components:
         verified_at:
           type: string
           format: date-time
+          nullable: true
+          description: Null while the domain is pending verification.
         created_at:
           type: string
           format: date-time

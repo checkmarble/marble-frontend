@@ -1839,6 +1839,8 @@ export type AppConfigDto = {
     };
     urls: {
         marble: string;
+        /** Backend API URL, null when not configured. */
+        api?: string | null;
         metabase: string;
         blobs: string[];
     };
@@ -1896,6 +1898,7 @@ export type CreateInitialOrgBody = {
 };
 export type ApiKeyDto = {
     id: string;
+    created_at?: string;
     description: string;
     organization_id: string;
     /** 3 first characters of the API key */
@@ -1963,11 +1966,12 @@ export type TenantDto = {
     /** The tenant OIDC configuration, without the client secret. Null when none is configured. */
     oidc_configuration: (TenantOidcConfiguration) | null;
 };
-export type Schema3 = {
+export type TenantDomain = {
     id: string;
     tenant_id: string;
     domain: string;
-    verified_at: string;
+    /** Null while the domain is pending verification. */
+    verified_at: string | null;
     created_at: string;
 };
 export type OrganizationDto = {
@@ -6546,7 +6550,7 @@ export function deleteTenantOidcConfiguration(tenantId: string, opts?: Oazapfts.
 export function listTenantOidcDomains(tenantId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Schema3[];
+        data: TenantDomain[];
     } | {
         status: 400;
         data: string;
@@ -6565,16 +6569,12 @@ export function listTenantOidcDomains(tenantId: string, opts?: Oazapfts.RequestO
  */
 export function createTenantOidcDomain(tenantId: string, body: {
     domain: string;
+    /** Create the domain already verified. Marble admins only (403 otherwise). */
+    verified?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 201;
-        data: {
-            id: string;
-            tenant_id: string;
-            domain: string;
-            verified_at: string;
-            created_at: string;
-        };
+        data: TenantDomain;
     } | {
         status: 400;
         data: string;
@@ -6593,6 +6593,35 @@ export function createTenantOidcDomain(tenantId: string, body: {
     }>(`/tenants/${encodeURIComponent(tenantId)}/domains`, oazapfts.json({
         ...opts,
         method: "POST",
+        body
+    })));
+}
+/**
+ * Verify or unverify a tenant OIDC domain
+ */
+export function updateTenantOidcDomain(tenantId: string, domainId: string, body: {
+    verified: boolean;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/tenants/${encodeURIComponent(tenantId)}/domains/${encodeURIComponent(domainId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
         body
     })));
 }

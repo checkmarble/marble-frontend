@@ -457,6 +457,8 @@ TenantDto:
   $ref: admin.yml#/components/schemas/TenantDto
 TenantOidcConfiguration:
   $ref: tenant-oidc.yml#/components/schemas/TenantOidcConfiguration
+TenantDomain:
+  $ref: tenant-oidc.yml#/components/schemas/TenantDomain
 CreateOrganizationBodyDto:
   $ref: admin.yml#/components/schemas/CreateOrganizationBodyDto
 UpdateOrganizationBodyDto:

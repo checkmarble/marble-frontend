@@ -132,6 +132,10 @@ components:
           properties:
             marble:
               type: string
+            api:
+              type: string
+              nullable: true
+              description: Backend API URL, null when not configured.
             metabase:
               type: string
             blobs:
