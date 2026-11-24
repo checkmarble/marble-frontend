@@ -6,16 +6,20 @@ import {
   isHttpError,
   isMarbleError,
   isNotFoundHttpError,
+  isStatusBadRequestHttpError,
   isStatusConflictHttpError,
+  marbleApiErrorMessage,
 } from '@app-builder/models';
 import { type ExportedFields } from '@app-builder/models/data-model';
 import { type PersonalSettings } from '@app-builder/models/personal-settings';
 import {
+  addSsoDomainPayloadSchema,
   auditEventsFiltersSchema,
   auditEventsPaginationSchema,
   createApiKeyPayloadSchema,
   createInboxPayloadSchema,
   createInboxUserPayloadSchema,
+  createSsoRecoveryKeyPayloadSchema,
   createTagPayloadSchema,
   createUserPayloadSchema,
   createWebhookPayloadSchema,
@@ -30,6 +34,7 @@ import {
   grantOrganizationAccessPayloadSchema,
   revokeOrganizationAccessPayloadSchema,
   revokeWebhookSecretPayloadSchema,
+  saveSsoConfigurationPayloadSchema,
   updateAllowedNetworksPayloadSchema,
   updateInboxPayloadSchema,
   updateInboxUserPayloadSchema,
@@ -41,9 +46,16 @@ import {
   updateWebhookPayloadSchema,
 } from '@app-builder/schemas/settings';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
-import { isReadUserAvailable } from '@app-builder/services/feature-access';
+import { ssoCallbackUrl } from '@app-builder/services/auth/sso-test.server';
+import {
+  isCreateApiKeyAvailable,
+  isReadApiKeyAvailable,
+  isReadUserAvailable,
+  isSsoSettingsAvailable,
+} from '@app-builder/services/feature-access';
 
 import { FORBIDDEN, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -382,6 +394,134 @@ function getHttpErrorMessage(error: Parameters<typeof isMarbleError>[0]) {
     return error.data.message;
   }
 }
+
+// ---- SSO ----
+
+export const getSsoSettingsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const { user, organization, apiKey } = context.authInfo;
+    const { appConfig } = context;
+
+    if (!isSsoSettingsAvailable(user, appConfig)) {
+      throw redirect({ to: '/' });
+    }
+
+    // The key list is secondary: the page must still load to fix or turn off SSO.
+    const apiKeysPromise = isReadApiKeyAvailable(user)
+      ? apiKey.listApiKeys().catch((error) => {
+          Sentry.captureException(error);
+          return null;
+        })
+      : null;
+    const { tenantId } = await organization.getCurrentOrganization();
+    const [configuration, domains, apiKeys] = await Promise.all([
+      organization.getTenantOidcConfiguration(tenantId),
+      organization.listTenantOidcDomains(tenantId),
+      apiKeysPromise,
+    ]);
+
+    return {
+      configuration,
+      domains,
+      /** `null` when the list could not be read: nothing may assume there is no recovery key. */
+      recoveryKeys:
+        apiKeys
+          ?.filter((key) => key.role === 'OIDC_CONFIG_EDITOR')
+          .map(({ id, description, prefix, createdAt }) => ({ id, description, prefix, createdAt })) ?? null,
+      tenantId,
+      callbackUrl: ssoCallbackUrl(appConfig),
+      apiUrl: appConfig.urls.api,
+      ssoLicensed: appConfig.features.sso,
+      canCreateRecoveryKey: isCreateApiKeyAvailable(user),
+    };
+  });
+
+export const saveSsoConfigurationFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(saveSsoConfigurationPayloadSchema)
+  .handler(async ({ context, data }) => {
+    const { user, organization } = context.authInfo;
+    const { appConfig } = context;
+
+    if (!isSsoSettingsAvailable(user, appConfig)) {
+      return { success: false as const, error: 'forbidden' as const };
+    }
+
+    try {
+      const { tenantId } = await organization.getCurrentOrganization();
+      await organization.putTenantOidcConfiguration(tenantId, {
+        ...data,
+        // The backend rejects a blank secret; leaving it out keeps the stored one.
+        clientSecret: data.clientSecret.trim() ? data.clientSecret : undefined,
+      });
+      return { success: true as const };
+    } catch (error) {
+      if (isStatusBadRequestHttpError(error)) {
+        return {
+          success: false as const,
+          error: 'invalid' as const,
+          message: marbleApiErrorMessage(error) ?? undefined,
+        };
+      }
+      if (isForbiddenHttpError(error)) {
+        // Saving needs the SSO licence, unlike reading the configuration.
+        return {
+          success: false as const,
+          error: appConfig.features.sso ? ('forbidden' as const) : ('license' as const),
+        };
+      }
+      Sentry.captureException(error);
+      return { success: false as const, error: 'unknown' as const };
+    }
+  });
+
+export const addSsoDomainFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(addSsoDomainPayloadSchema)
+  .handler(async ({ context, data }) => {
+    const { user, organization } = context.authInfo;
+
+    if (!isSsoSettingsAvailable(user, context.appConfig)) {
+      return { success: false as const, error: 'forbidden' as const };
+    }
+
+    try {
+      const { tenantId } = await organization.getCurrentOrganization();
+      await organization.createTenantOidcDomain(tenantId, data.domain);
+      return { success: true as const };
+    } catch (error) {
+      if (isStatusBadRequestHttpError(error)) return { success: false as const, error: 'invalid' as const };
+      if (isStatusConflictHttpError(error)) return { success: false as const, error: 'duplicate' as const };
+      if (isForbiddenHttpError(error)) return { success: false as const, error: 'forbidden' as const };
+      Sentry.captureException(error);
+      return { success: false as const, error: 'unknown' as const };
+    }
+  });
+
+// The recovery key can only read and change the tenant OIDC configuration, so it can turn SSO off
+// through the public API when a configuration change locks everyone out.
+export const createSsoRecoveryKeyFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(createSsoRecoveryKeyPayloadSchema)
+  .handler(async ({ context, data }) => {
+    const { user, apiKey } = context.authInfo;
+
+    if (!isSsoSettingsAvailable(user, context.appConfig) || !isCreateApiKeyAvailable(user)) {
+      return { success: false as const, error: 'forbidden' as const };
+    }
+
+    try {
+      const { key } = await apiKey.createApiKey({ description: data.description, role: 'OIDC_CONFIG_EDITOR' });
+      return { success: true as const, key };
+    } catch (error) {
+      if (isForbiddenHttpError(error)) {
+        return { success: false as const, error: 'forbidden' as const };
+      }
+      Sentry.captureException(error);
+      return { success: false as const, error: 'unknown' as const };
+    }
+  });
 
 // ---- Personal Settings ----
 

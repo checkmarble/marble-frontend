@@ -1,4 +1,5 @@
 import { type CurrentUser, isAdmin, isMarbleAdmin } from '@app-builder/models';
+import { type AppConfig } from '@app-builder/models/app-config';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -89,6 +90,10 @@ export const isCreateDraftAvailable = ({ permissions }: CurrentUser) => permissi
 export const isCreateApiKeyAvailable = ({ permissions }: CurrentUser) => permissions.canCreateApiKey;
 
 export const isDeleteApiKeyAvailable = ({ permissions }: CurrentUser) => permissions.canCreateApiKey;
+
+// The backend serves the tenant OIDC routes only when it lists the `oidc` provider: without it they 404.
+export const isSsoSettingsAvailable = ({ permissions }: CurrentUser, appConfig: AppConfig) =>
+  permissions.canUpdateTenantOidc && appConfig.auth.providers.includes('oidc');
 
 export const getInboxUserRoles = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.userRoles) ? (['admin', 'member'] as const) : (['admin'] as const);

@@ -1,3 +1,5 @@
+import { sign } from '@app-builder/repositories/SessionStorageRepositories/signed-cookie';
+import type { SsoTestCookieData } from '@app-builder/services/auth/sso-test.server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const TENANT_ID = 'dd3f4dae-8d90-45ac-892d-e9c1a64d59a2';
@@ -28,10 +30,10 @@ vi.mock('../../services/auth/oidc.server', async (importOriginal) => ({
   makeOidcService: vi.fn(),
 }));
 
-const callback = async (search = 'code=the-code&state=the-state') => {
+const callback = async (search = 'code=the-code&state=the-state', headers: Record<string, string> = {}) => {
   const { Route } = await import('./callback');
   const { GET } = Route.options.server!.handlers as { GET: (ctx: { request: Request }) => Promise<Response> };
-  return GET({ request: new Request(`http://localhost:3000/oidc/callback?${search}`) });
+  return GET({ request: new Request(`http://localhost:3000/oidc/callback?${search}`, { headers }) });
 };
 
 describe('/oidc/callback', () => {
@@ -177,6 +179,65 @@ describe('/oidc/callback', () => {
       expect(response.status).toBe(302);
       expect(response.headers.get('Location')).toBe('http://localhost:3000/sign-in');
       expect(response.headers.get('Set-Cookie')).toBeNull();
+    });
+  });
+
+  describe('with a pending SSO test sign-in', () => {
+    const ssoTest: SsoTestCookieData = {
+      state: 'test-state',
+      codeVerifier: 'test-verifier',
+      nonce: 'test-nonce',
+      issuer: 'https://idp.example.com',
+      clientId: 'client',
+      redirectUri: 'http://localhost:3000/oidc/callback',
+      tokenEndpoint: 'https://idp.example.com/token',
+      signingAlgs: ['RS256'],
+      startedAt: Date.now(),
+    };
+    const ssoTestCookie = (data: object, secret = 'secret') =>
+      `sso_test=${encodeURIComponent(sign(JSON.stringify(data), secret))}`;
+    const storedTest = async (response: Response) => {
+      const { readSsoTestCookie } = await import('@app-builder/services/auth/sso-test.server');
+      return readSsoTestCookie(
+        new Request('http://localhost:3000/', { headers: { cookie: response.headers.get('Set-Cookie') ?? '' } }),
+      );
+    };
+
+    beforeEach(() => {
+      cookie = { state: 'the-state', codeVerifier: 'the-verifier', tenantId: TENANT_ID };
+    });
+
+    it.each([
+      { search: 'code=test-code&state=test-state', stored: { code: 'test-code' } },
+      {
+        search: 'error=access_denied&error_description=Denied&state=test-state',
+        stored: { error: 'access_denied', errorDescription: 'Denied' },
+      },
+    ])('stores the result for $search and leaves the sign-in alone', async ({ search, stored }) => {
+      const response = await callback(search, { cookie: ssoTestCookie(ssoTest) });
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get('Location')).toBe('http://localhost:3000/sso-test-complete');
+      expect(await storedTest(response)).toEqual({ ...ssoTest, ...stored });
+      expect(response.headers.get('Set-Cookie')).not.toContain('oauth2=');
+      expect(exchangeTenantOidcCode).not.toHaveBeenCalled();
+      expect(authenticateOidc).not.toHaveBeenCalled();
+      expect(updateAuthSession).not.toHaveBeenCalled();
+      expect(setToast).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      { name: 'its state differs', testCookie: ssoTestCookie(ssoTest) },
+      { name: 'its signature is wrong', testCookie: ssoTestCookie({ ...ssoTest, state: 'the-state' }, 'forged') },
+      { name: 'it expired', testCookie: ssoTestCookie({ ...ssoTest, state: 'the-state', startedAt: 0 }) },
+      { name: 'it is not URI-encoded', testCookie: 'sso_test=%E0%A4%A' },
+    ])('runs the regular sign-in when $name', async ({ testCookie }) => {
+      const response = await callback('code=the-code&state=the-state', { cookie: testCookie });
+
+      expect(exchangeTenantOidcCode).toHaveBeenCalledWith(TENANT_ID, 'the-code', 'the-verifier');
+      expect(authenticateOidc).toHaveBeenCalled();
+      expect(response.headers.get('Location')).toBe('/app-router');
+      expect(response.headers.get('Set-Cookie')).toBe('oauth2=; Max-Age=0');
     });
   });
 });

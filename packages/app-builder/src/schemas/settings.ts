@@ -102,6 +102,31 @@ export const updateOrganizationScenariosPayloadSchema = z.object({
 });
 export type UpdateOrganizationScenariosPayload = z.infer<typeof updateOrganizationScenariosPayloadSchema>;
 
+// ---- SSO ----
+
+// Only the shape is checked here: the backend validates the values and its 400 message is shown to the user.
+export const saveSsoConfigurationPayloadSchema = z.object({
+  issuer: z.string().trim(),
+  clientId: z.string().trim(),
+  /** Empty keeps the stored secret. */
+  clientSecret: z.string(),
+  scopes: z.array(z.string().trim().min(1)),
+  extraParams: z.record(z.string(), z.string()),
+  emailClaim: z.string().trim(),
+  ssoEnabled: z.boolean(),
+});
+export type SaveSsoConfigurationPayload = z.infer<typeof saveSsoConfigurationPayloadSchema>;
+
+export const createSsoRecoveryKeyPayloadSchema = z.object({
+  description: z.string().trim().min(1),
+});
+export type CreateSsoRecoveryKeyPayload = z.infer<typeof createSsoRecoveryKeyPayloadSchema>;
+
+export const addSsoDomainPayloadSchema = z.object({
+  domain: z.string().trim().min(1),
+});
+export type AddSsoDomainPayload = z.infer<typeof addSsoDomainPayloadSchema>;
+
 // ---- Tags ----
 
 export const createTagPayloadSchema = z.object({
