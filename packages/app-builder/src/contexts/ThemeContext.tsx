@@ -89,6 +89,11 @@ export function ThemeProvider({ children, preference }: { children: React.ReactN
 /** The document's `<html>`, carrying the `dark` class of the theme in effect. */
 export function ThemedHtml({ className, ...props }: React.ComponentProps<'html'>) {
   const { theme } = useTheme();
-  // SYSTEM_THEME_SCRIPT may add `dark` before hydration, while the server rendered it without
+  // SYSTEM_THEME_SCRIPT may add `dark` before hydration, while the server rendered it without.
+  // Hydration leaves that mismatch in place, and React only rewrites `class` when the theme
+  // changes, so write the class from the theme in effect once mounted.
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
   return <html suppressHydrationWarning className={cn(className, theme === 'dark' && 'dark')} {...props} />;
 }
