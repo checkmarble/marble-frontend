@@ -3,12 +3,15 @@ import { Trans, useTranslation } from 'react-i18next';
 
 export function useGetCopyToClipboard() {
   const { t } = useTranslation('common');
-  return (value: string) => ({
-    'aria-label': t('clipboard.aria-label', {
-      replace: {
-        value,
-      },
-    }),
+  return (value: string, { secret = false }: { secret?: boolean } = {}) => ({
+    // Sentry click breadcrumbs record aria-labels, so a secret value must stay out of it.
+    'aria-label': secret
+      ? t('copy')
+      : t('clipboard.aria-label', {
+          replace: {
+            value,
+          },
+        }),
     onClick: async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       e.preventDefault();

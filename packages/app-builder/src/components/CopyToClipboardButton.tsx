@@ -33,6 +33,8 @@ const variances = cva(
 export type CopyToClipboardButtonProps = ComponentPropsWithoutRef<'button'> &
   VariantProps<typeof variances> & {
     toCopy: string;
+    /** Keeps the copied value out of the aria-label. */
+    secret?: boolean;
   };
 
 export const CopyToClipboardButton = function CopyToClipboardButton({
@@ -40,6 +42,7 @@ export const CopyToClipboardButton = function CopyToClipboardButton({
   children,
   className,
   toCopy,
+  secret,
   dimmed,
   size,
   rounded,
@@ -50,7 +53,7 @@ export const CopyToClipboardButton = function CopyToClipboardButton({
     <button
       ref={ref}
       className={variances({ dimmed, className, size, rounded })}
-      {...getCopyToClipboardProps(toCopy)}
+      {...getCopyToClipboardProps(toCopy, { secret })}
       {...props}
     >
       {children}
