@@ -73,6 +73,9 @@ describe('enum values', () => {
             fields: [field],
             linksToSingle: [],
             fieldOrder: ['mcc'],
+            lifecycle: {
+              enabled: false,
+            },
           },
         ],
         'transactions',

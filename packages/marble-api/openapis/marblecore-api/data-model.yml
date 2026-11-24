@@ -703,6 +703,21 @@ components:
         primary_ordering_field:
           type: string
           description: Name of the field used as default ordering
+        lifecycle:
+          type: object
+          required: [enabled]
+          properties:
+            enabled:
+              type: boolean
+              default: false
+            delete_stale_rows_after:
+              type: string
+              format: duration
+              nullable: true
+            delete_active_rows_after:
+              type: string
+              format: duration
+              nullable: true
       required:
         - id
         - name
@@ -789,6 +804,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreateTableBodyLink'
+        lifecycle:
+          type: object
+          required: [enabled]
+          properties:
+            enabled:
+              type: boolean
+              default: false
+            delete_stale_rows_after:
+              type: string
+              format: duration
+              nullable: true
+            delete_active_rows_after:
+              type: string
+              format: duration
+              nullable: true
     CreateTableResponseDto:
       type: object
       required:
@@ -810,7 +840,7 @@ components:
           type: string
         type:
           type: string
-          enum: 
+          enum:
             [Bool, Int, Float, String, Timestamp, IpAddress, Coords]
         alias:
           type: string
@@ -903,6 +933,21 @@ components:
           type: object
           nullable: true
           additionalProperties: {}
+        lifecycle:
+          type: object
+          required: [enabled]
+          properties:
+            enabled:
+              type: boolean
+              default: false
+            delete_stale_rows_after:
+              type: string
+              format: duration
+              nullable: true
+            delete_active_rows_after:
+              type: string
+              format: duration
+              nullable: true
     CreateTableFieldDto:
       type: object
       required:

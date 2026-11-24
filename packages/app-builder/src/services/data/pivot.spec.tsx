@@ -276,6 +276,7 @@ function helperTable(args: Pick<TableModel, 'id' | 'fields' | 'linksToSingle' | 
     alias: 'alias',
     captionField: 'captionField',
     fieldOrder: args.fields.map((f) => f.name),
+    lifecycle: { enabled: false },
   };
 }
 

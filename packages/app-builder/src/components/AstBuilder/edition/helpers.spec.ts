@@ -26,6 +26,9 @@ const table: TableModel = {
   fields: [mccField],
   linksToSingle: [],
   fieldOrder: ['mcc'],
+  lifecycle: {
+    enabled: false,
+  },
 };
 
 it('offers catalog values for semantic enum neighbours without isEnum', () => {

@@ -128,6 +128,11 @@ export function getOrganizationDataModel(organizationId: string, opts?: Oazapfts
                         } | null;
                         /** Name of the field used as default ordering */
                         primary_ordering_field?: string;
+                        lifecycle?: {
+                            enabled: boolean;
+                            delete_stale_rows_after?: string | null;
+                            delete_active_rows_after?: string | null;
+                        };
                     };
                 };
             };
