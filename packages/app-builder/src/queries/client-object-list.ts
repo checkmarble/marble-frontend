@@ -6,7 +6,7 @@ import { type InfiniteData, keepPreviousData, type QueryClient, useInfiniteQuery
 import { useServerFn } from '@tanstack/react-start';
 import { type GroupedAnnotations } from 'marble-api';
 
-type DataTableObjectListResource = {
+export type DataTableObjectListResource = {
   clientDataListResponse: ClientDataListResponse;
 };
 
