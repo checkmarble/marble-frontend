@@ -25,7 +25,7 @@ type FieldDatasetProps = {
 };
 
 export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDatasetProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['scenarios', 'common']);
   const listConfigQuery = useListConfigQuery('transaction_monitoring');
 
   return (

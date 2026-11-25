@@ -86,7 +86,7 @@ export function TagSelector({
               </MenuCommand.Item>
             ))}
             <MenuCommand.Empty>
-              <div className="px-md py-xs text-grey-60">{t('workflows:action.tags.no_result')}</div>
+              <div className="px-md py-xs text-grey-secondary">{t('workflows:action.tags.no_result')}</div>
             </MenuCommand.Empty>
           </MenuCommand.List>
         </MenuCommand.Content>

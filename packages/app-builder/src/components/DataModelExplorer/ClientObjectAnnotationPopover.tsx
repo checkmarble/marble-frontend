@@ -1,4 +1,4 @@
-import { setClientObjectListAnnotations } from '@app-builder/queries/client-object-list';
+import { setClientObjectListAnnotations } from '@app-builder/queries/data/client-object-list';
 import { getAnnotationsFn } from '@app-builder/server-fns/data';
 import { useCallbackRef } from '@marble/shared';
 import { useQueryClient } from '@tanstack/react-query';

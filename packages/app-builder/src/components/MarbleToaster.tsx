@@ -1,26 +1,16 @@
-import { isNewToastMessage, type ToastMessage } from '@app-builder/models/toast-session';
+import { type ToastMessage } from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment';
 import { useEffect } from 'react';
 import { resolveValue, ToastBar, Toaster, toast } from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 export function MarbleToaster({ toastMessage }: { toastMessage?: ToastMessage }) {
-  const { t } = useTranslation(['common']);
-
   useEffect(() => {
     if (!toastMessage) return;
 
-    if (isNewToastMessage(toastMessage)) {
-      const { type, message } = toastMessage;
-      toast[type](getMessage(message));
-    } else {
-      const { type, messageKey } = toastMessage;
-      const message = t(messageKey);
-
-      toast[type](getMessage(message));
-    }
-  }, [t, toastMessage]);
+    const { type, message } = toastMessage;
+    toast[type](getMessage(message));
+  }, [toastMessage]);
 
   return (
     <Toaster
@@ -95,13 +85,27 @@ const LoaderIcon = (
 const ErrorIcon = (
   <div
     aria-hidden
-    className="animate-circle-animation after:animate-first-line-animation after:bg-[#FFFFFF] before:animate-second-line-animation before:bg-[#FFFFFF] bg-red-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:start-xs before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:start-xs after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
-  />
+    className="animate-circleAnimation bg-red-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100"
+  >
+    <span
+      aria-hidden
+      className="animate-secondLineAnimation bg-grey-white absolute bottom-[9px] start-xs h-[2px] w-3 rounded-lg delay-150"
+    />
+    <span
+      aria-hidden
+      className="animate-firstLineAnimation bg-grey-white absolute bottom-[9px] start-xs h-[2px] w-3 rounded-lg delay-150"
+    />
+  </div>
 );
 
 const SuccessIcon = (
   <div
     aria-hidden
-    className="animate-circle-animation after:animate-checkmark-animation after:border-grey-white bg-green-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:start-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
-  />
+    className="animate-circleAnimation bg-green-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100"
+  >
+    <span
+      aria-hidden
+      className="animate-checkmarkAnimation border-grey-white absolute bottom-[6px] start-[6px] box-border h-[10px] w-[6px] border-b-2 border-r-2 border-solid delay-200"
+    />
+  </div>
 );

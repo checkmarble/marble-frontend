@@ -1,6 +1,7 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import CountryFlag from 'country-flag-emojis';
+import { type TFunction } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -53,7 +54,7 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
             >
               <span className="font-medium">
                 {hasSelection
-                  ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
+                  ? t(`screenings:refine_modal.schema.${value.toLowerCase() as Lowercase<typeof value>}`)
                   : t('screenings:freeform_search.all_entities')}
               </span>
             </Tag>
@@ -67,7 +68,7 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
           {/* Entity type list */}
           <div className="max-h-[300px] overflow-y-auto p-sm">
             {schemas.map((schema) => {
-              const schemaKey = schema.toLowerCase();
+              const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
               const fieldForSchema = SEARCH_ENTITIES[schema].fields;
               const isSelected = value === schema;
 
@@ -268,7 +269,7 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
 function getFilterTagLabel(
   fieldName: string,
   value: string,
-  t: (key: string, options?: Record<string, unknown>) => string,
+  t: TFunction<readonly ('common' | 'screenings')[]>,
 ): string | null {
   switch (fieldName) {
     case 'country':

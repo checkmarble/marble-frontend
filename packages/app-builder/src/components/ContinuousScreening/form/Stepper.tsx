@@ -3,12 +3,14 @@ import { Fragment } from 'react';
 import { cn } from 'ui-design-system';
 import { ContinuousScreeningConfigurationStepper } from '../context/CreationStepper';
 
+type ContinuousScreeningStepName = 'generalInfo' | 'objectMapping' | 'datasetSelection' | 'scoringConfiguration';
+
 export const Stepper = ({
   fromZero = false,
   getStepLabel,
 }: {
   fromZero?: boolean;
-  getStepLabel: (stepName: string) => string;
+  getStepLabel: (stepName: ContinuousScreeningStepName) => string;
 }) => {
   const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
   const steps = creationStepper.select((state) => state.__internals.steps);
@@ -23,7 +25,7 @@ export const Stepper = ({
   return (
     <StepperComponent
       fromZero={fromZero}
-      steps={steps.map((step) => ({ name: step.name }))}
+      steps={steps.map((step) => ({ name: step.name as ContinuousScreeningStepName }))}
       startAt={initialStep}
       currentStep={currentStep}
       onStepChange={handleStepChange}
@@ -32,23 +34,23 @@ export const Stepper = ({
   );
 };
 
-type StepperComponentProps = {
+type StepperComponentProps<TName extends string> = {
   fromZero?: boolean;
-  steps: { name: string }[];
+  steps: { name: TName }[];
   startAt: number;
   currentStep: number;
   onStepChange: (step: number) => void;
-  getStepLabel: (stepName: string) => string;
+  getStepLabel: (stepName: TName) => string;
 };
 
-const StepperComponent = ({
+const StepperComponent = <TName extends string>({
   steps,
   startAt,
   currentStep,
   onStepChange,
   getStepLabel,
   fromZero = false,
-}: StepperComponentProps) => {
+}: StepperComponentProps<TName>) => {
   return (
     <div className="flex flex-row gap-sm text-default font-normal items-center">
       {steps.map((step, index) => {

@@ -34,7 +34,7 @@ The DS hooks default to `manualSorting: true` and `manualFiltering: true`: witho
 
 ## Selects & Menus
 
-- **Static option list** (single or `multiple`): `SelectV2` from `ui-design-system` (controlled `value` / `onChange`, `options: { label, value }[]`, `placeholder`). Only the `Select` namespace in the same file is `@deprecated`.
+- **Static option list** (single or `multiple`): `SelectV2` from `ui-design-system` (controlled `value` / `onChange`, `options: { label, value }[]`, `placeholder`).
 - **Search, groups, submenus, custom rows, action menus**: compose `MenuCommand`. Composition: JSDoc on `Menu` in `packages/ui-design-system/src/MenuCommand/MenuCommand.tsx`; searchable select: `components/Settings/FormSelectTimezone.tsx`.
 - **List inside an existing popover/panel**: `MenuCommand.Inline` instead of `Menu` + `Content`. It never closes the host and does no filtering (the caller filters): `components/Decisions/Filters/FilterDetail/ScenarioFilter.tsx`.
 

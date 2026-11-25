@@ -75,7 +75,7 @@ export const Associations = ({
         const expandableItems = [
           <IconDot key="dot-1" dark spaced />,
           properties.caption?.length > 0 ? (
-            <span key="caption" className="text-sm text-grey-70 shrink-0 font-medium">
+            <span key="caption" className="text-sm text-grey-secondary shrink-0 font-medium">
               {properties.caption}
             </span>
           ) : (
@@ -122,7 +122,7 @@ export const Associations = ({
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-purple-primary hover:text-purple-75 underline"
+                          className="text-purple-primary hover:text-purple-hover underline"
                         >
                           {cleanUrl(url)}
                         </a>

@@ -1,13 +1,11 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useCreateListMutation } from '@app-builder/queries/lists/create-list';
 import { CreateListPayload, createListPayloadSchema } from '@app-builder/schemas/lists';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, SelectV2 } from 'ui-design-system';
+import { Button, Input, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Nudge } from '../Nudge';
 
@@ -21,20 +19,16 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
       description: '',
       kind: 'text',
     } as CreateListPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createListMutation
-          .mutateAsync(value)
-          .then((res) => {
-            // On success the server redirects — this only runs if it returned an error object
-            if (res && 'error' in res) {
-              toast.error(t('common:errors.list.duplicate_list_name'));
-              return;
-            }
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        const res = await createListMutation.mutateAsync(value);
+        // On success the server redirects — this only runs if it returned an error object
+        if (res && 'error' in res) {
+          toast.error(t('common:errors.list.duplicate_list_name'));
+          return;
+        }
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -64,14 +58,16 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
               <form.Field name="name">
                 {(field) => (
                   <div className="flex flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
-                    <FormInput
+                    <label htmlFor={field.name}>{t('lists:name')}</label>
+                    <Input
+                      id={field.name}
                       type="text"
                       name={field.name}
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      valid={field.state.meta.errors.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                       placeholder={t('lists:create_list.name_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -81,14 +77,16 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
               <form.Field name="description">
                 {(field) => (
                   <div className="flex flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
-                    <FormInput
+                    <label htmlFor={field.name}>{t('lists:description')}</label>
+                    <Input
+                      id={field.name}
                       type="text"
                       name={field.name}
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      valid={field.state.meta.errors.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                       placeholder={t('lists:create_list.description_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -99,7 +97,7 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
               <form.Field name="kind">
                 {(field) => (
                   <div className="flex flex-1 flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('lists:kind')}</FormLabel>
+                    <label htmlFor={field.name}>{t('lists:kind')}</label>
                     <SelectV2
                       className="w-full overflow-hidden"
                       value={field.state.value}

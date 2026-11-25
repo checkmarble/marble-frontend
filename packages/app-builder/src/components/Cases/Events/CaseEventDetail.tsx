@@ -73,7 +73,8 @@ export function CaseEventDetail({
       value={
         inboxName ? (
           <Trans
-            i18nKey="cases:case_detail.history.event_detail.event_inbox"
+            ns="cases"
+            i18nKey="case_detail.history.event_detail.event_inbox"
             components={{ Inbox: <bdi dir="auto" className="text-grey-primary font-medium" /> }}
             values={{ inbox: inboxName }}
           />

@@ -7,11 +7,11 @@ interface OperationBadgeProps {
   operation: AuditEventOperation | null;
 }
 
-const operationToTranslationKey: Record<AuditEventOperation, string> = {
+const operationToTranslationKey = {
   INSERT: 'settings:audit.operation.insert',
   UPDATE: 'settings:audit.operation.update',
   DELETE: 'settings:audit.operation.delete',
-} as const;
+} as const satisfies Record<AuditEventOperation, string>;
 
 const OperationColor: Record<AuditEventOperation, TagProps['color']> = {
   INSERT: 'green',

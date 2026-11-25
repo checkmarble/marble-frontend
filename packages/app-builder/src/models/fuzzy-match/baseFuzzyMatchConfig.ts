@@ -86,7 +86,8 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
         case 'phrase_match':
           return t('scenarios:edit_fuzzy_match.algorithm.phrase_match');
         default:
-          return assertNever('Untranslated fuzzy match algorithm', fuzzyMatchAlgorithm);
+          assertNever('Untranslated fuzzy match algorithm', fuzzyMatchAlgorithm);
+          return '';
       }
     },
     adaptLevel: (threshold: number): Level | undefined =>

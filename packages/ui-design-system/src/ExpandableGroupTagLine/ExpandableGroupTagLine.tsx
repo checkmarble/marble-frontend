@@ -1,9 +1,10 @@
-import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
-import { type MouseEvent, type ReactNode, useRef, useState } from 'react';
+import { type MouseEvent, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Popover } from '../Popover/Popover';
 import { Tag } from '../Tag/Tag';
 import { cn } from '../utils';
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const OVERFLOW_TAG_WIDTH_PX = 36;
 

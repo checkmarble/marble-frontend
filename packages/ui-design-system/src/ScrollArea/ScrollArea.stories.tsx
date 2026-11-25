@@ -1,5 +1,5 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import clsx from 'clsx';
+import { cn } from '../utils';
 
 import { ScrollAreaV2 } from './ScrollArea';
 
@@ -17,7 +17,7 @@ export const V2: StoryFn = () => (
     <ul>
       {Array.from({ length: 15 }).map((_, index) => (
         <li
-          className={clsx(
+          className={cn(
             'flex w-48 flex-col px-md py-xs shadow-xs',
             index % 2 === 0 ? 'bg-grey-border' : 'bg-surface-card',
           )}

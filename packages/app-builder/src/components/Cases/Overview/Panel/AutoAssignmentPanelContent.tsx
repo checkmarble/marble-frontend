@@ -1,8 +1,8 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateAutoAssignMutation } from '@app-builder/queries/cases/update-auto-assign';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ export const AutoAssignmentPanelContent = ({
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const updateAutoAssignMutation = useUpdateAutoAssignMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const [changes, setChanges] = useState<AutoAssignmentChanges>({
     inboxes: {},
@@ -90,7 +90,7 @@ export const AutoAssignmentPanelContent = ({
       {
         onSuccess: () => {
           toast.success(t('cases:overview.panel.auto_assignment.saved'));
-          revalidate();
+          router.invalidate();
           panelSharp.actions.close();
         },
         onError: () => {

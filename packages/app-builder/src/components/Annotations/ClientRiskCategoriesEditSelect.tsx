@@ -1,9 +1,9 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { RISK_TAG_CATEGORIES, SCREENING_CATEGORY_COLORS } from '@app-builder/models/screening';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createRiskAnnotationSchema, riskAnnotationFormSchema } from '@app-builder/schemas/annotations';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { GroupedAnnotations } from 'marble-api';
 import { toggle } from 'radash';
 import toast from 'react-hot-toast';
@@ -31,7 +31,7 @@ export function ClientRiskCategoriesEditSelect({
   const { t } = useTranslation(['cases', 'common']);
   const createAnnotationMutation = useCreateAnnotationMutation();
   const categories = annotations.map((annotation) => annotation.payload.tag);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -66,7 +66,7 @@ export function ClientRiskCategoriesEditSelect({
           },
         } satisfies z.infer<typeof createRiskAnnotationSchema>)
         .then((result) => {
-          revalidate();
+          router.invalidate();
           if (result.success) {
             onAnnotateSuccess?.();
           } else {
@@ -109,7 +109,7 @@ export function ClientRiskCategoriesEditSelect({
                   </Button>
                 ) : (
                   <Button size="small" type="submit">
-                    {t('common:confirm')}
+                    {t('common:validate')}
                   </Button>
                 )}
               </MenuCommand.HeadlessItem>

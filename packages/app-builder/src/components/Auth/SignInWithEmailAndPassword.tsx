@@ -1,4 +1,3 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import {
   EmailUnverified,
@@ -12,7 +11,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { sleep } from '@app-builder/utils/sleep';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm } from '@tanstack/react-form';
-import { Link, useHydrated } from '@tanstack/react-router';
+import { Link, useHydrated, useNavigate } from '@tanstack/react-router';
 import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -45,7 +44,7 @@ export function SignInWithEmailAndPassword({
 }) {
   const { t } = useTranslation(['auth', 'common']);
   const clientServices = useClientServices();
-  const navigate = useAgnosticNavigation();
+  const navigate = useNavigate();
   const hydrated = useHydrated();
 
   const [mfaResolver, setMfaResolver] = useState<MultiFactorResolver | null>(null);
@@ -69,7 +68,7 @@ export function SignInWithEmailAndPassword({
         await sleep(1000);
       } catch (error) {
         if (error instanceof EmailUnverified) {
-          navigate('/email-verification');
+          navigate({ to: '/email-verification' });
         } else if (error instanceof WrongPasswordError || error instanceof InvalidLoginCredentials) {
           formApi.setFieldMeta('credentials.password', (prev) => ({
             ...prev,

@@ -1,5 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type CurrentUser } from '@app-builder/models';
 import {
   EditAssigneePayload,
@@ -8,7 +7,8 @@ import {
 } from '@app-builder/queries/cases/edit-assignee';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { capitalize } from 'radash';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -29,7 +29,7 @@ export const EditCaseAssignee = ({
 }) => {
   const { t } = useTranslation(['cases', 'common']);
   const editAssigneeMutation = useEditAssigneeMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { getOrgUserById, orgUsers } = useOrganizationUsers();
 
@@ -39,7 +39,7 @@ export const EditCaseAssignee = ({
       return editAssigneeMutation
         .mutateAsync(value)
         .then(() => {
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
@@ -50,7 +50,7 @@ export const EditCaseAssignee = ({
     },
   });
 
-  const selectedUserId = useStore(form.store, (state) => state.values.assigneeId);
+  const selectedUserId = useSelector(form.store, (state) => state.values.assigneeId);
 
   const assignee = useMemo(
     () => (selectedUserId ? getOrgUserById(selectedUserId) : null),

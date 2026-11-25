@@ -26,7 +26,7 @@ const webhooksLoader = createServerFn()
   .handler(async function webhooksLoader({ context }) {
     const { webhookRepository, user, entitlements } = context.authInfo;
 
-    if (!isReadWebhookAvailable(user)) throw redirect({ to: '/' });
+    if (!isReadWebhookAvailable(user)) throw redirect({ to: '/app-router' });
 
     const webhooks = await webhookRepository.listWebhooks();
 

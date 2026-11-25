@@ -35,9 +35,7 @@ function RenameTenantForm({ tenant, onClose }: { tenant: Tenant; onClose: () => 
       onChange: renameTenantPayloadSchema,
       onSubmit: renameTenantPayloadSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
-
+    onSubmit: async ({ value }) => {
       const name = value.name.trim();
       try {
         await renameTenantMutation.mutateAsync({ tenantId: value.tenantId, name });

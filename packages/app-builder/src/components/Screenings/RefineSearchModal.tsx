@@ -5,14 +5,13 @@ import { useRefineScreeningMutation } from '@app-builder/queries/screening/refin
 import { useSearchScreeningMatchesMutation } from '@app-builder/queries/screening/search-screening-matches';
 import { type RefineSearchInput, refineSearchSchema } from '@app-builder/server-fns/screenings';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useCallbackRef } from '@app-builder/utils/hooks';
-import { useForm, useStore } from '@tanstack/react-form';
-import clsx from 'clsx';
+import { useCallbackRef } from '@marble/shared';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { type ReactNode, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Input, Modal, Select } from 'ui-design-system';
+import { cn, Input, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 import { MatchResult } from './MatchResult';
@@ -66,7 +65,7 @@ export function RefineSearchModal({
     },
   });
 
-  const entityType = useStore(form.store, (state) => state.values.entityType);
+  const entityType = useSelector(form.store, (state) => state.values.entityType);
   const additionalFields = entityType ? SEARCH_ENTITIES[entityType].fields : [];
 
   const onSearchEntityChange = ({ value }: { value: SearchableSchema }) => {
@@ -98,7 +97,7 @@ export function RefineSearchModal({
       <Modal.Content
         fixedHeight={!searchResults}
         size="medium"
-        className={clsx({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
+        className={cn({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
       >
         <Modal.Title>{t('screenings:refine_modal.title')}</Modal.Title>
         {searchResults ? (
@@ -214,6 +213,7 @@ type EntitySelectProps = {
 
 function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   const { t } = useTranslation(screeningsI18n);
+  const [open, setOpen] = useState(false);
   const schemas = R.keys(SEARCH_ENTITIES);
   const lowerCasedSchema = value?.toLowerCase() as Lowercase<typeof value>;
 
@@ -224,23 +224,33 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   };
 
   return (
-    <Select.Root name={name} value={value} onValueChange={handleChange}>
-      <Select.Trigger className="grow">
-        <Select.Value align="start" placeholder={'Select'}>
-          {lowerCasedSchema ? t(`screenings:refine_modal.schema.${lowerCasedSchema}`) : ''}
-        </Select.Value>
-        <Select.Arrow />
-      </Select.Trigger>
-      <Select.Content className="min-w-(--radix-select-trigger-width)" align="start">
-        <Select.Viewport>
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton
+          role="combobox"
+          name={name}
+          className="grow"
+          {...(!lowerCasedSchema ? { 'data-placeholder-shown': true } : {})}
+        >
+          <span>{lowerCasedSchema ? t(`screenings:refine_modal.schema.${lowerCasedSchema}`) : 'Select'}</span>
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content sameWidth align="start" sideOffset={4}>
+        <MenuCommand.List>
           {schemas.map((schema) => {
             const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
             const fieldForSchema = SEARCH_ENTITIES[schema].fields;
 
             return (
-              <Select.Item key={schema} value={schema}>
+              <MenuCommand.Item
+                key={schema}
+                role="option"
+                value={schema}
+                className="h-auto"
+                onSelect={() => handleChange(schema)}
+              >
                 <div className="flex items-center gap-sm p-sm">
-                  <Icon icon="plus" className="size-5" />
+                  <Icon icon="plus" className="size-5 shrink-0" />
                   <div className="flex flex-col">
                     <span>{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
                     <span className="text-grey-secondary text-xs">
@@ -249,12 +259,13 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
                     </span>
                   </div>
                 </div>
-              </Select.Item>
+                {value === schema ? <Icon icon="tick" className="size-5 shrink-0 text-purple-primary" /> : null}
+              </MenuCommand.Item>
             );
           })}
-        </Select.Viewport>
-      </Select.Content>
-    </Select.Root>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 }
 

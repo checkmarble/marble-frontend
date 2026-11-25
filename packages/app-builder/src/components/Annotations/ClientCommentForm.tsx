@@ -1,10 +1,9 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createCommentAnnotationSchema } from '@app-builder/schemas/annotations';
 import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
-import clsx from 'clsx';
+import { useRouter } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +29,7 @@ export function ClientCommentForm({
   const { t } = useTranslation(['common', 'cases']);
   const createAnnotationMutation = useCreateAnnotationMutation();
   const onAnnotateSuccess = useCallbackRef(onAnnotateSuccessProps);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -51,7 +50,7 @@ export function ClientCommentForm({
       createAnnotationMutation
         .mutateAsync(value)
         .then((result) => {
-          revalidate();
+          router.invalidate();
           if (result.success) {
             form.setFieldValue('payload.text', '');
             onAnnotateSuccess();
@@ -99,7 +98,7 @@ export function ClientCommentForm({
           >
             <Icon
               icon={isSubmitting ? 'spinner' : 'send'}
-              className={clsx('size-3.5', { 'animate-spin': isSubmitting })}
+              className={cn('size-3.5', { 'animate-spin': isSubmitting })}
             />
           </Button>
         )}

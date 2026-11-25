@@ -1,5 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
-import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { useUnavailabilitySettings } from '@app-builder/queries/settings/personal-settings';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { endOfToday } from 'date-fns';
@@ -25,7 +25,7 @@ export function SetMyselfUnavailable() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <div className="flex items-center gap-sm cursor-pointer p-sm rounded-sm hover:bg-green-34 text-grey-white font-semibold bg-green-primary transition-all duration-100">
+        <div className="flex items-center gap-sm cursor-pointer p-sm rounded-sm hover:bg-green-hover text-grey-white font-semibold bg-green-primary transition-all duration-100">
           <Icon icon="account-circle" className="size-5" />
           {t('settings:current_state_available')}
         </div>

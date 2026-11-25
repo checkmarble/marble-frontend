@@ -32,7 +32,7 @@ import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, scoringLevelEntries } fro
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { useCallbackRef } from '@app-builder/utils/hooks';
+import { useCallbackRef } from '@marble/shared';
 import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

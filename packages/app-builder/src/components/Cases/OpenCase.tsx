@@ -1,35 +1,31 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { OpenCasePayload, openCasePayloadSchema, useOpenCaseMutation } from '@app-builder/queries/cases/open-case';
 import { getFieldErrors, handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Modal, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const OpenCase = ({ id }: { id: string }) => {
   const { t } = useTranslation([...casesI18n, 'common']);
   const openCaseMutation = useOpenCaseMutation();
-  const revalide = useLoaderRevalidator();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
     defaultValues: { caseId: id, comment: '' } as OpenCasePayload,
-    onSubmit: ({ value }) => {
-      openCaseMutation
-        .mutateAsync(value)
-        .then(() => {
-          setOpen(false);
-          revalide();
-        })
-        .catch(() => {
-          toast.error(t('common:errors.unknown'));
-        });
+    onSubmit: async ({ value }) => {
+      try {
+        await openCaseMutation.mutateAsync(value);
+        setOpen(false);
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
+      }
     },
     validators: {
       onSubmit: openCasePayloadSchema,
@@ -58,12 +54,14 @@ export const OpenCase = ({ id }: { id: string }) => {
             >
               {(field) => (
                 <div className="flex flex-col gap-sm">
-                  <FormLabel name={field.name}>Add a comment</FormLabel>
-                  <FormTextArea
+                  <label htmlFor={field.name}>Add a comment</label>
+                  <TextArea
+                    id={field.name}
                     name={field.name}
                     defaultValue={field.state.value}
                     placeholder="Input your comment here"
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onKeyDown={submitOnCtrlEnter}
                   />

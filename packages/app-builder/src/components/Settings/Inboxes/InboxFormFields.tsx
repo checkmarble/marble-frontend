@@ -1,6 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type Inbox, type InboxMetadata } from '@app-builder/models/inbox';
 import { updateInboxPayloadSchema } from '@app-builder/queries/settings/inboxes/update-inbox';
@@ -8,7 +6,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuCommand, Switch, Tooltip } from 'ui-design-system';
+import { Input, MenuCommand, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 
@@ -35,10 +33,8 @@ export function useInboxForm({
     validators: {
       onSubmit: inboxFormSchema,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        return onSubmit(value);
-      }
+    onSubmit: ({ value }) => {
+      return onSubmit(value);
     },
   });
 }
@@ -68,14 +64,16 @@ export function InboxFormFields({
       >
         {(field) => (
           <div className="group flex flex-col gap-sm">
-            <FormLabel name={field.name}>{t('settings:inboxes.inbox_name')}</FormLabel>
-            <FormInput
+            <label htmlFor={field.name}>{t('settings:inboxes.inbox_name')}</label>
+            <Input
+              id={field.name}
               type="text"
               name={field.name}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               defaultValue={field.state.value}
-              valid={field.state.meta.errors.length === 0}
+              aria-invalid={field.state.meta.errors.length > 0 || undefined}
+              borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
             />
             <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
@@ -92,7 +90,7 @@ export function InboxFormFields({
 
           return (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:inboxes.escalation_inbox')}</FormLabel>
+              <label htmlFor={field.name}>{t('settings:inboxes.escalation_inbox')}</label>
               <MenuCommand.Menu open={isEscalationInboxOpen} onOpenChange={setEscalationOpen}>
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton>
@@ -131,7 +129,7 @@ export function InboxFormFields({
               onCheckedChange={field.handleChange}
               disabled={!isAutoAssignmentAvailable}
             />
-            <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.auto_assign_enabled.label')}</FormLabel>
+            <label htmlFor={field.name}>{t('settings:inboxes.inbox_details.auto_assign_enabled.label')}</label>
             {isAutoAssignmentAvailable ? (
               <Tooltip.Default content={t('settings:inboxes.auto_assign_queue_limit.nudge')}>
                 <Icon icon="tip" className="text-purple-primary size-5" />

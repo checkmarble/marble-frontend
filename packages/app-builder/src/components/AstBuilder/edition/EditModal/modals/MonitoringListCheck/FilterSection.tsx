@@ -1,8 +1,4 @@
-import {
-  RISK_TAG_CATEGORIES,
-  SCREENING_CATEGORY_I18N_KEY_MAP,
-  type ScreeningCategory,
-} from '@app-builder/models/screening';
+import { RISK_TAG_CATEGORIES, SCREENING_HIT_TYPE_T_KEYS, type ScreeningCategory } from '@app-builder/models/screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
@@ -38,9 +34,7 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
     if (selectedTopics.length === 0) {
       return t('scenarios:monitoring_list_check.select_hit_types');
     }
-    return selectedTopics
-      .map((topic) => t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[topic]}`))
-      .join(', ');
+    return selectedTopics.map((topic) => t(SCREENING_HIT_TYPE_T_KEYS[topic])).join(', ');
   }, [selectedTopics, t]);
 
   return (
@@ -68,16 +62,14 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
               {RISK_TAG_CATEGORIES.map((topic) => (
                 <label
                   key={topic}
-                  className="flex cursor-pointer items-center gap-sm rounded p-sm hover:bg-grey-02"
+                  className="flex cursor-pointer items-center gap-sm rounded p-sm hover:bg-grey-background-light"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox
                     checked={selectedTopics.includes(topic)}
                     onCheckedChange={(checked) => handleTopicToggle(topic, checked === true)}
                   />
-                  <span className="text-s text-grey-primary">
-                    {t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[topic]}`)}
-                  </span>
+                  <span className="text-s text-grey-primary">{t(SCREENING_HIT_TYPE_T_KEYS[topic])}</span>
                 </label>
               ))}
             </div>

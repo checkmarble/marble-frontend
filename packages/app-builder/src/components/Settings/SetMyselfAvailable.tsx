@@ -1,5 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
-import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { useUnavailabilitySettings } from '@app-builder/queries/settings/personal-settings';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

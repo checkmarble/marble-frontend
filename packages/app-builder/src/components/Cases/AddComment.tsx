@@ -1,5 +1,4 @@
 import { casesI18n } from '@app-builder/components';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useFormDropzone } from '@app-builder/hooks/useFormDropzone';
 import {
   AddCommentPayload,
@@ -7,7 +6,8 @@ import {
   useAddCommentMutation,
 } from '@app-builder/queries/cases/add-comment';
 import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { toggle } from 'radash';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ import { Icon } from 'ui-icons';
 export function AddComment({ caseId }: { caseId: string }) {
   const { t } = useTranslation([...casesI18n, 'common']);
   const addCommentMutation = useAddCommentMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: { caseId, comment: '', files: [] } as AddCommentPayload,
@@ -27,7 +27,7 @@ export function AddComment({ caseId }: { caseId: string }) {
         .then(() => {
           form.reset();
           form.validate('mount');
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
@@ -44,7 +44,7 @@ export function AddComment({ caseId }: { caseId: string }) {
       form.validate('change');
     },
   });
-  const hasContent = useStore(form.store, (s) => s.values.comment.length > 0 || s.values.files.length > 0);
+  const hasContent = useSelector(form.store, (s) => s.values.comment.length > 0 || s.values.files.length > 0);
 
   return (
     <form onSubmit={handleSubmit(form)} className="bg-surface-elevated border-grey-border gap-md border-t p-md">

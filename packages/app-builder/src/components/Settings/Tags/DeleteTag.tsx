@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteTagMutation } from '@app-builder/queries/settings/tags/delete-tag';
+import { useRouter } from '@tanstack/react-router';
 import { type Tag } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,13 +39,13 @@ export function DeleteTag({ tag }: { tag: Tag }) {
 const DeleteTagContent = ({ tagId, onSuccess }: { tagId: string; onSuccess: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteTagMutation = useDeleteTagMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleDeleteTag = () => {
     deleteTagMutation.mutateAsync({ tagId }).then((res) => {
       onSuccess();
 
-      revalidate();
+      router.invalidate();
     });
   };
 

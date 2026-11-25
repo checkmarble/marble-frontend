@@ -163,8 +163,8 @@ function FieldRow({
             ? 'border-red-primary'
             : isSelected
               ? 'border-purple-primary'
-              : 'border-grey-border hover:bg-grey-98',
-          isSelected ? 'bg-purple-96' : '',
+              : 'border-grey-border hover:bg-grey-background-light',
+          isSelected ? 'bg-purple-background-light' : '',
           field.hidden && 'opacity-50',
         )}
       >
@@ -172,7 +172,7 @@ function FieldRow({
         <span className="text-s font-medium">{field.alias || field.name}</span>
         <div className="me-auto flex items-center gap-sm rtl:flex-row-reverse">
           {semanticLabel ? (
-            <span className="rounded-sm border border-grey-border bg-grey-98 px-sm py-0.5 text-xs text-grey-secondary">
+            <span className="rounded-sm border border-grey-border bg-grey-background-light px-sm py-0.5 text-xs text-grey-secondary">
               {semanticLabel}
             </span>
           ) : null}
@@ -191,14 +191,14 @@ function FieldRow({
   );
 }
 
-const getSemanticLabel = (field: TableField, t: TFunction) => {
+const getSemanticLabel = (field: TableField, t: TFunction<['data']>) => {
   const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, field.semanticType);
 
   if (field.dataType === 'Bool') return t('data:upload_data.field_semantic.boolean');
   if (field.dataType === 'IpAddress') return t('data:upload_data.field_semantic.ip_address');
   if (field.dataType === 'Coords') return t('data:upload_data.field_semantic.coords');
-  if (subOpts?.length && subOpts.some((opt) => opt.value === field.semanticSubType))
-    return t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`);
+  const matchedSub = field.semanticSubType ? subOpts?.find((opt) => opt.value === field.semanticSubType) : undefined;
+  if (matchedSub && field.semanticSubType) return t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`);
   if (field.semanticType) return t(`data:upload_data.field_semantic.${field.semanticType}`);
   return null;
 };

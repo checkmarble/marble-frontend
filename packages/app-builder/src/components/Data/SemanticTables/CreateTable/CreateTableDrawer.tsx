@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Panel, Stepper, type StepperStep, Typo } from 'ui-design-system';
@@ -36,7 +36,6 @@ export function CreateTableDrawer({
   const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 
   const form = useCreateTableForm(async (value) => {
-    if (!form.state.isValid) return;
     const checkValidation = validateValues(value, 'all', t, false, dataModel);
     if (!checkValidation.ok) {
       setValidationErrors(checkValidation.errors);
@@ -66,8 +65,8 @@ export function CreateTableDrawer({
     [t],
   );
 
-  const formValues = useStore(form.store, (state) => state.values);
-  const isDirty = useStore(form.store, (state) => state.isDirty);
+  const formValues = useSelector(form.store, (state) => state.values);
+  const isDirty = useSelector(form.store, (state) => state.isDirty);
   const currentValidationScope = useMemo<ValidationScope>(() => {
     if (currentStep === 0) return 'table';
     if (currentStep === 1) return 'fields';

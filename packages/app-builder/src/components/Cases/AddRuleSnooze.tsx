@@ -1,9 +1,6 @@
 import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { adaptDateTimeFieldCodes, type DurationUnit } from '@app-builder/models/duration';
 import {
   AddRuleSnoozePayload,
@@ -16,10 +13,11 @@ import { getFieldErrors, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Modal, SelectV2, TextArea } from 'ui-design-system';
+import { cn, Input, Modal, SelectV2, TextArea } from 'ui-design-system';
 
 export function AddRuleSnooze({
   decisionId,
@@ -54,7 +52,7 @@ function AddRuleSnoozeContent({
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
   const addRuleSnoozeMutation = useAddRuleSnoozeMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const dateTimeFieldNames = useMemo(
     () =>
@@ -71,22 +69,18 @@ function AddRuleSnoozeContent({
       durationValue: 1,
       durationUnit: 'days',
     } as AddRuleSnoozePayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        addRuleSnoozeMutation
-          .mutateAsync(value)
-          .then((res) => {
-            if (res.status === 'success') {
-              queryClient.invalidateQueries({ queryKey: ['cases', 'rulesByPivot'] });
-              setOpen(false);
-            } else if ('error' in res && res.error === 'duplicate_rule_snooze') {
-              toast.error(t('cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze'));
-            }
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        const res = await addRuleSnoozeMutation.mutateAsync(value);
+        if (res.status === 'success') {
+          queryClient.invalidateQueries({ queryKey: ['cases', 'rulesByPivot'] });
+          setOpen(false);
+        } else if ('error' in res && res.error === 'duplicate_rule_snooze') {
+          toast.error(t('cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze'));
+        }
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -127,14 +121,16 @@ function AddRuleSnoozeContent({
         >
           {(field) => (
             <div className="row-span-full grid grid-rows-subgrid gap-sm">
-              <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.comment.label')}</FormLabel>
+              <label htmlFor={field.name}>{t('cases:case_detail.add_rule_snooze.comment.label')}</label>
               <TextArea
+                id={field.name}
                 className="w-full"
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onKeyDown={submitOnCtrlEnter}
                 name={field.name}
                 onBlur={field.handleBlur}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
                 borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 placeholder={t('cases:case_detail.add_rule_snooze.comment.placeholder')}
               />
@@ -152,16 +148,18 @@ function AddRuleSnoozeContent({
           >
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-sm">
-                <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+                <label htmlFor={field.name} className={cn(field.state.meta.errors.length > 0 && 'text-red-primary')}>
                   {t('cases:case_detail.add_rule_snooze.duration_value')}
-                </FormLabel>
-                <FormInput
+                </label>
+                <Input
+                  id={field.name}
                   type="number"
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(+e.currentTarget.value)}
                   onBlur={field.handleBlur}
-                  valid={field.state.meta.errors.length === 0}
+                  aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                   className="w-full"
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -178,7 +176,7 @@ function AddRuleSnoozeContent({
           >
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-sm">
-                <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.duration_unit')}</FormLabel>
+                <label htmlFor={field.name}>{t('cases:case_detail.add_rule_snooze.duration_unit')}</label>
                 <SelectV2
                   className="h-10 w-full"
                   value={field.state.value}

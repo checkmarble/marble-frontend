@@ -8,7 +8,7 @@ type ErrorComponentProps = {
 
 export const ErrorComponent = ({ message }: ErrorComponentProps) => {
   return (
-    <div className="p-md bg-red-95 border border-red-87 text-red-47 rounded-md flex items-center gap-lg">
+    <div className="p-md bg-red-background-light dark:bg-red-background-dark border border-red-border text-red-primary rounded-md flex items-center gap-lg">
       <Icon icon="error" className="size-10" />
       <p className="text-s">{message}</p>
     </div>

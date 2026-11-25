@@ -1,11 +1,10 @@
 import { type TestRunRuleExecutionCount } from '@app-builder/models/testrun';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import clsx from 'clsx';
 import { t } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { entries, flat, groupBy, isDeepEqual, keys, mapValues, omit, omitBy, values } from 'remeda';
-import { Collapsible, Switch } from 'ui-design-system';
+import { Collapsible, cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { HamburgerChart, type Versions } from './HamburgerGraph';
@@ -112,14 +111,14 @@ const TestRunRuleHitPercentage = ({
         </span>
       ) : null}
       <div
-        className={clsx('flex flex-row items-center justify-center rounded-sm p-xs', {
+        className={cn('flex flex-row items-center justify-center rounded-sm p-xs', {
           'bg-purple-background': direction === 'up' || direction === 'down',
           'bg-grey-background': direction === 'equal',
         })}
       >
         <Icon
           icon={direction === 'up' || direction === 'down' ? 'arrow-forward' : 'dash'}
-          className={clsx({
+          className={cn({
             'size-1.5': direction === 'equal',
             'text-purple-primary size-2.5': direction === 'up' || direction === 'down',
             'rotate-90': direction === 'down',

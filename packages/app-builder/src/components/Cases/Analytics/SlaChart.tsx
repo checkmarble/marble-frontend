@@ -123,7 +123,13 @@ export function SlaChart({ caseSlaStatusByDate }: SlaChartProps) {
               tickValues: yTicks,
               format: (v: number) => (displayMode === 'percent' ? `${v}%` : formatChartNumber(v, language)),
             }}
-            legendLabel={(datum) => t(`cases:analytics.chart.${String(datum.id)}`)}
+            legendLabel={(datum) => {
+              const id = String(datum.id);
+              if (id === 'completedWithinSla') return t('cases:analytics.chart.completedWithinSla');
+              if (id === 'stillOpenWithinSla') return t('cases:analytics.chart.stillOpenWithinSla');
+              if (id === 'slaBreached') return t('cases:analytics.chart.slaBreached');
+              return id;
+            }}
             legends={[
               {
                 dataFrom: 'keys',

@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_app/_builder/screening-search/')({
 });
 
 function ScreeningSearchIndexPage() {
-  const { t } = useTranslation(['screenings']);
+  const { t } = useTranslation(['screenings', 'common', 'navigation']);
   const { currentUser } = useOrganizationDetails();
   const { listConfig } = Route.useLoaderData();
   const [searchState, setSearchState] = useState<FreeformSearchState | null>(null);

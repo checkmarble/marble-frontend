@@ -48,7 +48,7 @@ const inboxesLoader = createServerFn()
 
     const inboxes = allInboxes.filter((inbox) => isAdmin(user) || isInboxAdmin(user, inbox));
     if (inboxes.length === 0 && !isAdmin(user)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const canReadTags = isReadTagAvailable(user);

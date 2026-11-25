@@ -1,11 +1,10 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useApplyArchetypeMutation } from '@app-builder/queries/data/apply-archetype';
 import { type Archetype, useListArchetypesQuery } from '@app-builder/queries/data/list-archetypes';
-import clsx from 'clsx';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'ui-design-system';
+import { cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SelectArchetype({ children }: { children: React.ReactNode }) {
@@ -14,7 +13,7 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
   const applyArchetypeMutation = useApplyArchetypeMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleApply = () => {
     if (!selectedArchetype) return;
@@ -22,7 +21,7 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
     applyArchetypeMutation
       .mutateAsync({ name: selectedArchetype.name })
       .then((result) => {
-        revalidate();
+        router.invalidate();
         if (result.success) {
           toast.success(t('data:apply_archetype.success'));
           setIsOpen(false);
@@ -94,7 +93,7 @@ function ArchetypeCard({
     <button
       type="button"
       onClick={onSelect}
-      className={clsx(
+      className={cn(
         'flex flex-col gap-xs rounded-lg border-2 p-md text-left transition-colors',
         isSelected
           ? 'border-purple-primary bg-purple-background dark:bg-purple-border'

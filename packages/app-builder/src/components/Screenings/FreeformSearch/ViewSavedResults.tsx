@@ -267,7 +267,7 @@ function TopicTag({ topics }: { topics: NonNullable<ScreeningConfigBodySectionDt
       {Object.entries(topics).map(([key, value]) => (
         <Tag color="white" appearance="monospace" className="gap-xs h-auto text-wrap items-start break-words" key={key}>
           <span>{key}:</span>
-          <span>{value.map((v) => t(`screeningTopics:${getKey(v)}`)).join(', ')}</span>
+          <span>{value.map((v) => t(`screeningTopics:${getKey(v)}`, { defaultValue: v })).join(', ')}</span>
         </Tag>
       ))}
     </>
@@ -286,7 +286,7 @@ function QueryValues({ query, type }: { query: SavedScreeningSearch['search_inpu
     <div className="flex flex-wrap items-center gap-xs">
       {type !== 'Thing' && (
         <Tag color="white" appearance="monospace" className="gap-xs">
-          {t(`screenings:entity.schema.${type.toLocaleLowerCase()}`)}
+          {t(`screenings:entity.schema.${type.toLowerCase() as Lowercase<typeof type>}`)}
         </Tag>
       )}
       {entityTypeFields.map((field) =>

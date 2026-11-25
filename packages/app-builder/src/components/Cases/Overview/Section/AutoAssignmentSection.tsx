@@ -60,7 +60,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
           .with({ canEdit: true }, () => (
             <Icon
               icon="edit"
-              className="size-5 cursor-pointer text-purple-primary hover:text-purple-50"
+              className="size-5 cursor-pointer text-purple-primary hover:text-purple-hover"
               onClick={handleOpenPanel}
             />
           ))

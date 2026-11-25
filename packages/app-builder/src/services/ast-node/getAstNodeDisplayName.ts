@@ -40,7 +40,7 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { isAggregatorOperator } from '@app-builder/models/modale-operators';
-import { SCREENING_CATEGORY_I18N_KEY_MAP, topicsToCategories } from '@app-builder/models/screening';
+import { SCREENING_HIT_TYPE_T_KEYS, topicsToCategories } from '@app-builder/models/screening';
 import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
@@ -355,11 +355,7 @@ function getMonitoringListCheckDisplayName(
 
   // Convert individual topics to categories for user-friendly display
   const categories = topicsToCategories(topicFilters);
-  const hitTypes = categories
-    .map((category) =>
-      context.t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[category]}`),
-    )
-    .join(', ');
+  const hitTypes = categories.map((category) => context.t(SCREENING_HIT_TYPE_T_KEYS[category])).join(', ');
 
   return context.t('scenarios:monitoring_list_check.display_name', {
     replace: { hitTypes, objectTableName },

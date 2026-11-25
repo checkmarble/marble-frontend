@@ -1,6 +1,6 @@
 # Forms & Modals
 
-TanStack Form with Zod v4, plus `Modal` and `Panel` from `ui-design-system`. Reference form: `components/Settings/Inboxes/InboxPanel.tsx`. Its fields file, `InboxFormFields.tsx`, is not a model: it uses the deprecated `FormInput` (wire inputs as shown below), casts `defaultValues` with `as` (type them as the payload instead) and keeps a needless `isValid` guard.
+TanStack Form with Zod v4, plus `Modal` and `Panel` from `ui-design-system`. Reference form: `components/Settings/Inboxes/InboxPanel.tsx`. Its fields file, `InboxFormFields.tsx`, still casts `defaultValues` with `as` (type them as the payload instead).
 
 ---
 
@@ -15,14 +15,13 @@ Field wiring inside the inner component:
 
 ```tsx
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { Input } from 'ui-design-system';
 
 <form.Field name="name" validators={{ onChange: formSchema.shape.name }}>
   {(field) => (
     <div className="flex flex-col gap-sm">
-      <FormLabel name={field.name}>{t('settings:inboxes.inbox_name')}</FormLabel>
+      <label htmlFor={field.name}>{t('settings:inboxes.inbox_name')}</label>
       <Input
         id={field.name}
         value={field.state.value}
@@ -39,17 +38,16 @@ import { Input } from 'ui-design-system';
 
 ### Reading form state
 
-`useForm` doesn't subscribe its component to the form, so `form.state` read during render is stale. In render, use `<form.Subscribe selector={(s) => [s.isSubmitting, s.canSubmit] as const}>` (`InboxPanel.tsx`) or `useSelector(form.store, (s) => s.values.x)` from `@tanstack/react-form`. The `useStore` you'll see in older files is a `@deprecated` alias of `useSelector`. Read `form.state` only in handlers.
+`useForm` doesn't subscribe its component to the form, so `form.state` read during render is stale. In render, use `<form.Subscribe selector={(s) => [s.isSubmitting, s.canSubmit] as const}>` (`InboxPanel.tsx`) or `useSelector(form.store, (s) => s.values.x)` from `@tanstack/react-form` (never the deprecated `useStore` alias). Read `form.state` only in handlers.
 
 ### Form components (`components/Form/Tanstack/`)
 
-- `FormInput` is `@deprecated`. Use `Input` as above, and keep `id={field.name}` so `FormLabel`'s `htmlFor={name}` links to it.
-- `FormLabel` turns red when `valid === false`. `FormErrorOrDescription` shows the first of `errors`, otherwise `description`.
-- `FormTextArea` has a red border unless `valid` is true, and it passes `valid` on to the DOM `<textarea>`, which triggers a React warning. Prefer `TextArea` from `ui-design-system`, wired like `Input` (`id`, `borderColor`). Always pass it a `placeholder`: the default is an untranslated "Write a note".
+- Use design-system `Input` and `TextArea` directly (wired with `id={field.name}`, `aria-invalid`, and `borderColor`), paired with native `<label htmlFor={field.name}>` (conditional `text-red-primary` on error). Always pass `TextArea` a translated `placeholder` (its default is an untranslated "Write a note").
+- `FormErrorOrDescription` shows the first of `errors`, otherwise `description`.
 
 ### Number fields
 
-`NumberInput` (`ui-design-system`) binds directly: `onChange={field.handleChange}` receives a number, and `value` must be a number. It accepts integers only unless you pass `decimalPrecision={n}`. Clearing it does not call `onChange`, so the field keeps its last number while the input shows empty. (With a plain `Input type="number"` and `+e.currentTarget.value`, an empty input becomes `0`.) Give it `id={field.name}` under a `FormLabel`.
+`NumberInput` (`ui-design-system`) binds directly: `onChange={field.handleChange}` receives a number, and `value` must be a number. It accepts integers only unless you pass `decimalPrecision={n}`. Clearing it does not call `onChange`, so the field keeps its last number while the input shows empty. (With a plain `Input type="number"` and `+e.currentTarget.value`, an empty input becomes `0`.) Give it `id={field.name}` under a `<label htmlFor={field.name}>`.
 
 ---
 
@@ -57,7 +55,7 @@ import { Input } from 'ui-design-system';
 
 - `Modal.Content` unmounts when closed. Always render a `Modal.Title`: Radix warns without one. `Modal.FooterButton isCloseButton` closes the modal through `Dialog.Close`, so it needs no `onClick`.
 - `Button` defaults to `type="button"`, so the submit `FooterButton` needs `type="submit"`. When the footer sits outside the `<form>`, add `form={formId}`.
-- **Destructive confirm**: `<Modal.FooterButton variant="destructive" leadingIcon="delete" ... />`, not `color="red"`, which only applies to `variant="primary"` with the filled appearance. Footer markup reference: `components/Settings/Inboxes/DeleteInboxUser.tsx` (its trigger is `DeleteInboxUserButton` in `InboxMembers.tsx`); refresh with `router.invalidate()`, not its `useLoaderRevalidator()`.
+- **Destructive confirm**: `<Modal.FooterButton variant="destructive" leadingIcon="delete" ... />`, not `color="red"`, which only applies to `variant="primary"` with the filled appearance. Footer markup reference: `components/Settings/Inboxes/DeleteInboxUser.tsx` (its trigger is `DeleteInboxUserButton` in `InboxMembers.tsx`).
 
 ---
 

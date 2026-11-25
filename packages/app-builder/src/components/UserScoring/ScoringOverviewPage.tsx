@@ -1,7 +1,8 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import {
+  getScoringLevelLabel,
+  type MaxRiskLevel,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   type ScoringRuleset,
   type ScoringSettings as ScoringSettingsModel,
 } from '@app-builder/models/scoring';
@@ -40,7 +41,7 @@ export function ScoringOverviewPage({
             ))
             .with({ isError: true }, () => (
               <div className="flex flex-col gap-sm items-center justify-center">
-                <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
+                <span className="text-s text-grey-secondary text-center">{t('common:generic_fetch_data_error')}</span>
                 <Button variant="secondary" onClick={() => rulesetsQuery.refetch()}>
                   {t('common:retry')}
                 </Button>
@@ -79,9 +80,8 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
   const distributionQuery = useGetScoreDistributionQuery(ruleset.recordType);
   const dataModel = useDataModelQuery().data?.dataModel ?? [];
   const entityName = dataModel.find((table) => table.name === ruleset.recordType)?.alias || ruleset.recordType;
-  const maxRiskLevel = settings.maxRiskLevel as 3 | 4 | 5 | 6;
+  const maxRiskLevel = settings.maxRiskLevel as MaxRiskLevel;
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
-  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="bg-surface-card border border-grey-border rounded-md p-md flex flex-col gap-md h-[400px]">
@@ -112,7 +112,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
             .filter((item) => item.count > 0)
             .map((item) => ({
               id: item.risk_level,
-              label: t(labelKeys[item.risk_level] ?? item.risk_level.toString()),
+              label: getScoringLevelLabel(t, maxRiskLevel, item.risk_level),
               value: item.count,
               color: colors[item.risk_level] ?? '#ccc',
             }));

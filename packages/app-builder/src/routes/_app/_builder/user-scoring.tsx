@@ -11,7 +11,7 @@ const userScoringLayoutLoader = createServerFn()
     const { user, entitlements, userScoring } = context.authInfo;
 
     if (isAnalyst(user) || !isUserScoringAvailable(entitlements)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const settings = await userScoring.getSettings();

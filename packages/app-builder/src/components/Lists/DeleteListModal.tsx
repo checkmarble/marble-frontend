@@ -1,8 +1,8 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteListMutation } from '@app-builder/queries/lists/delete-list';
 import { DeleteListPayload, deleteListPayloadSchema } from '@app-builder/schemas/lists';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -10,7 +10,7 @@ import { Icon } from 'ui-icons';
 export function DeleteListModal({ listId }: { listId: string }) {
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const deleteListMutation = useDeleteListMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -19,12 +19,9 @@ export function DeleteListModal({ listId }: { listId: string }) {
     validators: {
       onSubmit: deleteListPayloadSchema,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        deleteListMutation.mutateAsync(value).then(() => {
-          revalidate();
-        });
-      }
+    onSubmit: async ({ value }) => {
+      await deleteListMutation.mutateAsync(value);
+      router.invalidate();
     },
   });
 

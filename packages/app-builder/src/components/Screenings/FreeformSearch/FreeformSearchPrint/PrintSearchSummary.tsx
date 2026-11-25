@@ -55,7 +55,10 @@ export const PrintSearchSummary: FunctionComponent<PrintSearchSummaryProps> = ({
               <div className="flex flex-wrap gap-sm mt-sm">
                 {activeFields.map(([field, value]) => (
                   <Tag key={field} color="grey">
-                    <span className="font-medium">{t(`screenings:entity.property.${field}`)}:</span> {value}
+                    <span className="font-medium">
+                      {t(`screenings:entity.property.${field}`, { defaultValue: field })}:
+                    </span>{' '}
+                    {value}
                   </Tag>
                 ))}
               </div>

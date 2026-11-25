@@ -1,11 +1,10 @@
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import clsx from 'clsx';
 import { toggle } from 'radash';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { groupBy, keys, mapValues, omitBy, sumBy, unique } from 'remeda';
-import { Button, RadioGroup, RadioGroupItem, Tag } from 'ui-design-system';
+import { Button, cn, RadioGroup, RadioGroupItem, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type Item<T extends string> = { version: string; count: number; option: T };
@@ -69,12 +68,12 @@ function Hamburger<T extends string>({
               style={{
                 flexBasis: `${Math.round((count * 100) / summary.total)}%`,
               }}
-              className={clsx(
+              className={cn(
                 'flex min-h-[24px] w-full shrink grow flex-row items-center justify-center rounded-[4px]',
                 mapping[status].background,
               )}
             >
-              <span className={clsx('text-s font-medium', mapping[status].text)}>
+              <span className={cn('text-s font-medium', mapping[status].text)}>
                 {type === 'percentage'
                   ? formatNumber((count * 100) / summary.total / 100, {
                       language,
@@ -190,7 +189,7 @@ export function HamburgerChart<T extends string>({
             }
           >
             <div
-              className={clsx('size-4 rounded-[4px]', {
+              className={cn('size-4 rounded-[4px]', {
                 [`${mapping[option].border} border-2`]: !legend.includes(option),
                 [mapping[option].background]: legend.includes(option),
               })}

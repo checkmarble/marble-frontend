@@ -1,10 +1,10 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { DataModel } from '@app-builder/models';
 import { useAddConfigurationMutation } from '@app-builder/queries/client360/add-configuration';
 import { addConfigurationPayloadSchema } from '@app-builder/schemas/client360';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -27,7 +27,7 @@ export const AddConfigurationModal = ({
   const canEditDataModel = currentUser.permissions.canEditDataModel;
   const [open, setOpen] = useState(false);
   const addConfigurationMutation = useAddConfigurationMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -41,23 +41,19 @@ export const AddConfigurationModal = ({
       onChange: addConfigurationPayloadSchema,
       onMount: addConfigurationPayloadSchema,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        addConfigurationMutation
-          .mutateAsync(value)
-          .then((result) => {
-            if (result && 'error' in result) {
-              toast.error(result.error);
-              return;
-            }
-            toast.success(t('common:success.save'));
-            setOpen(false);
-            form.reset();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        const result = await addConfigurationMutation.mutateAsync(value);
+        if (result && 'error' in result) {
+          toast.error(result.error);
+          return;
+        }
+        toast.success(t('common:success.save'));
+        setOpen(false);
+        form.reset();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
   });
@@ -83,7 +79,7 @@ export const AddConfigurationModal = ({
     return true;
   });
 
-  const selectedTable = useStore(form.store, (state) =>
+  const selectedTable = useSelector(form.store, (state) =>
     state.values.tableId ? dataModel.find((table) => table.id === state.values.tableId) : null,
   );
   const tableFields = selectedTable ? selectedTable.fields.filter((field) => field.dataType === 'String') : [];

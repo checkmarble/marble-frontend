@@ -269,7 +269,7 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
               <DatasetTag category={sectionKey} />
             </div>
             {datasetNames.length > 0 && (
-              <span className="text-xs text-grey-50 pl-md">
+              <span className="text-xs text-grey-secondary pl-md">
                 {selectedCount} / {datasetNames.length}
               </span>
             )}
@@ -293,10 +293,10 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
         <DatasetTag category={sectionKey} />
         {datasetNames.length > 0 && (
           <span className="flex items-center gap-md">
-            <span className="text-xs text-grey-50">
+            <span className="text-xs text-grey-secondary">
               {t('continuousScreening:creation.datasetSelection.lists', { count: datasetNames.length })}
             </span>
-            <Icon icon="arrow-right" className="size-4 text-grey-50" />
+            <Icon icon="arrow-right" className="size-4 text-grey-secondary" />
           </span>
         )}
       </button>
@@ -417,7 +417,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
         </div>
       )}
       {isDatasetsEmpty ? (
-        <div className="text-s text-grey-50 px-md py-md">
+        <div className="text-s text-grey-secondary px-md py-md">
           {t('continuousScreening:creation.datasetSelection.search_empty')}
         </div>
       ) : (
@@ -513,7 +513,7 @@ const ItemGroup = ({
             </span>
           </span>
           <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-md font-normal">
-            <label htmlFor={`select-all-checkbox-${title}`} className="text-s text-grey-50">
+            <label htmlFor={`select-all-checkbox-${title}`} className="text-s text-grey-secondary">
               {t(
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
               )}
@@ -1110,7 +1110,7 @@ const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
         }}
       />
       <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
-        {t(config.label)}
+        {t(config.label, { defaultValue: config.groupKey })}
       </label>
     </div>
   );

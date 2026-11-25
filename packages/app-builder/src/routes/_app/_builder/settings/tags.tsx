@@ -26,7 +26,7 @@ const tagsLoader = createServerFn()
   .handler(async function tagsLoader({ context }) {
     const { organization, user } = context.authInfo;
 
-    if (!isReadTagAvailable(user)) throw redirect({ to: '/' });
+    if (!isReadTagAvailable(user)) throw redirect({ to: '/app-router' });
 
     const [caseTags, objectTags] = await Promise.all([
       organization

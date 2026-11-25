@@ -6,9 +6,9 @@ import {
   type RuleExecutionError,
 } from '@app-builder/models/decision';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import clsx from 'clsx';
 import { type TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { cn } from 'ui-design-system';
 
 import { decisionsI18n } from '../decisions-i18n';
 
@@ -28,7 +28,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
         </span>
       ) : null}
       <span
-        className={clsx(
+        className={cn(
           'text-s flex h-6 flex-1 items-center justify-center rounded-sm border px-xs font-medium capitalize leading-none shadow-sm',
           getRuleExecutionBadgeColor(ruleExecution),
         )}

@@ -80,9 +80,7 @@ function MergeTenantsForm({
       onChange: mergeTenantsFormSchema,
       onSubmit: mergeTenantsFormSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
-
+    onSubmit: async ({ value }) => {
       const target = tenants.find((tenant) => tenant.id === value.targetTenantId);
       if (!target) return;
 

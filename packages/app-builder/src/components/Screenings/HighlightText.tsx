@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
+import { cn } from 'ui-design-system';
 
 interface HighlightTextProps {
   text: string;
@@ -34,7 +34,7 @@ export function HighlightText({ text, highlight, className, asParagraph }: Highl
 
   const Component = asParagraph ? 'p' : 'span';
   if (isMatch) {
-    return <Component className={clsx('bg-yellow-background rounded-sm', className)}>{text}</Component>;
+    return <Component className={cn('bg-yellow-background rounded-sm', className)}>{text}</Component>;
   }
 
   return <Component className={className}>{text}</Component>;

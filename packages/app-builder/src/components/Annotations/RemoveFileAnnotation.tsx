@@ -1,7 +1,7 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type FileAnnotation } from '@app-builder/models';
 import { useDeleteAnnotationMutation } from '@app-builder/queries/annotations/delete-annotation';
 import { useCallbackRef } from '@marble/shared';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
@@ -16,13 +16,13 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
   const { t } = useTranslation(['cases', 'common']);
   const filenames = annotation.payload.files.map((f) => f.filename);
   const deleteAnnotationMutation = useDeleteAnnotationMutation(annotation.id);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleDelete = useCallbackRef(() => {
     deleteAnnotationMutation
       .mutateAsync()
       .then((result) => {
-        revalidate();
+        router.invalidate();
         if (result.success) {
           toast.success(t('common:success.deleted'));
           onDelete?.();

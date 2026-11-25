@@ -43,5 +43,6 @@ export function returnTimestampExtractInformation(
       return t(`scenarios:edit_timestamp_extract.explanation.hour`);
     default:
       assertNever('Untranslated operator', part);
+      return '';
   }
 }

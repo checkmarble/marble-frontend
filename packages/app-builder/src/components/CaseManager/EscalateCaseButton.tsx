@@ -1,5 +1,4 @@
 import { Callout, casesI18n } from '@app-builder/components';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { isAdmin } from '@app-builder/models/user';
 import { escalateCasePayloadSchema, useEscalateCaseMutation } from '@app-builder/queries/cases/escalate-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -7,7 +6,7 @@ import { useOrganizationDetails } from '@app-builder/services/organization/organ
 import { handleSubmit } from '@app-builder/utils/form';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
-import { Link } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, TooltipV2 } from 'ui-design-system';
@@ -22,7 +21,7 @@ type EscalateCaseButtonProps = {
 export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseButtonProps) {
   const { t } = useTranslation([...casesI18n, 'common']);
   const escalateCaseMutation = useEscalateCaseMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const inboxesQuery = useGetInboxesQuery();
   const { currentUser } = useOrganizationDetails();
   const isAdminUser = isAdmin(currentUser);
@@ -37,7 +36,7 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
       escalateCaseMutation
         .mutateAsync(value)
         .then(() => {
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));

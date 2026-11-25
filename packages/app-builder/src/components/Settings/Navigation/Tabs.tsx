@@ -15,7 +15,7 @@ const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
 };
 
 export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
-  const { t } = useTranslation(['navigation', 'settings']);
+  const { t } = useTranslation(['settings', 'navigation']);
 
   return (
     <div className="flex flex-col gap-sm">

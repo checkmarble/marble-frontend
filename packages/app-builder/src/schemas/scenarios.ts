@@ -74,7 +74,7 @@ export type CreateTestRunPayload = z.infer<typeof createTestRunPayloadSchema>;
 
 export const generateRuleInputSchema = z.object({
   scenarioId: z.string(),
-  ruleId: z.string().uuid(),
+  ruleId: z.uuid(),
   instruction: z.string().min(1),
 });
 

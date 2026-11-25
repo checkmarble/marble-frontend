@@ -46,7 +46,7 @@ export const CustomComponents = Template.bind({});
 CustomComponents.args = {
   children: '# Custom heading\n\nFollowed by a paragraph.',
   components: {
-    h1: ({ children }) => <div className="text-h1 font-bold text-red-100">{children}</div>,
+    h1: ({ children }) => <div className="text-h1 font-bold text-red-primary">{children}</div>,
     p: ({ children }) => <p className="text-s text-grey-secondary">{children}</p>,
   },
 };

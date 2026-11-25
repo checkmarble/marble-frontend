@@ -11,6 +11,7 @@
   "client_detail": "Customer hub",
   "collapse": "Collapse",
   "continuous_screening": "Continuous Screening",
+  "continuous_screening.nudge": "Continuously monitor your customers against sanctions and watchlists",
   "continuous-screening.configurations": "Continuous Screening Configurations",
   "dark_mode": "Dark Mode",
   "data": "Your Data",

@@ -2,29 +2,24 @@ import { Callout, decisionsI18n, OutcomeBadge, scenarioI18n } from '@app-builder
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
-import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { saveScenarioDecisionFn } from '@app-builder/server-fns/scenarios';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { fromParams } from '@app-builder/utils/short-uuid';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { useServerFn } from '@tanstack/react-start';
 import { type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Collapsible } from 'ui-design-system';
+import { Button, Collapsible, Input } from 'ui-design-system';
 import * as z from 'zod/v4';
 
 const MAX_THRESHOLD = 10000;
@@ -109,46 +104,6 @@ function getFormSchema(t: TFunction<typeof decisionPageI18n>) {
 
 const decisionPageI18n = [...decisionsI18n, ...scenarioI18n, 'common'] as const;
 
-type SaveDecisionResult = { status: 'success' | 'error'; errors: any };
-
-const saveDecisionInputSchema = z.object({
-  params: z.record(z.string(), z.string()),
-  scoreReviewThreshold: z.number(),
-  scoreBlockAndReviewThreshold: z.number(),
-  scoreDeclineThreshold: z.number(),
-});
-
-const saveDecisionAction = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .validator((input) => saveDecisionInputSchema.parse(input))
-  .handler(async function saveDecisionAction({ context, data }): Promise<SaveDecisionResult> {
-    const request = getRequest();
-    const { i18nextService } = context.services;
-    const { scenario } = context.authInfo;
-
-    const t = await i18nextService.getFixedT(request, ['common', 'scenarios']);
-    const { params, scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } = data;
-
-    const result = getFormSchema(t).safeParse({
-      scoreReviewThreshold,
-      scoreBlockAndReviewThreshold,
-      scoreDeclineThreshold,
-    });
-
-    if (!result.success) {
-      return { status: 'error' as const, errors: z.treeifyError(result.error) };
-    }
-
-    try {
-      const iterationId = fromParams(params, 'iterationId');
-      await scenario.updateScenarioIteration(iterationId, result.data);
-
-      return { status: 'success' as const, errors: [] };
-    } catch (_error) {
-      return { status: 'error' as const, errors: [] };
-    }
-  });
-
 export const Route = createFileRoute(
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision',
 )({
@@ -197,20 +152,20 @@ function ViewScoreThresholds() {
 
 function EditScoreThresholds() {
   const { t } = useTranslation(decisionPageI18n);
-  const params = Route.useParams();
   const { scenarioIteration, scenarioValidation } = useDetectionScenarioIterationData();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
+  const saveScenarioDecision = useServerFn(saveScenarioDecisionFn);
 
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const mutation = useMutation({
     mutationFn: (value: z.infer<ReturnType<typeof getFormSchema>>) => {
-      return saveDecisionAction({ data: { params, ...value } });
+      return saveScenarioDecision({ data: { iterationId: scenarioIteration.id, ...value } });
     },
     onSuccess: (result) => {
-      if (result.status === 'success') {
+      if (result?.status === 'success') {
         toast.success(t('common:success.save'));
-        revalidate();
+        router.invalidate();
         return;
       }
       toast.error(t('common:errors.unknown'));
@@ -276,16 +231,14 @@ function EditScoreThresholds() {
     validators: {
       onSubmit: schema as unknown as any,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        mutation.mutate(value);
-      }
+    onSubmit: ({ value }) => {
+      mutation.mutate(value);
     },
   });
 
-  const scoreReviewThreshold = useStore(form.store, (store) => store.values.scoreReviewThreshold);
-  const scoreBlockAndReviewThreshold = useStore(form.store, (store) => store.values.scoreBlockAndReviewThreshold);
-  const scoreDeclineThreshold = useStore(form.store, (store) => store.values.scoreDeclineThreshold);
+  const scoreReviewThreshold = useSelector(form.store, (store) => store.values.scoreReviewThreshold);
+  const scoreBlockAndReviewThreshold = useSelector(form.store, (store) => store.values.scoreBlockAndReviewThreshold);
+  const scoreDeclineThreshold = useSelector(form.store, (store) => store.values.scoreDeclineThreshold);
 
   const serverErrors = R.pipe(
     scenarioValidation.decision.errors,
@@ -313,22 +266,24 @@ function EditScoreThresholds() {
         >
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-xs lg:gap-sm">
-              <FormLabel name={field.name} className="sr-only">
+              <label htmlFor={field.name} className="sr-only">
                 {t('scenarios:decision.score_based.score_review_threshold')}
-              </FormLabel>
+              </label>
               <Trans
                 t={t}
                 i18nKey="scenarios:decision.score_based.approve_condition"
                 components={{
                   ReviewThreshold: (
-                    <FormInput
+                    <Input
+                      id={field.name}
                       type="number"
                       name={field.name}
                       onBlur={field.handleBlur}
                       className="relative w-fit"
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                      valid={field.state.meta.errors?.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     />
                   ),
                 }}
@@ -352,9 +307,9 @@ function EditScoreThresholds() {
         >
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-xs lg:gap-sm">
-              <FormLabel name={field.name} className="sr-only">
+              <label htmlFor={field.name} className="sr-only">
                 {t('scenarios:decision.score_based.score_block_and_review_threshold')}
-              </FormLabel>
+              </label>
               <Trans
                 t={t}
                 i18nKey="scenarios:decision.score_based.review_condition"
@@ -363,7 +318,8 @@ function EditScoreThresholds() {
                 }}
                 components={{
                   BlockAndReviewThreshold: (
-                    <FormInput
+                    <Input
+                      id={field.name}
                       type="number"
                       name={field.name}
                       onBlur={field.handleBlur}
@@ -371,7 +327,8 @@ function EditScoreThresholds() {
                       className="relative w-fit"
                       defaultValue={scoreBlockAndReviewThreshold}
                       onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                      valid={field.state.meta.errors?.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     />
                   ),
                 }}
@@ -395,9 +352,9 @@ function EditScoreThresholds() {
         >
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-xs lg:gap-sm">
-              <FormLabel name={field.name} className="sr-only">
+              <label htmlFor={field.name} className="sr-only">
                 {t('scenarios:decision.score_based.score_decline_threshold')}
-              </FormLabel>
+              </label>
               <Trans
                 t={t}
                 i18nKey="scenarios:decision.score_based.score_block_and_review_condition"
@@ -406,7 +363,8 @@ function EditScoreThresholds() {
                 }}
                 components={{
                   DeclineThreshold: (
-                    <FormInput
+                    <Input
+                      id={field.name}
                       type="number"
                       name={field.name}
                       onBlur={field.handleBlur}
@@ -414,7 +372,8 @@ function EditScoreThresholds() {
                       min={scoreBlockAndReviewThreshold}
                       defaultValue={scoreDeclineThreshold}
                       onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                      valid={field.state.meta.errors?.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     />
                   ),
                 }}

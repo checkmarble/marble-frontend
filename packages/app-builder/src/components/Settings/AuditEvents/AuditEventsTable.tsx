@@ -51,7 +51,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         size: 200,
         cell: ({ getValue }) => {
           const actor = getValue();
-          if (!actor) return <span className="text-grey-50">-</span>;
+          if (!actor) return <span className="text-grey-secondary">-</span>;
 
           let displayName: string;
           let secondaryText: string;

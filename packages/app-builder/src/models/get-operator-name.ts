@@ -104,6 +104,7 @@ export function getOperatorName(
         return t('scenarios:operator.filter_timestamp_extract');
       default:
         assertNever('Untranslated operator', operatorName);
+        return operatorName;
     }
   }
 

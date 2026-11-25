@@ -1,13 +1,13 @@
 import { CreateInboxUserContent } from '@app-builder/components/Settings/Inboxes/CreateInboxUser';
 import { DeleteInboxUserContent } from '@app-builder/components/Settings/Inboxes/DeleteInboxUser';
 import { SettingCard } from '@app-builder/components/Settings/settingCard';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Inbox, type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { useEditInboxUserAutoAssignMutation } from '@app-builder/queries/settings/inboxes/edit-inbox-user-auto-assign';
 import { useUpdateInboxUserMutation } from '@app-builder/queries/settings/inboxes/update-inbox-user';
 import { type getInboxUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
+import { useRouter } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo, useState } from 'react';
@@ -152,7 +152,7 @@ function InboxUserRoleSelect({
   const [open, setOpen] = useState(false);
   const [role, setRole] = useState(inboxUser.role);
   const updateInboxUserMutation = useUpdateInboxUserMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleSelect = (newRole: ReturnType<typeof getInboxUserRoles>[number]) => {
     setOpen(false);
@@ -165,7 +165,7 @@ function InboxUserRoleSelect({
         role: newRole,
         autoAssignable: inboxUser.autoAssignable,
       })
-      .then(() => revalidate())
+      .then(() => router.invalidate())
       .catch(() => {
         setRole(inboxUser.role);
         toast.error(t('common:errors.unknown'));
@@ -201,13 +201,13 @@ function InboxUserAutoAssignSwitch({ inboxUser }: { inboxUser: InboxUser }) {
   const { t } = useTranslation(['common']);
   const [checked, setChecked] = useState(inboxUser.autoAssignable);
   const editAutoAssignMutation = useEditInboxUserAutoAssignMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleChange = (value: boolean) => {
     setChecked(value);
     editAutoAssignMutation
       .mutateAsync({ id: inboxUser.id, autoAssignable: value })
-      .then(() => revalidate())
+      .then(() => router.invalidate())
       .catch(() => {
         setChecked(!value);
         toast.error(t('common:errors.unknown'));

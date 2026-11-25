@@ -31,7 +31,7 @@ export const CaseByDateGraph = () => {
           .with({ isError: true }, () => (
             <div className="grid place-items-center h-full">
               <div className="flex flex-col items-center gap-sm">
-                <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
+                <span className="text-s text-grey-secondary text-center">{t('common:generic_fetch_data_error')}</span>
                 <Button variant="secondary" onClick={() => caseStatusByDateQuery.refetch()}>
                   {t('common:retry')}
                 </Button>
@@ -46,7 +46,7 @@ export const CaseByDateGraph = () => {
 
             return (
               <>
-                <span className="text-xs text-grey-60">{t('cases:overview.graph.count')}</span>
+                <span className="text-xs text-grey-secondary">{t('cases:overview.graph.count')}</span>
                 <div className="flex-1">
                   <ResponsiveBar<CaseStatusByDateResponse>
                     enableLabel={false}
@@ -130,7 +130,9 @@ export const CaseByDateGraph = () => {
                     ]}
                     tooltip={({ data }) => (
                       <div className="flex flex-col gap-sm w-auto max-w-max bg-surface-card p-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
-                        <div className="text-s text-grey-60">{formatDateTime(data.date, { dateStyle: 'medium' })}</div>
+                        <div className="text-s text-grey-secondary">
+                          {formatDateTime(data.date, { dateStyle: 'medium' })}
+                        </div>
                         <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-xs">
                           {graphCaseStatuses.map((caseStatus) => (
                             <Fragment key={caseStatus}>

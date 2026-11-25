@@ -1,4 +1,4 @@
-import { useVersionUpdateQuery } from '@app-builder/queries/version-update';
+import { useVersionUpdateQuery } from '@app-builder/queries/version/version-update';
 import { useLocalStorage } from '@app-builder/utils/hooks';
 import { type FunctionComponent, useEffect, useState } from 'react';
 import { VersionUpdateModal } from './VersionUpdateModal';

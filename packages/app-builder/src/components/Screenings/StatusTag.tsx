@@ -1,7 +1,6 @@
 import { type ScreeningMatch } from '@app-builder/models/screening';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Tag, type TagProps } from 'ui-design-system';
+import { cn, Tag, type TagProps } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { screeningsI18n } from './screenings-i18n';
@@ -26,7 +25,7 @@ export function StatusTag({ status, disabled, onClick }: StatusTagProps) {
     <Tag
       color={statusTagColors[status]}
       onClick={() => !disabled && onClick?.()}
-      className={clsx('inline-flex h-8 gap-xs', {
+      className={cn('inline-flex h-8 gap-xs', {
         'cursor-pointer': !!onClick && !disabled,
       })}
     >

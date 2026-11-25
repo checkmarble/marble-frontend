@@ -5,7 +5,7 @@ import { UploadFile } from '@app-builder/components/Files/UploadFile';
 import { ScreeningStatusTag } from '@app-builder/components/Screenings/ScreeningStatusTag';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { useUploadScreeningFile } from '@app-builder/queries/upload-screening-file';
+import { useUploadScreeningFile } from '@app-builder/queries/screening/upload-screening-file';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';

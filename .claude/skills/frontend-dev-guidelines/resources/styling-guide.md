@@ -4,7 +4,7 @@ Tailwind 4. Tokens: `packages/tailwind-preset/src/tailwind.css` (light in `@them
 
 ## Colours
 
-The preset sets `--color-*: initial`: Tailwind's palette is gone, so `text-gray-500` or `bg-red-200` generate nothing, and neither do legacy Figma names still in old code (`text-grey-60`, `bg-grey-20`, `text-red-base`). Don't copy them.
+The preset sets `--color-*: initial`: Tailwind's default palette is gone, so `text-gray-500`, `bg-red-200`, or legacy Figma numeric names (`text-grey-60`, `bg-grey-20`, `text-red-base`) generate nothing. Always use semantic tokens from the preset.
 
 Names are hue × role. Hues: `grey`, `purple`, `red`, `green`, `yellow`, `orange`. Roles: `-primary`, `-hover`, `-secondary`, `-placeholder`, `-disabled`, `-border`, `-background`, `-background-light`. Extras: `grey-white`, `purple-border-light`, `blue-58`/`blue-96` (the only numeric ones), `enum-*` (enum values, `models/enum.ts`).
 
@@ -52,4 +52,4 @@ The `ar` locale renders `<html dir="rtl">`. Use logical utilities (`ms-`/`me-`, 
 
 ## Animations
 
-A kebab `animate-*` generates CSS only from Tailwind's defaults (`animate-spin`, `animate-pulse`, …), a `--animate-*` entry in the preset's `@theme`, or an `@utility` in the app's `tailwind.css`. The preset's other `.animate-*` are plain camelCase CSS classes (`animate-overlayShow`) that take no variants; their kebab spellings, still in old code (`animate-overlay-show`, `animate-slide-up-and-fade`), generate nothing. Radix enter/exit uses tw-animate-css (`data-[state=open]:animate-in fade-in-0 zoom-in-95`, see `ui-design-system/src/MenuCommand/MenuCommand.tsx`). Add an animation as an `--animate-*` entry plus `@keyframes` in the preset.
+A kebab `animate-*` generates CSS only from Tailwind's defaults (`animate-spin`, `animate-pulse`, …), a `--animate-*` entry in the preset's `@theme`, or an `@utility` in the app's `tailwind.css`. The preset's other `.animate-*` are plain camelCase CSS classes (`animate-overlayShow`, `animate-slideUpAndFade`) that take no variants; kebab spellings (`animate-overlay-show`, `animate-slide-up-and-fade`) generate nothing. Radix enter/exit uses tw-animate-css (`data-[state=open]:animate-in fade-in-0 zoom-in-95`, see `ui-design-system/src/MenuCommand/MenuCommand.tsx`). Add an animation as an `--animate-*` entry plus `@keyframes` in the preset.

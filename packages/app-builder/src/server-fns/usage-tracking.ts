@@ -21,7 +21,7 @@ export const updateUsageTrackingFn = createServerFn({ method: 'POST' })
   .middleware([usageTrackingMiddleware])
   .validator(z.object({ enabled: z.boolean() }))
   .handler(async ({ context, data }) => {
-    await context.authInfo.apiClient.updateUsageTracking(data);
+    await context.authInfo.appConfig.updateUsageTracking(data);
     const appConfig = await context.services.appConfigRepository.getAppConfig();
     return { enabled: appConfig.features.segment };
   });

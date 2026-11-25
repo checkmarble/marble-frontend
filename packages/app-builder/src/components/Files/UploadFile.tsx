@@ -1,13 +1,12 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
 import * as Sentry from '@sentry/tanstackstart-react';
-import clsx from 'clsx';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Modal } from 'ui-design-system';
+import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UploadFile({
@@ -18,7 +17,7 @@ export function UploadFile({
   children: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
@@ -29,7 +28,7 @@ export function UploadFile({
           setOpen={setOpen}
           onUploadCompleted={() => {
             setOpen(false);
-            revalidate();
+            router.invalidate();
           }}
         />
       </Modal.Content>
@@ -109,7 +108,7 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
       <div className="flex flex-col gap-lg p-lg">
         <div
           {...getRootProps()}
-          className={clsx(
+          className={cn(
             'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
             isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
           )}
@@ -137,7 +136,7 @@ const Loading = ({ className }: { className?: string }) => {
   const { t } = useTranslation(['common']);
   return (
     <div
-      className={clsx(
+      className={cn(
         className,
         'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}

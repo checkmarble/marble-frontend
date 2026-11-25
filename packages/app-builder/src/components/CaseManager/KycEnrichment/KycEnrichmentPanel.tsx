@@ -1,7 +1,7 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useAddCommentMutation } from '@app-builder/queries/cases/add-comment';
 import { useCreateKycEnrichmentQuery } from '@app-builder/queries/cases/create-kyc-enrichment';
 import * as Sentry from '@sentry/tanstackstart-react';
+import { useRouter } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ type KycEnrichmentPanelProps = {
 
 export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichmentPanelProps) {
   const { t } = useTranslation(['cases', 'common']);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [isCommentAdded, setIsCommentAdded] = useState(false);
 
   const { data, isPending, error, refetch, isSuccess, status } = useCreateKycEnrichmentQuery(caseId);
@@ -52,7 +52,7 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
       await addCommentMutation.mutateAsync({ caseId, comment, files: [] });
       setIsCommentAdded(true);
       toast.success(t('cases:kyc_enrichment.comment_added.toaster.success'));
-      revalidate();
+      router.invalidate();
       onOpenChange(false);
     } catch (e) {
       Sentry.captureException(e);

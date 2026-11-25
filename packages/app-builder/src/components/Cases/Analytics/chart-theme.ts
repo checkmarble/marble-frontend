@@ -1,3 +1,5 @@
+import { type TFunction } from 'i18next';
+
 export const nivoTheme = {
   text: { fill: 'var(--color-grey-secondary)' },
   axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
@@ -171,7 +173,7 @@ export function isSamePeriodYear(periods: string[]): boolean {
  * to a human-readable, localized day-range label via the i18n t() function.
  * Unknown bracket values fall through unchanged so chart rendering never breaks.
  */
-export function formatBracket(bracket: string, t: (key: string) => string): string {
+export function formatBracket(bracket: string, t: TFunction<['cases']>): string {
   switch (bracket) {
     case '0-2':
       return t('cases:analytics.chart.bracket.0_2');

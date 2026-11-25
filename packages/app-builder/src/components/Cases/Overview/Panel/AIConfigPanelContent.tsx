@@ -1,15 +1,13 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
 import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-settings';
 import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settings';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Input, Panel, Switch, Tooltip } from 'ui-design-system';
+import { Button, Input, Panel, Switch, TextArea, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { LanguageDropdown } from './LanguageDropdown';
 
@@ -64,7 +62,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             <form.Field name="caseReviewSetting.orgDescription">
               {(field) => (
                 <div className="flex flex-col gap-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
+                  <label htmlFor={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.org_description.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -77,13 +75,15 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     >
                       <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                     </Tooltip.Default>
-                  </FormLabel>
-                  <FormTextArea
+                  </label>
+                  <TextArea
+                    id={field.name}
                     name={field.name}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     defaultValue={field.state.value}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     resize="vertical"
                     className="min-h-[140px] disabled:cursor-not-allowed"
                     placeholder={t('cases:ai_settings.general.org_description.field.placeholder')}
@@ -96,7 +96,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             <form.Field name="caseReviewSetting.structure">
               {(field) => (
                 <div className="flex flex-col gap-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
+                  <label htmlFor={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.structure.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -115,13 +115,15 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     >
                       <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                     </Tooltip.Default>
-                  </FormLabel>
-                  <FormTextArea
+                  </label>
+                  <TextArea
+                    id={field.name}
                     name={field.name}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     defaultValue={field.state.value}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     resize="vertical"
                     className="min-h-[140px] disabled:cursor-not-allowed"
                     placeholder={t('cases:ai_settings.general.structure.field.placeholder')}
@@ -134,7 +136,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             <form.Field name="caseReviewSetting.language">
               {(field) => (
                 <div className="flex flex-col gap-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
+                  <label htmlFor={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.language.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -145,7 +147,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     >
                       <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                     </Tooltip.Default>
-                  </FormLabel>
+                  </label>
                   <LanguageDropdown
                     value={field.state.value}
                     onChange={(value) => field.handleChange(value)}
@@ -158,7 +160,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             <form.Field name="caseReviewSetting.additionalCaseReviewInstruction">
               {(field) => (
                 <div className="flex flex-col gap-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
+                  <label htmlFor={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.additional_instruction.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -171,13 +173,15 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     >
                       <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                     </Tooltip.Default>
-                  </FormLabel>
-                  <FormTextArea
+                  </label>
+                  <TextArea
+                    id={field.name}
                     name={field.name}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     defaultValue={field.state.value}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     resize="vertical"
                     className="min-h-[140px] disabled:cursor-not-allowed"
                     placeholder={t('cases:ai_settings.general.additional_instruction.field.placeholder')}
@@ -219,7 +223,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             <form.Field name="kycEnrichmentSetting.customInstructions">
               {(field) => (
                 <div className="flex flex-col gap-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
+                  <label htmlFor={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.kyc_enrichment.custom_instructions.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -238,13 +242,15 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     >
                       <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                     </Tooltip.Default>
-                  </FormLabel>
-                  <FormTextArea
+                  </label>
+                  <TextArea
+                    id={field.name}
                     name={field.name}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     defaultValue={field.state.value}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     resize="vertical"
                     className="min-h-[140px] disabled:cursor-not-allowed"
                     placeholder={t('cases:ai_settings.kyc_enrichment.custom_instructions.field.placeholder')}

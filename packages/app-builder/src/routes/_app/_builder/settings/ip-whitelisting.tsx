@@ -11,7 +11,7 @@ const ipWhitelistingLoader = createServerFn()
     const { appConfig } = context;
 
     if (!isAdmin(user) || !appConfig.isManagedMarble) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const organization = await orgRepo.getCurrentOrganization();

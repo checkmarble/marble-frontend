@@ -1,7 +1,6 @@
 import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { DataModel } from '@app-builder/models';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import {
@@ -12,7 +11,7 @@ import {
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import { useHydrated } from '@tanstack/react-router';
+import { useHydrated, useRouter } from '@tanstack/react-router';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -41,7 +40,7 @@ export function CreateScenario({ children }: { children: React.ReactElement }) {
 function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: DataModel; onCreateSuccess: () => void }) {
   const { t, i18n } = useTranslation(['common', 'scenarios']);
   const createScenarioMutation = useCreateScenarioMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -54,7 +53,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
         .mutateAsync(value)
         .then(() => {
           onCreateSuccess();
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));

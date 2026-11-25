@@ -1,6 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
 import { Page } from '@app-builder/components/Page';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Organization, type ScreeningProvider } from '@app-builder/models/organization';
 import {
   updateScreeningProvidersPayloadSchema,
@@ -8,6 +7,7 @@ import {
 } from '@app-builder/queries/settings/organization/update-screening-providers';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ export const ScreeningProvidersSettingsPage = ({
 }) => {
   const { t } = useTranslation(['common', 'settings']);
   const updateScreeningProvidersMutation = useUpdateScreeningProviders(organizationId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const providerLabels: Record<ScreeningProvider, string> = {
@@ -60,7 +60,7 @@ export const ScreeningProvidersSettingsPage = ({
           }
 
           toast.success(t('common:success.save'));
-          revalidate();
+          router.invalidate();
         })
         .catch((error) => {
           const message = error instanceof Error ? error.message : t('common:errors.unknown');

@@ -1,5 +1,4 @@
 import { UpdateInboxesSlaPayload } from '@app-builder/schemas/cases';
-import { type ParseKeys } from 'i18next';
 import {
   type AddInboxUserBodyDto,
   type InboxDto,
@@ -155,14 +154,14 @@ export function adaptInboxUserUpdateBody(data: InboxUserUpdateBody): {
   };
 }
 
-export function tKeyForInboxUserRole(role: string): ParseKeys<['settings']> {
+export function tKeyForInboxUserRole(role: string) {
   switch (role) {
     case 'admin':
-      return 'settings:inboxes.user_role.admin';
+      return 'settings:inboxes.user_role.admin' as const;
     case 'member':
-      return 'settings:inboxes.user_role.member';
+      return 'settings:inboxes.user_role.member' as const;
     default:
-      return 'settings:inboxes.user_role.unknown';
+      return 'settings:inboxes.user_role.unknown' as const;
   }
 }
 

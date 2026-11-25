@@ -14,7 +14,7 @@ const continuousScreeningLayoutLoader = createServerFn()
     }
 
     if (!isContinuousScreeningAvailable(entitlements)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     return null;

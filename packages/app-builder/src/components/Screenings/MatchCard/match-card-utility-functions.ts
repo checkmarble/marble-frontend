@@ -1,6 +1,7 @@
 import { FamilyPersonEntity, FamilyRelativeEntity, PersonEntity } from '@app-builder/models/screening';
 import { formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
+import { type TFunction } from 'i18next';
 import { Temporal } from 'temporal-polyfill';
 import { match } from 'ts-pattern';
 import { getCountryByName } from 'ui-design-system';
@@ -554,7 +555,7 @@ function formatPlainDate(date: Temporal.PlainDate, language: string, options: In
 export function formatBirthDateRange(
   range: BirthDateRange,
   language: string,
-  t: (key: string, options?: object) => string,
+  t: TFunction<readonly ('common' | 'screenings')[]>,
 ) {
   return match(range)
     .with({ type: 'years' }, ({ minYear, maxYear }) =>

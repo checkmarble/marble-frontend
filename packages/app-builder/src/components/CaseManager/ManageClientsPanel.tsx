@@ -265,7 +265,7 @@ function ObjectItem({
 }) {
   const dataModel = useDataModel();
   const typeHelpers = createGraphTypeHelpers(dataModel);
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
 
   return (
     <Card className={cn('p-md', kind === 'deleted' && 'opacity-60')}>

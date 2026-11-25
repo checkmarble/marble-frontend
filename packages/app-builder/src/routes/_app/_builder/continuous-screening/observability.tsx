@@ -28,7 +28,7 @@ const observabilityLoader = createServerFn()
     const { continuousScreening, user } = context.authInfo;
 
     if (!isAdmin(user)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const [datasetUpdates, updateJobs, clientDataIndexing] = await Promise.all([

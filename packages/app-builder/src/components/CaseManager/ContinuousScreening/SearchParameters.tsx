@@ -31,7 +31,7 @@ function GroupSummaryText({ titles }: { titles: string[] }) {
 }
 
 export function SearchParameters({ configStableId }: SearchParametersProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
   const { formatItemName } = useDatasetTitle();
   const configQuery = useContinuousScreeningConfigurationQuery(configStableId);
   const datasetsQuery = useListConfigQuery('continuous_monitoring');

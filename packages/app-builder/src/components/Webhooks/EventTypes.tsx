@@ -1,12 +1,11 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { eventTypes } from '@app-builder/models/webhook';
-import clsx from 'clsx';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { matchSorter } from 'match-sorter';
 import { toggle } from 'radash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuCommand, Tooltip } from 'ui-design-system';
+import { cn, MenuCommand, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SelectEvents({
@@ -47,7 +46,7 @@ export function SelectEvents({
           name={name}
           disabled={disabled}
           onBlur={onBlur}
-          className={clsx('h-auto min-h-10', className)}
+          className={cn('h-auto min-h-10', className)}
         >
           {selectedEventTypes.length > 0 ? (
             <EventTypes eventTypes={selectedEventTypes} />
@@ -97,7 +96,7 @@ export function EventTypes({ className, eventTypes }: { eventTypes: string[]; cl
         </div>
       }
     >
-      <div className={clsx('flex w-fit flex-wrap items-center gap-xs', className)}>
+      <div className={cn('flex w-fit flex-wrap items-center gap-xs', className)}>
         {eventTypes.slice(0, 3).map((event) => (
           <EventType key={event}>{event}</EventType>
         ))}

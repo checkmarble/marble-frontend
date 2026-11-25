@@ -664,14 +664,23 @@ export function getCategoryForTopic(topic: string): ScreeningCategory | undefine
  * Maps ScreeningCategory to i18n key suffix.
  * ScreeningCategory uses hyphens, i18n keys use underscores.
  */
-export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
+export const SCREENING_CATEGORY_I18N_KEY_MAP = {
   sanctions: 'sanctions',
   peps: 'peps',
   'third-parties': 'third_parties',
   'adverse-media': 'adverse_media',
   custom: 'custom',
   global: 'global',
-};
+} as const satisfies Record<ScreeningCategory, string>;
+
+export const SCREENING_HIT_TYPE_T_KEYS = {
+  sanctions: 'scenarios:monitoring_list_check.hit_type.sanctions',
+  peps: 'scenarios:monitoring_list_check.hit_type.peps',
+  'third-parties': 'scenarios:monitoring_list_check.hit_type.third_parties',
+  'adverse-media': 'scenarios:monitoring_list_check.hit_type.adverse_media',
+  custom: 'scenarios:monitoring_list_check.hit_type.custom',
+  global: 'scenarios:sanction.lists.global',
+} as const satisfies Record<ScreeningCategory, string>;
 
 export const RISK_TAG_CATEGORIES: RiskTagCategory[] = ['sanctions', 'peps', 'adverse-media'];
 

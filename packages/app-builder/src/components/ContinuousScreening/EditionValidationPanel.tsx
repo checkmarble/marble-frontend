@@ -1,11 +1,11 @@
 import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   ContinuousScreeningConfig,
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
 import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening';
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Panel, PanelSharpFactory } from 'ui-design-system';
@@ -34,7 +34,7 @@ export const EditionValidationPanel = ({
   const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening', 'common']);
   const updateConfigurationMutation = useUpdateContinuousScreeningConfigurationMutation(baseConfig.stableId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleValidateClick = () => {
     updateConfigurationMutation
@@ -49,7 +49,7 @@ export const EditionValidationPanel = ({
         }
         toast.success(t('common:success.save'));
         panelSharp.actions.close();
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

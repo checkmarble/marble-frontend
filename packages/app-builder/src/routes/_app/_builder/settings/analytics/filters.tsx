@@ -1,6 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateFilter } from '@app-builder/components/Settings/Scenario/CreateFilter';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { ExportedFields } from '@app-builder/models';
 import type { DataModel, Pivot } from '@app-builder/models/data-model';
@@ -8,7 +7,7 @@ import {
   type DeleteExportedFieldPayload,
   useDeleteFilterMutation,
 } from '@app-builder/queries/settings/scenarios/delete-filter';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
@@ -164,7 +163,7 @@ export const Route = createFileRoute('/_app/_builder/settings/analytics/filters'
 const columnHelper = createColumnHelper<MarbleTableFeatures, FilterRow>();
 
 function Filters() {
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const { t } = useTranslation(['settings', 'common']);
   const { filters, dataModel, triggerFieldItems, linkedFieldItems } = Route.useLoaderData();
@@ -244,7 +243,7 @@ function Filters() {
       .then(() => {
         setIsConfirmOpen(false);
         setItemToDelete(null);
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

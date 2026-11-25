@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useImportOrgFromFileMutation, useImportOrgMutation } from '@app-builder/queries/data/import-org';
+import { useRouter } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importFileMutation = useImportOrgFromFileMutation();
   const importBodyMutation = useImportOrgMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const hasFile = selectedFile !== null;
@@ -42,7 +42,7 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
       importFileMutation.mutate(selectedFile, {
         onSuccess: (result) => {
           if (result.success) {
-            revalidate();
+            router.invalidate();
             toast.success(t('data:import_org.success'));
             setIsOpen(false);
             resetState();
@@ -65,7 +65,7 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
           onSuccess: (result) => {
             if (result.success) {
               toast.success(t('data:import_org.success'));
-              revalidate();
+              router.invalidate();
               setIsOpen(false);
               resetState();
             } else {

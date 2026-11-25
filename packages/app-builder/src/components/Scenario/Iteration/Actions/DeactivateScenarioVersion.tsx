@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeactivateIterationMutation } from '@app-builder/queries/scenarios/deactivate-iteration';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -28,14 +28,14 @@ export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenari
 function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const deactivateIterationMutation = useDeactivateIterationMutation(scenarioId, iterationId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   function handleDeactivate() {
     deactivateIterationMutation
       .mutateAsync({ stopOperating: true, changeIsImmediate: true })
       .then(() => {
         toast.success(t('scenarios:deployment_modal.deactivate.success'));
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

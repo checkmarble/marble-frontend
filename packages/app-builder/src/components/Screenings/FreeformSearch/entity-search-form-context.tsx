@@ -1,6 +1,6 @@
 import { type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { createSimpleContext } from '@marble/shared';
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
 import { type ComponentType, type ReactNode } from 'react';
 
 export type EntitySearchFormValues = {
@@ -56,7 +56,7 @@ export function useEntitySearchForm() {
 
 export function useEntitySearchFormStore<TSelected>(selector: (state: EntitySearchFormState) => TSelected): TSelected {
   const { store } = useEntitySearchForm();
-  return useStore(store as never, selector);
+  return useSelector(store as never, selector);
 }
 
 export type { EntitySearchFormState };

@@ -4,10 +4,9 @@ import { IngestedObjectDetailModal } from '@app-builder/components/Data/Ingested
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { ScreeningQueryDetail } from '@app-builder/components/Screenings/ScreeningQueryDetail';
 import { ScreeningReviewSection } from '@app-builder/components/Screenings/SreeningReview';
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +24,7 @@ function CaseSanctionsHitsPage() {
     tableName: string;
     objectId: string;
   } | null>(null);
-  const navigate = useAgnosticNavigation();
+  const navigate = useNavigate();
 
   return (
     <div className="bg-surface-card border-grey-border grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
@@ -33,9 +32,14 @@ function CaseSanctionsHitsPage() {
         <ScreeningReviewSection
           screening={screening}
           onRefineSuccess={(screeningId) => {
-            navigate(
-              `/cases/${fromUUIDtoSUUID(caseDetail.id)}/d/${fromUUIDtoSUUID(decision.id)}/screenings/${fromUUIDtoSUUID(screeningId)}`,
-            );
+            navigate({
+              to: '/cases/$caseId/d/$decisionId/screenings/$screeningId',
+              params: {
+                caseId: fromUUIDtoSUUID(caseDetail.id),
+                decisionId: fromUUIDtoSUUID(decision.id),
+                screeningId: fromUUIDtoSUUID(screeningId),
+              },
+            });
           }}
         />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-lg">

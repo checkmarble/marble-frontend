@@ -46,7 +46,7 @@ const ModalContent = function ModalContent({
 }: ModalContentProps & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-md backdrop-blur-xs" />
+      <Dialog.Overlay className="animate-overlayShow bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-md backdrop-blur-xs" />
       <Dialog.Content
         ref={ref}
         {...props}

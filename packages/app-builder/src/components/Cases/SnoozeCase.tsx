@@ -1,12 +1,12 @@
 import { casesI18n } from '@app-builder/components/Cases';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   type SnoozeCasePayload,
   snoozeCasePayloadSchema,
   useSnoozeCaseMutation,
 } from '@app-builder/queries/cases/snooze-case';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import {
   addDays,
   addHours,
@@ -57,7 +57,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
   const { t } = useTranslation(casesI18n);
   const formatDateTime = useFormatDateTime();
   const snoozeCaseMutation = useSnoozeCaseMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const formatDate = (date: Date) => formatDateTime(date, { dateStyle: 'medium', timeStyle: 'short' });
@@ -70,7 +70,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
       };
 
       snoozeCaseMutation.mutateAsync(finalValue).then(() => {
-        revalidate();
+        router.invalidate();
       });
     },
     validators: {
@@ -82,7 +82,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
     } as SnoozeCasePayload,
   });
 
-  useStore(form.store, (state) => state.values.snoozeUntil);
+  useSelector(form.store, (state) => state.values.snoozeUntil);
 
   return (
     <form.Field

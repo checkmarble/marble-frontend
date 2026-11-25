@@ -13,7 +13,7 @@ const analyticsLegacyLoader = createServerFn()
     const { user, analytics, entitlements } = context.authInfo;
 
     if (!isAnalyticsAvailable(user, entitlements)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const analyticsList = await analytics.legacyListAnalytics();

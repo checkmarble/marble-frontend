@@ -1,6 +1,6 @@
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { isAdmin, isMarbleAdmin } from '@app-builder/models/user';
-import { useUpdateUsageTrackingMutation, useUsageTrackingQuery } from '@app-builder/queries/usage-tracking';
+import { useUpdateUsageTrackingMutation, useUsageTrackingQuery } from '@app-builder/queries/settings/usage-tracking';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';

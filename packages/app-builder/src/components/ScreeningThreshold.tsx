@@ -17,9 +17,9 @@ export const ScreeningThreshold = ({
   className,
   direction = 'column',
 }: ScreeningThresholdProps) => {
-  const { t } = useTranslation(['common', 'scenarios']);
+  const { t } = useTranslation(['common', 'scenarios', 'screenings', 'settings']);
 
-  const values = [
+  const values: Array<{ value: number; label?: string; color: string }> = [
     { value: 0, color: 'var(--color-red-hover)' },
     { value: 40, label: t('screenings:freeform_search.threshold.40'), color: 'var(--color-red-secondary)' },
     {

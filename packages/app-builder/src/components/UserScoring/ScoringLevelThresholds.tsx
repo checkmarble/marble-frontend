@@ -1,7 +1,7 @@
 import {
+  getScoringLevelLabel,
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   scoringLevelEntries,
 } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,6 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
   }
 
   const colorEntries = scoringLevelEntries(SCORING_LEVELS_COLORS[maxRiskLevel]);
-  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   const handleChange = (index: number, value: number) => {
     const next = [...thresholds];
@@ -45,7 +44,9 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
               {/* Level name display */}
               <div className="flex items-center gap-xs h-10 w-[195px] shrink-0 border border-grey-border rounded-sm px-xs">
                 <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <span className="text-s font-medium flex-1 min-w-0 truncate">{t(labelKeys[level] ?? '')}</span>
+                <span className="text-s font-medium flex-1 min-w-0 truncate">
+                  {getScoringLevelLabel(t, maxRiskLevel, level)}
+                </span>
               </div>
 
               {isFirst ? (

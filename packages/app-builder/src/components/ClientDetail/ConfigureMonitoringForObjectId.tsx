@@ -2,7 +2,7 @@ import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-s
 import { useContinuousScreeningConfigurationsQuery } from '@app-builder/queries/continuous-screening/configurations';
 import { useUpdateObjectMonitoringMutation } from '@app-builder/queries/continuous-screening/update-object-monitoring';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { toggle } from 'radash';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -52,9 +52,9 @@ export const ConfigureMonitoringForObjectId = ({
     },
   });
 
-  const selectedStableIds = useStore(form.store, (state) => state.values.configStableIds);
-  const skipScreen = useStore(form.store, (state) => state.values.skipScreen);
-  const isDirty = useStore(form.store, (state) => state.isDirty);
+  const selectedStableIds = useSelector(form.store, (state) => state.values.configStableIds);
+  const skipScreen = useSelector(form.store, (state) => state.values.skipScreen);
+  const isDirty = useSelector(form.store, (state) => state.isDirty);
 
   const eligibleConfigurations = useMemo(() => {
     const configs = configurationsQuery.data ?? [];

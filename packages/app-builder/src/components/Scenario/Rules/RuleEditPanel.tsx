@@ -15,7 +15,7 @@ import {
 } from '@app-builder/services/validation';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -104,7 +104,7 @@ function RuleEditForm({
   onSuccess,
   onDelete,
 }: RuleEditFormProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'scenarios']);
   const panelSharp = PanelSharpFactory.useSharp();
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -129,8 +129,8 @@ function RuleEditForm({
 
   const form = useForm({
     onSubmitMeta: { closeOnSuccess: false },
-    onSubmit: async ({ value, formApi, meta }) => {
-      if (serverValidationMessages.length > 0 || !formApi.state.isValid) {
+    onSubmit: async ({ value, meta }) => {
+      if (serverValidationMessages.length > 0) {
         return;
       }
 
@@ -155,7 +155,7 @@ function RuleEditForm({
     } as EditRuleForm,
   });
 
-  const formFormula = useStore(form.store, (state) => state.values.formula);
+  const formFormula = useSelector(form.store, (state) => state.values.formula);
   const [formulaKey, setFormulaKey] = useState(0);
   const [isDebouncing, setIsDebouncing] = useState(false);
   const [isValueSwitchOpen, setIsValueSwitchOpen] = useState(false);

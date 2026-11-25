@@ -1,7 +1,7 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetAiSettingsQuery } from '@app-builder/queries/cases/get-ai-settings';
 import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
+import { useRouter } from '@tanstack/react-router';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
   const { t } = useTranslation(['cases']);
   const [aiConfigPanelOpen, setAiConfigPanelOpen] = useState(false);
   const aiSettingsQuery = useGetAiSettingsQuery();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const restricted = isRestricted(access);
   const hasAccess = isAccessible(access);
@@ -108,7 +108,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                   settings={data.settings}
                   readOnly={!canEdit}
                   onSuccess={() => {
-                    revalidate();
+                    router.invalidate();
                     setAiConfigPanelOpen(false);
                     aiSettingsQuery.refetch();
                   }}

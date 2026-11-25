@@ -1,8 +1,8 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/update-inbox-escalation';
+import { useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ export const EscalationConditionsPanelContent = ({
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const updateEscalationMutation = useUpdateInboxEscalationMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const baseId = useId();
 
   const [conditions, setConditions] = useState<ConditionWithId[]>([]);
@@ -96,7 +96,7 @@ export const EscalationConditionsPanelContent = ({
       {
         onSuccess: () => {
           toast.success(t('cases:overview.panel.escalation.saved'));
-          revalidate();
+          router.invalidate();
           panelSharp.actions.close();
         },
         onError: () => {
