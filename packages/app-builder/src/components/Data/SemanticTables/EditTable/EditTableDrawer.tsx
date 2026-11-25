@@ -206,7 +206,7 @@ export function EditTableDrawer({
   const tableState = tablesState[tableModel.id]!;
   const initialTableState = initialTableStateRef.current[tableModel.id]!;
   const isSemanticTypeChanged =
-    tableState.entityType !== initialTableState.entityType || tableState.subEntity !== initialTableState.subEntity;
+    tableState.entityType !== initialTableState?.entityType || tableState.subEntity !== initialTableState.subEntity;
   const destinationTableOptions = useMemo(
     () => dataModel.map((t) => ({ tableId: t.id, label: t.alias || t.name })),
     [dataModel],

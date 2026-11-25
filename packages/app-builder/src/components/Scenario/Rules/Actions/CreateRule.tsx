@@ -17,7 +17,7 @@ export function CreateRule({
 
   const handleCreateRule = () => {
     createRuleMutation.mutateAsync().then((rule) => {
-      onSuccess(rule.id);
+      if (rule?.id) onSuccess(rule.id);
     });
   };
 
