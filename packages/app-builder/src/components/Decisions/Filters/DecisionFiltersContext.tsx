@@ -2,9 +2,9 @@ import { type Inbox } from '@app-builder/models/inbox';
 import { type Scenario } from '@app-builder/models/scenario';
 import { DecisionFilters, isUnboundedDateRange } from '@app-builder/schemas/decisions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type DateRangeFilterForm } from '@app-builder/utils/schema/filterSchema';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useCallbackRef } from '@marble/shared';
+import { useForm, useSelector } from '@tanstack/react-form';
 import * as React from 'react';
 import * as R from 'remeda';
 import {
@@ -86,21 +86,21 @@ export const useDecisionFiltersContext = DecisionFiltersContext.useValue;
 
 export function useDateRangeFilter() {
   const { form } = useDecisionFiltersContext();
-  const dateRange = useStore(form.store, (state) => state.values.dateRange);
+  const dateRange = useSelector(form.store, (state) => state.values.dateRange);
   const setDateRange = (value: DateRangeFilterForm | undefined) => form.setFieldValue('dateRange', value ?? null);
   return { dateRange, setDateRange };
 }
 
 export function useHasCaseFilter() {
   const { form } = useDecisionFiltersContext();
-  const selectedHasCase = useStore(form.store, (state) => state.values.hasCase);
+  const selectedHasCase = useSelector(form.store, (state) => state.values.hasCase);
   const setSelectedHasCase = (value: boolean | null) => form.setFieldValue('hasCase', value);
   return { selectedHasCase, setSelectedHasCase };
 }
 
 export function useOutcomeAndReviewStatusFilter() {
   const { form } = useDecisionFiltersContext();
-  const selectedOutcomeAndReviewStatus = useStore(form.store, (state) => state.values.outcomeAndReviewStatus);
+  const selectedOutcomeAndReviewStatus = useSelector(form.store, (state) => state.values.outcomeAndReviewStatus);
   const setOutcomeAndReviewStatus = (value: DecisionFiltersForm['outcomeAndReviewStatus']) =>
     form.setFieldValue('outcomeAndReviewStatus', value);
   return { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus };
@@ -108,21 +108,21 @@ export function useOutcomeAndReviewStatusFilter() {
 
 export function usePivotValueFilter() {
   const { hasPivots, form } = useDecisionFiltersContext();
-  const selectedPivotValue = useStore(form.store, (state) => state.values.pivotValue);
+  const selectedPivotValue = useSelector(form.store, (state) => state.values.pivotValue);
   const setSelectedPivotValue = (value: string | null) => form.setFieldValue('pivotValue', value);
   return { hasPivots, selectedPivotValue, setSelectedPivotValue };
 }
 
 export function useScenarioFilter() {
   const { scenarios, form } = useDecisionFiltersContext();
-  const selectedScenarioIds = useStore(form.store, (state) => state.values.scenarioId);
+  const selectedScenarioIds = useSelector(form.store, (state) => state.values.scenarioId);
   const setSelectedScenarioIds = (value: string[]) => form.setFieldValue('scenarioId', value);
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
 export function useScheduledExecutionFilter() {
   const { form } = useDecisionFiltersContext();
-  const selectedScheduledExecutionIds = useStore(form.store, (state) => state.values.scheduledExecutionId);
+  const selectedScheduledExecutionIds = useSelector(form.store, (state) => state.values.scheduledExecutionId);
   const setSelectedScheduledExecutionIds = (value: string[]) => form.setFieldValue('scheduledExecutionId', value);
   return {
     selectedScheduledExecutionIds,
@@ -132,7 +132,7 @@ export function useScheduledExecutionFilter() {
 
 export function useCaseInboxFilter() {
   const { inboxes, form } = useDecisionFiltersContext();
-  const selectedCaseInboxIds = useStore(form.store, (state) => state.values.caseInboxId);
+  const selectedCaseInboxIds = useSelector(form.store, (state) => state.values.caseInboxId);
   const setSelectedCaseInboxIds = (value: string[]) => form.setFieldValue('caseInboxId', value);
   return {
     inboxes,
@@ -152,14 +152,14 @@ export function useTriggerObjectFilter() {
       ),
     [scenarios],
   );
-  const selectedTriggerObjects = useStore(form.store, (state) => state.values.triggerObject);
+  const selectedTriggerObjects = useSelector(form.store, (state) => state.values.triggerObject);
   const setSelectedTriggerObjects = (value: string[]) => form.setFieldValue('triggerObject', value);
   return { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects };
 }
 
 export function useTriggerObjectIdFilter() {
   const { form } = useDecisionFiltersContext();
-  const selectedTriggerObjectId = useStore(form.store, (state) => state.values.triggerObjectId);
+  const selectedTriggerObjectId = useSelector(form.store, (state) => state.values.triggerObjectId);
   const setSelectedTriggerObjectId = (value: string | null) => form.setFieldValue('triggerObjectId', value);
   return { selectedTriggerObjectId, setSelectedTriggerObjectId };
 }

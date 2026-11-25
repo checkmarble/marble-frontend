@@ -1,4 +1,4 @@
-import { type MaxRiskLevel, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { getScoringLevelLabel, type MaxRiskLevel, SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
 import { type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';
@@ -16,7 +16,7 @@ export function RiskLevelBadge({ riskLevel, maxRiskLevel, onClick }: RiskLevelBa
   const { t } = useTranslation(['cases', 'user-scoring']);
 
   const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][riskLevel] ?? 'inherit';
-  const scoreLabel = t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][riskLevel] ?? riskLevel.toString());
+  const scoreLabel = getScoringLevelLabel(t, maxRiskLevel, riskLevel);
 
   const className = 'inline-flex shrink-0 items-center gap-xs rounded-full border px-sm py-px text-xs';
   const style = { backgroundColor: `${scoreColor}20`, borderColor: scoreColor };

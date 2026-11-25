@@ -44,7 +44,7 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
                   ? t('settings:audit.detail.api_key')
                   : t('settings:audit.detail.user_email')}
               </span>
-              <span className="text-grey-00 text-sm">
+              <span className="text-grey-primary text-sm">
                 {event.actor?.type === 'api_key' ? `${event.actor.name}***********` : (event.actor?.name ?? '-')}
               </span>
               <span className="text-grey-primary text-sm">{event.actor?.name ?? '-'}</span>

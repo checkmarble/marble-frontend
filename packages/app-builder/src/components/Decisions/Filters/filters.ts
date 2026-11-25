@@ -37,6 +37,7 @@ export function getFilterIcon(filterName: DecisionFilterName): IconName {
       return 'scheduled-execution';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
+      return 'search';
   }
 }
 
@@ -62,5 +63,6 @@ export function getFilterTKey(filterName: DecisionFilterName) {
       return 'decisions:filters.scheduled_execution';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
+      return 'decisions:created_at';
   }
 }

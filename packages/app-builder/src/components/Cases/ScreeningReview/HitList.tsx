@@ -1,4 +1,4 @@
-import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
+import { SCREENING_HIT_TYPE_T_KEYS, type ScreeningCategory } from '@app-builder/models/screening';
 import {
   isPendingReviewItem,
   type ScreeningReviewCard,
@@ -456,7 +456,7 @@ function TopicDots({ topics }: { topics: string[] }) {
   return (
     <span className="flex shrink-0 items-center gap-xs">
       {screeningReviewTopicFamilies(topics).map((family) => {
-        const label = t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[family]}`);
+        const label = t(SCREENING_HIT_TYPE_T_KEYS[family]);
         return (
           <span
             key={family}

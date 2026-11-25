@@ -1,11 +1,10 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   ContinuousScreeningConfig,
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
 import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening';
 import { ContinuousScreeningConfiguration } from '@app-builder/queries/continuous-screening/configurations';
-import QueryString from 'qs';
+import { useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
@@ -34,7 +33,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets, isAdmin 
   const { t } = useTranslation(['common', 'continuousScreening', 'navigation']);
   const { formatItemName } = useDatasetTitle();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
-  const navigate = useAgnosticNavigation();
+  const navigate = useNavigate();
 
   const [editingConfig, setEditingConfig] = useState<ContinuousScreeningConfig | null>(null);
   const [draft, setDraft] = useState<PartialCreateContinuousScreeningConfig | null>(null);
@@ -62,11 +61,9 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets, isAdmin 
   };
 
   const handleCreationSubmit = (value: { name: string; description: string }) => {
-    const qs = QueryString.stringify(value, { addQueryPrefix: true });
-
     navigate({
-      pathname: '/continuous-screening/create',
-      search: qs,
+      to: '/continuous-screening/create',
+      search: value,
     });
   };
 

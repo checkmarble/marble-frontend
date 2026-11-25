@@ -37,7 +37,7 @@ export const Route = createFileRoute('/_app/_builder/account')({
 });
 
 function AccountPage() {
-  const { t } = useTranslation(['navigation', 'account', 'common', 'settings']);
+  const { t } = useTranslation(['settings', 'navigation', 'account', 'common']);
   const { currentUser, org } = useOrganizationDetails();
   const logout = useServerFn(logoutFn);
 

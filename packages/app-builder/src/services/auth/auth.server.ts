@@ -38,6 +38,7 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import * as Sentry from '@sentry/node';
 import { BackendGlobalError, marblecoreApi, type Token, TokenService, TokenServiceUpdate } from 'marble-api';
 import * as z from 'zod/v4';
+import { type makeI18nextServerService } from '../i18n/i18next.server';
 import { captureUnexpectedError } from '../monitoring';
 import { refreshFirebaseIdToken } from './firebase.server';
 import {
@@ -88,6 +89,7 @@ interface AuthenticatedInfo {
   client360: Client360Repository;
   auditEvents: AuditEventsRepository;
   userScoring: UserScoringRepository;
+  appConfig: AppConfigRepository;
 }
 
 // Sliding idle timeout: a session is logged out after this much inactivity,
@@ -143,6 +145,7 @@ interface MakeAuthenticationServerServiceArgs {
   getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
   getUserScoringRepository: (marbleCoreApiClient: MarbleCoreApi) => UserScoringRepository;
   makeOidcService: (config: OidcClientConfig) => ReturnType<typeof makeOidcService>;
+  i18nextService: ReturnType<typeof makeI18nextServerService>;
 }
 
 function expectedErrors(error: unknown) {
@@ -180,6 +183,7 @@ export function makeAuthenticationServerService({
   getAuditEventsRepository,
   getUserScoringRepository,
   makeOidcService,
+  i18nextService,
 }: MakeAuthenticationServerServiceArgs) {
   async function refreshOidcTokens(
     appConfig: AppConfig,
@@ -577,9 +581,14 @@ export function makeAuthenticationServerService({
         : emptyFeatureAccesses();
     } catch (err) {
       if (err instanceof BackendGlobalError) {
+        const t = await i18nextService.getFixedT(request, ['common']);
+        const message =
+          err.code === 'disallowed-network'
+            ? t('common:errors.backend_global_error.disallowed-network')
+            : t('common:errors.backend_global_error.unknown');
         await setToast({
           type: 'error',
-          messageKey: `common:errors.backend_global_error.${err.code}`,
+          message,
         });
       }
 
@@ -620,6 +629,7 @@ export function makeAuthenticationServerService({
       client360: getClient360TablesRepository(marbleCoreApiClient),
       auditEvents: getAuditEventsRepository(marbleCoreApiClient),
       userScoring: getUserScoringRepository(marbleCoreApiClient),
+      appConfig: getAppConfigRepository(marbleCoreApiClient),
     };
   }
 

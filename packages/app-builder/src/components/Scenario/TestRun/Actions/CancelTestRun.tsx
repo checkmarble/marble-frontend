@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { Scenario } from '@app-builder/models/scenario';
 import { useCancelTestRunMutation } from '@app-builder/queries/scenarios/cancel-testrun';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -19,13 +19,13 @@ export function CancelTestRun({
   const [open, setOpen] = useState(false);
   const cancelTestRunMutation = useCancelTestRunMutation(currentScenario.id, testRunId);
   const { t } = useTranslation(['scenarios', 'common']);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleCancelScenario = () => {
     cancelTestRunMutation
       .mutateAsync()
       .then(() => {
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

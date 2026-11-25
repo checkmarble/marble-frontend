@@ -1,4 +1,4 @@
-import { useValidateAstMutation } from '@app-builder/queries/validate-ast';
+import { useValidateAstMutation } from '@app-builder/queries/scenarios/validate-ast';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { type AstBuilderRootProps } from '@ast-builder/types';
 import { useCallbackRef } from '@marble/shared';

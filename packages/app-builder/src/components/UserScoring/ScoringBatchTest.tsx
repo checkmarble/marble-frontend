@@ -1,7 +1,7 @@
 import {
+  getScoringLevelLabel,
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   type ScoringDryRun,
   type ScoringDryRunDistributionItem,
   type ScoringRulesetWithRules,
@@ -67,14 +67,13 @@ function PieDistribution({
   if (!isMaxRiskLevelInRange(maxRiskLevel)) return null;
 
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
-  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   const total = distribution.reduce((sum, item) => sum + item.count, 0);
   const pieData = distribution
     .filter((item) => item.count > 0)
     .map((item) => ({
       id: item.riskLevel,
-      label: t(labelKeys[item.riskLevel] ?? item.riskLevel.toString()),
+      label: getScoringLevelLabel(t, maxRiskLevel, item.riskLevel),
       value: item.count,
       color: colors[item.riskLevel] ?? '#ccc',
     }));

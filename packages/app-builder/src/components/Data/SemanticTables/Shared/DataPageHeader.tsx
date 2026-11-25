@@ -11,7 +11,7 @@ export function DataPageHeader({
   handleOpenCreateDrawer: () => void;
   handleCreateRelations: () => void;
 }) {
-  const { t } = useTranslation(['navigation']);
+  const { t } = useTranslation(['navigation', 'data']);
   const { isCreateDataModelTableAvailable, isExportOrgAvailable, isGraphExplorationAvailable } =
     useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();

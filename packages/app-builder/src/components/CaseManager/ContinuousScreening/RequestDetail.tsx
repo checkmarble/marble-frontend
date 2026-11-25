@@ -42,7 +42,9 @@ export const RequestDetail = ({ configStableId, request }: RequestDetailProps) =
                 'bg-purple-background-light border border-purple-border p-sm rounded-md': key === 'name',
               })}
             >
-              <div className="text-grey-secondary truncate">{t(`screenings:entity.property.${key}`)}</div>
+              <div className="text-grey-secondary truncate">
+                {t(`screenings:entity.property.${key}`, { defaultValue: key })}
+              </div>
               <FormatData data={value} className={cn('truncate', { 'text-purple-primary': key === 'name' })} />
             </div>
           ))}

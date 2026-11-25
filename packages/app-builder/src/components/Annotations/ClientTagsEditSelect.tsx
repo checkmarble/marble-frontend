@@ -1,11 +1,11 @@
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createTagAnnotationSchema, tagAnnotationFormSchema } from '@app-builder/schemas/annotations';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { type GroupedAnnotations } from 'marble-api';
 import { toggle } from 'radash';
 import toast from 'react-hot-toast';
@@ -36,7 +36,7 @@ export function ClientTagsEditSelect({
   const canDeleteAnnotation = currentUser.permissions.canDeleteAnnotation;
   const createAnnotationMutation = useCreateAnnotationMutation();
   const tags = annotations.map((annotation) => annotation.payload.tag_id);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -69,7 +69,7 @@ export function ClientTagsEditSelect({
           },
         } satisfies z.infer<typeof createTagAnnotationSchema>)
         .then((result) => {
-          revalidate();
+          router.invalidate();
           if (result.success) {
             onAnnotateSuccess?.();
           } else {

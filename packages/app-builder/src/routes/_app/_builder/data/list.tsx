@@ -8,10 +8,9 @@ import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTabl
 import { dataModelFlowStyles, TableFlow } from '@app-builder/components/Data/SemanticTables/Flow/TableFlow';
 import { DataPageHeader } from '@app-builder/components/Data/SemanticTables/Shared/DataPageHeader';
 import { Spinner } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { ClientOnly, createFileRoute } from '@tanstack/react-router';
+import { ClientOnly, createFileRoute, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Typo } from 'ui-design-system';
@@ -28,7 +27,7 @@ function DataList() {
   const { t } = useTranslation(dataI18n);
   const dataModel = useDataModel();
   const { isGraphExplorationAvailable } = useDataModelFeatureAccess();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const createTableMutation = useCreateTableMutation();
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const [isCreateRelationsOpen, setIsCreateRelationsOpen] = useState(false);
@@ -74,7 +73,7 @@ function DataList() {
           try {
             await createTableMutation.mutateAsync(adaptCreateTableValue(values));
             setIsCreateDrawerOpen(false);
-            revalidate();
+            router.invalidate();
             return true;
           } catch {
             return false;

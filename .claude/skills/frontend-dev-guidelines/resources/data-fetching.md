@@ -16,7 +16,7 @@ Chain, method, status, cookies, redirects: `.claude/rules/resource-routes.md`. R
 
 ## Query and Mutation Hooks
 
-One hook per file in `queries/{domain}/` (a few legacy files sit at the `queries/` root). Wrap the server fn with `useServerFn` and call it with `{ data }`. References: `queries/graph/list-relations.ts`, `queries/cases/edit-name.ts`.
+One hook per file in `queries/{domain}/`. Wrap the server fn with `useServerFn` and call it with `{ data }`. References: `queries/graph/list-relations.ts`, `queries/cases/edit-name.ts`.
 
 - **Redirects**: `useServerFn` catches a thrown redirect (yours, or `authMiddleware`'s `/sign-in`), navigates, and resolves with `undefined`. So `mutateAsync().then((res) => ...)` must accept `undefined` (snippet: [common-patterns.md](common-patterns.md#toasts)); a `useQuery` ends in error after navigating. Unwrapped, React Query still navigates (`setupRouterSsrQueryIntegration` in `router.tsx`, via cache `onError`), but the call fails and `onError`/`.catch` fire (e.g. an error toast on session expiry). Outside React Query, a bare call only rejects.
 - **Thin mutations**: `useServerFn` + `useMutation` + `mutationKey`, plus `invalidateQueries` in `onSuccess` for React Query data. The calling component narrows `res.error` and toasts ([common-patterns.md](common-patterns.md#toasts); build the form itself per [forms-and-modals.md](forms-and-modals.md)); toast in the hook only if every caller shows the same message.

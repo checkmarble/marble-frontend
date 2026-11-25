@@ -1,6 +1,5 @@
-import clsx from 'clsx';
 import { type FunctionComponent, type ReactNode } from 'react';
-import { Typo } from 'ui-design-system';
+import { cn, Typo } from 'ui-design-system';
 
 interface PrintSectionProps {
   /**
@@ -23,7 +22,7 @@ interface PrintSectionProps {
  */
 export const PrintSection: FunctionComponent<PrintSectionProps> = ({ title, children, className }) => {
   return (
-    <div className={clsx('mb-md break-inside-avoid', className)}>
+    <div className={cn('mb-md break-inside-avoid', className)}>
       {title && <Typo variant="title2">{title}</Typo>}
       {children}
     </div>

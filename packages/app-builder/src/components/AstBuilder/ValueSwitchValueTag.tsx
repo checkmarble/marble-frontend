@@ -2,7 +2,7 @@ import { EnumTag } from '@app-builder/components/Data/EnumTag';
 import type { DataModelField } from '@app-builder/models';
 import type { ValueSwitchDimension } from '@app-builder/models/astNode/value-switch';
 import { isEnumField } from '@app-builder/models/enum-values';
-import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { getScoringLevelLabel, isMaxRiskLevelInRange, SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
 import { cn, Tag } from 'ui-design-system';
 import { AstBuilderDataSharpFactory } from './Provider';
@@ -32,8 +32,7 @@ export function ValueSwitchValueTag({
     isMaxRiskLevelInRange(scoringSettings.maxRiskLevel)
   ) {
     const color = SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel][value];
-    const labelKey = SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel][value];
-    const label = labelKey ? t(labelKey) : String(value);
+    const label = getScoringLevelLabel(t, scoringSettings.maxRiskLevel, value);
     return (
       <Tag
         className={cn('flex min-w-0 overflow-hidden rounded-sm', className)}

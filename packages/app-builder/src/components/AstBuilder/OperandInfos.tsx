@@ -24,7 +24,7 @@ import { type CustomList } from '@app-builder/models/custom-list';
 import { isEnumField, resolveEnumDisplay, resolveEnumValues } from '@app-builder/models/enum-values';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
-import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { getScoringLevelLabel, isMaxRiskLevelInRange, SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
@@ -166,8 +166,8 @@ function RecordRiskLevelDescription({ node }: { node: IdLessAstNode<RecordRiskLe
     return null;
   }
 
-  const levelColorsMap = SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel];
-  const levelLabelsMap = SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel];
+  const maxRiskLevel = scoringSettings.maxRiskLevel;
+  const levelColorsMap = SCORING_LEVELS_COLORS[maxRiskLevel];
 
   return (
     <>
@@ -179,7 +179,7 @@ function RecordRiskLevelDescription({ node }: { node: IdLessAstNode<RecordRiskLe
             style={{ borderColor: levelColorsMap[level] }}
           >
             <div className="size-4 rounded-full" style={{ backgroundColor: levelColorsMap[level] }} />
-            <span>{t(levelLabelsMap[level])}</span>
+            <span>{getScoringLevelLabel(t, maxRiskLevel, level)}</span>
           </div>
         ))}
       </div>
@@ -204,8 +204,8 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
       <span className="font-bold">{aggregatedFieldName}</span>
       {percentileValue !== undefined && aggregator.constant === 'PCTILE' ? (
         <>
-          <span className="text-grey-50 text-xs">{t('scenarios:edit_aggregation.percentile_value')}</span>
-          <span className="text-grey-00 text-xs font-medium">{percentileValue * 100}%</span>
+          <span className="text-grey-secondary text-xs">{t('scenarios:edit_aggregation.percentile_value')}</span>
+          <span className="text-grey-primary text-xs font-medium">{percentileValue * 100}%</span>
         </>
       ) : null}
       {filters.children.map((filter, index) => {
@@ -249,8 +249,8 @@ function FuzzyMatchComparatorDescription({ node }: FuzzyMatchComparatorDescripti
 
   return (
     <div className="flex items-center gap-sm">
-      <span className="text-grey-50 text-xs">{t('scenarios:edit_fuzzy_match.level.label')}</span>
-      <span className="text-grey-00 text-xs font-medium uppercase">
+      <span className="text-grey-secondary text-xs">{t('scenarios:edit_fuzzy_match.level.label')}</span>
+      <span className="text-grey-primary text-xs font-medium uppercase">
         {t(`scenarios:edit_fuzzy_match.level.${level}`)}
       </span>
     </div>

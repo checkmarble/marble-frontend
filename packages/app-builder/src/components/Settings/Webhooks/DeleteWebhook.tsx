@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteWebhookMutation } from '@app-builder/queries/settings/webhooks/delete-webhook';
+import { useRouter } from '@tanstack/react-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
@@ -20,14 +20,14 @@ export function DeleteWebhook({ webhookId, children }: { webhookId: string; chil
 function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onSuccess: () => void }) {
   const { t } = useTranslation(['common', 'settings']);
   const deleteWebhookMutation = useDeleteWebhookMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleDeleteWebhook = () => {
     deleteWebhookMutation.mutateAsync({ webhookId }).then((res) => {
       if (!res) {
         onSuccess();
       }
-      revalidate();
+      router.invalidate();
     });
   };
 

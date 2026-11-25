@@ -4,8 +4,8 @@ import { type FlatAstValidation } from '@app-builder/server-fns/scenarios';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { type AstBuilderRootProps } from '@ast-builder/types';
-import clsx from 'clsx';
 import { useMemo } from 'react';
+import { cn } from 'ui-design-system';
 
 import { ViewingEvaluationErrors } from './ViewingEvaluationErrors';
 import { ViewingAstBuilderNode } from './ViewingNode';
@@ -53,15 +53,15 @@ function ViewingRootAndLine({ isFirst, isLast, path, validation, node }: Viewing
   return (
     <>
       {/* Row 1 */}
-      <div className={clsx('border-grey-border col-span-5 w-2 border-e', isFirst ? 'h-4' : 'h-2')} />
+      <div className={cn('border-grey-border col-span-5 w-2 border-e', isFirst ? 'h-4' : 'h-2')} />
 
       {/* Row 2 */}
-      <div className={clsx('border-grey-border col-start-1 border-e', isLast && 'h-5')} />
+      <div className={cn('border-grey-border col-start-1 border-e', isLast && 'h-5')} />
       <div className="border-grey-border col-start-2 h-5 border-b" />
 
       <LogicalOperatorLabel operator={isFirst ? 'where' : 'and'} className="col-start-3" type="contained" />
 
-      <div className={clsx('col-span-2 col-start-4 flex flex-col gap-sm px-xs')}>
+      <div className={cn('col-span-2 col-start-4 flex flex-col gap-sm px-xs')}>
         <ViewingAstBuilderNode path={path} node={node} validation={validation} root />
         <ViewingEvaluationErrors id={node.id} evaluation={validation.evaluation} />
       </div>

@@ -8,6 +8,8 @@ import { makeOidcService } from './auth/oidc.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
 
 function makeServerServices(repositories: ServerRepositories) {
+  const i18nextService = makeI18nextServerService();
+
   return {
     appConfigRepository: repositories.getAppConfigRepository(repositories.marbleCoreApiClient),
     onboardingRepository: repositories.getOnboardingRepository(repositories.marbleCoreApiClient),
@@ -15,8 +17,9 @@ function makeServerServices(repositories: ServerRepositories) {
     authService: makeAuthenticationServerService({
       ...repositories,
       makeOidcService,
+      i18nextService,
     }),
-    i18nextService: makeI18nextServerService(),
+    i18nextService,
   };
 }
 

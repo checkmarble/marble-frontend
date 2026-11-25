@@ -1,7 +1,7 @@
 import { type AiCaseReviewListItem } from '@app-builder/models/cases';
-import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
-import { useCaseReviewQuery } from '@app-builder/queries/get-case-review';
-import { useCaseReviewsQuery } from '@app-builder/queries/get-case-reviews';
+import { useEnqueueCaseReviewMutation } from '@app-builder/queries/cases/ask-case-review';
+import { useCaseReviewQuery } from '@app-builder/queries/cases/get-case-review';
+import { useCaseReviewsQuery } from '@app-builder/queries/cases/get-case-reviews';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

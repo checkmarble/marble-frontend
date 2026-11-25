@@ -2,6 +2,7 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { undefinedAstNodeName } from '@app-builder/models';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { type ParseKeys } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,9 +28,12 @@ export const operatorContainerClassnames = cva(
   },
 );
 
-export type OperatorSelectOptions<Op extends string> = Record<Op, { keywords?: string[]; tooltipKey?: string }>;
+export type OperatorSelectOptions<Op extends string> = Record<
+  Op,
+  { keywords?: string[]; tooltipKey?: ParseKeys<['scenarios']> }
+>;
 
-function OperatorTooltip({ tooltipKey }: { tooltipKey: string }) {
+function OperatorTooltip({ tooltipKey }: { tooltipKey: ParseKeys<['scenarios']> }) {
   const { t } = useTranslation(['scenarios']);
   return (
     <Tooltip.Default
@@ -123,7 +127,7 @@ export function OperatorSelect<Op extends string>({
 type Options<Op extends string> = {
   value: Op;
   keywords?: string[];
-  tooltipKey?: string;
+  tooltipKey?: ParseKeys<['scenarios']>;
 }[];
 
 function mapOptions<Op extends string>(options: readonly Op[] | OperatorSelectOptions<Op>): Options<Op> {

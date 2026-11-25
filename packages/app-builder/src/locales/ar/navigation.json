@@ -11,6 +11,7 @@
   "client_detail": "تفاصيل العميل",
   "collapse": "طيّ",
   "continuous_screening": "التحقق المستمر",
+  "continuous_screening.nudge": "راقب عملاءك باستمرار مقابل قوائم العقوبات والمراقبة",
   "continuous-screening.configurations": "إعدادات التحقق المستمر",
   "dark_mode": "الوضع الداكن",
   "data": "بياناتك",

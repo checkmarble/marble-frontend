@@ -73,7 +73,7 @@ export function useFormManuallSearch() {
 
 export function FreeformSearchForm({ onSearchComplete }: FreeformSearchFormProps) {
   const listConfigQuery = useListConfigQuery('manual_search');
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common']);
 
   return match(listConfigQuery)
     .with({ isPending: true }, () => (

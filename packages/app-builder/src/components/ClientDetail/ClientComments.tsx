@@ -22,7 +22,7 @@ type ClientCommentsProps = {
 };
 
 export const ClientComments = ({ objectType, objectId, annotationsQuery, root }: ClientCommentsProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'cases']);
   const queryClient = useQueryClient();
 
   return (
@@ -63,7 +63,7 @@ type CommentsProps = {
 
 const Comments = ({ comments: _comments, root }: CommentsProps) => {
   const comments = useMemo(() => _comments.toReversed(), [_comments]);
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'cases']);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
   const [olderCommentCount, setOlderCommentCount] = useState(0);

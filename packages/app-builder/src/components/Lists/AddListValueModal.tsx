@@ -1,7 +1,4 @@
 import { FormError } from '@app-builder/components/Form/Tanstack/FormError';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type CustomListKind } from '@app-builder/models/custom-list';
 import { useAddListValueMutation } from '@app-builder/queries/lists/add-value';
 import {
@@ -11,15 +8,16 @@ import {
   normalizeCidr,
 } from '@app-builder/schemas/lists';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AddListValueModal({ listId, kind }: { listId: string; kind: CustomListKind }) {
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const addListValueMutation = useAddListValueMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const validationSchema = useMemo(
@@ -33,15 +31,12 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
       value: '',
       kind,
     } as AddValuePayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        const payload = kind === 'cidrs' ? { ...value, value: normalizeCidr(value.value) } : value;
-        addListValueMutation.mutateAsync(payload).then(() => {
-          revalidate();
-          setIsOpen(false);
-          form.reset();
-        });
-      }
+    onSubmit: async ({ value }) => {
+      const payload = kind === 'cidrs' ? { ...value, value: normalizeCidr(value.value) } : value;
+      await addListValueMutation.mutateAsync(payload);
+      router.invalidate();
+      setIsOpen(false);
+      form.reset();
     },
     validators: {
       onSubmitAsync: validationSchema,
@@ -69,14 +64,16 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
             <form.Field name="value">
               {(field) => (
                 <div className="flex flex-col gap-sm">
-                  <FormLabel name={field.name}>{t('lists:detail.value.create.form.label')}</FormLabel>
-                  <FormInput
+                  <label htmlFor={field.name}>{t('lists:detail.value.create.form.label')}</label>
+                  <Input
+                    id={field.name}
                     type="text"
                     name={field.name}
                     defaultValue={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     placeholder={
                       kind === 'cidrs'
                         ? t('lists:create_value.cidr_placeholder')

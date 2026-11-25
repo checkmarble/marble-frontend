@@ -50,7 +50,7 @@ const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
 };
 
 export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['analytics', 'decisions', 'common']);
   const language = useFormatLanguage();
 
   const { ref: divRef, dimensions } = useResizeObserver<HTMLDivElement>({
@@ -129,6 +129,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
       case 'weekly':
         return (
           <Trans
+            t={t}
             i18nKey="analytics:decisions.tooltip.weekly"
             values={{
               date: dateObj.toLocaleDateString(language, {
@@ -147,6 +148,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
       case 'daily':
         return (
           <Trans
+            t={t}
             i18nKey="analytics:decisions.tooltip.daily"
             values={{
               date: dateObj.toLocaleDateString(language, {

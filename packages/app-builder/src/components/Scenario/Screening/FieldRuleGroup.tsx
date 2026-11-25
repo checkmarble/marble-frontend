@@ -1,9 +1,17 @@
 import { Content, Root, Trigger } from '@radix-ui/react-popover';
-import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { unique } from 'remeda';
-import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from 'ui-design-system';
+import {
+  Button,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  cn,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { RuleGroup } from '../Rules/RuleGroup';
@@ -47,7 +55,7 @@ export const FieldRuleGroup = ({
             disabled={disabled}
             variant="secondary"
             mode={selectedRuleGroup ? 'icon' : undefined}
-            className={clsx({ 'w-fit': !selectedRuleGroup })}
+            className={cn({ 'w-fit': !selectedRuleGroup })}
           >
             <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="text-grey-disabled size-4" />
             {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}

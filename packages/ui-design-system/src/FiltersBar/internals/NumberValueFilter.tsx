@@ -88,7 +88,7 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
         })()}
         {filter.unavailable ? (
           <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-            <Icon icon="error" className="text-red-base size-4" />
+            <Icon icon="error" className="text-red-primary size-4" />
           </Tooltip.Default>
         ) : null}
       </FilterTrigger>

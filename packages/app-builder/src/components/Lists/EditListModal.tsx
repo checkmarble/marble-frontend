@@ -1,20 +1,18 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useEditListMutation } from '@app-builder/queries/lists/edit-list';
 import { EditListPayload, editListPayloadSchema } from '@app-builder/schemas/lists';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function EditListModal({ listId, name, description }: { listId: string; name: string; description: string }) {
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const editListMutation = useEditListMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -23,13 +21,10 @@ export function EditListModal({ listId, name, description }: { listId: string; n
       name,
       description,
     } as EditListPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        editListMutation.mutateAsync(value).then(() => {
-          revalidate();
-          setOpen(false);
-        });
-      }
+    onSubmit: async ({ value }) => {
+      await editListMutation.mutateAsync(value);
+      router.invalidate();
+      setOpen(false);
     },
     validators: {
       onSubmitAsync: editListPayloadSchema,
@@ -64,14 +59,16 @@ export function EditListModal({ listId, name, description }: { listId: string; n
               >
                 {(field) => (
                   <div className="flex flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
-                    <FormInput
+                    <label htmlFor={field.name}>{t('lists:name')}</label>
+                    <Input
+                      id={field.name}
                       type="text"
                       name={field.name}
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      valid={field.state.meta.errors.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                       placeholder={t('lists:create_list.name_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -87,14 +84,16 @@ export function EditListModal({ listId, name, description }: { listId: string; n
               >
                 {(field) => (
                   <div className="flex flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
-                    <FormInput
+                    <label htmlFor={field.name}>{t('lists:description')}</label>
+                    <Input
+                      id={field.name}
                       type="text"
                       name={field.name}
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      valid={field.state.meta.errors.length === 0}
+                      aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                      borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                       placeholder={t('lists:create_list.description_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

@@ -78,7 +78,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                 snapshot.isDragging
                   ? 'border-purple-hover shadow-xl'
                   : isRuleModified
-                    ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
+                    ? 'border-purple-hover shadow-xl ring-2 ring-purple-border'
                     : 'border-grey-border'
               }`}
             >
@@ -97,7 +97,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                       }
                     }}
                     autoFocus
-                    className="bg-surface-card font-semibold text-base w-2/3 min-w-0 px-xs py-2xs rounded-sm border-2 border-purple-hover outline-hidden focus:ring-2 focus:ring-purple-30 transition-all"
+                    className="bg-surface-card font-semibold text-base w-2/3 min-w-0 px-xs py-2xs rounded-sm border-2 border-purple-hover outline-hidden focus:ring-2 focus:ring-purple-border transition-all"
                   />
                 ) : (
                   <div className="group inline-flex items-center gap-xs">
@@ -124,7 +124,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                     variant="secondary"
                     size="small"
                     onClick={() => deleteRule(displayRule.id, displayRule.name)}
-                    className="flex items-center hover:bg-red-200 text-red-600 hover:text-red-700 transition-colors duration-200"
+                    className="flex items-center hover:bg-red-background-light dark:hover:bg-red-disabled/30 text-red-primary hover:text-red-hover transition-colors duration-200"
                   >
                     <Icon icon="delete" className="size-5" />
                     {t('common:delete')}
@@ -135,13 +135,13 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                 {/* Drag Handle */}
                 <div
                   className={`absolute start-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-12 rounded-full cursor-grab active:cursor-grabbing transition-all duration-200 flex items-center justify-center ${
-                    snapshot.isDragging ? 'bg-purple-hover shadow-lg' : 'bg-grey-30 hover:bg-grey-40'
+                    snapshot.isDragging ? 'bg-purple-hover shadow-lg' : 'bg-grey-disabled hover:bg-grey-placeholder'
                   }`}
                   {...provided.dragHandleProps}
                 >
                   <Icon icon="drag" className="size-3 text-white" />
                 </div>
-                <div className="bg-grey-05 rounded-md p-xs overflow-x-auto w-full">
+                <div className="bg-grey-background-light rounded-md p-xs overflow-x-auto w-full">
                   {displayRule.conditions?.length > 0 ? (
                     <div className="flex flex-col gap-sm relative whitespace-nowrap">
                       {displayRule.conditions.map((condition, conditionIndex: number) => {
@@ -152,7 +152,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                           >
                             {/* Vertical line connecting conditions */}
                             {conditionIndex > 0 && (
-                              <div className="absolute start-xl top-0 w-0.5 h-8 bg-grey-30 -translate-y-4"></div>
+                              <div className="absolute start-xl top-0 w-0.5 h-8 bg-grey-border -translate-y-4"></div>
                             )}
                             <div className="flex items-center gap-sm flex-1">
                               <div>
@@ -172,7 +172,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                                 appearance="link"
                                 type="button"
                                 onClick={() => deleteCondition(condition.id)}
-                                className="opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
+                                className="opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 hover:bg-red-background-light dark:hover:bg-red-disabled/30 text-red-primary hover:text-red-hover"
                               >
                                 <Icon icon="delete" className="size-5 shrink-0" />
                               </Button>
@@ -213,11 +213,11 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
               snapshot.isDragging
                 ? 'border-purple-hover shadow-xl'
                 : isRuleModified
-                  ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
-                  : 'border-grey-20'
+                  ? 'border-purple-hover shadow-xl ring-2 ring-purple-border'
+                  : 'border-grey-border'
             }`}
           >
-            <div className="bg-grey-05 rounded-md">
+            <div className="bg-grey-background-light rounded-md">
               <ActionSelector
                 scenario={scenario}
                 action={displayRule.actions?.[0]}
@@ -235,7 +235,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                 cancelChanges();
                 handleCancelRenaming();
               }}
-              className="shadow-xl ring-2 ring-blue-200"
+              className="shadow-xl ring-2 ring-purple-border"
             >
               <Icon icon="arrow-left" className="size-4" />
               {t('common:cancel')}
@@ -247,7 +247,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
                 handleCancelRenaming();
               }}
               disabled={hasValidationErrorsForRule}
-              className="shadow-xl ring-2 ring-blue-200 min-w-44"
+              className="shadow-xl ring-2 ring-purple-border min-w-44"
             >
               <Icon icon="checked" className="size-5" />
               {t('common:save')}

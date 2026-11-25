@@ -1,6 +1,6 @@
 import { FilesList } from '@app-builder/components/Files/FilesList';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { useUploadScreeningFile } from '@app-builder/queries/upload-screening-file';
+import { useUploadScreeningFile } from '@app-builder/queries/screening/upload-screening-file';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';

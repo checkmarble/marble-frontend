@@ -14,12 +14,12 @@ Entitlement levels are `FeatureAccessLevelDto` (`'allowed' | 'test' | 'restricte
 
 ## Utilities
 
-- `tryCatch` (`@app-builder/utils/tryCatch`) returns `{ ok: true, value } | { ok: false, error: Error }`, or a `Promise` of that when given an async function or a promise. Prefer it to the legacy radash `tryit`.
+- `tryCatch` (`@app-builder/utils/tryCatch`) returns `{ ok: true, value } | { ok: false, error: Error }`, or a `Promise` of that when given an async function or a promise. Never use radash `tryit`.
 - Transform data with remeda (`import * as R from 'remeda'`). For multi-select state, use radash's `toggle(list, item)`.
 
 ## i18n
 
-- `t()` keys are **not** type-checked, because `services/i18n/i18next.d.ts` types them against `resources['en']`, which doesn't exist (locales are `en-GB`, `en-US`, `fr`, `ar`). Check that the key exists in `locales/en/<file>.json`.
+- `t()` keys are strictly type-checked against `locales/en/` via `services/i18n/i18next.d.ts`. Pass namespaces as an array (`useTranslation(['cases', 'common'])`) when using namespace-prefixed keys (`'cases:...'`). For dynamic keys over a finite union, use a typed lookup map (`as const` or `ParseKeys<[...]>`), and pass `{ defaultValue }` only for open runtime keys from external/backend payloads.
 - Namespace ids are the camelCase keys in `services/i18n/resources/en.ts`, so `continuousScreening` maps to `continuous-screening.json`. Adding keys or namespaces: `.claude/rules/i18n.md`.
 - On the server (server fn handler or function middleware): `const t = await context.services.i18nextService.getFixedT(getRequest(), ['common', 'cases'])`, with `getRequest` from `@tanstack/react-start/server` (`addRuleSnoozeFn` in `server-fns/cases.ts`).
 
@@ -42,7 +42,7 @@ await mutation.mutateAsync(value)
 
 - Expected failures are **returned** (`{ error: '<code>' }`), not thrown. `res` is `undefined` after any server-side redirect: the success redirect, but also `authMiddleware`'s sign-in redirect when the session expired ([data-fetching.md](data-fetching.md)). Keep the code after it redirect-safe (no navigation); a mutation that doesn't redirect on success returns an explicit value to check.
 - Exception: data-model table mutations throw `getTableMutationError(error, t)`. The hook's `onError` checks `isTableMutationError` and toasts `formatTableMutationError(error)`. See `editSemanticTableFn` (`server-fns/data.ts`) and `queries/data/edit-semantic-table.ts`.
-- Toast before a server redirect: `await setToast({ type: 'error', message: t(…) })` (`@app-builder/services/toast.server`), then `throw redirect(…)`. Server-only: call it in a `createServerFn` handler (a loader's included), a function middleware or `*.server.ts`, never in the isomorphic `loader:` itself. In a loader, also set `preload: false` on the route, or a link hover stores the toast early ([data-fetching.md](data-fetching.md)). `messageKey` is `@deprecated`; pass a translated `message`.
+- Toast before a server redirect: `await setToast({ type: 'error', message: t(…) })` (`@app-builder/services/toast.server`), then `throw redirect(…)`. Server-only: call it in a `createServerFn` handler (a loader's included), a function middleware or `*.server.ts`, never in the isomorphic `loader:` itself. In a loader, also set `preload: false` on the route, or a link hover stores the toast early ([data-fetching.md](data-fetching.md)). Always pass a pre-translated `message`.
 
 ## Dates and numbers
 

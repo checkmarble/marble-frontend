@@ -20,7 +20,7 @@ type SpecialTopicConfig = TopicItem & {
 // Scoped to a specific (section, group) pair: the same group key (e.g. "kind")
 // can exist in multiple sections, so we match on both to avoid promoting
 // unrelated groups (e.g. adverse-media's "kind") to a switch.
-const SPECIAL_TOPICS: SpecialTopicConfig[] = [
+const SPECIAL_TOPICS = [
   {
     section: 'peps',
     groupKey: 'kind',
@@ -33,7 +33,7 @@ const SPECIAL_TOPICS: SpecialTopicConfig[] = [
     name: 'pep.status.active',
     title: 'continuousScreening:topics.status.exclude_inactive',
   },
-];
+] as const satisfies readonly SpecialTopicConfig[];
 
 function findInSection(
   section: ScreeningAvailableFiltersSection,
@@ -292,9 +292,9 @@ const FILTER_TRANSLATION_MAP = {
 } as const;
 
 export function useDatasetTitle() {
-  const { t } = useTranslation('continuousScreening');
+  const { t } = useTranslation(['continuousScreening']);
 
-  function formatDatasetTitle(title: string) {
+  function formatDatasetTitle(title: string): string {
     const last = title.includes(':')
       ? (title.split(':').at(-1) ?? title)
       : title.includes('.')
@@ -311,14 +311,17 @@ export function useDatasetTitle() {
   }
 
   function hasTranslation(key: string) {
-    const hasKey = Object.keys(FILTER_TRANSLATION_MAP).includes(key);
-    return hasKey ? FILTER_TRANSLATION_MAP[key as keyof typeof FILTER_TRANSLATION_MAP] : undefined;
+    if (key in FILTER_TRANSLATION_MAP) {
+      return FILTER_TRANSLATION_MAP[key as keyof typeof FILTER_TRANSLATION_MAP];
+    }
+    return undefined;
   }
 
   function formatItemName(item: { name: string; title?: string }): string {
     const label = item.title ?? item.name;
     if (label.startsWith('continuousScreening:')) {
-      return t(label.slice('continuousScreening:'.length));
+      const key = label.slice('continuousScreening:'.length);
+      return t(key, { defaultValue: key });
     }
 
     const translation = hasTranslation(label);

@@ -170,7 +170,7 @@ export function CaseEvents({
 
 function formatCalendarDayDistance(
   distance: CalendarDayDistance | null,
-  t: ReturnType<typeof useTranslation>['t'],
+  t: ReturnType<typeof useTranslation<readonly ['cases', 'common']>>['t'],
 ): string {
   if (!distance) return '';
 

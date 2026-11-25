@@ -8,11 +8,10 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { getTableSelectColumn } from '@app-builder/utils/table-selection';
 import { Link } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Table, Tooltip, useTable } from 'ui-design-system';
+import { cn, Table, Tooltip, useTable } from 'ui-design-system';
 import { Score } from './Score';
 
 type Column = 'created_at' | 'scenario_name' | 'trigger_object_type' | 'case' | 'pivot_value' | 'score' | 'outcome';
@@ -176,7 +175,7 @@ export function DecisionsList({
   });
 
   return (
-    <Table.Container {...getContainerProps()} className={clsx('bg-surface-card', className)}>
+    <Table.Container {...getContainerProps()} className={cn('bg-surface-card', className)}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

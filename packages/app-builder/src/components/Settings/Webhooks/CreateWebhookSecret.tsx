@@ -1,7 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   type CreateWebhookSecretPayload,
   createWebhookSecretPayloadSchema,
@@ -9,10 +6,11 @@ import {
 } from '@app-builder/queries/settings/webhooks/create-webhook-secret';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { type ReactElement, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'ui-design-system';
+import { Input, Modal } from 'ui-design-system';
 
 export function CreateWebhookSecret({ webhookId, children }: { webhookId: string; children: ReactElement }) {
   const [open, setOpen] = useState(false);
@@ -30,24 +28,20 @@ export function CreateWebhookSecret({ webhookId, children }: { webhookId: string
 function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: string; onSuccess: () => void }) {
   const { t } = useTranslation(['common', 'settings']);
   const createMutation = useCreateWebhookSecretMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
       webhookId,
       expireExistingInDays: undefined,
     } as CreateWebhookSecretPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createMutation
-          .mutateAsync(value)
-          .then(() => {
-            onSuccess();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await createMutation.mutateAsync(value);
+        onSuccess();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -73,14 +67,16 @@ function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: strin
         >
           {(field) => (
             <div className="flex flex-col items-start gap-sm">
-              <FormLabel name={field.name}>{t('settings:webhooks.create_secret.expire_existing_in_days')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:webhooks.create_secret.expire_existing_in_days')}</label>
+              <Input
+                id={field.name}
                 type="number"
                 name={field.name}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.currentTarget.value ? +e.currentTarget.value : undefined)}
                 defaultValue={field.state.value}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 className="w-full"
               />
               <FormErrorOrDescription

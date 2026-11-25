@@ -41,7 +41,7 @@ interface RuleProviderProps {
 }
 
 export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: RuleProviderProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['workflows']);
   // Mutations
   const updateRuleMutation = useUpdateRuleMutation();
 

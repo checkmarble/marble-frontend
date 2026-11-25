@@ -7,7 +7,7 @@ File routes in `packages/app-builder/src/routes/`. File name → URL and route I
 - No 404 page: the `$.tsx` splat sends unknown URLs to `/app-router` (signed in) or `/sign-in`.
 - `_app.tsx` is a pathless shell with no auth; `_app/_builder.tsx`'s loader runs `authMiddleware`.
 - `/` (`index.tsx`) is only a server handler (GET → 302 `/sign-in`): a client navigation there renders a blank page, so never link or redirect to it.
-- Mutations go in `server-fns/`. Don't copy the two legacy route-local ones (`detection/scenarios/$scenarioId/home.tsx`, `.../_edit-view/decision.tsx`).
+- Mutations go in `server-fns/`, never inline in route modules.
 - Every file under `routes/` is a route candidate unless its name starts with `-`: keep helpers and specs elsewhere or `-`-prefix them.
 
 ## Breadcrumbs
@@ -38,7 +38,7 @@ File routes in `packages/app-builder/src/routes/`. File name → URL and route I
 Shapes: page-routes rule.
 
 - `loaderDeps` must return every search key the loader reads, or changing that key won't re-run it.
-- Feature gate: check a `services/feature-access` predicate in the loader and `throw redirect({ to: '/app-router' })`, not the legacy `redirect({ to: '/' })`.
+- Feature gate: check a `services/feature-access` predicate in the loader and `throw redirect({ to: '/app-router' })`, never `redirect({ to: '/' })`.
 - Parent data for child loaders: return it from the parent's `beforeLoad` (route context, `detection/scenarios/$scenarioId.tsx`). For child components only, the parent loader is enough: `useLoaderData({ from: '<parent route ID>' })`. Wrap either in a hook in `hooks/routes-layout-data.ts`. `beforeLoad` is not cached and also runs on hover preload: keep it cheap and side-effect free.
 - Refreshing loader data after a mutation: [data-fetching.md](data-fetching.md).
 

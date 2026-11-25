@@ -1,9 +1,8 @@
 import { type TableModel } from '@app-builder/models';
-import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-data';
+import { useUploadIngestionData } from '@app-builder/queries/data/upload-ingestion-data';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { createColumnHelper } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
 import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
@@ -11,7 +10,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, CtaV2ClassName, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const MAX_FILE_SIZE_MB = 32;
@@ -99,7 +98,7 @@ const ResultModal = ({
         <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
           <Icon
             icon={icon}
-            className={clsx(
+            className={cn(
               'size-[108px] rounded-full border-8',
               modalContent.success
                 ? 'bg-purple-background border-transparent text-purple-primary'
@@ -310,7 +309,7 @@ export const UploadForm = ({
       {!loading && !showIntermediateStep ? (
         <div
           {...getRootProps()}
-          className={clsx(
+          className={cn(
             'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
             isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
           )}
@@ -338,7 +337,7 @@ const UploadFormLoading = ({ className }: { className?: string }) => {
   const { t } = useTranslation(['common']);
   return (
     <div
-      className={clsx(
+      className={cn(
         className,
         'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}

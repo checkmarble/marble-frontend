@@ -479,7 +479,7 @@ export const createDraftIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
+    return context.authInfo.scenario.createDraftFromScenarioIteration(data.iterationId);
   });
 
 export const deactivateIterationFn = createServerFn({ method: 'POST' })
@@ -680,4 +680,45 @@ export const getIterationRuleFn = createServerFn({ method: 'GET' })
   .validator(z.object({ ruleId: z.string() }))
   .handler(async ({ context, data }) => {
     return { rule: await context.authInfo.scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }) };
+  });
+
+export const triggerManualExecutionFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      iterationId: z.string(),
+      forceRescore: z.boolean().optional(),
+    }),
+  )
+  .handler(async ({ data, context }) => {
+    await context.authInfo.scenario.scheduleScenarioExecution({
+      iterationId: data.iterationId,
+      deduplicateObjects: data.forceRescore ? false : undefined,
+    });
+    return { status: 'success' as const };
+  });
+
+const MAX_SCORE_THRESHOLD = 10000;
+
+const saveScenarioDecisionPayloadSchema = z
+  .object({
+    iterationId: z.string(),
+    scoreReviewThreshold: z.number().int().min(-MAX_SCORE_THRESHOLD).max(MAX_SCORE_THRESHOLD),
+    scoreBlockAndReviewThreshold: z.number().int().min(-MAX_SCORE_THRESHOLD).max(MAX_SCORE_THRESHOLD),
+    scoreDeclineThreshold: z.number().int().min(-MAX_SCORE_THRESHOLD).max(MAX_SCORE_THRESHOLD),
+  })
+  .refine((v) => v.scoreBlockAndReviewThreshold >= v.scoreReviewThreshold)
+  .refine((v) => v.scoreDeclineThreshold >= v.scoreBlockAndReviewThreshold);
+
+export const saveScenarioDecisionFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(saveScenarioDecisionPayloadSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      const { iterationId, ...thresholds } = data;
+      await context.authInfo.scenario.updateScenarioIteration(iterationId, thresholds);
+      return { status: 'success' as const };
+    } catch {
+      return { status: 'error' as const };
+    }
   });

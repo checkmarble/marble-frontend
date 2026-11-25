@@ -175,7 +175,7 @@ export function OrganizationScreeningsPage({ orgId, search }: OrganizationScreen
             </Button>
 
             {formError ? (
-              <p className="text-red-47 text-s md:col-span-full" role="alert">
+              <p className="text-red-primary text-s md:col-span-full" role="alert">
                 {formError}
               </p>
             ) : null}
@@ -670,7 +670,7 @@ function JsonBlock({ title, copyLabel, value }: JsonDialogValue) {
 
 function InlineError({ message, detail, onRetry }: { message: string; detail?: string; onRetry?: () => void }) {
   return (
-    <div className="flex items-center justify-between gap-md rounded-md border border-red-87 bg-red-95 p-md text-red-47">
+    <div className="flex items-center justify-between gap-md rounded-md border border-red-border bg-red-background-light dark:bg-red-background-dark p-md text-red-primary">
       <div className="flex min-w-0 items-start gap-sm">
         <Icon icon="error" className="size-5 shrink-0" />
         <div className="flex min-w-0 flex-col gap-xs">

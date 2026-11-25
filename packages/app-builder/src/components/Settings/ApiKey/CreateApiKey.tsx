@@ -1,7 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
 
 import {
@@ -12,10 +9,11 @@ import {
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, SelectV2 } from 'ui-design-system';
+import { Button, Input, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateApiKey() {
@@ -40,20 +38,16 @@ export function CreateApiKey() {
 const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
   const { t } = useTranslation(['settings', 'common']);
   const createApiKeyMutation = useCreateApiKeyMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createApiKeyMutation
-          .mutateAsync(value)
-          .then(() => {
-            onSuccess();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await createApiKeyMutation.mutateAsync(value);
+        onSuccess();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     defaultValues: { description: '', role: 'API_CLIENT' } as CreateApiKeyPayload,
@@ -70,12 +64,14 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
         <form.Field name="description">
           {(field) => (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:api_keys.description')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:api_keys.description')}</label>
+              <Input
+                id={field.name}
                 name={field.name}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 type="text"
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -85,7 +81,7 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
         <form.Field name="role">
           {(field) => (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:api_keys.role')}</FormLabel>
+              <label htmlFor={field.name}>{t('settings:api_keys.role')}</label>
               <SelectV2
                 disabled={apiKeyRoleOptions.length === 1}
                 value={field.state.value}

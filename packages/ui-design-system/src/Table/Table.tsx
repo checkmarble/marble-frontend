@@ -9,10 +9,10 @@ import {
   useTable as useTanStackTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import clsx from 'clsx';
 import { cloneElement, createContext, type JSX, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
+import { cn } from '../utils';
 import type { MarbleTableFeatures } from './features';
 import { marbleTableFeatures } from './features';
 
@@ -30,7 +30,7 @@ function TableContainer({
   return (
     <ScrollAreaV2
       ref={scrollElementRef}
-      className={clsx('border-grey-border border-spacing-0 rounded-lg border', className)}
+      className={cn('border-grey-border border-spacing-0 rounded-lg border', className)}
       orientation="both"
       type="auto"
     >
@@ -52,7 +52,7 @@ function TableTH<TData extends RowData, TValue>({
     <th
       colSpan={header.colSpan}
       style={{ width: header.getSize(), ...style }}
-      className={clsx(
+      className={cn(
         'border-grey-border bg-surface-card relative h-12 w-full border-b border-r px-md last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
@@ -127,7 +127,7 @@ function Header<TData extends RowData>({
                     ) : null}
                     {header.column.getCanResize() ? (
                       <div
-                        className={clsx(
+                        className={cn(
                           'hover:bg-grey-border active:bg-grey-placeholder absolute end-0 h-full w-1 cursor-col-resize touch-none select-none',
                           // Hack to take scroll bar into account
                           index === headerGroup.headers.length - 1 && 'end-sm',
@@ -298,7 +298,7 @@ function Row<TData extends RowData>({
         }
         onClick?.(e);
       }}
-      className={clsx(
+      className={cn(
         'group/row',
         'h-12 even:bg-surface-row dark:even:bg-transparent',
         'odd:hover:bg-surface-row-hover even:hover:bg-surface-row-hover',

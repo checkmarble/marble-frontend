@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
 import { useImperativeHandle, useRef, useState } from 'react';
+import { cn } from '../utils';
 
 export const textarea = cva(
   'text-s text-grey-primary placeholder:text-grey-disabled disabled:bg-grey-background read-only:bg-grey-background-light read-only:border-transparent rounded-sm p-sm font-medium outline-hidden border focus:not-read-only:border-purple-primary row-start-1 row-end-2 col-start-1 col-end-2',
@@ -52,12 +52,12 @@ export const TextArea = function TextArea({
   useImperativeHandle(ref, () => internalRef.current!);
 
   return (
-    <div className={clsx('grid', className)}>
-      <div className={clsx('invisible whitespace-pre-wrap', sharedClassNames)}>{`${internalRef.current?.value} `}</div>
+    <div className={cn('grid', className)}>
+      <div className={cn('invisible whitespace-pre-wrap', sharedClassNames)}>{`${internalRef.current?.value} `}</div>
       <textarea
         ref={internalRef}
         placeholder="Write a note"
-        className={clsx('overflow-hidden', sharedClassNames)}
+        className={cn('overflow-hidden', sharedClassNames)}
         onChangeCapture={(e) => {
           setValue(e.currentTarget.value);
         }}

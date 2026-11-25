@@ -25,10 +25,18 @@ import {
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { CreateTableValue } from '@app-builder/schemas/data';
-import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto, type UploadLog } from 'marble-api';
+import {
+  type ArchetypeDto,
+  GroupedAnnotations,
+  type OpenApiSpec,
+  UpdateTableBodyDto,
+  type UploadLog,
+} from 'marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
+  listArchetypes(): Promise<ArchetypeDto[]>;
+  applyArchetype(name: string): Promise<void>;
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
   createTable(body: CreateTableValue): Promise<{ id: string }>;
   patchDataModelTable(tableId: string, body: UpdateTableBodyDto): Promise<void>;
@@ -59,6 +67,13 @@ export function makeGetDataModelRepository() {
       const { data_model } = await marbleCoreApiClient.getDataModel();
 
       return adaptDataModel(data_model);
+    },
+    listArchetypes: async () => {
+      const { archetypes } = await marbleCoreApiClient.listArchetypes();
+      return archetypes;
+    },
+    applyArchetype: async (name) => {
+      await marbleCoreApiClient.applyArchetype({ name }, {});
     },
     getOpenApiSpecOfVersion: async (version: string) => {
       return marbleCoreApiClient.getDataModelOpenApiOfVersion(version);

@@ -450,8 +450,7 @@ function LicensePanelBody({ state, onClose }: { state: NonNullable<PanelState>; 
       onChange: licenseFormSchema,
       onSubmit: licenseFormSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
       const payload = {
         ...value,
         expiration_date: new Date(value.expiration_date).toISOString(),

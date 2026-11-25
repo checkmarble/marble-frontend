@@ -2,14 +2,13 @@ import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { DateSelector } from '@app-builder/components/Form/DateSelector';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { createTestRunPayloadSchema, useCreateTestRunMutation } from '@app-builder/queries/scenarios/create-testrun';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -68,7 +67,7 @@ function CreateTestRunToContent({
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const createTestRunMutation = useCreateTestRunMutation(currentScenario.id);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const refIterations = useMemo(
     () => scenarioIterations.filter(({ type }) => type === 'live version'),
@@ -90,22 +89,18 @@ function CreateTestRunToContent({
       testIterationId: testIterationsOptions[0] as string,
       endDate: new Date().toISOString(),
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createTestRunMutation
-          .mutateAsync(value)
-          .then((res) => {
-            if (res?.error === 'duplicate_test_run') {
-              toast.error(t('common:errors.data.duplicate_test_run'));
-            } else if (res?.error) {
-              toast.error(t('common:errors.unknown'));
-            } else {
-              revalidate();
-            }
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        const res = await createTestRunMutation.mutateAsync(value);
+        if (res?.error === 'duplicate_test_run') {
+          toast.error(t('common:errors.data.duplicate_test_run'));
+        } else if (res?.error) {
+          toast.error(t('common:errors.unknown'));
+        } else {
+          router.invalidate();
+        }
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -149,7 +144,7 @@ function CreateTestRunToContent({
                 const selectedRefIteration = refIterations.find(({ id }) => id === field.state.value);
                 return (
                   <div className="group flex w-full flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('scenarios:create_testrun.ref')}</FormLabel>
+                    <label htmlFor={field.name}>{t('scenarios:create_testrun.ref')}</label>
                     <MenuCommand.SelectButton name={field.name} disabled>
                       {selectedRefIteration
                         ? `V${selectedRefIteration.version} ${selectedRefIteration.type === 'live version' ? t('scenarios:live') : ''}`
@@ -171,7 +166,7 @@ function CreateTestRunToContent({
                 const selectedTestIteration = testIterations.find(({ id }) => id === field.state.value);
                 return (
                   <div className="group flex w-full flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('scenarios:create_testrun.phantom')}</FormLabel>
+                    <label htmlFor={field.name}>{t('scenarios:create_testrun.phantom')}</label>
                     <MenuCommand.Menu open={testIterationMenuOpen} onOpenChange={setTestIterationMenuOpen}>
                       <MenuCommand.Trigger>
                         <MenuCommand.SelectButton name={field.name}>
@@ -212,9 +207,9 @@ function CreateTestRunToContent({
           >
             {(field) => (
               <div className="group flex w-full flex-col gap-sm">
-                <FormLabel name={field.name} className="flex flex-row items-center gap-xs">
+                <label htmlFor={field.name} className="flex flex-row items-center gap-xs">
                   {t('scenarios:create_testrun.end_date')}
-                </FormLabel>
+                </label>
                 <DateSelector
                   name={field.name}
                   placeholder={t('scenarios:create_testrun.end_date_placeholder')}

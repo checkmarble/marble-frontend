@@ -1,10 +1,10 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { type UpdateInboxesSlaPayload, useUpdateInboxesSlaMutation } from '@app-builder/queries/cases/update-inboxes';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -34,7 +34,7 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const updateSlaMutation = useUpdateInboxesSlaMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const saveSla = (updates: UpdateInboxesSlaPayload) => {
     if (updates.length === 0) {
@@ -46,7 +46,7 @@ export const SlaConfigPanelContent = ({ readOnly }: SlaConfigPanelContentProps) 
       .mutateAsync(updates)
       .then(() => {
         toast.success(t('cases:overview.panel.sla.saved'));
-        revalidate();
+        router.invalidate();
         panelSharp.actions.close();
       })
       .catch(() => {
@@ -136,7 +136,7 @@ type SlaInboxCardProps = {
 };
 
 function SlaInboxCard({ inbox, value, onChange, disabled }: SlaInboxCardProps) {
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
 
   return (
     <div className="flex items-center gap-sm justify-between">

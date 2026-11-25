@@ -28,7 +28,7 @@ export function AddToCasePanel({
   onCreateCase,
   onAddToCase,
 }: AddToCasePanelProps) {
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
 
   return (
     <Panel.Container size="small" className="max-w-md">
@@ -143,12 +143,11 @@ function NewCaseForm({
   inboxes: Inbox[];
   onSubmit: (values: z.infer<typeof newCaseFieldsSchema>) => Promise<void>;
 }) {
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
   const form = useForm({
     defaultValues: { name: '', inboxId: '' },
     validators: { onSubmit: newCaseFieldsSchema },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
       await onSubmit(value);
     },
   });
@@ -216,12 +215,11 @@ function ExistingCaseForm({
   caseId?: string;
   onSubmit: (values: z.infer<typeof existingCaseFieldsSchema>) => Promise<void>;
 }) {
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
   const form = useForm({
     defaultValues: { caseId: '' },
     validators: { onSubmit: existingCaseFieldsSchema },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
       await onSubmit(value);
     },
   });

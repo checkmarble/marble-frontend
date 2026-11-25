@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
+import { cn } from 'ui-design-system';
 
 import { Ping } from './Ping';
 
@@ -23,7 +23,7 @@ export function CornerPing({
   className?: string;
 } & VariantProps<typeof corner_ping>) {
   return (
-    <span className={clsx('relative', className)}>
+    <span className={cn('relative', className)}>
       {children}
       <Ping aria-hidden="true" className={corner_ping({ position })} />
     </span>

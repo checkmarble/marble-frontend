@@ -1,7 +1,7 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxWorkflowMutation } from '@app-builder/queries/cases/update-inbox-workflow';
+import { useRouter } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const updateWorkflowMutation = useUpdateInboxWorkflowMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const [workflowState, setWorkflowState] = useState<InboxWorkflowState>(new Map());
 
@@ -85,7 +85,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
         {
           onSuccess: () => {
             toast.success(t('cases:overview.panel.workflow.saved'));
-            revalidate();
+            router.invalidate();
             panelSharp.actions.close();
           },
           onError: () => {

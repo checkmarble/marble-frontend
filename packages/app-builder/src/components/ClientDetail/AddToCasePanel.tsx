@@ -73,7 +73,7 @@ export function ClientAddToCasePanel({ objects }: ClientAddToCasePanelProps) {
 }
 
 function CaseObjectsList({ objects }: { objects: CaseObjectRef[] }) {
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
   const hasRiskLevel = objects.some((object) => object.riskLevel != null);
   const settingsQuery = useGetScoringSettingsQuery(hasRiskLevel);
   const rawMaxRiskLevel = settingsQuery.data?.settings?.maxRiskLevel;

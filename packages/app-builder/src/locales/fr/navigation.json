@@ -11,6 +11,7 @@
   "client_detail": "Vue 360 clients",
   "collapse": "Réduire",
   "continuous_screening": "Monitoring permanent",
+  "continuous_screening.nudge": "Surveillez en continu vos clients face aux listes de sanctions et de vigilance",
   "continuous-screening.configurations": "Configurations du monitoring permanent",
   "dark_mode": "Mode sombre",
   "data": "Vos données",

@@ -271,8 +271,8 @@ function ArchetypeStep({
       onChange: archetypeFormSchema,
       onSubmit: archetypeFormSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!selected || !formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
+      if (!selected) return;
       const { orgId, environmentUpdated } = await applyMutation.mutateAsync({
         name: selected,
         org_name: value.org_name,

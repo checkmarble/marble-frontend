@@ -16,6 +16,6 @@ Check the tag and current usage before picking.
 Defaults for new code:
 
 - Value pickers: `SelectV2` (built on `MenuCommand`). Action menus and custom dropdowns:
-  `MenuCommand`. `Select` from `ui-design-system` is `@deprecated`
+  `MenuCommand`
 - Callouts and banners: `Callout` (`@app-builder/components/Callout`) with
   `color`/`variant`/`icon`; `CalloutV2` only for the neutral purple tip aside

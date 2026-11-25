@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useRevokeOrganizationAccessMutation } from '@app-builder/queries/settings/users/revoke-organization-access';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ export function RevokeAccess({ userId }: { userId: string }) {
 function RevokeAccessContent({ userId, onSuccess }: { userId: string; onSuccess: () => void }) {
   const { t } = useTranslation(['common', 'settings']);
   const revokeAccessMutation = useRevokeOrganizationAccessMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleRevoke = () => {
     revokeAccessMutation
@@ -33,7 +33,7 @@ function RevokeAccessContent({ userId, onSuccess }: { userId: string; onSuccess:
       .then(() => {
         toast.success(t('settings:users.revoke_access.success'));
         onSuccess();
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

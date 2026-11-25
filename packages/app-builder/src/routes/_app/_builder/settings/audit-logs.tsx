@@ -23,7 +23,7 @@ const activityFollowUpLoader = createServerFn()
     const { user, apiKey } = context.authInfo;
 
     if (!isAdmin(user)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const apiKeys = await apiKey.listApiKeys();

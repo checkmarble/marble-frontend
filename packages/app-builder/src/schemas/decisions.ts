@@ -23,7 +23,7 @@ export const decisionFiltersSchema = z.object({
     .optional(),
   pivotValue: z.string().optional(),
   scenarioId: protectArray(z.array(z.string())).optional(),
-  scheduledExecutionId: protectArray(z.array(z.string().uuid())).optional(),
+  scheduledExecutionId: protectArray(z.array(z.uuid())).optional(),
   caseInboxId: protectArray(z.array(z.string())).optional(),
   triggerObject: protectArray(z.array(z.string())).optional(),
   triggerObjectId: z.string().optional(),

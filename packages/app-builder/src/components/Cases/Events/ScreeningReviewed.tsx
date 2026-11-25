@@ -20,7 +20,9 @@ function ScreeningReviewEvent({
   i18nKey,
 }: {
   event: ScreeningMatchReviewedEvent | ScreeningReviewedEvent;
-  i18nKey: string;
+  i18nKey:
+    | 'cases:case_detail.history.event_detail.screening_match_reviewed'
+    | 'cases:case_detail.history.event_detail.screening_reviewed';
 }) {
   const { t } = useTranslation(casesI18n);
   const { getOrgUserById } = useOrganizationUsers();

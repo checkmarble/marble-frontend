@@ -89,8 +89,7 @@ function FeaturesForm({
       onChange: patchOrganizationFeaturesPayloadSchema,
       onSubmit: patchOrganizationFeaturesPayloadSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
       await patchMutation.mutateAsync({ orgId, features: value });
       onSaved();
     },

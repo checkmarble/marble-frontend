@@ -1,7 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   CreateCasePayload,
   createCasePayloadSchema,
@@ -11,15 +8,16 @@ import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Panel, SelectV2 } from 'ui-design-system';
+import { Input, Panel, SelectV2 } from 'ui-design-system';
 
 export function CreateCase({ inboxId }: { inboxId: string | null }) {
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const createCaseMutation = useCreateCaseMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const form = useForm({
@@ -27,17 +25,13 @@ export function CreateCase({ inboxId }: { inboxId: string | null }) {
       name: '',
       inboxId: inboxId ?? '',
     } satisfies CreateCasePayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createCaseMutation
-          .mutateAsync(value)
-          .then(() => {
-            queryClient.invalidateQueries({ queryKey: ['cases', 'get-cases', value.inboxId] });
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await createCaseMutation.mutateAsync(value);
+        queryClient.invalidateQueries({ queryKey: ['cases', 'get-cases', value.inboxId] });
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -61,15 +55,17 @@ export function CreateCase({ inboxId }: { inboxId: string | null }) {
             >
               {(field) => (
                 <div className="flex flex-col gap-sm">
-                  <FormLabel name={field.name} className="text-xs first-letter:capitalize">
+                  <label htmlFor={field.name} className="text-xs first-letter:capitalize">
                     {t('cases:case.name')}
-                  </FormLabel>
-                  <FormInput
+                  </label>
+                  <Input
+                    id={field.name}
                     type="text"
                     name={field.name}
                     defaultValue={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     placeholder={t('cases:case.new_case.placeholder')}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -85,9 +81,9 @@ export function CreateCase({ inboxId }: { inboxId: string | null }) {
             >
               {(field) => (
                 <div className="flex flex-1 flex-col gap-sm">
-                  <FormLabel name={field.name} className="text-xs first-letter:capitalize">
+                  <label htmlFor={field.name} className="text-xs first-letter:capitalize">
                     {t('cases:case.new_case.select_inbox')}
-                  </FormLabel>
+                  </label>
                   {inboxesQuery.isSuccess ? (
                     <SelectV2
                       className="w-full overflow-hidden"

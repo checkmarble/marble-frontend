@@ -1,7 +1,7 @@
 import { CaseStatusBadgeV2 } from '@app-builder/components/Cases/CaseStatus';
 import { type Case, type CaseClient } from '@app-builder/models/cases';
+import { usePivotRelatedCasesQuery } from '@app-builder/queries/cases/pivot-related-cases';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
-import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type UseQueryResult } from '@tanstack/react-query';

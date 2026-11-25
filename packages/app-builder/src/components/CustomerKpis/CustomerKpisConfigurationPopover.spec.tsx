@@ -81,7 +81,7 @@ const { updateCustomerAggregate } = vi.hoisted(() => ({
 vi.mock('@app-builder/queries/data/get-data-model', () => ({
   useDataModelQuery: () => ({ data: { dataModel }, isPending: false, isError: false, refetch: vi.fn() }),
 }));
-vi.mock('@app-builder/queries/get-custom-lists', () => ({ useGetCustomListsQuery: () => ({ data: [] }) }));
+vi.mock('@app-builder/queries/lists/get-custom-lists', () => ({ useGetCustomListsQuery: () => ({ data: [] }) }));
 vi.mock('@app-builder/queries/customer-aggregates/create-customer-aggregate', () => ({
   useCreateCustomerAggregateMutation: () => ({ isPending: false, mutateAsync: vi.fn() }),
 }));

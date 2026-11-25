@@ -86,7 +86,14 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                   tickValues: yTicks,
                   format: (v: number) => formatChartNumber(v, language),
                 }}
-                legendLabel={(datum) => t(`cases:analytics.chart.${String(datum.id)}`)}
+                legendLabel={(datum) => {
+                  const id = String(datum.id);
+                  return id === 'avgDays'
+                    ? t('cases:analytics.chart.avgDays')
+                    : id === 'maxDays'
+                      ? t('cases:analytics.chart.maxDays')
+                      : id;
+                }}
                 legends={[
                   {
                     dataFrom: 'keys',
@@ -105,7 +112,13 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                       {formatPeriodTooltip(String(indexValue), language)}
                     </span>
                     <div className="flex items-center justify-between gap-md">
-                      <span className="text-s text-grey-secondary">{t(`cases:analytics.chart.${String(id)}`)}</span>
+                      <span className="text-s text-grey-secondary">
+                        {id === 'avgDays'
+                          ? t('cases:analytics.chart.avgDays')
+                          : id === 'maxDays'
+                            ? t('cases:analytics.chart.maxDays')
+                            : String(id)}
+                      </span>
                       <span className="text-s text-grey-primary font-semibold">
                         {formatChartNumber(value, language)} {t('cases:analytics.chart.days')}
                       </span>

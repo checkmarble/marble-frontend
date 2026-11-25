@@ -30,7 +30,7 @@ interface AddRuleMenuContentProps {
 }
 
 function AddRuleMenuContent({ onConfirm, onCancel }: AddRuleMenuContentProps) {
-  const { t } = useTranslation(['user-scoring']);
+  const { t } = useTranslation(['user-scoring', 'common']);
   const [selectedType, setSelectedType] = useState<RuleModelType>('user_attribute');
 
   return (
@@ -87,7 +87,7 @@ export function RulesTable({
   hasValidLicense,
   canUpdateScoringRulesets,
 }: RulesTableProps) {
-  const { t } = useTranslation(['user-scoring']);
+  const { t } = useTranslation(['user-scoring', 'common']);
   const router = useRouter();
   const navigate = useNavigate();
   const { rules, recordType: entityType } = ruleset;
@@ -339,13 +339,15 @@ function RuleRow({
   onRuleChange,
   onRuleDelete,
 }: RuleRowProps) {
-  const { t } = useTranslation(['user-scoring']);
+  const { t } = useTranslation(['user-scoring', 'common']);
   const [isEditing, setIsEditing] = useState(false);
 
   return (
     <div className="border-grey-border flex border-b last:border-b-0">
       <div className="flex w-[150px] shrink-0 items-center px-md py-sm">
-        {rule.riskType ? <Tag color="grey">{t(`user-scoring:risk_type.${rule.riskType}`)}</Tag> : null}
+        {rule.riskType ? (
+          <Tag color="grey">{t(`user-scoring:risk_type.${rule.riskType}`, { defaultValue: rule.riskType })}</Tag>
+        ) : null}
       </div>
       <div className="flex flex-1 flex-col gap-sm px-md py-sm">
         <span className="text-grey-primary text-s font-medium">{rule.name}</span>

@@ -1,7 +1,7 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { PrevalidationCreateContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { useCreateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/create-configuration';
 import { useCallbackRef } from '@marble/shared';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '../Breadcrumbs';
@@ -13,13 +13,13 @@ import { Stepper } from './form/Stepper';
 
 export const CreationPage = ({ name, description }: { name: string; description: string }) => {
   const { t } = useTranslation(['continuousScreening', 'common']);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const createConfigurationMutation = useCreateContinuousScreeningConfigurationMutation();
   const handleSubmit = useCallbackRef((value: PrevalidationCreateContinuousScreeningConfig) => {
     createConfigurationMutation
       .mutateAsync(value)
       .then((_) => {
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));
@@ -47,7 +47,14 @@ export const CreationPage = ({ name, description }: { name: string; description:
         <Page.Main className="min-h-0">
           <Page.Header className="justify-between">
             <BreadCrumbs />
-            <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:creation.stepper.${stepName}`)} />
+            <Stepper
+              fromZero
+              getStepLabel={(stepName) =>
+                stepName === 'generalInfo'
+                  ? t('continuousScreening:panel.stepper.generalInfo')
+                  : t(`continuousScreening:creation.stepper.${stepName}`)
+              }
+            />
           </Page.Header>
           <Page.Container className="min-h-0">
             <Page.Content padding="none" className="min-h-0">

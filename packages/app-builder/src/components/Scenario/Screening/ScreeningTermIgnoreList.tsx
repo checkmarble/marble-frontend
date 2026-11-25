@@ -1,4 +1,4 @@
-import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
+import { useGetCustomListsQuery } from '@app-builder/queries/lists/get-custom-lists';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';

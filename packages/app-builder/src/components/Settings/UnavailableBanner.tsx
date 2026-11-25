@@ -1,4 +1,4 @@
-import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { useUnavailabilitySettings } from '@app-builder/queries/settings/personal-settings';
 import { formatDate } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useState } from 'react';
@@ -39,7 +39,7 @@ export function UnavailableBanner() {
           onClick={() => setIsOpen(false)}
           data-dismiss-target="#bottom-banner"
           type="button"
-          className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-xs dark:hover:bg-gray-600 dark:hover:text-white"
+          className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-grey-white hover:bg-grey-white/20 rounded-lg text-sm p-xs"
         >
           <Icon icon="cross" className="size-6 text-grey-white" />
         </button>

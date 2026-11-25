@@ -1,5 +1,4 @@
 import { isHttpError, isStatusConflictHttpError, marbleApiErrorMessage } from '@app-builder/models';
-import type { TFunction } from 'i18next';
 
 interface TableMutationError {
   status: number;
@@ -8,7 +7,7 @@ interface TableMutationError {
 
 export function getTableMutationError(
   error: unknown,
-  t: TFunction,
+  t: (key: 'common:errors.conflict' | 'common:errors.unknown') => string,
   options?: {
     conflictMessage?: string;
   },

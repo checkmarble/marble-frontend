@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useRevokeWebhookSecretMutation } from '@app-builder/queries/settings/webhooks/revoke-webhook-secret';
+import { useRouter } from '@tanstack/react-router';
 import { type ReactElement, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -37,14 +37,14 @@ function RevokeWebhookSecretContent({
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const revokeMutation = useRevokeWebhookSecretMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleRevoke = () => {
     revokeMutation
       .mutateAsync({ webhookId, secretId })
       .then(() => {
         onSuccess();
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

@@ -9,7 +9,7 @@ import {
   type NavigationOption,
   TableModel,
 } from '@app-builder/models';
-import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
+import { useClientObjectListQuery } from '@app-builder/queries/data/client-object-list';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { createColumnHelper, flexRender, useTable as useTanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';

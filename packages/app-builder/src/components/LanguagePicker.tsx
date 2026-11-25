@@ -1,6 +1,6 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useSetLanguageMutation } from '@app-builder/queries/settings/set-language';
 import { languageNames, supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
@@ -19,9 +19,9 @@ export function LanguagePicker() {
   const {
     t,
     i18n: { language, changeLanguage },
-  } = useTranslation<'common'>('common');
+  } = useTranslation(['common']);
   const setLanguageMutation = useSetLanguageMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   if (supportedLngs.every((lng: string) => lng.startsWith('en'))) return null;
 
@@ -34,7 +34,7 @@ export function LanguagePicker() {
           .mutateAsync({ preferredLanguage: newPreferredLanguage })
           .then(() => {
             changeLanguage(newPreferredLanguage);
-            revalidate();
+            router.invalidate();
           })
           .catch(() => {
             toast.error(t('common:errors.unknown'));

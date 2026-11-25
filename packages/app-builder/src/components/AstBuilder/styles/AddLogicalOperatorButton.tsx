@@ -1,6 +1,6 @@
-import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type AddLogicalOperatorButtonProps = Omit<React.ComponentProps<'button'>, 'type'> & {
@@ -17,7 +17,7 @@ export const AddLogicalOperatorButton = function AddLogicalOperatorButton({
   return (
     <button
       type="button"
-      className={clsx(
+      className={cn(
         'flex size-fit flex-row items-center justify-center gap-xs rounded-sm border px-sm py-xs outline-hidden text-xs font-semibold',
         'bg-transparent border-purple-primary text-purple-primary',
         'hover:bg-purple-background hover:border-purple-hover hover:text-purple-hover',

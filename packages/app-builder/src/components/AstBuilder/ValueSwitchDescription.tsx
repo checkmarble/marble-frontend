@@ -20,7 +20,7 @@ const MAX_PREVIEW_VALUES = 6;
 const SCORE_MAXIMUM_FRACTION_DIGITS = 10;
 
 export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwitchAstNode> }) {
-  const { t } = useTranslation('scenarios');
+  const { t } = useTranslation(['scenarios', 'user-scoring']);
   const language = useFormatLanguage();
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const data = dataSharp.select((state) => state.data);
@@ -156,7 +156,7 @@ export function ValueSwitchDescription({ node }: { node: IdLessAstNode<ValueSwit
 }
 
 function NumericRowValue({ rows, index }: { rows: number[]; index: number }) {
-  const { t } = useTranslation('user-scoring');
+  const { t } = useTranslation(['user-scoring']);
   const language = useFormatLanguage();
   const value = rows[index];
 

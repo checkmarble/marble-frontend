@@ -31,7 +31,7 @@ const webhookDetailLoader = createServerFn()
   .handler(async function webhookDetailLoader({ context, data }) {
     const { webhookRepository, user, entitlements } = context.authInfo;
 
-    if (!isReadWebhookAvailable(user)) throw redirect({ to: '/' });
+    if (!isReadWebhookAvailable(user)) throw redirect({ to: '/app-router' });
 
     const webhookId = data?.params?.['webhookId'];
     invariant(webhookId, 'webhookId is required');

@@ -1,7 +1,5 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type User } from '@app-builder/models';
 import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import {
@@ -12,14 +10,14 @@ import {
 import { getInboxUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import clsx from 'clsx';
+import { useRouter } from '@tanstack/react-router';
 import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { MenuCommand, Modal, Switch } from 'ui-design-system';
+import { cn, MenuCommand, Modal, Switch } from 'ui-design-system';
 
 export function CreateInboxUserContent({
   currentInboxId,
@@ -38,7 +36,7 @@ export function CreateInboxUserContent({
 }) {
   const { t } = useTranslation(['common', 'settings'] satisfies Namespace);
   const createInboxUserMutation = useCreateInboxUserMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
@@ -63,7 +61,7 @@ export function CreateInboxUserContent({
         .mutateAsync(value)
         .then(() => {
           onSuccess();
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
@@ -92,7 +90,7 @@ export function CreateInboxUserContent({
         >
           {(field) => (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.user')}</FormLabel>
+              <label htmlFor={field.name}>{t('settings:inboxes.inbox_details.user')}</label>
               <MenuCommand.Menu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton hasError={field.state.meta.errors.length > 0} className="w-full">
@@ -135,14 +133,14 @@ export function CreateInboxUserContent({
         >
           {(field) => (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name} className="flex gap-sm">
-                <span className={clsx({ 'text-grey-disabled': access === 'restricted' })}>
+              <label htmlFor={field.name} className="flex gap-sm">
+                <span className={cn({ 'text-grey-disabled': access === 'restricted' })}>
                   {t('settings:inboxes.inbox_details.role')}
                 </span>
                 {access === 'allowed' ? null : (
                   <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                 )}
-              </FormLabel>
+              </label>
               <MenuCommand.Menu open={roleMenuOpen} onOpenChange={setRoleMenuOpen}>
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton
@@ -183,9 +181,9 @@ export function CreateInboxUserContent({
           {(field) => (
             <div className="group flex justify-between">
               <div className="flex gap-sm">
-                <FormLabel name={field.name} className="flex items-center gap-sm">
+                <label htmlFor={field.name} className="flex items-center gap-sm">
                   {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
-                </FormLabel>
+                </label>
                 {!isAutoAssignmentAvailable ? (
                   <Nudge
                     className="size-5"

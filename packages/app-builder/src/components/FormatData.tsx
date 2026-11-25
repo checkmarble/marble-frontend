@@ -102,7 +102,7 @@ function DerivedDataDetails({ value }: { value: object }) {
     <div className="col-start-2 grid w-full grid-cols-[auto_1fr] gap-x-4 rounded-lg border border-grey-border bg-surface-card p-md">
       {Object.entries(value).map(([k, v]) => (
         <Fragment key={k}>
-          <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</span>
+          <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`, { defaultValue: k })}</span>
           <span>{String(v)}</span>
         </Fragment>
       ))}
@@ -125,7 +125,7 @@ function CompactDerivedDataField({ value }: { value: object }) {
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-lg">
           {Object.entries(value).map(([k, v]) => (
             <Fragment key={k}>
-              <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</span>
+              <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`, { defaultValue: k })}</span>
               <span>{String(v)}</span>
             </Fragment>
           ))}

@@ -1,5 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type DataModel, type LinkToSingle } from '@app-builder/models';
 import {
   createNavigationOptionSchema,
@@ -8,6 +7,7 @@ import {
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ export function CreateNavigationOptionModal({ dataModel, link, children }: Creat
     ) ?? [];
   const [open, setOpen] = useState(false);
   const createNavigationOptionMutation = useCreateNavigationOptionMutation(link.parentTableId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleOpenChange = useCallbackRef((open: boolean) => {
     if (!open) {
@@ -50,21 +50,17 @@ export function CreateNavigationOptionModal({ dataModel, link, children }: Creat
     validators: {
       onChange: createNavigationOptionSchema,
     },
-    onSubmit({ value, formApi }) {
-      if (formApi.state.isValid) {
-        createNavigationOptionMutation
-          .mutateAsync(value)
-          .then((res) => {
-            if ('error' in res && res.error === 'duplicate_pivot_value') {
-              toast.error(t('data:create_navigation_option.errors.duplicate_pivot_value'));
-              return;
-            }
-            toast.success(t('common:success.save'));
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        const res = await createNavigationOptionMutation.mutateAsync(value);
+        if ('error' in res && res.error === 'duplicate_pivot_value') {
+          toast.error(t('data:create_navigation_option.errors.duplicate_pivot_value'));
+          return;
+        }
+        toast.success(t('common:success.save'));
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
   });

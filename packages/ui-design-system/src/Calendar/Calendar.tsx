@@ -1,4 +1,3 @@
-import { clsx } from 'clsx';
 import {
   type DateRange,
   DayFlag,
@@ -10,8 +9,8 @@ import {
   UI,
 } from 'react-day-picker';
 import { Icon } from 'ui-icons';
-
 import { CtaV2ClassName } from '../Button/Button';
+import { cn } from '../utils';
 
 export type CalendarProps = PropsBase & (PropsSingle | PropsRange);
 
@@ -29,14 +28,14 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [UI.CaptionLabel]:
           'text-grey-primary text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
         [UI.Nav]: 'absolute top-0 start-0 end-0',
-        [UI.PreviousMonthButton]: clsx(
+        [UI.PreviousMonthButton]: cn(
           CtaV2ClassName({
             variant: 'secondary',
             mode: 'icon',
           }),
           'size-10 absolute start-0',
         ),
-        [UI.NextMonthButton]: clsx(
+        [UI.NextMonthButton]: cn(
           CtaV2ClassName({
             variant: 'secondary',
             mode: 'icon',
@@ -51,7 +50,7 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [UI.Week]: 'flex w-full',
         [UI.Day]: 'flex size-12 shrink-0 p-0',
         [UI.DayButton]: 'size-12 text-default font-medium',
-        [SelectionState.selected]: clsx(
+        [SelectionState.selected]: cn(
           'transition-colors',
           props.mode === 'single' && 'rounded-md bg-purple-primary text-grey-white ',
         ),

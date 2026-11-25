@@ -1,9 +1,9 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { EditInboxPayload, editInboxPayloadSchema, useEditInboxMutation } from '@app-builder/queries/cases/edit-inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
@@ -12,14 +12,14 @@ import { Spinner } from '../Spinner';
 
 export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) => {
   const editInboxMutation = useEditInboxMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const inboxesQuery = useGetInboxesQuery();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
     onSubmit: ({ value }) => {
       editInboxMutation.mutateAsync(value).then(() => {
-        revalidate();
+        router.invalidate();
       });
     },
     defaultValues: { inboxId, caseId: id } as EditInboxPayload,
@@ -28,7 +28,7 @@ export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) 
     },
   });
 
-  const selectedInboxId = useStore(form.store, (state) => state.values.inboxId);
+  const selectedInboxId = useSelector(form.store, (state) => state.values.inboxId);
   const selectedInbox = inboxesQuery.data?.inboxes.find(({ id: inboxId }) => inboxId === selectedInboxId) ?? null;
 
   return (

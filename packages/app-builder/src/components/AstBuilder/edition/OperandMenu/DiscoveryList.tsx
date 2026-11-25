@@ -2,10 +2,9 @@ import { type AstNode } from '@app-builder/models';
 import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
-import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { MenuCommand } from 'ui-design-system';
+import { cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { EditionOperandSharpFactory } from '../EditionOperand';
@@ -141,7 +140,7 @@ function MenuTitle({ operandType, count, className }: MenuTitleProps) {
   const tKey = getOperandTypeTKey(operandType);
 
   return (
-    <div className={clsx('flex grow select-none flex-row items-center gap-xs', className)}>
+    <div className={cn('flex grow select-none flex-row items-center gap-xs', className)}>
       {icon ? <Icon aria-hidden="true" className="text-purple-primary size-5 shrink-0" icon={icon} /> : null}
       {tKey ? (
         <span className="text-grey-primary text-m flex flex-1 flex-row items-baseline gap-xs break-all">

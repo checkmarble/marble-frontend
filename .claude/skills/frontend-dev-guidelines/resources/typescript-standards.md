@@ -39,7 +39,7 @@ TanStack Form infers the form type from `defaultValues` alone (the validator sch
 ## Exhaustiveness
 
 - Generated `marble-api` enums are type-only unions. Alias the union in `models/` and declare its runtime list with `exhaustiveUnionList<U>()([...])` (`utils/types.ts`; `caseEventTypes` in `models/cases.ts`): a missing member fails type-check, and the list feeds `z.enum`. A typed array or `as const satisfies` doesn't check completeness, and TypeScript 7 sorts union members, so never derive a tuple from a union. `as const` + `(typeof xs)[number]` is for front-end-owned unions only.
-- `assertNever(prefix, x)` (`typescript-utils`) is typed `never`, but in the app it doesn't throw: it logs outside production and returns `undefined`. A function that returns a value needs `return fallback;` after it. Editors grey that line out as unreachable (TS7027 suggestion); keep it. Most existing call sites lack it (`adaptRuleExecutionDto`, `models/decision.ts`); don't copy them. For UI branching, use ts-pattern `.exhaustive()`.
+- `assertNever(prefix, x)` (`typescript-utils`) is typed `never`, but in the app it doesn't throw: it logs outside production and returns `undefined`. A function that returns a value needs `return fallback;` (or `throw`) after it. Editors grey that line out as unreachable (TS7027 suggestion); keep it. For UI branching, use ts-pattern `.exhaustive()`.
 
 ## Narrowing errors
 

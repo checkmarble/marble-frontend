@@ -1,7 +1,7 @@
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
-import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface SecretValueProps {
@@ -25,7 +25,7 @@ export function SecretValue({ value, alwaysVisible, className }: SecretValueProp
           <span className="sr-only">{visible ? t('common:hide') : t('common:show')}</span>
         </button>
       ) : null}
-      <span className={clsx('truncate font-mono text-xs', className)}>
+      <span className={cn('truncate font-mono text-xs', className)}>
         {visible ? value : '••••••••••••••••••••••••'}
       </span>
       {visible ? (

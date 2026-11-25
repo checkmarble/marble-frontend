@@ -30,6 +30,7 @@ function PivotDescription({ pivot }: { pivot: Pivot }) {
   if (pivot.type === 'link') {
     return (
       <Trans
+        t={t}
         i18nKey="data:view_pivot.link.description"
         values={{
           child: pivot.baseTable,

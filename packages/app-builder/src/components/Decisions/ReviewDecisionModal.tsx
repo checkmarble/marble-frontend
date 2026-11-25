@@ -59,22 +59,20 @@ function ReviewDecisionContent({
       reviewComment: '',
       reviewStatus: '' as Outcome,
     } as ReviewDecisionPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        reviewDecisionMutation.mutate(value, {
-          onSuccess: (res) => {
-            if (res.status === 'error') {
-              toast.error(t('common:errors.unknown'));
-              return;
-            }
-            toast.success(t('common:success.save'));
-            setOpen(false);
-          },
-          onError: () => {
+    onSubmit: ({ value }) => {
+      reviewDecisionMutation.mutate(value, {
+        onSuccess: (res) => {
+          if (res.status === 'error') {
             toast.error(t('common:errors.unknown'));
-          },
-        });
-      }
+            return;
+          }
+          toast.success(t('common:success.save'));
+          setOpen(false);
+        },
+        onError: () => {
+          toast.error(t('common:errors.unknown'));
+        },
+      });
     },
     validators: {
       onSubmit: reviewDecisionPayloadSchema,

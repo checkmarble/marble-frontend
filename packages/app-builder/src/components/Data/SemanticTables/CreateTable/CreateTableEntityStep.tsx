@@ -1,13 +1,11 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type FtmEntityPersonOption, type FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn, SelectV2 } from 'ui-design-system';
+import { cn, Input, SelectV2 } from 'ui-design-system';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
 import { isLinkableTable } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
@@ -18,9 +16,9 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   const { t } = useTranslation(['data']);
   const dataModel = useDataModel();
 
-  const selectedEntityType = useStore(form.store, (state) => state.values.entityType);
-  const selectedSubEntity = useStore(form.store, (state) => state.values.subEntity);
-  const selectedBelongsToTableId = useStore(form.store, (state) => state.values.belongsToTableId);
+  const selectedEntityType = useSelector(form.store, (state) => state.values.entityType);
+  const selectedSubEntity = useSelector(form.store, (state) => state.values.subEntity);
+  const selectedBelongsToTableId = useSelector(form.store, (state) => state.values.belongsToTableId);
 
   // Tables that qualify as "person" or "other" for the transaction/event link requirement
   const personOrOtherTables = useMemo(() => dataModel.filter(isLinkableTable), [dataModel]);
@@ -71,14 +69,16 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
         >
           {(field) => (
             <div className="flex flex-1 flex-col gap-sm">
-              <FormLabel name={field.name}>{t('data:create_table.name_label')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('data:create_table.name_label')}</label>
+              <Input
+                id={field.name}
                 type="text"
                 name={field.name}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0 && !hasNameError}
+                aria-invalid={field.state.meta.errors.length > 0 || hasNameError || undefined}
+                borderColor={field.state.meta.errors.length === 0 && !hasNameError ? 'greyfigma-90' : 'redfigma-47'}
                 placeholder={t('data:create_table.name_placeholder')}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -88,14 +88,16 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
         <form.Field name="alias">
           {(field) => (
             <div className="flex flex-1 flex-col gap-sm">
-              <FormLabel name={field.name}>{t('data:create_table.alias_label')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('data:create_table.alias_label')}</label>
+              <Input
+                id={field.name}
                 type="text"
                 name={field.name}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 placeholder={t('data:create_table.alias_placeholder')}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -121,7 +123,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
                   className={cn(
                     'flex items-center gap-sm rounded-md px-md py-xs text-left text-s transition-colors',
                     isSelected && 'text-purple-primary font-medium',
-                    !isSelected && !disabled && 'text-grey-primary hover:bg-grey-bg',
+                    !isSelected && !disabled && 'text-grey-primary hover:bg-grey-background',
                     disabled && 'cursor-not-allowed opacity-50',
                   )}
                 >
@@ -146,10 +148,9 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
                 {/* Sub-entity options */}
                 {isSelected && entity === 'person' ? (
                   <SubEntityOptions
-                    options={[...ftmEntityPersonOptions]}
+                    options={ftmEntityPersonOptions}
                     selected={selectedSubEntity}
                     onSelect={handleSubEntitySelect}
-                    labelPrefix="data:upload_data.ftm_entity_person"
                     hasError={hasSubEntityError}
                   />
                 ) : null}
@@ -180,20 +181,21 @@ function SubEntityOptions({
   options,
   selected,
   onSelect,
-  labelPrefix,
   hasError,
 }: {
-  options: string[];
+  options: readonly FtmEntityPersonOption[];
   selected: string;
-  onSelect: (value: string) => void;
-  labelPrefix: string;
+  onSelect: (value: FtmEntityPersonOption) => void;
   hasError?: boolean;
 }) {
   const { t } = useTranslation(['data']);
 
   return (
     <div
-      className={cn('ms-3xl flex flex-col gap-xs rounded-md bg-grey-bg p-sm', hasError && 'border border-red-primary')}
+      className={cn(
+        'ms-3xl flex flex-col gap-xs rounded-md bg-grey-background-light p-sm',
+        hasError && 'border border-red-primary',
+      )}
     >
       {options.map((option) => {
         const isSelected = selected === option;
@@ -216,7 +218,7 @@ function SubEntityOptions({
             >
               {isSelected ? <span className="size-1.5 rounded-full bg-purple-primary" /> : null}
             </span>
-            <span>{t(`${labelPrefix}.${option}`)}</span>
+            <span>{t(`data:upload_data.ftm_entity_person.${option}`)}</span>
           </button>
         );
       })}

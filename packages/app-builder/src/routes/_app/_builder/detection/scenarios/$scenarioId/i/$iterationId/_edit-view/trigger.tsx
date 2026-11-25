@@ -6,7 +6,7 @@ import { useScheduleForm } from '@app-builder/components/Scenario/Trigger';
 import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
 import { isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { useSaveTriggerMutation } from '@app-builder/queries/scenarios/save-trigger';
-import { useValidateAstMutation } from '@app-builder/queries/validate-ast';
+import { useValidateAstMutation } from '@app-builder/queries/scenarios/validate-ast';
 import { type FlatAstValidation, getBuilderOptionsFn } from '@app-builder/server-fns/scenarios';
 import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';

@@ -22,12 +22,12 @@ import { getTableMutationError } from '@app-builder/services/data/table-mutation
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getClientAnnotationFileUploadEndpoint, getIngestionDataBatchUploadEndpoint } from '@app-builder/utils/files';
 import { omitUndefined } from '@app-builder/utils/omit-undefined';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { decode } from 'decode-formdata';
 import { UpdateTableBodyDto } from 'marble-api';
-import { tryit } from 'radash';
 import { match } from 'ts-pattern';
 import { z } from 'zod/v4';
 
@@ -191,8 +191,7 @@ export const listObjectsFn = createServerFn({ method: 'POST' })
 export const listArchetypesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { archetypes } = await context.authInfo.apiClient.listArchetypes();
-    return archetypes;
+    return context.authInfo.dataModelRepository.listArchetypes();
   });
 
 export const createTableFn = createServerFn({ method: 'POST' })
@@ -249,7 +248,7 @@ export const applyArchetypeFn = createServerFn({ method: 'POST' })
   .validator(applyArchetypePayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.apiClient.applyArchetype({ name: data.name }, {});
+      await context.authInfo.dataModelRepository.applyArchetype(data.name);
       return { success: true };
     } catch {
       return { success: false };
@@ -295,15 +294,15 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
     const request = getRequest();
     const authSession = await useAuthSession();
 
-    const [err, raw] = await tryit(async (req: Request) => {
-      const contentLength = req.headers.get('content-length');
+    const rawResult = tryCatch(() => {
+      const contentLength = request.headers.get('content-length');
       if (contentLength && parseInt(contentLength, 10) > MAX_FILE_SIZE) {
         throw new Error('File too large');
       }
       return formData;
-    })(request);
+    });
 
-    if (err) {
+    if (!rawResult.ok) {
       return { success: false, error: 'file_too_large' as const };
     }
 
@@ -315,7 +314,7 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
       success,
       error,
     } = createAnnotationPayloadSchema.safeParse(
-      decode(raw, {
+      decode(rawResult.value, {
         arrays: ['payload.files', 'payload.addedTags', 'payload.removedAnnotations', 'payload.addedCategories'],
       }),
     );

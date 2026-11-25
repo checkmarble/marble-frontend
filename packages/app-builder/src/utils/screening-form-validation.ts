@@ -1,7 +1,6 @@
 import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
 import { isListAstNode } from '@app-builder/models/astNode/list';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
-import { type TFunction } from 'i18next';
 import { match } from 'ts-pattern';
 import { type z } from 'zod/v4';
 
@@ -24,7 +23,7 @@ export type ScreeningValidationIssue = {
   source: ScreeningValidationSource;
 };
 
-const SCREENING_QUERY_FIELD_LABEL_KEYS: Record<string, string> = {
+const SCREENING_QUERY_FIELD_LABEL_KEYS = {
   name: 'scenarios:screening.filter.name',
   birthDate: 'scenarios:edit_sanction.birthdate',
   nationality: 'scenarios:edit_sanction.nationality',
@@ -32,11 +31,16 @@ const SCREENING_QUERY_FIELD_LABEL_KEYS: Record<string, string> = {
   address: 'scenarios:edit_sanction.address',
   country: 'scenarios:edit_sanction.country',
   registrationNumber: 'scenarios:edit_sanction.registrationnumber',
-};
+} as const;
 
-export function getScreeningQueryFieldLabel(fieldKey: string, t: TFunction): string {
-  const labelKey = SCREENING_QUERY_FIELD_LABEL_KEYS[fieldKey];
-  return labelKey ? t(labelKey) : fieldKey;
+type ScreeningQueryFieldLabelKey =
+  (typeof SCREENING_QUERY_FIELD_LABEL_KEYS)[keyof typeof SCREENING_QUERY_FIELD_LABEL_KEYS];
+
+export function getScreeningQueryFieldLabel(fieldKey: string, t: (key: ScreeningQueryFieldLabelKey) => string): string {
+  if (fieldKey in SCREENING_QUERY_FIELD_LABEL_KEYS) {
+    return t(SCREENING_QUERY_FIELD_LABEL_KEYS[fieldKey as keyof typeof SCREENING_QUERY_FIELD_LABEL_KEYS]);
+  }
+  return fieldKey;
 }
 
 function screeningValidationSourceKey(source: ScreeningValidationSource): string {
@@ -129,13 +133,18 @@ export function hasRequiredScreeningCriteria(
     .otherwise(() => true);
 }
 
+type ScreeningFormValidationKey =
+  | 'scenarios:edit_screening.name_required'
+  | 'scenarios:sanction.match_settings.title'
+  | 'scenarios:edit_sanction.required_fields_error';
+
 export function collectFormValidationIssues<
   T extends {
     name: string;
     entityType?: ScreeningEntityType;
     query: Record<string, unknown>;
   },
->(values: T, schema: z.ZodType<T>, t: TFunction): ScreeningValidationIssue[] {
+>(values: T, schema: z.ZodType<T>, t: (key: ScreeningFormValidationKey) => string): ScreeningValidationIssue[] {
   const issues: ScreeningValidationIssue[] = [];
   const parseResult = schema.safeParse(values);
 

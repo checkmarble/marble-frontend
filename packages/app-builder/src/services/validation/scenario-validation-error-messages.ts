@@ -202,6 +202,7 @@ export const commonErrorMessages = (t: TFunction<['scenarios']>) => (evaluationE
       return evaluationError.message;
     default:
       assertNever('[EvaluationError] unhandled error code', evaluationError['code']);
+      return '';
   }
 };
 

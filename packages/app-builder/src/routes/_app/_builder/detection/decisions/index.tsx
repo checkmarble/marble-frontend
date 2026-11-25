@@ -425,11 +425,9 @@ function SearchById() {
       onSubmit: searchFormSchema,
       onMount: searchFormSchema,
     },
-    onSubmit: ({ formApi, value }) => {
-      if (formApi.state.isValid) {
-        const decisionId = decisionIdToParams(value.decisionId);
-        navigate({ to: '/detection/decisions/$decisionId', params: { decisionId } });
-      }
+    onSubmit: ({ value }) => {
+      const decisionId = decisionIdToParams(value.decisionId);
+      navigate({ to: '/detection/decisions/$decisionId', params: { decisionId } });
     },
   });
 

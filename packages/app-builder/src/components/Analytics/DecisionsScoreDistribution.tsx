@@ -101,7 +101,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
             {query.isFetching ? <GraphSpinnerOverlay /> : null}
             {query.isError ? (
               <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-background/80">
-                <span className="text-s text-grey-60">{t('common:global_error')}</span>
+                <span className="text-s text-grey-secondary">{t('common:global_error')}</span>
               </div>
             ) : null}
             <div className="flex w-full h-[500px] flex-col items-end justify-end gap-md">
@@ -119,7 +119,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
 };
 
 const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistributionModel }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['analytics']);
   const { bucketSize, min, max, hasOutliers } = useMemo(() => {
     const bucketSize = Math.abs((data[1]?.x ?? 0) - (data[0]?.x ?? 0));
     const { min, max, hasOutliers } = getFocusRange(data ?? []);

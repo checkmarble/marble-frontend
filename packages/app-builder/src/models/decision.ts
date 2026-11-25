@@ -253,6 +253,10 @@ export function adaptRuleExecutionDto(dto: RuleExecutionDto, includeRuleEvaluati
     }
     default:
       assertNever('[RuleExecutionDto] unknown outcome:', dto.outcome);
+      return {
+        ...ruleExecution,
+        outcome: 'no_hit',
+      };
   }
 }
 

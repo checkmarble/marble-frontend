@@ -1,4 +1,3 @@
-import * as Label from '@radix-ui/react-label';
 import { type Meta, type StoryFn } from '@storybook/react';
 import { useState } from 'react';
 
@@ -25,7 +24,7 @@ export const WithLabel: StoryFn<typeof Checkbox> = (args) => (
   <form>
     <div className="flex flex-row gap-sm">
       <Checkbox {...args} id="c1" />
-      <Label.Root htmlFor="c1">Accept terms and conditions.</Label.Root>
+      <label htmlFor="c1">Accept terms and conditions.</label>
     </div>
   </form>
 );
@@ -61,7 +60,7 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
               });
             }}
           />
-          <Label.Root htmlFor="c1">All fruits</Label.Root>
+          <label htmlFor="c1">All fruits</label>
         </div>
         <ul className="flex flex-col gap-sm rounded-sm border p-sm">
           {fruits.map((fruit) => (
@@ -77,7 +76,7 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
                     });
                   }}
                 />
-                <Label.Root htmlFor={fruit}>{fruit}</Label.Root>
+                <label htmlFor={fruit}>{fruit}</label>
               </div>
             </li>
           ))}

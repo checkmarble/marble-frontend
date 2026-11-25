@@ -33,5 +33,6 @@ export function FilterDetail({ filterName }: { filterName: DecisionFilterName })
       return <ScheduledExecutionFilter />;
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
+      return null;
   }
 }

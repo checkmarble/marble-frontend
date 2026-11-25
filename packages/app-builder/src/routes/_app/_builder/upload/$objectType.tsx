@@ -3,8 +3,8 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TableModel } from '@app-builder/models';
+import { useUploadIngestionData } from '@app-builder/queries/data/upload-ingestion-data';
 import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
-import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-data';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -13,7 +13,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ClientOnly, createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
 import { useCallback, useMemo, useState } from 'react';
@@ -22,7 +21,7 @@ import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, cn, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const MAX_FILE_SIZE_MB = 32;
@@ -162,7 +161,7 @@ const UploadForm = ({ objectType, onSuccess }: { objectType: string; onSuccess?:
     <>
       <div
         {...getRootProps()}
-        className={clsx(
+        className={cn(
           'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
           isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
         )}
@@ -222,7 +221,7 @@ const ResultModal = ({
         <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
           <Icon
             icon={icon}
-            className={clsx(
+            className={cn(
               'size-[108px] rounded-full border-8',
               modalContent.success
                 ? 'bg-purple-background border-transparent text-purple-primary'
@@ -419,7 +418,7 @@ function Upload() {
               <a
                 href={generateCsvTemplateLink(table)}
                 download={`${objectType}_template.csv`}
-                className={clsx(
+                className={cn(
                   'text-s flex flex-row items-center justify-center gap-xs rounded-sm border border-solid px-sm py-xs font-semibold outline-hidden',
                   'hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-secondary disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary',
                 )}
@@ -445,7 +444,7 @@ const Loading = ({ className }: { className?: string }) => {
   const { t } = useTranslation(['common']);
   return (
     <div
-      className={clsx(
+      className={cn(
         className,
         'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}

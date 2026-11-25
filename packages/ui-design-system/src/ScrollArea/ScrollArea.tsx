@@ -1,5 +1,5 @@
 import { Corner, Root, Scrollbar, Thumb, Viewport } from '@radix-ui/react-scroll-area';
-import clsx from 'clsx';
+import { cn } from '../utils';
 
 type ScrollAreaElement = React.ElementRef<typeof Viewport>;
 interface ScrollAreaV2Props
@@ -22,7 +22,7 @@ export const ScrollAreaV2 = function ScrollAreaV2({
       type={type}
       scrollHideDelay={scrollHideDelay}
       dir={dir}
-      className={clsx('flex flex-col overflow-hidden', className)}
+      className={cn('flex flex-col overflow-hidden', className)}
     >
       <Viewport
         {...viewportProps}

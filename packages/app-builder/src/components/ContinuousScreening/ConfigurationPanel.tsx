@@ -33,7 +33,7 @@ export const ConfigurationPanel = ({
   initialMode,
   baseStep,
 }: ConfigurationPanelProps) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['continuousScreening', 'common']);
   const configurationStepper = ContinuousScreeningConfigurationStepper.createSharp(
     initialMode ?? 'view',
     newConfig,
@@ -74,7 +74,7 @@ export const ConfigurationPanel = ({
 };
 
 const ConfigurationPanelHeader = () => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['continuousScreening', 'common']);
   const configurationStepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
