@@ -41,6 +41,31 @@ const RESERVED_AUTHORIZATION_PARAMS = new Set([
   'response_type',
 ]);
 
+/** `params` are set last, so they win over `extra_params`. */
+export function buildOidcAuthorizationUrl(
+  authorizationEndpoint: string,
+  { client_id, redirect_uri, scopes, extra_params }: Omit<OidcClientConfig, 'issuer'>,
+  params: Record<string, string> = {},
+): { url: string; state: string; codeVerifier: string } {
+  const state = generateState();
+  const codeVerifier = generateCodeVerifier();
+  const url = new OAuth2Client(client_id, null, redirect_uri).createAuthorizationURLWithPKCE(
+    authorizationEndpoint,
+    state,
+    CodeChallengeMethod.S256,
+    codeVerifier,
+    scopes,
+  );
+  for (const [key, value] of Object.entries(extra_params)) {
+    if (RESERVED_AUTHORIZATION_PARAMS.has(key)) continue;
+    url.searchParams.set(key, value);
+  }
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, value);
+  }
+  return { url: url.toString(), state, codeVerifier };
+}
+
 async function requestTokens(tokenEndpoint: string, body: URLSearchParams): Promise<CompatOAuth2Tokens> {
   const response = await fetch(tokenEndpoint, {
     method: 'POST',
@@ -88,16 +113,20 @@ export function getOauth2Cookie({ secrets, secure }: { secrets: string[]; secure
   });
 }
 
+export function isHttpsRequest(request: Request) {
+  const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol;
+  // `x-forwarded-proto` carries `https`, `URL.protocol` carries `https:`.
+  return proto === 'https' || proto === 'https:';
+}
+
 /** Writes the `oauth2` cookie from a server function, where the response is not built by hand. */
 export function setOauth2Cookie(request: Request, data: OAuth2CookieData) {
-  const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol;
   setCookie('oauth2', sign(JSON.stringify(data), getServerEnv('SESSION_SECRET')), {
     path: '/',
     httpOnly: true,
     sameSite: 'lax',
     maxAge: OAUTH2_COOKIE_MAX_AGE,
-    // `x-forwarded-proto` carries `https`, `URL.protocol` carries `https:`.
-    secure: proto === 'https' || proto === 'https:',
+    secure: isHttpsRequest(request),
   });
 }
 
@@ -125,11 +154,10 @@ export function tenantOidcClientConfig(discovery: TenantOidcDiscovery): OidcClie
 
 export async function makeOidcService(config: OidcClientConfig) {
   const apiUrl = getServerEnv('MARBLE_API_URL');
-  const { client_id, redirect_uri, scopes, issuer, extra_params } = config;
+  const { client_id, redirect_uri, scopes, issuer } = config;
 
   // Override token endpoint to use marble API proxy (same as old service)
   const tokenEndpoint = `${apiUrl}/oidc/token`;
-  const client = new OAuth2Client(client_id, null, redirect_uri);
 
   return {
     buildAuthorizationUrl: async ({
@@ -142,23 +170,11 @@ export async function makeOidcService(config: OidcClientConfig) {
       codeVerifier: string;
     }> => {
       const discovery = await getOidcDiscovery(issuer);
-      const state = generateState();
-      const codeVerifier = generateCodeVerifier();
-      const url = client.createAuthorizationURLWithPKCE(
+      return buildOidcAuthorizationUrl(
         discovery.authorization_endpoint,
-        state,
-        CodeChallengeMethod.S256,
-        codeVerifier,
-        scopes,
+        config,
+        loginHint ? { login_hint: loginHint } : {},
       );
-      for (const [key, value] of Object.entries(extra_params)) {
-        if (RESERVED_AUTHORIZATION_PARAMS.has(key)) continue;
-        url.searchParams.set(key, value);
-      }
-      if (loginHint) {
-        url.searchParams.set('login_hint', loginHint);
-      }
-      return { url: url.toString(), state, codeVerifier };
     },
 
     refreshToken: async (refreshToken: string) => {

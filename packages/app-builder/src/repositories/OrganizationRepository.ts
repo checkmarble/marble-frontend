@@ -7,6 +7,13 @@ import {
   type OrganizationUpdateInput,
   type UserOrganization,
 } from '@app-builder/models/organization';
+import {
+  adaptTenantDomain,
+  adaptTenantOidcConfiguration,
+  type TenantDomain,
+  type TenantOidcConfiguration,
+  type TenantOidcConfigurationInput,
+} from '@app-builder/models/tenant-oidc';
 import { type OrganizationGrantRole } from '@app-builder/schemas/settings';
 import { type Tag, type UserDto } from 'marble-api';
 
@@ -24,6 +31,11 @@ export interface OrganizationRepository {
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
   updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<string[]>;
+  /** `null` when the tenant has no OIDC configuration yet. */
+  getTenantOidcConfiguration(tenantId: string): Promise<TenantOidcConfiguration | null>;
+  putTenantOidcConfiguration(tenantId: string, input: TenantOidcConfigurationInput): Promise<void>;
+  listTenantOidcDomains(tenantId: string): Promise<TenantDomain[]>;
+  createTenantOidcDomain(tenantId: string, domain: string): Promise<void>;
 }
 
 export function makeGetOrganizationRepository() {
@@ -106,6 +118,34 @@ export function makeGetOrganizationRepository() {
       return await marbleCoreApiClient.updateOrganizationSubnets(organizationId, {
         subnets: allowedNetworks,
       });
+    },
+    getTenantOidcConfiguration: async (tenantId) => {
+      try {
+        return adaptTenantOidcConfiguration(await marbleCoreApiClient.getTenantOidcConfiguration(tenantId));
+      } catch (error) {
+        if (isNotFoundHttpError(error)) return null;
+        throw error;
+      }
+    },
+    putTenantOidcConfiguration: async (tenantId, input) => {
+      // A full replace: the backend resets any omitted field, and an omitted `sso_enabled` means true.
+      await marbleCoreApiClient.putTenantOidcConfiguration(tenantId, {
+        issuer: input.issuer,
+        client_id: input.clientId,
+        client_secret: input.clientSecret,
+        scopes: input.scopes,
+        extra_params: input.extraParams,
+        email_claim: input.emailClaim,
+        sso_enabled: input.ssoEnabled,
+      });
+    },
+    listTenantOidcDomains: async (tenantId) => {
+      const domains = await marbleCoreApiClient.listTenantOidcDomains(tenantId);
+      return domains.map(adaptTenantDomain);
+    },
+    createTenantOidcDomain: async (tenantId, domain) => {
+      // Without `verified`, the domain stays pending until a Marble admin verifies it.
+      await marbleCoreApiClient.createTenantOidcDomain(tenantId, { domain });
     },
   });
 }

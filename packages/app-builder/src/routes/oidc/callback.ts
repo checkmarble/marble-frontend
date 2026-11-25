@@ -1,4 +1,5 @@
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { handleSsoTestCallback } from '@app-builder/services/auth/sso-test.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { setToast } from '@app-builder/services/toast.server';
 import { preserveSignedOut } from '@app-builder/utils/cross-tab-session';
@@ -26,6 +27,9 @@ export const Route = createFileRoute('/oidc/callback')({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const ssoTestResponse = await handleSsoTestCallback(request);
+        if (ssoTestResponse) return ssoTestResponse;
+
         const url = new URL(request.url);
         const code = url.searchParams.get('code');
         const state = url.searchParams.get('state');

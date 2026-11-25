@@ -1,15 +1,19 @@
 import { type ApiKeyDto, type CreatedApiKeyDto } from 'marble-api';
 import { assertNever } from 'typescript-utils';
 
+/** Roles offered when creating an API key from the API keys page. */
 export const apiKeyRoleOptions = ['API_CLIENT'] as const;
-type ApiKeyRole = (typeof apiKeyRoleOptions)[number];
+// OIDC_CONFIG_EDITOR keys are created only as SSO recovery keys, from the security settings.
+const apiKeyRoles = [...apiKeyRoleOptions, 'OIDC_CONFIG_EDITOR'] as const;
+type ApiKeyRole = (typeof apiKeyRoles)[number];
 
 function isApiKeyRole(role: string): role is ApiKeyRole {
-  return apiKeyRoleOptions.includes(role as ApiKeyRole);
+  return apiKeyRoles.includes(role as ApiKeyRole);
 }
 
 export interface ApiKey {
   id: string;
+  createdAt?: string;
   description: string;
   organizationId: string;
   prefix: string;
@@ -19,6 +23,7 @@ export interface ApiKey {
 export function adaptApiKey(apiKeyDto: ApiKeyDto): ApiKey {
   const apiKey: ApiKey = {
     id: apiKeyDto.id,
+    createdAt: apiKeyDto.created_at,
     description: apiKeyDto.description,
     organizationId: apiKeyDto.organization_id,
     prefix: apiKeyDto.prefix,

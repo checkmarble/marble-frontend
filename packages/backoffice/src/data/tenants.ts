@@ -3,6 +3,7 @@ import {
   type CreateTenantOidcDomainPayload,
   type DeleteTenantOidcDomainPayload,
   type PutTenantOidcConfigurationPayload,
+  type UpdateTenantOidcDomainPayload,
 } from '@bo/schemas/tenant-oidc';
 import {
   createTenantOidcDomainFn,
@@ -13,6 +14,7 @@ import {
   mergeTenantsFn,
   putTenantOidcConfigurationFn,
   renameTenantFn,
+  updateTenantOidcDomainFn,
 } from '@bo/server-fns/tenants';
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
@@ -107,6 +109,17 @@ export const useDeleteTenantOidcDomainMutationOptions = () => {
     mutationFn: (payload: DeleteTenantOidcDomainPayload) => deleteTenantOidcDomain({ data: payload }),
     meta: {
       invalidates: ({ tenantId }: DeleteTenantOidcDomainPayload) => [['tenants', tenantId, 'domains']],
+    },
+  });
+};
+
+export const useUpdateTenantOidcDomainMutationOptions = () => {
+  const updateTenantOidcDomain = useServerFn(updateTenantOidcDomainFn);
+
+  return mutationOptions({
+    mutationFn: (payload: UpdateTenantOidcDomainPayload) => updateTenantOidcDomain({ data: payload }),
+    meta: {
+      invalidates: ({ tenantId }: UpdateTenantOidcDomainPayload) => [['tenants', tenantId, 'domains']],
     },
   });
 };

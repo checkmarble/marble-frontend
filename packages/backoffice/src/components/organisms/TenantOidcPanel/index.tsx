@@ -9,23 +9,25 @@ import {
   useDeleteTenantOidcConfigurationMutationOptions,
   useDeleteTenantOidcDomainMutationOptions,
   usePutTenantOidcConfigurationMutationOptions,
+  useUpdateTenantOidcDomainMutationOptions,
 } from '@bo/data/tenants';
 import {
   TENANT_OIDC_DOMAIN_CONFLICT_ERROR,
   TENANT_OIDC_LICENSE_REQUIRED_ERROR,
   TENANT_OIDC_NOT_FOUND_ERROR,
 } from '@bo/schemas/tenant-oidc';
+import { isClientSecretRequired } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Button, Input, Panel, Switch, TextArea, Typo } from 'ui-design-system';
+import { Button, Input, Panel, Switch, Tag, TextArea, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
-  isClientSecretRequired,
   makeTenantOidcFormSchema,
   type TenantOidcFormValues,
   toPutTenantOidcConfigurationPayload,
+  toSavedOidcClient,
   toTenantOidcFormValues,
 } from './oidc-form';
 
@@ -38,7 +40,7 @@ const DomainsError = makeQueryErrorComponent(
 const ERROR_MESSAGES: Record<string, string> = {
   [TENANT_OIDC_LICENSE_REQUIRED_ERROR]: 'Saving an OIDC configuration requires an SSO license.',
   [TENANT_OIDC_NOT_FOUND_ERROR]: 'This tenant no longer exists, or per-tenant OIDC is not enabled on this deployment.',
-  [TENANT_OIDC_DOMAIN_CONFLICT_ERROR]: 'Another tenant already uses this domain.',
+  [TENANT_OIDC_DOMAIN_CONFLICT_ERROR]: 'This domain is already listed on this tenant, or verified for another tenant.',
 };
 
 const toErrorMessage = (error: unknown, fallback: string) =>
@@ -164,7 +166,11 @@ function TenantOidcPanelBody({
             )}
           </form.Field>
 
-          <form.Subscribe selector={(state) => isClientSecretRequired(state.values as TenantOidcFormValues, config)}>
+          <form.Subscribe
+            selector={(state) =>
+              isClientSecretRequired(toSavedOidcClient(config), state.values as TenantOidcFormValues)
+            }
+          >
             {(isRequired) => (
               <form.Field name="clientSecret">
                 {(field) => (
@@ -327,7 +333,7 @@ function TenantOidcDomains({ tenantId }: { tenantId: string }) {
       <div className="flex flex-col gap-2xs">
         <Typo variant="subtitle1">Sign-in domains</Typo>
         <p className="text-grey-secondary text-xs">
-          Users whose email ends with one of these domains are sent to this identity provider when they sign in.
+          Users whose email ends with a verified domain are sent to this identity provider when they sign in.
         </p>
       </div>
       <SuspenseQuery
@@ -344,7 +350,9 @@ function TenantOidcDomains({ tenantId }: { tenantId: string }) {
 function TenantOidcDomainList({ tenantId, domains }: { tenantId: string; domains: TenantOidcDomain[] }) {
   const createMutation = useMutation(useCreateTenantOidcDomainMutationOptions());
   const deleteMutation = useMutation(useDeleteTenantOidcDomainMutationOptions());
+  const updateMutation = useMutation(useUpdateTenantOidcDomainMutationOptions());
   const [domain, setDomain] = useState('');
+  const hasVerifiedDomain = domains.some(({ verified_at }) => verified_at !== null);
 
   const handleAdd = async () => {
     const value = domain.trim();
@@ -365,28 +373,62 @@ function TenantOidcDomainList({ tenantId, domains }: { tenantId: string; domains
     }
   };
 
+  const handleVerify = async (domainId: string) => {
+    try {
+      await updateMutation.mutateAsync({ tenantId, domainId, verified: true });
+    } catch (error) {
+      toast.error(toErrorMessage(error, 'Could not verify the domain.'));
+    }
+  };
+
   return (
     <div className="flex flex-col gap-sm">
-      {domains.length === 0 ? (
-        <p className="text-grey-placeholder text-s">No domains yet: nobody is sent to this provider.</p>
-      ) : (
-        <ul className="border-grey-border bg-surface-card divide-grey-border divide-y overflow-hidden rounded-lg border">
-          {domains.map(({ id, domain: name }) => (
-            <li key={id} className="flex items-center justify-between gap-md px-md py-sm">
-              <span className="text-grey-primary truncate font-mono text-s">{name}</span>
-              <Button
-                variant="secondary"
-                size="small"
-                onClick={() => void handleRemove(id)}
-                disabled={deleteMutation.isPending && deleteMutation.variables?.domainId === id}
-                aria-label={`Remove ${name}`}
-              >
-                <Icon icon="delete" className="size-4" />
-              </Button>
-            </li>
-          ))}
-        </ul>
+      {hasVerifiedDomain ? null : (
+        <p className="text-grey-placeholder text-s">
+          {domains.length === 0
+            ? 'No domains yet: nobody is sent to this provider.'
+            : 'No verified domain yet: nobody is sent to this provider.'}
+        </p>
       )}
+      {domains.length > 0 ? (
+        <ul className="border-grey-border bg-surface-card divide-grey-border divide-y overflow-hidden rounded-lg border">
+          {domains.map(({ id, domain: name, verified_at }) => {
+            const pending = verified_at === null;
+            return (
+              <li key={id} className="flex items-center justify-between gap-md px-md py-sm">
+                <div className="flex min-w-0 items-center gap-sm">
+                  <span className="text-grey-primary truncate font-mono text-s">{name}</span>
+                  <Tag color={pending ? 'yellow' : 'green'} size="small">
+                    {pending ? 'Pending' : 'Verified'}
+                  </Tag>
+                </div>
+                <div className="flex shrink-0 items-center gap-xs">
+                  {pending ? (
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      onClick={() => void handleVerify(id)}
+                      disabled={updateMutation.isPending && updateMutation.variables?.domainId === id}
+                    >
+                      <Icon icon="tick" className="size-4" />
+                      Verify
+                    </Button>
+                  ) : null}
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() => void handleRemove(id)}
+                    disabled={deleteMutation.isPending && deleteMutation.variables?.domainId === id}
+                    aria-label={`Remove ${name}`}
+                  >
+                    <Icon icon="delete" className="size-4" />
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
       <form
         className="flex items-center gap-sm"
         onSubmit={(event) => {

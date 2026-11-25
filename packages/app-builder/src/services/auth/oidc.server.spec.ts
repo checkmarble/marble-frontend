@@ -23,3 +23,36 @@ describe('setOauth2Cookie', () => {
     expect(setCookie.mock.calls[0]?.[2]).toMatchObject({ secure });
   });
 });
+
+describe('makeOidcService().buildAuthorizationUrl', () => {
+  it('sends the login hint and keeps admin extra params away from the PKCE parameters', async () => {
+    const issuer = 'https://build-url.idp.example.com';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ authorization_endpoint: `${issuer}/authorize` })),
+    );
+    const { makeOidcService } = await import('./oidc.server');
+    const oidc = await makeOidcService({
+      issuer,
+      client_id: 'client',
+      redirect_uri: 'https://app.example.com/oidc/callback',
+      scopes: ['openid', 'email'],
+      extra_params: { prompt: 'login', state: 'forced', login_hint: 'admin@example.com' },
+    });
+
+    const { url, state } = await oidc.buildAuthorizationUrl({ loginHint: 'ada@example.com' });
+
+    expect(Object.fromEntries(new URL(url).searchParams)).toEqual({
+      response_type: 'code',
+      client_id: 'client',
+      redirect_uri: 'https://app.example.com/oidc/callback',
+      state,
+      code_challenge_method: 'S256',
+      code_challenge: expect.any(String),
+      scope: 'openid email',
+      prompt: 'login',
+      login_hint: 'ada@example.com',
+    });
+    vi.unstubAllGlobals();
+  });
+});

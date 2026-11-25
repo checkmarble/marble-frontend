@@ -27,6 +27,7 @@ import { Route as AppAuthEmailVerificationRouteImport } from './routes/_app/_aut
 import { Route as AppAuthSignInRouteImport } from './routes/_app/_auth/sign-in'
 import { Route as AppAuthSignInEmailRouteImport } from './routes/_app/_auth/sign-in-email'
 import { Route as AppAuthSignInOidcRouteImport } from './routes/_app/_auth/sign-in-oidc'
+import { Route as AppAuthSsoTestCompleteRouteImport } from './routes/_app/_auth/sso-test-complete'
 import { Route as AppBuilderAccountRouteImport } from './routes/_app/_builder/account'
 import { Route as AppBuilderAnalyticsLegacyRouteImport } from './routes/_app/_builder/analytics-legacy'
 import { Route as AppBuilderCasesRouteImport } from './routes/_app/_builder/cases'
@@ -65,6 +66,7 @@ import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_bu
 import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
 import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
+import { Route as AppBuilderSettingsSecurityRouteImport } from './routes/_app/_builder/settings/security'
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
@@ -212,6 +214,11 @@ const AppAuthSignInEmailRoute = AppAuthSignInEmailRouteImport.update({
 const AppAuthSignInOidcRoute = AppAuthSignInOidcRouteImport.update({
   id: '/sign-in-oidc',
   path: '/sign-in-oidc',
+  getParentRoute: () => AppAuthRoute,
+} as any)
+const AppAuthSsoTestCompleteRoute = AppAuthSsoTestCompleteRouteImport.update({
+  id: '/sso-test-complete',
+  path: '/sso-test-complete',
   getParentRoute: () => AppAuthRoute,
 } as any)
 const AppBuilderAccountRoute = AppBuilderAccountRouteImport.update({
@@ -423,6 +430,12 @@ const AppBuilderSettingsScreeningProvidersRoute =
   AppBuilderSettingsScreeningProvidersRouteImport.update({
     id: '/screening-providers',
     path: '/screening-providers',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
+const AppBuilderSettingsSecurityRoute =
+  AppBuilderSettingsSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
     getParentRoute: () => AppBuilderSettingsRoute,
   } as any)
 const AppBuilderSettingsTagsRoute = AppBuilderSettingsTagsRouteImport.update({
@@ -816,6 +829,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AppAuthSignInRoute
   '/sign-in-email': typeof AppAuthSignInEmailRoute
   '/sign-in-oidc': typeof AppAuthSignInOidcRoute
+  '/sso-test-complete': typeof AppAuthSsoTestCompleteRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
   '/cases': typeof AppBuilderCasesRouteWithChildren
@@ -846,6 +860,7 @@ export interface FileRoutesByFullPath {
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
+  '/settings/security': typeof AppBuilderSettingsSecurityRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
@@ -929,6 +944,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AppAuthSignInRoute
   '/sign-in-email': typeof AppAuthSignInEmailRoute
   '/sign-in-oidc': typeof AppAuthSignInOidcRoute
+  '/sso-test-complete': typeof AppAuthSsoTestCompleteRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
@@ -946,6 +962,7 @@ export interface FileRoutesByTo {
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
+  '/settings/security': typeof AppBuilderSettingsSecurityRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
@@ -1025,6 +1042,7 @@ export interface FileRoutesById {
   '/_app/_auth/sign-in': typeof AppAuthSignInRoute
   '/_app/_auth/sign-in-email': typeof AppAuthSignInEmailRoute
   '/_app/_auth/sign-in-oidc': typeof AppAuthSignInOidcRoute
+  '/_app/_auth/sso-test-complete': typeof AppAuthSsoTestCompleteRoute
   '/_app/_builder/account': typeof AppBuilderAccountRoute
   '/_app/_builder/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
   '/_app/_builder/cases': typeof AppBuilderCasesRouteWithChildren
@@ -1056,6 +1074,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/_app/_builder/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
+  '/_app/_builder/settings/security': typeof AppBuilderSettingsSecurityRoute
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/_app/_builder/settings/users': typeof AppBuilderSettingsUsersRoute
   '/_app/_builder/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
@@ -1142,6 +1161,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-in-email'
     | '/sign-in-oidc'
+    | '/sso-test-complete'
     | '/account'
     | '/analytics-legacy'
     | '/cases'
@@ -1172,6 +1192,7 @@ export interface FileRouteTypes {
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
     | '/settings/screening-providers'
+    | '/settings/security'
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
@@ -1255,6 +1276,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-in-email'
     | '/sign-in-oidc'
+    | '/sso-test-complete'
     | '/account'
     | '/analytics-legacy'
     | '/ressources/data/export-org'
@@ -1272,6 +1294,7 @@ export interface FileRouteTypes {
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
     | '/settings/screening-providers'
+    | '/settings/security'
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
@@ -1350,6 +1373,7 @@ export interface FileRouteTypes {
     | '/_app/_auth/sign-in'
     | '/_app/_auth/sign-in-email'
     | '/_app/_auth/sign-in-oidc'
+    | '/_app/_auth/sso-test-complete'
     | '/_app/_builder/account'
     | '/_app/_builder/analytics-legacy'
     | '/_app/_builder/cases'
@@ -1381,6 +1405,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/ip-whitelisting'
     | '/_app/_builder/settings/scenarios'
     | '/_app/_builder/settings/screening-providers'
+    | '/_app/_builder/settings/security'
     | '/_app/_builder/settings/tags'
     | '/_app/_builder/settings/users'
     | '/_app/_builder/settings/webhooks'
@@ -1596,6 +1621,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in-oidc'
       fullPath: '/sign-in-oidc'
       preLoaderRoute: typeof AppAuthSignInOidcRouteImport
+      parentRoute: typeof AppAuthRoute
+    }
+    '/_app/_auth/sso-test-complete': {
+      id: '/_app/_auth/sso-test-complete'
+      path: '/sso-test-complete'
+      fullPath: '/sso-test-complete'
+      preLoaderRoute: typeof AppAuthSsoTestCompleteRouteImport
       parentRoute: typeof AppAuthRoute
     }
     '/_app/_builder/account': {
@@ -1862,6 +1894,13 @@ declare module '@tanstack/react-router' {
       path: '/screening-providers'
       fullPath: '/settings/screening-providers'
       preLoaderRoute: typeof AppBuilderSettingsScreeningProvidersRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/security': {
+      id: '/_app/_builder/settings/security'
+      path: '/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof AppBuilderSettingsSecurityRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
     '/_app/_builder/settings/tags': {
@@ -2294,6 +2333,7 @@ interface AppAuthRouteChildren {
   AppAuthSignInRoute: typeof AppAuthSignInRoute
   AppAuthSignInEmailRoute: typeof AppAuthSignInEmailRoute
   AppAuthSignInOidcRoute: typeof AppAuthSignInOidcRoute
+  AppAuthSsoTestCompleteRoute: typeof AppAuthSsoTestCompleteRoute
 }
 
 const AppAuthRouteChildren: AppAuthRouteChildren = {
@@ -2303,6 +2343,7 @@ const AppAuthRouteChildren: AppAuthRouteChildren = {
   AppAuthSignInRoute: AppAuthSignInRoute,
   AppAuthSignInEmailRoute: AppAuthSignInEmailRoute,
   AppAuthSignInOidcRoute: AppAuthSignInOidcRoute,
+  AppAuthSsoTestCompleteRoute: AppAuthSsoTestCompleteRoute,
 }
 
 const AppAuthRouteWithChildren =
@@ -2760,6 +2801,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
   AppBuilderSettingsScreeningProvidersRoute: typeof AppBuilderSettingsScreeningProvidersRoute
+  AppBuilderSettingsSecurityRoute: typeof AppBuilderSettingsSecurityRoute
   AppBuilderSettingsTagsRoute: typeof AppBuilderSettingsTagsRoute
   AppBuilderSettingsUsersRoute: typeof AppBuilderSettingsUsersRoute
   AppBuilderSettingsWebhooksRoute: typeof AppBuilderSettingsWebhooksRoute
@@ -2777,6 +2819,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,
   AppBuilderSettingsScreeningProvidersRoute:
     AppBuilderSettingsScreeningProvidersRoute,
+  AppBuilderSettingsSecurityRoute: AppBuilderSettingsSecurityRoute,
   AppBuilderSettingsTagsRoute: AppBuilderSettingsTagsRoute,
   AppBuilderSettingsUsersRoute: AppBuilderSettingsUsersRoute,
   AppBuilderSettingsWebhooksRoute: AppBuilderSettingsWebhooksRoute,

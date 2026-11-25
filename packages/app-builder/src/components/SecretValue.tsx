@@ -29,7 +29,7 @@ export function SecretValue({ value, alwaysVisible, className }: SecretValueProp
         {visible ? value : '••••••••••••••••••••••••'}
       </span>
       {visible ? (
-        <button className="shrink-0" {...getCopyToClipboardProps(value)}>
+        <button className="shrink-0" {...getCopyToClipboardProps(value, { secret: true })}>
           <Icon icon="copy" className="size-4" />
         </button>
       ) : null}

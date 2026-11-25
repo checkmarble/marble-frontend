@@ -11,6 +11,7 @@ const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
   case_manager: 'settings:case_manager',
   audit: 'settings:audit',
   ip_whitelisting: 'settings:ip_whitelisting',
+  security: 'settings:security',
   screening_providers: 'settings:screening_providers',
 };
 

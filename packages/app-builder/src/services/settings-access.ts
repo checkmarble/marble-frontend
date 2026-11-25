@@ -6,6 +6,7 @@ import {
   isReadApiKeyAvailable,
   isReadTagAvailable,
   isReadUserAvailable,
+  isSsoSettingsAvailable,
 } from '@app-builder/services/feature-access';
 import { type IconName } from 'ui-icons';
 
@@ -26,6 +27,7 @@ export type Sections = {
   case_manager: Section;
   audit: Section;
   ip_whitelisting: Section;
+  security: Section;
   screening_providers: Section;
 };
 
@@ -69,6 +71,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
           ? [{ title: 'ip_whitelisting', to: '/settings/ip-whitelisting' }]
           : []),
       ],
+    },
+    security: {
+      icon: 'lock',
+      settings: [...(isSsoSettingsAvailable(user, appConfig) ? [{ title: 'security', to: '/settings/security' }] : [])],
     },
     screening_providers: {
       icon: 'search',

@@ -14,6 +14,7 @@ import {
   TENANT_OIDC_LICENSE_REQUIRED_ERROR,
   TENANT_OIDC_NOT_FOUND_ERROR,
   tenantIdPayloadSchema,
+  updateTenantOidcDomainPayloadSchema,
 } from '@bo/schemas/tenant-oidc';
 import { isRedirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -136,7 +137,8 @@ export const createTenantOidcDomainFn = createServerFn({ method: 'POST' })
     try {
       return await marblecoreApi.createTenantOidcDomain(
         data.tenantId,
-        { domain: data.domain },
+        // Backoffice users are Marble admins, the only callers allowed to add a domain already verified.
+        { domain: data.domain, verified: true },
         {
           baseUrl: env.API_BASE_URL,
           fetch: context.authFetch,
@@ -159,5 +161,25 @@ export const deleteTenantOidcDomainFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       rethrowTenantOidcError(error, 'Failed to remove the domain');
+    }
+  });
+
+export const updateTenantOidcDomainFn = createServerFn({ method: 'POST' })
+  .middleware([needAuth])
+  .validator(updateTenantOidcDomainPayloadSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      await marblecoreApi.updateTenantOidcDomain(
+        data.tenantId,
+        data.domainId,
+        { verified: data.verified },
+        {
+          baseUrl: env.API_BASE_URL,
+          fetch: context.authFetch,
+        },
+      );
+    } catch (error) {
+      if (hasStatus(error, CONFLICT_STATUS)) throw new Error(TENANT_OIDC_DOMAIN_CONFLICT_ERROR);
+      rethrowTenantOidcError(error, 'Failed to update the domain');
     }
   });

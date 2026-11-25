@@ -41,6 +41,7 @@ function NewPermissionsList() {
     canUpdateOrganization: 'ORGANIZATIONS_UPDATE',
     canDeleteAnnotation: 'ANNOTATION_DELETE',
     canWriteRiskTagAnnotation: 'ANNOTATION_RISK_TAG_WRITE',
+    canUpdateTenantOidc: 'TENANT_OIDC_CONFIG_UPDATE',
   } as const;
 }
 

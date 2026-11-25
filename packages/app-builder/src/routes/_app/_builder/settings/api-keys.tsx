@@ -196,7 +196,7 @@ function CreatedAPIKey({ createdApiKey }: { createdApiKey: CreatedApiKey }) {
       <div className="flex flex-col gap-xs">
         <span className="font-bold">{t('settings:api_keys.new_api_key')}</span>
         <span>{t('settings:api_keys.copy_api_key')}</span>
-        <CopyToClipboardButton toCopy={createdApiKey.key}>
+        <CopyToClipboardButton toCopy={createdApiKey.key} secret>
           <span className="text-s line-clamp-1 font-semibold">{createdApiKey.key}</span>
         </CopyToClipboardButton>
       </div>
