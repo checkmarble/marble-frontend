@@ -20,6 +20,7 @@ import {
   type ScreeningReviewSession,
   type ScreeningReviewSignals,
   screeningReviewCards,
+  screeningReviewCategoryCounts,
   screeningReviewChipFields,
   screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
@@ -609,6 +610,39 @@ describe('screening review stream', () => {
       ['sanctions', 'peps', 'adverse-media'],
     );
     expect(screeningReviewTopicFamilies(['filter.something', 'unknown'])).toEqual([]);
+  });
+
+  it('counts topics and lists in each category', () => {
+    expect(
+      Object.fromEntries(
+        screeningReviewCategoryCounts(
+          [
+            'sanctions',
+            'pep',
+            'pep.kind.primary',
+            'pep.kind.secondary',
+            'pep.category.govt_branch_member',
+            'pep.status.active',
+            'adverse_media',
+            'adverse_media.kind.enforcement',
+            'adverse_media.category.asset_freeze',
+            'adverse_media.category.excluded_party',
+            'alive',
+          ],
+          ['sanctions'],
+        ),
+      ),
+    ).toEqual({ sanctions: 2, peps: 2, 'adverse-media': 3 });
+    expect(
+      Object.fromEntries(
+        screeningReviewCategoryCounts(['crime.fraud', 'role.pep', 'sanction', 'sanction.linked', 'isAlive'], []),
+      ),
+    ).toEqual({ sanctions: 2, peps: 1, 'adverse-media': 1 });
+    expect(Object.fromEntries(screeningReviewCategoryCounts([], ['peps', 'peps', 'sanctions']))).toEqual({
+      peps: 2,
+      sanctions: 1,
+    });
+    expect(Object.fromEntries(screeningReviewCategoryCounts(['filter.something', 'unknown'], []))).toEqual({});
   });
 
   // A real `object_added` screening from staging, pseudonymized. The customer was screened on

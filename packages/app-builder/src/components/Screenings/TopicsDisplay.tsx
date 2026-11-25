@@ -4,7 +4,7 @@ import {
   ScreeningCategory,
   type ScreeningMatchPayload,
 } from '@app-builder/models/screening';
-import { TopicTag } from './TopicTag';
+import { isDisplayableTopic, TopicTag } from './TopicTag';
 
 export const topicCategoryPriority: Record<string, number> = {
   sanctions: 0,
@@ -55,17 +55,18 @@ export function toOrderedTopic(topic: string): string {
   return `${TOPIC_ORDER[getCategoryForTopic(topic) ?? 'third-parties']}.${topic}`;
 }
 
-export function getFilteredAndSortedTopics(topics: string[]): string[] {
-  if (topics.every(isOpenSanctionTopic)) {
-    const topicsWithCategory = new Set(topics.map(toOrderedTopic));
+export function getFilteredAndSortedTopics(topics: readonly string[]): string[] {
+  const displayable = topics.filter(isDisplayableTopic);
+  if (displayable.every(isOpenSanctionTopic)) {
+    const topicsWithCategory = new Set(displayable.map(toOrderedTopic));
     const sorted = Array.from(topicsWithCategory).toSorted(sortTopics);
     return sorted.map((sortedTopic) => {
       const dot = sortedTopic.indexOf('.');
       return sortedTopic.slice(dot + 1);
     });
   }
-  const hasPepPrimary = topics.includes('pep.kind.primary');
-  return topics.filter((topic) => !(hasPepPrimary && topic === 'pep.kind.secondary')).sort(sortTopics);
+  const hasPepPrimary = displayable.includes('pep.kind.primary');
+  return displayable.filter((topic) => !(hasPepPrimary && topic === 'pep.kind.secondary')).sort(sortTopics);
 }
 
 export function TopicsDisplay({ entity, containerClassName }: TopicsDisplayProps) {

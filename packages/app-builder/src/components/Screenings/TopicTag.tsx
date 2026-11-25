@@ -10,6 +10,8 @@ import { Tag } from 'ui-design-system';
 
 export function isDisplayableTopic(topic: string): boolean {
   if (topic.startsWith('filter.')) return false;
+  // Lexis sends this category root next to the real PEP topics. The source list does not show it as a tag.
+  if (topic === 'pep') return false;
   if (isLexisTopic(topic) && lexisTopicIgnoreDisplay(topic)) return false;
   return true;
 }

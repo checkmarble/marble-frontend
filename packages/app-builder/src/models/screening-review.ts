@@ -1,4 +1,8 @@
-import { toOrderedTopic, topicCategoryPriority } from '@app-builder/components/Screenings/TopicsDisplay';
+import {
+  getFilteredAndSortedTopics,
+  toOrderedTopic,
+  topicCategoryPriority,
+} from '@app-builder/components/Screenings/TopicsDisplay';
 import { FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
 import * as countryCatalog from 'country-flag-emojis/flags';
 import type { CaseDetail, CaseStatus } from './cases';
@@ -167,6 +171,22 @@ function topicFamily(topic: string): ScreeningCategory | undefined {
 /** One entry per topic family, for the hit card's topic dots. */
 export function screeningReviewTopicFamilies(topics: readonly string[]): ScreeningCategory[] {
   return orderScreeningCategories(topics.map(topicFamily).filter((family) => family !== undefined));
+}
+
+/** Topics and lists in each category. A hit carries topics, lists, or both, and a category chip's badge is their sum. */
+export function screeningReviewCategoryCounts(
+  topics: readonly string[],
+  listCategories: Iterable<ScreeningCategory>,
+): Map<ScreeningCategory, number> {
+  const counts = new Map<ScreeningCategory, number>();
+  const add = (category: ScreeningCategory) => counts.set(category, (counts.get(category) ?? 0) + 1);
+  // Same topics the Tags row renders, so the badge matches the tags it collapses.
+  for (const topic of getFilteredAndSortedTopics(topics)) {
+    const family = topicFamily(topic);
+    if (family) add(family);
+  }
+  for (const category of listCategories) add(category);
+  return counts;
 }
 
 /** Sanctions, PEPs, adverse media, then the other categories, each once. */

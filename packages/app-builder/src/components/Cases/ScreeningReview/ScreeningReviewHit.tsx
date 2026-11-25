@@ -19,6 +19,7 @@ import {
   type ScreeningReviewFieldComparison,
   type ScreeningReviewFieldState,
   type ScreeningReviewItem,
+  screeningReviewCategoryCounts,
   screeningReviewTopicFamilies,
 } from '@app-builder/models/screening-review';
 import { useRiskLevelLatestQuery } from '@app-builder/queries/scoring/get-risk-level-latest';
@@ -27,7 +28,7 @@ import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, cn, Tag, type TagProps, Typo } from 'ui-design-system';
+import { Card, cn, ExpandableGroupTagLine, Tag, type TagProps, Typo } from 'ui-design-system';
 
 const MAX_VALUES = 3;
 const IDENTITY_ID_PROPERTIES = [
@@ -237,7 +238,7 @@ function ListRecordCard({ item }: { item: ScreeningReviewItem }) {
       : t('cases:screening_review.identity_source.list_record');
   return (
     <IdentityCard side="list_record" source={source}>
-      <div className="flex min-w-0 flex-wrap items-center gap-sm">
+      <div className="flex min-w-0 items-center gap-sm">
         <Typo variant="subtitle1" className="min-w-0 truncate">
           <bdi>{item.listRecord.caption || item.listRecord.id}</bdi>
         </Typo>
@@ -413,44 +414,55 @@ export function useListRecordListTitles(datasets: readonly string[]) {
 const LIST_CATEGORY_COLORS: Record<ScreeningCategory, { tag: TagProps['color']; count: string }> = {
   sanctions: { tag: 'red', count: 'bg-red-background-light' },
   peps: { tag: 'blue', count: 'bg-blue-96' },
-  'adverse-media': { tag: 'orange', count: 'bg-orange-background-light' },
+  'adverse-media': { tag: 'yellow', count: 'bg-yellow-background-light' },
   'third-parties': { tag: 'grey', count: 'bg-grey-background-light' },
   custom: { tag: 'grey', count: 'bg-grey-background-light' },
   global: { tag: 'green', count: 'bg-green-background-light' },
 };
-const MAX_LIST_CATEGORY_TAGS = 3;
 
-/** One tag per list type, from its topics and lists, with the number of lists when several hit. */
+/** One tag per category, from its topics and lists, with their combined count when several hit. */
 function ListCategoryTags({ item }: { item: ScreeningReviewItem }) {
   const { t } = useTranslation(['scenarios']);
   const listConfigQuery = useListConfigQuery('continuous_monitoring');
-  const listCounts = new Map<ScreeningCategory, number>();
+  const listCategories: ScreeningCategory[] = [];
   for (const name of item.listRecord.datasets ?? []) {
     const category = findDataset(listConfigQuery.data?.filters, name)?.category;
-    if (category) listCounts.set(category, (listCounts.get(category) ?? 0) + 1);
+    if (category) listCategories.push(category);
   }
-  const categories = orderScreeningCategories([
-    ...screeningReviewTopicFamilies(item.topics),
-    ...listCounts.keys(),
-  ]).slice(0, MAX_LIST_CATEGORY_TAGS);
-  return categories.map((category) => {
-    const count = listCounts.get(category) ?? 0;
-    return (
-      <Tag key={category} size="xs" color={LIST_CATEGORY_COLORS[category].tag} className="h-5 shrink-0 px-sm">
-        {t(SCREENING_HIT_TYPE_T_KEYS[category])}
-        {count > 1 ? (
-          <span
-            className={cn(
-              'flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-2xs font-semibold',
-              LIST_CATEGORY_COLORS[category].count,
-            )}
-          >
-            {count}
-          </span>
-        ) : null}
-      </Tag>
-    );
-  });
+  const counts = screeningReviewCategoryCounts(item.topics, listCategories);
+  const categories = orderScreeningCategories([...screeningReviewTopicFamilies(item.topics), ...counts.keys()]);
+  if (!categories.length) return null;
+  return (
+    <div className="flex min-w-24 flex-1">
+      <ExpandableGroupTagLine
+        overflowBehavior="popover"
+        overflowTagWidth={32}
+        items={categories.map((category) => {
+          const count = counts.get(category) ?? 0;
+          return (
+            <Tag key={category} size="xs" color={LIST_CATEGORY_COLORS[category].tag} className="h-5 px-sm">
+              {t(SCREENING_HIT_TYPE_T_KEYS[category])}
+              {count > 1 ? (
+                <span
+                  className={cn(
+                    'flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-2xs font-semibold',
+                    LIST_CATEGORY_COLORS[category].count,
+                  )}
+                >
+                  {count}
+                </span>
+              ) : null}
+            </Tag>
+          );
+        })}
+        moreButton={(overflow, onExpand) => (
+          <Tag size="xs" color="purple" className="h-5 cursor-pointer px-sm" onClick={onExpand}>
+            +{overflow}
+          </Tag>
+        )}
+      />
+    </div>
+  );
 }
 
 function ListRecordLists({ datasets }: { datasets: string[] }) {
