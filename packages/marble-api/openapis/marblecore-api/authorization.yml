@@ -236,3 +236,8 @@ components:
             used_second_factor:
               type: boolean
               description: Whether the current sign-in used a second factor.
+        sections:
+          type: object
+          description: Visibility of each app section for the principal (true means visible). Sections left out are visible.
+          additionalProperties:
+            type: boolean

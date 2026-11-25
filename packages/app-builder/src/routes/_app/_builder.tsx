@@ -55,7 +55,7 @@ const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
         isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
         analytics: entitlements.analytics,
         settings:
-          !isAnalyst(user) && firstSetting !== undefined
+          user.sections.settings && firstSetting !== undefined
             ? { isAvailable: true as const, to: firstSetting.to }
             : { isAvailable: false as const },
         isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
@@ -109,6 +109,7 @@ function Builder() {
   useSentryIdentification(user);
   useSentryReplay(sentryReplayEnabled);
   const { t } = useTranslation(i18n);
+  const { sections } = user;
 
   return (
     <>
@@ -142,7 +143,7 @@ function Builder() {
                             </li>
                           )}
                           {/* Detection - flat link (tabs are inside the page) */}
-                          {!isAnalyst(user) && (
+                          {sections.scenarios && (
                             <li>
                               <SidebarLink
                                 labelTKey="navigation:detection"
@@ -152,7 +153,7 @@ function Builder() {
                             </li>
                           )}
                           {/* User Scoring */}
-                          {!isAnalyst(user) && (
+                          {sections.customer_scoring && (
                             <li>
                               {match(featuresAccess.userScoring)
                                 .with(P.union('allowed', 'test'), () => {
@@ -178,7 +179,7 @@ function Builder() {
                             </li>
                           )}
                           {/* Monitoring (Continuous Screening) */}
-                          {!isAnalyst(user) && (
+                          {sections.continuous_monitoring && (
                             <li>
                               {match(featuresAccess.continuousScreening)
                                 .with(P.union('allowed', 'test'), () => {
@@ -204,15 +205,17 @@ function Builder() {
                             </li>
                           )}
                           {/* Investigations (Cases) */}
-                          <li>
-                            <SidebarLink
-                              labelTKey="navigation:case_manager"
-                              to="/cases"
-                              Icon={(props) => <Icon icon="case-manager" {...props} />}
-                            />
-                          </li>
+                          {sections.case_manager && (
+                            <li>
+                              <SidebarLink
+                                labelTKey="navigation:case_manager"
+                                to="/cases"
+                                Icon={(props) => <Icon icon="case-manager" {...props} />}
+                              />
+                            </li>
+                          )}
                           {/* Global Search (Screening Search) */}
-                          {featuresAccess.isScreeningSearchAvailable ? (
+                          {sections.manual_screening && featuresAccess.isScreeningSearchAvailable ? (
                             <li>
                               <SidebarLink
                                 labelTKey="navigation:screening_search"
@@ -222,20 +225,22 @@ function Builder() {
                             </li>
                           ) : null}
                           {/* Client detail */}
-                          <li>
-                            <SidebarLink
-                              labelTKey="navigation:client_detail"
-                              to="/client-detail"
-                              Icon={(props) => <Icon icon="users" {...props} />}
-                            />
-                          </li>
+                          {sections.customer_hub && (
+                            <li>
+                              <SidebarLink
+                                labelTKey="navigation:client_detail"
+                                to="/client-detail"
+                                Icon={(props) => <Icon icon="users" {...props} />}
+                              />
+                            </li>
+                          )}
                         </ul>
                       </nav>
                       {/* Secondary Navigation - Bottom */}
                       <nav className="p-sm pb-md">
                         <ul className="flex w-full min-w-0 flex-col gap-sm">
                           {/* Your Data */}
-                          {!isAnalyst(user) && (
+                          {sections.data_model && (
                             <li>
                               <SidebarLink
                                 labelTKey="navigation:data"

@@ -65,6 +65,8 @@
   "live": "En direct",
   "load_more_results": "Charger plus de résultats",
   "loading": "Chargement...",
+  "lost.subtitle": "Votre rôle ne vous donne accès à aucune section. Contactez l'administrateur de votre organisation pour obtenir un accès.",
+  "lost.title": "Rien à afficher pour le moment",
   "max_size_exceeded": "La taille maximale est de {{size}} Mo. Veuillez réessayer avec un fichier plus petit.",
   "missing_configuration": "Marble a détecté une configuration manquante pour cette fonctionnalité. Consultez la documentation pour la configurer correctement.",
   "missing_configuration_title": "Configuration manquante",

@@ -14,8 +14,8 @@ describe('custom roles settings access', () => {
   };
 
   it('requires MANAGE_ROLES regardless of role name', () => {
-    const without = adaptCurrentUser({ ...credentials, roles: ['ADMIN'] });
-    const withPermission = adaptCurrentUser({ ...credentials, permissions: ['MANAGE_ROLES'] });
+    const without = adaptCurrentUser({ credentials: { ...credentials, roles: ['ADMIN'] } });
+    const withPermission = adaptCurrentUser({ credentials: { ...credentials, permissions: ['MANAGE_ROLES'] } });
 
     expect(getSettingsAccess(without, config, []).custom_roles.settings).toEqual([]);
     const sections = getSettingsAccess(withPermission, config, []);

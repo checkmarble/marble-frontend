@@ -1,21 +1,8 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-const detectionLayoutLoader = createServerFn()
-  .middleware([authMiddleware])
-  .handler(async function detectionLayout({ context }) {
-    if (isAnalyst(context.authInfo.user)) {
-      throw redirect({ to: '/cases' });
-    }
-    return null;
-  });
-
 export const Route = createFileRoute('/_app/_builder/detection')({
-  loader: () => detectionLayoutLoader(),
   staticData: {
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {

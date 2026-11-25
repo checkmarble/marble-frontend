@@ -65,6 +65,8 @@
   "live": "Live",
   "load_more_results": "Load more results",
   "loading": "Loading...",
+  "lost.subtitle": "Your role doesn't give you access to any section. Contact your organization admin to get access.",
+  "lost.title": "Nothing to see here yet",
   "max_size_exceeded": "{{size}} MB is the maximum file size. Please try again with a smaller file.",
   "missing_configuration": "Marble identified missing configuration for this feature. Please check the docs for the correct configuration setup.",
   "missing_configuration_title": "Missing Configuration",

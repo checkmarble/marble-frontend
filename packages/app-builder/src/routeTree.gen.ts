@@ -33,6 +33,7 @@ import { Route as AppBuilderCasesRouteImport } from './routes/_app/_builder/case
 import { Route as AppBuilderContinuousScreeningRouteImport } from './routes/_app/_builder/continuous-screening'
 import { Route as AppBuilderDataRouteImport } from './routes/_app/_builder/data'
 import { Route as AppBuilderDetectionRouteImport } from './routes/_app/_builder/detection'
+import { Route as AppBuilderLostRouteImport } from './routes/_app/_builder/lost'
 import { Route as AppBuilderScreeningSearchRouteImport } from './routes/_app/_builder/screening-search'
 import { Route as AppBuilderSettingsRouteImport } from './routes/_app/_builder/settings'
 import { Route as AppBuilderTestGraphRouteImport } from './routes/_app/_builder/test-graph'
@@ -245,6 +246,11 @@ const AppBuilderDataRoute = AppBuilderDataRouteImport.update({
 const AppBuilderDetectionRoute = AppBuilderDetectionRouteImport.update({
   id: '/detection',
   path: '/detection',
+  getParentRoute: () => AppBuilderRoute,
+} as any)
+const AppBuilderLostRoute = AppBuilderLostRouteImport.update({
+  id: '/lost',
+  path: '/lost',
   getParentRoute: () => AppBuilderRoute,
 } as any)
 const AppBuilderScreeningSearchRoute =
@@ -828,6 +834,7 @@ export interface FileRoutesByFullPath {
   '/continuous-screening': typeof AppBuilderContinuousScreeningRouteWithChildren
   '/data': typeof AppBuilderDataRouteWithChildren
   '/detection': typeof AppBuilderDetectionRouteWithChildren
+  '/lost': typeof AppBuilderLostRoute
   '/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/settings': typeof AppBuilderSettingsRouteWithChildren
   '/test-graph': typeof AppBuilderTestGraphRouteWithChildren
@@ -938,6 +945,7 @@ export interface FileRoutesByTo {
   '/sign-in-oidc': typeof AppAuthSignInOidcRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
+  '/lost': typeof AppBuilderLostRoute
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
   '/cases': typeof AppBuilderCasesIndexRoute
   '/cases/analytics': typeof AppBuilderCasesAnalyticsRoute
@@ -1039,6 +1047,7 @@ export interface FileRoutesById {
   '/_app/_builder/continuous-screening': typeof AppBuilderContinuousScreeningRouteWithChildren
   '/_app/_builder/data': typeof AppBuilderDataRouteWithChildren
   '/_app/_builder/detection': typeof AppBuilderDetectionRouteWithChildren
+  '/_app/_builder/lost': typeof AppBuilderLostRoute
   '/_app/_builder/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/_app/_builder/settings': typeof AppBuilderSettingsRouteWithChildren
   '/_app/_builder/test-graph': typeof AppBuilderTestGraphRouteWithChildren
@@ -1157,6 +1166,7 @@ export interface FileRouteTypes {
     | '/continuous-screening'
     | '/data'
     | '/detection'
+    | '/lost'
     | '/screening-search'
     | '/settings'
     | '/test-graph'
@@ -1267,6 +1277,7 @@ export interface FileRouteTypes {
     | '/sign-in-oidc'
     | '/account'
     | '/analytics-legacy'
+    | '/lost'
     | '/ressources/data/export-org'
     | '/cases'
     | '/cases/analytics'
@@ -1367,6 +1378,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/continuous-screening'
     | '/_app/_builder/data'
     | '/_app/_builder/detection'
+    | '/_app/_builder/lost'
     | '/_app/_builder/screening-search'
     | '/_app/_builder/settings'
     | '/_app/_builder/test-graph'
@@ -1650,6 +1662,13 @@ declare module '@tanstack/react-router' {
       path: '/detection'
       fullPath: '/detection'
       preLoaderRoute: typeof AppBuilderDetectionRouteImport
+      parentRoute: typeof AppBuilderRoute
+    }
+    '/_app/_builder/lost': {
+      id: '/_app/_builder/lost'
+      path: '/lost'
+      fullPath: '/lost'
+      preLoaderRoute: typeof AppBuilderLostRouteImport
       parentRoute: typeof AppBuilderRoute
     }
     '/_app/_builder/screening-search': {
@@ -2845,6 +2864,7 @@ interface AppBuilderRouteChildren {
   AppBuilderContinuousScreeningRoute: typeof AppBuilderContinuousScreeningRouteWithChildren
   AppBuilderDataRoute: typeof AppBuilderDataRouteWithChildren
   AppBuilderDetectionRoute: typeof AppBuilderDetectionRouteWithChildren
+  AppBuilderLostRoute: typeof AppBuilderLostRoute
   AppBuilderScreeningSearchRoute: typeof AppBuilderScreeningSearchRouteWithChildren
   AppBuilderSettingsRoute: typeof AppBuilderSettingsRouteWithChildren
   AppBuilderTestGraphRoute: typeof AppBuilderTestGraphRouteWithChildren
@@ -2862,6 +2882,7 @@ const AppBuilderRouteChildren: AppBuilderRouteChildren = {
     AppBuilderContinuousScreeningRouteWithChildren,
   AppBuilderDataRoute: AppBuilderDataRouteWithChildren,
   AppBuilderDetectionRoute: AppBuilderDetectionRouteWithChildren,
+  AppBuilderLostRoute: AppBuilderLostRoute,
   AppBuilderScreeningSearchRoute: AppBuilderScreeningSearchRouteWithChildren,
   AppBuilderSettingsRoute: AppBuilderSettingsRouteWithChildren,
   AppBuilderTestGraphRoute: AppBuilderTestGraphRouteWithChildren,

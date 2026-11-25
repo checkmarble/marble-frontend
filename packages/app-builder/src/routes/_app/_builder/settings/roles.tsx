@@ -1,7 +1,5 @@
 import { Page } from '@app-builder/components';
 import { Callout } from '@app-builder/components/Callout';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { RolePermissionSelector } from '@app-builder/components/Settings/RolePermissionSelector';
 import { CustomRolesLoadError } from '@app-builder/components/Settings/Roles/CustomRolesLoadError';
 import { DeleteCustomRole } from '@app-builder/components/Settings/Roles/DeleteCustomRole';
@@ -28,7 +26,7 @@ import { type CustomRoleDto } from 'marble-api';
 import { useId, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, type MarbleTableFeatures, Panel, Tooltip, useTable } from 'ui-design-system';
+import { Button, Input, type MarbleTableFeatures, Panel, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const rolesLoader = createServerFn()
@@ -211,14 +209,16 @@ export function CreateRolePanel({
         <form.Field name="name" validators={{ onBlur: createCustomRoleSchema.shape.name }}>
           {(field) => (
             <div className="flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:custom_roles.name')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:custom_roles.name')}</label>
+              <Input
+                id={field.name}
                 name={field.name}
                 type="text"
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.currentTarget.value)}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 disabled={!!role || roleCreated}
               />
               {field.state.meta.errors.length > 0 ? (
@@ -230,14 +230,16 @@ export function CreateRolePanel({
         <form.Field name="slug" validators={{ onBlur: createCustomRoleSchema.shape.slug }}>
           {(field) => (
             <div className="flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:custom_roles.slug')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:custom_roles.slug')}</label>
+              <Input
+                id={field.name}
                 name={field.name}
                 type="text"
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.currentTarget.value)}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 disabled={!!role || roleCreated}
               />
               <p className="text-grey-secondary text-s">{t('settings:custom_roles.slug_hint')}</p>

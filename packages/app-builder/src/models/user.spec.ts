@@ -21,7 +21,7 @@ const credentials: CredentialsDto['credentials'] = {
 
 describe('current user access', () => {
   it('preserves all roles from grant-based credentials and recognizes the organization admin', () => {
-    const user = adaptCurrentUser(credentials);
+    const user = adaptCurrentUser({ credentials });
 
     expect(user.roles).toEqual(['ADMIN', 'TENANT_ADMIN']);
     expect(isAdmin(user)).toBe(true);
@@ -38,7 +38,7 @@ describe('current user access', () => {
     { roles: ['VIEWER'], admin: false, marbleAdmin: false, analyst: false, coreUser: true },
     { roles: [], admin: false, marbleAdmin: false, analyst: false, coreUser: false },
   ])('checks every granted role for $roles', ({ roles, admin, marbleAdmin, analyst, coreUser }) => {
-    const user = adaptCurrentUser({ ...credentials, roles });
+    const user = adaptCurrentUser({ credentials: { ...credentials, roles } });
 
     expect(isAdmin(user)).toBe(admin);
     expect(isMarbleAdmin(user)).toBe(marbleAdmin);
@@ -48,11 +48,20 @@ describe('current user access', () => {
 
   it('treats omitted roles as an empty list', () => {
     const { roles, ...credentialsWithoutRoles } = credentials;
-    const user = adaptCurrentUser(credentialsWithoutRoles);
+    const user = adaptCurrentUser({ credentials: credentialsWithoutRoles });
 
     expect(user.roles).toEqual([]);
     expect(isAdmin(user)).toBe(false);
     expect(isMarbleCoreUser(user)).toBe(false);
+  });
+
+  it('hides only the sections the credentials mark hidden, including when the map is omitted', () => {
+    const user = adaptCurrentUser({ credentials, sections: { case_manager: false, settings: true } });
+
+    expect(user.sections.case_manager).toBe(false);
+    expect(user.sections.settings).toBe(true);
+    expect(user.sections.scenarios).toBe(true);
+    expect(Object.values(adaptCurrentUser({ credentials }).sections).every(Boolean)).toBe(true);
   });
 });
 

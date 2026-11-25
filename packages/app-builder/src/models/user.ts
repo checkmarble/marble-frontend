@@ -1,3 +1,4 @@
+import { type SectionsVisibility, sectionsVisibility } from '@app-builder/models/custom-role-sections';
 import { type ParseKeys } from 'i18next';
 import { type CredentialsDto, type RoleBinding, type UserDto } from 'marble-api';
 import * as R from 'remeda';
@@ -12,6 +13,7 @@ export interface CurrentUser {
     lastName?: string;
   };
   permissions: UserPermissions;
+  sections: SectionsVisibility;
 }
 
 function NewPermissionsList() {
@@ -51,7 +53,7 @@ export function NewPermissions(): UserPermissions {
   return R.mapValues(NewPermissionsList(), () => false);
 }
 
-export function adaptCurrentUser(credentials: CredentialsDto['credentials']): CurrentUser {
+export function adaptCurrentUser({ credentials, sections }: CredentialsDto): CurrentUser {
   return {
     organizationId: credentials.organization_id,
     roles: credentials.roles ?? [],
@@ -65,6 +67,7 @@ export function adaptCurrentUser(credentials: CredentialsDto['credentials']): Cu
       NewPermissionsList(),
       R.mapValues((permissionList) => credentials.permissions.includes(permissionList)),
     ),
+    sections: sectionsVisibility(sections),
   };
 }
 

@@ -1,6 +1,5 @@
 import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { isAnalyst } from '@app-builder/models';
 import { logoutFn } from '@app-builder/server-fns/auth';
 import { segment } from '@app-builder/services/segment';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
@@ -15,16 +14,15 @@ import { authMiddleware } from '../middlewares/auth-middleware';
 const appRouterLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function appRouterLoader({ context }) {
-    if (isAnalyst(context.authInfo.user)) {
-      throw redirect({ to: '/cases' });
-    }
+    const { user, dataModelRepository } = context.authInfo;
+    const { sections } = user;
 
-    const dataModel = await context.authInfo.dataModelRepository.getDataModel();
-    if (dataModel.length === 0) {
+    if (sections.data_model && (await dataModelRepository.getDataModel()).length === 0) {
       throw redirect({ to: '/data/list' });
     }
-
-    throw redirect({ to: '/detection' });
+    if (sections.scenarios) throw redirect({ to: '/detection' });
+    if (sections.case_manager) throw redirect({ to: '/cases' });
+    throw redirect({ to: '/lost' });
   });
 
 export const Route = createFileRoute('/app-router')({

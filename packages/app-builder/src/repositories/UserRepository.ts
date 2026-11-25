@@ -8,9 +8,7 @@ export interface UserRepository {
 export function makeGetUserRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): UserRepository => ({
     getCurrentUser: async () => {
-      const { credentials } = await marbleCoreApiClient.getCredentials();
-
-      return adaptCurrentUser(credentials);
+      return adaptCurrentUser(await marbleCoreApiClient.getCredentials());
     },
   });
 }

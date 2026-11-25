@@ -79,6 +79,10 @@ export type CredentialsDto = {
         /** Whether the current sign-in used a second factor. */
         used_second_factor: boolean;
     };
+    /** Visibility of each app section for the principal (true means visible). Sections left out are visible. */
+    sections?: {
+        [key: string]: boolean;
+    };
 };
 export type OrganizationEnvironmentDto = "production" | "staging" | "demo";
 export type UserOrganizationDto = {
