@@ -24,13 +24,15 @@ import {
 } from 'marble-api';
 import * as R from 'remeda';
 import {
-  adaptScreeningMatchComments,
+  adaptContinuousScreeningMatchComments,
   adaptScreeningMatchPayload,
+  adaptScreeningMatchTentativeReview,
+  type ContinuousScreeningMatchComment,
   isKnownEntitySchema,
   matchEntitySchemas,
   type OpenSanctionEntitySchema,
-  type ScreeningMatchComment,
   type ScreeningMatchPayload,
+  type ScreeningMatchTentativeReview,
 } from './screening';
 import { createScreeningFilters, getDatasetFromFilters } from './screening-config';
 
@@ -371,7 +373,10 @@ export type ContinuousScreeningMatchBase = {
   payload: ContinuousScreeningMatchPayload;
   /** The user who decided the match. */
   reviewedBy?: string;
-  comments: ScreeningMatchComment[];
+  /** Excludes the comment of the active tentative review, which is in `tentativeReview`. */
+  comments: ContinuousScreeningMatchComment[];
+  /** The backend keeps it after the match gets a final decision, so check `status` before showing it as pending. */
+  tentativeReview: ScreeningMatchTentativeReview | null;
 };
 
 export type ContinuousScreeningMatchScreeningEntity = ContinuousScreeningMatchBase & {
@@ -442,7 +447,8 @@ function adaptContinuousScreeningMatchBase(dto: ContinuousScreeningMatchBaseDto)
       datasets: dto.payload.datasets,
     },
     reviewedBy: dto.reviewed_by,
-    comments: adaptScreeningMatchComments(dto.comments),
+    comments: adaptContinuousScreeningMatchComments(dto.comments),
+    tentativeReview: adaptScreeningMatchTentativeReview(dto.tentative_review),
   };
 }
 
@@ -500,3 +506,15 @@ export const getMatchEntityType = (screeningMatch: ContinuousScreeningMatch): st
   }
   return screeningMatch.payload.schema;
 };
+
+export type PendingTentativeReview = {
+  match: ContinuousScreeningMatch;
+  review: ScreeningMatchTentativeReview;
+};
+
+/** Tentative reviews that still await confirmation: a match with a final decision no longer needs one. */
+export function getPendingTentativeReviews(matches: ContinuousScreeningMatch[]): PendingTentativeReview[] {
+  return matches.flatMap((match) =>
+    match.status === 'pending' && match.tentativeReview ? [{ match, review: match.tentativeReview }] : [],
+  );
+}

@@ -1018,24 +1018,90 @@ components:
         comments:
           type: array
           items:
-            type: object
-            required:
-              - id
-              - author_id
-              - comment
-              - created_at
-            properties:
-              id:
-                type: string
-                format: uuid
-              author_id:
-                type: string
-                format: uuid
-              comment:
-                type: string
-              created_at:
-                type: string
-                format: date-time
+            $ref: '#/components/schemas/ScreeningMatchCommentDto'
+    ScreeningMatchTentativeReviewStatusDto:
+      type: string
+      enum: ['confirmed_hit', 'no_hit']
+    ScreeningMatchCommentDto:
+      type: object
+      required:
+        - id
+        - author_id
+        - comment
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        tentative_review:
+          description: Set when the comment carries a tentative review that a newer one replaced. The active tentative review is returned on the match instead.
+          type: object
+          required:
+            - status
+          properties:
+            status:
+              $ref: '#/components/schemas/ScreeningMatchTentativeReviewStatusDto'
+            inbox_id:
+              type: string
+              format: uuid
+              description: The inbox of the case when the tentative review was submitted
+            superseded_at:
+              type: string
+              format: date-time
+        created_at:
+          type: string
+          format: date-time
+    ScreeningMatchTentativeReviewDto:
+      description: The active tentative review of a match, with the comment that carries it. Null when the match has none.
+      type: object
+      # OpenAPI 3.0 ignores `nullable` next to an untyped `allOf`, so the referenced schema carries it.
+      nullable: true
+      required:
+        - id
+        - author_id
+        - comment
+        - status
+        - inbox_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        status:
+          $ref: '#/components/schemas/ScreeningMatchTentativeReviewStatusDto'
+        inbox_id:
+          type: string
+          format: uuid
+          description: The inbox of the case when the tentative review was submitted
+        created_at:
+          type: string
+          format: date-time
+    CreateScreeningMatchCommentDto:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: string
+          minLength: 1
+        tentative_review:
+          description: Makes the comment a tentative review. Allowed only on a pending match of a screening in review, attached to a case.
+          type: object
+          required:
+            - status
+          properties:
+            status:
+              $ref: '#/components/schemas/ScreeningMatchTentativeReviewStatusDto'
     ScreeningEntityDto:
       type: string
       enum:

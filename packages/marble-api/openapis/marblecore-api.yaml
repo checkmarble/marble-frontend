@@ -302,6 +302,8 @@ paths:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1client-data-indexing
   /continuous-screenings/matches/{id}:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1matches~1{id}
+  /continuous-screenings/matches/{id}/comments:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1matches~1{id}~1comments
   /continuous-screenings/matches/review:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1matches~1review
   /continuous-screenings:

@@ -1,8 +1,13 @@
-import { type ScreeningMatchReviewedEvent, type ScreeningReviewedEvent } from '@app-builder/models/cases';
+import {
+  type ScreeningMatchCommentedEvent,
+  type ScreeningMatchReviewedEvent,
+  type ScreeningReviewedEvent,
+} from '@app-builder/models/cases';
+import { tentativeReviewDecisionKeys } from '@app-builder/models/screening';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { Trans, useTranslation } from 'react-i18next';
-import { Tag, type TagProps } from 'ui-design-system';
+import { Markdown, Tag, type TagProps } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { casesI18n } from '../cases-i18n';
@@ -60,4 +65,40 @@ export function ScreeningMatchReviewedDetail({ event }: { event: ScreeningMatchR
 
 export function ScreeningReviewedDetail({ event }: { event: ScreeningReviewedEvent }) {
   return <ScreeningReviewEvent event={event} i18nKey="cases:case_detail.history.event_detail.screening_reviewed" />;
+}
+
+export function ScreeningMatchCommentedDetail({ event }: { event: ScreeningMatchCommentedEvent }) {
+  const { t } = useTranslation(casesI18n);
+  const { getOrgUserById } = useOrganizationUsers();
+  const user = event.userId ? getOrgUserById(event.userId) : undefined;
+  // A reviewer who left the organization is no longer in the user list, but still wrote this review.
+  const actor = event.userId ? getFullName(user) || t('cases:case_detail.unknown_user') : 'Marble';
+  return (
+    <div key={event.id} className="flex w-full items-start gap-sm">
+      <div className="bg-surface-card border-grey-border flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
+        <Icon icon="manage-search" className="text-grey-primary size-3" />
+      </div>
+      <div className="flex min-w-0 flex-col gap-xs text-xs text-grey-primary">
+        <span className="inline-flex min-h-6 items-center whitespace-pre">
+          <Trans
+            t={t}
+            i18nKey="cases:case_detail.history.event_detail.screening_match_commented"
+            components={{
+              Actor: <span className="font-bold capitalize" />,
+              Status: (
+                <Tag size="xs" color="yellow">
+                  {t(tentativeReviewDecisionKeys[event.status])}
+                </Tag>
+              ),
+            }}
+            values={{ actor }}
+          />
+        </span>
+        <div className="whitespace-pre-wrap">
+          <Markdown>{event.comment}</Markdown>
+        </div>
+      </div>
+      <EventTime time={event.createdAt} />
+    </div>
+  );
 }

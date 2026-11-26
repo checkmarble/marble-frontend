@@ -329,18 +329,37 @@ export type ContinuousScreeningMatchPayloadDto = ScreeningMatchPayloadDto & {
     datasets: string[];
     target: boolean;
 };
+export type ScreeningMatchTentativeReviewStatusDto = "confirmed_hit" | "no_hit";
+export type ScreeningMatchCommentDto = {
+    id: string;
+    author_id: string;
+    comment: string;
+    /** Set when the comment carries a tentative review that a newer one replaced. The active tentative review is returned on the match instead. */
+    tentative_review?: {
+        status: ScreeningMatchTentativeReviewStatusDto;
+        /** The inbox of the case when the tentative review was submitted */
+        inbox_id?: string;
+        superseded_at?: string;
+    };
+    created_at: string;
+};
+export type ScreeningMatchTentativeReviewDto = {
+    id: string;
+    author_id: string;
+    comment: string;
+    status: ScreeningMatchTentativeReviewStatusDto;
+    /** The inbox of the case when the tentative review was submitted */
+    inbox_id: string;
+    created_at: string;
+} | null;
 export type ContinuousScreeningMatchBaseDto = {
     id: string;
     continuous_screening_id: string;
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     payload: ContinuousScreeningMatchPayloadDto;
     reviewed_by?: string;
-    comments: {
-        id: string;
-        author_id: string;
-        comment: string;
-        created_at: string;
-    }[];
+    comments: ScreeningMatchCommentDto[];
+    tentative_review: ScreeningMatchTentativeReviewDto;
     created_at: string;
     updated_at: string;
 };
@@ -570,6 +589,18 @@ export type ScreeningMatchReviewedEventDto = {
     /** The id of the continuous screening match */
     resource_id: string;
 };
+export type ScreeningMatchCommentedEventDto = {
+    event_type: "screening_match_commented";
+} & CaseEventDtoBase & {
+    user_id?: string | null;
+    /** The status of the tentative review */
+    new_value: "confirmed_hit" | "no_hit";
+    /** The comment that carries the tentative review */
+    additional_note: string;
+    resource_type: "continuous_screening_match" | "screening_match";
+    /** The id of the screening match */
+    resource_id: string;
+};
 export type ScreeningReviewedEventDto = {
     event_type: "sanction_check_reviewed";
 } & CaseEventDtoBase & {
@@ -582,7 +613,7 @@ export type ScreeningReviewedEventDto = {
     resource_type: "decision" | "continuous_screening";
     resource_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto | CaseEntityAddedEventDto | CaseEntityRemovedEventDto | ScreeningMatchReviewedEventDto | ScreeningReviewedEventDto;
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto | CaseEntityAddedEventDto | CaseEntityRemovedEventDto | ScreeningMatchReviewedEventDto | ScreeningMatchCommentedEventDto | ScreeningReviewedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -1193,12 +1224,7 @@ export type ScreeningMatchDto = {
     datasets: any;
     payload: ScreeningMatchPayloadDto;
     enriched: boolean;
-    comments: {
-        id: string;
-        author_id: string;
-        comment: string;
-        created_at: string;
-    }[];
+    comments: ScreeningMatchCommentDto[];
 };
 export type ScreeningSuccessDto = {
     id: string;
@@ -1520,6 +1546,13 @@ export type ContinuousScreeningClientDataIndexingResponseDto = {
     /** Dataset versions processed by Motiva. */
     items: ContinuousScreeningClientDataIndexingDto[];
     has_next_page: boolean;
+};
+export type CreateScreeningMatchCommentDto = {
+    comment: string;
+    /** Makes the comment a tentative review. Allowed only on a pending match of a screening in review, attached to a case. */
+    tentative_review?: {
+        status: ScreeningMatchTentativeReviewStatusDto;
+    };
 };
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
@@ -5363,6 +5396,21 @@ export function updateContinuousScreeningMatch(id: string, updateScreeningMatchD
         ...opts,
         method: "PATCH",
         body: updateScreeningMatchDto
+    })));
+}
+/**
+ * Comment on a continuous screening match, optionally with a tentative review
+ */
+export function createContinuousScreeningMatchComment(id: string, createScreeningMatchCommentDto: CreateScreeningMatchCommentDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: ScreeningMatchCommentDto;
+    } | {
+        status: 422;
+    }>(`/continuous-screenings/matches/${encodeURIComponent(id)}/comments`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createScreeningMatchCommentDto
     })));
 }
 /**

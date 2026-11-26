@@ -105,6 +105,8 @@ ScreeningMatchReviewedEventDto:
   $ref: cases.yml#/components/schemas/ScreeningMatchReviewedEventDto
 ScreeningReviewedEventDto:
   $ref: cases.yml#/components/schemas/ScreeningReviewedEventDto
+ScreeningMatchCommentedEventDto:
+  $ref: cases.yml#/components/schemas/ScreeningMatchCommentedEventDto
 CaseCreatedEventDto:
   $ref: cases.yml#/components/schemas/CaseCreatedEventDto
 CaseStatusUpdatedEventDto:
@@ -352,6 +354,14 @@ ScreeningRefineDto:
   $ref: screenings.yml#/components/schemas/ScreeningRefineDto
 updateScreeningMatchDto:
   $ref: screenings.yml#/components/schemas/updateScreeningMatchDto
+ScreeningMatchCommentDto:
+  $ref: screenings.yml#/components/schemas/ScreeningMatchCommentDto
+ScreeningMatchTentativeReviewDto:
+  $ref: screenings.yml#/components/schemas/ScreeningMatchTentativeReviewDto
+ScreeningMatchTentativeReviewStatusDto:
+  $ref: screenings.yml#/components/schemas/ScreeningMatchTentativeReviewStatusDto
+CreateScreeningMatchCommentDto:
+  $ref: screenings.yml#/components/schemas/CreateScreeningMatchCommentDto
 ScreeningAiSuggestionDto:
   $ref: screenings.yml#/components/schemas/ScreeningAiSuggestionDto
 ScreeningFreeformSearchDto:

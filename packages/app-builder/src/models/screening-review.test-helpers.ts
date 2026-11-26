@@ -48,6 +48,7 @@ export function objectReviewScreening(
         status: 'pending',
         payload: reviewPayload('record-high', 'List record A', 0.95),
         comments: [],
+        tentativeReview: null,
       },
       {
         id: `${id}-low`,
@@ -56,6 +57,7 @@ export function objectReviewScreening(
         status: 'pending',
         payload: reviewPayload('record-low', 'List record B', 0.8),
         comments: [],
+        tentativeReview: null,
       },
     ],
   };
@@ -89,6 +91,7 @@ export function datasetReviewScreening(id = 'dataset-1'): ContinuousScreeningScr
         status: 'pending',
         payload: reviewPayload('customer-alice', 'Alice', 0.9),
         comments: [],
+        tentativeReview: null,
       },
       {
         id: `${id}-bob`,
@@ -98,6 +101,7 @@ export function datasetReviewScreening(id = 'dataset-1'): ContinuousScreeningScr
         status: 'pending',
         payload: reviewPayload('customer-bob', 'Bob', 0.7),
         comments: [],
+        tentativeReview: null,
       },
     ],
   };

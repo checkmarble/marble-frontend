@@ -26,6 +26,7 @@ import { CaseInfo } from './CaseInfo';
 import { CaseInvestigation } from './CaseInvestigation/CaseInvestigation';
 import { ScreeningMatchList } from './ContinuousScreening/MatchList';
 import { RequestSideInfo } from './ContinuousScreening/RequestSideInfo';
+import { TentativeReviewsCallout } from './ContinuousScreening/TentativeReview';
 import { EscalateCaseButton } from './EscalateCaseButton';
 
 type ContinuousScreeningPageProps = {
@@ -148,6 +149,7 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
                 </div>
               </div>
               <Card className="grid grid-cols-[2fr_1fr] gap-sm">
+                <TentativeReviewsCallout screening={screening} className="col-span-full" />
                 <CaseInfo caseDetail={caseDetail} currentUser={currentUser} />
                 <CaseEvents
                   events={caseDetail.events}

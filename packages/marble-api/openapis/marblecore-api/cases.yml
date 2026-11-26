@@ -1525,6 +1525,7 @@ components:
           entity_added: "#/components/schemas/CaseEntityAddedEventDto"
           entity_removed: "#/components/schemas/CaseEntityRemovedEventDto"
           screening_match_reviewed: "#/components/schemas/ScreeningMatchReviewedEventDto"
+          screening_match_commented: "#/components/schemas/ScreeningMatchCommentedEventDto"
           sanction_check_reviewed: "#/components/schemas/ScreeningReviewedEventDto"
       required:
         - id
@@ -2190,6 +2191,34 @@ components:
               type: string
               format: uuid
               description: The id of the continuous screening match
+    ScreeningMatchCommentedEventDto:
+      allOf:
+        - $ref: "#/components/schemas/CaseEventDto"
+        - type: object
+          required:
+            - new_value
+            - additional_note
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+              nullable: true
+            new_value:
+              type: string
+              description: The status of the tentative review
+              enum: ["confirmed_hit", "no_hit"]
+            additional_note:
+              type: string
+              description: The comment that carries the tentative review
+            resource_type:
+              type: string
+              enum: ["continuous_screening_match", "screening_match"]
+            resource_id:
+              type: string
+              format: uuid
+              description: The id of the screening match
     ScreeningReviewedEventDto:
       allOf:
         - $ref: "#/components/schemas/CaseEventDto"
