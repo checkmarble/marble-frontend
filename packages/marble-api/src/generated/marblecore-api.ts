@@ -84,6 +84,27 @@ export type UserOrganizationDto = {
     roles: string[];
     environment: OrganizationEnvironmentDto;
 };
+export type CustomRoleDto = {
+    /** Organization-scoped role slug, for example org/fraud.analyst. */
+    slug: string;
+    name: string;
+    permissions: string[];
+    /** Visibility of each app section for this role (true means visible). */
+    sections: {
+        [key: string]: boolean;
+    };
+};
+export type CreateCustomRoleBody = {
+    /** Organization-scoped role slug, for example org/fraud.analyst. */
+    slug: string;
+    name: string;
+};
+export type UpdateCustomRolePermissionsBody = {
+    /** Organization-scoped role slug. */
+    role: string;
+    /** Permission names replacing the role's current permissions. */
+    permissions: string[];
+};
 export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" | "unknown";
 export type ReviewStatusDto = "pending" | "approve" | "decline";
 export type Pagination = {
@@ -1896,6 +1917,7 @@ export type CreateInitialOrgBody = {
 };
 export type RoleBinding = {
     id?: string;
+    /** Native role name or organization-scoped custom role slug. */
     role: string;
 };
 export type ApiKeyDto = {
@@ -2739,6 +2761,134 @@ export function listMyOrganizations(opts?: Oazapfts.RequestOpts) {
         data: string;
     }>("/me/organizations", {
         ...opts
+    }));
+}
+/**
+ * List the current organization's custom roles
+ */
+export function listCustomRoles(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomRoleDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/roles", {
+        ...opts
+    }));
+}
+/**
+ * Create a custom role without permissions
+ */
+export function createCustomRole(createCustomRoleBody: CreateCustomRoleBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: CustomRoleDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/roles", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCustomRoleBody
+    })));
+}
+/**
+ * Replace a custom role's permissions
+ */
+export function updateCustomRolePermissions(updateCustomRolePermissionsBody: UpdateCustomRolePermissionsBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomRoleDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/roles/permissions", oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: updateCustomRolePermissionsBody
+    })));
+}
+/**
+ * Replace a custom role's section visibility
+ */
+export function updateCustomRoleSections(body: {
+    /** Organization-scoped role slug. */
+    role: string;
+    /** Visibility per app section; sections left out stay visible. */
+    sections: {
+        [key: string]: boolean;
+    };
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomRoleDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/roles/sections", oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
+}
+/**
+ * Delete a custom role
+ */
+export function deleteCustomRole(slug: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/roles/${encodeURIComponent(slug)}`, {
+        ...opts,
+        method: "DELETE"
     }));
 }
 /**

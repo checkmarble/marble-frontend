@@ -1,0 +1,34 @@
+import { PERMISSIONS, type Permission } from '@marble/shared';
+
+// These permissions apply beyond an organization and cannot be granted to custom roles.
+const PLATFORM_PERMISSIONS = [
+  'ANY_ORGANIZATION_ID_IN_CONTEXT',
+  'ORGANIZATIONS_LIST',
+  'ORGANIZATIONS_CREATE',
+  'ORGANIZATIONS_DELETE',
+  'LICENSE_LIST',
+  'LICENSE_CREATE',
+  'LICENSE_UPDATE',
+  'TENANTS_MERGE',
+  'TENANTS_LIST',
+  'TENANTS_UPDATE',
+] as const satisfies readonly Permission[];
+
+export type CustomRolePermission = Exclude<Permission, (typeof PLATFORM_PERMISSIONS)[number]>;
+
+const platformPermissions = new Set<string>(PLATFORM_PERMISSIONS);
+
+export const CUSTOM_ROLE_PERMISSIONS = PERMISSIONS.filter(
+  (permission): permission is CustomRolePermission => !platformPermissions.has(permission),
+);
+
+const knownCustomRolePermissions = new Set<string>(CUSTOM_ROLE_PERMISSIONS);
+
+export function isCustomRolePermission(permission: string): boolean {
+  return !platformPermissions.has(permission);
+}
+
+// False for permissions this frontend doesn't know yet (sent by a newer backend), which have no description.
+export function isKnownCustomRolePermission(permission: string): permission is CustomRolePermission {
+  return knownCustomRolePermissions.has(permission);
+}
