@@ -3,12 +3,13 @@ import type { CaseStatus } from '@app-builder/models/cases';
 import {
   buildScreeningReviewItems,
   matchesScreeningReviewFilter,
-  needsFalsePositiveClosure,
+  type ScreeningReviewEscalation,
   type ScreeningReviewFilter,
   type ScreeningReviewItem,
+  screeningReviewCaseFollowUp,
 } from '@app-builder/models/screening-review';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
-import { closeFalsePositiveCase } from './screening-review-decision';
+import { followUpScreeningReviewCase } from './screening-review-decision';
 
 export interface ScreeningReviewPage {
   items: ScreeningReviewItem[];
@@ -16,6 +17,14 @@ export interface ScreeningReviewPage {
   failed: boolean;
   /** Cases this read closed, after a closure that failed on write. To review leaves them out of `items`. */
   closedCaseIds?: string[];
+  escalations?: ScreeningReviewRetriedEscalation[];
+}
+
+export interface ScreeningReviewRetriedEscalation {
+  caseId: string;
+  /** The inbox the case was escalated from. */
+  inboxId: string;
+  escalation: ScreeningReviewEscalation;
 }
 
 /**
@@ -39,7 +48,7 @@ const OPEN_CASE_STATUSES: CaseStatus[] = ['pending', 'investigating', 'waiting_f
  * page can count the other filters from what it loaded.
  */
 export async function readScreeningReviewPage(
-  repository: Pick<CaseRepository, 'listCases' | 'getCase' | 'updateCase'>,
+  repository: Pick<CaseRepository, 'listCases' | 'getCase' | 'updateCase' | 'escalateCase'>,
   userId: string,
   limit: number,
   cursor: string | null,
@@ -47,6 +56,14 @@ export async function readScreeningReviewPage(
 ): Promise<ScreeningReviewPage> {
   const items: ScreeningReviewItem[] = [];
   const closedCaseIds: string[] = [];
+  const escalations: ScreeningReviewRetriedEscalation[] = [];
+  const pageResult = (nextCursor: string | null, failed: boolean): ScreeningReviewPage => ({
+    items,
+    nextCursor,
+    failed,
+    closedCaseIds,
+    escalations,
+  });
   // Closed cases pile up over time, so To review never reads them.
   const includeClosed = filter !== 'to_review';
   let offsetId = cursor;
@@ -68,9 +85,9 @@ export async function readScreeningReviewPage(
         type: ['continuous_screening'],
       });
     } catch {
-      return { items, nextCursor: null, failed: true, closedCaseIds };
+      return pageResult(null, true);
     }
-    if (page.items.length === 0) return { items, nextCursor: null, failed: false, closedCaseIds };
+    if (page.items.length === 0) return pageResult(null, false);
     if (page.items.at(-1)?.id === offsetId) throw new Error('Case pagination did not advance');
 
     // Fetch at most four case details concurrently, preserving the API's cursor order.
@@ -89,18 +106,25 @@ export async function readScreeningReviewPage(
             (detail.snoozedUntil && Date.parse(detail.snoozedUntil) > Date.now())
           )
             return [];
-          // A closure that failed after the last review is retried here; its hits are done either way.
-          if (needsFalsePositiveClosure(detail)) {
-            const closed = await closeFalsePositiveCase(repository, detail);
-            if (closed) closedCaseIds.push(detail.id);
-            return includeClosed ? buildScreeningReviewItems([closed ? { ...detail, status: 'closed' } : detail]) : [];
+          // A closure or an escalation that failed after the last review is retried here.
+          const followUp = screeningReviewCaseFollowUp(detail, userId);
+          if (followUp === 'none') return buildScreeningReviewItems([detail]);
+          const { caseClosed, escalation } = await followUpScreeningReviewCase(repository, detail, userId);
+          if (escalation) {
+            escalations.push({ caseId: detail.id, inboxId: detail.inboxId, escalation });
+            // An escalated case is no longer assigned to the user.
+            return escalation === 'escalated' ? [] : buildScreeningReviewItems([detail]);
           }
-          return buildScreeningReviewItems([detail]);
+          // The hits of a case to close are done either way.
+          if (caseClosed) closedCaseIds.push(detail.id);
+          return includeClosed
+            ? buildScreeningReviewItems([caseClosed ? { ...detail, status: 'closed' } : detail])
+            : [];
         }),
       );
       for (const result of results) {
         // Retry the same page on failure. Never advance a cursor beyond missing data.
-        if (result.status === 'rejected') return { items, nextCursor: null, failed: true, closedCaseIds };
+        if (result.status === 'rejected') return pageResult(null, true);
         items.push(...result.value);
         matchingCount += result.value.filter((item) => matchesScreeningReviewFilter(item, filter)).length;
       }
@@ -110,9 +134,9 @@ export async function readScreeningReviewPage(
       scannedCount += batch.length;
       if (matchingCount >= limit || scannedCount >= MAX_SCANNED_CASES) {
         const more = index + batch.length < page.items.length || page.hasNextPage;
-        return { items, nextCursor: more ? offsetId : null, failed: false, closedCaseIds };
+        return pageResult(more ? offsetId : null, false);
       }
     }
-    if (!page.hasNextPage) return { items, nextCursor: null, failed: false, closedCaseIds };
+    if (!page.hasNextPage) return pageResult(null, false);
   }
 }

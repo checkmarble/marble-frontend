@@ -23,12 +23,30 @@ const loader = createServerFn()
   .handler(async ({ context }) => {
     const { user, entitlements, inbox } = context.authInfo;
     if (!isContinuousScreeningAvailable(entitlements)) throw redirect({ to: '/cases' });
-    const inboxes = await inbox.listInboxes();
+    const [inboxes, inboxNames] = await Promise.all([
+      inbox.listInboxes(),
+      // The names of every inbox of the organization: the user is often not a member of an escalation inbox.
+      inbox.listInboxesMetadata().then(
+        (metadata) => new Map(metadata.map(({ id, name }) => [id, name])),
+        (error: unknown) => {
+          if (error instanceof Response) throw error;
+          return new Map<string, string>();
+        },
+      ),
+    ]);
     return {
       canViewAdminSections: isAdmin(user) || inboxes.some((item) => isInboxAdmin(user, item)),
       // The backend gives the dismiss permission to admins only.
       canDismissScreenings: isAdmin(user),
-      inboxes: inboxes.map(({ id, name }) => ({ id, name })),
+      inboxes: inboxes.map(({ id, name, escalationInboxId }) => {
+        const escalationInboxName = escalationInboxId ? inboxNames.get(escalationInboxId) : undefined;
+        return {
+          id,
+          name,
+          ...(escalationInboxId ? { escalationInboxId } : {}),
+          ...(escalationInboxName ? { escalationInboxName } : {}),
+        };
+      }),
     };
   });
 

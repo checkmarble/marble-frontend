@@ -11,13 +11,17 @@ import {
   datasetReviewScreening,
   objectReviewScreening,
   reviewCase,
+  withMatchStatus,
+  withTentativeReview,
 } from '@app-builder/models/screening-review.test-helpers';
 import { loadMoreContinuousScreeningMatchesFn } from '@app-builder/server-fns/continuous-screening';
 import {
   closeScreeningReviewCaseFn,
+  escalateScreeningReviewCaseFn,
   listScreeningReviewPageFn,
   reviewScreeningReviewMatchesFn,
   reviewScreeningReviewMatchFn,
+  submitScreeningReviewTentativeReviewFn,
 } from '@app-builder/server-fns/screening-review';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -27,17 +31,19 @@ import { type ContinuousScreeningDto } from 'marble-api';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ScreeningReviewPage, type ScreeningReviewSearch } from './ScreeningReviewPage';
+import { type ScreeningReviewInbox, ScreeningReviewPage, type ScreeningReviewSearch } from './ScreeningReviewPage';
 
 vi.mock('@app-builder/server-fns/screening-review', () => ({
   listScreeningReviewPageFn: vi.fn(),
   reviewScreeningReviewMatchFn: vi.fn(),
   reviewScreeningReviewMatchesFn: vi.fn(),
   closeScreeningReviewCaseFn: vi.fn(),
+  submitScreeningReviewTentativeReviewFn: vi.fn(),
+  escalateScreeningReviewCaseFn: vi.fn(),
 }));
 vi.mock('@app-builder/server-fns/continuous-screening', () => ({ loadMoreContinuousScreeningMatchesFn: vi.fn() }));
 vi.mock('@app-builder/services/organization/organization-detail', () => ({
-  useOrganizationDetails: () => ({ currentUser: { actorIdentity: { userId: 'user-1' } } }),
+  useOrganizationDetails: () => ({ currentUser: { actorIdentity: { userId: 'user-1' }, roles: [] } }),
 }));
 vi.mock('@app-builder/services/organization/organization-users', () => ({
   useOrganizationUsers: () => ({ getOrgUserById: () => undefined }),
@@ -149,6 +155,7 @@ function renderPage(
   canViewRiskLevel = false,
   canValidate = true,
   canDismissScreenings = false,
+  pageInboxes: ScreeningReviewInbox[] = inboxes,
 ) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
   function Harness() {
@@ -160,7 +167,7 @@ function renderPage(
           canViewRiskLevel={canViewRiskLevel}
           canValidate={canValidate}
           canDismissScreenings={canDismissScreenings}
-          inboxes={inboxes}
+          inboxes={pageInboxes}
           search={search}
           onSearchChange={(next) => {
             onSearchChange(next);
@@ -805,6 +812,125 @@ describe('screening review decisions', () => {
     await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
   });
 
+  describe('tentative review', () => {
+    const escalatingInboxes = [
+      { id: 'inbox', name: 'Screening alerts', escalationInboxId: 'second-review' },
+      { id: 'second-review', name: 'Second review' },
+    ];
+    const requestButton = () => screen.getByRole('button', { name: /screening_review\.dock\.request_confirmation/ });
+    function renderTentative(items = decisionItems, pageInboxes: ScreeningReviewInbox[] = escalatingInboxes) {
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+      return renderPage({ filter: 'to_review' }, false, true, false, pageInboxes);
+    }
+    const draftTentativeNoHit = (comment = '  Same birth year, unsure  ') => {
+      press('n', 'KeyN');
+      fireEvent.change(commentBox(), { target: { value: comment } });
+    };
+
+    it.each([
+      ['an escalation inbox', inboxes, 'Unsure'],
+      ['a comment', escalatingInboxes, ''],
+      ['a non-blank comment', escalatingInboxes, '   '],
+    ] as const)('cannot request confirmation without %s', async (_, pageInboxes, comment) => {
+      renderTentative(decisionItems, pageInboxes);
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      draftTentativeNoHit(comment);
+      expect(requestButton().hasAttribute('disabled')).toBe(true);
+      press('Enter', 'Enter', true);
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      expect(submitScreeningReviewTentativeReviewFn).not.toHaveBeenCalled();
+      expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['Shift+Enter', () => press('Enter', 'Enter', true)],
+      [
+        'Shift+Enter in the comment box',
+        () => {
+          const box = commentBox();
+          box.focus();
+          fireEvent.keyDown(box, { key: 'Enter', code: 'Enter', shiftKey: true });
+        },
+      ],
+      ['the button', () => fireEvent.click(requestButton())],
+    ] as const)('requests confirmation with %s, and writes it after the undo delay', async (_, request) => {
+      vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue(inReview);
+      renderTentative();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      draftTentativeNoHit();
+      request();
+      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
+      expect(card('List record A')?.textContent).toContain('cases:tentative_review.tag.no_hit');
+      expect(await screen.findByText('cases:screening_review.undo.confirmation_requested')).toBeTruthy();
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      await waitFor(() =>
+        expect(submitScreeningReviewTentativeReviewFn).toHaveBeenCalledWith(
+          written('screening-1-high', 'no_hit', { comment: 'Same birth year, unsure' }),
+        ),
+      );
+      expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
+      fireEvent.click(card('List record A')!);
+      await screen.findByText('cases:screening_review.dock.tentative_submitted');
+      expect(screen.getByText('cases:screening_review.dock.escalates_when_reviewed')).toBeTruthy();
+      expect(screen.getByText('cases:screening_review.step.tentative')).toBeTruthy();
+      expect(screen.getAllByText('Same birth year, unsure').length).toBeGreaterThan(0);
+      expect(screen.queryByRole('textbox', { name: 'cases:screening_review.dock.comment' })).toBeNull();
+    });
+
+    it('keeps a case whose escalation failed in To review, tells it once, and offers Escalate', async () => {
+      const due = buildScreeningReviewItems([
+        reviewCase(caseId, [
+          withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', [
+            'screening-1-low',
+          ]),
+        ]),
+      ]);
+      const failedAgain = (items: typeof due) => ({
+        items,
+        nextCursor: null,
+        failed: false,
+        escalations: [{ caseId, inboxId: 'inbox', escalation: 'failed' as const }],
+      });
+      // Different data on refetch, or the page would not read its escalations again.
+      vi.mocked(listScreeningReviewPageFn)
+        .mockResolvedValueOnce(failedAgain(due))
+        .mockResolvedValue(failedAgain([...due].reverse()));
+      vi.mocked(escalateScreeningReviewCaseFn).mockResolvedValue({ ok: true, escalation: 'escalated' });
+      const { queryClient } = renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
+      await screen.findByText('cases:screening_review.escalation.failed');
+      await act(() => queryClient.refetchQueries({ queryKey: ['cases', 'screening-review'] }));
+      await elapse(0);
+      expect(listScreeningReviewPageFn).toHaveBeenCalledTimes(2);
+      expect(screen.getAllByText('cases:screening_review.escalation.failed')).toHaveLength(1);
+      expect(card('List record A')?.textContent).toContain('cases:tentative_review.tag.no_hit');
+      fireEvent.click(card('List record A')!);
+      await screen.findByText('cases:screening_review.screening_state.escalation_pending');
+      fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.escalate_case' }));
+      await waitFor(() => expect(escalateScreeningReviewCaseFn).toHaveBeenCalledWith({ data: { caseId } }));
+      await screen.findByText('cases:screening_review.screening_state.escalated');
+    });
+
+    it.each([
+      ['escalated', false],
+      ['no_escalation_inbox', true],
+    ] as const)('tells the escalation that a request on the last open hit makes: %s', async (escalation, stays) => {
+      const lastOpen = buildScreeningReviewItems([
+        reviewCase(caseId, [withMatchStatus(objectReviewScreening(), 'no_hit', ['screening-1-low'])]),
+      ]);
+      vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue({ ...inReview, escalation });
+      renderTentative(lastOpen);
+      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
+      draftTentativeNoHit();
+      press('Enter', 'Enter', true);
+      expect(await screen.findByText('cases:screening_review.undo.with_escalation')).toBeTruthy();
+      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
+      expect(await screen.findByText(`cases:screening_review.escalation.${escalation}`)).toBeTruthy();
+      expect(card('List record A')).toBeTruthy();
+      await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
+      await waitFor(() => expect(!!card('List record A')).toBe(stays));
+    });
+  });
+
   it('keeps a decided hit decided when a window-focus refetch returns the data from before the write', async () => {
     vi.mocked(reviewScreeningReviewMatchFn).mockResolvedValue(inReview);
     const { queryClient } = renderDecisionPage();
@@ -1108,6 +1234,56 @@ describe('screening review decisions', () => {
       fireEvent.click(closeButton()!);
       await screen.findByText('cases:screening_review.screening_state.closure_pending');
       expect(closeButton()).toBeNull();
+    });
+
+    describe('with a tentative review on the case', () => {
+      const tentativePartial = () => ({
+        ...withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', [
+          'screening-1-low',
+        ]),
+        partial: true,
+      });
+      const escalateButton = (name: string) => screen.findByRole('button', { name: `cases:screening_review.${name}` });
+      function renderEscalatable(pageInboxes: ScreeningReviewInbox[]) {
+        const items = buildScreeningReviewItems([reviewCase(caseId, [tentativePartial()])]);
+        vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+        return renderPage({ filter: 'all', hit: items[0]!.id }, false, true, true, pageInboxes);
+      }
+
+      it('offers Escalate to the escalation inbox instead of Close case, and leaves the other matches pending', async () => {
+        vi.mocked(escalateScreeningReviewCaseFn).mockResolvedValue({ ok: true, escalation: 'escalated' });
+        renderEscalatable([
+          { id: 'inbox', name: 'Screening alerts', escalationInboxId: 'second-review', escalationInboxName: 'Second' },
+        ]);
+        await screen.findByText('cases:screening_review.screening_state.load_more');
+        expect(closeButton()).toBeNull();
+        vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: null, failed: false });
+        fireEvent.click(await escalateButton('escalate_case'));
+        await waitFor(() => expect(escalateScreeningReviewCaseFn).toHaveBeenCalledWith({ data: { caseId } }));
+        expect(closeScreeningReviewCaseFn).not.toHaveBeenCalled();
+        await screen.findByText('cases:screening_review.screening_state.escalated');
+        expect(screen.getByText('cases:screening_review.escalation.escalated')).toBeTruthy();
+        await waitFor(() => expect(vi.mocked(listScreeningReviewPageFn).mock.calls.length).toBeGreaterThan(1));
+        expect(screen.getByText('cases:screening_review.screening_state.escalated')).toBeTruthy();
+        await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
+        await waitFor(() => expect(screen.queryByText('cases:screening_review.screening_state.escalated')).toBeNull());
+      });
+
+      it('asks to try again when a click on Escalate fails', async () => {
+        vi.mocked(escalateScreeningReviewCaseFn).mockResolvedValue({ ok: true, escalation: 'failed' });
+        renderEscalatable([
+          { id: 'inbox', name: 'Screening alerts', escalationInboxId: 'second-review', escalationInboxName: 'Second' },
+        ]);
+        fireEvent.click(await escalateButton('escalate_case'));
+        expect(await screen.findByText('cases:screening_review.escalation.manual_failed')).toBeTruthy();
+      });
+
+      it('disables Escalate when the inbox has no escalation inbox', async () => {
+        renderEscalatable(inboxes);
+        await screen.findByText('cases:screening_review.screening_state.load_more');
+        expect(closeButton()).toBeNull();
+        expect((await escalateButton('escalate_case_no_inbox')).hasAttribute('disabled')).toBe(true);
+      });
     });
 
     it('keeps a partial screening with no pending hit in To review after a reload', async () => {

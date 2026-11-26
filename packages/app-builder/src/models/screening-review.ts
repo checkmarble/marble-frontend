@@ -15,6 +15,7 @@ import {
   type ScreeningMatchComment,
   type ScreeningMatchExplanation,
   type ScreeningMatchStatus,
+  type ScreeningMatchTentativeReview,
 } from './screening';
 
 export interface ScreeningReviewItem {
@@ -43,6 +44,7 @@ export interface ScreeningReviewItem {
   reviewedBy?: string;
   screeningStatus: ContinuousScreening['status'];
   comments: ScreeningMatchComment[];
+  tentativeReview: ScreeningMatchTentativeReview | null;
   partial: boolean;
   /** Motiva signals stored on the match, comparing this customer with this list record. */
   signals: ScreeningReviewSignals;
@@ -87,6 +89,14 @@ function customerReference(
   };
 }
 
+/** The backend keeps a tentative review after the final decision, which supersedes it. */
+function activeTentativeReview(match: {
+  status: ScreeningMatchStatus;
+  tentativeReview: ScreeningMatchTentativeReview | null;
+}) {
+  return match.status === 'pending' ? match.tentativeReview : null;
+}
+
 /** The only review-stream code that interprets the two screening directions. */
 export function buildScreeningReviewItems(cases: readonly CaseDetail[]): ScreeningReviewItem[] {
   return cases.flatMap((caseDetail) => {
@@ -121,6 +131,7 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
           status: match.status,
           reviewedBy: match.reviewedBy,
           comments: match.comments,
+          tentativeReview: activeTentativeReview(match),
           signals: matchSignals(match.payload),
         }));
       }
@@ -144,6 +155,7 @@ export function buildScreeningReviewItems(cases: readonly CaseDetail[]): Screeni
         status: match.status,
         reviewedBy: match.reviewedBy,
         comments: match.comments,
+        tentativeReview: activeTentativeReview(match),
         signals: matchSignals(match.payload),
       }));
     });
@@ -596,9 +608,18 @@ export function screeningReviewChipFields(
   return (['birthDate', 'nationality', 'country', 'identifier'] as const).filter((field) => fields.has(field));
 }
 
-/** A hit still to decide. A case closed by other means takes no more decisions. */
-export function isPendingReviewItem(item: ScreeningReviewItem) {
+/** A hit the backend still takes a decision on. A case closed by other means takes no more decisions. */
+function isOpenHit(item: ScreeningReviewItem) {
   return item.status === 'pending' && item.screeningStatus === 'in_review' && item.caseStatus !== 'closed';
+}
+
+/** A tentative review from the inbox the case was escalated from leaves the hit to review here. */
+export function awaitsEscalation(item: ScreeningReviewItem) {
+  return isOpenHit(item) && item.tentativeReview?.inboxId === item.inboxId;
+}
+
+export function isPendingReviewItem(item: ScreeningReviewItem) {
+  return isOpenHit(item) && !awaitsEscalation(item);
 }
 
 /** The queue filters. To review reads open cases only; the others also read closed cases. */
@@ -687,7 +708,10 @@ export function groupScreeningReviewItems(
     .filter((group) => group.items.length > 0)
     .sort((a, b) => a.caseCreatedAt.localeCompare(b.caseCreatedAt) || a.key.localeCompare(b.key))
     .map(({ all, ...group }): ScreeningReviewGroup => {
-      const shown = [...group.items, ...all.filter((item) => item.status !== 'pending' && !group.items.includes(item))];
+      const shown = [
+        ...group.items,
+        ...all.filter((item) => (item.status !== 'pending' || awaitsEscalation(item)) && !group.items.includes(item)),
+      ];
       const confirmed = shown.some((item) => item.status === 'confirmed_hit');
       const listed = confirmed ? shown.filter((item) => !isSetAside(item)) : shown;
       return {
@@ -783,9 +807,18 @@ export interface ScreeningReviewDecided {
   item: ScreeningReviewItem;
   decision: ScreeningReviewDecision;
   comment?: string;
+  /** Set for a tentative review: `decision` is then not final, and the hit stays pending. */
+  tentativeReview?: ScreeningMatchTentativeReview;
   /** False during the undo delay and while the write runs: the screen shows its predicted effect. */
   written: boolean;
 }
+
+export type ScreeningReviewEscalation =
+  | 'escalated'
+  | 'no_escalation_inbox'
+  | 'inactive_escalation_inbox'
+  | 'case_closed'
+  | 'failed';
 
 /** What a write did to its screening and case. */
 export interface ScreeningReviewScreeningResult {
@@ -798,9 +831,16 @@ export interface ScreeningReviewSession {
   decided: Readonly<Record<string, ScreeningReviewDecided>>;
   screenings: Readonly<Record<string, ScreeningReviewScreeningResult>>;
   hiddenCases: readonly string[];
+  /** The hits of each case escalated this visit, as they were: the server stops returning the case at once. */
+  escalated: Readonly<Record<string, readonly ScreeningReviewItem[]>>;
 }
 
-export const emptyScreeningReviewSession: ScreeningReviewSession = { decided: {}, screenings: {}, hiddenCases: [] };
+export const emptyScreeningReviewSession: ScreeningReviewSession = {
+  decided: {},
+  screenings: {},
+  hiddenCases: [],
+  escalated: {},
+};
 
 function isObjectTriggeredItem(item: ScreeningReviewItem) {
   return item.triggerType !== 'dataset_updated';
@@ -812,9 +852,8 @@ function isObjectTriggeredItem(item: ScreeningReviewItem) {
  */
 export function screeningReviewHitsSkippedBy(items: readonly ScreeningReviewItem[], item: ScreeningReviewItem) {
   if (!isObjectTriggeredItem(item)) return [];
-  return items.filter(
-    (other) => other.screeningId === item.screeningId && other.id !== item.id && isPendingReviewItem(other),
-  );
+  // Tentatively reviewed hits are still pending for the backend, so they are skipped too.
+  return items.filter((other) => other.screeningId === item.screeningId && other.id !== item.id && isOpenHit(other));
 }
 
 /**
@@ -871,9 +910,13 @@ function applyScreeningReviewDecisions(
   const hidden = new Set(session.hiddenCases);
   const merged = new Map(items.map((item) => [item.id, item]));
   for (const { item } of Object.values(session.decided)) if (!merged.has(item.id)) merged.set(item.id, item);
+  for (const item of Object.values(session.escalated).flat()) if (!merged.has(item.id)) merged.set(item.id, item);
   const confirmedScreenings = new Set(
     Object.values(session.decided)
-      .filter(({ item, decision }) => decision === 'confirmed_hit' && isObjectTriggeredItem(item))
+      .filter(
+        ({ item, decision, tentativeReview }) =>
+          decision === 'confirmed_hit' && !tentativeReview && isObjectTriggeredItem(item),
+      )
       .map(({ item }) => item.screeningId),
   );
   return [...merged.values()]
@@ -881,22 +924,30 @@ function applyScreeningReviewDecisions(
     .map((item) => {
       const decided = session.decided[item.id];
       const skipped = item.status === 'pending' && confirmedScreenings.has(item.screeningId);
+      const screeningStatus = reconciledScreeningStatus(session.screenings[item.screeningId], item.screeningStatus);
+      if (decided?.tentativeReview) {
+        if (skipped) return { ...item, status: 'skipped', tentativeReview: null, screeningStatus };
+        if (decided.written && item.status !== 'pending') return { ...item, screeningStatus };
+        return { ...item, tentativeReview: decided.tentativeReview, screeningStatus };
+      }
       return {
         ...item,
         status: decided?.decision ?? (skipped ? 'skipped' : item.status),
-        screeningStatus: reconciledScreeningStatus(session.screenings[item.screeningId], item.screeningStatus),
+        screeningStatus,
       };
     });
 }
 
 /**
- * Pending hits, every hit of a screening decided during this visit, written or not, and every hit of
- * a partial screening still in review, whose next matches wait for Load more.
+ * Pending hits, every hit of a screening decided during this visit, written or not, every hit of a
+ * partial screening still in review, whose next matches wait for Load more, and every hit of a case
+ * escalated during this visit, until it is hidden.
  */
 export function isListedInScreeningReviewSession(item: ScreeningReviewItem, session: ScreeningReviewSession) {
   return (
     isPendingReviewItem(item) ||
     awaitsMoreMatches(item) ||
+    !!session.escalated[item.caseId] ||
     !!session.decided[item.id] ||
     !!session.screenings[item.screeningId] ||
     Object.values(session.decided).some((decided) => decided.item.screeningId === item.screeningId)
@@ -910,13 +961,22 @@ export type ScreeningReviewScreeningState =
   | 'confirmed_hit'
   | 'case_closed'
   /** `no_hit` with the case still open: the next load closes it. */
-  | 'closure_pending';
+  | 'closure_pending'
+  | 'escalated'
+  /** The case calls for escalation, but its escalation failed: the next load retries it. */
+  | 'escalation_pending';
 
 export function screeningReviewScreeningState(
   items: readonly ScreeningReviewItem[],
   item: ScreeningReviewItem,
   session: ScreeningReviewSession,
 ): ScreeningReviewScreeningState {
+  if (session.escalated[item.caseId]) return 'escalated';
+  const caseAwaitingWrite = Object.values(session.decided).some(
+    ({ item: decided, written }) => !written && decided.caseId === item.caseId,
+  );
+  // Until its decisions are written, the case only predicts its escalation, which the undo toast tells.
+  if (!caseAwaitingWrite && willEscalateScreeningReviewCase(items, item.caseId)) return 'escalation_pending';
   const result = session.screenings[item.screeningId];
   // An unwritten decision is newer than the last write's result, so its prediction wins.
   const predicted = isAwaitingWrite(session, item.screeningId);
@@ -969,6 +1029,20 @@ export function nextPendingScreeningReviewItem(groups: readonly ScreeningReviewG
   return undefined;
 }
 
+/** Predicts, from the listed hits, the escalation `screeningReviewCaseFollowUp` makes after a write. */
+export function willEscalateScreeningReviewCase(items: readonly ScreeningReviewItem[], caseId: string) {
+  const caseItems = items.filter((item) => item.caseId === caseId);
+  return (
+    caseItems.some(awaitsEscalation) && !caseItems.some((item) => isPendingReviewItem(item) || awaitsMoreMatches(item))
+  );
+}
+
+/** Unlike the escalation after a write, Escalate leaves the matches still to load pending. */
+export function canEscalateScreeningReviewCase(items: readonly ScreeningReviewItem[], caseId: string) {
+  const caseItems = items.filter((item) => item.caseId === caseId);
+  return caseItems.some(awaitsEscalation) && !caseItems.some(isPendingReviewItem);
+}
+
 /** Every screening ended at `no_hit` but the case is still open, after a failed closure. */
 export function needsFalsePositiveClosure(caseDetail: CaseDetail) {
   return (
@@ -977,4 +1051,18 @@ export function needsFalsePositiveClosure(caseDetail: CaseDetail) {
     caseDetail.continuousScreenings.length > 0 &&
     caseDetail.continuousScreenings.every((screening) => screening.status === 'no_hit')
   );
+}
+
+export type ScreeningReviewCaseFollowUp = 'close' | 'escalate' | 'none';
+
+/** Escalating unassigns the case, so only a write by its assignee escalates it. */
+export function screeningReviewCaseFollowUp(caseDetail: CaseDetail, userId: string): ScreeningReviewCaseFollowUp {
+  if (needsFalsePositiveClosure(caseDetail)) return 'close';
+  if (caseDetail.type !== 'continuous_screening' || caseDetail.status === 'closed' || caseDetail.assignedTo !== userId)
+    return 'none';
+  const inReview = caseDetail.continuousScreenings.filter((screening) => screening.status === 'in_review');
+  if (inReview.some((screening) => screening.partial)) return 'none';
+  const pending = inReview.flatMap((screening) => screening.matches.filter((match) => match.status === 'pending'));
+  const awaiting = pending.filter((match) => match.tentativeReview?.inboxId === caseDetail.inboxId);
+  return awaiting.length > 0 && awaiting.length === pending.length ? 'escalate' : 'none';
 }

@@ -8,8 +8,10 @@ import {
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import {
   closeScreeningReviewCase,
+  escalateScreeningReviewCase,
   reviewScreeningReviewMatch,
   reviewScreeningReviewMatches,
+  submitScreeningReviewTentativeReview,
 } from '@app-builder/services/screening-review-decision';
 import { readScreeningReviewPage } from '@app-builder/services/screening-review-page';
 import { redirect } from '@tanstack/react-router';
@@ -83,4 +85,30 @@ export const closeScreeningReviewCaseFn = createServerFn({ method: 'POST' })
     const { cases, continuousScreening, user, entitlements } = context.authInfo;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
     return closeScreeningReviewCase({ cases, continuousScreening }, user.actorIdentity.userId, data);
+  });
+
+export const submitScreeningReviewTentativeReviewFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      caseId: z.uuid(),
+      screeningId: z.uuid(),
+      matchId: z.uuid(),
+      status: z.enum(['confirmed_hit', 'no_hit']),
+      comment: z.string().trim().min(1).max(SCREENING_REVIEW_COMMENT_MAX),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
+    return submitScreeningReviewTentativeReview({ cases, continuousScreening }, user.actorIdentity.userId, data);
+  });
+
+export const escalateScreeningReviewCaseFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(z.object({ caseId: z.uuid() }))
+  .handler(async ({ context, data }) => {
+    const { cases, user, entitlements } = context.authInfo;
+    if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
+    return escalateScreeningReviewCase(cases, user.actorIdentity.userId, data);
   });

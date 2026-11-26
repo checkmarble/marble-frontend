@@ -1,3 +1,4 @@
+import type { ScreeningMatchTentativeReview } from '@app-builder/models/screening';
 import {
   applyScreeningReviewSession,
   emptyScreeningReviewSession,
@@ -6,17 +7,23 @@ import {
   nextPendingScreeningReviewItem,
   SCREENING_REVIEW_HIDE_DELAY_MS,
   type ScreeningReviewDecision,
+  type ScreeningReviewEscalation,
   type ScreeningReviewItem,
   type ScreeningReviewSession,
+  willEscalateScreeningReviewCase,
 } from '@app-builder/models/screening-review';
 import {
   useScreeningReviewBatchDecisionMutation,
   useScreeningReviewDecisionMutation,
 } from '@app-builder/queries/cases/screening-review-decision';
+import { useScreeningReviewTentativeReviewMutation } from '@app-builder/queries/cases/screening-review-tentative-review';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import type {
   ScreeningReviewDecisionResult,
+  ScreeningReviewEscalateResult,
   ScreeningReviewRejection,
 } from '@app-builder/services/screening-review-decision';
+import type { ScreeningReviewRetriedEscalation } from '@app-builder/services/screening-review-page';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -53,14 +60,41 @@ function caseChunks(items: readonly ScreeningReviewItem[], size: number): CaseCh
   );
 }
 
+export type ScreeningReviewSubmission = 'decision' | 'tentative_review';
+
+function sessionTentativeReview(
+  item: ScreeningReviewItem,
+  decision: ScreeningReviewDecision,
+  comment: string,
+  authorId: string,
+): ScreeningMatchTentativeReview {
+  return {
+    id: `session:${item.id}`,
+    authorId,
+    comment,
+    status: decision,
+    inboxId: item.inboxId,
+    createdAt: new Date().toISOString(),
+  };
+}
+
 function withDecided(
   session: ScreeningReviewSession,
   entries: readonly (readonly [ScreeningReviewItem, string | undefined])[],
   decision: ScreeningReviewDecision,
+  tentativeReviewAuthorId?: string,
 ): ScreeningReviewSession {
   const decided = { ...session.decided };
   for (const [item, comment] of entries) {
-    decided[item.id] = { item, decision, ...(comment ? { comment } : {}), written: false };
+    decided[item.id] = {
+      item,
+      decision,
+      ...(comment ? { comment } : {}),
+      ...(tentativeReviewAuthorId !== undefined
+        ? { tentativeReview: sessionTentativeReview(item, decision, comment ?? '', tentativeReviewAuthorId) }
+        : {}),
+      written: false,
+    };
   }
   return { ...session, decided };
 }
@@ -84,20 +118,26 @@ export function useReviewDecisions({
   serverItems,
   hasMore,
   closedCaseIds,
+  escalations,
   canValidate,
+  escalationInboxName,
   onNavigate,
 }: {
   serverItems: readonly ScreeningReviewItem[];
   hasMore: boolean;
   /** The cases the latest settled page read closed, retrying a closure a write couldn't make. */
   closedCaseIds: readonly string[] | undefined;
+  escalations: readonly ScreeningReviewRetriedEscalation[] | undefined;
   canValidate: boolean;
+  escalationInboxName: (inboxId: string) => string;
   onNavigate: (itemId: string) => void;
 }) {
   const { t } = useTranslation(['cases']);
   const queryClient = useQueryClient();
+  const { currentUser } = useOrganizationDetails();
   const decisionMutation = useScreeningReviewDecisionMutation();
   const batchDecisionMutation = useScreeningReviewBatchDecisionMutation();
+  const tentativeReviewMutation = useScreeningReviewTentativeReviewMutation();
   const pendingDecision = usePendingDecision({ undoLabel: t('cases:screening_review.undo.action') });
   const [session, setSession] = useState<ScreeningReviewSession>(emptyScreeningReviewSession);
   const [drafts, setDrafts] = useState<Readonly<Record<string, ScreeningReviewDraft>>>({});
@@ -105,12 +145,14 @@ export function useReviewDecisions({
   const [notice, setNotice] = useState<ScreeningReviewNotice>();
   const sessionRef = useRef(session);
   const hideTimers = useRef<number[]>([]);
+  // Each case's escalation outcome is told once: every refetch retries a failed escalation.
+  const toldEscalations = useRef(new Set<string>());
   // A write finishing after a page change or unmount must not touch the screen.
   const generationRef = useRef(0);
   // The latest values, read when a delayed write completes.
-  const latest = useRef({ serverItems, hasMore, onNavigate });
+  const latest = useRef({ serverItems, hasMore, onNavigate, escalationInboxName });
   useEffect(() => {
-    latest.current = { serverItems, hasMore, onNavigate };
+    latest.current = { serverItems, hasMore, onNavigate, escalationInboxName };
   });
   useEffect(
     () => () => {
@@ -142,6 +184,51 @@ export function useReviewDecisions({
   const navigate = (itemId: string) => latest.current.onNavigate(itemId);
   const refreshPage = () => queryClient.invalidateQueries({ queryKey: ['cases', 'screening-review'] });
 
+  // Shown even when the page that made the write is gone.
+  const notifyEscalation = (
+    { caseId, inboxId }: { caseId: string; inboxId: string },
+    escalation: ScreeningReviewEscalation,
+    /** A failed Escalate click is not retried by the next load. */
+    manual = false,
+  ) => {
+    const key = `${caseId}:${escalation}`;
+    if (!manual && toldEscalations.current.has(key)) return;
+    toldEscalations.current.add(key);
+    const inbox = latest.current.escalationInboxName(inboxId);
+    if (escalation === 'escalated') toast.success(t('cases:screening_review.escalation.escalated', { inbox }));
+    else if (manual && escalation === 'failed') toast.error(t('cases:screening_review.escalation.manual_failed'));
+    else toast.error(t(`cases:screening_review.escalation.${escalation}`, { inbox }));
+  };
+  const caseSnapshot = (caseId: string) =>
+    applyScreeningReviewSession(latest.current.serverItems, sessionRef.current).filter(
+      (item) => item.caseId === caseId,
+    );
+  const markEscalated = (snapshots: readonly (readonly ScreeningReviewItem[])[]) => {
+    const added = snapshots.filter(
+      (items): items is readonly [ScreeningReviewItem, ...ScreeningReviewItem[]] =>
+        !!items[0] && !sessionRef.current.escalated[items[0].caseId],
+    );
+    if (!added.length) return;
+    updateSession((current) => ({
+      ...current,
+      escalated: { ...current.escalated, ...Object.fromEntries(added.map((items) => [items[0].caseId, items])) },
+    }));
+    added.forEach((items) => hideCaseLater(items[0].caseId));
+  };
+  const withEscalationNotice = (
+    message: string,
+    next: ScreeningReviewSession,
+    items: readonly ScreeningReviewItem[],
+  ) => {
+    const applied = applyScreeningReviewSession(latest.current.serverItems, next);
+    const escalating = items.find((item) => willEscalateScreeningReviewCase(applied, item.caseId));
+    if (!escalating) return message;
+    return t('cases:screening_review.undo.with_escalation', {
+      message,
+      inbox: latest.current.escalationInboxName(escalating.inboxId),
+    });
+  };
+
   /** After a decision, open the next pending hit, read from the latest server data. */
   const openNextPending = (fromId: string, next: ScreeningReviewSession) => {
     const nextGroups = groupScreeningReviewItems(
@@ -172,6 +259,29 @@ export function useReviewDecisions({
     });
     // Apply the outcome before this case's next queued request starts. Waiting for an entire batch
     // could let a slower case make its older results overwrite a newer decision on another case.
+    if (result?.ok && result.escalation) notifyEscalation(item, result.escalation);
+    if (result?.ok && isCurrent()) markWritten([[item, result]]);
+    return result;
+  };
+
+  const writeTentativeReview = async (
+    item: ScreeningReviewItem,
+    decision: ScreeningReviewDecision,
+    comment: string,
+    keepalive: boolean,
+    isCurrent: () => boolean,
+  ) => {
+    const result = await tentativeReviewMutation.mutateAsync({
+      input: {
+        caseId: item.caseId,
+        screeningId: item.screeningId,
+        matchId: item.matchId,
+        status: decision,
+        comment,
+      },
+      keepalive,
+    });
+    if (result?.ok && result.escalation) notifyEscalation(item, result.escalation);
     if (result?.ok && isCurrent()) markWritten([[item, result]]);
     return result;
   };
@@ -203,6 +313,9 @@ export function useReviewDecisions({
         },
         keepalive,
       });
+      // Every written decision of a chunk reports the same escalation of its case.
+      const escalated = results?.find((result) => result?.ok && result.escalation);
+      if (escalated?.ok && escalated.escalation) notifyEscalation(chunk.items[0]!, escalated.escalation);
       // As with a single write: apply the outcome before this case's next chunk starts.
       if (results && isCurrent()) {
         markWritten(
@@ -252,6 +365,10 @@ export function useReviewDecisions({
     });
     const closedCases = new Set(written.filter(([, result]) => result.caseClosed).map(([item]) => item.caseId));
     closedCases.forEach(hideCaseLater);
+    const escalatedCases = new Set(
+      written.filter(([, result]) => result.escalation === 'escalated').map(([item]) => item.caseId),
+    );
+    markEscalated([...escalatedCases].map(caseSnapshot));
   };
 
   useEffect(() => {
@@ -276,13 +393,27 @@ export function useReviewDecisions({
     new Set(closed.values()).forEach(hideCaseLater);
   }, [closedCaseIds]);
 
+  useEffect(() => {
+    if (!escalations?.length) return;
+    for (const escalation of escalations) notifyEscalation(escalation, escalation.escalation);
+    // The page read left the escalated cases out: only the hits decided this visit are left to show.
+    const decidedItems = Object.values(sessionRef.current.decided).map(({ item }) => item);
+    markEscalated(
+      escalations
+        .filter(({ escalation }) => escalation === 'escalated')
+        .map(({ caseId }) => decidedItems.filter((item) => item.caseId === caseId)),
+    );
+  }, [escalations]);
+
   /** Records the decision drafted under `draftId` on `item`. */
-  const submit = (item: ScreeningReviewItem, draftId: string) => {
+  const submit = (item: ScreeningReviewItem, draftId: string, submission: ScreeningReviewSubmission = 'decision') => {
     const draftBefore = drafts[draftId];
     const decision = draftBefore?.decision;
     if (!draftBefore || !decision) return;
+    const tentative = submission === 'tentative_review';
     const items = [item];
     const comment = draftBefore.comment.trim() || undefined;
+    if (tentative && !comment) return;
     const ids = items.map((other) => other.id);
     const isCurrent = isCurrentGeneration();
     const restore = (restoredIds: readonly string[]) => {
@@ -291,20 +422,27 @@ export function useReviewDecisions({
     };
     setNotice(undefined);
     setDraft(draftId, undefined);
-    openNextPending(
-      item.id,
-      updateSession((current) =>
-        withDecided(
-          current,
-          items.map((other) => [other, comment]),
-          decision,
-        ),
+    const next = updateSession((current) =>
+      withDecided(
+        current,
+        items.map((other) => [other, comment]),
+        decision,
+        tentative ? (currentUser.actorIdentity.userId ?? '') : undefined,
       ),
     );
+    openNextPending(item.id, next);
     pendingDecision.schedule({
-      message: t(
-        canValidate ? 'cases:screening_review.undo.validated' : 'cases:screening_review.undo.sent_for_validation',
-        { name: item.customer.name },
+      message: withEscalationNotice(
+        t(
+          tentative
+            ? 'cases:screening_review.undo.confirmation_requested'
+            : canValidate
+              ? 'cases:screening_review.undo.validated'
+              : 'cases:screening_review.undo.sent_for_validation',
+          { name: item.customer.name },
+        ),
+        next,
+        items,
       ),
       undoneMessage: t('cases:screening_review.undo.recalled', { name: item.customer.name }),
       undo: () => {
@@ -314,7 +452,9 @@ export function useReviewDecisions({
       },
       write: async (writeItems) => {
         const results = await writeItems(items, (other, { keepalive }) =>
-          writeDecision(other, decision, comment, keepalive, isCurrent),
+          tentative && comment
+            ? writeTentativeReview(other, decision, comment, keepalive, isCurrent)
+            : writeDecision(other, decision, comment, keepalive, isCurrent),
         );
         const failed: ScreeningReviewItem[] = [];
         let rejection: ScreeningReviewRejection | undefined;
@@ -368,11 +508,15 @@ export function useReviewDecisions({
     );
     if (activeId && items.some((item) => item.id === activeId)) openNextPending(activeId, next);
     pendingDecision.schedule({
-      message: t(
-        canValidate
-          ? 'cases:screening_review.undo.batch_validated'
-          : 'cases:screening_review.undo.batch_sent_for_validation',
-        { count: items.length },
+      message: withEscalationNotice(
+        t(
+          canValidate
+            ? 'cases:screening_review.undo.batch_validated'
+            : 'cases:screening_review.undo.batch_sent_for_validation',
+          { count: items.length },
+        ),
+        next,
+        items,
       ),
       undoneMessage: t('cases:screening_review.undo.batch_recalled', { count: items.length }),
       undo: () => {
@@ -427,6 +571,19 @@ export function useReviewDecisions({
     };
   };
 
+  const caseEscalated = (item: ScreeningReviewItem) => {
+    const isCurrent = isCurrentGeneration();
+    // Taken before the refetch that follows the escalation drops the case.
+    const snapshot = caseSnapshot(item.caseId);
+    return (result: ScreeningReviewEscalateResult | undefined) => {
+      if (!result) return;
+      if (result.ok) notifyEscalation(item, result.escalation, true);
+      if (!isCurrent()) return;
+      if (!result.ok) setNotice({ reason: result.reason });
+      else if (result.escalation === 'escalated') markEscalated([snapshot]);
+    };
+  };
+
   /** Decisions belong to the page they were made on. A pending one is written first. */
   const reset = () => {
     void pendingDecision.flush();
@@ -454,6 +611,7 @@ export function useReviewDecisions({
     reset,
     refreshPage,
     caseClosed,
+    caseEscalated,
     pendingDecision,
   };
 }

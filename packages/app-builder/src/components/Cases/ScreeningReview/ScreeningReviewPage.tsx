@@ -5,7 +5,9 @@ import type { InboxMetadata } from '@app-builder/models/inbox';
 import {
   adjacentScreeningReviewItem,
   applyScreeningReviewSession,
+  awaitsEscalation,
   awaitsMoreMatches,
+  canEscalateScreeningReviewCase,
   compareScreeningReviewFields,
   countScreeningReviewFilters,
   groupScreeningReviewItems,
@@ -22,6 +24,7 @@ import {
   screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
+  willEscalateScreeningReviewCase,
 } from '@app-builder/models/screening-review';
 import { useScreeningReviewPageQuery } from '@app-builder/queries/cases/screening-review-page';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -34,7 +37,9 @@ import { FilterInboxSelector } from '../Inbox/FilterBar/FilterInboxSelector';
 import { CasesNavigationTabs } from '../Navigation/Tabs';
 import {
   ActionDock,
+  canRequestConfirmation,
   DecisionTag,
+  HitTentativeTag,
   ReadOnlyDock,
   type ScreeningStateActions,
   ScreeningStateNote,
@@ -43,6 +48,7 @@ import {
 import { BatchPanel, NoHitStackSummary } from './BatchSummary';
 import { emptyBatchSelection, withoutSelected, withSelected } from './batch-selection';
 import { DETAILS_PANEL_TABS, DetailsPanel, type DetailsPanelTab } from './DetailsPanel';
+import type { ScreeningReviewEscalationTarget } from './EscalationTooltip';
 import { HitList } from './HitList';
 import { LoadMoreCases } from './LoadMoreCases';
 import { useMappedProperties } from './MatchedFieldChips';
@@ -71,7 +77,12 @@ interface ScreeningReviewPageProps {
   canValidate: boolean;
   /** Ending a screening without loading its other matches needs the dismiss permission. */
   canDismissScreenings: boolean;
-  inboxes: InboxMetadata[];
+  inboxes: ScreeningReviewInbox[];
+}
+
+export interface ScreeningReviewInbox extends InboxMetadata {
+  escalationInboxId?: string;
+  escalationInboxName?: string;
 }
 
 export function ScreeningReviewPage(props: ScreeningReviewPageProps) {
@@ -236,6 +247,15 @@ function ReviewStream({
     );
   }, [pages]);
   const closedCaseIds = useMemo(() => pages?.flatMap((page) => page.closedCaseIds ?? []), [pages]);
+  const escalations = useMemo(() => pages?.flatMap((page) => page.escalations ?? []), [pages]);
+  const escalationTarget = (inboxId: string): ScreeningReviewEscalationTarget => {
+    const inbox = inboxes.find((candidate) => candidate.id === inboxId);
+    if (!inbox?.escalationInboxId) return { inboxId };
+    return {
+      inboxId,
+      escalationInboxName: inbox.escalationInboxName ?? t('cases:screening_review.escalation.unknown_inbox'),
+    };
+  };
   const hasMore = query.hasNextPage || failed;
   const ready = !!query.data && !query.isPlaceholderData;
   // The latest search, read when a delayed write moves the cursor.
@@ -253,13 +273,20 @@ function ReviewStream({
     serverItems,
     hasMore,
     closedCaseIds: ready && !query.isFetching ? closedCaseIds : undefined,
+    escalations: ready && !query.isFetching ? escalations : undefined,
     canValidate,
+    escalationInboxName: (inboxId) =>
+      escalationTarget(inboxId).escalationInboxName ?? t('cases:screening_review.escalation.unknown_inbox'),
     onNavigate: (itemId) => onSearchChange({ ...latestSearch.current, hit: itemId }),
   });
   const { session, selection, setSelection, pendingDecision } = decisions;
   // Only To review lets a closed case go. All and Validated read closed cases, so they keep it.
+  // An escalated case leaves every filter: it is no longer the user's.
   const viewSession = useMemo(
-    () => (search.filter === 'to_review' ? session : { ...session, hiddenCases: [] }),
+    () =>
+      search.filter === 'to_review'
+        ? session
+        : { ...session, hiddenCases: session.hiddenCases.filter((caseId) => !!session.escalated[caseId]) },
     [session, search.filter],
   );
   const reviewItems = useMemo(() => applyScreeningReviewSession(serverItems, viewSession), [serverItems, viewSession]);
@@ -271,8 +298,16 @@ function ReviewStream({
     }
     // To review keeps this visit's decisions listed, so the analyst sees them land, until a group
     // without a Hit has nothing left to decide and its decisions are written.
-    return groupScreeningReviewItems(reviewItems, hasMore, (item) =>
-      isListedInScreeningReviewSession(item, session),
+    // A case whose escalation failed stays listed, so the analyst can retry it.
+    const escalationDue = new Set(
+      reviewItems
+        .filter((item) => awaitsEscalation(item) && willEscalateScreeningReviewCase(reviewItems, item.caseId))
+        .map((item) => item.caseId),
+    );
+    return groupScreeningReviewItems(
+      reviewItems,
+      hasMore,
+      (item) => isListedInScreeningReviewSession(item, session) || escalationDue.has(item.caseId),
     ).filter((group) => !isSettledScreeningReviewGroup(group, session));
   }, [reviewItems, hasMore, session, search.filter]);
   const counts = useMemo(() => countScreeningReviewFilters(reviewItems), [reviewItems]);
@@ -339,6 +374,15 @@ function ReviewStream({
     collapse([active]);
     decisions.submit(active, draftId);
   };
+  const activeEscalationTarget = active ? escalationTarget(active.inboxId) : undefined;
+  const confirmationRequestable =
+    !!activeEscalationTarget && canRequestConfirmation(activeDraft, activeEscalationTarget);
+  const requestConfirmation = () => {
+    if (!ready || !draftId || !reviewable || !confirmationRequestable) return;
+    setUnavailable(false);
+    collapse([active]);
+    decisions.submit(active, draftId, 'tentative_review');
+  };
   const submitBatch = () => {
     if (!ready) return;
     setUnavailable(false);
@@ -400,13 +444,20 @@ function ReviewStream({
 
   const stateActions: ScreeningStateActions = {
     onMatchesLoaded: decisions.refreshPage,
-    // Not on the previous search's page, nor on a screening that holds a Hit.
+    // Not on the previous search's page, nor on a screening that holds a Hit or a case that escalates.
     canCloseCase: (item) =>
       ready &&
       canDismissScreenings &&
       isLastOpenScreeningOfCase(reviewItems, item) &&
-      !reviewItems.some((other) => other.screeningId === item.screeningId && other.status === 'confirmed_hit'),
+      !reviewItems.some(
+        (other) =>
+          (other.screeningId === item.screeningId && other.status === 'confirmed_hit') ||
+          (other.caseId === item.caseId && awaitsEscalation(other)),
+      ),
     onCaseClosed: decisions.caseClosed,
+    escalationTarget: (item) => escalationTarget(item.inboxId),
+    canEscalateCase: (item) => ready && canEscalateScreeningReviewCase(reviewItems, item.caseId),
+    onCaseEscalated: decisions.caseEscalated,
   };
 
   const canNavigate = ready && !helpOpen;
@@ -441,6 +492,12 @@ function ReviewStream({
       hotkey: 'Enter',
       action: batchMode ? submitBatch : submit,
       enabled: batchMode ? canNavigate : canDecide && !!activeDraft.decision,
+      yieldToControls: true,
+    },
+    {
+      hotkey: 'Shift+Enter',
+      action: requestConfirmation,
+      enabled: canDecide && confirmationRequestable,
       yieldToControls: true,
     },
     { hotkey: 'U', action: pendingDecision.undo, enabled: canNavigate && pendingDecision.undoable },
@@ -647,6 +704,7 @@ function ReviewStream({
                     <>
                       <StepTag item={active} decidedThisVisit={!!session.decided[active.id]} />
                       <DecisionTag status={active.status} />
+                      <HitTentativeTag item={active} />
                     </>
                   }
                   actions={
@@ -675,6 +733,8 @@ function ReviewStream({
                     draft={activeDraft}
                     onDraftChange={changeDraft}
                     onSubmit={submit}
+                    onRequestConfirmation={requestConfirmation}
+                    escalationTarget={activeEscalationTarget ?? { inboxId: active.inboxId }}
                     onCancel={() => changeDraft({ decision: undefined, comment: '' })}
                     skippedCount={screeningReviewHitsSkippedBy(reviewItems, active).length}
                     commentRef={commentRef}
@@ -683,7 +743,10 @@ function ReviewStream({
                   <ReadOnlyDock
                     item={active}
                     state={screeningReviewScreeningState(reviewItems, active, session)}
-                    sessionComment={session.decided[active.id]?.comment}
+                    // A tentative review shows its comment on its own.
+                    sessionComment={
+                      session.decided[active.id]?.tentativeReview ? undefined : session.decided[active.id]?.comment
+                    }
                     canMoveNext={!!adjacentScreeningReviewItem(groups, active.id, 1, false, expanded) && canNavigate}
                     onNext={() => move(1)}
                     actions={stateActions}

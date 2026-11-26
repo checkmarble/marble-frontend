@@ -1,6 +1,11 @@
 import { Callout } from '@app-builder/components/Callout';
+import {
+  TentativeReviewSummary,
+  TentativeReviewTag,
+} from '@app-builder/components/CaseManager/ContinuousScreening/TentativeReview';
 import type { ScreeningMatchComment, ScreeningMatchStatus } from '@app-builder/models/screening';
 import {
+  awaitsEscalation,
   isPendingReviewItem,
   SCREENING_REVIEW_COMMENT_MAX,
   type ScreeningReviewDecision,
@@ -8,10 +13,14 @@ import {
   type ScreeningReviewScreeningState,
 } from '@app-builder/models/screening-review';
 import { useCloseScreeningReviewCaseMutation } from '@app-builder/queries/cases/screening-review-close-case';
+import { useEscalateScreeningReviewCaseMutation } from '@app-builder/queries/cases/screening-review-escalate-case';
 import { useLoadMoreContinuousScreeningMatchesMutation } from '@app-builder/queries/continuous-screening/load-more-matches';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import type { ScreeningReviewDecisionResult } from '@app-builder/services/screening-review-decision';
+import type {
+  ScreeningReviewDecisionResult,
+  ScreeningReviewEscalateResult,
+} from '@app-builder/services/screening-review-decision';
 import { getFullName } from '@app-builder/services/user';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -20,6 +29,7 @@ import { type Ref, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, cn, Tag, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { EscalationTooltip, type ScreeningReviewEscalationTarget } from './EscalationTooltip';
 import { useFlushPendingDecision, useOpenCaseInNewTab } from './pending-decision';
 import { ShortcutButton } from './ShortcutButton';
 
@@ -51,6 +61,22 @@ export function StepTag({ item, decidedThisVisit }: { item: ScreeningReviewItem;
   const { currentUser } = useOrganizationDetails();
   const { getOrgUserById } = useOrganizationUsers();
   const you = t('cases:screening_review.step.you');
+  const currentUserId = currentUser.actorIdentity.userId;
+  const actorName = (userId: string | undefined) => {
+    if (userId && userId === currentUserId) return you;
+    const user = userId ? getOrgUserById(userId) : undefined;
+    return user ? getFullName(user) : undefined;
+  };
+  if (awaitsEscalation(item)) {
+    const actor = actorName(item.tentativeReview?.authorId);
+    return (
+      <Tag color="yellow" className="shrink-0">
+        {actor
+          ? t('cases:screening_review.step.tentative', { actor })
+          : t('cases:screening_review.step.tentative_no_actor')}
+      </Tag>
+    );
+  }
   if (isPendingReviewItem(item)) {
     return (
       <Tag color="purple" className="shrink-0">
@@ -60,11 +86,8 @@ export function StepTag({ item, decidedThisVisit }: { item: ScreeningReviewItem;
   }
   // A pending hit of a closed screening has no step left.
   if (item.status === 'pending') return null;
-  const currentUserId = currentUser.actorIdentity.userId;
   // A decision made this visit is missing from the snapshot until the next refetch.
-  const reviewerId = decidedThisVisit ? currentUserId : item.reviewedBy;
-  const reviewer = reviewerId ? getOrgUserById(reviewerId) : undefined;
-  const actor = reviewerId && reviewerId === currentUserId ? you : reviewer ? getFullName(reviewer) : undefined;
+  const actor = actorName(decidedThisVisit ? currentUserId : item.reviewedBy);
   return (
     <Tag color="green" className="shrink-0">
       {actor
@@ -110,27 +133,39 @@ function HitComments({ comments, sessionComment }: { comments: ScreeningMatchCom
   );
 }
 
+export function HitTentativeTag({ item }: { item: ScreeningReviewItem }) {
+  return item.tentativeReview ? <TentativeReviewTag status={item.tentativeReview.status} /> : null;
+}
+
+export function canRequestConfirmation(draft: ScreeningReviewDraft, target: ScreeningReviewEscalationTarget) {
+  return !!draft.decision && !!draft.comment.trim() && !!target.escalationInboxName;
+}
+
 interface ActionDockProps {
   item: ScreeningReviewItem;
   draft: ScreeningReviewDraft;
   onDraftChange: (draft: ScreeningReviewDraft) => void;
   onSubmit: () => void;
+  onRequestConfirmation: () => void;
+  escalationTarget: ScreeningReviewEscalationTarget;
   onCancel: () => void;
   skippedCount: number;
   commentRef: Ref<HTMLTextAreaElement>;
 }
 
-/** Hit or No hit, an optional comment, then Validate. Room is left for more actions later. */
 export function ActionDock({
   item,
   draft,
   onDraftChange,
   onSubmit,
+  onRequestConfirmation,
+  escalationTarget,
   onCancel,
   skippedCount,
   commentRef,
 }: ActionDockProps) {
   const { t } = useTranslation(['cases']);
+  const confirmationRequestable = canRequestConfirmation(draft, escalationTarget);
   const decisions = [
     { value: 'confirmed_hit', hotkey: 'M' },
     { value: 'no_hit', hotkey: 'N' },
@@ -143,6 +178,7 @@ export function ActionDock({
       className="flex max-h-[50%] min-h-0 shrink-0 flex-col gap-sm p-md"
     >
       <div className="flex min-h-0 flex-col gap-sm overflow-y-auto overscroll-y-contain">
+        {item.tentativeReview ? <TentativeReviewSummary review={item.tentativeReview} /> : null}
         <HitComments comments={item.comments} />
         <div role="group" aria-label={t('cases:screening_review.dock.title')} className="flex flex-wrap gap-sm">
           {decisions.map(({ value, hotkey }) => {
@@ -186,6 +222,10 @@ export function ActionDock({
             if (event.key === 'Enter' && !event.shiftKey) {
               event.preventDefault();
               onSubmit();
+            } else if (event.key === 'Enter' && confirmationRequestable) {
+              // Shift+Enter breaks the line only while a confirmation can't be requested.
+              event.preventDefault();
+              onRequestConfirmation();
             } else if (event.key === 'Escape') {
               event.preventDefault();
               event.currentTarget.blur();
@@ -197,6 +237,20 @@ export function ActionDock({
         <ShortcutButton tone="ghost" hotkeys={['Escape']} onClick={onCancel}>
           {t('cases:screening_review.dock.cancel')}
         </ShortcutButton>
+        <EscalationTooltip
+          target={escalationTarget}
+          fallback={confirmationRequestable ? undefined : t('cases:screening_review.dock.request_confirmation_hint')}
+        >
+          <ShortcutButton
+            tone="neutral"
+            hotkeys={['Shift+Enter']}
+            aria-keyshortcuts="Shift+Enter"
+            disabled={!confirmationRequestable}
+            onClick={onRequestConfirmation}
+          >
+            {t('cases:screening_review.dock.request_confirmation')}
+          </ShortcutButton>
+        </EscalationTooltip>
         <ShortcutButton tone="primary" hotkeys={['Enter']} disabled={!draft.decision} onClick={onSubmit}>
           {t('cases:screening_review.dock.validate')}
         </ShortcutButton>
@@ -234,19 +288,39 @@ export interface ScreeningStateActions {
   canCloseCase: (item: ScreeningReviewItem) => boolean;
   /** Called when Close case starts; the callback it returns receives the outcome. */
   onCaseClosed: (item: ScreeningReviewItem) => (result: ScreeningReviewDecisionResult | undefined) => void;
+  escalationTarget: (item: ScreeningReviewItem) => ScreeningReviewEscalationTarget;
+  canEscalateCase: (item: ScreeningReviewItem) => boolean;
+  onCaseEscalated: (item: ScreeningReviewItem) => (result: ScreeningReviewEscalateResult | undefined) => void;
 }
 
-type ScreeningStateAction = 'load_more' | 'close_case';
+type ScreeningStateAction = 'load_more' | 'close_case' | 'escalate';
 
-function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions: ScreeningStateActions }) {
+function ScreeningActions({
+  item,
+  actions,
+  loadable,
+}: {
+  item: ScreeningReviewItem;
+  actions: ScreeningStateActions;
+  loadable: boolean;
+}) {
   const { t } = useTranslation(['cases']);
   const loadMore = useLoadMoreContinuousScreeningMatchesMutation(item.screeningId);
   const closeCase = useCloseScreeningReviewCaseMutation();
+  const escalateCase = useEscalateScreeningReviewCaseMutation();
   const flush = useFlushPendingDecision();
   // The action waiting for the decisions on screen to be written.
   const [flushingFor, setFlushingFor] = useState<ScreeningStateAction>();
   const running: ScreeningStateAction | undefined =
-    flushingFor ?? (loadMore.isPending ? 'load_more' : closeCase.isPending ? 'close_case' : undefined);
+    flushingFor ??
+    (loadMore.isPending
+      ? 'load_more'
+      : closeCase.isPending
+        ? 'close_case'
+        : escalateCase.isPending
+          ? 'escalate'
+          : undefined);
+  const escalationTarget = actions.escalationTarget(item);
   // A pending decision may be on this screening: write it before acting on the screening.
   const afterFlush = (action: ScreeningStateAction, then: () => void) => {
     setFlushingFor(action);
@@ -256,27 +330,50 @@ function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions
     });
   };
   const spinner = <Icon icon="spinner" aria-hidden className="size-4 animate-spin" />;
+  const or = loadable ? <span>{t('cases:screening_review.or')}</span> : null;
   return (
     <>
-      <Button
-        variant="secondary"
-        disabled={!!running}
-        // The promise, unlike a per-call `onSuccess`, still settles once this dock unmounts.
-        onClick={() =>
-          afterFlush('load_more', () =>
-            loadMore.mutateAsync().then(
-              () => void actions.onMatchesLoaded(),
-              () => undefined,
-            ),
-          )
-        }
-      >
-        {running === 'load_more' ? spinner : null}
-        {t('cases:screening_review.load_more')}
-      </Button>
-      {actions.canCloseCase(item) ? (
+      {loadable ? (
+        <Button
+          variant="secondary"
+          disabled={!!running}
+          // The promise, unlike a per-call `onSuccess`, still settles once this dock unmounts.
+          onClick={() =>
+            afterFlush('load_more', () =>
+              loadMore.mutateAsync().then(
+                () => void actions.onMatchesLoaded(),
+                () => undefined,
+              ),
+            )
+          }
+        >
+          {running === 'load_more' ? spinner : null}
+          {t('cases:screening_review.load_more')}
+        </Button>
+      ) : null}
+      {actions.canEscalateCase(item) ? (
         <>
-          <span>{t('cases:screening_review.or')}</span>
+          {or}
+          <EscalationTooltip target={escalationTarget}>
+            <Button
+              disabled={!!running || !escalationTarget.escalationInboxName}
+              onClick={() => {
+                const onEscalated = actions.onCaseEscalated(item);
+                afterFlush('escalate', () =>
+                  escalateCase.mutateAsync({ caseId: item.caseId }).then(onEscalated, () => undefined),
+                );
+              }}
+            >
+              {running === 'escalate' ? spinner : null}
+              {escalationTarget.escalationInboxName
+                ? t('cases:screening_review.escalate_case', { inbox: escalationTarget.escalationInboxName })
+                : t('cases:screening_review.escalate_case_no_inbox')}
+            </Button>
+          </EscalationTooltip>
+        </>
+      ) : loadable && actions.canCloseCase(item) ? (
+        <>
+          {or}
           <Button
             disabled={!!running}
             // Ends the screening at No hit without loading its other matches, which closes the case.
@@ -304,6 +401,11 @@ function LoadMoreMatches({ item, actions }: { item: ScreeningReviewItem; actions
           {t('cases:screening_review.close_case_error')}
         </p>
       ) : null}
+      {escalateCase.isError ? (
+        <p role="alert" className="text-s text-red-primary">
+          {t('cases:screening_review.escalation.manual_failed')}
+        </p>
+      ) : null}
     </>
   );
 }
@@ -322,9 +424,15 @@ export function ScreeningStateNote({
   if (state === 'in_review') return null;
   return (
     <div role="status" className="flex flex-wrap items-center gap-sm text-s">
-      <span>{t(`cases:screening_review.screening_state.${state}`)}</span>
+      <span>
+        {t(`cases:screening_review.screening_state.${state}`, {
+          inbox: actions.escalationTarget(item).escalationInboxName,
+        })}
+      </span>
       {state === 'confirmed_hit' ? <OpenCaseLink caseId={item.caseId} /> : null}
-      {state === 'load_more' ? <LoadMoreMatches item={item} actions={actions} /> : null}
+      {state === 'load_more' || state === 'escalation_pending' ? (
+        <ScreeningActions item={item} actions={actions} loadable={state === 'load_more'} />
+      ) : null}
     </div>
   );
 }
@@ -353,11 +461,13 @@ export function ReadOnlyDock({
     >
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-sm">
         <span className="text-s font-medium">
-          {item.status === 'pending'
-            ? t('cases:screening_review.dock.not_reviewable')
-            : t('cases:screening_review.dock.validated', {
-                decision: t(`cases:screening_review.decision.${item.status}`),
-              })}
+          {awaitsEscalation(item)
+            ? t('cases:screening_review.dock.tentative_submitted')
+            : item.status === 'pending'
+              ? t('cases:screening_review.dock.not_reviewable')
+              : t('cases:screening_review.dock.validated', {
+                  decision: t(`cases:screening_review.decision.${item.status}`),
+                })}
         </span>
         <ShortcutButton tone="neutral" hotkeys={['J']} disabled={!canMoveNext} onClick={onNext}>
           {t('cases:screening_review.dock.next_hit')}
@@ -365,6 +475,10 @@ export function ReadOnlyDock({
       </div>
       <div className="flex min-h-0 flex-col gap-sm overflow-y-auto overscroll-y-contain empty:hidden">
         <ScreeningStateNote item={item} state={state} actions={actions} />
+        {awaitsEscalation(item) && state === 'in_review' ? (
+          <p className="text-s">{t('cases:screening_review.dock.escalates_when_reviewed')}</p>
+        ) : null}
+        {item.tentativeReview ? <TentativeReviewSummary review={item.tentativeReview} /> : null}
         <HitComments comments={item.comments} sessionComment={sessionComment} />
       </div>
     </section>

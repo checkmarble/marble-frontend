@@ -49,6 +49,11 @@ export interface ContinuousScreeningRepository {
   reviewMatches(
     matches: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }[],
   ): Promise<{ matchId: string; statusCode: number; message?: string }[]>;
+  commentMatch(payload: {
+    matchId: string;
+    comment: string;
+    tentativeReview?: { status: 'confirmed_hit' | 'no_hit' };
+  }): Promise<void>;
   dismiss(id: string): Promise<void>;
   loadMoreMatches(id: string): Promise<void>;
 }
@@ -156,6 +161,12 @@ export function makeGetContinuousScreeningRepository() {
         statusCode: status_code,
         ...(message ? { message } : {}),
       }));
+    },
+    commentMatch: async ({ matchId, comment, tentativeReview }) => {
+      await marbleCoreApiClient.createContinuousScreeningMatchComment(matchId, {
+        comment,
+        ...(tentativeReview ? { tentative_review: tentativeReview } : {}),
+      });
     },
     dismiss: async (id: string) => {
       await marbleCoreApiClient.dismissContinuousScreening(id);

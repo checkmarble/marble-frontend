@@ -132,3 +132,39 @@ export function reviewCase(
     ...overrides,
   };
 }
+
+export function withTentativeReview(
+  screening: ContinuousScreeningMarbleToScreeningEntity,
+  matchId: string,
+  { inboxId = 'inbox', status = 'no_hit' }: { inboxId?: string; status?: 'confirmed_hit' | 'no_hit' } = {},
+): ContinuousScreeningMarbleToScreeningEntity {
+  return {
+    ...screening,
+    matches: screening.matches.map((match) =>
+      match.id === matchId
+        ? {
+            ...match,
+            tentativeReview: {
+              id: `${matchId}-tentative`,
+              authorId: 'analyst',
+              comment: 'Unsure about the birth date',
+              status,
+              inboxId,
+              createdAt: '2026-11-02T10:00:00Z',
+            },
+          }
+        : match,
+    ),
+  };
+}
+
+export function withMatchStatus(
+  screening: ContinuousScreeningMarbleToScreeningEntity,
+  status: 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped',
+  matchIds: readonly string[] = screening.matches.map((match) => match.id),
+): ContinuousScreeningMarbleToScreeningEntity {
+  return {
+    ...screening,
+    matches: screening.matches.map((match) => (matchIds.includes(match.id) ? { ...match, status } : match)),
+  };
+}

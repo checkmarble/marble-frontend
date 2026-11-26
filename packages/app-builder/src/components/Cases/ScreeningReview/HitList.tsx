@@ -1,3 +1,7 @@
+import {
+  TentativeReviewAuthor,
+  TentativeReviewTag,
+} from '@app-builder/components/CaseManager/ContinuousScreening/TentativeReview';
 import { SCREENING_HIT_TYPE_T_KEYS, type ScreeningCategory } from '@app-builder/models/screening';
 import {
   isPendingReviewItem,
@@ -360,9 +364,21 @@ function HitCard({
           <TopicDots topics={item.topics} />
           <SimilarityScore score={item.score} />
           <span className="ms-auto">
-            <DecisionTag status={item.status} />
+            {item.tentativeReview ? (
+              <TentativeReviewTag status={item.tentativeReview.status} size="xs" />
+            ) : (
+              <DecisionTag status={item.status} />
+            )}
           </span>
         </span>
+        {item.tentativeReview ? (
+          <span className="flex w-full min-w-0 flex-col gap-2xs rounded-sm border border-yellow-border bg-yellow-background-light px-xs py-2xs text-xs dark:border-yellow-primary dark:bg-transparent">
+            <span className="flex flex-wrap items-center gap-xs text-2xs">
+              <TentativeReviewAuthor review={item.tentativeReview} />
+            </span>
+            <span className="line-clamp-2 whitespace-pre-wrap">{item.tentativeReview.comment}</span>
+          </span>
+        ) : null}
         <span className="flex w-full flex-wrap items-center gap-xs empty:hidden">
           <MatchedFieldChips item={item} mappedProperties={mappedProperties} />
           {restackLabel ? (

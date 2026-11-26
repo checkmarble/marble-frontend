@@ -9,7 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
 /** Lets the request finish after the page unloads. */
-const keepaliveFetch: typeof fetch = (input, init) => fetch(input, { ...init, keepalive: true });
+export const keepaliveFetch: typeof fetch = (input, init) => fetch(input, { ...init, keepalive: true });
 
 /**
  * Resolves `undefined` after a redirect (expired session, lost entitlement): `useServerFn` has

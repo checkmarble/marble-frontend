@@ -36,6 +36,7 @@ export const SCREENING_REVIEW_SHORTCUT_HELP = [
     rows: [
       { name: 'hit_no_hit', hotkeys: ['M', 'N'] },
       { name: 'validate', hotkeys: ['Enter'] },
+      { name: 'request_confirmation', hotkeys: ['Shift+Enter'] },
       { name: 'comment', hotkeys: ['C'] },
       { name: 'cancel_clear_close', hotkeys: ['Escape'] },
       { name: 'undo', hotkeys: ['U'] },

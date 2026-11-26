@@ -17,6 +17,7 @@ describe('assigned screening review page reader', () => {
         .fn<CaseRepository['listCases']>()
         .mockResolvedValueOnce({ items: [reviewCase('decision', [], { type: 'decision' })], hasNextPage: true })
         .mockResolvedValueOnce({ items: [detail], hasNextPage: false }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(detail),
     };
@@ -37,6 +38,7 @@ describe('assigned screening review page reader', () => {
     const second = reviewCase('second', undefined, { inboxId: 'second-inbox' });
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [first, second], hasNextPage: false }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi
         .fn<CaseRepository['getCase']>()
@@ -52,6 +54,7 @@ describe('assigned screening review page reader', () => {
     const result = await readScreeningReviewPage(
       {
         listCases: async () => ({ items: [summary], hasNextPage: false }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: async () => ({ ...summary, inboxId: 'other-inbox' }),
       },
@@ -72,6 +75,7 @@ describe('assigned screening review page reader', () => {
           .fn<CaseRepository['listCases']>()
           .mockResolvedValueOnce({ items: [reviewCase('decision', [], { type: 'decision' })], hasNextPage: true })
           .mockResolvedValueOnce({ items: [detail], hasNextPage: false }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(detail),
       };
@@ -99,6 +103,7 @@ describe('assigned screening review page reader', () => {
         .fn<CaseRepository['listCases']>()
         .mockResolvedValueOnce({ items: [reviewed], hasNextPage: true })
         .mockResolvedValueOnce({ items: [pending], hasNextPage: false }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi
         .fn<CaseRepository['getCase']>()
@@ -116,6 +121,7 @@ describe('assigned screening review page reader', () => {
       listCases: vi
         .fn<CaseRepository['listCases']>()
         .mockResolvedValue({ items: [closes, staysOpen], hasNextPage: false }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>().mockImplementation(async ({ caseId }) => {
         if (caseId === staysOpen.id) throw new Error('closure failed');
         return closes;
@@ -129,6 +135,7 @@ describe('assigned screening review page reader', () => {
       nextCursor: null,
       failed: false,
       closedCaseIds: [closes.id],
+      escalations: [],
     });
     expect(repository.updateCase).toHaveBeenCalledWith({
       caseId: closes.id,
@@ -148,6 +155,7 @@ describe('assigned screening review page reader', () => {
       getCase: vi
         .fn<CaseRepository['getCase']>()
         .mockImplementation(async ({ caseId }) => reviewed.find((item) => item.id === caseId)!),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
     };
     const result = await readScreeningReviewPage(repository, 'analyst', 50, null);
@@ -162,6 +170,7 @@ describe('assigned screening review page reader', () => {
     let maximum = 0;
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: cases, hasNextPage: true }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockImplementation(async ({ caseId }) => {
         concurrent += 1;
@@ -188,6 +197,7 @@ describe('assigned screening review page reader', () => {
     const result = await readScreeningReviewPage(
       {
         listCases: async () => ({ items: [summary], hasNextPage: false }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: async () => ({ ...summary, ...overrides }),
       },
@@ -204,6 +214,7 @@ describe('assigned screening review page reader', () => {
     let fail = true;
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [first, second], hasNextPage: false }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>().mockImplementation(async ({ caseId }) => {
         if (fail && caseId === second.id) throw new Error('temporary');
@@ -228,6 +239,7 @@ describe('assigned screening review page reader', () => {
         .fn<CaseRepository['listCases']>()
         .mockRejectedValueOnce(new Error('offline'))
         .mockResolvedValueOnce({ items: [] satisfies Case[], hasNextPage: false }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>(),
       getCase: vi.fn<CaseRepository['getCase']>(),
     };
@@ -236,12 +248,14 @@ describe('assigned screening review page reader', () => {
       nextCursor: null,
       failed: true,
       closedCaseIds: [],
+      escalations: [],
     });
     expect(await readScreeningReviewPage(repository, 'analyst', 50, null)).toEqual({
       items: [],
       nextCursor: null,
       failed: false,
       closedCaseIds: [],
+      escalations: [],
     });
   });
 
@@ -252,6 +266,7 @@ describe('assigned screening review page reader', () => {
       const closed = reviewCase('closed', [decided], { status: 'closed' });
       const repository = {
         listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [closed], hasNextPage: false }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(closed),
       };
@@ -274,6 +289,7 @@ describe('assigned screening review page reader', () => {
       ];
       const repository = {
         listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: cases, hasNextPage: true }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: vi
           .fn<CaseRepository['getCase']>()
@@ -291,6 +307,7 @@ describe('assigned screening review page reader', () => {
       const ended = reviewCase('ended', [{ ...objectReviewScreening(), status: 'no_hit' }]);
       const repository = {
         listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [ended], hasNextPage: false }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(ended),
       };
@@ -302,6 +319,7 @@ describe('assigned screening review page reader', () => {
     it('passes a search to the case name filter and omits an empty one', async () => {
       const repository = {
         listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [], hasNextPage: false }),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
         getCase: vi.fn<CaseRepository['getCase']>(),
       };
