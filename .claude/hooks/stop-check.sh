@@ -1,6 +1,6 @@
 #!/bin/bash
-# Stop hook: format modified files with Biome + run type-check
-# If type-check fails, blocks the agent from stopping so it can fix errors.
+# Stop hook: format modified files with Biome, run type-check, then check the comment and test
+# budget. Blocks the agent from stopping, once, on a type-check failure or an exceeded budget.
 
 set -euo pipefail
 
@@ -25,11 +25,6 @@ fi
 
 # Changed files (staged + unstaged + new untracked)
 CHANGED=$({ git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; } 2>/dev/null | sort -u | grep -v '^$' || true)
-
-# Nothing changed, let the agent stop
-if [ -z "$CHANGED" ]; then
-  exit 0
-fi
 
 # Format and apply assist (including named-import sort) so the result matches `biome check`.
 TS_FILES=$(echo "$CHANGED" | grep -E '\.(ts|tsx)$' || true)
@@ -65,5 +60,11 @@ if [ -n "$ERRORS" ]; then
   exit 0
 fi
 
-# All good, let the agent stop
+# Runs on committed work too, so it is not behind the CHANGED check.
+BUDGET=$("$PROJECT_DIR"/.claude/hooks/tests-comments-budget.sh 2>/dev/null || true)
+if [ -n "$BUDGET" ]; then
+  printf '{"decision":"block","reason":%s}' "$(printf '%s' "$BUDGET" | jq -Rs .)"
+  exit 0
+fi
+
 exit 0

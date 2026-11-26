@@ -207,7 +207,7 @@ Shell scripts that run on lifecycle events. Cannot be bypassed by Claude.
 }
 ```
 
-**Auto-format + type-check on stop** (Stop):
+**Auto-format, type-check and comment/test budget on stop** (Stop):
 ```json
 {
   "Stop": [{
