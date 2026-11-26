@@ -1,12 +1,19 @@
-import { objectReviewScreening, reviewCase } from '@app-builder/models/screening-review.test-helpers';
+import {
+  objectReviewScreening,
+  reviewCase,
+  withMatchStatus,
+  withTentativeReview,
+} from '@app-builder/models/screening-review.test-helpers';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
 import type { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { describe, expect, it, vi } from 'vitest';
 import {
   closeScreeningReviewCase,
+  escalateScreeningReviewCase,
   reviewScreeningReviewMatch,
   reviewScreeningReviewMatches,
   type ScreeningReviewDecisionInput,
+  submitScreeningReviewTentativeReview,
 } from './screening-review-decision';
 import { readScreeningReviewPage } from './screening-review-page';
 
@@ -26,6 +33,7 @@ function repositories(before = reviewCase('case'), after = before) {
   return {
     cases: {
       getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
     },
     continuousScreening: {
@@ -138,6 +146,7 @@ describe('screening review batch decision', () => {
     return {
       cases: {
         getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
       },
       continuousScreening: {
@@ -230,6 +239,7 @@ describe('screening review case closure', () => {
     return {
       cases: {
         getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>(),
         updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
       },
       continuousScreening: { dismiss: vi.fn<ContinuousScreeningRepository['dismiss']>().mockResolvedValue(undefined) },
@@ -292,6 +302,7 @@ describe('closure recovery on load', () => {
     const repository = {
       listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [leftOpen], hasNextPage: false }),
       getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(leftOpen),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
       updateCase: vi.fn<CaseRepository['updateCase']>().mockRejectedValue(new Error('still failing')),
     };
     expect(await readScreeningReviewPage(repository, 'analyst', 50, null)).toEqual({
@@ -300,10 +311,187 @@ describe('closure recovery on load', () => {
       failed: false,
       // The closure failed again, so the case stays open.
       closedCaseIds: [],
+      escalations: [],
     });
     expect(repository.updateCase).toHaveBeenCalledExactlyOnceWith({
       caseId: 'case',
       body: { status: 'closed', outcome: 'false_positive' },
     });
+  });
+});
+
+describe('screening review tentative review', () => {
+  const tentativeInput = { ...input, status: 'confirmed_hit' as const, comment: '  Same birth year, unsure  ' };
+  /** The low hit decided, the high one tentatively reviewed: nothing left to review. */
+  const escalating = reviewCase('case', [
+    withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', ['screening-1-low']),
+  ]);
+  function tentativeRepositories(before = reviewCase('case'), after = before) {
+    return {
+      cases: {
+        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        escalateCase: vi.fn<CaseRepository['escalateCase']>().mockResolvedValue(undefined),
+        updateCase: vi.fn<CaseRepository['updateCase']>(),
+      },
+      continuousScreening: {
+        commentMatch: vi.fn<ContinuousScreeningRepository['commentMatch']>().mockResolvedValue(undefined),
+      },
+    };
+  }
+
+  it('writes the trimmed comment with the tentative status, and leaves the case while a hit is to review', async () => {
+    const repos = tentativeRepositories(
+      reviewCase('case'),
+      reviewCase('case', [withTentativeReview(objectReviewScreening(), 'screening-1-high')]),
+    );
+    expect(await submitScreeningReviewTentativeReview(repos, 'analyst', tentativeInput)).toEqual({
+      ok: true,
+      screeningStatus: 'in_review',
+      caseClosed: false,
+    });
+    expect(repos.continuousScreening.commentMatch).toHaveBeenCalledExactlyOnceWith({
+      matchId: 'screening-1-high',
+      comment: 'Same birth year, unsure',
+      tentativeReview: { status: 'confirmed_hit' },
+    });
+    expect(repos.cases.escalateCase).not.toHaveBeenCalled();
+  });
+
+  it('escalates the case once its last open hit has a tentative review', async () => {
+    const repos = tentativeRepositories(reviewCase('case'), escalating);
+    expect(await submitScreeningReviewTentativeReview(repos, 'analyst', tentativeInput)).toEqual({
+      ok: true,
+      screeningStatus: 'in_review',
+      caseClosed: false,
+      escalation: 'escalated',
+    });
+    expect(repos.cases.escalateCase).toHaveBeenCalledExactlyOnceWith({ caseId: 'case' });
+    expect(repos.cases.updateCase).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['no_escalation_inbox', httpError(422, 'the source inbox does not have escalation configured')],
+    ['inactive_escalation_inbox', httpError(422, 'target inbox is inactive')],
+    ['case_closed', httpError(422, 'case is already closed, cannot escalate')],
+    ['failed', httpError(422, 'something else')],
+    ['failed', new Error('network')],
+  ] as const)('reports an escalation that could not be made: %s', async (escalation, error) => {
+    const repos = tentativeRepositories(reviewCase('case'), escalating);
+    repos.cases.escalateCase.mockRejectedValue(error);
+    expect(await submitScreeningReviewTentativeReview(repos, 'analyst', tentativeInput)).toMatchObject({
+      ok: true,
+      escalation,
+    });
+  });
+
+  it('lets a sign-in redirect through instead of reporting a failed escalation', async () => {
+    const repos = tentativeRepositories(reviewCase('case'), escalating);
+    const signIn = new Response(null, { status: 302, headers: { Location: '/sign-in' } });
+    repos.cases.escalateCase.mockRejectedValue(signIn);
+    await expect(submitScreeningReviewTentativeReview(repos, 'analyst', tentativeInput)).rejects.toBe(signIn);
+  });
+
+  it('refuses a hit that is no longer pending, like a decision', async () => {
+    const reviewed = withMatchStatus(objectReviewScreening(), 'no_hit', ['screening-1-high']);
+    const repos = tentativeRepositories(reviewCase('case', [reviewed]));
+    expect(await submitScreeningReviewTentativeReview(repos, 'analyst', tentativeInput)).toEqual({
+      ok: false,
+      reason: 'already_reviewed',
+    });
+    expect(repos.continuousScreening.commentMatch).not.toHaveBeenCalled();
+  });
+
+  it('escalates after a final decision on the last open hit when another has a tentative review', async () => {
+    const before = reviewCase('case', [withTentativeReview(objectReviewScreening(), 'screening-1-high')]);
+    const repos = repositories(before, escalating);
+    expect(await reviewScreeningReviewMatch(repos, 'analyst', { ...input, matchId: 'screening-1-low' })).toMatchObject({
+      ok: true,
+      caseClosed: false,
+      escalation: 'escalated',
+    });
+    expect(repos.cases.escalateCase).toHaveBeenCalledExactlyOnceWith({ caseId: 'case' });
+    expect(repos.cases.updateCase).not.toHaveBeenCalled();
+  });
+});
+
+describe('screening review case escalation', () => {
+  /** A partial screening: one hit No hit, one tentatively reviewed, more matches to load. */
+  const partial = reviewCase('case', [
+    {
+      ...withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', [
+        'screening-1-low',
+      ]),
+      partial: true,
+    },
+  ]);
+  function escalateRepositories(before = partial) {
+    return {
+      getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(before),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>().mockResolvedValue(undefined),
+    };
+  }
+
+  it('escalates a partial screening without loading or dismissing its other matches', async () => {
+    const cases = escalateRepositories();
+    expect(await escalateScreeningReviewCase(cases, 'analyst', { caseId: 'case' })).toEqual({
+      ok: true,
+      escalation: 'escalated',
+    });
+    expect(cases.escalateCase).toHaveBeenCalledExactlyOnceWith({ caseId: 'case' });
+  });
+
+  it.each([
+    ['unavailable', { ...partial, status: 'closed' as const }],
+    ['reassigned', { ...partial, assignedTo: 'colleague' }],
+    ['not_escalatable', reviewCase('case', [{ ...withMatchStatus(objectReviewScreening(), 'no_hit'), partial: true }])],
+    ['not_escalatable', reviewCase('case', [withTentativeReview(objectReviewScreening(), 'screening-1-high')])],
+  ] as const)('refuses before escalating: %s', async (reason, before) => {
+    const cases = escalateRepositories(before);
+    expect(await escalateScreeningReviewCase(cases, 'analyst', { caseId: 'case' })).toEqual({ ok: false, reason });
+    expect(cases.escalateCase).not.toHaveBeenCalled();
+  });
+
+  it('reports an inbox without an escalation inbox', async () => {
+    const cases = escalateRepositories();
+    cases.escalateCase.mockRejectedValue(httpError(422, 'the source inbox does not have escalation configured'));
+    expect(await escalateScreeningReviewCase(cases, 'analyst', { caseId: 'case' })).toEqual({
+      ok: true,
+      escalation: 'no_escalation_inbox',
+    });
+  });
+});
+
+describe('escalation recovery on load', () => {
+  const leftAssigned = reviewCase('case', [
+    withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', ['screening-1-low']),
+  ]);
+  function loadRepository() {
+    return {
+      listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [leftAssigned], hasNextPage: false }),
+      getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(leftAssigned),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>().mockResolvedValue(undefined),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
+    };
+  }
+
+  it('escalates a case left by a failed escalation, and lists none of its hits', async () => {
+    const repository = loadRepository();
+    expect(await readScreeningReviewPage(repository, 'analyst', 50, null, { filter: 'all' })).toEqual({
+      items: [],
+      nextCursor: null,
+      failed: false,
+      closedCaseIds: [],
+      escalations: [{ caseId: 'case', inboxId: 'inbox', escalation: 'escalated' }],
+    });
+    expect(repository.escalateCase).toHaveBeenCalledExactlyOnceWith({ caseId: 'case' });
+    expect(repository.updateCase).not.toHaveBeenCalled();
+  });
+
+  it('keeps listing a case whose escalation failed again', async () => {
+    const repository = loadRepository();
+    repository.escalateCase.mockRejectedValue(httpError(422, 'target inbox is inactive'));
+    const page = await readScreeningReviewPage(repository, 'analyst', 50, null, { filter: 'all' });
+    expect(page.escalations).toEqual([{ caseId: 'case', inboxId: 'inbox', escalation: 'inactive_escalation_inbox' }]);
+    expect(page.items.map((item) => item.matchId)).toEqual(['screening-1-high', 'screening-1-low']);
   });
 });

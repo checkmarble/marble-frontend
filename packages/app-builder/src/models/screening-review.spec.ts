@@ -4,8 +4,10 @@ import { adaptContinuousScreening } from './continuous-screening';
 import {
   adjacentScreeningReviewItem,
   applyScreeningReviewSession,
+  awaitsEscalation,
   awaitsMoreMatches,
   buildScreeningReviewItems,
+  canEscalateScreeningReviewCase,
   compareScreeningReviewFields,
   countScreeningReviewFilters,
   emptyScreeningReviewSession,
@@ -20,15 +22,23 @@ import {
   type ScreeningReviewSession,
   type ScreeningReviewSignals,
   screeningReviewCards,
+  screeningReviewCaseFollowUp,
   screeningReviewCategoryCounts,
   screeningReviewChipFields,
   screeningReviewGroupPendingItems,
   screeningReviewHitsSkippedBy,
   screeningReviewScreeningState,
   screeningReviewTopicFamilies,
+  willEscalateScreeningReviewCase,
 } from './screening-review';
 import stagingObjectAddedDto from './screening-review.staging-object-added.json';
-import { datasetReviewScreening, objectReviewScreening, reviewCase } from './screening-review.test-helpers';
+import {
+  datasetReviewScreening,
+  objectReviewScreening,
+  reviewCase,
+  withMatchStatus,
+  withTentativeReview,
+} from './screening-review.test-helpers';
 
 const TRIGGERS = ['object_added', 'dataset_updated'] as const;
 
@@ -701,6 +711,7 @@ describe('screening review session', () => {
     decided: { [item.id]: { item, decision, written: true } },
     screenings: { [item.screeningId]: { status: 'in_review', caseClosed: false, ...screening } },
     hiddenCases: [],
+    escalated: {},
   });
   const listedGroups = (session: ScreeningReviewSession, source = items) =>
     groupScreeningReviewItems(applyScreeningReviewSession(source, session), false, (item) =>
@@ -777,6 +788,7 @@ describe('screening review session', () => {
       },
       screenings: {},
       hiddenCases: [],
+      escalated: {},
     });
     const settled = (session: ScreeningReviewSession, source = [high!, low!]) =>
       groupScreeningReviewItems(applyScreeningReviewSession(source, session), false, (item) =>
@@ -848,6 +860,7 @@ describe('screening review session', () => {
       decided: Object.fromEntries(decisions.map(([item, decision]) => [item.id, { item, decision, written: false }])),
       screenings,
       hiddenCases: [],
+      escalated: {},
     });
     const state = (session: ScreeningReviewSession, matchId: string, source = items) => {
       const applied = applyScreeningReviewSession(source, session);
@@ -902,6 +915,7 @@ describe('screening review session', () => {
         },
         screenings: { [high!.screeningId]: { status: 'in_review', caseClosed: false } },
         hiddenCases: [],
+        escalated: {},
       };
       expect(state(session, 'screening-1-low', objectOnly)).toBe('case_closed');
     });
@@ -988,5 +1002,202 @@ describe('screening review filters', () => {
     ]);
     expect(screeningReviewScreeningState(partial, partial[0]!, emptyScreeningReviewSession)).toBe('in_review');
     expect(awaitsMoreMatches(partial[0]!)).toBe(false);
+  });
+});
+
+describe('screening review tentative reviews', () => {
+  const high = 'screening-1-high';
+  const low = 'screening-1-low';
+  const itemOf = (items: ScreeningReviewItem[], matchId: string) => items.find((item) => item.matchId === matchId)!;
+
+  it('counts a hit tentatively reviewed in the case’s inbox under Validated, and the cursor skips it', () => {
+    const items = buildScreeningReviewItems([reviewCase('case', [withTentativeReview(objectReviewScreening(), high)])]);
+    const tentative = itemOf(items, high);
+    expect(awaitsEscalation(tentative)).toBe(true);
+    expect(isPendingReviewItem(tentative)).toBe(false);
+    expect(matchesScreeningReviewFilter(tentative, 'validated')).toBe(true);
+    expect(countScreeningReviewFilters(items)).toEqual({ all: 2, to_review: 1, validated: 1 });
+
+    const groups = groupScreeningReviewItems(items);
+    // Listed beside the pending hit, like a decided one.
+    expect(groups[0]!.items.map((item) => item.matchId)).toEqual([high, low]);
+    expect(groups[0]!.remaining).toBe(1);
+    expect(nextPendingScreeningReviewItem(groups, itemOf(items, low).id)).toBeUndefined();
+    expect(screeningReviewGroupPendingItems(groups, tentative.id).map((item) => item.matchId)).toEqual([low]);
+  });
+
+  it('counts a hit tentatively reviewed in another inbox, once escalated, under To review', () => {
+    const items = buildScreeningReviewItems([
+      reviewCase('case', [withTentativeReview(objectReviewScreening(), high, { inboxId: 'first-inbox' })]),
+    ]);
+    const escalated = itemOf(items, high);
+    expect(escalated.tentativeReview?.inboxId).toBe('first-inbox');
+    expect(awaitsEscalation(escalated)).toBe(false);
+    expect(isPendingReviewItem(escalated)).toBe(true);
+    expect(countScreeningReviewFilters(items)).toEqual({ all: 2, to_review: 2, validated: 0 });
+    const groups = groupScreeningReviewItems(items);
+    expect(nextPendingScreeningReviewItem(groups, itemOf(items, low).id)?.matchId).toBe(high);
+  });
+
+  it('drops the tentative review of a hit with a final decision', () => {
+    const screening = withMatchStatus(withTentativeReview(objectReviewScreening(), high), 'no_hit', [high]);
+    expect(itemOf(buildScreeningReviewItems([reviewCase('case', [screening])]), high).tentativeReview).toBeNull();
+  });
+
+  it('keeps a tentative review written this visit pending, and a tentative Hit skips no other hit', () => {
+    const items = buildScreeningReviewItems([reviewCase('case')]);
+    const item = itemOf(items, high);
+    const session: ScreeningReviewSession = {
+      ...emptyScreeningReviewSession,
+      decided: {
+        [item.id]: {
+          item,
+          decision: 'confirmed_hit',
+          comment: 'Looks like them',
+          tentativeReview: {
+            id: 'session',
+            authorId: 'analyst',
+            comment: 'Looks like them',
+            status: 'confirmed_hit',
+            inboxId: item.inboxId,
+            createdAt: '2026-11-02T10:00:00Z',
+          },
+          written: false,
+        },
+      },
+    };
+    const applied = applyScreeningReviewSession(items, session);
+    expect(itemOf(applied, high)).toMatchObject({ status: 'pending', tentativeReview: { status: 'confirmed_hit' } });
+    expect(awaitsEscalation(itemOf(applied, high))).toBe(true);
+    expect(itemOf(applied, low).status).toBe('pending');
+    // Still pending for the backend, so a final Hit on the other hit skips it.
+    expect(screeningReviewHitsSkippedBy(applied, itemOf(applied, low)).map((other) => other.matchId)).toEqual([high]);
+  });
+
+  it('predicts the escalation once the case has nothing left to review', () => {
+    const withTentative = withTentativeReview(objectReviewScreening(), high);
+    const open = buildScreeningReviewItems([reviewCase('case', [withTentative])]);
+    expect(willEscalateScreeningReviewCase(open, 'case')).toBe(false);
+    expect(canEscalateScreeningReviewCase(open, 'case')).toBe(false);
+
+    const done = buildScreeningReviewItems([reviewCase('case', [withMatchStatus(withTentative, 'no_hit', [low])])]);
+    expect(willEscalateScreeningReviewCase(done, 'case')).toBe(true);
+    expect(canEscalateScreeningReviewCase(done, 'case')).toBe(true);
+
+    // A partial screening waits for its other matches, but can be escalated by hand.
+    const partial = buildScreeningReviewItems([
+      reviewCase('case', [{ ...withMatchStatus(withTentative, 'no_hit', [low]), partial: true }]),
+    ]);
+    expect(willEscalateScreeningReviewCase(partial, 'case')).toBe(false);
+    expect(canEscalateScreeningReviewCase(partial, 'case')).toBe(true);
+
+    const finalOnly = buildScreeningReviewItems([
+      reviewCase('case', [withMatchStatus(objectReviewScreening(), 'no_hit')]),
+    ]);
+    expect(willEscalateScreeningReviewCase(finalOnly, 'case')).toBe(false);
+  });
+
+  it('shows a case whose escalation is due but not made as pending escalation, once its decisions are written', () => {
+    const due = buildScreeningReviewItems([
+      reviewCase('case', [withMatchStatus(withTentativeReview(objectReviewScreening(), high), 'no_hit', [low])]),
+    ]);
+    expect(screeningReviewScreeningState(due, itemOf(due, high), emptyScreeningReviewSession)).toBe(
+      'escalation_pending',
+    );
+    const unwritten: ScreeningReviewSession = {
+      ...emptyScreeningReviewSession,
+      decided: { [itemOf(due, low).id]: { item: itemOf(due, low), decision: 'no_hit', written: false } },
+    };
+    expect(screeningReviewScreeningState(due, itemOf(due, high), unwritten)).not.toBe('escalation_pending');
+  });
+
+  it('lets a final decision read from the server supersede a written tentative review', () => {
+    const items = buildScreeningReviewItems([reviewCase('case')]);
+    const item = itemOf(items, high);
+    const session = (written: boolean): ScreeningReviewSession => ({
+      ...emptyScreeningReviewSession,
+      decided: {
+        [item.id]: {
+          item,
+          decision: 'no_hit',
+          tentativeReview: {
+            id: 'session',
+            authorId: 'analyst',
+            comment: 'Unsure',
+            status: 'no_hit',
+            inboxId: item.inboxId,
+            createdAt: '2026-11-02T10:00:00Z',
+          },
+          written,
+        },
+      },
+    });
+    const finalized = buildScreeningReviewItems([
+      reviewCase('case', [withMatchStatus(objectReviewScreening(), 'confirmed_hit', [high])]),
+    ]);
+    expect(itemOf(applyScreeningReviewSession(finalized, session(true)), high)).toMatchObject({
+      status: 'confirmed_hit',
+      tentativeReview: null,
+    });
+    expect(itemOf(applyScreeningReviewSession(items, session(true)), high).tentativeReview?.id).toBe('session');
+  });
+
+  it('shows an escalated case as escalated, and keeps its hits listed once the server drops them', () => {
+    const items = buildScreeningReviewItems([reviewCase('case', [withTentativeReview(objectReviewScreening(), high)])]);
+    const session = { ...emptyScreeningReviewSession, escalated: { case: items } };
+    expect(screeningReviewScreeningState(items, itemOf(items, high), session)).toBe('escalated');
+    const kept = applyScreeningReviewSession([], session);
+    expect(kept.map((item) => item.matchId)).toEqual([high, low]);
+    expect(kept.every((item) => isListedInScreeningReviewSession(item, session))).toBe(true);
+  });
+});
+
+describe('screening review case follow-up', () => {
+  const high = 'screening-1-high';
+  const low = 'screening-1-low';
+  const tentative = withTentativeReview(objectReviewScreening(), high);
+  const followUp = (...args: Parameters<typeof reviewCase>) =>
+    screeningReviewCaseFollowUp(reviewCase(...args), 'analyst');
+
+  it('escalates once every hit has a final decision or a tentative review, and one is tentative', () => {
+    expect(followUp('case', [withMatchStatus(tentative, 'no_hit', [low])])).toBe('escalate');
+    expect(followUp('case', [withMatchStatus(tentative, 'confirmed_hit', [low])])).toBe('escalate');
+    expect(followUp('case', [withTentativeReview(tentative, low, { status: 'confirmed_hit' })])).toBe('escalate');
+    // Re-escalation: the confirming reviewer's own tentative review replaced the first one.
+    const reviewedAgain = withTentativeReview(objectReviewScreening(), high, { inboxId: 'escalation-inbox' });
+    expect(followUp('case', [withMatchStatus(reviewedAgain, 'no_hit', [low])], { inboxId: 'escalation-inbox' })).toBe(
+      'escalate',
+    );
+  });
+
+  it('leaves the case while a hit is still to review here', () => {
+    expect(followUp('case', [tentative])).toBe('none');
+    // A tentative review from the inbox the case was escalated from awaits this inbox's decision.
+    const escalated = withMatchStatus(
+      withTentativeReview(objectReviewScreening(), high, { inboxId: 'first' }),
+      'no_hit',
+      [low],
+    );
+    expect(followUp('case', [escalated])).toBe('none');
+    expect(followUp('case', [withMatchStatus(tentative, 'no_hit', [low]), objectReviewScreening('other')])).toBe(
+      'none',
+    );
+  });
+
+  it('leaves a case with matches still to load, a closed case, and a case assigned to someone else', () => {
+    const done = withMatchStatus(tentative, 'no_hit', [low]);
+    expect(followUp('case', [{ ...done, partial: true }])).toBe('none');
+    expect(followUp('case', [done], { status: 'closed' })).toBe('none');
+    expect(followUp('case', [done], { assignedTo: 'someone-else' })).toBe('none');
+  });
+
+  it('closes a case whose screenings all ended at No hit, and leaves one without a tentative review', () => {
+    expect(followUp('case', [{ ...withMatchStatus(objectReviewScreening(), 'no_hit'), status: 'no_hit' }])).toBe(
+      'close',
+    );
+    expect(followUp('case', [objectReviewScreening()])).toBe('none');
+    expect(
+      followUp('case', [{ ...withMatchStatus(objectReviewScreening(), 'confirmed_hit'), status: 'confirmed_hit' }]),
+    ).toBe('none');
   });
 });

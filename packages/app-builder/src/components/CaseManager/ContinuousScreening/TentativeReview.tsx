@@ -36,7 +36,7 @@ export function TentativeReviewTag({
   );
 }
 
-function TentativeReviewAuthor({ review }: { review: ScreeningMatchTentativeReview }) {
+export function TentativeReviewAuthor({ review }: { review: ScreeningMatchTentativeReview }) {
   const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
   const { getOrgUserById } = useOrganizationUsers();

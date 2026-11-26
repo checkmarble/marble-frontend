@@ -1,7 +1,12 @@
 import type { CaseDetail } from '@app-builder/models/cases';
 import type { ContinuousScreening } from '@app-builder/models/continuous-screening';
 import { isHttpError, marbleApiErrorMessage } from '@app-builder/models/http-errors';
-import { needsFalsePositiveClosure, type ScreeningReviewDecision } from '@app-builder/models/screening-review';
+import {
+  needsFalsePositiveClosure,
+  type ScreeningReviewDecision,
+  type ScreeningReviewEscalation,
+  screeningReviewCaseFollowUp,
+} from '@app-builder/models/screening-review';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
 import type { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { FORBIDDEN, NOT_FOUND, OK, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
@@ -27,7 +32,9 @@ export type ScreeningReviewRejection =
   /** Someone else reviewed the hit, or a Hit on another hit skipped it. */
   | 'already_reviewed'
   /** The screening has hits to review again, or another screening of the case is still open. */
-  | 'not_closable';
+  | 'not_closable'
+  /** The case has no tentative review awaiting escalation, or still has hits to review. */
+  | 'not_escalatable';
 
 export type ScreeningReviewDecisionResult =
   | {
@@ -35,18 +42,36 @@ export type ScreeningReviewDecisionResult =
       /** `null` when the screening couldn't be read back. The next load recovers. */
       screeningStatus: ContinuousScreening['status'] | null;
       caseClosed: boolean;
+      /** Set when the write left the case to escalate. */
+      escalation?: ScreeningReviewEscalation;
     }
   | { ok: false; reason: ScreeningReviewRejection };
 
+type FollowUpCases = Pick<CaseRepository, 'getCase' | 'updateCase' | 'escalateCase'>;
+
 type Repositories = {
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>;
+  cases: FollowUpCases;
   continuousScreening: Pick<ContinuousScreeningRepository, 'updateMatchStatus'>;
 };
 
+type TentativeReviewRepositories = {
+  cases: FollowUpCases;
+  continuousScreening: Pick<ContinuousScreeningRepository, 'commentMatch'>;
+};
+
 type BatchRepositories = {
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>;
+  cases: FollowUpCases;
   continuousScreening: Pick<ContinuousScreeningRepository, 'reviewMatches'>;
 };
+
+/** A tentative review always carries its comment. */
+export interface ScreeningReviewTentativeReviewInput extends ScreeningReviewDecisionInput {
+  comment: string;
+}
+
+export type ScreeningReviewEscalateResult =
+  | { ok: true; escalation: ScreeningReviewEscalation }
+  | { ok: false; reason: ScreeningReviewRejection };
 
 export interface ScreeningReviewBatchInput {
   caseId: string;
@@ -57,7 +82,7 @@ export interface ScreeningReviewBatchInput {
 export type ScreeningReviewBatchResult = (ScreeningReviewDecisionResult | null)[];
 
 type CloseRepositories = {
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>;
+  cases: FollowUpCases;
   continuousScreening: Pick<ContinuousScreeningRepository, 'dismiss'>;
 };
 
@@ -119,6 +144,14 @@ function rejectionFromError(error: unknown): ScreeningReviewRejection | null {
   return isHttpError(error) ? rejectionFromStatus(error.status, marbleApiErrorMessage(error)) : null;
 }
 
+/**
+ * A sign-in redirect, thrown when the session can't be refreshed, must reach the client. A catch that
+ * turns failures into an outcome calls this first.
+ */
+function rethrowRedirect(error: unknown) {
+  if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
+}
+
 /** Closes a case whose screenings all ended at `no_hit`. Returns whether the case is closed. */
 export async function closeFalsePositiveCase(
   cases: Pick<CaseRepository, 'updateCase'>,
@@ -128,9 +161,44 @@ export async function closeFalsePositiveCase(
   try {
     await cases.updateCase({ caseId: caseDetail.id, body: { status: 'closed', outcome: 'false_positive' } });
     return true;
-  } catch {
+  } catch (error) {
+    rethrowRedirect(error);
     // Not atomic with the review: the next page load retries.
     return false;
+  }
+}
+
+/** The refusals the backend's escalation answers with 422, told apart by their message. */
+const ESCALATION_REFUSALS = [
+  ['does not have escalation configured', 'no_escalation_inbox'],
+  ['target inbox is inactive', 'inactive_escalation_inbox'],
+  ['already closed', 'case_closed'],
+] as const;
+
+async function escalateCase(
+  cases: Pick<CaseRepository, 'escalateCase'>,
+  caseId: string,
+): Promise<ScreeningReviewEscalation> {
+  try {
+    await cases.escalateCase({ caseId });
+    return 'escalated';
+  } catch (error) {
+    rethrowRedirect(error);
+    if (!isHttpError(error) || error.status !== UNPROCESSABLE_ENTITY) return 'failed';
+    const message = marbleApiErrorMessage(error) ?? '';
+    return ESCALATION_REFUSALS.find(([fragment]) => message.includes(fragment))?.[1] ?? 'failed';
+  }
+}
+
+/** Closes the case as a false positive or escalates it, as it now calls for. */
+export async function followUpScreeningReviewCase(cases: FollowUpCases, caseDetail: CaseDetail, userId: string) {
+  switch (screeningReviewCaseFollowUp(caseDetail, userId)) {
+    case 'close':
+      return { caseClosed: await closeFalsePositiveCase(cases, caseDetail) };
+    case 'escalate':
+      return { caseClosed: false, escalation: await escalateCase(cases, caseDetail.id) };
+    case 'none':
+      return { caseClosed: caseDetail.status === 'closed' };
   }
 }
 
@@ -158,32 +226,66 @@ export async function reviewScreeningReviewMatch(
     throw error;
   }
 
-  return resultAfterWrite(repositories.cases, input.caseId, input.screeningId);
+  return resultAfterWrite(repositories.cases, userId, input.caseId, input.screeningId);
 }
 
 /**
- * Reads the case back after a write, then closes it when every screening ended at `no_hit`.
+ * Writes a tentative review: a comment carrying a non-binding decision, which leaves the hit pending.
+ * Then escalates the case once every hit has a final decision or a tentative review.
+ */
+export async function submitScreeningReviewTentativeReview(
+  repositories: TentativeReviewRepositories,
+  userId: string,
+  input: ScreeningReviewTentativeReviewInput,
+): Promise<ScreeningReviewDecisionResult> {
+  try {
+    const before = await repositories.cases.getCase({ caseId: input.caseId });
+    const rejection = rejectionBeforeWrite(before, userId, input);
+    if (rejection) return { ok: false, reason: rejection };
+    await repositories.continuousScreening.commentMatch({
+      matchId: input.matchId,
+      comment: input.comment.trim(),
+      tentativeReview: { status: input.status },
+    });
+  } catch (error) {
+    const reason = rejectionFromError(error);
+    if (reason) return { ok: false, reason };
+    throw error;
+  }
+
+  return resultAfterWrite(repositories.cases, userId, input.caseId, input.screeningId);
+}
+
+/**
+ * Reads the case back after a write, then closes or escalates it as it calls for.
  * `undefined` when the case couldn't be read back: the next load recovers.
  */
-async function readBack(cases: Pick<CaseRepository, 'getCase' | 'updateCase'>, caseId: string) {
+async function readBack(cases: FollowUpCases, userId: string, caseId: string) {
   let caseDetail: CaseDetail;
   try {
     caseDetail = await cases.getCase({ caseId });
-  } catch {
+  } catch (error) {
+    rethrowRedirect(error);
     return undefined;
   }
-  return { caseDetail, caseClosed: await closeFalsePositiveCase(cases, caseDetail) };
+  return { caseDetail, ...(await followUpScreeningReviewCase(cases, caseDetail, userId)) };
 }
 
 async function resultAfterWrite(
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>,
+  cases: FollowUpCases,
+  userId: string,
   caseId: string,
   screeningId: string,
 ): Promise<ScreeningReviewDecisionResult> {
-  const after = await readBack(cases, caseId);
+  const after = await readBack(cases, userId, caseId);
   if (!after) return { ok: true, screeningStatus: null, caseClosed: false };
   const screeningStatus = after.caseDetail.continuousScreenings.find(({ id }) => id === screeningId)?.status ?? null;
-  return { ok: true, screeningStatus, caseClosed: after.caseClosed };
+  return {
+    ok: true,
+    screeningStatus,
+    caseClosed: after.caseClosed,
+    ...(after.escalation ? { escalation: after.escalation } : {}),
+  };
 }
 
 /**
@@ -223,7 +325,7 @@ export async function reviewScreeningReviewMatches(
     throw error;
   }
 
-  const after = outcomes.includes('written') ? await readBack(repositories.cases, caseId) : undefined;
+  const after = outcomes.includes('written') ? await readBack(repositories.cases, userId, caseId) : undefined;
   return decisions.map((decision, index): ScreeningReviewDecisionResult | null => {
     const outcome = outcomes[index]!;
     if (outcome === 'failed') return null;
@@ -233,6 +335,7 @@ export async function reviewScreeningReviewMatches(
       screeningStatus:
         after?.caseDetail.continuousScreenings.find(({ id }) => id === decision.screeningId)?.status ?? null,
       caseClosed: after?.caseClosed ?? false,
+      ...(after?.escalation ? { escalation: after.escalation } : {}),
     };
   });
 }
@@ -256,5 +359,49 @@ export async function closeScreeningReviewCase(
     if (reason) return { ok: false, reason };
     throw error;
   }
-  return resultAfterWrite(repositories.cases, input.caseId, input.screeningId);
+  return resultAfterWrite(repositories.cases, userId, input.caseId, input.screeningId);
+}
+
+/** Pending matches of the screenings in review that still wait for a decision in the case's inbox. */
+function hasHitsToReview(caseDetail: CaseDetail) {
+  return caseDetail.continuousScreenings.some(
+    (screening) =>
+      screening.status === 'in_review' &&
+      screening.matches.some(
+        (match) => match.status === 'pending' && match.tentativeReview?.inboxId !== caseDetail.inboxId,
+      ),
+  );
+}
+
+function hasTentativeReviewToEscalate(caseDetail: CaseDetail) {
+  return caseDetail.continuousScreenings.some(
+    (screening) =>
+      screening.status === 'in_review' &&
+      screening.matches.some(
+        (match) => match.status === 'pending' && match.tentativeReview?.inboxId === caseDetail.inboxId,
+      ),
+  );
+}
+
+/**
+ * Escalates a case whose loaded hits all have a final decision or a tentative review, without loading
+ * the other matches of its partial screening, which stay pending.
+ */
+export async function escalateScreeningReviewCase(
+  cases: Pick<CaseRepository, 'getCase' | 'escalateCase'>,
+  userId: string,
+  { caseId }: { caseId: string },
+): Promise<ScreeningReviewEscalateResult> {
+  try {
+    const before = await cases.getCase({ caseId });
+    if (before.status === 'closed') return { ok: false, reason: 'unavailable' };
+    if (before.assignedTo !== userId) return { ok: false, reason: 'reassigned' };
+    if (!hasTentativeReviewToEscalate(before) || hasHitsToReview(before))
+      return { ok: false, reason: 'not_escalatable' };
+  } catch (error) {
+    const reason = rejectionFromError(error);
+    if (reason) return { ok: false, reason };
+    throw error;
+  }
+  return { ok: true, escalation: await escalateCase(cases, caseId) };
 }
