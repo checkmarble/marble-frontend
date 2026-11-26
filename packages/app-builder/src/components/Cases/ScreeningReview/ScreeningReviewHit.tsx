@@ -28,7 +28,7 @@ import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, cn, ExpandableGroupTagLine, Tag, type TagProps, Typo } from 'ui-design-system';
+import { Card, cn, ExpandableGroupTagLine, Tag, type TagProps, Typo, tagClassName } from 'ui-design-system';
 
 const MAX_VALUES = 3;
 const IDENTITY_ID_PROPERTIES = [
@@ -456,9 +456,13 @@ function ListCategoryTags({ item }: { item: ScreeningReviewItem }) {
           );
         })}
         moreButton={(overflow, onExpand) => (
-          <Tag size="xs" color="purple" className="h-5 cursor-pointer px-sm" onClick={onExpand}>
+          <button
+            type="button"
+            className={cn(tagClassName({ size: 'xs', color: 'purple' }), 'h-5 cursor-pointer px-sm')}
+            onClick={onExpand}
+          >
             +{overflow}
-          </Tag>
+          </button>
         )}
       />
     </div>

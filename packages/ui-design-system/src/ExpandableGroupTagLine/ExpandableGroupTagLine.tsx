@@ -105,6 +105,8 @@ export function ExpandableGroupTagLine({
 
     const observer = new ResizeObserver(recalculate);
     observer.observe(container);
+    // An item can change width without the item count changing, e.g. when a badge appears in it.
+    for (const child of Array.from(ghost.children)) observer.observe(child);
     recalculate();
     return () => observer.disconnect();
   }, [isExpanded, items.length, overflowTagWidth]);
