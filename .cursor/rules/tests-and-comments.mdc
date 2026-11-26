@@ -1,5 +1,5 @@
 ---
-description: Read before adding a comment or a test in TypeScript — a comment only for what the code cannot say, a test only when it would catch a real failure
+description: Read before adding a comment or a test in TypeScript — start from none, a comment only for what the code cannot say, each behavior tested once at the layer that owns it
 globs: **/*.ts,**/*.tsx
 alwaysApply: false
 ---

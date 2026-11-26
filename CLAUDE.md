@@ -46,7 +46,9 @@ Generated output — edit the source and regenerate rather than the output:
 - Work on a feature branch; on `main`/`master` a hook blocks Edit/Write tool calls (it can't
   see shell writes, so don't write files from Bash there either).
 - Finish with a clean `type-check`. A stop hook Biome-formats changed and new `.ts`/`.tsx`
-  files and type-checks every package you changed, and sends you back on failure.
+  files and type-checks every package you changed, and sends you back on failure. It also
+  sends you back, once, when your unpushed work adds more comments or tests than
+  `.claude/rules/tests-and-comments.md` budgets for.
 - Reach for non-destructive git: `push --force`, `reset --hard`, `clean -f` and
   `checkout .` are blocked.
 
