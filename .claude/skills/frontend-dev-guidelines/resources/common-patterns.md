@@ -21,7 +21,7 @@ Entitlement levels are `FeatureAccessLevelDto` (`'allowed' | 'test' | 'restricte
 
 - `t()` keys are strictly type-checked against `locales/en/` via `services/i18n/i18next.d.ts`. Pass namespaces as an array (`useTranslation(['cases', 'common'])`) when using namespace-prefixed keys (`'cases:...'`). For dynamic keys over a finite union, use a typed lookup map (`as const` or `ParseKeys<[...]>`), and pass `{ defaultValue }` only for open runtime keys from external/backend payloads.
 - Namespace ids are the camelCase keys in `services/i18n/resources/en.ts`, so `continuousScreening` maps to `continuous-screening.json`. Adding keys or namespaces: `.claude/rules/i18n.md`.
-- On the server (server fn handler or function middleware): `const t = await context.services.i18nextService.getFixedT(getRequest(), ['common', 'cases'])`, with `getRequest` from `@tanstack/react-start/server` (`addRuleSnoozeFn` in `server-fns/cases.ts`).
+- On the server (server fn handler or function middleware): `const t = await getFixedT(getRequest(), ['common', 'cases'])`, with `getFixedT` from `@app-builder/services/i18n/i18next.server` and `getRequest` from `@tanstack/react-start/server` (`addRuleSnoozeFn` in `server-fns/cases.ts`).
 
 ## Icons
 

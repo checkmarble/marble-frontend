@@ -6,6 +6,7 @@ import { UpdateTag } from '@app-builder/components/Settings/Tags/UpdateTag';
 import { ColorPreview } from '@app-builder/components/Tags/ColorPreview';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TagColor } from '@app-builder/models/tags';
+import { listTags } from '@app-builder/server/organization';
 import {
   isCreateTagAvailable,
   isDeleteTagAvailable,
@@ -24,17 +25,13 @@ import { useTable } from 'ui-design-system';
 const tagsLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function tagsLoader({ context }) {
-    const { organization, user } = context.authInfo;
+    const { api, user } = context;
 
     if (!isReadTagAvailable(user)) throw redirect({ to: '/app-router' });
 
     const [caseTags, objectTags] = await Promise.all([
-      organization
-        .listTags({ withCaseCount: true })
-        .then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
-      organization
-        .listTags({ target: 'object' })
-        .then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
+      listTags(api, { withCaseCount: true }).then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
+      listTags(api, { target: 'object' }).then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
     ]);
 
     return {

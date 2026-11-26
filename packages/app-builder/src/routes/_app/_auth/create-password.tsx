@@ -1,6 +1,6 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { ResetPassword, StaticResetPassword } from '@app-builder/components/Auth/ResetPassword';
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Typo } from 'ui-design-system';
 
 const createPasswordLoader = createServerFn()
-  .middleware([servicesMiddleware])
+  .middleware([appConfigMiddleware])
   .handler(async function createPasswordLoader({ context }) {
     const request = getRequest();
     const appConfig = context.appConfig;

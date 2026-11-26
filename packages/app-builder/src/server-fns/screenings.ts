@@ -1,8 +1,20 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { freeformSearchPresetSchema } from '@app-builder/models/freeform-search-preset';
 import { isStatusConflictHttpError, marbleApiErrorMessage } from '@app-builder/models/http-errors';
-import { availableFeatures, type Screening } from '@app-builder/models/screening';
-import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
+import { adaptScreeningMatchPayload, availableFeatures, type Screening } from '@app-builder/models/screening';
+import { adaptScreeningAiSuggestion, type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
+import {
+  deleteFreeformSearchPreset,
+  freeformSearch,
+  getAvailableFilters,
+  getFreeformSearch,
+  listFreeformSearchPresets,
+  listSavedScreeningSearches,
+  listScreenings,
+  refineScreening,
+  saveFreeformSearchPreset,
+  searchScreeningMatches,
+} from '@app-builder/server/screenings';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getScreeningFileUploadEndpoint } from '@app-builder/utils/files';
 import { createServerFn } from '@tanstack/react-start';
@@ -121,7 +133,7 @@ export const getListConfigFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(getAvailableFiltersSchema)
   .handler(async ({ context, data }) => {
-    const filter = await context.authInfo.screening.getAvailableFilters({ feature: data.feature });
+    const filter = await getAvailableFilters(context.api, { feature: data.feature });
     return filter;
   });
 
@@ -129,7 +141,7 @@ export const getScreeningAiSuggestionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }): Promise<{ suggestions: ScreeningAiSuggestion[] }> => {
-    const suggestions = await context.authInfo.screening.getAiSuggestions({ screeningId: data.screeningId });
+    const suggestions = (await context.api.getScreeningAiSuggestions(data.screeningId)).map(adaptScreeningAiSuggestion);
     return { suggestions };
   });
 
@@ -137,7 +149,7 @@ export const getScreeningDetailFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ decisionId: z.string(), screeningId: z.string() }))
   .handler(async ({ context, data }): Promise<{ screening: Screening }> => {
-    const screenings = await context.authInfo.screening.listScreenings({ decisionId: data.decisionId });
+    const screenings = await listScreenings(context.api, { decisionId: data.decisionId });
     const screeningItem = screenings.find((s) => s.id === data.screeningId);
 
     if (!screeningItem) {
@@ -152,7 +164,7 @@ export const enrichMatchFn = createServerFn({ method: 'POST' })
   .validator(z.object({ matchId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.screening.enrichMatch({ matchId: data.matchId });
+      await context.api.enrichScreeningMatch(data.matchId);
     } catch (error) {
       if (isStatusConflictHttpError(error)) {
         return { error: 'already_enriched' as const };
@@ -165,7 +177,7 @@ export const searchScreeningMatchesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(refineSearchSchema)
   .handler(async ({ context, data }) => {
-    return await context.authInfo.screening.searchScreeningMatches(data);
+    return await searchScreeningMatches(context.api, data);
   });
 
 export const freeformSearchFn = createServerFn({ method: 'POST' })
@@ -173,7 +185,7 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
   .validator(freeformSearchSchema)
   .handler(async ({ context, data }) => {
     try {
-      const result = await context.authInfo.screening.freeformSearch(data);
+      const result = await freeformSearch(context.api, data);
       return result;
     } catch (error) {
       console.error(`Freeform search error (${data})`, error);
@@ -186,7 +198,7 @@ export const saveFreeformSearchFn = createServerFn({ method: 'POST' })
   .validator(z.object({ id: z.uuid() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.screening.saveFreeformSearch(data);
+      await context.api.saveFreeformSearch(data.id);
     } catch {
       throw new Error('Save freeform search failed');
     }
@@ -197,7 +209,7 @@ export const listSavedFreeformSearchesFn = createServerFn({ method: 'GET' })
   .validator(savedSearchFiltersSchema)
   .handler(async ({ context, data }) => {
     try {
-      const page = await context.authInfo.screening.listSavedScreeningSearches(data);
+      const page = await listSavedScreeningSearches(context.api, data);
       return page;
     } catch {
       throw new Error('List saved searches failed');
@@ -209,7 +221,7 @@ export const getFreeformSearchFn = createServerFn({ method: 'GET' })
   .validator(z.object({ id: z.uuid() }))
   .handler(async ({ context, data }) => {
     try {
-      const result = await context.authInfo.screening.getFreeformSearch(data);
+      const result = await getFreeformSearch(context.api, data);
       return result;
     } catch {
       throw new Error('Get freeform search failed');
@@ -221,7 +233,7 @@ export const getEnrichedDataFn = createServerFn({ method: 'GET' })
   .validator(getEnrichedDataInputSchema)
   .handler(async ({ context, data }) => {
     try {
-      const result = await context.authInfo.screening.enrichedData(data);
+      const result = adaptScreeningMatchPayload(await context.api.getEnrichedData(data.entityId));
       return result;
     } catch {
       throw new Error('Enriched data failed');
@@ -232,7 +244,7 @@ export const refineScreeningFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(refineSearchSchema)
   .handler(async ({ context, data }) => {
-    return await context.authInfo.screening.refineScreening(data);
+    return await refineScreening(context.api, data);
   });
 
 export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
@@ -245,7 +257,7 @@ export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
     const screeningId = data.get('screeningId') as string | null;
     if (!screeningId) return new Response(null, { status: 400 });
 
-    const token = await context.authInfo.tokenService.getToken();
+    const token = await context.tokenService.getToken();
 
     const backendData = new FormData();
     for (const [key, value] of data.entries()) {
@@ -273,14 +285,14 @@ export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
 
 export const getListFreeFormSearchPresetsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => context.authInfo.screening.listFreeformSearchPresets());
+  .handler(async ({ context }) => listFreeformSearchPresets(context.api));
 
 export const createFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ name: z.string().trim().min(1), value: freeformSearchPresetSchema }))
   .handler(async ({ context, data }) => {
     try {
-      const preset = await context.authInfo.screening.saveFreeformSearchPreset(data);
+      const preset = await saveFreeformSearchPreset(context.api, data);
       return { success: true as const, preset };
     } catch (error) {
       if (isStatusConflictHttpError(error)) {
@@ -297,7 +309,7 @@ export const deleteFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
   .validator(z.object({ id: z.uuid() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.screening.deleteFreeformSearchPreset(data);
+      await deleteFreeformSearchPreset(context.api, data);
       return { success: true as const };
     } catch (error) {
       const message = marbleApiErrorMessage(error);

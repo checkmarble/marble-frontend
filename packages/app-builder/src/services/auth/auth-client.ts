@@ -1,19 +1,8 @@
-import {
-  type AuthenticationClientRepository,
-  type ReauthResult,
-} from '@app-builder/repositories/AuthenticationRepository';
+import { type ReauthResult, useFirebaseAuthClient } from '@app-builder/services/auth/firebase-auth-client';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes, type MultiFactorResolver, type TotpSecret } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
-
-export function makeAuthenticationClientService(authenticationClientRepository: AuthenticationClientRepository) {
-  return {
-    authenticationClientRepository,
-  };
-}
-
-export type AuthenticationClientService = ReturnType<typeof makeAuthenticationClientService>;
 
 export class AccountExistsWithDifferentCredential extends Error {}
 export class PopupBlockedByClient extends Error {}
@@ -44,48 +33,54 @@ function throwMappedMfaError(error: unknown): never {
   throw error;
 }
 
-export function useGetEnrolledMfaFactors({ authenticationClientRepository }: AuthenticationClientService) {
-  return () => authenticationClientRepository.getEnrolledMfaFactors();
+export function useGetEnrolledMfaFactors() {
+  const authClient = useFirebaseAuthClient();
+  return () => authClient.getEnrolledMfaFactors();
 }
 
-export function useStartTotpEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
+export function useStartTotpEnrollment() {
+  const authClient = useFirebaseAuthClient();
   return async () => {
     try {
-      return await authenticationClientRepository.startTotpEnrollment();
+      return await authClient.startTotpEnrollment();
     } catch (error) {
       throwMappedMfaError(error);
     }
   };
 }
 
-export function useFinalizeTotpEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
+export function useFinalizeTotpEnrollment() {
+  const authClient = useFirebaseAuthClient();
   return async (secret: TotpSecret, verificationCode: string, displayName: string) => {
     try {
-      await authenticationClientRepository.finalizeTotpEnrollment(secret, verificationCode, displayName);
+      await authClient.finalizeTotpEnrollment(secret, verificationCode, displayName);
     } catch (error) {
       throwMappedMfaError(error);
     }
   };
 }
 
-export function useUnenrollMfaFactor({ authenticationClientRepository }: AuthenticationClientService) {
+export function useUnenrollMfaFactor() {
+  const authClient = useFirebaseAuthClient();
   return async (factorUid: string) => {
     try {
-      await authenticationClientRepository.unenrollMfaFactor(factorUid);
+      await authClient.unenrollMfaFactor(factorUid);
     } catch (error) {
       throwMappedMfaError(error);
     }
   };
 }
 
-export function useGetCurrentUserProviderIds({ authenticationClientRepository }: AuthenticationClientService) {
-  return () => authenticationClientRepository.getCurrentUserProviderIds();
+export function useGetCurrentUserProviderIds() {
+  const authClient = useFirebaseAuthClient();
+  return () => authClient.getCurrentUserProviderIds();
 }
 
-export function useReauthenticateWithPassword({ authenticationClientRepository }: AuthenticationClientService) {
+export function useReauthenticateWithPassword() {
+  const authClient = useFirebaseAuthClient();
   return async (password: string): Promise<ReauthResult> => {
     try {
-      return await authenticationClientRepository.reauthenticateWithPassword(password);
+      return await authClient.reauthenticateWithPassword(password);
     } catch (error) {
       console.error('[auth] password reauthentication failed', error);
       if (error instanceof FirebaseError) {
@@ -107,10 +102,11 @@ export function useReauthenticateWithPassword({ authenticationClientRepository }
 
 // Resolves to the reauth result (possibly requiring an MFA challenge), or `{ cancelled: true }`
 // when the user dismissed the popup.
-export function useReauthenticateWithOAuth({ authenticationClientRepository }: AuthenticationClientService) {
+export function useReauthenticateWithOAuth() {
+  const authClient = useFirebaseAuthClient();
   return async (providerId: 'google.com' | 'microsoft.com'): Promise<ReauthResult | { cancelled: true }> => {
     try {
-      return await authenticationClientRepository.reauthenticateWithOAuth(providerId);
+      return await authClient.reauthenticateWithOAuth(providerId);
     } catch (error) {
       console.error('[auth] OAuth reauthentication failed', error);
       if (error instanceof FirebaseError) {
@@ -130,7 +126,8 @@ export function useReauthenticateWithOAuth({ authenticationClientRepository }: A
   };
 }
 
-export function useGoogleSignIn({ authenticationClientRepository }: AuthenticationClientService) {
+function useOAuthSignIn(signIn: 'googleSignIn' | 'microsoftSignIn') {
+  const authClient = useFirebaseAuthClient();
   const {
     i18n: { language },
   } = useTranslation();
@@ -138,7 +135,7 @@ export function useGoogleSignIn({ authenticationClientRepository }: Authenticati
 
   return async () => {
     try {
-      const result = await authenticationClientRepository.googleSignIn(language);
+      const result = await authClient[signIn](language);
       if ('mfaRequired' in result) {
         return { mfaRequired: true as const, resolver: result.resolver };
       }
@@ -166,43 +163,16 @@ export function useGoogleSignIn({ authenticationClientRepository }: Authenticati
   };
 }
 
-export function useMicrosoftSignIn({ authenticationClientRepository }: AuthenticationClientService) {
-  const {
-    i18n: { language },
-  } = useTranslation();
-  const csrf = useCsrfToken();
-
-  return async () => {
-    try {
-      const result = await authenticationClientRepository.microsoftSignIn(language);
-      if ('mfaRequired' in result) {
-        return { mfaRequired: true as const, resolver: result.resolver };
-      }
-      return { mfaRequired: false as const, idToken: result.idToken, refreshToken: result.refreshToken, csrf };
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
-          // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
-          case AuthErrorCodes.POPUP_CLOSED_BY_USER:
-          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
-          case AuthErrorCodes.USER_CANCELLED:
-            return;
-          case AuthErrorCodes.NEED_CONFIRMATION:
-            throw new AccountExistsWithDifferentCredential();
-          case AuthErrorCodes.POPUP_BLOCKED:
-            throw new PopupBlockedByClient();
-          case AuthErrorCodes.INVALID_IDP_RESPONSE:
-            throw new InvalidLoginCredentials();
-          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
-            throw new NetworkRequestFailed();
-        }
-      }
-      throw error;
-    }
-  };
+export function useGoogleSignIn() {
+  return useOAuthSignIn('googleSignIn');
 }
 
-export function useEmailAndPasswordSignIn({ authenticationClientRepository }: AuthenticationClientService) {
+export function useMicrosoftSignIn() {
+  return useOAuthSignIn('microsoftSignIn');
+}
+
+export function useEmailAndPasswordSignIn() {
+  const authClient = useFirebaseAuthClient();
   const {
     i18n: { language },
   } = useTranslation();
@@ -210,7 +180,7 @@ export function useEmailAndPasswordSignIn({ authenticationClientRepository }: Au
 
   return async (email: string, password: string) => {
     try {
-      const result = await authenticationClientRepository.emailAndPasswordSignIn(language, email, password);
+      const result = await authClient.emailAndPasswordSignIn(language, email, password);
       if ('mfaRequired' in result) {
         return { mfaRequired: true as const, resolver: result.resolver };
       }
@@ -234,16 +204,13 @@ export function useEmailAndPasswordSignIn({ authenticationClientRepository }: Au
   };
 }
 
-export function useResolveMfaTotpSignIn({ authenticationClientRepository }: AuthenticationClientService) {
+export function useResolveMfaTotpSignIn() {
+  const authClient = useFirebaseAuthClient();
   const csrf = useCsrfToken();
 
   return async (resolver: MultiFactorResolver, enrollmentId: string, verificationCode: string) => {
     try {
-      const { idToken, refreshToken } = await authenticationClientRepository.resolveMfaTotpSignIn(
-        resolver,
-        enrollmentId,
-        verificationCode,
-      );
+      const { idToken, refreshToken } = await authClient.resolveMfaTotpSignIn(resolver, enrollmentId, verificationCode);
       return { idToken, refreshToken, csrf };
     } catch (error) {
       throwMappedMfaError(error);
@@ -251,14 +218,15 @@ export function useResolveMfaTotpSignIn({ authenticationClientRepository }: Auth
   };
 }
 
-export function useResendEmailVerification({ authenticationClientRepository }: AuthenticationClientService) {
+export function useResendEmailVerification() {
+  const authClient = useFirebaseAuthClient();
   const {
     i18n: { language },
   } = useTranslation();
 
   return async (logout: () => void) => {
     try {
-      await authenticationClientRepository.resendEmailVerification(language, logout);
+      await authClient.resendEmailVerification(language, logout);
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -273,14 +241,15 @@ export function useResendEmailVerification({ authenticationClientRepository }: A
   };
 }
 
-export function useSendPasswordResetEmail({ authenticationClientRepository }: AuthenticationClientService) {
+export function useSendPasswordResetEmail() {
+  const authClient = useFirebaseAuthClient();
   const {
     i18n: { language },
   } = useTranslation();
 
   return async (email: string) => {
     try {
-      await authenticationClientRepository.sendPasswordResetEmail(language, email);
+      await authClient.sendPasswordResetEmail(language, email);
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {

@@ -7,6 +7,7 @@ import {
   deleteValuePayloadSchema,
   editListPayloadSchema,
 } from '@app-builder/schemas/lists';
+import { listCustomLists } from '@app-builder/server/custom-lists';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCustomListDataUploadEndpoint } from '@app-builder/utils/files';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -17,7 +18,7 @@ import { omit } from 'radash';
 export const getListsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    return context.authInfo.customListsRepository.listCustomLists();
+    return listCustomLists(context.api);
   });
 
 export const createListFn = createServerFn({ method: 'POST' })
@@ -25,8 +26,8 @@ export const createListFn = createServerFn({ method: 'POST' })
   .validator(createListPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const result = await context.authInfo.customListsRepository.createCustomList(data);
-      throw redirect({ to: '/detection/lists/$listId', params: { listId: fromUUIDtoSUUID(result.id) } });
+      const { custom_list } = await context.api.createCustomList(data);
+      throw redirect({ to: '/detection/lists/$listId', params: { listId: fromUUIDtoSUUID(custom_list.id) } });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) {
         throw error;
@@ -42,7 +43,7 @@ export const deleteListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(deleteListPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.customListsRepository.deleteCustomList(data.listId);
+    await context.api.deleteCustomList(data.listId);
     throw redirect({ to: '/detection/lists' });
   });
 
@@ -50,14 +51,14 @@ export const editListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editListPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.customListsRepository.updateCustomList(data.listId, omit(data, ['listId']));
+    await context.api.updateCustomList(data.listId, omit(data, ['listId']));
   });
 
 export const addListValueFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(addValuePayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.customListsRepository.createCustomListValue(data.listId, {
+    await context.api.createCustomListValue(data.listId, {
       value: data.value,
     });
   });
@@ -66,7 +67,7 @@ export const deleteListValueFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(deleteValuePayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.customListsRepository.deleteCustomListValue(data.listId, data.listValueId);
+    await context.api.deleteCustomListValue(data.listId, data.listValueId);
   });
 
 export const uploadListDataFileFn = createServerFn({ method: 'POST' })
@@ -79,7 +80,7 @@ export const uploadListDataFileFn = createServerFn({ method: 'POST' })
     const listId = data.get('listId') as string | null;
     if (!listId) return new Response(null, { status: 400 });
 
-    const token = await context.authInfo.tokenService.getToken();
+    const token = await context.tokenService.getToken();
 
     const backendData = new FormData();
     for (const [key, value] of data.entries()) {

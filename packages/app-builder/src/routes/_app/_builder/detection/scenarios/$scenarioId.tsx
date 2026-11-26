@@ -2,7 +2,11 @@ import { ErrorComponent } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { adaptScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
+import {
+  adaptScenarioIterationSummary,
+  adaptScenarioIterationSummaryWithType,
+} from '@app-builder/models/scenario/iteration';
+import { getScenario } from '@app-builder/server/scenarios';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
@@ -15,14 +19,16 @@ const scenarioData = createServerFn()
     const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
 
     const [currentScenario, scenarioIterations] = await Promise.all([
-      context.authInfo.scenario.getScenario({ scenarioId }),
-      context.authInfo.scenario.listScenarioIterationsMetadata({ scenarioId }),
+      getScenario(context.api, { scenarioId }),
+      context.api
+        .listScenarioIterationsMetadata({ scenarioId })
+        .then((dtos) => dtos.map(adaptScenarioIterationSummary)),
     ]);
 
     return {
       currentScenario,
-      scenarioIterations: scenarioIterations.map((dto) =>
-        adaptScenarioIterationSummaryWithType(dto, currentScenario.liveVersionId),
+      scenarioIterations: scenarioIterations.map((iteration) =>
+        adaptScenarioIterationSummaryWithType(iteration, currentScenario.liveVersionId),
       ),
     };
   });

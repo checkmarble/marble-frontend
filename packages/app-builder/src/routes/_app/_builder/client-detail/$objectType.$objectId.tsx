@@ -2,10 +2,14 @@ import { ClientDetailPage as ClientDetailPageComponent } from '@app-builder/comp
 import { ErrorComponent } from '@app-builder/components/ErrorComponent';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin, isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } from '@app-builder/models';
+import { getClient360Tables } from '@app-builder/server/client-360';
+import { loadClientDetailObject } from '@app-builder/server/client-detail-object';
+import { getDataModel } from '@app-builder/server/data-model';
+import { getScoreLatestWithEvaluation, getSettings } from '@app-builder/server/user-scoring';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
+import { getFixedT } from '@app-builder/services/i18n/i18next.server';
 import { setToast } from '@app-builder/services/toast.server';
-import { loadClientDetailObject } from '@app-builder/utils/routes/client-detail-object';
 import { decodeClientDetailObjectIdParam } from '@app-builder/utils/routes/client-detail-url';
 import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -23,33 +27,30 @@ const getDataFn = createServerFn()
   .handler(async ({ context, data: { objectId, objectType } }) => {
     try {
       const request = getRequest();
-      const { i18nextService } = context.services;
-      const t = await i18nextService.getFixedT(request, ['common', 'client360']);
-      const { user, dataModelRepository, userScoring, client360, entitlements } = context.authInfo;
+      const t = await getFixedT(request, ['common', 'client360']);
+      const { api, user, entitlements } = context;
 
-      const objectPromise = loadClientDetailObject(dataModelRepository, client360, objectType, objectId).catch(
-        async (error) => {
-          if (isNotFoundHttpError(error)) {
-            await setToast({
-              type: 'error',
-              message: t('client360:client_detail.no_object_found', { objectType }),
-            });
-            throw redirect({ to: '/client-detail' });
-          }
-          throw error;
-        },
-      );
+      const objectPromise = loadClientDetailObject(api, objectType, objectId).catch(async (error) => {
+        if (isNotFoundHttpError(error)) {
+          await setToast({
+            type: 'error',
+            message: t('client360:client_detail.no_object_found', { objectType }),
+          });
+          throw redirect({ to: '/client-detail' });
+        }
+        throw error;
+      });
 
       const [objectDetails, scoringSettings, tables, dataModel] = await Promise.all([
         objectPromise,
-        userScoring.getSettings(),
-        client360.getClient360Tables(),
-        dataModelRepository.getDataModel(),
+        getSettings(api),
+        getClient360Tables(api),
+        getDataModel(api),
       ]);
 
       let activeScore = null;
       try {
-        activeScore = (await userScoring.getScoreLatestWithEvaluation(objectType, objectId)) ?? null;
+        activeScore = (await getScoreLatestWithEvaluation(api, objectType, objectId)) ?? null;
       } catch (error) {
         if (!isNotFoundHttpError(error) && !isUnauthorizedHttpError(error) && !isForbiddenHttpError(error)) throw error;
       }

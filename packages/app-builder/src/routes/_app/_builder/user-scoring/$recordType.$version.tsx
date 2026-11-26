@@ -3,6 +3,8 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import { type ScoringRulesetWithRules } from '@app-builder/models/scoring';
+import { listCustomLists } from '@app-builder/server/custom-lists';
+import { getRulesetPreparationStatus, getRulesetWithRules, getScoringDryRun } from '@app-builder/server/user-scoring';
 import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { normalizeTimestampForInstant } from '@app-builder/utils/datetime';
 import { tryCatch } from '@app-builder/utils/tryCatch';
@@ -33,14 +35,14 @@ const scoringRulesetLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scoringRulesetLoader({ data, context }) {
-    const { userScoring, customListsRepository, entitlements } = context.authInfo;
+    const { api, entitlements } = context;
 
     const recordType = data?.params?.['recordType'] ?? '';
     const version = data?.params?.['version'] ?? '';
 
     let ruleset: ScoringRulesetWithRules | null = null;
     try {
-      ruleset = await userScoring.getRulesetWithRules(recordType, version);
+      ruleset = await getRulesetWithRules(api, recordType, version);
     } catch (err) {
       if (isNotFoundHttpError(err)) {
         throw redirect({ to: '/user-scoring/overview' });
@@ -48,12 +50,12 @@ const scoringRulesetLoader = createServerFn()
       throw err;
     }
 
-    const customLists = await customListsRepository.listCustomLists();
-    const dryRunResult = await userScoring.getScoringDryRun(recordType);
+    const customLists = await listCustomLists(api);
+    const dryRunResult = await getScoringDryRun(api, recordType);
 
     let preparationStatus: ScenarioPublicationStatus | null = null;
     if (ruleset.status === 'draft') {
-      preparationStatus = await userScoring.getRulesetPreparationStatus(recordType);
+      preparationStatus = await getRulesetPreparationStatus(api, recordType);
     }
 
     return {

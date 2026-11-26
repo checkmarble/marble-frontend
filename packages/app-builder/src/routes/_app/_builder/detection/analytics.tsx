@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const analyticsLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function analyticsLayout({ context }) {
-    const { user, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
     if (!isAnalyticsAvailable(user, entitlements)) {
       throw redirect({ to: '/detection' });

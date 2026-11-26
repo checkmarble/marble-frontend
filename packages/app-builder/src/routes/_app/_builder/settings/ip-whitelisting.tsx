@@ -1,20 +1,21 @@
 import { IpWhitelistingSettingsPage } from '@app-builder/components/Settings/IpWhitelisting/IpWhitelistingSettingsPage';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
+import { getCurrentOrganization } from '@app-builder/server/organization';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 const ipWhitelistingLoader = createServerFn()
-  .middleware([authMiddleware])
+  .middleware([authMiddleware, appConfigMiddleware])
   .handler(async function ipWhitelistingLoader({ context }) {
-    const { organization: orgRepo, user } = context.authInfo;
-    const { appConfig } = context;
+    const { api, user, appConfig } = context;
 
     if (!isAdmin(user) || !appConfig.isManagedMarble) {
       throw redirect({ to: '/app-router' });
     }
 
-    const organization = await orgRepo.getCurrentOrganization();
+    const organization = await getCurrentOrganization(api, user.organizationId);
 
     return {
       allowedNetworks: organization.allowedNetworks,

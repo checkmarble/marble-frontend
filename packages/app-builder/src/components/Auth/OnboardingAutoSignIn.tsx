@@ -2,7 +2,7 @@
  * Signs the freshly-created admin in with the credentials they just chose during onboarding.
  *
  * This lives in its own component, rendered only after a successful submit, on purpose:
- * `useClientServices()` builds the Firebase client, and `getAuth` throws
+ * `useEmailAndPasswordSignIn()` builds the Firebase client, and `getAuth` throws
  * `auth/invalid-api-key` when no API key is configured — which is the case on OIDC
  * instances, since `/config` reports Firebase settings regardless of the active provider.
  * A component rendered only in response to an interaction never runs on the server and
@@ -19,7 +19,6 @@ import {
   NetworkRequestFailed,
   useEmailAndPasswordSignIn,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,8 +36,7 @@ export function OnboardingAutoSignIn({
   onFailure: (reason: AutoSignInFailure) => void;
 }) {
   const { t } = useTranslation(['auth', 'common']);
-  const clientServices = useClientServices();
-  const emailAndPasswordSignIn = useEmailAndPasswordSignIn(clientServices.authenticationClientService);
+  const emailAndPasswordSignIn = useEmailAndPasswordSignIn();
 
   // Sign-in must happen exactly once. StrictMode double-invokes effects in development, and
   // `emailAndPasswordSignIn` starts by signing out of Firebase — so a second run would tear

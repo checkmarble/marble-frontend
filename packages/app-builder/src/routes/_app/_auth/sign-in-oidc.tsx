@@ -5,11 +5,11 @@ import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle'
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { Spinner } from '@app-builder/components/Spinner';
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { getAuthMode } from '@app-builder/models/auth-mode';
+import { type AuthPayload, isAuthenticated } from '@app-builder/server/auth';
 import { signInFn } from '@app-builder/server-fns/auth';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import {
   notifyOtherTabsToCheckSession,
@@ -27,22 +27,13 @@ import { CtaV2ClassName, Typo } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 const signInLoader = createServerFn()
-  .middleware([servicesMiddleware])
+  .middleware([appConfigMiddleware])
   .validator(z.object({ signedOut: z.boolean() }))
   .handler(async function signInLoader({ context, data: { signedOut } }) {
     const request = getRequest();
     const url = new URL(request.url);
     if (!signedOut) {
-      try {
-        await context.services.authService.isAuthenticated(request, {
-          successRedirect: '/app-router',
-        });
-      } catch (error) {
-        if (error instanceof Response && error.status >= 300 && error.status < 400) {
-          throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
-        }
-        throw error;
-      }
+      if (await isAuthenticated(request)) throw redirect({ to: '/app-router' });
     }
     const appConfig = context.appConfig;
 

@@ -1,6 +1,6 @@
 # Data Fetching
 
-Page data: route loaders. Client data: `queries/{domain}/` hook → `server-fns/{domain}.ts` → repository. Downloads: resource routes (`.claude/rules/resource-routes.md`).
+Page data: route loaders. Client data: `queries/{domain}/` hook → `server-fns/{domain}.ts` → `context.api` + a `models/` adapter. Downloads: resource routes (`.claude/rules/resource-routes.md`).
 
 ## Route Loaders
 
@@ -12,7 +12,7 @@ Chain, method, status, cookies, redirects: `.claude/rules/resource-routes.md`. R
 
 - Payload shared with a form or hook: schema in `schemas/{domain}.ts`. Server-only payload: validate inline (`.validator(z.object({ ... }))`).
 - Expected failures the UI explains: return `{ error: '<code>' as const }` (map API errors with `isStatusConflictHttpError`, `isNotFoundHttpError`, … from `@app-builder/models`). Otherwise throw a generic `Error`.
-- In a `try/catch` around repository calls, re-throw any 3xx `Response` first: `if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;`. This also catches the plain 302 `Response` thrown when a 401 can't be refreshed (`refreshToken` in `services/auth/auth.server.ts`), which `isRedirect()` misses.
+- In a `try/catch` around API calls, re-throw redirects first: `if (isRedirect(error)) throw error;` (`@tanstack/react-router`). A 401 that can't be refreshed throws one from inside the API call (`getTokenService` in `server/auth.ts`).
 
 ## Query and Mutation Hooks
 
@@ -36,33 +36,35 @@ Loader data (`Route.useLoaderData()`) and React Query data are separate caches.
 
 ## Server/Client Boundaries
 
-Default import protection (`vite.config.ts` sets none) keeps `**/*.server.*` files and `@tanstack/react-start/server` out of the client. `build` fails on a violation; `dev` only mocks the import (terminal warning, console error on access), so dev works while the build breaks.
+Import protection (`importProtection` in `vite.config.ts`) keeps `**/*.server.*` files, `src/server/**` and `@tanstack/react-start/server` out of the client. Setting `client.files` replaces the defaults, so keep `**/*.server.*` in that list. `build` fails on a violation; `dev` only mocks the import (terminal warning, console error on access), so dev works while the build breaks.
 
 - A value import of either is allowed only if every use sits in code the build strips from the client: a `createServerFn` `.handler()`, a middleware `.server()`, a file route's `server: { handlers, middleware }`, or `createIsomorphicFn().server()` (`router.tsx`). Example: `getPreferencesCookie` in `routes/_app/_builder/cases/inboxes.$inboxId.tsx`.
-- Anywhere else (components, query hooks), import types only: `import { type AuthPayload } from '@app-builder/services/auth/auth.server'`.
+- Anywhere else (components, query hooks), import types only: `import { type AuthPayload } from '@app-builder/server/auth'`.
 - Components import `server-fns/*.ts`, so their top-level code and non-handler exports reach the client. Keep server-only calls inside `.handler()`.
-- `*-client.ts` files (`services/init-client.ts`, `utils/csrf-client.ts`) escape the `**/*.client.*` rule (hyphen), so the server can still import them.
+- `*-client.ts` files (`services/auth/auth-client.ts`, `utils/csrf-client.ts`) escape the `**/*.client.*` rule (hyphen), so the server can still import them.
 
-## Adding a Repository
+## Calling the Marble API
 
-A repository reaches `context.authInfo` only after wiring in four places (copy `repositories/GraphRepository.ts`):
+Handlers behind `authMiddleware` call the generated client on `context.api` (`MarbleCoreApi`, `infra/marblecore-api.ts`) and adapt the DTO with the adapter in `models/`:
 
-1. `repositories/XRepository.ts`: `export interface XRepository` and `export function makeGetXRepository()` returning `(marbleCoreApiClient: MarbleCoreApi): XRepository => ({ ... })`, which adapts DTOs to models.
-2. `repositories/init.server.ts`: add `getXRepository: makeGetXRepository()` to `makeServerRepositories`.
-3. `services/auth/auth.server.ts`: add the field to `interface AuthenticatedInfo`, keyed by the short domain name (`graph`, `customerAggregates`; `xRepository` keys are older). Add `getXRepository` to `MakeAuthenticationServerServiceArgs`, destructure it in `makeAuthenticationServerService`, and instantiate it in the object `isAuthenticated` returns (`graph: getGraphRepository(marbleCoreApiClient)`).
-4. Read it in handlers as `context.authInfo.<key>`. Never add `authInfo.apiClient` calls (`@deprecated`).
+```ts
+.handler(async ({ context: { api }, data }) => {
+  const { custom_list } = await api.getCustomList(data.listId);
+  return adaptCustomListWithValues(custom_list);
+});
+```
 
-Unauthenticated repositories (app config, onboarding, feature access) go on `context.services`: register them in `makeServerRepositories`, then build them in `makeServerServices` (`services/init.server.ts`).
+- A call and its adapter form one operation, so a plain function `fn(api, args)` in `server/{domain}.ts` that returns the model is fine even with a single caller (`listCustomLists` in `server/custom-lists.ts`). Logic spanning several calls or reshaping arguments belongs there too. A one-off call can also stay inline, as above. `server/**` is server-only, so import it only from handler code.
 
 ## Middleware
 
 | Middleware | Use |
 |---|---|
-| `authMiddleware` | Authenticated handlers. Chains `servicesMiddleware`, redirects to `/sign-in`, provides `context.authInfo` |
-| `servicesMiddleware` | Alone, for handlers without a session: `context.services`, `context.appConfig` |
+| `authMiddleware` | Authenticated server fns and resource routes (request middleware). Redirects to `/sign-in`, provides `context.api`, `context.user`, `context.entitlements`, `context.tokenService` |
+| `appConfigMiddleware` | Handlers that read `context.appConfig`, with or without a session (`[authMiddleware, appConfigMiddleware]`). `getAppConfig(request)` in `server/app-config.ts` fetches it once per request, so SSR loaders share one call |
 | `caseDetailMiddleware` | Case-detail loaders. Reads `data.params.caseId`, adds `context.case` (`{ detail, inbox }`) and `context.inboxes`, and redirects away if the case can't be loaded (`routes/_app/_builder/cases/$caseId/index.tsx`) |
-| `rateLimitIpFunctionMiddleware({ max, windowMs })` | Per-client-IP limit for a server fn called before sign-in, listed before `servicesMiddleware` (`discoverSignInFn`) |
+| `rateLimitIpFunctionMiddleware({ max, windowMs })` | Per-client-IP limit for a server fn called before sign-in, listed first (`discoverSignInFn`) |
 
 The limiter rejects with HTTP 429 and `TOO_MANY_REQUESTS_ERROR_MESSAGE`; match it client-side with `isTooManyRequestsError`.
 
-Never add `servicesMiddleware` next to `authMiddleware`. List middleware that chains `authMiddleware` after it (`[authMiddleware, caseDetailMiddleware]`); TanStack dedupes it.
+Pre-auth handlers (sign-in, logout, refresh) need no middleware: call `server/auth.ts` functions directly. List middleware that chains `authMiddleware` after it (`[authMiddleware, caseDetailMiddleware]`); TanStack dedupes it.

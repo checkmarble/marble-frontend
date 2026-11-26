@@ -1,6 +1,7 @@
 import { ActivityFollowUpPage } from '@app-builder/components/Settings/AuditEvents/AuditLogsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
+import { listApiKeys } from '@app-builder/server/api-keys';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
@@ -20,13 +21,13 @@ const activityFollowUpLoader = createServerFn()
   .middleware([authMiddleware])
   .validator(activityFollowUpLoaderSchema)
   .handler(async function activityFollowUpLoader({ context, data: { query } }) {
-    const { user, apiKey } = context.authInfo;
+    const { user } = context;
 
     if (!isAdmin(user)) {
       throw redirect({ to: '/app-router' });
     }
 
-    const apiKeys = await apiKey.listApiKeys();
+    const apiKeys = await listApiKeys(context.api);
 
     return {
       query: query.q,

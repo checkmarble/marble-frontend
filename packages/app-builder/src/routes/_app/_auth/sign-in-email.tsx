@@ -8,11 +8,11 @@ import {
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { getAuthMode } from '@app-builder/models/auth-mode';
+import { type AuthPayload, isAuthenticated } from '@app-builder/server/auth';
 import { signInEmailFn } from '@app-builder/server-fns/auth';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import {
   notifyOtherTabsToCheckSession,
@@ -39,22 +39,13 @@ function signInEmailPageSearch(search: { signedOut?: 1; email?: string } & Searc
 }
 
 const signInEmailLoader = createServerFn()
-  .middleware([servicesMiddleware])
+  .middleware([appConfigMiddleware])
   .validator(z.object({ signedOut: z.boolean() }))
   .handler(async function signInEmailLoader({ context, data: { signedOut } }) {
     const request = getRequest();
     const url = new URL(request.url);
     if (!signedOut) {
-      try {
-        await context.services.authService.isAuthenticated(request, {
-          successRedirect: '/app-router',
-        });
-      } catch (error) {
-        if (error instanceof Response && error.status >= 300 && error.status < 400) {
-          throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
-        }
-        throw error;
-      }
+      if (await isAuthenticated(request)) throw redirect({ to: '/app-router' });
     }
     const appConfig = context.appConfig;
 

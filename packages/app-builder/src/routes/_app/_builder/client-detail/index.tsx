@@ -1,5 +1,7 @@
 import { ClientDetailSearchPage as ClientDetailSearchPageComponent } from '@app-builder/components/ClientDetail/SearchPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { getClient360Tables } from '@app-builder/server/client-360';
+import { getDataModel } from '@app-builder/server/data-model';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { createFileRoute } from '@tanstack/react-router';
@@ -15,12 +17,12 @@ const getClientDetailFn = createServerFn()
   .middleware([authMiddleware])
   .validator(queryParams)
   .handler(async function clientDetailIndexLoader({ context, data: { table, terms } }) {
-    const { client360, user, dataModelRepository, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
 
-    const dataModel = await dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(api);
     const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
 
-    const tables = await client360.getClient360Tables();
+    const tables = await getClient360Tables(api);
     const payload = table && terms ? { table, terms } : null;
 
     return { tables, payload, dataModel, dataModelFeatureAccess };

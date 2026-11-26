@@ -2,7 +2,7 @@ import { type AutoSignInFailure, OnboardingAutoSignIn } from '@app-builder/compo
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { useCreateInitialOrgMutation } from '@app-builder/queries/onboarding/create-initial-org';
 import {
   createInitialOrgPayloadSchema,
@@ -22,7 +22,7 @@ import { Icon, Logo } from 'ui-icons';
 import type z from 'zod/v4';
 
 const onboardingLoader = createServerFn()
-  .middleware([servicesMiddleware])
+  .middleware([appConfigMiddleware])
   .handler(async function onboardingLoader({ context }) {
     const appConfig = context.appConfig;
 

@@ -1,9 +1,10 @@
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import type { CaseDetail } from '@app-builder/models/cases';
 import type { ContinuousScreening } from '@app-builder/models/continuous-screening';
 import { isHttpError, marbleApiErrorMessage } from '@app-builder/models/http-errors';
 import { needsFalsePositiveClosure, type ScreeningReviewDecision } from '@app-builder/models/screening-review';
-import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
-import type { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
+import { getCase, updateCase } from '@app-builder/server/cases';
+import { dismiss, reviewMatches, updateMatchStatus } from '@app-builder/server/continuous-screening';
 import { FORBIDDEN, NOT_FOUND, OK, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
 
 export interface ScreeningReviewDecisionInput {
@@ -38,16 +39,6 @@ export type ScreeningReviewDecisionResult =
     }
   | { ok: false; reason: ScreeningReviewRejection };
 
-type Repositories = {
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>;
-  continuousScreening: Pick<ContinuousScreeningRepository, 'updateMatchStatus'>;
-};
-
-type BatchRepositories = {
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>;
-  continuousScreening: Pick<ContinuousScreeningRepository, 'reviewMatches'>;
-};
-
 export interface ScreeningReviewBatchInput {
   caseId: string;
   decisions: Omit<ScreeningReviewDecisionInput, 'caseId'>[];
@@ -55,11 +46,6 @@ export interface ScreeningReviewBatchInput {
 
 /** One result per decision, in order. `null`: the write failed unexpectedly and can be tried again. */
 export type ScreeningReviewBatchResult = (ScreeningReviewDecisionResult | null)[];
-
-type CloseRepositories = {
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>;
-  continuousScreening: Pick<ContinuousScreeningRepository, 'dismiss'>;
-};
 
 export interface ScreeningReviewCloseCaseInput {
   caseId: string;
@@ -120,13 +106,10 @@ function rejectionFromError(error: unknown): ScreeningReviewRejection | null {
 }
 
 /** Closes a case whose screenings all ended at `no_hit`. Returns whether the case is closed. */
-export async function closeFalsePositiveCase(
-  cases: Pick<CaseRepository, 'updateCase'>,
-  caseDetail: CaseDetail,
-): Promise<boolean> {
+export async function closeFalsePositiveCase(api: MarbleCoreApi, caseDetail: CaseDetail): Promise<boolean> {
   if (!needsFalsePositiveClosure(caseDetail)) return caseDetail.status === 'closed';
   try {
-    await cases.updateCase({ caseId: caseDetail.id, body: { status: 'closed', outcome: 'false_positive' } });
+    await updateCase(api, { caseId: caseDetail.id, body: { status: 'closed', outcome: 'false_positive' } });
     return true;
   } catch {
     // Not atomic with the review: the next page load retries.
@@ -139,15 +122,15 @@ export async function closeFalsePositiveCase(
  * write's completion, so a delayed write doesn't change it.
  */
 export async function reviewScreeningReviewMatch(
-  repositories: Repositories,
+  api: MarbleCoreApi,
   userId: string,
   input: ScreeningReviewDecisionInput,
 ): Promise<ScreeningReviewDecisionResult> {
   try {
-    const before = await repositories.cases.getCase({ caseId: input.caseId });
+    const before = await getCase(api, { caseId: input.caseId });
     const rejection = rejectionBeforeWrite(before, userId, input);
     if (rejection) return { ok: false, reason: rejection };
-    await repositories.continuousScreening.updateMatchStatus({
+    await updateMatchStatus(api, {
       matchId: input.matchId,
       status: input.status,
       ...(input.comment?.trim() ? { comment: input.comment.trim() } : {}),
@@ -158,29 +141,29 @@ export async function reviewScreeningReviewMatch(
     throw error;
   }
 
-  return resultAfterWrite(repositories.cases, input.caseId, input.screeningId);
+  return resultAfterWrite(api, input.caseId, input.screeningId);
 }
 
 /**
  * Reads the case back after a write, then closes it when every screening ended at `no_hit`.
  * `undefined` when the case couldn't be read back: the next load recovers.
  */
-async function readBack(cases: Pick<CaseRepository, 'getCase' | 'updateCase'>, caseId: string) {
+async function readBack(api: MarbleCoreApi, caseId: string) {
   let caseDetail: CaseDetail;
   try {
-    caseDetail = await cases.getCase({ caseId });
+    caseDetail = await getCase(api, { caseId });
   } catch {
     return undefined;
   }
-  return { caseDetail, caseClosed: await closeFalsePositiveCase(cases, caseDetail) };
+  return { caseDetail, caseClosed: await closeFalsePositiveCase(api, caseDetail) };
 }
 
 async function resultAfterWrite(
-  cases: Pick<CaseRepository, 'getCase' | 'updateCase'>,
+  api: MarbleCoreApi,
   caseId: string,
   screeningId: string,
 ): Promise<ScreeningReviewDecisionResult> {
-  const after = await readBack(cases, caseId);
+  const after = await readBack(api, caseId);
   if (!after) return { ok: true, screeningStatus: null, caseClosed: false };
   const screeningStatus = after.caseDetail.continuousScreenings.find(({ id }) => id === screeningId)?.status ?? null;
   return { ok: true, screeningStatus, caseClosed: after.caseClosed };
@@ -191,13 +174,13 @@ async function resultAfterWrite(
  * read once before and once after, and closed once when its screenings all ended at `no_hit`.
  */
 export async function reviewScreeningReviewMatches(
-  repositories: BatchRepositories,
+  api: MarbleCoreApi,
   userId: string,
   { caseId, decisions }: ScreeningReviewBatchInput,
 ): Promise<ScreeningReviewBatchResult> {
   const outcomes: (ScreeningReviewRejection | 'written' | 'failed')[] = [];
   try {
-    const before = await repositories.cases.getCase({ caseId });
+    const before = await getCase(api, { caseId });
     const toWrite: number[] = [];
     decisions.forEach((decision, index) => {
       const rejection = rejectionBeforeWrite(before, userId, { ...decision, caseId });
@@ -205,7 +188,8 @@ export async function reviewScreeningReviewMatches(
       if (!rejection) toWrite.push(index);
     });
     if (toWrite.length) {
-      const results = await repositories.continuousScreening.reviewMatches(
+      const results = await reviewMatches(
+        api,
         toWrite.map((index) => {
           const { matchId, status, comment } = decisions[index]!;
           return { matchId, status, ...(comment?.trim() ? { comment: comment.trim() } : {}) };
@@ -223,7 +207,7 @@ export async function reviewScreeningReviewMatches(
     throw error;
   }
 
-  const after = outcomes.includes('written') ? await readBack(repositories.cases, caseId) : undefined;
+  const after = outcomes.includes('written') ? await readBack(api, caseId) : undefined;
   return decisions.map((decision, index): ScreeningReviewDecisionResult | null => {
     const outcome = outcomes[index]!;
     if (outcome === 'failed') return null;
@@ -242,19 +226,19 @@ export async function reviewScreeningReviewMatches(
  * matches, then closes the case as a false positive. Dismiss needs the admin permission.
  */
 export async function closeScreeningReviewCase(
-  repositories: CloseRepositories,
+  api: MarbleCoreApi,
   userId: string,
   input: ScreeningReviewCloseCaseInput,
 ): Promise<ScreeningReviewDecisionResult> {
   try {
-    const before = await repositories.cases.getCase({ caseId: input.caseId });
+    const before = await getCase(api, { caseId: input.caseId });
     const rejection = rejectionBeforeClose(before, userId, input);
     if (rejection) return { ok: false, reason: rejection };
-    await repositories.continuousScreening.dismiss(input.screeningId);
+    await dismiss(api, input.screeningId);
   } catch (error) {
     const reason = rejectionFromError(error);
     if (reason) return { ok: false, reason };
     throw error;
   }
-  return resultAfterWrite(repositories.cases, input.caseId, input.screeningId);
+  return resultAfterWrite(api, input.caseId, input.screeningId);
 }

@@ -1,6 +1,7 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { legacyAnalytics } from '@app-builder/models/analytics';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -10,13 +11,14 @@ import { Icon } from 'ui-icons';
 const analyticsLegacyLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function analyticsLegacyLoader({ context }) {
-    const { user, analytics, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
     if (!isAnalyticsAvailable(user, entitlements)) {
       throw redirect({ to: '/app-router' });
     }
 
-    const analyticsList = await analytics.legacyListAnalytics();
+    const { analytics } = await context.api.legacyListAnalytics();
+    const analyticsList = analytics.map(legacyAnalytics.adaptAnalytics);
     const globalDashbord = analyticsList.find(({ embeddingType }) => embeddingType === 'global_dashboard');
     if (!globalDashbord) {
       throw new Response("Global dashboard doesn't exist", { status: 404 });

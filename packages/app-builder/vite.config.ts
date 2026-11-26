@@ -25,7 +25,10 @@ const plugins = [
     ? []
     : [
         devtools(),
-        tanstackStart(),
+        tanstackStart({
+          // Setting `client.files` replaces the default list, so `**/*.server.*` is restated.
+          importProtection: { client: { files: ['**/*.server.*', '**/src/server/**'] } },
+        }),
         nitro({
           config: {
             preset: 'node-server',

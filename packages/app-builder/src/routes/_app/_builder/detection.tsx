@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const detectionLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function detectionLayout({ context }) {
-    if (isAnalyst(context.authInfo.user)) {
+    if (isAnalyst(context.user)) {
       throw redirect({ to: '/cases' });
     }
     return null;

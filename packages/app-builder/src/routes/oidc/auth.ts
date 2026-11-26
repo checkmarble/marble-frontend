@@ -1,5 +1,5 @@
 import { getAuthMode } from '@app-builder/models/auth-mode';
-import { initServerServices } from '@app-builder/services/init.server';
+import { getAppConfig } from '@app-builder/server/app-config';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { createFileRoute } from '@tanstack/react-router';
 import { getOauth2Cookie, makeOidcService, type OAuth2CookieData } from '../../services/auth/oidc.server';
@@ -16,8 +16,7 @@ export const Route = createFileRoute('/oidc/auth')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const { appConfigRepository } = initServerServices(request);
-        const appConfig = await appConfigRepository.getAppConfig();
+        const appConfig = await getAppConfig(request);
 
         // Only the deployment-wide provider starts here; per-tenant OIDC starts from email discovery.
         if (getAuthMode(appConfig.auth.providers) !== 'oidc-legacy') {

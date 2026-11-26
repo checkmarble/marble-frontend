@@ -30,8 +30,9 @@ bunx biome check --write <files>    # format + organize imports + safe fixes (CI
 
 `src/` holds `routes/` (file-based: `_app/` pages, `ressources/` endpoints), `server-fns/`
 (createServerFn handlers called from React Query), `components/`, `queries/` (one file per
-query), `repositories/`, `services/`, `models/` (types with adapters), `middlewares/`
-(`authMiddleware`, `servicesMiddleware`, `caseDetailMiddleware`), `schemas/` (Zod),
+query), `server/` (server-only Marble API helpers taking `api`), `services/`, `models/` (types
+with adapters), `middlewares/`
+(`authMiddleware`, `appConfigMiddleware`, `caseDetailMiddleware`), `schemas/` (Zod),
 `contexts/`, `hooks/`, `utils/`, `locales/` (`en`, `fr`, `ar`).
 
 Generated output — edit the source and regenerate rather than the output:

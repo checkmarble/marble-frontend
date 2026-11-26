@@ -7,6 +7,7 @@ import {
   getScheduledExecutionsRefetchInterval,
   useListScheduleExecutions,
 } from '@app-builder/queries/decisions/list-scheduled-executions';
+import { listScheduledExecutions } from '@app-builder/server/decisions';
 import { isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
@@ -21,12 +22,12 @@ const scheduledExecutionsLoader = createServerFn()
   .handler(async function scheduledExecutionsLoader({ data, context }) {
     const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
 
-    const scheduledExecutions = await context.authInfo.decision.listScheduledExecutions({ scenarioId });
+    const scheduledExecutions = await listScheduledExecutions(context.api, { scenarioId });
 
     return {
       scenarioId,
       scheduledExecutions,
-      canCancel: isManualTriggerScenarioAvailable(context.authInfo.user),
+      canCancel: isManualTriggerScenarioAvailable(context.user),
     };
   });
 

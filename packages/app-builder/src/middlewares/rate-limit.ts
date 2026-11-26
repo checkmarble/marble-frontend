@@ -15,7 +15,7 @@ function rejectTooManyRequests(): never {
 }
 
 // Function middleware keyed by client IP, for server functions called before sign-in:
-//   createServerFn({ method: 'POST' }).middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 }), servicesMiddleware])
+//   createServerFn({ method: 'POST' }).middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 })])
 // List it first: a refused call then skips the next middlewares and their backend calls.
 export function rateLimitIpFunctionMiddleware(options: RateLimitOptions) {
   const check = createRateLimiter(options);

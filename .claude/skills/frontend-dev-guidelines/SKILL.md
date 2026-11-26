@@ -27,7 +27,7 @@ Repo conventions for `packages/app-builder` and `packages/ui-design-system`; pat
 | Resource | Keywords |
 |---|---|
 | [component-patterns.md](resources/component-patterns.md) | compound components, memoization, context, refs, CVA, SSR/hydration, new ui-design-system component |
-| [data-fetching.md](resources/data-fetching.md) | loaders, server fns, query/mutation hooks, redirects, refreshing data, query keys, server/client boundaries, repositories, middleware |
+| [data-fetching.md](resources/data-fetching.md) | loaders, server fns, query/mutation hooks, redirects, refreshing data, query keys, server/client boundaries, `context.api` and `server/` helpers, middleware |
 | [routing-guide.md](resources/routing-guide.md) | route tree, breadcrumbs, navigation, short UUIDs, params/search, `loaderDeps`, feature-gate redirects, downloads/resource-route clients |
 | [styling-guide.md](resources/styling-guide.md) | color tokens, typography, spacing, dark mode, variants, RTL, animations |
 | [tables-and-selects.md](resources/tables-and-selects.md) | TanStack Table, `useTable`, `useVirtualTable`, row links, `SelectV2`, `MenuCommand` |

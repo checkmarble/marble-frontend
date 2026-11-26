@@ -12,6 +12,7 @@ import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSea
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useSaveFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
 import { normalizeListConfig } from '@app-builder/queries/screening/lists-config';
+import { getAvailableFilters } from '@app-builder/server/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import * as Sentry from '@sentry/react';
 import { createFileRoute } from '@tanstack/react-router';
@@ -25,7 +26,7 @@ import { Icon } from 'ui-icons';
 const screeningSearchLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function screeningSearchLoader({ context }) {
-    const rawListConfig = await context.authInfo.screening.getAvailableFilters({ feature: 'manual_search' });
+    const rawListConfig = await getAvailableFilters(context.api, { feature: 'manual_search' });
     return { listConfig: normalizeListConfig(rawListConfig) };
   });
 

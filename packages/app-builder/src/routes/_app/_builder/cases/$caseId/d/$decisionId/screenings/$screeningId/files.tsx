@@ -1,6 +1,8 @@
 import { FilesList } from '@app-builder/components/Files/FilesList';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { adaptScreeningFile } from '@app-builder/models/screening';
 import { useUploadScreeningFile } from '@app-builder/queries/screening/upload-screening-file';
+import { listScreenings } from '@app-builder/server/screenings';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -9,11 +11,9 @@ const screeningFilesLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function screeningFilesLoader({ context, data }) {
-    const { screening: screeningRepository } = context.authInfo;
-
     const decisionId = fromParams(data?.params ?? {}, 'decisionId');
     const screeningId = fromParams(data?.params ?? {}, 'screeningId');
-    const screenings = await screeningRepository.listScreenings({ decisionId });
+    const screenings = await listScreenings(context.api, { decisionId });
     const screening = screenings.find((s) => s.id === screeningId);
 
     if (!screening) {
@@ -21,9 +21,7 @@ const screeningFilesLoader = createServerFn()
     }
 
     return {
-      files: await screeningRepository.listScreeningFiles({
-        screeningId: screening.id,
-      }),
+      files: (await context.api.listScreeningFiles(screening.id)).map(adaptScreeningFile),
       screening,
     };
   });

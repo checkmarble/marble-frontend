@@ -9,6 +9,8 @@ import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type ApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
 import { type Webhook } from '@app-builder/models/webhook';
+import { listApiKeys } from '@app-builder/server/api-keys';
+import { listWebhooks } from '@app-builder/server/webhooks';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { webhooksSetupDocHref } from '@app-builder/services/documentation-href';
 import {
@@ -36,14 +38,11 @@ import { Icon } from 'ui-icons';
 const apiKeysLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function apiKeysLoader({ context }) {
-    const { apiKey, webhookRepository, dataModelRepository, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
 
     if (!isReadApiKeyAvailable(user)) throw redirect({ to: '/' });
 
-    const [apiKeys, openapiV1] = await Promise.all([
-      apiKey.listApiKeys(),
-      dataModelRepository.getOpenApiSpecOfVersion('v1'),
-    ]);
+    const [apiKeys, openapiV1] = await Promise.all([listApiKeys(api), api.getDataModelOpenApiOfVersion('v1')]);
 
     const authSession = await useAuthSession();
     const createdApiKey = authSession.data.createdApiKey;
@@ -56,7 +55,7 @@ const apiKeysLoader = createServerFn()
     let webhooksError = false;
     if (canReadWebhooks) {
       try {
-        webhooks = await webhookRepository.listWebhooks();
+        webhooks = await listWebhooks(api);
       } catch {
         webhooksError = true;
       }

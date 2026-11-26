@@ -1,6 +1,29 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { analyticsQuery, dateRangeFilterSchema } from '@app-builder/models/analytics';
+import {
+  adaptAvailableFiltersResponse,
+  transformAvailableFiltersRequest,
+} from '@app-builder/models/analytics/available-filters';
+import {
+  adaptCaseSlaStatusByDate,
+  adaptCasesCreated,
+  adaptCasesDuration,
+  adaptFalsePositiveRate,
+  adaptOpenCasesByAge,
+  adaptSarDelay,
+  adaptSarDelayDistribution,
+} from '@app-builder/models/analytics/case-analytics';
+import { adaptCaseStatusByInbox } from '@app-builder/models/analytics/case-status-by-inbox';
+import { adaptCaseStatusByDate } from '@app-builder/models/analytics/cases-status-by-date';
 import type { ExportedFields } from '@app-builder/models/data-model';
+import {
+  getDecisionOutcomesPerDay,
+  getDecisionsScoreDistribution,
+  getRuleHitTable,
+  getRuleVsDecisionOutcome,
+  getScreeningHitsTable,
+} from '@app-builder/server/analytics';
+import { getDataModel, getDataModelTableExportedFields } from '@app-builder/server/data-model';
 import {
   buildExistingFilterRows,
   type CustomFilterTableConfig,
@@ -21,7 +44,7 @@ export const getCaseStatusByDateFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(caseAnalyticsQuerySchema)
   .handler(async ({ context, data }) => {
-    const casesStatusByDate = await context.authInfo.analytics.getCaseStatusByDate(data);
+    const casesStatusByDate = (await context.api.getCaseStatusByDate(data)).map(adaptCaseStatusByDate);
     return { casesStatusByDate };
   });
 
@@ -29,7 +52,7 @@ export const getCaseStatusByInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(caseAnalyticsQuerySchema)
   .handler(async ({ context, data }) => {
-    const caseStatusByInbox = await context.authInfo.analytics.getCaseStatusByInbox(data);
+    const caseStatusByInbox = (await context.api.getCaseStatusByInbox(data)).map(adaptCaseStatusByInbox);
     return { caseStatusByInbox };
   });
 
@@ -51,15 +74,15 @@ export const getCustomFiltersConfigFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(customFiltersConfigInputSchema)
   .handler(async ({ context, data }): Promise<CustomFiltersConfig> => {
-    const { dataModelRepository } = context.authInfo;
+    const { api } = context;
     const triggerObjectTypeSet = new Set(data.triggerObjectTypes);
 
-    const dataModel = await dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(api);
     const triggerTables = dataModel.filter((table) => triggerObjectTypeSet.has(table.name));
 
     const exportedEntries = await Promise.all(
       triggerTables.map(async (table) => {
-        const exported = await dataModelRepository.getDataModelTableExportedFields(table.id);
+        const exported = await getDataModelTableExportedFields(api, table.id);
         return [table.id, exported] as const;
       }),
     );
@@ -76,45 +99,44 @@ export const getAvailableFiltersFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(availableFiltersInputSchema)
   .handler(async ({ context, data }) => {
-    return context.authInfo.analytics.getAvailableFilters({
-      scenarioId: data.scenarioId,
-      ranges: data.ranges,
-    });
+    return context.api
+      .getAvailableFilters(transformAvailableFiltersRequest({ scenarioId: data.scenarioId, ranges: data.ranges }))
+      .then((response) => adaptAvailableFiltersResponse(response));
   });
 
 export const getDecisionOutcomesPerDayFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
-    return context.authInfo.analytics.getDecisionOutcomesPerDay(data);
+    return getDecisionOutcomesPerDay(context.api, data);
   });
 
 export const getDecisionsScoreDistributionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
-    return context.authInfo.analytics.getDecisionsScoreDistribution(data);
+    return getDecisionsScoreDistribution(context.api, data);
   });
 
 export const getRuleHitTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
-    return context.authInfo.analytics.getRuleHitTable(data);
+    return getRuleHitTable(context.api, data);
   });
 
 export const getRuleVsDecisionOutcomeFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
-    return context.authInfo.analytics.getRuleVsDecisionOutcome(data);
+    return getRuleVsDecisionOutcome(context.api, data);
   });
 
 export const getScreeningHitsTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
-    return context.authInfo.analytics.getScreeningHitsTable(data);
+    return getScreeningHitsTable(context.api, data);
   });
 
 const caseAnalyticsInputSchema = z.object({
@@ -140,7 +162,7 @@ export const getCaseAnalyticsFn = createServerFn({ method: 'POST' })
       ...(data.userId ? { assigned_user_id: data.userId } : {}),
     };
 
-    const { analytics } = context.authInfo;
+    const { api } = context;
 
     const [
       sarTotalCompleted,
@@ -152,14 +174,14 @@ export const getCaseAnalyticsFn = createServerFn({ method: 'POST' })
       openCasesByAge,
       caseSlaStatusByDate,
     ] = await Promise.all([
-      analytics.getCasesSarCompleted(query),
-      analytics.getCasesSarDelay(query),
-      analytics.getCasesSarDelayDistribution(query),
-      analytics.getCasesCreated(query),
-      analytics.getCasesFalsePositiveRate(query),
-      analytics.getCasesDuration(query),
-      analytics.getOpenCasesByAge(query),
-      analytics.getCaseSlaStatusByDate(query),
+      api.getCasesAnalyticsSarCompleted(query).then((result) => result?.count ?? 0),
+      api.getCasesAnalyticsSarDelay(query).then((result) => (result ?? []).map(adaptSarDelay)),
+      api.getCasesAnalyticsSarDelayDistribution(query).then((result) => (result ?? []).map(adaptSarDelayDistribution)),
+      api.getCasesAnalyticsCasesCreated(query).then((result) => (result ?? []).map(adaptCasesCreated)),
+      api.getCasesAnalyticsFalsePositiveRate(query).then((result) => (result ?? []).map(adaptFalsePositiveRate)),
+      api.getCasesAnalyticsCasesDuration(query).then((result) => (result ?? []).map(adaptCasesDuration)),
+      api.getCasesAnalyticsOpenCasesByAge(query).then((result) => (result ?? []).map(adaptOpenCasesByAge)),
+      api.getCaseSlaStatusByDate(query).then((result) => (result ?? []).map(adaptCaseSlaStatusByDate)),
     ]);
 
     return {

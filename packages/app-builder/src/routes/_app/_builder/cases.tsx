@@ -1,5 +1,6 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { getDataModel } from '@app-builder/server/data-model';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
@@ -9,9 +10,9 @@ import { useTranslation } from 'react-i18next';
 const casesLayoutLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async function casesLayoutLoader({ context }) {
-    const { user, dataModelRepository, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
-    const dataModel = await dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(context.api);
 
     const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
     return { dataModel, dataModelFeatureAccess };

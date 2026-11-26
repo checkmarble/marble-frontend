@@ -1,5 +1,5 @@
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
 import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import { setLanguage } from '@app-builder/services/i18n/i18next.server';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
 
@@ -10,11 +10,10 @@ const setLanguagePayloadSchema = z.object({
 export type SetLanguagePayload = z.infer<typeof setLanguagePayloadSchema>;
 
 export const setLanguageFn = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
   .validator(setLanguagePayloadSchema)
-  .handler(async ({ context, data }) => {
+  .handler(async ({ data }) => {
     try {
-      await context.services.i18nextService.setLanguage(data.preferredLanguage);
+      await setLanguage(data.preferredLanguage);
     } catch {
       throw new Error('Failed to set language');
     }

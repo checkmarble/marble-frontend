@@ -14,6 +14,7 @@ import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data'
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isForbiddenHttpError, isNotFoundHttpError, type User } from '@app-builder/models';
 import type { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
+import { listTestRuns } from '@app-builder/server/test-runs';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
@@ -30,10 +31,8 @@ const testRunsLoader = createServerFn()
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function testRunsLoader({ data, context }) {
     const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
-    const { testRun } = context.authInfo;
-
     try {
-      return { runs: await testRun.listTestRuns({ scenarioId }) };
+      return { runs: await listTestRuns(context.api, { scenarioId }) };
     } catch (error) {
       if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
         throw redirect({ to: '/detection/scenarios' });

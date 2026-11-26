@@ -1,6 +1,6 @@
 import { SendEmailVerification } from '@app-builder/components/Auth/SendEmailVerification';
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
-import { useClientServices } from '@app-builder/services/init-client';
+import { isAuthenticated } from '@app-builder/server/auth';
+import { useFirebaseAuthClient } from '@app-builder/services/auth/firebase-auth-client';
 import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
@@ -8,22 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const emailVerificationLoader = createServerFn()
-  .middleware([servicesMiddleware])
-  .handler(async function emailVerificationLoader({ context }) {
-    const request = getRequest();
-    try {
-      await context.services.authService.isAuthenticated(request, {
-        successRedirect: '/app-router',
-      });
-    } catch (error) {
-      if (error instanceof Response && error.status >= 300 && error.status < 400) {
-        throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
-      }
-      throw error;
-    }
-    return null;
-  });
+const emailVerificationLoader = createServerFn().handler(async function emailVerificationLoader() {
+  const request = getRequest();
+  if (await isAuthenticated(request)) throw redirect({ to: '/app-router' });
+  return null;
+});
 
 export const Route = createFileRoute('/_app/_auth/email-verification')({
   staticData: {
@@ -34,8 +23,7 @@ export const Route = createFileRoute('/_app/_auth/email-verification')({
 });
 
 const UserEmail = () => {
-  const { authenticationClientService } = useClientServices();
-  const user = authenticationClientService.authenticationClientRepository.getCurrentUser();
+  const user = useFirebaseAuthClient().getCurrentUser();
 
   return <strong>{user?.email}</strong>;
 };

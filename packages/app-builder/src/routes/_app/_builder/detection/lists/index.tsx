@@ -3,6 +3,7 @@ import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type CustomList } from '@app-builder/models/custom-list';
+import { listCustomLists } from '@app-builder/server/custom-lists';
 import { hasAnyEntitlement, isCreateListAvailable } from '@app-builder/services/feature-access';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
@@ -17,9 +18,9 @@ import { Table, Tag, useVirtualTable } from 'ui-design-system';
 const listsLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { user, customListsRepository, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
 
-    const customLists = await customListsRepository.listCustomLists();
+    const customLists = await listCustomLists(api);
 
     return {
       customLists,

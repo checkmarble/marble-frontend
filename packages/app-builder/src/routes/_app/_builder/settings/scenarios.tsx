@@ -9,6 +9,7 @@ import {
   type UpdateOrganizationScenariosPayload,
   updateOrganizationScenariosPayloadSchema,
 } from '@app-builder/schemas/settings';
+import { getCurrentOrganization } from '@app-builder/server/organization';
 import { updateOrganizationScenariosFn } from '@app-builder/server-fns/settings';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { UTC, validTimezones } from '@app-builder/utils/validTimezones';
@@ -23,14 +24,14 @@ import { Button, Card, NumberInput } from 'ui-design-system';
 const scenariosLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function scenariosLoader({ context }) {
-    const { organization: repository, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
 
     if (!isAdmin(user)) {
       throw redirect({ to: '/app-router' });
     }
 
     return {
-      organization: await repository.getCurrentOrganization(),
+      organization: await getCurrentOrganization(api, user.organizationId),
       entitlements,
       user,
     };

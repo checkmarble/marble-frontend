@@ -8,7 +8,7 @@ import { UpdateWebhook } from '@app-builder/components/Settings/Webhooks/UpdateW
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { type WebhookSecret } from '@app-builder/models/webhook';
+import { adaptWebhookWithSecret, type WebhookSecret } from '@app-builder/models/webhook';
 import {
   isDeleteWebhookAvailable,
   isEditWebhookAvailable,
@@ -29,14 +29,15 @@ const webhookDetailLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function webhookDetailLoader({ context, data }) {
-    const { webhookRepository, user, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
     if (!isReadWebhookAvailable(user)) throw redirect({ to: '/app-router' });
 
     const webhookId = data?.params?.['webhookId'];
     invariant(webhookId, 'webhookId is required');
 
-    const webhook = await webhookRepository.getWebhook({ webhookId });
+    const { webhook: webhookDto } = await context.api.getWebhook(webhookId);
+    const webhook = adaptWebhookWithSecret(webhookDto);
 
     return {
       webhook,

@@ -1,16 +1,12 @@
-import { initServerServices } from '@app-builder/services/init.server';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/ressources/data/export-org')({
   server: {
+    middleware: [authMiddleware],
     handlers: {
-      GET: async ({ request }) => {
-        const { authService } = initServerServices(request);
-        const { organization } = await authService.isAuthenticated(request, {
-          failureRedirect: '/sign-in',
-        });
-
-        const exportData = await organization.exportOrganization();
+      GET: async ({ context }) => {
+        const exportData = await context.api.exportOrganization();
 
         return new Response(JSON.stringify(exportData), {
           headers: {

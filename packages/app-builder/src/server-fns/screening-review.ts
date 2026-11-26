@@ -28,10 +28,10 @@ export const listScreeningReviewPageFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    const { cases, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
     const { limit, cursor, ...options } = data;
-    return readScreeningReviewPage(cases, user.actorIdentity.userId, limit, cursor, options);
+    return readScreeningReviewPage(api, user.actorIdentity.userId, limit, cursor, options);
   });
 
 export const reviewScreeningReviewMatchFn = createServerFn({ method: 'POST' })
@@ -46,9 +46,9 @@ export const reviewScreeningReviewMatchFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
-    return reviewScreeningReviewMatch({ cases, continuousScreening }, user.actorIdentity.userId, data);
+    return reviewScreeningReviewMatch(api, user.actorIdentity.userId, data);
   });
 
 /** The decisions of one case, written in one request. */
@@ -71,16 +71,16 @@ export const reviewScreeningReviewMatchesFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
-    return reviewScreeningReviewMatches({ cases, continuousScreening }, user.actorIdentity.userId, data);
+    return reviewScreeningReviewMatches(api, user.actorIdentity.userId, data);
   });
 
 export const closeScreeningReviewCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.uuid(), screeningId: z.uuid() }))
   .handler(async ({ context, data }) => {
-    const { cases, continuousScreening, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
     if (!isContinuousScreeningAvailable(entitlements) || !user.actorIdentity.userId) throw redirect({ to: '/cases' });
-    return closeScreeningReviewCase({ cases, continuousScreening }, user.actorIdentity.userId, data);
+    return closeScreeningReviewCase(api, user.actorIdentity.userId, data);
   });

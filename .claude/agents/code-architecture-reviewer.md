@@ -35,7 +35,7 @@ When reviewing code, you will:
 3. **Verify System Integration**:
    - Ensure new code properly integrates with existing services and APIs
    - Validate that API hooks follow the established TanStack Query patterns
-   - Check imports follow the layered architecture (routes -> components -> queries (`useServerFn`) -> server-fns -> repositories/services -> models)
+   - Check imports follow the layered architecture (routes -> components -> queries (`useServerFn`) -> server-fns -> `context.api` / `server/` helpers -> models)
 
 4. **Assess Architectural Fit**:
    - Evaluate if the code belongs in the correct module

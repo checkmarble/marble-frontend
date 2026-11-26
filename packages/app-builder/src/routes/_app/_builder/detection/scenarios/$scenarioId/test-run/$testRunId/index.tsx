@@ -10,6 +10,7 @@ import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRun
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import type { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
+import { adaptTestRun, adaptTestRunDecision, adaptTestRunRuleExecution } from '@app-builder/models/testrun';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Await, createFileRoute } from '@tanstack/react-router';
@@ -25,11 +26,13 @@ const testRunLoader = createServerFn()
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function testRunLoader({ data, context }) {
     const testRunId = fromParams(data?.params ?? {}, 'testRunId');
-    const { testRun } = context.authInfo;
+    const { api } = context;
 
-    const decisionsPromise = testRun.listDecisions({ testRunId });
-    const rulesPromise = testRun.listRuleExecutions({ testRunId });
-    const run = await testRun.getTestRun({ testRunId });
+    const decisionsPromise = api
+      .getDecisionData(testRunId)
+      .then(({ decisions }) => decisions.map(adaptTestRunDecision));
+    const rulesPromise = api.getRuleData(testRunId).then(({ rules }) => rules.map(adaptTestRunRuleExecution));
+    const run = adaptTestRun((await api.getTestRun(testRunId)).scenario_test_run);
 
     return { run, decisionsPromise, rulesPromise };
   });

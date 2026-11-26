@@ -10,6 +10,8 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { type TagColor } from '@app-builder/models/tags';
+import { listInboxesMetadata, listInboxesWithCaseCount } from '@app-builder/server/inboxes';
+import { getCurrentOrganization, listTags } from '@app-builder/server/organization';
 import {
   getInboxUserRoles,
   isAutoAssignmentAvailable,
@@ -38,12 +40,12 @@ import { z } from 'zod/v4';
 const inboxesLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function inboxesLoader({ context }) {
-    const { entitlements, inbox, user, organization } = context.authInfo;
+    const { api, entitlements, user } = context;
 
     const [allInboxes, escalationInboxes, currentOrganization] = await Promise.all([
-      inbox.listInboxesWithCaseCount(),
-      inbox.listInboxesMetadata(),
-      organization.getCurrentOrganization(),
+      listInboxesWithCaseCount(api),
+      listInboxesMetadata(api),
+      getCurrentOrganization(api, user.organizationId),
     ]);
 
     const inboxes = allInboxes.filter((inbox) => isAdmin(user) || isInboxAdmin(user, inbox));
@@ -55,12 +57,8 @@ const inboxesLoader = createServerFn()
     let tags: (Tag & { target: 'case' | 'object' })[] = [];
     if (canReadTags) {
       const [caseTags, objectTags] = await Promise.all([
-        organization
-          .listTags({ withCaseCount: true })
-          .then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
-        organization
-          .listTags({ target: 'object' })
-          .then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
+        listTags(api, { withCaseCount: true }).then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
+        listTags(api, { target: 'object' }).then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
       ]);
       tags = [...caseTags, ...objectTags];
     }

@@ -3,6 +3,7 @@ import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/o
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import { type ContinuousScreeningClientDataIndexingResponse } from '@app-builder/models/continuous-screening';
+import { listClientDataIndexing, listDatasetUpdates, listUpdateJobs } from '@app-builder/server/continuous-screening';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -25,19 +26,17 @@ async function getObservabilityClientDataIndexing(request: Promise<ContinuousScr
 const observabilityLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function continuousScreeningObservabilityLoader({ context }) {
-    const { continuousScreening, user } = context.authInfo;
+    const { api, user } = context;
 
     if (!isAdmin(user)) {
       throw redirect({ to: '/app-router' });
     }
 
     const [datasetUpdates, updateJobs, clientDataIndexing] = await Promise.all([
-      getObservabilityItems(
-        continuousScreening.listDatasetUpdates({ limit: DATASET_UPDATES_PAGE_SIZE, order: 'DESC' }),
-      ),
-      getObservabilityItems(continuousScreening.listUpdateJobs({ limit: UPDATE_JOBS_PAGE_SIZE, order: 'DESC' })),
+      getObservabilityItems(listDatasetUpdates(api, { limit: DATASET_UPDATES_PAGE_SIZE, order: 'DESC' })),
+      getObservabilityItems(listUpdateJobs(api, { limit: UPDATE_JOBS_PAGE_SIZE, order: 'DESC' })),
       getObservabilityClientDataIndexing(
-        continuousScreening.listClientDataIndexing({ limit: CLIENT_DATA_INDEXING_PAGE_SIZE, order: 'DESC' }),
+        listClientDataIndexing(api, { limit: CLIENT_DATA_INDEXING_PAGE_SIZE, order: 'DESC' }),
       ),
     ]);
 

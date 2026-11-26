@@ -1,15 +1,14 @@
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { getReleaseNotes } from '@app-builder/server/app-config';
 import { createServerFn } from '@tanstack/react-start';
+import { getRequest } from '@tanstack/react-start/server';
 
-export const checkVersionUpdateFn = createServerFn({ method: 'GET' })
-  .middleware([servicesMiddleware])
-  .handler(async ({ context }) => {
-    const { outdated, versions } = await context.services.appConfigRepository.getReleaseNotes();
+export const checkVersionUpdateFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const { outdated, versions } = await getReleaseNotes(getRequest());
 
-    return {
-      needsUpdate: outdated.isOutdated,
-      version: outdated.latestVersion ?? versions.apiVersion,
-      releaseNotes: outdated.releaseNotes?.join('\n\n') ?? '',
-      releaseUrl: outdated.latestUrl ?? '',
-    };
-  });
+  return {
+    needsUpdate: outdated.isOutdated,
+    version: outdated.latestVersion ?? versions.apiVersion,
+    releaseNotes: outdated.releaseNotes?.join('\n\n') ?? '',
+    releaseUrl: outdated.latestUrl ?? '',
+  };
+});

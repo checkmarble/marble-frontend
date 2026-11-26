@@ -18,7 +18,7 @@ Inline modifier, the dominant style: `import { type Case, type CaseStatus } from
 Infer by default; annotate where a contract fixes the type:
 
 - Adapters annotate their return, so a missing or mistyped field fails in the adapter, not at callers. Naming: `adaptXxx(dto: XxxDto): Xxx` maps a snake_case DTO to a camelCase model (`adaptCaseTag`, `models/cases.ts`); `adaptXxxDto` / `adaptXxxBody` go the other way, returning the generated body type (`adaptCreateScenarioIterationRuleBodyDto`, `models/scenario/iteration-rule.ts`).
-- Repositories declare an interface and annotate the factory return once (`(marbleCoreApiClient: MarbleCoreApi): UserScoringRepository => ({ … })`); methods are then contextually typed (`repositories/UserScoringRepository.ts`).
+- Exported helpers in `server/` annotate their return with the model type (`listCustomLists(api): Promise<CustomList[]>`, `server/custom-lists.ts`).
 
 ## Form `defaultValues`
 

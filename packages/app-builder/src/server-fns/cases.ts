@@ -1,4 +1,5 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import {
   isNotFoundHttpError,
@@ -6,19 +7,22 @@ import {
   isStatusConflictHttpError,
   isUnprocessableEntityHttpError,
 } from '@app-builder/models';
-import { type AiSettingSchema } from '@app-builder/models/ai-settings';
+import { type AiSettingSchema, transformCaseReviewSetting } from '@app-builder/models/ai-settings';
 import {
   type AiCaseReviewListItem,
+  adaptAiCaseReviewListItem,
+  adaptCase,
+  adaptCaseReview,
+  adaptSuspiciousActivityReport,
   type CaseReview,
   caseStatuses,
   type SuspiciousActivityReport,
 } from '@app-builder/models/cases';
 import { Decision, DecisionDetails, DecisionForSnooze, RuleWithSnoozeData } from '@app-builder/models/decision';
-import { KycCaseEnrichment } from '@app-builder/models/kyc-case-enrichment';
+import { adaptUpdateInboxesSla } from '@app-builder/models/inbox';
+import { adaptKycCaseEnrichment, KycCaseEnrichment } from '@app-builder/models/kyc-case-enrichment';
 import { RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
-import { DecisionRepository } from '@app-builder/repositories/DecisionRepository';
-import { ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import {
   addCommentPayloadSchema,
   addObjectsToCasePayloadSchema,
@@ -44,7 +48,32 @@ import {
   updateInboxesSlaPayloadSchema,
   updateInboxWorkflowPayloadSchema,
 } from '@app-builder/schemas/cases';
+import { getAiAssistSettings } from '@app-builder/server/ai-assist';
+import {
+  addCaseReviewFeedback,
+  addComment,
+  addDecisionsToCase,
+  addObjectsToCase,
+  assignUser,
+  createCase,
+  createCaseFromObjects,
+  getCase,
+  getNextUnassignedCaseId,
+  getPivotRelatedCases,
+  listCaseDecisions,
+  listCases,
+  removeObjectsFromCase,
+  reviewDecision,
+  setTags,
+  snoozeCase,
+  updateCase,
+} from '@app-builder/server/cases';
+import { createSnoozeForDecision, getDecisionActiveSnoozes, getDecisionById } from '@app-builder/server/decisions';
+import { getInbox, listInboxesWithCaseCount, updateInbox, updateInboxUser } from '@app-builder/server/inboxes';
+import { listRules } from '@app-builder/server/scenario-iteration-rules';
+import { updateMatchStatus } from '@app-builder/server/screenings';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { getFixedT } from '@app-builder/services/i18n/i18next.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
@@ -70,7 +99,7 @@ export const createCaseFn = createServerFn({ method: 'POST' })
   )
   .handler(async ({ context, data }) => {
     try {
-      const createdCase = await context.authInfo.cases.createCase(data);
+      const createdCase = await createCase(context.api, data);
       throw redirect({ to: '/cases/$caseId', params: { caseId: fromUUIDtoSUUID(createdCase.id) } });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
@@ -84,11 +113,9 @@ export const closeCaseFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     const { caseId, outcome, comment } = data;
     try {
-      const promises: Promise<unknown>[] = [
-        context.authInfo.cases.updateCase({ caseId, body: { status: 'closed', outcome } }),
-      ];
+      const promises: Promise<unknown>[] = [updateCase(context.api, { caseId, body: { status: 'closed', outcome } })];
       if (comment !== '') {
-        promises.push(context.authInfo.cases.addComment({ caseId, body: { comment } }));
+        promises.push(addComment(context.api, { caseId, body: { comment } }));
       }
       await Promise.all(promises);
     } catch {
@@ -103,9 +130,9 @@ export const openCaseFn = createServerFn({ method: 'POST' })
     try {
       const promises: Promise<unknown>[] = [];
       if (data.comment !== '') {
-        promises.push(context.authInfo.cases.addComment({ caseId: data.caseId, body: { comment: data.comment } }));
+        promises.push(addComment(context.api, { caseId: data.caseId, body: { comment: data.comment } }));
       }
-      promises.push(context.authInfo.cases.updateCase({ caseId: data.caseId, body: { status: 'investigating' } }));
+      promises.push(updateCase(context.api, { caseId: data.caseId, body: { status: 'investigating' } }));
       await Promise.allSettled(promises);
     } catch {
       throw new Error('Failed to open case');
@@ -117,7 +144,7 @@ export const escalateCaseFn = createServerFn({ method: 'POST' })
   .validator(escalateCasePayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.cases.escalateCase({ caseId: data.caseId });
+      await context.api.escalateCase(data.caseId);
       throw redirect({ to: '/cases/inboxes/$inboxId', params: { inboxId: fromUUIDtoSUUID(data.inboxId) } });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
@@ -130,8 +157,8 @@ export const snoozeCaseFn = createServerFn({ method: 'POST' })
   .validator(snoozeCasePayloadSchema)
   .handler(async ({ context, data }) => {
     await (data.snoozeUntil
-      ? context.authInfo.cases.snoozeCase({ caseId: data.caseId, snoozeUntil: data.snoozeUntil })
-      : context.authInfo.cases.unsnoozeCase(data));
+      ? snoozeCase(context.api, { caseId: data.caseId, snoozeUntil: data.snoozeUntil })
+      : context.api.unsnoozeCase(data.caseId));
   });
 
 // ---- Case edits ----
@@ -141,9 +168,9 @@ export const editAssigneeFn = createServerFn({ method: 'POST' })
   .validator(editAssigneePayloadSchema)
   .handler(async ({ context, data }) => {
     if (data.assigneeId) {
-      await context.authInfo.cases.assignUser({ caseId: data.caseId, userId: data.assigneeId });
+      await assignUser(context.api, { caseId: data.caseId, userId: data.assigneeId });
     } else {
-      await context.authInfo.cases.unassignUser({ caseId: data.caseId });
+      await context.api.unassignUser(data.caseId);
     }
   });
 
@@ -151,14 +178,14 @@ export const editInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editInboxPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { inboxId: data.inboxId } });
+    await updateCase(context.api, { caseId: data.caseId, body: { inboxId: data.inboxId } });
   });
 
 export const editTagsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editTagsPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.cases.setTags(data);
+    await setTags(context.api, data);
   });
 
 export const editSuspicionFn = createServerFn({ method: 'POST' })
@@ -176,22 +203,23 @@ export const editSuspicionFn = createServerFn({ method: 'POST' })
     try {
       let sar: SuspiciousActivityReport | undefined = undefined;
 
+      // `file` must be left out rather than set to undefined, or the client sends the string "undefined" as the file.
       if (formData.reportId && formData.status === 'none') {
-        await context.authInfo.cases.deleteSuspiciousActivityReport({
-          caseId: formData.caseId,
-          reportId: formData.reportId,
-        });
+        await context.api.sarDelete(formData.caseId, formData.reportId);
       } else if (formData.reportId && formData.status !== 'none') {
-        sar = await context.authInfo.cases.updateSuspiciousActivityReport({
-          caseId: formData.caseId,
-          reportId: formData.reportId,
-          body: { status: formData.status, ...(formData.file && { file: formData.file }) },
-        });
+        sar = adaptSuspiciousActivityReport(
+          await context.api.sarUpdate(formData.caseId, formData.reportId, {
+            status: formData.status,
+            ...(formData.file && { file: formData.file }),
+          }),
+        );
       } else if (!formData.reportId && formData.status !== 'none') {
-        sar = await context.authInfo.cases.createSuspiciousActivityReport({
-          caseId: formData.caseId,
-          body: { status: formData.status, ...(formData.file && { file: formData.file }) },
-        });
+        sar = adaptSuspiciousActivityReport(
+          await context.api.sarCreate(formData.caseId, {
+            status: formData.status,
+            ...(formData.file && { file: formData.file }),
+          }),
+        );
       } else {
         throw new Error('Should not happen');
       }
@@ -206,14 +234,14 @@ export const listSuspicionActivityReportsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    return await context.authInfo.cases.listSuspiciousActivityReports({ caseId: data.caseId });
+    return R.map(await context.api.sarList(data.caseId), adaptSuspiciousActivityReport);
   });
 
 export const massUpdateCasesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(massUpdateCasesPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.cases.massUpdateCases({ body: data });
+    await context.api.massUpdateCases(data);
   });
 
 // ---- Comments ----
@@ -238,9 +266,7 @@ export const addCommentFn = createServerFn({ method: 'POST' })
       const promises: Promise<unknown>[] = [];
 
       if (formData.comment !== '') {
-        promises.push(
-          context.authInfo.cases.addComment({ caseId: formData.caseId, body: { comment: formData.comment } }),
-        );
+        promises.push(addComment(context.api, { caseId: formData.caseId, body: { comment: formData.comment } }));
       }
 
       if (formData.files.length > 0) {
@@ -274,7 +300,7 @@ export const reviewDecisionFn = createServerFn({ method: 'POST' })
   .validator(reviewDecisionPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.cases.reviewDecision(data);
+      await reviewDecision(context.api, data);
       return { status: 'success' as const };
     } catch {
       return { status: 'error' as const };
@@ -286,7 +312,7 @@ export const addRuleSnoozeFn = createServerFn({ method: 'POST' })
   .validator(addRuleSnoozePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+    const t = await getFixedT(request, ['common', 'cases']);
 
     const { decisionId, ruleId, comment, durationUnit, durationValue } = data;
 
@@ -304,7 +330,7 @@ export const addRuleSnoozeFn = createServerFn({ method: 'POST' })
     }
 
     try {
-      await context.authInfo.decision.createSnoozeForDecision(decisionId, { ruleId, duration, comment });
+      await createSnoozeForDecision(context.api, decisionId, { ruleId, duration, comment });
       return { status: 'success' as const, errors: [] };
     } catch (error) {
       if (isStatusConflictHttpError(error)) {
@@ -319,7 +345,7 @@ export const reviewScreeningMatchFn = createServerFn({ method: 'POST' })
   .validator(reviewScreeningMatchPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.screening.updateMatchStatus(data);
+      await updateMatchStatus(context.api, data);
     } catch {
       throw new Error('Failed to review screening match');
     }
@@ -338,7 +364,7 @@ export const setAllMatchesToNoHitFn = createServerFn({ method: 'POST' })
     try {
       await Promise.all(
         data.matchIds.map((matchId) =>
-          context.authInfo.screening.updateMatchStatus({
+          updateMatchStatus(context.api, {
             matchId,
             status: 'no_hit',
             whitelist: data.whitelist,
@@ -356,13 +382,13 @@ export const addToCaseFn = createServerFn({ method: 'POST' })
   .validator(addToCasePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+    const t = await getFixedT(request, ['common', 'cases']);
 
     try {
       if (data.newCase) {
-        return await context.authInfo.cases.createCase(data);
+        return await createCase(context.api, data);
       } else {
-        return await context.authInfo.cases.addDecisionsToCase(data);
+        return await addDecisionsToCase(context.api, data);
       }
     } catch (error) {
       if (isStatusBadRequestHttpError(error)) {
@@ -379,13 +405,13 @@ export const addObjectsToCaseFn = createServerFn({ method: 'POST' })
   .validator(addObjectsToCasePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+    const t = await getFixedT(request, ['common', 'cases']);
 
     try {
       if (data.newCase) {
-        return await context.authInfo.cases.createCaseFromObjects(data);
+        return await createCaseFromObjects(context.api, data);
       }
-      return await context.authInfo.cases.addObjectsToCase(data);
+      return await addObjectsToCase(context.api, data);
     } catch (error) {
       if (isUnprocessableEntityHttpError(error)) {
         throw new Error(t('cases:errors.invalid_case_objects'));
@@ -403,10 +429,10 @@ export const removeObjectsFromCaseFn = createServerFn({ method: 'POST' })
   .validator(removeObjectsFromCasePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+    const t = await getFixedT(request, ['common', 'cases']);
 
     try {
-      return await context.authInfo.cases.removeObjectsFromCase(data);
+      return await removeObjectsFromCase(context.api, data);
     } catch (error) {
       if (isUnprocessableEntityHttpError(error)) {
         throw new Error(t('cases:errors.invalid_case_objects'));
@@ -424,7 +450,7 @@ export const removeObjectsFromCaseFn = createServerFn({ method: 'POST' })
 export const getAiSettingsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const settings = await context.authInfo.aiAssistSettings.getAiAssistSettings();
+    const settings = await getAiAssistSettings(context.api);
     return { settings };
   });
 
@@ -433,7 +459,7 @@ export const updateAiSettingsFn = createServerFn({ method: 'POST' })
   .validator((data: unknown) => data as AiSettingSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.aiAssistSettings.updateAiAssistSettings(data);
+      await context.api.upsertAiSettings(transformCaseReviewSetting.encode(data));
     } catch (error) {
       Sentry.captureException(error);
       throw new Error('Failed to update AI settings');
@@ -445,7 +471,7 @@ export const updateAiSettingsFn = createServerFn({ method: 'POST' })
 export const getInboxesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const inboxes = await context.authInfo.inbox.listInboxesWithCaseCount();
+    const inboxes = await listInboxesWithCaseCount(context.api);
     return { inboxes };
   });
 
@@ -453,7 +479,7 @@ export const getCaseDetailFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    const caseDetail = await context.authInfo.cases.getCase({ caseId: data.caseId });
+    const caseDetail = await getCase(context.api, { caseId: data.caseId });
     return { caseDetail };
   });
 
@@ -461,7 +487,7 @@ export const getCaseNameFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    const c = await context.authInfo.cases.getCase({ caseId: data.caseId });
+    const c = await getCase(context.api, { caseId: data.caseId });
     return { name: c.name };
   });
 
@@ -470,13 +496,13 @@ export const getCasesFn = createServerFn({ method: 'POST' })
   .validator(listCasesInputSchema)
   .handler(async ({ context, data }) => {
     const { inboxId, limit, order, offsetId, ...filters } = data;
-    const { user, cases: caseRepository } = context.authInfo;
+    const { user } = context;
 
     const filterInboxIds = inboxId === MY_INBOX_ID ? undefined : [inboxId];
     const assigneeIdFilter = filters.assignee ? { assigneeId: filters.assignee } : {};
     const statusesFilter = filters.statuses ?? caseStatuses.filter((status) => status !== 'closed');
 
-    return caseRepository.listCases({
+    return listCases(context.api, {
       ...filters,
       ...(limit ? { limit } : {}),
       ...(order ? { order } : {}),
@@ -491,7 +517,9 @@ export const getRelatedCasesByObjectFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
-    const relatedCases = await context.authInfo.cases.getObjectRelatedCases(data);
+    const relatedCases = (await context.api.getObjectRelatedCases(data.objectType, data.objectId)).map((dto) =>
+      adaptCase(dto),
+    );
     return { cases: relatedCases };
   });
 
@@ -499,7 +527,7 @@ export const getPivotRelatedCasesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ pivotValue: z.string() }))
   .handler(async ({ context, data }) => {
-    const cases = await context.authInfo.cases.getPivotRelatedCases({ pivotValue: data.pivotValue });
+    const cases = await getPivotRelatedCases(context.api, { pivotValue: data.pivotValue });
     return { cases };
   });
 
@@ -509,7 +537,8 @@ export const listCaseDecisionsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(listCaseDecisionsInputSchema)
   .handler(async ({ context, data }) => {
-    return context.authInfo.cases.listCaseDecisions(
+    return listCaseDecisions(
+      context.api,
       { caseId: data.caseId },
       { limit: data.limit ?? 200, cursorId: data.cursorId },
     );
@@ -521,14 +550,14 @@ export const getRulesByPivotFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    const { cases: caseRepository, decision: decisionRepository, scenarioIterationRuleRepository } = context.authInfo;
+    const { api } = context;
 
-    const caseDetail = await caseRepository.getCase({ caseId: data.caseId });
-    const iterationRules = await getScenarioIterationsRules(caseDetail.decisions, scenarioIterationRuleRepository);
+    const caseDetail = await getCase(api, { caseId: data.caseId });
+    const iterationRules = await getScenarioIterationsRules(caseDetail.decisions, api);
 
     const [decisionsDetails, snoozes] = await Promise.all([
-      enrichDecisions(caseDetail.decisions, decisionRepository, iterationRules),
-      getDecisionsSnoozes(caseDetail.decisions, decisionRepository),
+      enrichDecisions(caseDetail.decisions, api, iterationRules),
+      getDecisionsSnoozes(caseDetail.decisions, api),
     ]);
 
     const rulesByPivot = R.pipe(
@@ -546,12 +575,12 @@ export const getRulesByPivotFn = createServerFn({ method: 'GET' })
 
 async function enrichDecisions(
   decisions: Decision[],
-  repository: DecisionRepository,
+  api: MarbleCoreApi,
   iterationRules: ScenarioIterationRule[],
 ): Promise<DecisionForSnooze[]> {
   return Promise.all(
     decisions.map((decision) =>
-      repository.getDecisionById(decision.id).then((decisionDetail) => enrichRules(decisionDetail, iterationRules)),
+      getDecisionById(api, decision.id).then((decisionDetail) => enrichRules(decisionDetail, iterationRules)),
     ),
   );
 }
@@ -569,22 +598,16 @@ async function enrichRules(
   };
 }
 
-async function getDecisionsSnoozes(
-  decisions: Decision[],
-  repository: DecisionRepository,
-): Promise<RuleSnoozeWithRuleId[]> {
+async function getDecisionsSnoozes(decisions: Decision[], api: MarbleCoreApi): Promise<RuleSnoozeWithRuleId[]> {
   return Promise.all(
-    decisions.map((decision) => repository.getDecisionActiveSnoozes(decision.id).then((r) => r.ruleSnoozes)),
+    decisions.map((decision) => getDecisionActiveSnoozes(api, decision.id).then((r) => r.ruleSnoozes)),
   ).then((ruleSnoozesArrays) => R.flat(ruleSnoozesArrays));
 }
 
-async function getScenarioIterationsRules(
-  decisions: Decision[],
-  repository: ScenarioIterationRuleRepository,
-): Promise<ScenarioIterationRule[]> {
+async function getScenarioIterationsRules(decisions: Decision[], api: MarbleCoreApi): Promise<ScenarioIterationRule[]> {
   const uniqueScenarioIterationIds = R.unique(decisions.map((decision) => decision.scenario.scenarioIterationId));
   return Promise.all(
-    uniqueScenarioIterationIds.map((scenarioIterationId) => repository.listRules({ scenarioIterationId })),
+    uniqueScenarioIterationIds.map((scenarioIterationId) => listRules(api, { scenarioIterationId })),
   ).then((rulesArrays) => R.flat(rulesArrays));
 }
 
@@ -618,7 +641,7 @@ export const listCaseReviewsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    const reviews = await context.authInfo.cases.listCaseReviews({ caseId: data.caseId });
+    const reviews = (await context.api.listCaseReviews(data.caseId)).map(adaptAiCaseReviewListItem);
     return { reviews } as { reviews: AiCaseReviewListItem[] };
   });
 
@@ -626,7 +649,7 @@ export const getCaseReviewFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string(), reviewId: z.string() }))
   .handler(async ({ context, data }) => {
-    const review = await context.authInfo.cases.getCaseReviewById({ caseId: data.caseId, reviewId: data.reviewId });
+    const review = adaptCaseReview(await context.api.getCaseReviewById(data.caseId, data.reviewId));
     return { review } as { review: CaseReview };
   });
 
@@ -634,14 +657,14 @@ export const enqueueReviewFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    await context.authInfo.cases.enqueueReviewForCase({ caseId: data.caseId });
+    await context.api.enqueueReviewForCase(data.caseId);
   });
 
 export const addCaseReviewFeedbackFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string(), reviewId: z.string(), reaction: caseReviewReactionSchema }))
   .handler(async ({ context, data }) => {
-    await context.authInfo.cases.addCaseReviewFeedback({
+    await addCaseReviewFeedback(context.api, {
       caseId: data.caseId,
       reviewId: data.reviewId,
       reaction: data.reaction,
@@ -652,14 +675,14 @@ export const addReviewToCaseCommentsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string(), reviewId: z.string() }))
   .handler(async ({ context, data }) => {
-    const caseReviews = await context.authInfo.cases.getMostRecentCaseReview({ caseId: data.caseId });
+    const caseReviews = (await context.api.getMostRecentCaseReview(data.caseId)).map(adaptCaseReview);
     const caseReview = caseReviews.find((review) => review.id === data.reviewId);
 
     if (!caseReview) throw new Error('Review not found');
     if (!caseReview.review) throw new Error('Review has no content');
 
     try {
-      await context.authInfo.cases.addComment({ caseId: data.caseId, body: { comment: caseReview.review.output } });
+      await addComment(context.api, { caseId: data.caseId, body: { comment: caseReview.review.output } });
     } catch {
       throw new Error('Failed to add review to case comments');
     }
@@ -688,7 +711,8 @@ export const enrichKycFn = createServerFn({ method: 'POST' })
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      const kycCaseEnrichments = await context.authInfo.cases.enrichPivotObjectOfCaseWithKyc({ caseId: data.caseId });
+      const kycCaseEnrichments =
+        (await context.api.enrichPivotObjectOfCaseWithKyc(data.caseId)).results?.map(adaptKycCaseEnrichment) ?? [];
       if (!kycCaseEnrichments) throw new Error('KYC enrichment not found');
       return { success: true as const, kycCaseEnrichments: enrichAnalysisWithLinks(kycCaseEnrichments) };
     } catch (error) {
@@ -708,8 +732,8 @@ export const updateInboxEscalationFn = createServerFn({ method: 'POST' })
     try {
       await Promise.all(
         data.updates.map(async (update) => {
-          const inboxData = await context.authInfo.inbox.getInbox(update.inboxId);
-          return context.authInfo.inbox.updateInbox(update.inboxId, {
+          const inboxData = await getInbox(context.api, update.inboxId);
+          return updateInbox(context.api, update.inboxId, {
             name: inboxData.name,
             escalationInboxId: update.escalationInboxId,
           });
@@ -728,8 +752,8 @@ export const updateAutoAssignFn = createServerFn({ method: 'POST' })
       const inboxEntries = Object.entries(data.inboxes) as [string, boolean][];
       await Promise.all(
         inboxEntries.map(async ([inboxId, autoAssignEnabled]) => {
-          const inboxData = await context.authInfo.inbox.getInbox(inboxId);
-          return context.authInfo.inbox.updateInbox(inboxId, {
+          const inboxData = await getInbox(context.api, inboxId);
+          return updateInbox(context.api, inboxId, {
             name: inboxData.name,
             escalationInboxId: inboxData.escalationInboxId,
             autoAssignEnabled,
@@ -739,9 +763,7 @@ export const updateAutoAssignFn = createServerFn({ method: 'POST' })
 
       const userEntries = Object.entries(data.users) as [string, boolean][];
       await Promise.all(
-        userEntries.map(([userId, autoAssignable]) =>
-          context.authInfo.inbox.updateInboxUser(userId, { autoAssignable }),
-        ),
+        userEntries.map(([userId, autoAssignable]) => updateInboxUser(context.api, userId, { autoAssignable })),
       );
     } catch {
       throw new Error('Failed to update auto-assign');
@@ -755,8 +777,8 @@ export const updateInboxWorkflowFn = createServerFn({ method: 'POST' })
     try {
       await Promise.all(
         data.updates.map(async (update) => {
-          const inboxData = await context.authInfo.inbox.getInbox(update.inboxId);
-          return context.authInfo.inbox.updateInbox(update.inboxId, {
+          const inboxData = await getInbox(context.api, update.inboxId);
+          return updateInbox(context.api, update.inboxId, {
             name: inboxData.name,
             caseReviewManual: update.caseReviewManual,
             caseReviewOnCaseCreated: update.caseReviewOnCaseCreated,
@@ -774,7 +796,7 @@ export const updateInboxesSlaFn = createServerFn({ method: 'POST' })
   .validator(updateInboxesSlaPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.inbox.updateInboxesSla(data);
+      await context.api.putInboxesSla(adaptUpdateInboxesSla(data));
     } catch {
       throw new Error('Failed to update inboxes sla');
     }
@@ -785,7 +807,7 @@ export const getNextUnassignedCaseFn = createServerFn({ method: 'GET' })
   .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      const nextCaseId = await context.authInfo.cases.getNextUnassignedCaseId({ caseId: data.caseId });
+      const nextCaseId = await getNextUnassignedCaseId(context.api, { caseId: data.caseId });
       if (!nextCaseId) {
         throw redirect({ to: '/cases/inboxes/$inboxId', params: { inboxId: MY_INBOX_ID } });
       }

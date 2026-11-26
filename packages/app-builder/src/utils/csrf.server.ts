@@ -1,6 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
-import { getCsrfCookie } from '@app-builder/repositories/SessionStorageRepositories/CsrfStorageRepository';
-import { sign } from '@app-builder/repositories/SessionStorageRepositories/signed-cookie';
+import { createSignedCookie, sign } from '@app-builder/server/signed-cookie';
 import { DEFAULT_SESSION_MAX_AGE } from '@app-builder/services/auth/auth-session.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { setCookie } from '@tanstack/react-start/server';
@@ -15,8 +14,12 @@ function isSecureRequest(request: Request): boolean {
 }
 
 function getCsrfCookieForRequest(request: Request) {
-  return getCsrfCookie({
+  return createSignedCookie({
+    name: 'csrf',
     maxAge: Number(getServerEnv('SESSION_MAX_AGE')) || DEFAULT_SESSION_MAX_AGE,
+    sameSite: 'lax',
+    path: '/',
+    httpOnly: true,
     secrets: [getServerEnv('SESSION_SECRET')],
     secure: isSecureRequest(request),
   });

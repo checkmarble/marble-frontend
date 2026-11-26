@@ -1,4 +1,3 @@
-import { type TotpEnrollmentParams } from '@app-builder/repositories/AuthenticationRepository';
 import {
   InvalidVerificationCode,
   RequiresRecentLogin,
@@ -7,7 +6,7 @@ import {
   useStartTotpEnrollment,
   useUnenrollMfaFactor,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
+import { type TotpEnrollmentParams } from '@app-builder/services/auth/firebase-auth-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState } from 'react';
@@ -21,11 +20,10 @@ const enrolledFactorsQueryKey = ['mfa', 'enrolled-factors'];
 
 export function TwoFactorAuthSettings() {
   const { t, i18n } = useTranslation(['account', 'common']);
-  const { authenticationClientService } = useClientServices();
   const queryClient = useQueryClient();
 
-  const getEnrolledMfaFactors = useGetEnrolledMfaFactors(authenticationClientService);
-  const unenrollMfaFactor = useUnenrollMfaFactor(authenticationClientService);
+  const getEnrolledMfaFactors = useGetEnrolledMfaFactors();
+  const unenrollMfaFactor = useUnenrollMfaFactor();
 
   const factorsQuery = useQuery({
     queryKey: enrolledFactorsQueryKey,
@@ -129,10 +127,9 @@ export function TwoFactorAuthSettings() {
 
 function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
   const { t } = useTranslation(['account', 'common']);
-  const { authenticationClientService } = useClientServices();
 
-  const startTotpEnrollment = useStartTotpEnrollment(authenticationClientService);
-  const finalizeTotpEnrollment = useFinalizeTotpEnrollment(authenticationClientService);
+  const startTotpEnrollment = useStartTotpEnrollment();
+  const finalizeTotpEnrollment = useFinalizeTotpEnrollment();
 
   const [open, setOpen] = useState(false);
   const [needsReauth, setNeedsReauth] = useState(false);

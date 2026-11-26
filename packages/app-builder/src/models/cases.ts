@@ -1,4 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { exhaustiveUnionList } from '@app-builder/utils/types';
 import {
   type AiCaseReviewListItemDto,
@@ -37,6 +38,7 @@ import {
 } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
+import { type FiltersWithPagination } from './pagination';
 import { ScreeningStatus } from './screening';
 
 export interface CaseContributor {
@@ -933,3 +935,19 @@ export type CaseMassUpdateBodyDto =
   | CaseMassUpdateChangeStatusDto
   | CaseMassUpdateAssignDto
   | CaseMassUpdateMoveToInboxDto;
+
+export const DEFAULT_CASE_PAGINATION_SIZE = 50;
+
+export type CaseFilters = {
+  snoozed?: boolean;
+  statuses?: CaseStatus[];
+  name?: string;
+  dateRange?: DateRangeFilter;
+  inboxIds?: string[];
+  assigneeId?: string;
+  tagId?: string;
+  qualification?: 'green' | 'yellow' | 'red';
+  type?: Case['type'][];
+};
+
+export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;

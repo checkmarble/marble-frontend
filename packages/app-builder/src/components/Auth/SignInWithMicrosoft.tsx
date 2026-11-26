@@ -1,5 +1,5 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import { type AuthPayload } from '@app-builder/server/auth';
 import {
   AccountExistsWithDifferentCredential,
   InvalidLoginCredentials,
@@ -7,7 +7,6 @@ import {
   PopupBlockedByClient,
   useMicrosoftSignIn,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { ClientOnly } from '@tanstack/react-router';
@@ -50,9 +49,8 @@ function ClientSignInWithMicrosoft({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
-  const clientServices = useClientServices();
 
-  const microsoftSignIn = useMicrosoftSignIn(clientServices.authenticationClientService);
+  const microsoftSignIn = useMicrosoftSignIn();
 
   const [handleMicrosoftSignIn, _state] = useAsync(async () => {
     try {

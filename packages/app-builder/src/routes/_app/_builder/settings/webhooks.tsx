@@ -4,6 +4,7 @@ import { CreateWebhook } from '@app-builder/components/Settings/Webhooks/CreateW
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Webhook } from '@app-builder/models/webhook';
+import { listWebhooks } from '@app-builder/server/webhooks';
 import { webhooksSetupDocHref } from '@app-builder/services/documentation-href';
 import {
   isCreateWebhookAvailable,
@@ -24,11 +25,11 @@ import { Icon } from 'ui-icons';
 const webhooksLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function webhooksLoader({ context }) {
-    const { webhookRepository, user, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
     if (!isReadWebhookAvailable(user)) throw redirect({ to: '/app-router' });
 
-    const webhooks = await webhookRepository.listWebhooks();
+    const webhooks = await listWebhooks(context.api);
 
     return {
       webhooks,

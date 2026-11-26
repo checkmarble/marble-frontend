@@ -9,7 +9,7 @@ import { Icon } from 'ui-icons';
 const screeningSearchLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function screeningSearchLayout({ context }) {
-    const { entitlements } = context.authInfo;
+    const { entitlements } = context;
 
     if (!isScreeningSearchAvailable(entitlements)) {
       throw redirect({ to: '/app-router' });
