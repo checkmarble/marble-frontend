@@ -3,6 +3,7 @@ import {
   type ScreeningMatchReviewedEvent,
   type ScreeningReviewedEvent,
 } from '@app-builder/models/cases';
+import { tentativeReviewDecisionKeys } from '@app-builder/models/screening';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { Trans, useTranslation } from 'react-i18next';
@@ -70,6 +71,8 @@ export function ScreeningMatchCommentedDetail({ event }: { event: ScreeningMatch
   const { t } = useTranslation(casesI18n);
   const { getOrgUserById } = useOrganizationUsers();
   const user = event.userId ? getOrgUserById(event.userId) : undefined;
+  // A reviewer who left the organization is no longer in the user list, but still wrote this review.
+  const actor = event.userId ? getFullName(user) || t('cases:case_detail.unknown_user') : 'Marble';
   return (
     <div key={event.id} className="flex w-full items-start gap-sm">
       <div className="bg-surface-card border-grey-border flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
@@ -84,11 +87,11 @@ export function ScreeningMatchCommentedDetail({ event }: { event: ScreeningMatch
               Actor: <span className="font-bold capitalize" />,
               Status: (
                 <Tag size="xs" color="yellow">
-                  {t(`cases:screening_review.decision.${event.status}`)}
+                  {t(tentativeReviewDecisionKeys[event.status])}
                 </Tag>
               ),
             }}
-            values={{ actor: user ? getFullName(user) : 'Marble' }}
+            values={{ actor }}
           />
         </span>
         <div className="whitespace-pre-wrap">

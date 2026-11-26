@@ -6,6 +6,7 @@ import {
   type ScreeningErrorDto,
   type ScreeningFileDto,
   ScreeningFreeformSearchDto,
+  type ScreeningMatchCommentDto,
   type ScreeningMatchDto,
   type ScreeningMatchPayloadDto,
   type ScreeningMatchTentativeReviewDto,
@@ -205,11 +206,27 @@ export function adaptScreeningMatchPayload(dto: ScreeningMatchPayloadDto): Scree
 
 export type ScreeningMatchTentativeReviewStatus = ScreeningMatchTentativeReviewStatusDto;
 
+/** Translation keys of the "Tentative: Hit / No hit" tag. */
+export const tentativeReviewTagKeys = {
+  confirmed_hit: 'cases:tentative_review.tag.confirmed_hit',
+  no_hit: 'cases:tentative_review.tag.no_hit',
+} as const satisfies Record<ScreeningMatchTentativeReviewStatus, string>;
+
+/** Translation keys of a tentative review's bare decision ("Hit", "No hit"). */
+export const tentativeReviewDecisionKeys = {
+  confirmed_hit: 'cases:screening_review.decision.confirmed_hit',
+  no_hit: 'cases:screening_review.decision.no_hit',
+} as const satisfies Record<ScreeningMatchTentativeReviewStatus, string>;
+
 export type ScreeningMatchComment = {
   id: string;
   authorId: string;
   comment: string;
   createdAt: string;
+};
+
+/** Tentative reviews exist only on continuous screening matches: decision screenings don't show them. */
+export type ContinuousScreeningMatchComment = ScreeningMatchComment & {
   /** Set on a comment that carried a tentative review a newer one replaced. */
   tentativeReview?: {
     status: ScreeningMatchTentativeReviewStatus;
@@ -239,12 +256,25 @@ export type ScreeningMatch = {
   comments: ScreeningMatchComment[];
 };
 
-export function adaptScreeningMatchComments(comments: ScreeningMatchDto['comments']): ScreeningMatchComment[] {
-  return R.map(comments, (comment) => ({
+function adaptScreeningMatchComment(comment: ScreeningMatchCommentDto): ScreeningMatchComment {
+  return {
     id: comment.id,
     authorId: comment.author_id,
     comment: comment.comment,
     createdAt: comment.created_at,
+  };
+}
+
+/** Drops tentative review metadata: decision screenings are out of the tentative review scope. */
+export function adaptScreeningMatchComments(comments: ScreeningMatchCommentDto[]): ScreeningMatchComment[] {
+  return R.map(comments, adaptScreeningMatchComment);
+}
+
+export function adaptContinuousScreeningMatchComments(
+  comments: ScreeningMatchCommentDto[],
+): ContinuousScreeningMatchComment[] {
+  return R.map(comments, (comment) => ({
+    ...adaptScreeningMatchComment(comment),
     ...(comment.tentative_review && {
       tentativeReview: {
         status: comment.tentative_review.status,
@@ -255,7 +285,7 @@ export function adaptScreeningMatchComments(comments: ScreeningMatchDto['comment
 }
 
 export function adaptScreeningMatchTentativeReview(
-  dto: ScreeningMatchTentativeReviewDto | null | undefined,
+  dto: ScreeningMatchTentativeReviewDto | undefined,
 ): ScreeningMatchTentativeReview | null {
   if (!dto) return null;
   return {

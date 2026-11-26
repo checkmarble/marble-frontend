@@ -351,7 +351,7 @@ export type ScreeningMatchTentativeReviewDto = {
     /** The inbox of the case when the tentative review was submitted */
     inbox_id: string;
     created_at: string;
-};
+} | null;
 export type ContinuousScreeningMatchBaseDto = {
     id: string;
     continuous_screening_id: string;
@@ -359,7 +359,7 @@ export type ContinuousScreeningMatchBaseDto = {
     payload: ContinuousScreeningMatchPayloadDto;
     reviewed_by?: string;
     comments: ScreeningMatchCommentDto[];
-    tentative_review: (ScreeningMatchTentativeReviewDto) | null;
+    tentative_review: ScreeningMatchTentativeReviewDto;
     created_at: string;
     updated_at: string;
 };

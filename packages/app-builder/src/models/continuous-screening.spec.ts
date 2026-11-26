@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { type ContinuousScreeningMatch, getPendingTentativeReviews } from './continuous-screening';
-import { adaptScreeningMatchComments, type ScreeningMatchTentativeReview } from './screening';
+import {
+  adaptContinuousScreeningMatchComments,
+  adaptScreeningMatchComments,
+  type ScreeningMatchTentativeReview,
+} from './screening';
 
 function tentativeReview(id: string): ScreeningMatchTentativeReview {
   return {
@@ -25,13 +29,14 @@ function screeningMatch(
     status,
     payload: {
       id: `entity-${id}`,
+      match: true,
       schema: 'Person',
       caption: id,
       properties: {},
       score: 0.9,
       datasets: [],
       target: true,
-    } as unknown as ContinuousScreeningMatch['payload'],
+    },
     comments: [],
     tentativeReview: review,
   };
@@ -49,20 +54,31 @@ describe('getPendingTentativeReviews', () => {
   });
 });
 
-describe('adaptScreeningMatchComments', () => {
+const commentDtos = [
+  { id: 'comment-1', author_id: 'user-1', comment: 'Plain', created_at: '2026-11-19T10:00:00Z' },
+  {
+    id: 'comment-2',
+    author_id: 'user-1',
+    comment: 'First opinion',
+    created_at: '2026-11-19T11:00:00Z',
+    tentative_review: { status: 'no_hit' as const, superseded_at: '2026-11-20T10:00:00Z' },
+  },
+];
+
+describe('adaptContinuousScreeningMatchComments', () => {
   it('keeps the replaced tentative review a comment carried', () => {
-    const [plain, replaced] = adaptScreeningMatchComments([
-      { id: 'comment-1', author_id: 'user-1', comment: 'Plain', created_at: '2026-11-19T10:00:00Z' },
-      {
-        id: 'comment-2',
-        author_id: 'user-1',
-        comment: 'First opinion',
-        created_at: '2026-11-19T11:00:00Z',
-        tentative_review: { status: 'no_hit', superseded_at: '2026-11-20T10:00:00Z' },
-      },
-    ]);
+    const [plain, replaced] = adaptContinuousScreeningMatchComments(commentDtos);
 
     expect(plain).not.toHaveProperty('tentativeReview');
     expect(replaced?.tentativeReview).toEqual({ status: 'no_hit', supersededAt: '2026-11-20T10:00:00Z' });
+  });
+});
+
+describe('adaptScreeningMatchComments', () => {
+  it('drops tentative reviews, which decision screenings do not show', () => {
+    const comments = adaptScreeningMatchComments(commentDtos);
+
+    expect(comments.map((comment) => comment.id)).toEqual(['comment-1', 'comment-2']);
+    expect(comments[1]).not.toHaveProperty('tentativeReview');
   });
 });

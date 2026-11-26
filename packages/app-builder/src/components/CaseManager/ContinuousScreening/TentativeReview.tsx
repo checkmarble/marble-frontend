@@ -7,6 +7,7 @@ import {
 import {
   type ScreeningMatchTentativeReview,
   type ScreeningMatchTentativeReviewStatus,
+  tentativeReviewTagKeys,
 } from '@app-builder/models/screening';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
@@ -30,17 +31,20 @@ export function TentativeReviewTag({
   const { t } = useTranslation(['cases']);
   return (
     <Tag color="yellow" size={size} className={cn('shrink-0', className)}>
-      {t(`cases:tentative_review.tag.${status}`)}
+      {t(tentativeReviewTagKeys[status])}
     </Tag>
   );
 }
 
 function TentativeReviewAuthor({ review }: { review: ScreeningMatchTentativeReview }) {
+  const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
   const { getOrgUserById } = useOrganizationUsers();
+  // A reviewer who left the organization is no longer in the user list.
+  const authorName = getFullName(getOrgUserById(review.authorId)) || t('cases:case_detail.unknown_user');
   return (
     <>
-      <span>{getFullName(getOrgUserById(review.authorId))}</span>
+      <span className="first-letter:capitalize">{authorName}</span>
       <time className="text-grey-secondary" dateTime={review.createdAt}>
         {formatDateTime(review.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
       </time>
@@ -67,7 +71,10 @@ export function TentativeReviewsCallout({
       color="yellow"
       icon="warning"
       iconColor="yellow"
-      className={cn('bg-yellow-background-light [&>div:last-child]:items-start', className)}
+      className={cn(
+        'bg-yellow-background-light dark:bg-grey-background-light [&>div:last-child]:items-start',
+        className,
+      )}
     >
       <div className="flex min-w-0 flex-1 flex-col gap-sm">
         <span className="font-medium">
@@ -95,7 +102,7 @@ function TentativeReviewRow({
   return (
     <button
       type="button"
-      className="hover:bg-yellow-background flex w-full flex-col gap-xs rounded-sm p-xs text-start"
+      className="hover:bg-yellow-background dark:hover:bg-yellow-primary/20 flex w-full flex-col gap-xs rounded-sm p-xs text-start"
       onClick={() =>
         document.getElementById(matchCardElementId(match.id))?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
@@ -118,7 +125,7 @@ function TentativeReviewRow({
 export function TentativeReviewSummary({ review }: { review: ScreeningMatchTentativeReview }) {
   const { t } = useTranslation(['cases']);
   return (
-    <div className="border-yellow-border bg-yellow-background-light flex flex-col gap-xs rounded-sm border p-sm">
+    <div className="border-yellow-border bg-yellow-background-light dark:border-yellow-primary flex flex-col gap-xs rounded-sm border p-sm dark:bg-transparent">
       <span className="flex flex-wrap items-center gap-xs text-xs">
         <span className="font-medium">{t('cases:tentative_review.title')}</span>
         <TentativeReviewTag status={review.status} size="xs" />

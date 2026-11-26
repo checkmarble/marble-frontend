@@ -24,13 +24,13 @@ import {
 } from 'marble-api';
 import * as R from 'remeda';
 import {
-  adaptScreeningMatchComments,
+  adaptContinuousScreeningMatchComments,
   adaptScreeningMatchPayload,
   adaptScreeningMatchTentativeReview,
+  type ContinuousScreeningMatchComment,
   isKnownEntitySchema,
   matchEntitySchemas,
   type OpenSanctionEntitySchema,
-  type ScreeningMatchComment,
   type ScreeningMatchPayload,
   type ScreeningMatchTentativeReview,
 } from './screening';
@@ -374,7 +374,7 @@ export type ContinuousScreeningMatchBase = {
   /** The user who decided the match. */
   reviewedBy?: string;
   /** Excludes the comment of the active tentative review, which is in `tentativeReview`. */
-  comments: ScreeningMatchComment[];
+  comments: ContinuousScreeningMatchComment[];
   /** The backend keeps it after the match gets a final decision, so check `status` before showing it as pending. */
   tentativeReview: ScreeningMatchTentativeReview | null;
 };
@@ -447,7 +447,7 @@ function adaptContinuousScreeningMatchBase(dto: ContinuousScreeningMatchBaseDto)
       datasets: dto.payload.datasets,
     },
     reviewedBy: dto.reviewed_by,
-    comments: adaptScreeningMatchComments(dto.comments),
+    comments: adaptContinuousScreeningMatchComments(dto.comments),
     tentativeReview: adaptScreeningMatchTentativeReview(dto.tentative_review),
   };
 }

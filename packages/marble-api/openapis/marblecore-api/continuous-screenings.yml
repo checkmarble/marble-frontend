@@ -1010,9 +1010,7 @@ components:
           items:
             $ref: 'screenings.yml#/components/schemas/ScreeningMatchCommentDto'
         tentative_review:
-          allOf:
-            - $ref: 'screenings.yml#/components/schemas/ScreeningMatchTentativeReviewDto'
-          nullable: true
+          $ref: 'screenings.yml#/components/schemas/ScreeningMatchTentativeReviewDto'
         created_at:
           type: string
           format: date-time

@@ -1,16 +1,17 @@
-import type { ScreeningMatchComment } from '@app-builder/models/screening';
+import { type ContinuousScreeningMatchComment, tentativeReviewDecisionKeys } from '@app-builder/models/screening';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Tag } from 'ui-design-system';
 
-export const CommentLine = ({ comment }: { comment: ScreeningMatchComment }) => {
+/** Renders a decision or continuous screening comment; only the latter can carry a tentative review. */
+export const CommentLine = ({ comment }: { comment: ContinuousScreeningMatchComment }) => {
   const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
   const { getOrgUserById } = useOrganizationUsers();
   const user = getOrgUserById(comment.authorId);
-  const fullName = getFullName(user);
+  const fullName = getFullName(user) || t('cases:case_detail.unknown_user');
 
   return (
     <div key={comment.id} className="flex flex-col text-s gap-sm font-normal">
@@ -26,7 +27,7 @@ export const CommentLine = ({ comment }: { comment: ScreeningMatchComment }) => 
           <Tag size="xs" color={comment.tentativeReview.supersededAt ? 'grey' : 'yellow'}>
             {comment.tentativeReview.supersededAt
               ? t('cases:tentative_review.marker_superseded', {
-                  status: t(`cases:screening_review.decision.${comment.tentativeReview.status}`),
+                  status: t(tentativeReviewDecisionKeys[comment.tentativeReview.status]),
                 })
               : t('cases:tentative_review.marker')}
           </Tag>

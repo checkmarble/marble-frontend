@@ -37,7 +37,7 @@ import {
 } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
-import { ScreeningStatus } from './screening';
+import { type ScreeningMatchTentativeReviewStatus, ScreeningStatus } from './screening';
 
 export interface CaseContributor {
   id: string;
@@ -293,7 +293,7 @@ export interface ScreeningMatchReviewedEvent extends CaseEventBase<'screening_ma
 /** A reviewer submitted a tentative review on a screening match. */
 export interface ScreeningMatchCommentedEvent extends CaseEventBase<'screening_match_commented'> {
   userId?: string | null;
-  status: 'confirmed_hit' | 'no_hit';
+  status: ScreeningMatchTentativeReviewStatus;
   comment: string;
   matchId: string;
 }
@@ -501,13 +501,19 @@ async function adaptCaseEventDto(caseEventDto: CaseEventDto, marbleCoreApiClient
     .exhaustive();
 }
 
-/** Skips event types this frontend doesn't know yet, so a newer backend can't break the case page. */
+function isShownCaseEvent(dto: CaseEventDto): boolean {
+  if (!caseEventTypes.includes(dto.event_type)) return false;
+  // Tentative reviews are shown on continuous screenings only, not on decision screenings.
+  if (dto.event_type === 'screening_match_commented') return dto.resource_type === 'continuous_screening_match';
+  return true;
+}
+
+/**
+ * Skips event types this frontend doesn't know yet, so a newer backend can't break the case page,
+ * and tentative reviews of decision screening matches.
+ */
 export function adaptCaseEvents(dtos: CaseEventDto[], marbleCoreApiClient: MarbleCoreApi): Promise<CaseEvent[]> {
-  return Promise.all(
-    dtos
-      .filter((e) => caseEventTypes.includes(e.event_type))
-      .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
-  );
+  return Promise.all(dtos.filter(isShownCaseEvent).map((event) => adaptCaseEventDto(event, marbleCoreApiClient)));
 }
 
 function parseCaseEntityRef(value: string): { tableName: string; objectId: string } | undefined {

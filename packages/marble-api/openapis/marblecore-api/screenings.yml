@@ -1057,8 +1057,10 @@ components:
           type: string
           format: date-time
     ScreeningMatchTentativeReviewDto:
-      description: The active tentative review of a match, with the comment that carries it
+      description: The active tentative review of a match, with the comment that carries it. Null when the match has none.
       type: object
+      # OpenAPI 3.0 ignores `nullable` next to an untyped `allOf`, so the referenced schema carries it.
+      nullable: true
       required:
         - id
         - author_id

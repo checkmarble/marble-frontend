@@ -47,4 +47,21 @@ describe('adaptCaseEvents', () => {
       matchId: 'match-1',
     });
   });
+
+  it('skips a tentative review on a decision screening match', async () => {
+    const dtos: CaseEventDto[] = [
+      {
+        ...baseEvent,
+        id: 'event-1',
+        event_type: 'screening_match_commented',
+        user_id: 'user-1',
+        new_value: 'no_hit',
+        additional_note: 'Different date of birth',
+        resource_type: 'screening_match',
+        resource_id: 'match-1',
+      },
+    ];
+
+    expect(await adaptCaseEvents(dtos, unusedClient)).toEqual([]);
+  });
 });

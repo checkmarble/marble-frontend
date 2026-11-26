@@ -10,7 +10,7 @@ import {
   isDirectContinuousScreeningMatch,
   isIndirectContinuousScreeningMatch,
 } from '@app-builder/models/continuous-screening';
-import { type ScreeningMatchComment } from '@app-builder/models/screening';
+import { type ContinuousScreeningMatchComment } from '@app-builder/models/screening';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
   const { t } = useTranslation(['screenings']);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { tentativeReview } = screeningMatch;
-  const comments: ScreeningMatchComment[] = tentativeReview
+  const comments: ContinuousScreeningMatchComment[] = tentativeReview
     ? [
         ...screeningMatch.comments,
         {
@@ -64,9 +64,7 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
                   <Tag color="grey" className="shrink-0">
                     {t('screenings:match.score', { score: Math.round(screeningMatch.payload.score * 100) })}
                   </Tag>
-                  {tentativeReview && screeningMatch.status === 'pending' ? (
-                    <TentativeReviewTag status={tentativeReview.status} />
-                  ) : null}
+                  {tentativeReview ? <TentativeReviewTag status={tentativeReview.status} /> : null}
                 </div>
                 <div className="flex flex-row flex-wrap gap-xs">
                   {screeningMatch.payload.properties['topics']?.map((topic) => {
