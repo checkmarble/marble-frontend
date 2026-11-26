@@ -26,6 +26,8 @@ export const ReviewScreeningMatch = ({
   onOpenChange,
 }: ReviewScreeningMatchProps) => {
   const { t } = useTranslation(['screenings']);
+  // Owned here rather than by the content, which unmounts on close: Save stays disabled while a request is in flight.
+  const reviewScreeningMatchMutation = useReviewContinuousScreeningMatchMutation();
 
   return (
     <MenuCommand.Menu open={open} onOpenChange={onOpenChange} persistOnSelect>
@@ -46,6 +48,7 @@ export const ReviewScreeningMatch = ({
         <ReviewScreeningMatchContent
           screeningMatch={screeningMatch}
           automaticallyConfirmScreening={automaticallyConfirmScreening}
+          reviewScreeningMatchMutation={reviewScreeningMatchMutation}
           onClose={() => onOpenChange(false)}
         />
       </MenuCommand.Content>
@@ -68,14 +71,15 @@ const reviewMatchDraftSchema = reviewMatchPayloadSchema.extend({ comment: z.stri
 function ReviewScreeningMatchContent({
   screeningMatch,
   automaticallyConfirmScreening,
+  reviewScreeningMatchMutation,
   onClose,
 }: {
   screeningMatch: ContinuousScreeningMatch;
   automaticallyConfirmScreening: boolean;
+  reviewScreeningMatchMutation: ReturnType<typeof useReviewContinuousScreeningMatchMutation>;
   onClose: () => void;
 }) {
   const { t } = useTranslation(['common', 'screenings']);
-  const reviewScreeningMatchMutation = useReviewContinuousScreeningMatchMutation();
   const router = useRouter();
 
   const defaultValues: ReviewMatchDraft = {
@@ -164,7 +168,7 @@ function ReviewScreeningMatchContent({
               type="submit"
               form={formId}
               label={t('common:save')}
-              disabled={currentStatus === null || isSubmitting}
+              disabled={currentStatus === null || isSubmitting || reviewScreeningMatchMutation.isPending}
             />
           )}
         </form.Subscribe>

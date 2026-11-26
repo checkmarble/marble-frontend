@@ -72,7 +72,13 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
                   })}
                 </div>
                 {comments.map((comment) => {
-                  return <CommentLine key={comment.id} comment={comment} />;
+                  return (
+                    <CommentLine
+                      key={comment.id}
+                      comment={comment}
+                      isActiveTentativeReview={comment.id === tentativeReview?.id}
+                    />
+                  );
                 })}
               </div>
             </div>

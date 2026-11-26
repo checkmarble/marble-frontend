@@ -5,8 +5,17 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Tag } from 'ui-design-system';
 
-/** Renders a decision or continuous screening comment; only the latter can carry a tentative review. */
-export const CommentLine = ({ comment }: { comment: ContinuousScreeningMatchComment }) => {
+/**
+ * Renders a decision or continuous screening comment; only the latter can carry a tentative review.
+ * A comment's tentative review is a replaced one unless the caller marks it as the match's active review.
+ */
+export const CommentLine = ({
+  comment,
+  isActiveTentativeReview = false,
+}: {
+  comment: ContinuousScreeningMatchComment;
+  isActiveTentativeReview?: boolean;
+}) => {
   const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
   const { getOrgUserById } = useOrganizationUsers();
@@ -24,12 +33,12 @@ export const CommentLine = ({ comment }: { comment: ContinuousScreeningMatchComm
           </time>
         </span>
         {comment.tentativeReview ? (
-          <Tag size="xs" color={comment.tentativeReview.supersededAt ? 'grey' : 'yellow'}>
-            {comment.tentativeReview.supersededAt
-              ? t('cases:tentative_review.marker_superseded', {
+          <Tag size="xs" color={isActiveTentativeReview ? 'yellow' : 'grey'}>
+            {isActiveTentativeReview
+              ? t('cases:tentative_review.marker')
+              : t('cases:tentative_review.marker_superseded', {
                   status: t(tentativeReviewDecisionKeys[comment.tentativeReview.status]),
-                })
-              : t('cases:tentative_review.marker')}
+                })}
           </Tag>
         ) : null}
       </div>
