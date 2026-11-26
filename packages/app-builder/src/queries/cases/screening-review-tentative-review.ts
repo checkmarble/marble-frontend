@@ -7,7 +7,6 @@ import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { keepaliveFetch } from './screening-review-decision';
 
-/** Resolves `undefined` after a redirect: `useServerFn` has already navigated away. */
 export function useScreeningReviewTentativeReviewMutation() {
   const submit = useServerFn(submitScreeningReviewTentativeReviewFn);
   return useMutation({

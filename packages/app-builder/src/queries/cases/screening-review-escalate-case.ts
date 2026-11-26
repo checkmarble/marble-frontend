@@ -3,7 +3,6 @@ import type { ScreeningReviewEscalateResult } from '@app-builder/services/screen
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-/** Resolves `undefined` after a redirect: `useServerFn` has already navigated away. */
 export function useEscalateScreeningReviewCaseMutation() {
   const escalate = useServerFn(escalateScreeningReviewCaseFn);
   const queryClient = useQueryClient();

@@ -44,7 +44,6 @@ export interface ScreeningReviewItem {
   reviewedBy?: string;
   screeningStatus: ContinuousScreening['status'];
   comments: ScreeningMatchComment[];
-  /** The active tentative review of a pending hit. */
   tentativeReview: ScreeningMatchTentativeReview | null;
   partial: boolean;
   /** Motiva signals stored on the match, comparing this customer with this list record. */
@@ -614,15 +613,11 @@ function isOpenHit(item: ScreeningReviewItem) {
   return item.status === 'pending' && item.screeningStatus === 'in_review' && item.caseStatus !== 'closed';
 }
 
-/**
- * An open hit tentatively reviewed in the case's current inbox: done for this inbox, it waits for the
- * case's escalation. Once the case is escalated, the hit is to review again in the escalation inbox.
- */
+/** A tentative review from the inbox the case was escalated from leaves the hit to review here. */
 export function awaitsEscalation(item: ScreeningReviewItem) {
   return isOpenHit(item) && item.tentativeReview?.inboxId === item.inboxId;
 }
 
-/** A hit still to decide in this inbox. */
 export function isPendingReviewItem(item: ScreeningReviewItem) {
   return isOpenHit(item) && !awaitsEscalation(item);
 }
@@ -812,16 +807,12 @@ export interface ScreeningReviewDecided {
   item: ScreeningReviewItem;
   decision: ScreeningReviewDecision;
   comment?: string;
-  /** Set when the decision is a tentative review: the hit stays pending, and `decision` is its status. */
+  /** Set for a tentative review: `decision` is then not final, and the hit stays pending. */
   tentativeReview?: ScreeningMatchTentativeReview;
   /** False during the undo delay and while the write runs: the screen shows its predicted effect. */
   written: boolean;
 }
 
-/**
- * What became of an escalation: done, refused by the backend (the case's inbox has no escalation
- * inbox, its escalation inbox is inactive, or the case was closed), or failed.
- */
 export type ScreeningReviewEscalation =
   | 'escalated'
   | 'no_escalation_inbox'
@@ -840,10 +831,7 @@ export interface ScreeningReviewSession {
   decided: Readonly<Record<string, ScreeningReviewDecided>>;
   screenings: Readonly<Record<string, ScreeningReviewScreeningResult>>;
   hiddenCases: readonly string[];
-  /**
-   * Cases escalated during this visit, with their hits as they were then: the case leaves the user's
-   * queue at once, but stays listed until hidden. Once hidden, it leaves every filter.
-   */
+  /** The hits of each case escalated this visit, as they were: the server stops returning the case at once. */
   escalated: Readonly<Record<string, readonly ScreeningReviewItem[]>>;
 }
 
@@ -938,7 +926,6 @@ function applyScreeningReviewDecisions(
       const skipped = item.status === 'pending' && confirmedScreenings.has(item.screeningId);
       const screeningStatus = reconciledScreeningStatus(session.screenings[item.screeningId], item.screeningStatus);
       if (decided?.tentativeReview) {
-        // Once written, a final decision the server reports supersedes it.
         if (decided.written && item.status !== 'pending') return { ...item, screeningStatus };
         return { ...item, tentativeReview: decided.tentativeReview, screeningStatus };
       }
@@ -974,7 +961,6 @@ export type ScreeningReviewScreeningState =
   | 'case_closed'
   /** `no_hit` with the case still open: the next load closes it. */
   | 'closure_pending'
-  /** The case was escalated during this visit, and leaves the queue. */
   | 'escalated'
   /** The case calls for escalation, but its escalation failed: the next load retries it. */
   | 'escalation_pending';
@@ -1042,10 +1028,7 @@ export function nextPendingScreeningReviewItem(groups: readonly ScreeningReviewG
   return undefined;
 }
 
-/**
- * Once this visit's decisions are written, the case escalates: it has a hit awaiting escalation,
- * nothing left to review, and no screening with matches left to load.
- */
+/** Predicts, from the listed hits, the escalation `screeningReviewCaseFollowUp` makes after a write. */
 export function willEscalateScreeningReviewCase(items: readonly ScreeningReviewItem[], caseId: string) {
   const caseItems = items.filter((item) => item.caseId === caseId);
   return (
@@ -1053,10 +1036,7 @@ export function willEscalateScreeningReviewCase(items: readonly ScreeningReviewI
   );
 }
 
-/**
- * Escalate is offered in place of Close case when the case has a hit awaiting escalation and nothing
- * left to review. Unlike the escalation after a write, it leaves the unloaded matches pending.
- */
+/** Unlike the escalation after a write, Escalate leaves the matches still to load pending. */
 export function canEscalateScreeningReviewCase(items: readonly ScreeningReviewItem[], caseId: string) {
   const caseItems = items.filter((item) => item.caseId === caseId);
   return caseItems.some(awaitsEscalation) && !caseItems.some(isPendingReviewItem);
@@ -1074,11 +1054,7 @@ export function needsFalsePositiveClosure(caseDetail: CaseDetail) {
 
 export type ScreeningReviewCaseFollowUp = 'close' | 'escalate' | 'none';
 
-/**
- * A case escalates when every pending hit of its screenings in review carries a tentative review from
- * its current inbox, at least one does, and no screening still has matches to load. Escalating
- * unassigns the case, so it only happens for the assignee.
- */
+/** Escalating unassigns the case, so only a write by its assignee escalates it. */
 export function screeningReviewCaseFollowUp(caseDetail: CaseDetail, userId: string): ScreeningReviewCaseFollowUp {
   if (needsFalsePositiveClosure(caseDetail)) return 'close';
   if (caseDetail.type !== 'continuous_screening' || caseDetail.status === 'closed' || caseDetail.assignedTo !== userId)

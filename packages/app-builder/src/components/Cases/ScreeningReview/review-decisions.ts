@@ -60,10 +60,8 @@ function caseChunks(items: readonly ScreeningReviewItem[], size: number): CaseCh
   );
 }
 
-/** What a decision on this page is: final, or a tentative review that asks another inbox to confirm it. */
 export type ScreeningReviewSubmission = 'decision' | 'tentative_review';
 
-/** The tentative review shown until the written one is read back. */
 function sessionTentativeReview(
   item: ScreeningReviewItem,
   decision: ScreeningReviewDecision,
@@ -114,8 +112,7 @@ function withoutDecided(session: ScreeningReviewSession, ids: readonly string[])
  *
  * `onNavigate` moves the cursor to a hit: the next pending one after a decision, or back to a hit
  * that needs the analyst again. `canValidate` says whether a decision is final or goes to a validator,
- * which the undo toast tells the analyst. A write that leaves a case to escalate escalates it, and the
- * case then leaves the queue like a closed one.
+ * which the undo toast tells the analyst.
  */
 export function useReviewDecisions({
   serverItems,
@@ -130,10 +127,8 @@ export function useReviewDecisions({
   hasMore: boolean;
   /** The cases the latest settled page read closed, retrying a closure a write couldn't make. */
   closedCaseIds: readonly string[] | undefined;
-  /** The escalations the latest settled page read retried, after ones a write couldn't make. */
   escalations: readonly ScreeningReviewRetriedEscalation[] | undefined;
   canValidate: boolean;
-  /** The name of the inbox a case in `inboxId` escalates to, for the toasts. */
   escalationInboxName: (inboxId: string) => string;
   onNavigate: (itemId: string) => void;
 }) {
@@ -204,12 +199,10 @@ export function useReviewDecisions({
     else if (manual && escalation === 'failed') toast.error(t('cases:screening_review.escalation.manual_failed'));
     else toast.error(t(`cases:screening_review.escalation.${escalation}`, { inbox }));
   };
-  /** The case's hits as listed now, kept once it is escalated: it leaves the server data at once. */
   const caseSnapshot = (caseId: string) =>
     applyScreeningReviewSession(latest.current.serverItems, sessionRef.current).filter(
       (item) => item.caseId === caseId,
     );
-  /** Escalated cases leave the queue after the hide delay, from every filter. */
   const markEscalated = (snapshots: readonly (readonly ScreeningReviewItem[])[]) => {
     const added = snapshots.filter(
       (items): items is readonly [ScreeningReviewItem, ...ScreeningReviewItem[]] =>
@@ -412,10 +405,7 @@ export function useReviewDecisions({
     );
   }, [escalations]);
 
-  /**
-   * Records the decision drafted under `draftId` on `item`, final or as a tentative review, which needs
-   * a comment.
-   */
+  /** Records the decision drafted under `draftId` on `item`. */
   const submit = (item: ScreeningReviewItem, draftId: string, submission: ScreeningReviewSubmission = 'decision') => {
     const draftBefore = drafts[draftId];
     const decision = draftBefore?.decision;
@@ -581,10 +571,6 @@ export function useReviewDecisions({
     };
   };
 
-  /**
-   * Called when Escalate starts on `item`'s case, for a partial screening. Like `caseClosed`, the
-   * returned callback shows the outcome on the page that started it; the toast shows anywhere.
-   */
   const caseEscalated = (item: ScreeningReviewItem) => {
     const isCurrent = isCurrentGeneration();
     // Taken before the refetch that follows the escalation drops the case.

@@ -33,7 +33,6 @@ export type ScreeningReviewRejection =
   | 'already_reviewed'
   /** The screening has hits to review again, or another screening of the case is still open. */
   | 'not_closable'
-  /** The case has no tentative review awaiting escalation, or still has hits to review. */
   | 'not_escalatable';
 
 export type ScreeningReviewDecisionResult =
@@ -42,7 +41,6 @@ export type ScreeningReviewDecisionResult =
       /** `null` when the screening couldn't be read back. The next load recovers. */
       screeningStatus: ContinuousScreening['status'] | null;
       caseClosed: boolean;
-      /** Set when the write left the case to escalate. */
       escalation?: ScreeningReviewEscalation;
     }
   | { ok: false; reason: ScreeningReviewRejection };
@@ -64,7 +62,6 @@ type BatchRepositories = {
   continuousScreening: Pick<ContinuousScreeningRepository, 'reviewMatches'>;
 };
 
-/** A tentative review always carries its comment. */
 export interface ScreeningReviewTentativeReviewInput extends ScreeningReviewDecisionInput {
   comment: string;
 }
@@ -144,10 +141,7 @@ function rejectionFromError(error: unknown): ScreeningReviewRejection | null {
   return isHttpError(error) ? rejectionFromStatus(error.status, marbleApiErrorMessage(error)) : null;
 }
 
-/**
- * A sign-in redirect, thrown when the session can't be refreshed, must reach the client. A catch that
- * turns failures into an outcome calls this first.
- */
+/** A catch that turns failures into an outcome calls this first: a sign-in redirect must reach the client. */
 function rethrowRedirect(error: unknown) {
   if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
 }
@@ -190,7 +184,6 @@ async function escalateCase(
   }
 }
 
-/** Closes the case as a false positive or escalates it, as it now calls for. */
 export async function followUpScreeningReviewCase(cases: FollowUpCases, caseDetail: CaseDetail, userId: string) {
   switch (screeningReviewCaseFollowUp(caseDetail, userId)) {
     case 'close':
@@ -229,10 +222,6 @@ export async function reviewScreeningReviewMatch(
   return resultAfterWrite(repositories.cases, userId, input.caseId, input.screeningId);
 }
 
-/**
- * Writes a tentative review: a comment carrying a non-binding decision, which leaves the hit pending.
- * Then escalates the case once every hit has a final decision or a tentative review.
- */
 export async function submitScreeningReviewTentativeReview(
   repositories: TentativeReviewRepositories,
   userId: string,
@@ -362,7 +351,6 @@ export async function closeScreeningReviewCase(
   return resultAfterWrite(repositories.cases, userId, input.caseId, input.screeningId);
 }
 
-/** Pending matches of the screenings in review that still wait for a decision in the case's inbox. */
 function hasHitsToReview(caseDetail: CaseDetail) {
   return caseDetail.continuousScreenings.some(
     (screening) =>
@@ -383,10 +371,6 @@ function hasTentativeReviewToEscalate(caseDetail: CaseDetail) {
   );
 }
 
-/**
- * Escalates a case whose loaded hits all have a final decision or a tentative review, without loading
- * the other matches of its partial screening, which stay pending.
- */
 export async function escalateScreeningReviewCase(
   cases: Pick<CaseRepository, 'getCase' | 'escalateCase'>,
   userId: string,

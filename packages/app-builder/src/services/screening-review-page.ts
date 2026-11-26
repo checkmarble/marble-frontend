@@ -17,10 +17,6 @@ export interface ScreeningReviewPage {
   failed: boolean;
   /** Cases this read closed, after a closure that failed on write. To review leaves them out of `items`. */
   closedCaseIds?: string[];
-  /**
-   * Escalations this read retried, after one that failed on write. An escalated case is left out of
-   * `items`; one that failed again stays.
-   */
   escalations?: ScreeningReviewRetriedEscalation[];
 }
 

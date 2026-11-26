@@ -133,7 +133,6 @@ export function reviewCase(
   };
 }
 
-/** Gives a match of a customer-triggered screening a tentative review, submitted in `inboxId`. */
 export function withTentativeReview(
   screening: ContinuousScreeningMarbleToScreeningEntity,
   matchId: string,
@@ -159,7 +158,6 @@ export function withTentativeReview(
   };
 }
 
-/** Gives every match of a customer-triggered screening the same status. */
 export function withMatchStatus(
   screening: ContinuousScreeningMarbleToScreeningEntity,
   status: 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped',

@@ -5,18 +5,13 @@ import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { TooltipV2 } from 'ui-design-system';
 
-/** Where a case escalates to: its inbox, and the escalation inbox's name when it has one. */
 export interface ScreeningReviewEscalationTarget {
   inboxId: string;
   /** Unset when the inbox has no escalation inbox. */
   escalationInboxName?: string;
 }
 
-/**
- * Explains why an escalating action is disabled: the case's inbox has no escalation inbox, which an
- * admin can set from the inbox settings, or `fallback` for any other reason. Without a reason, the
- * button shows as is.
- */
+/** Explains a disabled escalating action: no escalation inbox, else `fallback`; without either, just `children`. */
 export function EscalationTooltip({
   target,
   fallback,

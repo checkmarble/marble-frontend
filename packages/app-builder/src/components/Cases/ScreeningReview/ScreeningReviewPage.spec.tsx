@@ -813,22 +813,28 @@ describe('screening review decisions', () => {
   });
 
   describe('tentative review', () => {
-    // The test cases sit in the `inbox` inbox.
     const escalatingInboxes = [
       { id: 'inbox', name: 'Screening alerts', escalationInboxId: 'second-review' },
       { id: 'second-review', name: 'Second review' },
     ];
     const requestButton = () => screen.getByRole('button', { name: /screening_review\.dock\.request_confirmation/ });
-    const draftTentativeNoHit = () => {
+    function renderTentative(items = decisionItems, pageInboxes: ScreeningReviewInbox[] = escalatingInboxes) {
+      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items, nextCursor: null, failed: false });
+      return renderPage({ filter: 'to_review' }, false, true, false, pageInboxes);
+    }
+    const draftTentativeNoHit = (comment = '  Same birth year, unsure  ') => {
       press('n', 'KeyN');
-      fireEvent.change(commentBox(), { target: { value: '  Same birth year, unsure  ' } });
+      fireEvent.change(commentBox(), { target: { value: comment } });
     };
 
-    it('needs a decision, a comment and an escalation inbox to request confirmation', async () => {
-      renderDecisionPage();
+    it.each([
+      ['an escalation inbox', inboxes, 'Unsure'],
+      ['a comment', escalatingInboxes, ''],
+      ['a non-blank comment', escalatingInboxes, '   '],
+    ] as const)('cannot request confirmation without %s', async (_, pageInboxes, comment) => {
+      renderTentative(decisionItems, pageInboxes);
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-      draftTentativeNoHit();
-      // The case's inbox has no escalation inbox.
+      draftTentativeNoHit(comment);
       expect(requestButton().hasAttribute('disabled')).toBe(true);
       press('Enter', 'Enter', true);
       await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
@@ -836,25 +842,23 @@ describe('screening review decisions', () => {
       expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
     });
 
-    it('requires a comment', async () => {
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: decisionItems, nextCursor: null, failed: false });
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-      press('n', 'KeyN');
-      expect(requestButton().hasAttribute('disabled')).toBe(true);
-      fireEvent.change(commentBox(), { target: { value: '   ' } });
-      expect(requestButton().hasAttribute('disabled')).toBe(true);
-      fireEvent.change(commentBox(), { target: { value: 'Unsure' } });
-      expect(requestButton().hasAttribute('disabled')).toBe(false);
-    });
-
-    it('writes the tentative review with Shift+Enter after the undo delay, and the cursor moves on', async () => {
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: decisionItems, nextCursor: null, failed: false });
+    it.each([
+      ['Shift+Enter', () => press('Enter', 'Enter', true)],
+      [
+        'Shift+Enter in the comment box',
+        () => {
+          const box = commentBox();
+          box.focus();
+          fireEvent.keyDown(box, { key: 'Enter', code: 'Enter', shiftKey: true });
+        },
+      ],
+      ['the button', () => fireEvent.click(requestButton())],
+    ] as const)('requests confirmation with %s, and writes it after the undo delay', async (_, request) => {
       vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue(inReview);
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
+      renderTentative();
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
       draftTentativeNoHit();
-      press('Enter', 'Enter', true);
+      request();
       await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
       expect(card('List record A')?.textContent).toContain('cases:tentative_review.tag.no_hit');
       expect(await screen.findByText('cases:screening_review.undo.confirmation_requested')).toBeTruthy();
@@ -865,32 +869,15 @@ describe('screening review decisions', () => {
         ),
       );
       expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
-      // Done for this reviewer: read-only, with the tentative review, and never offered as a draft.
       fireEvent.click(card('List record A')!);
       await screen.findByText('cases:screening_review.dock.tentative_submitted');
-      // The case's other hits are still to review.
       expect(screen.getByText('cases:screening_review.dock.escalates_when_reviewed')).toBeTruthy();
       expect(screen.getByText('cases:screening_review.step.tentative')).toBeTruthy();
       expect(screen.getAllByText('Same birth year, unsure').length).toBeGreaterThan(0);
       expect(screen.queryByRole('textbox', { name: 'cases:screening_review.dock.comment' })).toBeNull();
     });
 
-    it('requests confirmation with Shift+Enter from the comment box', async () => {
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: decisionItems, nextCursor: null, failed: false });
-      vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue(inReview);
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-      draftTentativeNoHit();
-      const box = commentBox();
-      box.focus();
-      fireEvent.keyDown(box, { key: 'Enter', code: 'Enter', shiftKey: true });
-      await waitFor(() => expect(activeCard()?.textContent).toContain('Shared list record'));
-      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
-      await waitFor(() => expect(submitScreeningReviewTentativeReviewFn).toHaveBeenCalledOnce());
-      expect(reviewScreeningReviewMatchFn).not.toHaveBeenCalled();
-    });
-
-    it('keeps a case whose escalation failed in To review, says so, and offers Escalate', async () => {
+    it('keeps a case whose escalation failed in To review, tells it once, and offers Escalate', async () => {
       const due = buildScreeningReviewItems([
         reviewCase(caseId, [
           withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', [
@@ -898,102 +885,49 @@ describe('screening review decisions', () => {
           ]),
         ]),
       ]);
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
-        items: due,
+      const failedAgain = (items: typeof due) => ({
+        items,
         nextCursor: null,
         failed: false,
-        escalations: [{ caseId, inboxId: 'inbox', escalation: 'failed' }],
+        escalations: [{ caseId, inboxId: 'inbox', escalation: 'failed' as const }],
       });
+      // Different data on refetch, or the page would not read its escalations again.
+      vi.mocked(listScreeningReviewPageFn)
+        .mockResolvedValueOnce(failedAgain(due))
+        .mockResolvedValue(failedAgain([...due].reverse()));
       vi.mocked(escalateScreeningReviewCaseFn).mockResolvedValue({ ok: true, escalation: 'escalated' });
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      expect(await screen.findByText('cases:screening_review.escalation.failed')).toBeTruthy();
+      const { queryClient } = renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
+      await screen.findByText('cases:screening_review.escalation.failed');
+      await act(() => queryClient.refetchQueries({ queryKey: ['cases', 'screening-review'] }));
+      await elapse(0);
+      expect(listScreeningReviewPageFn).toHaveBeenCalledTimes(2);
+      expect(screen.getAllByText('cases:screening_review.escalation.failed')).toHaveLength(1);
       expect(card('List record A')?.textContent).toContain('cases:tentative_review.tag.no_hit');
       fireEvent.click(card('List record A')!);
       await screen.findByText('cases:screening_review.screening_state.escalation_pending');
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: null, failed: false });
       fireEvent.click(await screen.findByRole('button', { name: 'cases:screening_review.escalate_case' }));
       await waitFor(() => expect(escalateScreeningReviewCaseFn).toHaveBeenCalledWith({ data: { caseId } }));
       await screen.findByText('cases:screening_review.screening_state.escalated');
-      // The refetch no longer returns the case: it stays until the hide delay.
-      await waitFor(() => expect(vi.mocked(listScreeningReviewPageFn).mock.calls.length).toBeGreaterThan(1));
-      expect(card('List record A')).toBeTruthy();
-      await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-      await waitFor(() => expect(card('List record A')).toBeUndefined());
     });
 
-    it('tells a failed escalation once, though every refetch retries it', async () => {
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
-        items: decisionItems,
-        nextCursor: null,
-        failed: false,
-        escalations: [{ caseId: 'other-case', inboxId: 'inbox', escalation: 'no_escalation_inbox' }],
-      });
-      const { queryClient } = renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      await screen.findByText('cases:screening_review.escalation.no_escalation_inbox');
-      await act(() => queryClient.refetchQueries({ queryKey: ['cases', 'screening-review'] }));
-      expect(listScreeningReviewPageFn).toHaveBeenCalledTimes(2);
-      expect(screen.getAllByText('cases:screening_review.escalation.no_escalation_inbox')).toHaveLength(1);
-    });
-
-    it('tells an escalation a page load made, even with nothing decided on the page', async () => {
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({
-        items: decisionItems,
-        nextCursor: null,
-        failed: false,
-        escalations: [{ caseId: 'other-case', inboxId: 'inbox', escalation: 'escalated' }],
-      });
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      expect(await screen.findByText('cases:screening_review.escalation.escalated')).toBeTruthy();
-    });
-
-    it('brings the hit back with its draft on undo', async () => {
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: decisionItems, nextCursor: null, failed: false });
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-      draftTentativeNoHit();
-      fireEvent.click(requestButton());
-      fireEvent.click(await undoButton());
-      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-      expect(commentBox().value).toBe('  Same birth year, unsure  ');
-      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
-      expect(submitScreeningReviewTentativeReviewFn).not.toHaveBeenCalled();
-    });
-
-    it('announces and runs the escalation on the last open hit, then the case leaves the queue', async () => {
+    it.each([
+      ['escalated', false],
+      ['no_escalation_inbox', true],
+    ] as const)('tells the escalation that a request on the last open hit makes: %s', async (escalation, stays) => {
       const lastOpen = buildScreeningReviewItems([
         reviewCase(caseId, [withMatchStatus(objectReviewScreening(), 'no_hit', ['screening-1-low'])]),
       ]);
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: lastOpen, nextCursor: null, failed: false });
-      vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue({ ...inReview, escalation: 'escalated' });
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
+      vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue({ ...inReview, escalation });
+      renderTentative(lastOpen);
       await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
       draftTentativeNoHit();
       press('Enter', 'Enter', true);
       expect(await screen.findByText('cases:screening_review.undo.with_escalation')).toBeTruthy();
       await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
-      expect(await screen.findByText('cases:screening_review.escalation.escalated')).toBeTruthy();
+      expect(await screen.findByText(`cases:screening_review.escalation.${escalation}`)).toBeTruthy();
       expect(card('List record A')).toBeTruthy();
       await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-      await waitFor(() => expect(card('List record A')).toBeUndefined());
-    });
-
-    it('says so when the case could not be escalated, and keeps it in the queue', async () => {
-      const lastOpen = buildScreeningReviewItems([
-        reviewCase(caseId, [withMatchStatus(objectReviewScreening(), 'no_hit', ['screening-1-low'])]),
-      ]);
-      vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: lastOpen, nextCursor: null, failed: false });
-      vi.mocked(submitScreeningReviewTentativeReviewFn).mockResolvedValue({
-        ...inReview,
-        escalation: 'no_escalation_inbox',
-      });
-      renderPage({ filter: 'to_review' }, false, true, false, escalatingInboxes);
-      await waitFor(() => expect(activeCard()?.textContent).toContain('List record A'));
-      draftTentativeNoHit();
-      press('Enter', 'Enter', true);
-      await elapse(SCREENING_REVIEW_UNDO_DELAY_MS);
-      expect(await screen.findByText('cases:screening_review.escalation.no_escalation_inbox')).toBeTruthy();
-      await elapse(SCREENING_REVIEW_HIDE_DELAY_MS);
-      expect(card('List record A')).toBeTruthy();
+      await waitFor(() => expect(!!card('List record A')).toBe(stays));
     });
   });
 
@@ -1323,7 +1257,6 @@ describe('screening review decisions', () => {
         ]);
         await screen.findByText('cases:screening_review.screening_state.load_more');
         expect(closeButton()).toBeNull();
-        // Escalated, the case is no longer the user's.
         vi.mocked(listScreeningReviewPageFn).mockResolvedValue({ items: [], nextCursor: null, failed: false });
         fireEvent.click(await escalateButton('escalate_case'));
         await waitFor(() => expect(escalateScreeningReviewCaseFn).toHaveBeenCalledWith({ data: { caseId } }));

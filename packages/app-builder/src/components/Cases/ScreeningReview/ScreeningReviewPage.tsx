@@ -82,7 +82,6 @@ interface ScreeningReviewPageProps {
 
 export interface ScreeningReviewInbox extends InboxMetadata {
   escalationInboxId?: string;
-  /** Read from every inbox of the organization: the user is often not a member of it. */
   escalationInboxName?: string;
 }
 
@@ -281,8 +280,8 @@ function ReviewStream({
     onNavigate: (itemId) => onSearchChange({ ...latestSearch.current, hit: itemId }),
   });
   const { session, selection, setSelection, pendingDecision } = decisions;
-  // Only To review lets a closed case go. All and Validated read closed cases, so they keep it. An
-  // escalated case leaves every filter, as it is no longer the user's.
+  // Only To review lets a closed case go. All and Validated read closed cases, so they keep it.
+  // An escalated case leaves every filter: it is no longer the user's.
   const viewSession = useMemo(
     () =>
       search.filter === 'to_review'
@@ -298,8 +297,8 @@ function ReviewStream({
       );
     }
     // To review keeps this visit's decisions listed, so the analyst sees them land, until a group
-    // without a Hit has nothing left to decide and its decisions are written. A case whose escalation
-    // failed stays listed until it is escalated.
+    // without a Hit has nothing left to decide and its decisions are written.
+    // A case whose escalation failed stays listed, so the analyst can retry it.
     const escalationDue = new Set(
       reviewItems
         .filter((item) => awaitsEscalation(item) && willEscalateScreeningReviewCase(reviewItems, item.caseId))

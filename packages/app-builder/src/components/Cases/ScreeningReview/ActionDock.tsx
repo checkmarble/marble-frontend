@@ -153,10 +153,6 @@ interface ActionDockProps {
   commentRef: Ref<HTMLTextAreaElement>;
 }
 
-/**
- * Hit or No hit, a comment, then Validate, or Request confirmation for a tentative review. The
- * hit's own tentative review shows first, and never fills the draft.
- */
 export function ActionDock({
   item,
   draft,
@@ -293,15 +289,12 @@ export interface ScreeningStateActions {
   /** Called when Close case starts; the callback it returns receives the outcome. */
   onCaseClosed: (item: ScreeningReviewItem) => (result: ScreeningReviewDecisionResult | undefined) => void;
   escalationTarget: (item: ScreeningReviewItem) => ScreeningReviewEscalationTarget;
-  /** Escalate replaces Close case once the case has a tentative review and nothing left to review. */
   canEscalateCase: (item: ScreeningReviewItem) => boolean;
-  /** Called when Escalate starts; the callback it returns receives the outcome. */
   onCaseEscalated: (item: ScreeningReviewItem) => (result: ScreeningReviewEscalateResult | undefined) => void;
 }
 
 type ScreeningStateAction = 'load_more' | 'close_case' | 'escalate';
 
-/** Load more, unless `loadable` is false, then Escalate or Close case when the case allows it. */
 function ScreeningActions({
   item,
   actions,
@@ -364,7 +357,6 @@ function ScreeningActions({
           <EscalationTooltip target={escalationTarget}>
             <Button
               disabled={!!running || !escalationTarget.escalationInboxName}
-              // Escalates without dismissing the matches still to load, which stay pending.
               onClick={() => {
                 const onEscalated = actions.onCaseEscalated(item);
                 afterFlush('escalate', () =>
