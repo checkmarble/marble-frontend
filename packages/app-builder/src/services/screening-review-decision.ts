@@ -1,6 +1,11 @@
 import type { CaseDetail } from '@app-builder/models/cases';
 import type { ContinuousScreening } from '@app-builder/models/continuous-screening';
-import { isHttpError, marbleApiErrorMessage } from '@app-builder/models/http-errors';
+import {
+  isForbiddenHttpError,
+  isHttpError,
+  isNotFoundHttpError,
+  marbleApiErrorMessage,
+} from '@app-builder/models/http-errors';
 import {
   needsFalsePositiveClosure,
   type ScreeningReviewDecision,
@@ -169,27 +174,57 @@ const ESCALATION_REFUSALS = [
   ['already closed', 'case_closed'],
 ] as const;
 
+const escalationQueues = new Map<string, Promise<void>>();
+
+function enqueueEscalation<T>(caseId: string, run: () => Promise<T>): Promise<T> {
+  const previous = escalationQueues.get(caseId) ?? Promise.resolve();
+  const result = previous.then(run, run);
+  const settled = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  escalationQueues.set(caseId, settled);
+  void settled.finally(() => {
+    if (escalationQueues.get(caseId) === settled) escalationQueues.delete(caseId);
+  });
+  return result;
+}
+
 async function escalateCase(
-  cases: Pick<CaseRepository, 'escalateCase'>,
+  cases: Pick<CaseRepository, 'getCase' | 'escalateCase'>,
   caseId: string,
-): Promise<ScreeningReviewEscalation> {
-  try {
-    await cases.escalateCase({ caseId });
-    return 'escalated';
-  } catch (error) {
-    rethrowRedirect(error);
-    if (!isHttpError(error) || error.status !== UNPROCESSABLE_ENTITY) return 'failed';
-    const message = marbleApiErrorMessage(error) ?? '';
-    return ESCALATION_REFUSALS.find(([fragment]) => message.includes(fragment))?.[1] ?? 'failed';
-  }
+  expectedInboxId: string,
+): Promise<ScreeningReviewEscalation | undefined> {
+  return enqueueEscalation(caseId, async () => {
+    let current: CaseDetail;
+    try {
+      current = await cases.getCase({ caseId });
+    } catch (error) {
+      rethrowRedirect(error);
+      if (isForbiddenHttpError(error) || isNotFoundHttpError(error)) return undefined;
+      return 'failed';
+    }
+    if (current.inboxId !== expectedInboxId) return undefined;
+    try {
+      await cases.escalateCase({ caseId });
+      return 'escalated';
+    } catch (error) {
+      rethrowRedirect(error);
+      if (!isHttpError(error) || error.status !== UNPROCESSABLE_ENTITY) return 'failed';
+      const message = marbleApiErrorMessage(error) ?? '';
+      return ESCALATION_REFUSALS.find(([fragment]) => message.includes(fragment))?.[1] ?? 'failed';
+    }
+  });
 }
 
 export async function followUpScreeningReviewCase(cases: FollowUpCases, caseDetail: CaseDetail, userId: string) {
   switch (screeningReviewCaseFollowUp(caseDetail, userId)) {
     case 'close':
       return { caseClosed: await closeFalsePositiveCase(cases, caseDetail) };
-    case 'escalate':
-      return { caseClosed: false, escalation: await escalateCase(cases, caseDetail.id) };
+    case 'escalate': {
+      const escalation = await escalateCase(cases, caseDetail.id, caseDetail.inboxId);
+      return { caseClosed: false, ...(escalation ? { escalation } : {}) };
+    }
     case 'none':
       return { caseClosed: caseDetail.status === 'closed' };
   }
@@ -382,10 +417,12 @@ export async function escalateScreeningReviewCase(
     if (before.assignedTo !== userId) return { ok: false, reason: 'reassigned' };
     if (!hasTentativeReviewToEscalate(before) || hasHitsToReview(before))
       return { ok: false, reason: 'not_escalatable' };
+    const escalation = await escalateCase(cases, caseId, before.inboxId);
+    if (!escalation) return { ok: false, reason: 'not_escalatable' };
+    return { ok: true, escalation };
   } catch (error) {
     const reason = rejectionFromError(error);
     if (reason) return { ok: false, reason };
     throw error;
   }
-  return { ok: true, escalation: await escalateCase(cases, caseId) };
 }

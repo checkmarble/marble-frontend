@@ -926,6 +926,7 @@ function applyScreeningReviewDecisions(
       const skipped = item.status === 'pending' && confirmedScreenings.has(item.screeningId);
       const screeningStatus = reconciledScreeningStatus(session.screenings[item.screeningId], item.screeningStatus);
       if (decided?.tentativeReview) {
+        if (skipped) return { ...item, status: 'skipped', tentativeReview: null, screeningStatus };
         if (decided.written && item.status !== 'pending') return { ...item, screeningStatus };
         return { ...item, tentativeReview: decided.tentativeReview, screeningStatus };
       }

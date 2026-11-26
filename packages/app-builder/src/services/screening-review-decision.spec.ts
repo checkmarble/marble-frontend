@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   closeScreeningReviewCase,
   escalateScreeningReviewCase,
+  followUpScreeningReviewCase,
   reviewScreeningReviewMatch,
   reviewScreeningReviewMatches,
   type ScreeningReviewDecisionInput,
@@ -328,7 +329,7 @@ describe('screening review tentative review', () => {
   function tentativeRepositories(before = reviewCase('case'), after = before) {
     return {
       cases: {
-        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValue(after),
         escalateCase: vi.fn<CaseRepository['escalateCase']>().mockResolvedValue(undefined),
         updateCase: vi.fn<CaseRepository['updateCase']>(),
       },
@@ -475,4 +476,43 @@ describe('escalation recovery on load', () => {
       expect(repository.updateCase).not.toHaveBeenCalled();
     },
   );
+
+  it('does not escalate a case that left the inbox the page read', async () => {
+    const repository = {
+      listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [leftAssigned], hasNextPage: false }),
+      getCase: vi
+        .fn<CaseRepository['getCase']>()
+        .mockResolvedValueOnce(leftAssigned)
+        .mockResolvedValueOnce({ ...leftAssigned, inboxId: 'second-review' }),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
+    };
+    const page = await readScreeningReviewPage(repository, 'analyst', 50, null, { filter: 'all' });
+    expect(repository.escalateCase).not.toHaveBeenCalled();
+    expect(page.escalations).toEqual([]);
+  });
+});
+
+describe('overlapping escalation follow-ups', () => {
+  const ready = reviewCase('case', [
+    withMatchStatus(withTentativeReview(objectReviewScreening(), 'screening-1-high'), 'no_hit', ['screening-1-low']),
+  ]);
+
+  it('escalates once when a write and a page load both follow up the same case', async () => {
+    let current = ready;
+    const cases = {
+      getCase: vi.fn<CaseRepository['getCase']>(async () => current),
+      escalateCase: vi.fn<CaseRepository['escalateCase']>(async () => {
+        current = { ...current, inboxId: 'second-review' };
+      }),
+      updateCase: vi.fn<CaseRepository['updateCase']>(),
+    };
+    const [first, second] = await Promise.all([
+      followUpScreeningReviewCase(cases, ready, 'analyst'),
+      followUpScreeningReviewCase(cases, ready, 'analyst'),
+    ]);
+    expect(cases.escalateCase).toHaveBeenCalledExactlyOnceWith({ caseId: 'case' });
+    expect([first.escalation, second.escalation].filter((escalation) => escalation === 'escalated')).toHaveLength(1);
+    expect([first.escalation, second.escalation].filter((escalation) => escalation === undefined)).toHaveLength(1);
+  });
 });

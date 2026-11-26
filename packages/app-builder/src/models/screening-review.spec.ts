@@ -1060,6 +1060,40 @@ describe('screening review tentative reviews', () => {
     });
   });
 
+  it('sets aside a tentatively reviewed hit when a sibling’s final Hit is applied', () => {
+    const items = buildScreeningReviewItems([reviewCase('case')]);
+    const tentative = itemOf(items, low);
+    const hit = itemOf(items, high);
+    const session: ScreeningReviewSession = {
+      ...emptyScreeningReviewSession,
+      decided: {
+        [tentative.id]: {
+          item: tentative,
+          decision: 'no_hit',
+          tentativeReview: {
+            id: 'session',
+            authorId: 'analyst',
+            comment: 'Unsure',
+            status: 'no_hit',
+            inboxId: tentative.inboxId,
+            createdAt: '2026-11-02T10:00:00Z',
+          },
+          written: true,
+        },
+        [hit.id]: { item: hit, decision: 'confirmed_hit', written: true },
+      },
+    };
+    const applied = applyScreeningReviewSession(items, session);
+    expect(itemOf(applied, low)).toMatchObject({ status: 'skipped', tentativeReview: null });
+    expect(itemOf(applied, high).status).toBe('confirmed_hit');
+
+    const [group] = groupScreeningReviewItems(applied, false, (item) =>
+      isListedInScreeningReviewSession(item, session),
+    );
+    expect(group?.items.map((item) => item.matchId)).toEqual([high]);
+    expect(group).toMatchObject({ setAside: 1 });
+  });
+
   it('predicts the escalation once the case has nothing left to review', () => {
     const withTentative = withTentativeReview(objectReviewScreening(), high);
     const open = buildScreeningReviewItems([reviewCase('case', [withTentative])]);
