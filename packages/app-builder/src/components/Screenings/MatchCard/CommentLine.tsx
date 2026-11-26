@@ -2,9 +2,11 @@ import type { ScreeningMatchComment } from '@app-builder/models/screening';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { Avatar } from 'ui-design-system';
+import { useTranslation } from 'react-i18next';
+import { Avatar, Tag } from 'ui-design-system';
 
 export const CommentLine = ({ comment }: { comment: ScreeningMatchComment }) => {
+  const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
   const { getOrgUserById } = useOrganizationUsers();
   const user = getOrgUserById(comment.authorId);
@@ -20,6 +22,15 @@ export const CommentLine = ({ comment }: { comment: ScreeningMatchComment }) => 
             {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short', fullYear: true })}
           </time>
         </span>
+        {comment.tentativeReview ? (
+          <Tag size="xs" color={comment.tentativeReview.supersededAt ? 'grey' : 'yellow'}>
+            {comment.tentativeReview.supersededAt
+              ? t('cases:tentative_review.marker_superseded', {
+                  status: t(`cases:screening_review.decision.${comment.tentativeReview.status}`),
+                })
+              : t('cases:tentative_review.marker')}
+          </Tag>
+        ) : null}
       </div>
       <p>{comment.comment}</p>
     </div>

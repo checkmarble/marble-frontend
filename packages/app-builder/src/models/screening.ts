@@ -8,6 +8,8 @@ import {
   ScreeningFreeformSearchDto,
   type ScreeningMatchDto,
   type ScreeningMatchPayloadDto,
+  type ScreeningMatchTentativeReviewDto,
+  type ScreeningMatchTentativeReviewStatusDto,
   type ScreeningRequestDto,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -201,10 +203,28 @@ export function adaptScreeningMatchPayload(dto: ScreeningMatchPayloadDto): Scree
   };
 }
 
+export type ScreeningMatchTentativeReviewStatus = ScreeningMatchTentativeReviewStatusDto;
+
 export type ScreeningMatchComment = {
   id: string;
   authorId: string;
   comment: string;
+  createdAt: string;
+  /** Set on a comment that carried a tentative review a newer one replaced. */
+  tentativeReview?: {
+    status: ScreeningMatchTentativeReviewStatus;
+    supersededAt?: string;
+  };
+};
+
+/** A reviewer's non-binding decision on a pending match, carried by a comment. */
+export type ScreeningMatchTentativeReview = {
+  id: string;
+  authorId: string;
+  comment: string;
+  status: ScreeningMatchTentativeReviewStatus;
+  /** The case's inbox when the tentative review was submitted. */
+  inboxId: string;
   createdAt: string;
 };
 
@@ -225,7 +245,27 @@ export function adaptScreeningMatchComments(comments: ScreeningMatchDto['comment
     authorId: comment.author_id,
     comment: comment.comment,
     createdAt: comment.created_at,
+    ...(comment.tentative_review && {
+      tentativeReview: {
+        status: comment.tentative_review.status,
+        supersededAt: comment.tentative_review.superseded_at,
+      },
+    }),
   }));
+}
+
+export function adaptScreeningMatchTentativeReview(
+  dto: ScreeningMatchTentativeReviewDto | null | undefined,
+): ScreeningMatchTentativeReview | null {
+  if (!dto) return null;
+  return {
+    id: dto.id,
+    authorId: dto.author_id,
+    comment: dto.comment,
+    status: dto.status,
+    inboxId: dto.inbox_id,
+    createdAt: dto.created_at,
+  };
 }
 
 export function adaptScreeningMatch(dto: ScreeningMatchDto): ScreeningMatch {

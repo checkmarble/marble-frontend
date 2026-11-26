@@ -160,6 +160,7 @@ const caseEventTypes = exhaustiveUnionList<CaseEventType>()([
   'entity_added',
   'entity_removed',
   'screening_match_reviewed',
+  'screening_match_commented',
   'sanction_check_reviewed',
 ]);
 
@@ -289,6 +290,14 @@ export interface ScreeningMatchReviewedEvent extends CaseEventBase<'screening_ma
   matchId: string;
 }
 
+/** A reviewer submitted a tentative review on a screening match. */
+export interface ScreeningMatchCommentedEvent extends CaseEventBase<'screening_match_commented'> {
+  userId?: string | null;
+  status: 'confirmed_hit' | 'no_hit';
+  comment: string;
+  matchId: string;
+}
+
 /** A screening reached its final status, for a decision or a continuous screening. */
 export interface ScreeningReviewedEvent extends CaseEventBase<'sanction_check_reviewed'> {
   userId?: string | null;
@@ -318,6 +327,7 @@ export type CaseEvent =
   | CaseEntityAddedEvent
   | CaseEntityRemovedEvent
   | ScreeningMatchReviewedEvent
+  | ScreeningMatchCommentedEvent
   | ScreeningReviewedEvent;
 
 async function adaptCaseEventDto(caseEventDto: CaseEventDto, marbleCoreApiClient: MarbleCoreApi): Promise<CaseEvent> {
@@ -464,6 +474,14 @@ async function adaptCaseEventDto(caseEventDto: CaseEventDto, marbleCoreApiClient
       status: dto.new_value,
       matchId: dto.resource_id,
     }))
+    .with({ event_type: 'screening_match_commented' }, async (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      status: dto.new_value,
+      comment: dto.additional_note,
+      matchId: dto.resource_id,
+    }))
     .with({ event_type: 'sanction_check_reviewed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
@@ -481,6 +499,15 @@ async function adaptCaseEventDto(caseEventDto: CaseEventDto, marbleCoreApiClient
     })
 
     .exhaustive();
+}
+
+/** Skips event types this frontend doesn't know yet, so a newer backend can't break the case page. */
+export function adaptCaseEvents(dtos: CaseEventDto[], marbleCoreApiClient: MarbleCoreApi): Promise<CaseEvent[]> {
+  return Promise.all(
+    dtos
+      .filter((e) => caseEventTypes.includes(e.event_type))
+      .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
+  );
 }
 
 function parseCaseEntityRef(value: string): { tableName: string; objectId: string } | undefined {
@@ -585,11 +612,7 @@ export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: M
       score: decisionDto.score,
     })),
     continuousScreenings: dto.continuous_screenings.map(adaptContinuousScreening),
-    events: await Promise.all(
-      dto.events
-        .filter((e) => caseEventTypes.includes(e.event_type))
-        .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
-    ),
+    events: await adaptCaseEvents(dto.events, marbleCoreApiClient),
     files: dto.files.map(adaptCaseFile),
     entities: dto.entities.map(adaptCaseEntity),
   };

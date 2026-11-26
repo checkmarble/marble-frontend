@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal, Radio, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { TentativeReviewSummary } from './TentativeReview';
 
 type ReviewScreeningMatchProps = {
   screeningMatch: ContinuousScreeningMatch;
@@ -31,7 +32,8 @@ export const ReviewScreeningMatch = ({
   const form = useForm({
     defaultValues: {
       matchId: screeningMatch.id,
-      status: 'no_hit',
+      // A prefilled decision would read as agreeing with the tentative review, so the reviewer picks one.
+      status: screeningMatch.tentativeReview ? undefined : 'no_hit',
       comment: '',
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
@@ -72,6 +74,7 @@ export const ReviewScreeningMatch = ({
           className="flex flex-col gap-sm p-md"
           onSubmit={handleSubmit(form)}
         >
+          {screeningMatch.tentativeReview ? <TentativeReviewSummary review={screeningMatch.tentativeReview} /> : null}
           <span className="text-s font-medium">{t('screenings:review_modal.status_label')}</span>
 
           <form.Field name="status">

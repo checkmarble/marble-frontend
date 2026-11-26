@@ -16,6 +16,7 @@ import { SarDeletedDetail } from '@app-builder/components/Cases/Events/SarDelete
 import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarFileUploaded';
 import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
 import {
+  ScreeningMatchCommentedDetail,
   ScreeningMatchReviewedDetail,
   ScreeningReviewedDetail,
 } from '@app-builder/components/Cases/Events/ScreeningReviewed';
@@ -65,6 +66,7 @@ export function CaseEventDetail({
     .with({ eventType: 'entity_added' }, (e) => <CaseEntityAddedDetail event={e} />)
     .with({ eventType: 'entity_removed' }, (e) => <CaseEntityRemovedDetail event={e} />)
     .with({ eventType: 'screening_match_reviewed' }, (e) => <ScreeningMatchReviewedDetail event={e} />)
+    .with({ eventType: 'screening_match_commented' }, (e) => <ScreeningMatchCommentedDetail event={e} />)
     .with({ eventType: 'sanction_check_reviewed' }, (e) => <ScreeningReviewedDetail event={e} />)
     .exhaustive();
 

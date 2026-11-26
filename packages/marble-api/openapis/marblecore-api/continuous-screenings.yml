@@ -189,6 +189,36 @@
             schema:
               $ref: '#/components/schemas/ContinuousScreeningMatchScreeningEntityDto'
 
+/continuous-screenings/matches/{id}/comments:
+  post:
+    summary: Comment on a continuous screening match, optionally with a tentative review
+    description: A tentative review replaces the match's previous one and adds a screening_match_commented case event. It leaves the match status unchanged.
+    operationId: createContinuousScreeningMatchComment
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: 'screenings.yml#/components/schemas/CreateScreeningMatchCommentDto'
+    responses:
+      '201':
+        description: Created comment
+        content:
+          application/json:
+            schema:
+              $ref: 'screenings.yml#/components/schemas/ScreeningMatchCommentDto'
+      '422':
+        description: The screening is not attached to a case, not in review, or the match is not pending
+
 /continuous-screenings/matches/review:
   post:
     summary: Review several continuous screening matches
@@ -953,6 +983,7 @@ components:
         - status
         - payload
         - comments
+        - tentative_review
         - created_at
         - updated_at
       properties:
@@ -977,24 +1008,11 @@ components:
         comments:
           type: array
           items:
-            type: object
-            required:
-              - id
-              - author_id
-              - comment
-              - created_at
-            properties:
-              id:
-                type: string
-                format: uuid
-              author_id:
-                type: string
-                format: uuid
-              comment:
-                type: string
-              created_at:
-                type: string
-                format: date-time
+            $ref: 'screenings.yml#/components/schemas/ScreeningMatchCommentDto'
+        tentative_review:
+          allOf:
+            - $ref: 'screenings.yml#/components/schemas/ScreeningMatchTentativeReviewDto'
+          nullable: true
         created_at:
           type: string
           format: date-time

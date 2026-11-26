@@ -10,6 +10,7 @@ import {
   isDirectContinuousScreeningMatch,
   isIndirectContinuousScreeningMatch,
 } from '@app-builder/models/continuous-screening';
+import { type ScreeningMatchComment } from '@app-builder/models/screening';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,7 @@ import { Card, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ObjectDetails } from './ObjectDetails';
 import { ReviewScreeningMatch } from './ReviewScreeningMatch';
+import { matchCardElementId, TentativeReviewTag } from './TentativeReview';
 
 type MatchCardProps = {
   caseDetail: Case;
@@ -28,9 +30,22 @@ type MatchCardProps = {
 export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardProps) {
   const { t } = useTranslation(['screenings']);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const { tentativeReview } = screeningMatch;
+  const comments: ScreeningMatchComment[] = tentativeReview
+    ? [
+        ...screeningMatch.comments,
+        {
+          id: tentativeReview.id,
+          authorId: tentativeReview.authorId,
+          comment: tentativeReview.comment,
+          createdAt: tentativeReview.createdAt,
+          tentativeReview: { status: tentativeReview.status },
+        },
+      ].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    : screeningMatch.comments;
 
   return (
-    <Card>
+    <Card id={matchCardElementId(screeningMatch.id)} className="scroll-mt-lg">
       <Collapsible.Root defaultOpen={screening.matches.length === 1} className="overflow-hidden group/collapsible">
         <div className="flex justify-between gap-md">
           <Collapsible.Trigger asChild>
@@ -49,13 +64,16 @@ export function MatchCard({ caseDetail, screening, screeningMatch }: MatchCardPr
                   <Tag color="grey" className="shrink-0">
                     {t('screenings:match.score', { score: Math.round(screeningMatch.payload.score * 100) })}
                   </Tag>
+                  {tentativeReview && screeningMatch.status === 'pending' ? (
+                    <TentativeReviewTag status={tentativeReview.status} />
+                  ) : null}
                 </div>
                 <div className="flex flex-row flex-wrap gap-xs">
                   {screeningMatch.payload.properties['topics']?.map((topic) => {
                     return <TopicTag key={topic} topic={topic} className="text-small" />;
                   })}
                 </div>
-                {screeningMatch.comments.map((comment) => {
+                {comments.map((comment) => {
                   return <CommentLine key={comment.id} comment={comment} />;
                 })}
               </div>
