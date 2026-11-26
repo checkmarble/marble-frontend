@@ -23,6 +23,8 @@ const sizeClasses: Record<PanelSize, string> = {
 
 type OnOpenChangeFn = (state: boolean) => boolean | void;
 
+const openPanels: symbol[] = [];
+
 interface PanelRootProps {
   children: ReactNode;
   open?: boolean;
@@ -112,9 +114,10 @@ interface PanelContainerProps {
   children: ReactNode;
   className?: string;
   size?: PanelSize;
+  'aria-label'?: string;
 }
 
-function PanelContainer({ children, className, size = 'small' }: PanelContainerProps) {
+function PanelContainer({ children, className, size = 'small', 'aria-label': ariaLabel }: PanelContainerProps) {
   const sharp = PanelSharpFactory.useSharp();
 
   if (!sharp.value.isOpen) {
@@ -122,26 +125,34 @@ function PanelContainer({ children, className, size = 'small' }: PanelContainerP
   }
 
   return (
-    <PanelContainerPortal className={className} size={size}>
+    <PanelContainerPortal className={className} size={size} aria-label={ariaLabel}>
       {children}
     </PanelContainerPortal>
   );
 }
 
-function PanelContainerPortal({ children, className, size = 'small' }: PanelContainerProps) {
+function PanelContainerPortal({ children, className, size = 'small', 'aria-label': ariaLabel }: PanelContainerProps) {
   const sharp = PanelSharpFactory.useSharp();
   const panelRef = useRef<HTMLDivElement>(null);
+  const panelId = useRef(Symbol('panel'));
 
   useEffect(() => {
+    const id = panelId.current;
+    openPanels.push(id);
     const handleKeyDown = (event: KeyboardEvent) => {
       // A layer opened inside the panel (popover, menu, drag in progress) handles Escape first.
-      if (event.key === 'Escape' && !event.defaultPrevented) {
+      // Only the topmost panel closes: a nested panel mounts after its parent, so it is last on the stack.
+      if (event.key === 'Escape' && !event.defaultPrevented && openPanels[openPanels.length - 1] === id) {
         sharp.actions.close();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      const index = openPanels.indexOf(id);
+      if (index !== -1) openPanels.splice(index, 1);
+    };
   }, [sharp]);
 
   // Focus trap = when panel is open, pressing Tab keeps focus inside the panel
@@ -150,6 +161,7 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     // Queried on each use: the panel content changes after mount (data loads, sections open).
     const getFocusableElements = () =>
@@ -179,7 +191,10 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
     getFocusableElements()[0]?.focus();
 
     panel.addEventListener('keydown', handleTabKey);
-    return () => panel.removeEventListener('keydown', handleTabKey);
+    return () => {
+      panel.removeEventListener('keydown', handleTabKey);
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+    };
   }, []);
 
   return createPortal(
@@ -194,6 +209,7 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
         )}
         role="dialog"
         aria-modal="true"
+        aria-label={ariaLabel}
       >
         {children}
       </div>

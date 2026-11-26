@@ -1,13 +1,22 @@
 import { type CredentialsDto, type UserDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
 
-import { adaptCurrentUser, adaptUser, isAdmin, isAnalyst, isMarbleAdmin, isMarbleCoreUser } from './user';
+import {
+  adaptCurrentUser,
+  adaptUser,
+  isAdmin,
+  isAnalyst,
+  isMarbleAdmin,
+  isMarbleCoreUser,
+  normalizeRoleBindings,
+} from './user';
 
 const credentials: CredentialsDto['credentials'] = {
   organization_id: 'organization-id',
   roles: ['ADMIN', 'TENANT_ADMIN'],
   actor_identity: { user_id: 'user-id', email: 'admin@example.com' },
   permissions: ['DATA_MODEL_WRITE', 'MARBLE_USER_CREATE'],
+  used_second_factor: false,
 };
 
 describe('current user access', () => {
@@ -55,8 +64,24 @@ describe('adaptUser', () => {
       first_name: 'First',
       last_name: 'Last',
       organization_id: 'org-id',
-      roles: [{ id: 'binding-id', role: 'ADMIN' }, { role: 'ANALYST' }],
+      roles: [{ id: 'binding-id', role: 'ADMIN', conditions: { used_second_factor: true } }, { role: 'ANALYST' }],
     };
     expect(adaptUser(dto).roles).toEqual(dto.roles);
+  });
+});
+
+describe('normalizeRoleBindings', () => {
+  it('treats null, undefined and absent conditions alike', () => {
+    expect(
+      normalizeRoleBindings([
+        { id: 'a', role: 'ADMIN', conditions: { used_second_factor: true, day_of_week: undefined } },
+        { role: 'VIEWER', conditions: { networks: null } as unknown as { networks?: string[] } },
+        { role: 'ANALYST', conditions: {} },
+      ]),
+    ).toStrictEqual([
+      { id: 'a', role: 'ADMIN', conditions: { used_second_factor: true } },
+      { role: 'VIEWER' },
+      { role: 'ANALYST' },
+    ]);
   });
 });

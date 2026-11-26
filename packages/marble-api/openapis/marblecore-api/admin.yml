@@ -1101,6 +1101,38 @@ components:
           type: array
           items:
             type: string
+    RoleBindingConditions:
+      type: object
+      description: All provided conditions must be met for the binding to apply. Dates and times have inclusive bounds; days and times use the organization's time zone, or UTC if none is configured.
+      properties:
+        not_before:
+          type: string
+          format: date-time
+        not_after:
+          type: string
+          format: date-time
+        day_of_week:
+          type: array
+          description: Days from 0 (Sunday) to 6 (Saturday). An empty list allows every day.
+          items:
+            type: integer
+            minimum: 0
+            maximum: 6
+        time_of_day:
+          type: array
+          description: Inclusive start and end in HHMM format. The range may span midnight.
+          minItems: 2
+          maxItems: 2
+          items:
+            type: integer
+        networks:
+          type: array
+          description: CIDRs or individual IP addresses. An empty list or unknown client IP does not restrict access.
+          items:
+            type: string
+        used_second_factor:
+          type: boolean
+          description: Require a Firebase TOTP sign-in when true.
     RoleBinding:
       type: object
       required:
@@ -1111,6 +1143,8 @@ components:
         role:
           type: string
           description: Native role name or organization-scoped custom role slug.
+        conditions:
+          $ref: "#/components/schemas/RoleBindingConditions"
     UserDto:
       type: object
       required:

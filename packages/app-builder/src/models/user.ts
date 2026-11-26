@@ -85,10 +85,21 @@ export function adaptUser(user: UserDto): User {
     email: user.email,
     firstName: user.first_name,
     lastName: user.last_name,
-    roles: user.roles ?? [],
+    roles: normalizeRoleBindings(user.roles ?? []),
     organizationId: user.organization_id,
     tfaEnabled: user.tfa_enabled,
   };
+}
+
+// Absent, null and undefined conditions all mean "no restriction"; collapsing them lets bindings
+// from the backend and from the form compare equal.
+export function normalizeRoleBinding({ conditions, ...binding }: RoleBinding): RoleBinding {
+  const defined = R.pickBy(conditions ?? {}, (value) => value !== null && value !== undefined);
+  return R.isEmpty(defined) ? binding : { ...binding, conditions: defined };
+}
+
+export function normalizeRoleBindings(bindings: RoleBinding[]): RoleBinding[] {
+  return bindings.map(normalizeRoleBinding);
 }
 
 // A user of the organization's tenant, without the role they would hold on a given organization.

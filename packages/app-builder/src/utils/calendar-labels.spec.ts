@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { getTimestampExtractMonths, getTimestampExtractWeekdays } from './timestampExtractLabels';
+import { getMonthLabels, getWeekdayLabels } from './calendar-labels';
 
-describe('timestamp extract labels', () => {
+describe('calendar labels', () => {
   it('generates January through December in UTC', () => {
-    expect(getTimestampExtractMonths('en')).toEqual([
+    expect(getMonthLabels('en')).toEqual([
       { value: 1, label: 'Jan' },
       { value: 2, label: 'Feb' },
       { value: 3, label: 'Mar' },
@@ -21,7 +21,7 @@ describe('timestamp extract labels', () => {
   });
 
   it('generates Monday through Sunday in UTC', () => {
-    expect(getTimestampExtractWeekdays('en')).toEqual([
+    expect(getWeekdayLabels('en')).toEqual([
       { value: 1, label: 'Mon' },
       { value: 2, label: 'Tue' },
       { value: 3, label: 'Wed' },

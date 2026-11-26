@@ -10,6 +10,7 @@ describe('custom roles settings access', () => {
     actor_identity: {},
     roles: ['ANALYST'],
     permissions: [] as string[],
+    used_second_factor: false,
   };
 
   it('requires MANAGE_ROLES regardless of role name', () => {
