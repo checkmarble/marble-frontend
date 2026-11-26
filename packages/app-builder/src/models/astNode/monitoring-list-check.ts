@@ -37,17 +37,8 @@ export type LinkedTableCheck =
 /**
  * Helper type guard to check if a LinkedTableCheck is an "up" direction check.
  */
-export function isUpDirectionCheck(check: LinkedTableCheck): check is { tableName: string; linkToSingleName: string } {
+function isUpDirectionCheck(check: LinkedTableCheck): check is { tableName: string; linkToSingleName: string } {
   return 'linkToSingleName' in check;
-}
-
-/**
- * Helper type guard to check if a LinkedTableCheck is a "down" direction check.
- */
-export function isDownDirectionCheck(
-  check: LinkedTableCheck,
-): check is { tableName: string; navigationOption: NavigationOptionRef } {
-  return 'navigationOption' in check;
 }
 
 /**

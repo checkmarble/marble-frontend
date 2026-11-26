@@ -68,8 +68,7 @@ export const ImportFlow = ({ data }: { data: OrgImportSpec }) => {
       onChange: importEditSchema,
       onSubmit: importEditSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
       const editedSpec: OrgImportSpec = {
         ...data,
         org: {

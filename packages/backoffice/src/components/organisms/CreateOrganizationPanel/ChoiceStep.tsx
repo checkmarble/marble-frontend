@@ -20,8 +20,8 @@ import { z } from 'zod/v4';
 import { type CreatableOrganizationEnvironment, EnvironmentField } from './EnvironmentField';
 import { OrganizationCreationFlow } from './types';
 
-export const MAX_FILE_SIZE_MB = 20;
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_FILE_SIZE_MB = 20;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 type MethodKey = 'upload' | 'archetype' | 'empty';
 
@@ -271,8 +271,8 @@ function ArchetypeStep({
       onChange: archetypeFormSchema,
       onSubmit: archetypeFormSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!selected || !formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
+      if (!selected) return;
       const { orgId, environmentUpdated } = await applyMutation.mutateAsync({
         name: selected,
         org_name: value.org_name,

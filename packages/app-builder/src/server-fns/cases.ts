@@ -28,7 +28,6 @@ import {
   closeCasePayloadSchema,
   editAssigneePayloadSchema,
   editInboxPayloadSchema,
-  editNamePayloadSchema,
   editSuspicionPayloadSchema,
   editTagsPayloadSchema,
   escalateCasePayloadSchema,
@@ -55,7 +54,6 @@ import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { decode } from 'decode-formdata';
-import { tryit } from 'radash';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
 import { z } from 'zod/v4';
@@ -156,13 +154,6 @@ export const editInboxFn = createServerFn({ method: 'POST' })
     await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { inboxId: data.inboxId } });
   });
 
-export const editNameFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .validator(editNamePayloadSchema)
-  .handler(async ({ context, data }) => {
-    await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { name: data.name } });
-  });
-
 export const editTagsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editTagsPayloadSchema)
@@ -177,13 +168,7 @@ export const editSuspicionFn = createServerFn({ method: 'POST' })
     return data;
   })
   .handler(async ({ context, data }) => {
-    const [err, raw] = await tryit(() => Promise.resolve(data))();
-
-    if (err) {
-      throw new Error('FormData error');
-    }
-
-    const parsed = editSuspicionPayloadSchema.safeParse(decode(raw));
+    const parsed = editSuspicionPayloadSchema.safeParse(decode(data));
     if (!parsed.success) throw new Error('Invalid payload');
 
     const formData = parsed.data;
@@ -240,17 +225,11 @@ export const addCommentFn = createServerFn({ method: 'POST' })
     return data;
   })
   .handler(async ({ context, data }) => {
-    const [err, raw] = await tryit(() => Promise.resolve(data))();
-
-    if (err) {
-      throw new Error('FormData error');
-    }
-
     const authSession = await useAuthSession();
     const token = authSession.data.authToken?.access_token;
     if (!token) throw redirect({ to: '/sign-in', statusCode: 302 });
 
-    const parsed = addCommentPayloadSchema.safeParse(decode(raw, { arrays: ['files'] }));
+    const parsed = addCommentPayloadSchema.safeParse(decode(data, { arrays: ['files'] }));
     if (!parsed.success) throw new Error('Invalid payload');
 
     const formData = parsed.data;

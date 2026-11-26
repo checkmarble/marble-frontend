@@ -9,9 +9,7 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@tailwindcss/container-queries": "^0.1.1",
-    "tailwindcss": "4.3.3",
-    "tailwindcss-animate": "^1.0.7",
+    "tailwindcss": "4.3.5",
     "tailwindcss-radix": "^4.0.2"
   },
   "license": "ISC",

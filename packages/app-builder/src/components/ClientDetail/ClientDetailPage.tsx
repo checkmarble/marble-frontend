@@ -7,7 +7,12 @@ import { DataModelExplorerProvider } from '@app-builder/components/DataModelExpl
 import { Page } from '@app-builder/components/Page';
 import { Spinner } from '@app-builder/components/Spinner';
 import { DataModelObject, isAnalyst } from '@app-builder/models';
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
+import {
+  getScoringLevelLabel,
+  type MaxRiskLevel,
+  SCORING_LEVELS_COLORS,
+  type ScoringSettings,
+} from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useActiveConfigsForObjectQuery } from '@app-builder/queries/continuous-screening/active-configs-for-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
@@ -64,7 +69,7 @@ export const ClientDetailPage = ({
   userScoringAccess,
   isAdmin,
 }: ClientDetailPageProps) => {
-  const { t } = useTranslation(['common', 'client360', 'user-scoring']);
+  const { t } = useTranslation(['common', 'client360', 'user-scoring', 'cases']);
   const { currentUser } = useOrganizationDetails();
   const canConfigureUserScoring = isAccessible(userScoringAccess) && !isAnalyst(currentUser);
   const dataModel = useDataModel();
@@ -97,12 +102,9 @@ export const ClientDetailPage = ({
   let [scoreColor, scoreLabel] = ['', ''];
 
   if (scoringSettings && activeScore) {
-    scoreColor =
-      SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ?? 'inherit';
-    scoreLabel = t(
-      SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ??
-        activeScore.risk_level.toString(),
-    );
+    const maxRiskLevel = scoringSettings.maxRiskLevel as MaxRiskLevel;
+    scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level] ?? 'inherit';
+    scoreLabel = getScoringLevelLabel(t, maxRiskLevel, activeScore.risk_level);
   }
 
   const handleScoreClick = () => setShowScorePanel(true);
@@ -432,7 +434,7 @@ export const ClientDetailPage = ({
 
 const PanelGraphLinks = ({ objectType, objectId }: { objectType: string; objectId: string }) => {
   const [open, setOpen] = useState(false);
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'cases']);
   return (
     <Panel.Root open={open} onOpenChange={setOpen}>
       <Panel.Trigger asChild>

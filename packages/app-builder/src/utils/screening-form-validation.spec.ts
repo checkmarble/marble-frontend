@@ -1,18 +1,17 @@
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewListAstNode } from '@app-builder/models/astNode/list';
 import { NewStringConcatAstNode } from '@app-builder/models/astNode/strings';
-import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
 import { collectFormValidationIssues } from './screening-form-validation';
 
-const t = ((key: string) => {
+const t = (key: string) => {
   if (key === 'scenarios:sanction.match_settings.title') return 'Matching settings';
   if (key === 'scenarios:edit_sanction.required_fields_error') return 'Please fill at least one field';
   if (key === 'scenarios:edit_screening.name_required') return 'Name is required';
   return key;
-}) as TFunction;
+};
 
 const schema = z.object({
   name: z.string().min(1),

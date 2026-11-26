@@ -1,18 +1,16 @@
 import { casesI18n } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type FinalOutcome, finalOutcomes } from '@app-builder/models/cases';
 import { CloseCasePayload, closeCasePayloadSchema, useCloseCaseMutation } from '@app-builder/queries/cases/close-case';
 import { getFieldErrors, handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Modal } from 'ui-design-system';
+import { Button, cn, Modal, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const CloseCase = ({
@@ -26,7 +24,7 @@ export const CloseCase = ({
 }) => {
   const { t } = useTranslation([...casesI18n, 'common']);
   const closeCaseMutation = useCloseCaseMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -35,16 +33,14 @@ export const CloseCase = ({
       comment: '',
       outcome: undefined,
     } as CloseCasePayload,
-    onSubmit: ({ value }) => {
-      closeCaseMutation
-        .mutateAsync(value)
-        .then(() => {
-          setOpen(false);
-          revalidate();
-        })
-        .catch(() => {
-          toast.error(t('common:errors.unknown'));
-        });
+    onSubmit: async ({ value }) => {
+      try {
+        await closeCaseMutation.mutateAsync(value);
+        setOpen(false);
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
+      }
     },
     validators: {
       onSubmit: closeCasePayloadSchema,
@@ -73,7 +69,7 @@ export const CloseCase = ({
               >
                 {(field) => (
                   <div className="flex flex-col gap-sm">
-                    <FormLabel name={field.name}>{t('cases:case.close.choose_outcome')}</FormLabel>
+                    <label htmlFor={field.name}>{t('cases:case.close.choose_outcome')}</label>
                     <RadioGroup
                       name={field.name}
                       onValueChange={(v) => field.handleChange(v as FinalOutcome)}
@@ -118,11 +114,13 @@ export const CloseCase = ({
             >
               {(field) => (
                 <div className="flex flex-col gap-sm">
-                  <FormTextArea
+                  <TextArea
+                    id={field.name}
                     name={field.name}
                     defaultValue={field.state.value}
                     placeholder={t('cases:case.close.add_comment_placeholder')}
-                    valid={field.state.meta.errors.length === 0}
+                    aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onKeyDown={submitOnCtrlEnter}
                   />

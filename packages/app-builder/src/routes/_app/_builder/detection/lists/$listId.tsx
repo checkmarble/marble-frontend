@@ -5,9 +5,8 @@ import { DeleteListModal } from '@app-builder/components/Lists/DeleteListModal';
 import { DeleteListValueModal } from '@app-builder/components/Lists/DeleteListValueModal';
 import { EditListModal } from '@app-builder/components/Lists/EditListModal';
 import { LoadingIcon } from '@app-builder/components/Spinner';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { useUploadListDataFile } from '@app-builder/queries/upload-list-data';
+import { useUploadListDataFile } from '@app-builder/queries/lists/upload-list-data';
 import {
   isCreateListValueAvailable,
   isDeleteListAvailable,
@@ -19,16 +18,15 @@ import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
-import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router';
+import { ClientOnly, createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { useMemo, useReducer, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, CtaV2ClassName, Modal, SearchInput, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Modal, SearchInput, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -208,7 +206,7 @@ const UploadAsCsvDropzone = function UploadAsCsvDropzone({
   return (
     <div
       ref={ref}
-      className={clsx(
+      className={cn(
         'text-s flex h-40 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
         className,
       )}
@@ -284,7 +282,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
   const { t } = useTranslation(['lists', 'common']);
   const [modalState, dispatch] = useReducer(modalReducer, initialState);
   const uploadListDataFile = useUploadListDataFile(listId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const [onDrop, { loading }] = useAsync(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -343,7 +341,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
           created: results.total_created,
         },
       });
-      revalidate();
+      router.invalidate();
     } catch (error) {
       dispatch({
         type: 'error',
@@ -383,7 +381,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
           <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
             <Icon
               icon={modalState.success ? 'tick' : 'cross'}
-              className={clsx(
+              className={cn(
                 'size-[108px] rounded-full border-8',
                 modalState.success
                   ? 'bg-purple-background border-transparent text-purple-primary'

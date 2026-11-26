@@ -23,7 +23,7 @@ Use a namespace object of plain functions, such as `export const Paper = { Conta
 
 ## Refs
 
-`ref` is a prop: `{ ref?: React.Ref<HTMLButtonElement> }`. `Card` still uses `forwardRef`, but don't copy it.
+`ref` is a prop: `{ ref?: React.Ref<HTMLButtonElement> }`. Never use `forwardRef`.
 
 Some children are rendered through Radix `asChild`: the children of `Modal.Trigger asChild`, `Popover.Trigger asChild`, `MenuCommand.Trigger` and `Tooltip.Default`. A custom component there must accept `ref` and spread `...props` onto its DOM element. If it doesn't, the menu never opens and the tooltip has no anchor.
 
@@ -34,7 +34,7 @@ Some children are rendered through Radix `asChild`: the children of `Modal.Trigg
 ## Memoization (no React Compiler)
 
 - Wrap context values, table `columns`, and objects or arrays passed as props or effect deps in `useMemo`.
-- For a stable callback that still reads the latest props and state, use `useCallbackRef(fn)` from `@marble/shared`. The debounced variant is `useDebouncedCallbackRef(fn, delay)`. Don't use the copy in `@app-builder/utils/hooks`: it updates its ref in an effect, so a call made during render runs the previous closure.
+- For a stable callback that still reads the latest props and state, use `useCallbackRef(fn)` from `@marble/shared`. The debounced variant is `useDebouncedCallbackRef(fn, delay)`.
 - Keep `memo()` for hot spots (AstBuilder nodes), not as a default.
 
 ## Context

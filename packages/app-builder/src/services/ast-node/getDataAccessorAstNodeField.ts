@@ -34,4 +34,5 @@ export function getDataAccessorAstNodeField(
     });
   }
   assertNever('Unsupported DataAccessorAstNode', astNode);
+  throw new Error('Unsupported DataAccessorAstNode');
 }

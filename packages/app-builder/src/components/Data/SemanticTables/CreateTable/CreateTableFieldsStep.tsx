@@ -1,5 +1,5 @@
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
@@ -18,10 +18,10 @@ export function CreateTableFieldsStep({
   const { t } = useTranslation(['data']);
   const form = useCreateTableFormContext();
   const dataModel = useDataModel();
-  const fields = useStore(form.store, (s) => s.values.fields);
-  const mainTimestampFieldName = useStore(form.store, (s) => s.values.mainTimestampFieldName);
-  const entityType = useStore(form.store, (s) => s.values.entityType);
-  const belongsToTableId = useStore(form.store, (s) => s.values.belongsToTableId);
+  const fields = useSelector(form.store, (s) => s.values.fields);
+  const mainTimestampFieldName = useSelector(form.store, (s) => s.values.mainTimestampFieldName);
+  const entityType = useSelector(form.store, (s) => s.values.entityType);
+  const belongsToTableId = useSelector(form.store, (s) => s.values.belongsToTableId);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   const belongsToTableName = useMemo(
@@ -135,11 +135,12 @@ export function CreateTableFieldsStep({
     [fields, mainTimestampFieldName, updateField, reorderFields, addField, removeField, setMainTimestampFieldName],
   );
 
-  const title = entityType
-    ? t('data:create_table.suggested_fields_title', {
-        entity: t(`data:upload_data.ftm_entity.${entityType}`),
-      })
-    : t('data:create_table.suggested_fields_title_default');
+  const title =
+    entityType && entityType !== 'unset'
+      ? t('data:create_table.suggested_fields_title', {
+          entity: t(`data:upload_data.ftm_entity.${entityType}`),
+        })
+      : t('data:create_table.suggested_fields_title_default');
 
   return (
     <FieldsEditorContext.Provider value={editorValue}>

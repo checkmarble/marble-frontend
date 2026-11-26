@@ -1,6 +1,6 @@
 import type { DataType } from './data-model';
 
-export const semanticTypeField = [
+const semanticTypeField = [
   'text',
   'name',
   'enum',

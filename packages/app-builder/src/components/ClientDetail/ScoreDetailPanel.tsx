@@ -6,16 +6,17 @@ import {
   computeScoreFromMatchedRules,
   getMatchedRuleFloor,
   getMatchedRuleModifier,
+  getScoringLevelLabel,
   isMaxRiskLevelInRange,
   type MatchedScoreRule,
+  type MaxRiskLevel,
   matchScoreEvaluationsToRules,
   RISK_TYPES,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   type ScoringSettings,
   scoringLevelEntries,
 } from '@app-builder/models/scoring';
-import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
+import { useGetCustomListsQuery } from '@app-builder/queries/lists/get-custom-lists';
 import { useGetScoringRulesetForScoreQuery } from '@app-builder/queries/scoring/get-ruleset';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useFormatDateTime } from '@app-builder/utils/format';
@@ -45,11 +46,9 @@ export function ScoreDetailPanel({
   const rulesetQuery = useGetScoringRulesetForScoreQuery(objectType, activeScore.ruleset_id);
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
-  const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
+  const maxRiskLevel = scoringSettings.maxRiskLevel as MaxRiskLevel;
   const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level] ?? 'inherit';
-  const scoreLabel = t(
-    SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString(),
-  );
+  const scoreLabel = getScoringLevelLabel(t, maxRiskLevel, activeScore.risk_level);
 
   const scoreValue =
     activeScore.evaluations && rulesetQuery.data

@@ -1,8 +1,8 @@
 import { type ScreeningProviders } from '@app-builder/models/screening';
 import { createSharpFactory } from 'sharpstate';
 
-export type ListAndTopicDatasetConfigurationMode = 'view' | 'edit' | 'create';
-export type ListAndTopicDatasetConfigurationVariant = 'default' | 'popover';
+type ListAndTopicDatasetConfigurationMode = 'view' | 'edit' | 'create';
+type ListAndTopicDatasetConfigurationVariant = 'default' | 'popover';
 
 type ListAndTopicDatasetConfigurationParams = {
   datasets: Record<string, boolean>;

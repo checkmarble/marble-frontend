@@ -28,7 +28,7 @@ export const MonitoringHitsList = ({ monitoringHitsQuery, showAll = false }: Mon
         .with({ isError: true }, () => {
           return (
             <div className="flex flex-col gap-sm items-center justify-center h-full">
-              <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
+              <span className="text-s text-grey-secondary text-center">{t('common:generic_fetch_data_error')}</span>
               <Button variant="secondary" onClick={() => monitoringHitsQuery.refetch()}>
                 {t('common:retry')}
               </Button>

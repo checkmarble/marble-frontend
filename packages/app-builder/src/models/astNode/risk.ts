@@ -2,7 +2,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { AstNode, CheckNodeId, IdLessAstNode } from '..';
 import { ConstantAstNode, NewConstantAstNode } from './constant';
 
-export const recordHasPastAlertsAstNodeName = 'RecordHasPastAlerts';
+const recordHasPastAlertsAstNodeName = 'RecordHasPastAlerts';
 
 export interface RecordHasPastAlertsAstNode {
   id: string;

@@ -10,7 +10,7 @@ import {
 } from '@app-builder/constants/screening-entity';
 import { isMaxRiskLevelInRange } from '@app-builder/models/scoring';
 import {
-  SCREENING_CATEGORY_I18N_KEY_MAP,
+  SCREENING_HIT_TYPE_T_KEYS,
   type ScreeningCategory,
   type ScreeningSanctionEntity,
 } from '@app-builder/models/screening';
@@ -437,7 +437,7 @@ function ListCategoryTags({ item }: { item: ScreeningReviewItem }) {
     const count = listCounts.get(category) ?? 0;
     return (
       <Tag key={category} size="xs" color={LIST_CATEGORY_COLORS[category].tag} className="h-5 shrink-0 px-sm">
-        {t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[category]}`)}
+        {t(SCREENING_HIT_TYPE_T_KEYS[category])}
         {count > 1 ? (
           <span
             className={cn(

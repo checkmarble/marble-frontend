@@ -1,18 +1,16 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   updateOrganizationPayloadSchema,
   useUpdateOrganizationMutation,
 } from '@app-builder/queries/settings/organization/update-organization';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -66,7 +64,7 @@ export function UpdateOrganizationSettings({
   );
 }
 
-export function UpdateOrganizationSettingsContents({
+function UpdateOrganizationSettingsContents({
   organizationId,
   autoAssignQueueLimit,
   closeModal,
@@ -77,25 +75,21 @@ export function UpdateOrganizationSettingsContents({
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const updateOrganizationMutation = useUpdateOrganizationMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
       organizationId,
       autoAssignQueueLimit,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        updateOrganizationMutation
-          .mutateAsync(value)
-          .then(() => {
-            toast.success(t('common:success.save'));
-            closeModal();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await updateOrganizationMutation.mutateAsync(value);
+        toast.success(t('common:success.save'));
+        closeModal();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -118,8 +112,9 @@ export function UpdateOrganizationSettingsContents({
         >
           {(field) => (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:global_settings.auto_assign_queue_limit')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:global_settings.auto_assign_queue_limit')}</label>
+              <Input
+                id={field.name}
                 type="number"
                 min={0}
                 step={1}
@@ -129,7 +124,8 @@ export function UpdateOrganizationSettingsContents({
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(+e.currentTarget.value)}
                 defaultValue={field.state.value}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>

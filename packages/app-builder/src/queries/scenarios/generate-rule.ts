@@ -3,7 +3,7 @@ import { generateAstFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export interface GenerateRuleResult {
+interface GenerateRuleResult {
   success: boolean;
   ruleAst?: AstNode;
   validation?: { isValid: boolean; errors: string[]; warnings: string[] };

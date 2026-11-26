@@ -1,10 +1,7 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
 import { SelectEvents } from '@app-builder/components/Webhooks/EventTypes';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type EventType } from '@app-builder/models/webhook';
 import {
   CreateWebhookPayload,
@@ -14,12 +11,13 @@ import {
 import { webhooksEventsDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Modal } from 'ui-design-system';
+import { Input, Modal } from 'ui-design-system';
 
 export function CreateWebhook({
   children,
@@ -49,24 +47,20 @@ function CreateWebhookContent({
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const createWebhookMutation = useCreateWebhookMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
       url: '',
       eventTypes: [],
     } as CreateWebhookPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createWebhookMutation
-          .mutateAsync(value)
-          .then(() => {
-            onSuccess();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await createWebhookMutation.mutateAsync(value);
+        onSuccess();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -92,14 +86,16 @@ function CreateWebhookContent({
         >
           {(field) => (
             <div className="flex flex-col items-start gap-sm">
-              <FormLabel name={field.name}>{t('settings:webhooks.url')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:webhooks.url')}</label>
+              <Input
+                id={field.name}
                 type="url"
                 name={field.name}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 defaultValue={field.state.value}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 className="w-full"
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -115,14 +111,14 @@ function CreateWebhookContent({
         >
           {(field) => (
             <div className="flex flex-col items-start gap-sm">
-              <FormLabel name={field.name} className="flex items-center gap-sm">
+              <label htmlFor={field.name} className="flex items-center gap-sm">
                 {t('settings:webhooks.event_types')}
                 {match(webhookStatus)
                   .with('allowed', () => null)
                   .otherwise((status) => (
                     <Nudge kind={status} content={t('settings:webhooks.nudge')} className="size-6" />
                   ))}
-              </FormLabel>
+              </label>
               <SelectEvents
                 selectedEventTypes={field.state.value}
                 className="w-full"
@@ -157,14 +153,16 @@ function CreateWebhookContent({
         >
           {(field) => (
             <div className="flex flex-col items-start gap-sm">
-              <FormLabel name={field.name}>{t('settings:webhooks.http_timeout')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:webhooks.http_timeout')}</label>
+              <Input
+                id={field.name}
                 type="number"
                 name={field.name}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(+e.currentTarget.value)}
                 defaultValue={field.state.value}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 className="w-full"
               />
               <FormErrorOrDescription

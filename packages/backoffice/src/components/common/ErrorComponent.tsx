@@ -8,22 +8,14 @@ type ErrorComponentProps = {
 
 export const ErrorComponent = ({ message }: ErrorComponentProps) => {
   return (
-    <div className="p-md bg-red-95 border border-red-87 text-red-47 rounded-md flex items-center gap-lg">
+    <div className="p-md bg-red-background-light dark:bg-red-background-dark border border-red-border text-red-primary rounded-md flex items-center gap-lg">
       <Icon icon="error" className="size-10" />
       <p className="text-s">{message}</p>
     </div>
   );
 };
 
-export function QueryErrorComponent({
-  error: _error,
-  reset,
-  children,
-}: {
-  error: any;
-  reset: () => void;
-  children: ReactNode;
-}) {
+function QueryErrorComponent({ reset, children }: { reset: () => void; children: ReactNode }) {
   return (
     <div className="col-span-full p-lg flex flex-col gap-md items-center">
       {children}

@@ -16,7 +16,7 @@ Chain, method, status, cookies, redirects: `.claude/rules/resource-routes.md`. R
 
 ## Query and Mutation Hooks
 
-One hook per file in `queries/{domain}/` (a few legacy files sit at the `queries/` root). Wrap the server fn with `useServerFn` and call it with `{ data }`. References: `queries/graph/list-relations.ts`, `queries/cases/edit-name.ts`.
+One hook per file in `queries/{domain}/`. Wrap the server fn with `useServerFn` and call it with `{ data }`. References: `queries/graph/list-relations.ts`, `queries/cases/edit-name.ts`.
 
 - **Redirects**: `useServerFn` catches a thrown redirect (yours, or `authMiddleware`'s `/sign-in`), navigates, and resolves with `undefined`. So `mutateAsync().then((res) => ...)` must accept `undefined` (snippet: [common-patterns.md](common-patterns.md#toasts)); a `useQuery` ends in error after navigating. Unwrapped, React Query still navigates (`setupRouterSsrQueryIntegration` in `router.tsx`, via cache `onError`), but the call fails and `onError`/`.catch` fire (e.g. an error toast on session expiry). Outside React Query, a bare call only rejects.
 - **Thin mutations**: `useServerFn` + `useMutation` + `mutationKey`, plus `invalidateQueries` in `onSuccess` for React Query data. The calling component narrows `res.error` and toasts ([common-patterns.md](common-patterns.md#toasts); build the form itself per [forms-and-modals.md](forms-and-modals.md)); toast in the hook only if every caller shows the same message.
@@ -61,9 +61,8 @@ Unauthenticated repositories (app config, onboarding, feature access) go on `con
 | `authMiddleware` | Authenticated handlers. Chains `servicesMiddleware`, redirects to `/sign-in`, provides `context.authInfo` |
 | `servicesMiddleware` | Alone, for handlers without a session: `context.services`, `context.appConfig` |
 | `caseDetailMiddleware` | Case-detail loaders. Reads `data.params.caseId`, adds `context.case` (`{ detail, inbox }`) and `context.inboxes`, and redirects away if the case can't be loaded (`routes/_app/_builder/cases/$caseId/index.tsx`) |
-| `rateLimitFunctionMiddleware({ max, windowMs, scope? })` | Per-user (default) or `'organization'` limit for a server fn. Chains `authMiddleware`. Server routes use `rateLimitRequestMiddleware({ max, windowMs })` |
 | `rateLimitIpFunctionMiddleware({ max, windowMs })` | Per-client-IP limit for a server fn called before sign-in, listed before `servicesMiddleware` (`discoverSignInFn`) |
 
-Both function-middleware limiters reject with HTTP 429 and `TOO_MANY_REQUESTS_ERROR_MESSAGE`; match it client-side with `isTooManyRequestsError`.
+The limiter rejects with HTTP 429 and `TOO_MANY_REQUESTS_ERROR_MESSAGE`; match it client-side with `isTooManyRequestsError`.
 
 Never add `servicesMiddleware` next to `authMiddleware`. List middleware that chains `authMiddleware` after it (`[authMiddleware, caseDetailMiddleware]`); TanStack dedupes it.

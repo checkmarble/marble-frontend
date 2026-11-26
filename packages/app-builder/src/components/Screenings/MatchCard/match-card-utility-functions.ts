@@ -1,6 +1,7 @@
 import { FamilyPersonEntity, FamilyRelativeEntity, PersonEntity } from '@app-builder/models/screening';
 import { formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
+import { type TFunction } from 'i18next';
 import { Temporal } from 'temporal-polyfill';
 import { match } from 'ts-pattern';
 import { getCountryByName } from 'ui-design-system';
@@ -306,15 +307,15 @@ function decodeUrlForDisplay(url: string): string {
   return decoded.ok ? decoded.value : url;
 }
 
-export function isAddressEntityUuid(value: unknown): boolean {
+function isAddressEntityUuid(value: unknown): boolean {
   return typeof value === 'string' && addressEntityUuidSchema.safeParse(value).success;
 }
 
-export function isRawAddressEntity(value: unknown): value is RawAddressEntity {
+function isRawAddressEntity(value: unknown): value is RawAddressEntity {
   return rawAddressEntitySchema.safeParse(value).success;
 }
 
-export function adaptRawAddressEntity(raw: RawAddressEntity): AddressEntity {
+function adaptRawAddressEntity(raw: RawAddressEntity): AddressEntity {
   const full = firstValue(raw.properties.full);
   const caption = raw.caption ?? full;
 
@@ -331,7 +332,7 @@ export function adaptRawAddressEntity(raw: RawAddressEntity): AddressEntity {
   };
 }
 
-export function parseStringAddress(address: string): AddressEntity {
+function parseStringAddress(address: string): AddressEntity {
   const segments = address
     .split(',')
     .map((part) => part.trim())
@@ -372,7 +373,7 @@ export function parseStringAddress(address: string): AddressEntity {
   };
 }
 
-export function getAddressDedupeKey(entity: AddressEntity): string {
+function getAddressDedupeKey(entity: AddressEntity): string {
   const key = entity.properties.full ?? entity.caption;
   if (key) return normalizeAddressKey(key);
 
@@ -513,7 +514,7 @@ export function classifyBirthDate(value: string): BirthDateKind | null {
   }
 }
 
-export function toBirthDate(value: string, kind: BirthDateKind): Temporal.PlainDate {
+function toBirthDate(value: string, kind: BirthDateKind): Temporal.PlainDate {
   if (kind === 'full') return Temporal.PlainDate.from(value);
   return Temporal.PlainDate.from(`${value}-07-01`);
 }
@@ -547,18 +548,14 @@ export function getBirthDateRange(classified: { value: string; kind: BirthDateKi
   return { type: 'full', min, max };
 }
 
-export function formatPlainDate(
-  date: Temporal.PlainDate,
-  language: string,
-  options: Intl.DateTimeFormatOptions,
-): string {
+function formatPlainDate(date: Temporal.PlainDate, language: string, options: Intl.DateTimeFormatOptions): string {
   return formatDateTimeWithoutPresets(date.toString(), { language, ...options });
 }
 
 export function formatBirthDateRange(
   range: BirthDateRange,
   language: string,
-  t: (key: string, options?: object) => string,
+  t: TFunction<readonly ('common' | 'screenings')[]>,
 ) {
   return match(range)
     .with({ type: 'years' }, ({ minYear, maxYear }) =>

@@ -246,7 +246,7 @@ export function ThresholdRange({
                 href={learnMoreUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-grey-50 text-purple-primary hover:text-purple-hover"
+                className="text-purple-primary hover:text-purple-hover"
               >
                 <Icon icon="helpcenter" className="size-4" />
               </a>

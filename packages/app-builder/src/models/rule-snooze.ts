@@ -33,25 +33,10 @@ export interface RuleSnoozeWithRuleId extends RuleSnooze {
   ruleId: string;
 }
 
-export function adaptRuleSnoozeWithRuleId(dto: RuleSnoozeWithRuleIdDto): RuleSnoozeWithRuleId {
+function adaptRuleSnoozeWithRuleId(dto: RuleSnoozeWithRuleIdDto): RuleSnoozeWithRuleId {
   return {
     ...adaptRuleSnooze(dto),
     ruleId: dto.rule_id,
-  };
-}
-
-export interface RuleSnoozeDetail {
-  id: string;
-  pivotValue: string;
-  startsAt: string;
-  endsAt: string;
-  createdByUser: string;
-  createdFromDecisionId?: string;
-  createdFromRule: {
-    ruleId: string;
-    ruleName: string;
-    scenarioId: string;
-    scenarioIterationId: string;
   };
 }
 

@@ -1,6 +1,5 @@
-import clsx from 'clsx';
 import { type ComponentPropsWithoutRef } from 'react';
-import { Popover } from 'ui-design-system';
+import { cn, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const FilterPopoverContent = function FilterPopoverContent({
@@ -16,7 +15,7 @@ const FilterPopoverContent = function FilterPopoverContent({
       align="start"
       sideOffset={8}
       collisionPadding={10}
-      className={clsx('animate-slideUpAndFade p-0 text-xs shadow-md', className)}
+      className={cn('animate-slideUpAndFade p-0 text-xs shadow-md', className)}
       {...props}
     >
       {children}
@@ -38,7 +37,7 @@ const FilterItemRoot = function FilterItem({
   return (
     <div
       ref={ref}
-      className={clsx(
+      className={cn(
         'bg-purple-background-light dark:bg-grey-background-light flex h-10 flex-row items-center rounded-sm',
         className,
       )}
@@ -55,7 +54,7 @@ const FilterItemTrigger = function FilterItem({
   className,
   ...props
 }: React.ComponentProps<typeof Popover.Trigger> & { ref?: React.Ref<HTMLButtonElement> }) {
-  return <FilterPopover.Trigger ref={ref} className={clsx(filterItemTriggerClassName, className)} {...props} />;
+  return <FilterPopover.Trigger ref={ref} className={cn(filterItemTriggerClassName, className)} {...props} />;
 };
 
 const FilterItemClear = function FilterItem({
@@ -67,7 +66,7 @@ const FilterItemClear = function FilterItem({
     <button
       ref={ref}
       data-test="filter-item-clear"
-      className={clsx(
+      className={cn(
         'focus:border-purple-primary dark:focus:border-purple-hover -ms-xs h-full rounded-sm border border-solid border-transparent px-xs outline-hidden',
         className,
       )}

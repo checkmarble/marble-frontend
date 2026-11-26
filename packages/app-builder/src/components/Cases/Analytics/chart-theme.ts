@@ -1,3 +1,5 @@
+import { type TFunction } from 'i18next';
+
 export const nivoTheme = {
   text: { fill: 'var(--color-grey-secondary)' },
   axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
@@ -23,13 +25,6 @@ export function formatChartNumber(value: number, language: string): string {
     maximumFractionDigits: 1,
   }).format(value);
 }
-
-/**
- * Vertical space (in px) reserved at the bottom of a bar chart to fit the
- * x-axis tick labels and the legend strip below. Used as both `margin.bottom`
- * and `legend.translateY` to keep the two values coupled.
- */
-export const CHART_LEGEND_OFFSET = 40;
 
 export const CASE_ANALYTICS_COLORS = {
   primary: 'var(--color-purple-primary)',
@@ -178,7 +173,7 @@ export function isSamePeriodYear(periods: string[]): boolean {
  * to a human-readable, localized day-range label via the i18n t() function.
  * Unknown bracket values fall through unchanged so chart rendering never breaks.
  */
-export function formatBracket(bracket: string, t: (key: string) => string): string {
+export function formatBracket(bracket: string, t: TFunction<['cases']>): string {
   switch (bracket) {
     case '0-2':
       return t('cases:analytics.chart.bracket.0_2');

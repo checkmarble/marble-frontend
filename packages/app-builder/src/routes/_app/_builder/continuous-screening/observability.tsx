@@ -28,7 +28,7 @@ const observabilityLoader = createServerFn()
     const { continuousScreening, user } = context.authInfo;
 
     if (!isAdmin(user)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     const [datasetUpdates, updateJobs, clientDataIndexing] = await Promise.all([
@@ -50,7 +50,6 @@ const observabilityLoader = createServerFn()
 
 export const Route = createFileRoute('/_app/_builder/continuous-screening/observability')({
   staticData: {
-    i18n: ['navigation', 'continuousScreening', 'screenings'],
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
         const { t } = useTranslation(['screenings']);

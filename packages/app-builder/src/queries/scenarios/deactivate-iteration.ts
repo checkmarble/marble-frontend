@@ -1,9 +1,7 @@
-import { type DeactivateIterationPayload, deactivateIterationPayloadSchema } from '@app-builder/schemas/scenarios';
+import { type DeactivateIterationPayload } from '@app-builder/schemas/scenarios';
 import { deactivateIterationFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type DeactivateIterationPayload, deactivateIterationPayloadSchema };
 
 export const useDeactivateIterationMutation = (scenarioId: string, iterationId: string) => {
   const deactivateIteration = useServerFn(deactivateIterationFn);

@@ -1,13 +1,12 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
-import { useHydrated } from '@tanstack/react-router';
+import { useHydrated, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function ArchiveScenario({
+function ArchiveScenario({
   children,
   scenarioId,
   scenarioName,
@@ -40,13 +39,13 @@ function ArchiveScenarioContent({
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const archiveScenarioMutation = useArchiveScenarioMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleArchiveScenario = () => {
     archiveScenarioMutation
       .mutateAsync({ scenarioId })
       .then(() => {
-        revalidate();
+        router.invalidate();
         onClose();
       })
       .catch(() => {

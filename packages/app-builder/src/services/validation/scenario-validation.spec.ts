@@ -4,7 +4,6 @@ import type { ScenarioValidationErrorCodeDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
 import {
   collectScreeningValidationIssues,
-  collectScreeningValidationMessages,
   hasScreeningErrors,
   type ScreeningValidationSectionLabels,
 } from './scenario-validation';
@@ -49,7 +48,9 @@ describe('screening edit page validation options', () => {
   it('does not surface legacy aggregate query under Matching settings', () => {
     const screening = screeningWithAggregateRequired();
 
-    const messages = collectScreeningValidationMessages(screening, getScenarioErrorMessage, labels, editPageOptions);
+    const messages = collectScreeningValidationIssues(screening, getScenarioErrorMessage, labels, editPageOptions).map(
+      (issue) => issue.message,
+    );
 
     expect(messages.some((m) => m.startsWith('Matching settings:'))).toBe(false);
     expect(hasScreeningErrors(screening, editPageOptions)).toBe(false);
@@ -91,7 +92,9 @@ describe('screening edit page validation options', () => {
       },
     };
 
-    const messages = collectScreeningValidationMessages(screening, getScenarioErrorMessage, labels, editPageOptions);
+    const messages = collectScreeningValidationIssues(screening, getScenarioErrorMessage, labels, editPageOptions).map(
+      (issue) => issue.message,
+    );
 
     expect(messages).toEqual([]);
     expect(hasScreeningErrors(screening, editPageOptions)).toBe(false);
@@ -112,7 +115,9 @@ describe('screening edit page validation options', () => {
       },
     };
 
-    const messages = collectScreeningValidationMessages(screening, getScenarioErrorMessage, labels, editPageOptions);
+    const messages = collectScreeningValidationIssues(screening, getScenarioErrorMessage, labels, editPageOptions).map(
+      (issue) => issue.message,
+    );
 
     expect(messages).toEqual([]);
     expect(hasScreeningErrors(screening, editPageOptions)).toBe(false);

@@ -2,7 +2,7 @@ import { getScoringDryRunFn } from '@app-builder/server-fns/scoring';
 import { type Query, useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export const SCORING_DRY_RUN_POLL_INTERVAL_MS = 1000;
+const SCORING_DRY_RUN_POLL_INTERVAL_MS = 1000;
 
 type ScoringDryRunQueryData = Awaited<ReturnType<typeof getScoringDryRunFn>>;
 

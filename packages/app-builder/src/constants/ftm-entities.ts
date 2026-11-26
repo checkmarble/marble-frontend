@@ -40,7 +40,7 @@ export type FtmEntityPropertyKey = {
   [E in FtmEntity]: `${E}.${FtmEntityProperty<E>}`;
 }[FtmEntity];
 
-export const FTM_ENTITIES_SUGGESTIONS = {
+const FTM_ENTITIES_SUGGESTIONS = {
   'Person.name': { semanticType: 'name', semanticSubType: 'caption' },
   'Person.firstName': { semanticType: 'name', semanticSubType: 'first_name' },
   'Person.lastName': { semanticType: 'name', semanticSubType: 'last_name' },

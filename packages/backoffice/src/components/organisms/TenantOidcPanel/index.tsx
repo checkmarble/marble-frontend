@@ -89,9 +89,7 @@ function TenantOidcPanelBody({
   const form = useForm({
     defaultValues: toTenantOidcFormValues(config),
     validators: { onChange: schema, onSubmit: schema },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
-
+    onSubmit: async ({ value }) => {
       try {
         await putMutation.mutateAsync(toPutTenantOidcConfigurationPayload(tenant.id, value));
       } catch (error) {

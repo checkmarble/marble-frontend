@@ -2,9 +2,9 @@ import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/P
 import { Callout } from '@app-builder/components/Callout';
 import { type RecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import {
+  getScoringLevelLabel,
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   scoringLevelEntries,
 } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
@@ -21,19 +21,14 @@ export function EditRecordRiskLevelCheck(props: Omit<OperandEditModalProps, 'nod
   const node = nodeSharp.select((s) => s.node as RecordRiskLevelCheckAstNode);
   const scoringSettings = AstBuilderDataSharpFactory.select((s) => s.data.scoringSettings);
 
-  const levelColorsEntries =
-    scoringSettings && isMaxRiskLevelInRange(scoringSettings.maxRiskLevel)
-      ? scoringLevelEntries(SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel])
-      : null;
-  const levelLabelsMap =
-    scoringSettings && isMaxRiskLevelInRange(scoringSettings.maxRiskLevel)
-      ? SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel]
-      : null;
+  const maxRiskLevel =
+    scoringSettings && isMaxRiskLevelInRange(scoringSettings.maxRiskLevel) ? scoringSettings.maxRiskLevel : null;
+  const levelColorsEntries = maxRiskLevel ? scoringLevelEntries(SCORING_LEVELS_COLORS[maxRiskLevel]) : null;
 
   const levelsOptions: SelectOption<number>[] =
-    levelColorsEntries && levelLabelsMap
+    levelColorsEntries && maxRiskLevel
       ? levelColorsEntries.map(([level, color]) => {
-          const label = t(levelLabelsMap[level]);
+          const label = getScoringLevelLabel(t, maxRiskLevel, level);
           return {
             value: level,
             label: () => (

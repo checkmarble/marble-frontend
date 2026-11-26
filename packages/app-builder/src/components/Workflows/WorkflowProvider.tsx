@@ -21,7 +21,6 @@ interface WorkflowContextValue {
   error?: Error;
   scenarioId: string;
 
-  // State
   ruleOrder: string[];
   isDragging: boolean;
   shouldScrollToBottom: boolean;
@@ -70,7 +69,6 @@ export function WorkflowProvider({
   const deleteRuleMutation = useDeleteRuleMutation();
   const reorderRulesMutation = useReorderRulesMutation();
 
-  // State
   const [ruleOrder, setRuleOrder] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [justReordered, setJustReordered] = useState(false);
@@ -81,7 +79,6 @@ export function WorkflowProvider({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ruleToDelete, setRuleToDelete] = useState<{ id: string; name: string } | null>(null);
 
-  // Update rule order when query data changes
   useEffect(() => {
     if (rulesQuery.data?.workflow && !justReordered) {
       const order = rulesQuery.data.workflow.map((rule) => rule.id);
@@ -167,7 +164,6 @@ export function WorkflowProvider({
     error: rulesQuery.error as Error,
     scenarioId,
 
-    // State
     ruleOrder,
     isDragging,
     shouldScrollToBottom,

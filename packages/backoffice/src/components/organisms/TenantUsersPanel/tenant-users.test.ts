@@ -15,7 +15,7 @@ const makeUser = (
   email: `${user_id}@example.com`,
   first_name,
   last_name: 'Doe',
-  role,
+  roles: [{ role }],
   organization_id,
   grants: grants.map((grant) => ({ ...grant, tenant_id: TENANT })),
 });

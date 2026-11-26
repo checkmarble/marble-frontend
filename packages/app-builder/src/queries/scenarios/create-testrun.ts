@@ -3,7 +3,7 @@ import { createTestRunFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { type CreateTestRunPayload, createTestRunPayloadSchema };
+export { createTestRunPayloadSchema };
 
 export const useCreateTestRunMutation = (scenarioId: string) => {
   const createTestRun = useServerFn(createTestRunFn);

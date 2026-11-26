@@ -5,7 +5,7 @@ import { type ConstantAstNode, isConstant, NewConstantAstNode } from './constant
 import { type DataAccessorAstNode, isDataAccessorAstNode, isDatabaseAccess, isPayload } from './data-accessor';
 import { isRecordRiskLevelCheckAstNode, NewRecordRiskLevelCheckAstNode } from './risk';
 
-export const valueSwitchCaseAstNodeName = 'Case';
+const valueSwitchCaseAstNodeName = 'Case';
 
 export interface ValueSwitchCaseAstNode {
   id: string;
@@ -15,7 +15,7 @@ export interface ValueSwitchCaseAstNode {
   namedChildren: Record<string, never>;
 }
 
-export const valueSwitchAstNodeName = 'Switch';
+const valueSwitchAstNodeName = 'Switch';
 
 export interface ValueSwitchAstNode {
   id: string;
@@ -77,7 +77,7 @@ export function isValueSwitchAstNode(
   );
 }
 
-export function isValueSwitchCaseAstNode(
+function isValueSwitchCaseAstNode(
   node: IdLessAstNode | AstNode,
 ): node is CheckNodeId<ValueSwitchCaseAstNode, typeof node> {
   return (

@@ -21,12 +21,12 @@ export function AstBuilderRoot({ node: _node, ...props }: AstBuilderRootProps) {
     .otherwise((node) => <AstBuilderAnyRoot {...props} node={node} />);
 }
 
-export function AstBuilderAnyRoot(props: AstBuilderRootProps) {
+function AstBuilderAnyRoot(props: AstBuilderRootProps) {
   const builderMode = AstBuilderDataSharpFactory.select((s) => s.mode);
   return builderMode === 'edit' ? <EditionAstBuilderAnyRoot {...props} /> : 'view mode not supported yet!';
 }
 
-export function AstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWithAndAstNode>) {
+function AstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWithAndAstNode>) {
   const builderMode = AstBuilderDataSharpFactory.select((s) => s.mode);
   return builderMode === 'edit' ? (
     <EditionAstBuilderOrWithAndRoot {...props} />
@@ -35,7 +35,7 @@ export function AstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWithAndAstN
   );
 }
 
-export function AstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>) {
+function AstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>) {
   const builderMode = AstBuilderDataSharpFactory.select((s) => s.mode);
   return builderMode === 'edit' ? <EditionAstBuilderAndRoot {...props} /> : <ViewingAstBuilderAndRoot {...props} />;
 }

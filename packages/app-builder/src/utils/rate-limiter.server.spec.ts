@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createRateLimiter, perUserRateLimitKey } from './rate-limiter.server';
+import { createRateLimiter } from './rate-limiter.server';
 
 describe('createRateLimiter', () => {
   afterEach(() => {
@@ -72,19 +72,5 @@ describe('createRateLimiter', () => {
     expect(check('a')).toEqual({ allowed: true });
     expect(check('a')).toEqual({ allowed: false, retryAfterSeconds: 1 });
     expect(monotonicNow).toHaveBeenCalled();
-  });
-});
-
-describe('perUserRateLimitKey', () => {
-  it('uses the user id when both id and email are present', () => {
-    expect(perUserRateLimitKey({ userId: 'user-1', email: 'a@example.com' })).toBe('user-1');
-  });
-
-  it('uses the email when the user id is absent', () => {
-    expect(perUserRateLimitKey({ email: 'a@example.com' })).toBe('a@example.com');
-  });
-
-  it('returns undefined when both id and email are absent', () => {
-    expect(perUserRateLimitKey({})).toBeUndefined();
   });
 });

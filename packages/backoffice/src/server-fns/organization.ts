@@ -151,7 +151,8 @@ export const createOrganizationUserFn = createServerFn({ method: 'POST' })
   .middleware([needAuth])
   .validator(createOrganizationUserFnInputSchema)
   .handler(async ({ context, data }) => {
-    const payload = { ...data.userPayload, organization_id: data.orgId };
+    const { role, ...details } = data.userPayload;
+    const payload = { ...details, roles: [{ role }], organization_id: data.orgId };
 
     try {
       const { user } = await marblecoreApi.createUser(payload, {

@@ -1,9 +1,8 @@
 import { type TableModel } from '@app-builder/models';
-import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-data';
+import { useUploadIngestionData } from '@app-builder/queries/data/upload-ingestion-data';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { createColumnHelper } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
 import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
@@ -11,13 +10,13 @@ import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, CtaV2ClassName, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const MAX_FILE_SIZE_MB = 32;
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_FILE_SIZE_MB = 32;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-export const generateCsvTemplateLink = (table: TableModel): string => {
+const generateCsvTemplateLink = (table: TableModel): string => {
   const csvContent = table.fields.map((field) => field.name).join(',') + '\n';
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8,' });
   return URL.createObjectURL(blob);
@@ -38,7 +37,7 @@ export function DownloadCsvTemplate({ tableModel, objectType }: { tableModel: Ta
   );
 }
 
-export const getStatusIcon = (status: string) => {
+const getStatusIcon = (status: string) => {
   if (status === 'success') {
     return <Icon icon="tick" className="text-green-primary size-6" />;
   }
@@ -48,7 +47,7 @@ export const getStatusIcon = (status: string) => {
   return <Icon icon="restart-alt" className="text-grey-secondary size-6" />;
 };
 
-export const getStatusTKey = (status: string): ParseKeys<['upload']> => {
+const getStatusTKey = (status: string): ParseKeys<['upload']> => {
   if (status === 'success') {
     return 'upload:status_success';
   }
@@ -67,7 +66,7 @@ type ModalContent = {
   error?: string;
 };
 
-export const ResultModal = ({
+const ResultModal = ({
   onOpenChange,
   isOpen,
   modalContent,
@@ -99,7 +98,7 @@ export const ResultModal = ({
         <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
           <Icon
             icon={icon}
-            className={clsx(
+            className={cn(
               'size-[108px] rounded-full border-8',
               modalContent.success
                 ? 'bg-purple-background border-transparent text-purple-primary'
@@ -310,7 +309,7 @@ export const UploadForm = ({
       {!loading && !showIntermediateStep ? (
         <div
           {...getRootProps()}
-          className={clsx(
+          className={cn(
             'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
             isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
           )}
@@ -334,11 +333,11 @@ export const UploadForm = ({
   );
 };
 
-export const UploadFormLoading = ({ className }: { className?: string }) => {
+const UploadFormLoading = ({ className }: { className?: string }) => {
   const { t } = useTranslation(['common']);
   return (
     <div
-      className={clsx(
+      className={cn(
         className,
         'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}

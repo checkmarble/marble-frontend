@@ -58,7 +58,7 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
     const listName = list?.name ?? value.listId;
     return (
       <div
-        className="flex flex-1 items-center gap-sm rounded-md border border-grey-border px-xs h-10 cursor-pointer hover:bg-grey-bg"
+        className="flex flex-1 items-center gap-sm rounded-md border border-grey-border px-xs h-10 cursor-pointer hover:bg-grey-background"
         onClick={() => {
           onChange({ type: 'customList', listId: '' });
           setInputText(listName);
@@ -79,7 +79,7 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
         {stringValues.map((v, i) => (
           <span
             key={i}
-            className="flex items-center gap-xs rounded-full border border-grey-border bg-grey-bg px-xs py-0.5 text-xs text-grey-primary"
+            className="flex items-center gap-xs rounded-full border border-grey-border bg-grey-background px-xs py-0.5 text-xs text-grey-primary"
           >
             {v}
             <button
@@ -113,7 +113,7 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
             <button
               key={list.id}
               type="button"
-              className="w-full px-md py-xs text-left text-s text-grey-primary hover:bg-grey-bg flex items-center gap-sm"
+              className="w-full px-md py-xs text-left text-s text-grey-primary hover:bg-grey-background flex items-center gap-sm"
               onMouseDown={(e) => {
                 e.preventDefault();
                 onChange({ type: 'customList', listId: list.id });

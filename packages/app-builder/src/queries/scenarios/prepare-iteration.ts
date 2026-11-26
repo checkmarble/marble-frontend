@@ -1,9 +1,7 @@
-import { type PrepareIterationPayload, prepareIterationPayloadSchema } from '@app-builder/schemas/scenarios';
+import { type PrepareIterationPayload } from '@app-builder/schemas/scenarios';
 import { prepareIterationFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-
-export { type PrepareIterationPayload, prepareIterationPayloadSchema };
 
 export const usePrepareIterationMutation = (scenarioId: string, iterationId: string) => {
   const prepareIteration = useServerFn(prepareIterationFn);

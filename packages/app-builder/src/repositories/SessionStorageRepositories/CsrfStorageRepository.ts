@@ -12,5 +12,3 @@ export function getCsrfCookie({ maxAge, secrets, secure }: SessionStorageReposit
     secure,
   });
 }
-
-export type CsrfCookie = ReturnType<typeof getCsrfCookie>;

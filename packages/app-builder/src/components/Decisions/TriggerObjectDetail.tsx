@@ -20,7 +20,6 @@ export function DecisionDetailTriggerObject({
   triggerObject: Record<string, DataModelObjectValue>;
 }) {
   const { t } = useTranslation(decisionsI18n);
-  // const parsedTriggerObject = useParsedTriggerObject(triggerObject);
 
   return (
     <Collapsible.Container className="bg-surface-card">

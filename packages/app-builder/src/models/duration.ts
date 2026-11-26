@@ -1,6 +1,6 @@
 import { Temporal } from 'temporal-polyfill';
 
-export const durationUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'] as const;
+const durationUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'] as const;
 export type DurationUnit = (typeof durationUnits)[number];
 
 // Source https://tc39.es/ecma402/#table-validcodefordatetimefield

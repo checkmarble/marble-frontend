@@ -3,7 +3,7 @@ import { updateOrganizationFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { type UpdateOrganizationPayload, updateOrganizationPayloadSchema };
+export { updateOrganizationPayloadSchema };
 
 export const useUpdateOrganizationMutation = () => {
   const updateOrganization = useServerFn(updateOrganizationFn);

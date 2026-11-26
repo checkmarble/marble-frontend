@@ -13,7 +13,7 @@ import { Scenario } from '@app-builder/models/scenario';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { ScreeningCategory } from '@app-builder/models/screening';
 import { ScreeningConfig } from '@app-builder/models/screening-config';
-import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
+import { useGetCustomListsQuery } from '@app-builder/queries/lists/get-custom-lists';
 import { useScenarioIterationRule } from '@app-builder/queries/scenarios/scenario-iteration-rule';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import {

@@ -19,7 +19,7 @@ export function isIpFieldAstNode(node: AstNode): node is IpFieldAstNode {
   return isDataAccessorAstNode(node) || isUndefinedAstNode(node);
 }
 
-export const ipHasFlagAstNodeName = 'HasIpFlag';
+const ipHasFlagAstNodeName = 'HasIpFlag';
 export const validIpFlags = ['abuse', 'vpn', 'tor_exit_node', 'cloud_provider'] as const;
 export type ValidIpFlags = (typeof validIpFlags)[number];
 

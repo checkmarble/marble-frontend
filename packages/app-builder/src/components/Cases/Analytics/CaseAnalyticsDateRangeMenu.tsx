@@ -1,5 +1,6 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import { formatDuration, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { type TFunction } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Separator } from 'ui-design-system';
@@ -67,7 +68,7 @@ function formatLabel(
   value: DateRangeFilterType,
   formatDateTime: ReturnType<typeof useFormatDateTime>,
   language: string,
-  t: (key: string, options?: Record<string, unknown>) => string,
+  t: TFunction<['cases', 'common', 'filters']>,
 ): string {
   if (!value) return t('cases:analytics.filters.select_date_range');
 

@@ -28,8 +28,8 @@ function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
   const { t } = useTranslation(['workflows']);
 
   return (
-    <div className="bg-grey-20 px-xs py-2xs rounded-sm">
-      <span className="text-grey-60 font-bold text-sm">
+    <div className="bg-grey-background px-xs py-2xs rounded-sm">
+      <span className="text-grey-secondary font-bold text-sm">
         {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
       </span>
     </div>
@@ -39,8 +39,8 @@ function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
 // Common equals separator component
 function ConditionSeparator() {
   return (
-    <div className="bg-grey-20 px-xs py-2xs rounded-sm">
-      <span className="text-grey-60 font-bold text-sm">=</span>
+    <div className="bg-grey-background px-xs py-2xs rounded-sm">
+      <span className="text-grey-secondary font-bold text-sm">=</span>
     </div>
   );
 }
@@ -145,7 +145,6 @@ export function ConditionSelector({
     (condition?.function && condition.function !== 'always' && condition.function !== 'never') ?? false;
   const selectedCondition = condition?.function;
 
-  // Render condition line with common structure
   const renderConditionLine = () => {
     // Special case for payload_evaluates with custom rendering
     if (selectedCondition === 'payload_evaluates' && triggerObjectType && dataModel) {

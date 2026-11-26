@@ -28,7 +28,7 @@ import {
   screeningFieldHasError,
   screeningSectionHasError,
 } from '@app-builder/utils/screening-form-validation';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
 import { pick } from 'radash';
@@ -222,15 +222,13 @@ export function ScreeningRuleEditPanel({
         setShowValidationSummary(true);
         return;
       }
-      if (form.state.isValid) {
-        // leave threshold undefined if it is the same as the organization threshold
-        await mutation.mutateAsync({
-          ...value,
-          threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold,
-        });
-        if (meta.closeOnSuccess) {
-          panelSharp.actions.close();
-        }
+      // leave threshold undefined if it is the same as the organization threshold
+      await mutation.mutateAsync({
+        ...value,
+        threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold,
+      });
+      if (meta.closeOnSuccess) {
+        panelSharp.actions.close();
       }
     },
     onSubmitInvalid: () => {
@@ -259,7 +257,7 @@ export function ScreeningRuleEditPanel({
     } as EditScreeningForm,
   });
 
-  const formValues = useStore(form.store, (state) => state.values);
+  const formValues = useSelector(form.store, (state) => state.values);
   const entityType = formValues.entityType;
   const query = formValues.query;
   const useNerEnabled = formValues.preprocessing?.useNer === true;

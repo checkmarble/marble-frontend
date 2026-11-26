@@ -423,7 +423,7 @@ export function FieldDetailPanel({
           {/* Example of visual in Marble */}
           <div className="flex flex-col gap-xs">
             <label className="text-s text-grey-secondary italic">{t('data:upload_data.field_visual_example')}</label>
-            <div className="rounded-lg border border-grey-border bg-grey-98 p-md">
+            <div className="rounded-lg border border-grey-border bg-grey-background-light p-md">
               <div className="flex flex-col gap-md">
                 <div className="p-xs rounded border border-grey-border font-mono w-full text-xs text-grey-secondary">
                   <span>{`${t('data:upload_data.raw_data')} { "${field.name}": ${typeof mockedValue === 'string' ? '"' : ''}${mockedValue}${typeof mockedValue === 'string' ? '"' : ''}}`}</span>
@@ -596,7 +596,7 @@ function BooleanSettings({
             onClick={() => onChange({ booleanDisplay: opt.value })}
             className={`flex-1 rounded-lg border px-sm py-xs text-s transition-colors ${
               (booleanDisplay ?? 'checkbox') === opt.value
-                ? 'border-purple-primary bg-purple-10 text-purple-primary'
+                ? 'border-purple-primary bg-purple-background-light text-purple-primary'
                 : 'border-grey-border text-grey-secondary hover:bg-grey-border'
             }`}
             disabled={disabled}

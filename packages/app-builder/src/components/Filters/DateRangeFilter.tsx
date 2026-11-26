@@ -100,7 +100,7 @@ function DateRangeFilterRoot({
 // used as default date range in the DateRangeFilterFromNowPicker
 export const last30DaysDuration = Temporal.Duration.from({ days: -30 }).toString();
 
-export const fromNowDurations = [
+const fromNowDurations = [
   Temporal.Duration.from({ days: -7 }).toString(),
   Temporal.Duration.from({ days: -14 }).toString(),
   last30DaysDuration,

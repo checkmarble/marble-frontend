@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
 import { Collapsible, Table, Tag, useTable } from 'ui-design-system';
 
-export const archivedIterationI18n = [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace;
+const archivedIterationI18n = [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace;
 
 type RuleOrScreening = (ScenarioIterationRuleMetadata & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' });
 

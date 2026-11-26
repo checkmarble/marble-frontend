@@ -1,6 +1,6 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxUser } from '@app-builder/models/inbox';
 import { useDeleteInboxUserMutation } from '@app-builder/queries/settings/inboxes/delete-inbox-user';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
@@ -8,14 +8,14 @@ import { Modal } from 'ui-design-system';
 export const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser; onSuccess: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxUserMutation = useDeleteInboxUserMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleDeleteInboxUser = () => {
     deleteInboxUserMutation
       .mutateAsync({ inboxUserId: inboxUser.id })
       .then(() => {
         onSuccess();
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));

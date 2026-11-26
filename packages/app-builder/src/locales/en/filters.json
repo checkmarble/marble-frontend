@@ -13,7 +13,6 @@
   "date_range.range_value": "From {{startDate}} to {{endDate}}",
   "ds.addNewFilter.label": "Add new filter",
   "ds.apply_button.label": "Apply",
-  "ds.chooseFilter.label": "Choose a filter",
   "ds.clear_button.label": "Clear",
   "ds.clear_dynamic_button.label": "Clear",
   "ds.noOptionsAvailable.label": "No options available",

@@ -1,5 +1,4 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { Link } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import { cva, VariantProps } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, cn, StickyComponent, Tooltip } from 'ui-design-system';
@@ -8,7 +7,8 @@ import { pageLayoutGutter } from './Page/page-layout';
 import { PageStickyFooter } from './Page/StickyFooter';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
-  return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;
+  // `isolate` keeps page z-indexes local, so no page content can paint over the app sidebar
+  return <main className={cn('relative isolate bg-surface-page flex flex-1 flex-col', className)} {...props} />;
 }
 
 function PageHeader({ className, children, color, ...props }: React.ComponentProps<'div'>) {
@@ -108,11 +108,11 @@ const pageBack = cva(
 );
 
 function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
-  const navigate = useAgnosticNavigation();
+  const router = useRouter();
   const { t } = useTranslation(['common']);
   return (
     <Tooltip.Default content={t('common:go_back')}>
-      <button className={pageBack({ className })} onClick={() => navigate(-1)} {...props}>
+      <button className={pageBack({ className })} onClick={() => router.history.back()} {...props}>
         <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />
         <span className="sr-only">{t('common:go_back')}</span>
       </button>

@@ -30,11 +30,11 @@ The DS hooks default to `manualSorting: true` and `manualFiltering: true`: witho
 
 - Resizing is on by default: pass `columnResizeMode: 'onChange'` so widths follow the drag; disable with `enableColumnResizing: false`.
 - `rowLink` returns a bare `<Link to=... params=... />`. `Table.Row` forwards any click in the row to that link, so cells with buttons, checkboxes or menus wrap them in `onClick={(e) => e.stopPropagation()}`.
-- Selectable rows: `useTanstackTableListSelection(data, getRowId)` (`hooks/useTanstackTableListSelection.ts`) in the page; in the table, spread its `tableProps` into `useTable`, pass `state: { rowSelection: selectionProps.rowSelection }` + `enableRowSelection`, and prepend `...getTableSelectColumn(columnHelper, selectable)` (`utils/table-selection.tsx`, already stops the click reaching the row link): `detection/decisions/index.tsx` → the `useTable` call in `components/Decisions/DecisionsList.tsx` (ignore that file's dead `useSelectedDecisionIds`).
+- Selectable rows: `useTanstackTableListSelection(data, getRowId)` (`hooks/useTanstackTableListSelection.ts`) in the page; in the table, spread its `tableProps` into `useTable`, pass `state: { rowSelection: selectionProps.rowSelection }` + `enableRowSelection`, and prepend `...getTableSelectColumn(columnHelper, selectable)` (`utils/table-selection.tsx`, already stops the click reaching the row link): `detection/decisions/index.tsx` → the `useTable` call in `components/Decisions/DecisionsList.tsx`.
 
 ## Selects & Menus
 
-- **Static option list** (single or `multiple`): `SelectV2` from `ui-design-system` (controlled `value` / `onChange`, `options: { label, value }[]`, `placeholder`). Only the `Select` namespace in the same file is `@deprecated`.
+- **Static option list** (single or `multiple`): `SelectV2` from `ui-design-system` (controlled `value` / `onChange`, `options: { label, value }[]`, `placeholder`).
 - **Search, groups, submenus, custom rows, action menus**: compose `MenuCommand`. Composition: JSDoc on `Menu` in `packages/ui-design-system/src/MenuCommand/MenuCommand.tsx`; searchable select: `components/Settings/FormSelectTimezone.tsx`.
 - **List inside an existing popover/panel**: `MenuCommand.Inline` instead of `Menu` + `Content`. It never closes the host and does no filtering (the caller filters): `components/Decisions/Filters/FilterDetail/ScenarioFilter.tsx`.
 

@@ -7,8 +7,6 @@ import { isRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk'
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { type ValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
-import { type ParseKeys } from 'i18next';
-import { type ComponentType, type ReactNode } from 'react';
 import { match } from 'ts-pattern';
 import { getEvaluationForNode } from '../helpers';
 import { useRoot } from '../hooks/useRoot';
@@ -24,19 +22,13 @@ import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
 import { EditTimeAdd } from './modals/TimeAdd/TimeAdd';
 import { EditTimestampExtract } from './modals/TimestampExtract/TimestampExtract';
 
-export type EditModalContent = {
-  titleTKey: ParseKeys<['scenarios']>;
-  Content: ComponentType;
-  size?: 'small' | 'medium' | 'large' | 'xlarge';
-};
-
 type ModalEditableAstNode = Exclude<EditableAstNode, ValueSwitchAstNode>;
 
 export type OperandEditModalProps = {
   onSave: (node: EditableAstNode) => void;
   onCancel: () => void;
   node: EditableAstNode;
-  saveLabel?: ReactNode;
+  saveLabel?: string;
 };
 
 export function OperandEditModal({ node, ...props }: OperandEditModalProps & { node: ModalEditableAstNode }) {

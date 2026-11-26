@@ -40,7 +40,6 @@ export function MenuOption({
   const hasContinuousScreening = AstBuilderDataSharpFactory.select((s) => s.data.hasContinuousScreening);
   const hasScoringRuleset = AstBuilderDataSharpFactory.select((s) => s.data.hasScoringRuleset);
 
-  // Check if this is a restricted aggregator option
   const isRestrictedOption =
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
   const isRestrictedClientRisk =

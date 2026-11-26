@@ -2,8 +2,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
-export const variants = ['info', 'error'] as const;
-
 const iconColorClassName = {
   grey: 'text-grey-primary',
   purple: 'text-purple-primary',

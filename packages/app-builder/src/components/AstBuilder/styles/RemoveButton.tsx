@@ -1,13 +1,12 @@
-import clsx from 'clsx';
 import * as React from 'react';
-import { type ButtonV2Props } from 'ui-design-system';
+import { type ButtonV2Props, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const RemoveButton = ({ ref, className, ...props }: ButtonV2Props & { ref?: React.Ref<HTMLButtonElement> }) => {
   return (
     <button
       type="button"
-      className={clsx(
+      className={cn(
         'size-fit rounded-xs border p-xs text-xs transition-colors duration-200 ease-in-out',
         'bg-surface-card text-grey-secondary border-grey-border',
         'hover:text-grey-white hover:border-red-primary hover:bg-red-primary',

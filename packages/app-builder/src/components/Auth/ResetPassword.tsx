@@ -9,12 +9,10 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, cn, Input } from 'ui-design-system';
 import * as z from 'zod/v4';
 
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '../Form/Tanstack/FormInput';
-import { FormLabel } from '../Form/Tanstack/FormLabel';
 
 const resetPasswordFormSchema = z.object({
   email: z.email(),
@@ -66,13 +64,16 @@ export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | nu
       >
         {(field) => (
           <div className="flex flex-col items-start gap-sm">
-            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+            <label htmlFor={field.name} className={cn(field.state.meta.errors.length > 0 && 'text-red-primary')}>
               {t('auth:sign_in.email')}
-            </FormLabel>
-            <FormInput
+            </label>
+            <Input
+              id={field.name}
+              name={field.name}
               type="email"
               className="w-full"
-              valid={field.state.meta.errors.length === 0}
+              aria-invalid={field.state.meta.errors.length > 0 || undefined}
+              borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
               defaultValue={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
@@ -93,8 +94,15 @@ export const StaticResetPassword = ({ prefilledEmail }: { prefilledEmail?: strin
   return (
     <form className="flex w-full flex-col gap-md">
       <div className="flex flex-col items-start gap-sm">
-        <FormLabel name="email">{t('auth:sign_in.email')}</FormLabel>
-        <FormInput type="email" className="w-full" defaultValue={prefilledEmail ?? ''} enablePasswordManagers />
+        <label htmlFor="email">{t('auth:sign_in.email')}</label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          className="w-full"
+          defaultValue={prefilledEmail ?? ''}
+          enablePasswordManagers
+        />
       </div>
       <Button>{t('auth:reset-password.send')}</Button>
     </form>

@@ -7,10 +7,9 @@ import { type AstNode, type CheckNodeId, type IdLessAstNode, NewUndefinedAstNode
 import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
-export const unaryAggregationFilterOperators = ['IsEmpty', 'IsNotEmpty'] as const;
-export type UnaryAggregationFilterOperator = (typeof unaryAggregationFilterOperators)[number];
+const unaryAggregationFilterOperators = ['IsEmpty', 'IsNotEmpty'] as const;
 
-export const binaryAggregationFilterOperators = [
+const binaryAggregationFilterOperators = [
   '=',
   '!=',
   '>',
@@ -24,9 +23,7 @@ export const binaryAggregationFilterOperators = [
 ] as const;
 export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOperators)[number];
 
-export const complexAggregationFilterOperators = ['FuzzyMatch', 'IsMultipleOf', 'TimestampExtract'] as const;
-
-export type ComplexAggregationFilterOperator = (typeof complexAggregationFilterOperators)[number];
+const complexAggregationFilterOperators = ['FuzzyMatch', 'IsMultipleOf', 'TimestampExtract'] as const;
 
 export const aggregationFilterOperators = [
   ...binaryAggregationFilterOperators,
@@ -53,7 +50,7 @@ export const aggregationFiltersWithTypes: Record<AggregationFilterOperator, Prim
   TimestampExtract: ['Timestamp'],
 };
 
-export const aggregationFilterAstNodeName = 'Filter';
+const aggregationFilterAstNodeName = 'Filter';
 export type UnaryAggregationFilterAstNode = {
   id: string;
   name: typeof aggregationFilterAstNodeName;
@@ -200,13 +197,7 @@ export type AggregationFilterAstNode =
   | BinaryAggregationFilterAstNode
   | ComplexAggregationFilterAstNode;
 
-export type GetAggregationFilterOperator<T extends AggregationFilterAstNode> = T extends UnaryAggregationFilterAstNode
-  ? UnaryAggregationFilterOperator
-  : T extends BinaryAggregationFilterAstNode
-    ? BinaryAggregationFilterOperator
-    : ComplexAggregationFilterOperator;
-
-export const aggregationAstNodeName = 'Aggregator';
+const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
   id: string;
   name: typeof aggregationAstNodeName;
@@ -272,13 +263,6 @@ export function NewAggregatorFilterAstNode<T extends AggregationFilterAstNode>({
 
 export function isAggregationFilterOperator(value: string): value is AggregationFilterOperator {
   return (aggregationFilterOperators as ReadonlyArray<string>).includes(value);
-}
-
-export function isUnaryAggregationFilterOperator(value: string | null): value is UnaryAggregationFilterOperator {
-  return (unaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
-}
-export function isBinaryAggregationFilterOperator(value: string | null): value is BinaryAggregationFilterOperator {
-  return (binaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
 
 export function isUnaryAggregationFilter(

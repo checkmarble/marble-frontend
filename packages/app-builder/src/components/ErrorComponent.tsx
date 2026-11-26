@@ -1,17 +1,12 @@
 import { FORBIDDEN, NOT_FOUND } from '@app-builder/utils/http/http-status-codes';
 import { useCanGoBack, useRouter } from '@tanstack/react-router';
-import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Typo } from 'ui-design-system';
-
-export const handle = {
-  i18n: ['common'] satisfies Namespace,
-};
 
 export const ErrorComponent = ({ error }: { error: unknown }) => {
   const router = useRouter();
   const canGoBack = useCanGoBack();
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common']);
 
   const isDevMode = process.env.NODE_ENV === 'development';
 

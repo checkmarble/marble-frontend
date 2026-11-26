@@ -25,7 +25,7 @@ import {
 import { useCreateCustomerAggregateMutation } from '@app-builder/queries/customer-aggregates/create-customer-aggregate';
 import { useUpdateCustomerAggregateMutation } from '@app-builder/queries/customer-aggregates/update-customer-aggregate';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
-import { useGetCustomListsQuery } from '@app-builder/queries/get-custom-lists';
+import { useGetCustomListsQuery } from '@app-builder/queries/lists/get-custom-lists';
 import {
   type BuilderOptionsResource,
   buildDatabaseAccessorsFromDataModel,

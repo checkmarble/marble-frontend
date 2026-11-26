@@ -31,8 +31,6 @@
   "list.row.values_count_one": "value",
   "list.row.values_count_other": "values",
   "name": "Name",
-  "other_scenarios_one": "+{{count}} other",
-  "other_scenarios_other": "+{{count}} others",
   "pick_csv": "Pick a CSV file",
   "show_less": "show less",
   "upload_csv.results": "Results",
@@ -43,6 +41,5 @@
   "upload_csv.success.deleted_other": "{{count}} old values deleted",
   "upload_csv.success.existing_one": "{{count}} existing value",
   "upload_csv.success.existing_other": "{{count}} existing values",
-  "used_in_scenarios": "Used in the following scenarios:",
   "values_count": "Values count"
 }

@@ -376,18 +376,7 @@ function Analytics() {
   return (
     <Page.Main>
       <Page.Content>
-        <DetectionNavigationTabs
-        // actions={
-        //   <Link
-        //     to="/analytics-legacy"
-        //     target="_blank"
-        //     className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-xs"
-        //   >
-        //     <Icon icon="openinnew" className="size-4" />
-        //     <span>{t('analytics:legacy-analytics-link')}</span>
-        //   </Link>
-        // }
-        />
+        <DetectionNavigationTabs />
         <FormattingProvider
           value={{
             language: i18n.language,

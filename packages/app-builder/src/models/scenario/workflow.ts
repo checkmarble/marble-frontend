@@ -31,8 +31,6 @@ export type RuleDto = WorkflowRuleDto & {
   actions: WorkflowActionDto[];
 };
 
-export type WorkflowConditionDetail = WorkflowConditionDetailDto;
-
 export type Rule = WorkflowRuleDto & {
   conditions: WorkflowCondition[];
   actions: WorkflowAction[];

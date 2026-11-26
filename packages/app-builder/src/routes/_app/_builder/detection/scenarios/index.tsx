@@ -16,12 +16,11 @@ import * as Sentry from '@sentry/react';
 import { createFileRoute, Link, useHydrated } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, Table, Tag, useTable } from 'ui-design-system';
+import { Button, cn, Table, Tag, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const scenariosLoader = createServerFn()
@@ -210,7 +209,7 @@ function DetectionScenariosPage() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => (
-                  <Table.Row key={row.id} row={row} className={clsx(row.original.archived && 'opacity-50')} />
+                  <Table.Row key={row.id} row={row} className={cn(row.original.archived && 'opacity-50')} />
                 ))}
               </Table.Body>
             </Table.Container>

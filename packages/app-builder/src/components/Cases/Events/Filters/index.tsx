@@ -12,7 +12,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { casesI18n } from '../../cases-i18n';
 
-export const caseEventsFilterSchema = z.object({
+const caseEventsFilterSchema = z.object({
   types: protectArray(z.array(z.enum(CASE_EVENT_CATEGORIES))),
   startDate: z.iso.datetime().optional(),
   endDate: z.iso.datetime().optional(),

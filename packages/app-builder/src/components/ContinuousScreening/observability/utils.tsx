@@ -11,8 +11,8 @@ import { Icon, IconName } from 'ui-icons';
 
 export const LIMIT_FOR_PANELS = 20;
 
-export const OBSERVABILITY_REFETCH_INTERVAL_ACTIVE = 1_000;
-export const OBSERVABILITY_REFETCH_INTERVAL_IDLE = 10_000;
+const OBSERVABILITY_REFETCH_INTERVAL_ACTIVE = 1_000;
+const OBSERVABILITY_REFETCH_INTERVAL_IDLE = 10_000;
 
 export function getObservabilityRefetchInterval(allStatusesCompleted: boolean) {
   return allStatusesCompleted ? OBSERVABILITY_REFETCH_INTERVAL_IDLE : OBSERVABILITY_REFETCH_INTERVAL_ACTIVE;

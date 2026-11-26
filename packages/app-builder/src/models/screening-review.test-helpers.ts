@@ -6,7 +6,7 @@ import type {
   ContinuousScreeningScreeningEntityToMarble,
 } from './continuous-screening';
 
-export function reviewPayload(id: string, name: string, score = 0.9): ContinuousScreeningMatchPayload {
+function reviewPayload(id: string, name: string, score = 0.9): ContinuousScreeningMatchPayload {
   return {
     id,
     caption: name,

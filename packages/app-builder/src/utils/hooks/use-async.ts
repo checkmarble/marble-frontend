@@ -1,6 +1,5 @@
+import { useCallbackRef } from '@marble/shared';
 import * as React from 'react';
-
-import { useCallbackRef } from './use-callback-ref';
 
 /**
  * A custom hook that wraps an async function and provides loading, error and value states

@@ -5,11 +5,6 @@ import { describe, expect, it } from 'vitest';
 import { Switch } from './Switch';
 
 describe('Switch', () => {
-  it('should render successfully', () => {
-    render(<Switch aria-label="switch" />);
-    expect(screen.getByLabelText('switch')).toBeInTheDocument();
-  });
-
   it('should check correctly', async () => {
     render(<Switch aria-label="switch" />);
 

@@ -1,9 +1,9 @@
-import { type ExportedFieldPayload, exportedFieldSchema } from '@app-builder/schemas/settings';
+import { type ExportedFieldPayload } from '@app-builder/schemas/settings';
 import { deleteExportedFieldFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { type ExportedFieldPayload as DeleteExportedFieldPayload, exportedFieldSchema as deleteExportedFieldSchema };
+export { type ExportedFieldPayload as DeleteExportedFieldPayload };
 
 export const useDeleteFilterMutation = () => {
   const deleteExportedField = useServerFn(deleteExportedFieldFn);

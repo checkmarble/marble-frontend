@@ -9,10 +9,10 @@ import {
 import { type EditableAstNode, isEditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { isValueSwitchAstNode } from '@app-builder/models/astNode/value-switch';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type AstBuilderOperandProps } from '@ast-builder/Operand';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { OperandDisplayName, operandDisplayNameClassnames } from '@ast-builder/styles/OperandDisplayName';
+import { useCallbackRef } from '@marble/shared';
 import { cva } from 'class-variance-authority';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -48,7 +48,6 @@ function RootProviders({ children }: { children: React.ReactNode }) {
     [tsNavigate],
   );
 
-  // router.invalidate() is the TanStack Router equivalent of Remix's revalidator.revalidate()
   const invalidate = useCallback(() => {
     router.invalidate();
   }, [router]);

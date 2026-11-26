@@ -4,8 +4,7 @@ import { type ScenarioIterationWithType } from '@app-builder/models/scenario/ite
 import { type TestRun } from '@app-builder/models/testrun';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
-import clsx from 'clsx';
-import { Avatar } from 'ui-design-system';
+import { Avatar, cn } from 'ui-design-system';
 import { TestRunPeriod } from './TestRunPeriod';
 import { TestRunStatus } from './TestRunStatus';
 import { TestRunVersions } from './TestRunVersions';
@@ -33,7 +32,7 @@ export const TestRunSelector = ({
         scenarioId: fromUUIDtoSUUID(scenario.id),
         testRunId: fromUUIDtoSUUID(id),
       }}
-      className={clsx(
+      className={cn(
         'grid cursor-pointer grid-cols-[30%_30%_8%_auto] items-center rounded-lg border py-sm transition-colors',
         {
           'bg-surface-card hover:bg-grey-background border-grey-border': status !== 'up',

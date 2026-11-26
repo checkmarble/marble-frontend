@@ -1,5 +1,4 @@
 import { Callout } from '@app-builder/components/Callout';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   type DestroyDataModelReport,
   DestroyDataModelReportRef,
@@ -9,7 +8,7 @@ import {
 import { useDeleteTableMutation } from '@app-builder/queries/data/delete-table';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import { TFunction } from 'i18next';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -25,14 +24,14 @@ interface DeleteTableModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-export type DeleteDataModelEntityType = 'table' | 'field' | 'link' | 'pivot';
+type DeleteDataModelEntityType = 'table' | 'field' | 'link' | 'pivot';
 
 export function DeleteTableModal({ table, onDeleted, children, open, onOpenChange }: DeleteTableModalProps) {
   const { t } = useTranslation(dataI18n);
   const { isDeleteDataModelTableAvailable } = useDataModelFeatureAccess();
   const [report, setReport] = useState<DestroyDataModelReport | null>(null);
   const deleteTableMutation = useDeleteTableMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [confirmationText, setConfirmationText] = useState('');
   const [isBlocked, setIsBlocked] = useState(false);
   const [hasArchivedIterations, setHasArchivedIterations] = useState(false);
@@ -74,7 +73,7 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
       toast.success(t('common:success.deleted'));
 
       handleOpenChange(false);
-      revalidate();
+      router.invalidate();
       onDeleted?.();
     }
   };
@@ -100,9 +99,9 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
         {report ? (
           <div className="flex flex-col gap-md overflow-y-auto p-lg">
             {isBlocked ? (
-              <BlockedDeletionContent report={report} entityType={'table'} entityName={table.name} t={t} />
+              <BlockedDeletionContent report={report} entityName={table.name} t={t} />
             ) : hasArchivedIterations ? (
-              <DraftDeletionContent report={report} entityType={'table'} entityName={table.name} t={t} />
+              <DraftDeletionContent report={report} entityName={table.name} t={t} />
             ) : (
               <SimpleDeletionContent entityType={'table'} entityName={table.name} t={t} />
             )}
@@ -154,21 +153,19 @@ function SimpleDeletionContent({
 }: {
   entityType: DeleteDataModelEntityType;
   entityName: string;
-  t: TFunction;
+  t: TFunction<readonly ('common' | 'data')[]>;
 }) {
   return <p className="text-s text-grey-primary">{t(`data:delete_${entityType}.confirm`, { name: entityName })}</p>;
 }
 
 function DraftDeletionContent({
   report,
-  entityType,
   entityName,
   t,
 }: {
   report: DestroyDataModelReport;
-  entityType: DeleteDataModelEntityType;
   entityName: string;
-  t: TFunction;
+  t: TFunction<readonly ('common' | 'data')[]>;
 }) {
   return (
     <div className="flex flex-col gap-md">
@@ -187,14 +184,12 @@ function DraftDeletionContent({
 
 function BlockedDeletionContent({
   report,
-  entityType,
   entityName,
   t,
 }: {
   report: DestroyDataModelReport;
-  entityType: DeleteDataModelEntityType;
   entityName: string;
-  t: TFunction;
+  t: TFunction<readonly ('common' | 'data')[]>;
 }) {
   const { conflicts, archivedIterations } = report;
   const hasArchivedIterations = archivedIterations.length > 0;
@@ -360,7 +355,6 @@ function ScenarioLink({ item }: { item: DestroyDataModelReportRef }) {
     return null;
   }
 
-  // Convert UUID to short UUID for URL-friendly format
   const shortId = fromUUIDtoSUUID(item.id);
 
   return (

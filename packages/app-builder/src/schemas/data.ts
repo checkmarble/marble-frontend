@@ -31,7 +31,7 @@ export const createFieldValuesSchema = z.object({
     .optional(),
   semantic_type: z.enum(semanticFieldForBack).optional(),
 });
-export const createLinksValuesSchema = z.object({
+const createLinksValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
     error: 'Link/name: Only lower case alphanumeric and _, must start with a letter',
   }),

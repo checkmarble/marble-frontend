@@ -5,7 +5,7 @@ import { BackendUsageTrackingSettings } from '@app-builder/components/Settings/B
 import { TwoFactorAuthSettings } from '@app-builder/components/Settings/TwoFactorAuth/TwoFactorAuthSettings';
 import { UserAvailabilityStatus } from '@app-builder/components/Settings/UserAvailabilityStatus';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
-import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
+import { type ThemePreference, useTheme } from '@app-builder/contexts/ThemeContext';
 import { useBuilderLayoutData } from '@app-builder/hooks/routes-layout-data';
 import { tKeyForUserRole } from '@app-builder/models/user';
 import { logoutFn } from '@app-builder/server-fns/auth';
@@ -37,11 +37,11 @@ export const Route = createFileRoute('/_app/_builder/account')({
 });
 
 function AccountPage() {
-  const { t } = useTranslation(['navigation', 'account', 'common', 'settings']);
+  const { t } = useTranslation(['settings', 'navigation', 'account', 'common']);
   const { currentUser, org } = useOrganizationDetails();
   const logout = useServerFn(logoutFn);
 
-  const { theme, setTheme } = useTheme();
+  const { themePreference, setThemePreference } = useTheme();
   const appConfig = AppConfigContext.useValue();
   const { versions } = appConfig;
   const isFirebaseAuth = appConfig.auth.providers.includes('firebase');
@@ -53,89 +53,98 @@ function AccountPage() {
   const fullName = getFullName({ firstName, lastName });
 
   return (
-    <Page.Main>
-      <Page.Header className="justify-between">
-        <BreadCrumbs />
-        <Button
-          variant="secondary"
-          onClick={() => {
-            void segment.reset();
-            void logout({ data: {} });
-          }}
-        >
-          {t('common:auth.logout')}
-        </Button>
-      </Page.Header>
-      <Page.Container>
-        <Page.Content width="fluid" centered>
-          <div className="flex flex-col items-center gap-lg">
-            <div className="flex flex-col items-center gap-md">
-              <Avatar size="xl" firstName={firstName} lastName={lastName} />
-              {fullName ? <p className="text-xl font-semibold tracking-tight">{fullName}</p> : null}
-              <div className="flex items-center gap-sm">
-                {currentUser.roles.map((role) => (
-                  <Tag key={role} color="purple">
-                    {t(tKeyForUserRole(role))}
-                  </Tag>
-                ))}
-                <Tag color="grey">{org.name}</Tag>
-              </div>
-              {email ? (
-                <a href={`mailto:${email}`} className="text-s text-purple-primary font-medium underline">
-                  {email}
-                </a>
-              ) : null}
-            </div>
-
-            <div className="bg-surface-card border-grey-border flex flex-col gap-lg rounded-lg border p-md">
-              <div className="flex w-[272px] flex-col gap-sm">
-                <label className="text-s">{t('account:language')}</label>
-                <LanguagePicker />
-              </div>
-              <div className="flex flex-col gap-sm">
-                <span className="text-s">{t('account:dark_mode')}</span>
-                <Radio.Root value={theme} onValueChange={(value) => setTheme(value as Theme)}>
-                  <Radio.Item value="light">
-                    <span className="text-s">{t('account:theme.light')}</span>
-                  </Radio.Item>
-                  <Radio.Item value="dark">
-                    <span className="text-s">{t('account:theme.dark')}</span>
-                  </Radio.Item>
-                </Radio.Root>
-              </div>
-              <div className="fixed bottom-md end-md z-30 flex flex-wrap justify-end gap-sm sm:bottom-lg sm:end-lg">
-                <BackendUsageTrackingSettings />
-                {isProboBannerReady ? (
-                  <Button type="button" variant="secondary" className="shadow-md" onClick={toggleProboPreferences}>
-                    <Icon icon="settings" className="size-4" />
-                    {t('account:cookie_settings')}
-                  </Button>
+    <>
+      <Page.Main>
+        <Page.Header className="justify-between">
+          <BreadCrumbs />
+          <Button
+            variant="secondary"
+            onClick={() => {
+              void segment.reset();
+              void logout({ data: {} });
+            }}
+          >
+            {t('common:auth.logout')}
+          </Button>
+        </Page.Header>
+        <Page.Container>
+          <Page.Content width="fluid" centered>
+            <div className="flex flex-col items-center gap-lg">
+              <div className="flex flex-col items-center gap-md">
+                <Avatar size="xl" firstName={firstName} lastName={lastName} />
+                {fullName ? <p className="text-xl font-semibold tracking-tight">{fullName}</p> : null}
+                <div className="flex items-center gap-sm">
+                  {currentUser.roles.map((role) => (
+                    <Tag key={role} color="purple">
+                      {t(tKeyForUserRole(role))}
+                    </Tag>
+                  ))}
+                  <Tag color="grey">{org.name}</Tag>
+                </div>
+                {email ? (
+                  <a href={`mailto:${email}`} className="text-s text-purple-primary font-medium underline">
+                    {email}
+                  </a>
                 ) : null}
               </div>
-              <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
-            </div>
 
-            {isFirebaseAuth ? (
-              <div className="w-full max-w-md">
-                <ClientOnly fallback={null}>
-                  <TwoFactorAuthSettings />
-                </ClientOnly>
+              <div className="bg-surface-card border-grey-border flex flex-col gap-lg rounded-lg border p-md">
+                <div className="flex w-[272px] flex-col gap-sm">
+                  <label className="text-s">{t('account:language')}</label>
+                  <LanguagePicker />
+                </div>
+                <div className="flex flex-col gap-sm">
+                  <span className="text-s">{t('account:dark_mode')}</span>
+                  <Radio.Root
+                    value={themePreference}
+                    onValueChange={(value) => setThemePreference(value as ThemePreference)}
+                  >
+                    <Radio.Item value="light">
+                      <span className="text-s">{t('account:theme.light')}</span>
+                    </Radio.Item>
+                    <Radio.Item value="dark">
+                      <span className="text-s">{t('account:theme.dark')}</span>
+                    </Radio.Item>
+                    <Radio.Item value="system">
+                      <span className="text-s">{t('account:theme.system')}</span>
+                    </Radio.Item>
+                  </Radio.Root>
+                </div>
+                <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
               </div>
-            ) : null}
 
-            <div className="text-grey-secondary flex items-center gap-md text-xs">
-              <span className="flex items-center gap-xs">
-                <Icon icon="monitor" className="size-4" />
-                <span>{versions.appVersion}</span>
-              </span>
-              <span className="flex items-center gap-xs">
-                <Icon icon="dns" className="size-4" />
-                <span>{versions.apiVersion}</span>
-              </span>
+              {isFirebaseAuth ? (
+                <div className="w-full max-w-md">
+                  <ClientOnly fallback={null}>
+                    <TwoFactorAuthSettings />
+                  </ClientOnly>
+                </div>
+              ) : null}
+
+              <div className="text-grey-secondary flex items-center gap-md text-xs">
+                <span className="flex items-center gap-xs">
+                  <Icon icon="monitor" className="size-4" />
+                  <span>{versions.appVersion}</span>
+                </span>
+                <span className="flex items-center gap-xs">
+                  <Icon icon="dns" className="size-4" />
+                  <span>{versions.apiVersion}</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </Page.Content>
-      </Page.Container>
-    </Page.Main>
+          </Page.Content>
+        </Page.Container>
+      </Page.Main>
+      {/* Outside Page.Main (isolated) so it stays above the app-wide UnavailableBanner */}
+      <div className="fixed bottom-md end-md z-30 flex flex-wrap justify-end gap-sm sm:bottom-lg sm:end-lg">
+        <BackendUsageTrackingSettings />
+        {isProboBannerReady ? (
+          <Button type="button" variant="secondary" className="shadow-md" onClick={toggleProboPreferences}>
+            <Icon icon="settings" className="size-4" />
+            {t('account:cookie_settings')}
+          </Button>
+        ) : null}
+      </div>
+    </>
   );
 }

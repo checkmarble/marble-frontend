@@ -62,7 +62,3 @@ export function isMatchEdge(edge: GraphRfEdge): boolean {
   if (edge.type === 'hypernode') return false;
   return edge.type === 'match' || edge.data?.kind === 'match';
 }
-
-export function isLinkEdge(edge: GraphRfEdge): boolean {
-  return !isMatchEdge(edge);
-}

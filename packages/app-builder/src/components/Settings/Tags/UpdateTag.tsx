@@ -1,8 +1,5 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { ColorSelect } from '@app-builder/components/Tags/ColorSelect';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   UpdateTagPayload,
   updateTagPayloadSchema,
@@ -10,11 +7,12 @@ import {
 } from '@app-builder/queries/settings/tags/update-tag';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { type Tag } from 'marble-api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'ui-design-system';
+import { Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateTag({ tag }: { tag: Tag }) {
@@ -40,22 +38,18 @@ export function UpdateTag({ tag }: { tag: Tag }) {
 const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const updateTagMutation = useUpdateTagMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: tag as UpdateTagPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        updateTagMutation
-          .mutateAsync(value)
-          .then(() => {
-            toast.success(t('common:success.save'));
-            onSuccess();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await updateTagMutation.mutateAsync(value);
+        toast.success(t('common:success.save'));
+        onSuccess();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -82,13 +76,15 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
           >
             {(field) => (
               <div className="group flex w-full flex-col gap-sm">
-                <FormLabel name={field.name}>{t('settings:tags.name')}</FormLabel>
-                <FormInput
+                <label htmlFor={field.name}>{t('settings:tags.name')}</label>
+                <Input
+                  id={field.name}
                   type="text"
                   name={field.name}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
                   defaultValue={field.state.value}
-                  valid={field.state.meta.errors.length === 0}
+                  aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
@@ -102,7 +98,7 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
           >
             {(field) => (
               <div className="group flex flex-col gap-sm">
-                <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>
+                <label htmlFor={field.name}>{t('settings:tags.color')}</label>
                 <ColorSelect onChange={field.handleChange} value={field.state.value} />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>

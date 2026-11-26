@@ -95,7 +95,6 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   const handleObjectChange = (tableName: string, path: ObjectPathSegment[]) => {
     setTargetTableName(tableName);
     setPathToTarget(path);
-    // Reset linked object checks when object changes
     setLinkedObjectChecks([]);
   };
 

@@ -62,7 +62,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
         )}
         {filter.unavailable ? (
           <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-            <Icon icon="error" className="text-red-base size-4" />
+            <Icon icon="error" className="text-red-primary size-4" />
           </Tooltip.Default>
         ) : null}
       </FilterTrigger>

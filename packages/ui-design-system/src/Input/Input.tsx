@@ -1,4 +1,3 @@
-import { formatNumber } from '@app-builder/utils/format';
 import { cva, VariantProps } from 'class-variance-authority';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import { Icon, type IconName } from 'ui-icons';
@@ -351,12 +350,11 @@ function clampDecimalPrecision(precision: number) {
 }
 
 function formatNumberInputValue(value: number, forceSign: boolean, language: string, decimalPrecision: number) {
-  return formatNumber(value, {
-    language,
+  return Intl.NumberFormat(language, {
     maximumFractionDigits: decimalPrecision,
     useGrouping: false,
     signDisplay: forceSign ? 'never' : 'auto',
-  });
+  }).format(value);
 }
 
 function fractionDigitCount(value: string) {

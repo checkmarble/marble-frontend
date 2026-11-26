@@ -1,12 +1,12 @@
 import { FormError } from '@app-builder/components/Form/Tanstack/FormError';
 import { Page } from '@app-builder/components/Page';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   updateAllowedNetworksPayloadSchema,
   useUpdateAllowedNetworks,
 } from '@app-builder/queries/settings/organization/update-allowed-networks';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -24,7 +24,7 @@ export const IpWhitelistingSettingsPage = ({
 }) => {
   const { t } = useTranslation(['common', 'settings']);
   const updateAllowedNetworksMutation = useUpdateAllowedNetworks(organizationId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -43,7 +43,7 @@ export const IpWhitelistingSettingsPage = ({
             form.setFieldValue('allowedNetworks', res.subnets);
           }
           toast.success(t('common:success.save'));
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
@@ -54,7 +54,9 @@ export const IpWhitelistingSettingsPage = ({
     },
   });
 
-  const removedNetworks = useStore(form.store, (state) => R.difference(allowedNetworks, state.values.allowedNetworks));
+  const removedNetworks = useSelector(form.store, (state) =>
+    R.difference(allowedNetworks, state.values.allowedNetworks),
+  );
 
   return (
     <Page.Content width="readable">

@@ -525,7 +525,7 @@ export const graphEdgeTypes = {
   hypernode: GraphEdge,
 };
 
-export function EdgeLabel({
+function EdgeLabel({
   through,
   field,
   appearance,

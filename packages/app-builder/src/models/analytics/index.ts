@@ -14,13 +14,6 @@ export * from './screening-hit';
 export type Outcome = 'approve' | 'review' | 'blockAndReview' | 'decline';
 export type DecisionsFilter = Map<Outcome, boolean>;
 
-export const outcomeColors: Record<Outcome, string> = {
-  approve: '#89D4AE',
-  review: '#FBDD82',
-  blockAndReview: '#FFECE6',
-  decline: '#E99B8E',
-};
-
 const iso = z.iso.datetime();
 
 const staticDateRangeSchema = z.object({
@@ -28,8 +21,6 @@ const staticDateRangeSchema = z.object({
   startDate: iso,
   endDate: iso,
 });
-
-export type StaticDateRange = z.infer<typeof staticDateRangeSchema>;
 
 const dynamicDateRangeSchema = z.object({
   type: z.literal('dynamic'),
@@ -85,7 +76,7 @@ export const analyticsQuery = analyticsFiltersQuery.extend({
   scenarioId: z.uuid(),
 });
 
-export const transformTriggersFiltersToFieldsFilters = (filters: AnalyticsFiltersQuery['trigger']): FieldFilterDto[] =>
+const transformTriggersFiltersToFieldsFilters = (filters: AnalyticsFiltersQuery['trigger']): FieldFilterDto[] =>
   filters
     ?.filter((f) => !f.unavailable)
     .map((f) => ({
@@ -94,8 +85,6 @@ export const transformTriggersFiltersToFieldsFilters = (filters: AnalyticsFilter
       op: f.op,
       values: f.value,
     })) ?? [];
-
-// export const TransformAnalyticsQueryRequest = analyticsQuery.transform((val): AnalyticsQueryDto[] => {
 
 export type AnalyticsQuery = z.infer<typeof analyticsQuery>;
 

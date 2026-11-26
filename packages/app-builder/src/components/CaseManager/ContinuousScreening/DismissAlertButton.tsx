@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ContinuousScreening } from '@app-builder/models/continuous-screening';
 import { useDismissContinuousScreeningMutation } from '@app-builder/queries/continuous-screening/dismiss';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import { Icon } from 'ui-icons';
 export function DismissAlertButton({ screening }: { screening: ContinuousScreening }) {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const dismissMutation = useDismissContinuousScreeningMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const dismissAlert = () => {
@@ -19,7 +19,7 @@ export function DismissAlertButton({ screening }: { screening: ContinuousScreeni
       .mutateAsync(screening.id)
       .then(() => {
         toast.success(t('continuousScreening:success.dismissed'));
-        revalidate();
+        router.invalidate();
         setOpen(false);
       })
       .catch(() => {

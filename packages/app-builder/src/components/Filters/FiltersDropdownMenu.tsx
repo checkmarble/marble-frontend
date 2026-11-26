@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import clsx from 'clsx';
+import { cn } from 'ui-design-system';
 
 const FiltersDropdownMenuContent = function FiltersDropdownMenuContent({
   ref,
@@ -11,8 +11,8 @@ const FiltersDropdownMenuContent = function FiltersDropdownMenuContent({
     <DropdownMenu.Portal>
       <DropdownMenu.Content
         ref={ref}
-        className={clsx(
-          'animate-slide-up-and-fade bg-surface-card border-grey-border rounded-sm border shadow-md will-change-[transform,opacity]',
+        className={cn(
+          'animate-slideUpAndFade bg-surface-card border-grey-border rounded-sm border shadow-md will-change-[transform,opacity]',
           className,
         )}
         side="bottom"
@@ -34,7 +34,7 @@ const FiltersDropdownMenuItem = function FiltersDropdownMenuItem({
   return (
     <DropdownMenu.Item
       ref={ref}
-      className={clsx(
+      className={cn(
         'radix-highlighted:bg-purple-background-light flex flex-row gap-sm rounded-sm p-sm outline-hidden transition-colors',
         className,
       )}

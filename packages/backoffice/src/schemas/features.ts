@@ -11,7 +11,7 @@ export const OVERRIDABLE_FEATURES = [
   'graph_exploration',
 ] as const;
 
-export const featureValueSchema = z.enum(['allowed', 'restricted', 'test']);
+const featureValueSchema = z.enum(['allowed', 'restricted', 'test']);
 
 export type FeatureValue = z.infer<typeof featureValueSchema>;
 

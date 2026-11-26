@@ -1,7 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   CreateInboxPayload,
   createInboxPayloadSchema,
@@ -10,10 +7,11 @@ import {
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, type ButtonV2Props, cn, Modal } from 'ui-design-system';
+import { Button, type ButtonV2Props, cn, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
@@ -43,7 +41,7 @@ export function CreateInbox({
   );
 }
 
-export function CreateInboxContent({
+function CreateInboxContent({
   setOpen,
   onInboxCreated,
 }: {
@@ -52,7 +50,7 @@ export function CreateInboxContent({
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const createInboxMutation = useCreateInboxMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const form = useForm({
@@ -60,22 +58,18 @@ export function CreateInboxContent({
     validators: {
       onSubmit: createInboxPayloadSchema,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createInboxMutation
-          .mutateAsync(value)
-          .then((result) => {
-            toast.success(t('common:success.save'));
-            setOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['inboxes'] });
-            revalidate();
-            if (result?.inboxId) {
-              onInboxCreated?.(result.inboxId);
-            }
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        const result = await createInboxMutation.mutateAsync(value);
+        toast.success(t('common:success.save'));
+        setOpen(false);
+        queryClient.invalidateQueries({ queryKey: ['inboxes'] });
+        router.invalidate();
+        if (result?.inboxId) {
+          onInboxCreated?.(result.inboxId);
+        }
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
   });
@@ -93,12 +87,14 @@ export function CreateInboxContent({
         <form.Field name="name">
           {(field) => (
             <div className="group flex flex-col gap-sm">
-              <FormLabel name={field.name}>{t('settings:inboxes.new_inbox.name')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('settings:inboxes.new_inbox.name')}</label>
+              <Input
+                id={field.name}
                 name={field.name}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 type="text"
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

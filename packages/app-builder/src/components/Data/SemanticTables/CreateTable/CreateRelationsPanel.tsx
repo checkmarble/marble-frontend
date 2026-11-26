@@ -118,7 +118,7 @@ function EmptyState() {
 }
 
 function RelationGroupDisplay({ group, canEdit }: { group: RelationGroupDisplay; canEdit: boolean }) {
-  const { t } = useTranslation('graph');
+  const { t } = useTranslation(['graph']);
   const [isEditing, setIsEditing] = useState(false);
   const [isViewing, setIsViewing] = useState(false);
   const dataModel = useDataModel();
@@ -208,7 +208,7 @@ function RelationGroupEdit({ group }: { group?: RelationGroupDisplay }) {
     defaultValues: { label: group?.label ?? '', ...emptyRelationEndpoints },
     validators: { onSubmit: relationFormSchema },
     onSubmit: ({ value, formApi }) => {
-      if (!formApi.state.isValid || isDuplicateRelation(relationsRef.current, value)) return;
+      if (isDuplicateRelation(relationsRef.current, value)) return;
       const trimmedLabel = value.label.trim();
       createMutation.mutate(
         { ...value, label: trimmedLabel, groupId: groupIdRef.current ?? undefined },
@@ -488,7 +488,7 @@ function TableFieldSelect({
   /** Lock the table select (e.g. same-table relations) while still allowing a field pick. */
   tableDisabled?: boolean;
 }) {
-  const { t } = useTranslation('graph');
+  const { t } = useTranslation(['graph']);
 
   return (
     <div className="flex flex-col gap-xs">

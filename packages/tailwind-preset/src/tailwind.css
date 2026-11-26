@@ -395,17 +395,6 @@
   }
 }
 
-@keyframes slideLeftAndFadeOut {
-  from {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-  to {
-    opacity: 0;
-    transform: translate(-100%, 0);
-  }
-}
-
 @keyframes slideRightAndFadeIn {
   from {
     opacity: 0;
@@ -414,17 +403,6 @@
   to {
     opacity: 1;
     transform: translate(0, 0);
-  }
-}
-
-@keyframes slideRightAndFadeOut {
-  from {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-  to {
-    opacity: 0;
-    transform: translate(+100%, 0);
   }
 }
 
@@ -457,18 +435,6 @@
   }
 }
 
-@keyframes overflow {
-  0% {
-    overflow: hidden;
-  }
-  99% {
-    overflow: hidden;
-  }
-  100% {
-    overflow: visible;
-  }
-}
-
 /* Custom animations */
 .animate-ping-slow {
   animation: ping-slow 5s ease infinite;
@@ -496,34 +462,6 @@
 
 .animate-overlayShow {
   animation: overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideLeftAndFadeIn {
-  animation: slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideLeftAndFadeOut {
-  animation: slideLeftAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideRightAndFadeIn {
-  animation: slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideRightAndFadeOut {
-  animation: slideRightAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slideDown {
-  animation: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.animate-slideUp {
-  animation: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.animate-overflow {
-  animation: overflow linear;
 }
 
 /* Scrollbar styling */
@@ -557,16 +495,8 @@
   }
 }
 
-.scrollbar-gutter-stable {
-  scrollbar-gutter: stable;
-}
-
 .text-rtl {
   direction: rtl;
-}
-
-.text-ltr {
-  direction: ltr;
 }
 
 /* Hide number input spinners */

@@ -1,4 +1,3 @@
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Outlet, useMatches } from '@tanstack/react-router';
@@ -6,7 +5,7 @@ import { cva } from 'class-variance-authority';
 import { useEffect } from 'react';
 import { Logo } from 'ui-icons';
 
-export type AuthPageHandle = {
+type AuthPageHandle = {
   alignment?: 'reverse' | 'default';
 };
 
@@ -23,9 +22,6 @@ const layoutClassName = cva('flex h-dvh bg-[#080525] relative isolate overflow-h
 });
 
 export const Route = createFileRoute('/_app/_auth')({
-  staticData: {
-    i18n: authI18n,
-  },
   beforeLoad: async ({ context }) => {
     await context.i18n.loadNamespaces(['common', 'auth']);
   },

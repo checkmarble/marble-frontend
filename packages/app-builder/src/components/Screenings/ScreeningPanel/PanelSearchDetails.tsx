@@ -93,7 +93,8 @@ function SearchDetailRow({ label, children }: { label: string; children: React.R
 }
 
 function QueryProperties({ query }: { query: ScreeningQuery }) {
-  const { getEntityName, t } = useEntityName();
+  const { getEntityName } = useEntityName();
+  const { t } = useTranslation(['screenings']);
   const entityTypeLabel = getEntityName(query.schema as SearchableSchema);
 
   return (

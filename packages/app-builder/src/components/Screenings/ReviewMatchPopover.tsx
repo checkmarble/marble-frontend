@@ -6,7 +6,7 @@ import {
   useReviewScreeningMatchMutation,
 } from '@app-builder/queries/screening/review-screening-match';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { type ReactElement, useId } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +66,7 @@ export function ReviewMatchPopover({
     },
   });
 
-  const currentStatus = useStore(form.store, (state) => state.values.status);
+  const currentStatus = useSelector(form.store, (state) => state.values.status);
 
   return (
     <MenuCommand.Menu

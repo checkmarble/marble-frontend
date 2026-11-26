@@ -12,7 +12,6 @@ export const RISK_TYPES = [
   'transaction_execution',
   'geo_risks',
 ] as const;
-export type RiskType = (typeof RISK_TYPES)[number];
 
 export type ScoringRule = {
   stableId: string;
@@ -22,7 +21,7 @@ export type ScoringRule = {
   ast: AstNode;
 };
 
-export const adaptScoringRule = (dto: ScoringRulesetWithRulesDto['rules'][number]): ScoringRule => ({
+const adaptScoringRule = (dto: ScoringRulesetWithRulesDto['rules'][number]): ScoringRule => ({
   stableId: dto.stable_id,
   name: dto.name,
   description: dto.description ?? '',

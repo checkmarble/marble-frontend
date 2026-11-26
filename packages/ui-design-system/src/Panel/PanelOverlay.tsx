@@ -5,7 +5,7 @@ export function PanelOverlay() {
 
   return (
     <div
-      className="absolute inset-0 bg-grey-primary/10 z-20 backdrop-blur-xs animate-overlay-show"
+      className="absolute inset-0 bg-grey-primary/10 z-20 backdrop-blur-xs animate-overlayShow"
       onClick={sharp.actions.close}
       aria-hidden="true"
     />

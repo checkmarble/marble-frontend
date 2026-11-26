@@ -1,11 +1,11 @@
 import type { DataModelField, ExportedFields, LinkToSingle, TableModel } from '@app-builder/models/data-model';
 import type { ExportedFieldPayload } from '@app-builder/schemas/settings';
 
-export const MAX_FILTERS_PER_TABLE = 5;
+const MAX_FILTERS_PER_TABLE = 5;
 
 const FILTERABLE_DATA_TYPES = ['String', 'Timestamp'] as const;
 
-export function isFilterableField(field: DataModelField): boolean {
+function isFilterableField(field: DataModelField): boolean {
   return (
     FILTERABLE_DATA_TYPES.includes(field.dataType as (typeof FILTERABLE_DATA_TYPES)[number]) &&
     field.name !== 'updated_at'
@@ -52,7 +52,7 @@ function encodeFilterKey(tableId: string, selection: CustomFilterSelection): str
   return `${tableId}::ingested::${selection.path.join('→')}.${selection.fieldName}`;
 }
 
-export function buildPersistedKey(tableId: string, payload: ExportedFieldPayload): string {
+function buildPersistedKey(tableId: string, payload: ExportedFieldPayload): string {
   if ('triggerObjectField' in payload) {
     return encodeFilterKey(tableId, { kind: 'trigger', fieldName: payload.triggerObjectField });
   }
@@ -63,7 +63,7 @@ export function buildPersistedKey(tableId: string, payload: ExportedFieldPayload
   });
 }
 
-export function toExportedFieldPayload(row: Pick<CustomFilterDraftRow, 'selection'>): ExportedFieldPayload | null {
+function toExportedFieldPayload(row: Pick<CustomFilterDraftRow, 'selection'>): ExportedFieldPayload | null {
   if (!row.selection) return null;
 
   if (row.selection.kind === 'trigger') {
@@ -90,7 +90,7 @@ export function hasIncompleteActiveRow(draftRows: CustomFilterDraftRow[]): boole
   return draftRows.some((row) => isActiveRow(row) && !isRowComplete(row));
 }
 
-export function getActiveCompleteRows(draftRows: CustomFilterDraftRow[]): CustomFilterDraftRow[] {
+function getActiveCompleteRows(draftRows: CustomFilterDraftRow[]): CustomFilterDraftRow[] {
   return draftRows.filter((row) => isActiveRow(row) && isRowComplete(row));
 }
 

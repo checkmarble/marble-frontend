@@ -51,11 +51,13 @@ export function RequestSideInfo({ screening, caseDetail }: RequestSideInfoProps)
 }
 
 export function ScreeningTriggerCallout({ screening }: { screening: ContinuousScreening }) {
+  const { t } = useTranslation(['continuousScreening']);
   return (
     <Callout variant="outlined" color="purple" className="text-small">
       <div className="grid grid-cols-[1fr_auto] items-center">
         <div>
           <Trans
+            t={t}
             i18nKey={`continuousScreening:review.callout.${screening.triggerType}`}
             components={{
               EntityType: <Tag color="grey">{getEntityType(screening)}</Tag>,

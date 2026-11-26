@@ -68,12 +68,6 @@ export const editInboxPayloadSchema = z.object({ inboxId: z.string(), caseId: z.
 
 export type EditInboxPayload = z.infer<typeof editInboxPayloadSchema>;
 
-// Edit name
-
-export const editNamePayloadSchema = z.object({ name: z.string(), caseId: z.string() });
-
-export type EditNamePayload = z.infer<typeof editNamePayloadSchema>;
-
 // Edit tags
 
 export const editTagsPayloadSchema = z.object({
@@ -197,14 +191,14 @@ export type ReviewScreeningMatchPayload = z.infer<typeof reviewScreeningMatchPay
 
 // Add to case
 
-export const newCaseSchema = z.object({
+const newCaseSchema = z.object({
   newCase: z.literal(true),
   name: z.string().min(1),
   decisionIds: protectArray(z.array(z.string())),
   inboxId: z.string().min(1),
 });
 
-export const existingCaseSchema = z.object({
+const existingCaseSchema = z.object({
   newCase: z.literal(false),
   caseId: z.string().min(1),
   decisionIds: protectArray(z.array(z.string())),
@@ -219,8 +213,8 @@ export type AddToCasePayload = z.infer<typeof addToCasePayloadSchema>;
 const caseObjectReferenceSchema = z.object({ objectType: z.string().min(1), objectId: z.string().min(1) });
 const caseObjectsSchema = protectArray(z.array(caseObjectReferenceSchema).min(1));
 
-export const newObjectsToCaseSchema = newCaseSchema.omit({ decisionIds: true }).extend({ objects: caseObjectsSchema });
-export const existingObjectsToCaseSchema = existingCaseSchema
+const newObjectsToCaseSchema = newCaseSchema.omit({ decisionIds: true }).extend({ objects: caseObjectsSchema });
+const existingObjectsToCaseSchema = existingCaseSchema
   .omit({ decisionIds: true })
   .extend({ objects: caseObjectsSchema });
 
@@ -339,8 +333,6 @@ export const listCasesInputSchema = filtersSchema.extend({
   offsetId: z.string().nullable().optional(),
 });
 
-export type ListCasesInput = z.infer<typeof listCasesInputSchema>;
-
 // List case decisions pagination
 
 export const listCaseDecisionsInputSchema = z.object({
@@ -348,5 +340,3 @@ export const listCaseDecisionsInputSchema = z.object({
   limit: z.number().optional(),
   cursorId: z.string().optional(),
 });
-
-export type ListCaseDecisionsInput = z.infer<typeof listCaseDecisionsInputSchema>;

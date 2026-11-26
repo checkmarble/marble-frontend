@@ -61,7 +61,7 @@ function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInp
   });
 }
 
-export type ManualSearchFormInstance = ReturnType<typeof useManualSearchForm>;
+type ManualSearchFormInstance = ReturnType<typeof useManualSearchForm>;
 
 const ManualSearchFormContext = createContext<ManualSearchFormInstance | null>(null);
 
@@ -73,7 +73,7 @@ export function useFormManuallSearch() {
 
 export function FreeformSearchForm({ onSearchComplete }: FreeformSearchFormProps) {
   const listConfigQuery = useListConfigQuery('manual_search');
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common']);
 
   return match(listConfigQuery)
     .with({ isPending: true }, () => (
@@ -413,5 +413,3 @@ function FreeformSearchFormInner({
     </ManualSearchFormContext.Provider>
   );
 }
-
-export default FreeformSearchForm;

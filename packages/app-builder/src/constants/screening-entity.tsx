@@ -17,18 +17,9 @@ import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
 import { formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { match } from 'ts-pattern';
 
-export {
-  BirthdDateAverage,
-  IconDot,
-  ParseAddress,
-  ParseAlias,
-} from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
-export {
-  cleanUrl,
-  detectNativeScript,
-} from '@app-builder/components/Screenings/MatchCard/match-card-utility-functions';
+export { BirthdDateAverage } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 
-export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
+type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
   Schema extends keyof typeof schemaInheritence,
   _R = never,
@@ -53,7 +44,7 @@ export const SEARCH_ENTITIES = {
   },
 } satisfies { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } };
 
-export const schemaProperties = {
+const schemaProperties = {
   Thing: [
     'name',
     'summary',
@@ -279,7 +270,7 @@ const SCRIPT_TAGGED_PROPERTIES = [
 ] as const satisfies ScreeningEntityProperty[];
 
 // list of properties that are displayed in a list, not inline
-export const propertyMetadataList: Array<keyof typeof propertyMetadata> = [
+const propertyMetadataList: Array<keyof typeof propertyMetadata> = [
   'address',
   'addressEntity',
   ...SCRIPT_TAGGED_PROPERTIES,

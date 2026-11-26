@@ -28,8 +28,6 @@ type StepperData<Steps extends readonly Step[], Validator extends ZodType, Initi
   data: InitialData;
 };
 
-export type Identity<T> = T extends object ? {} & { [P in keyof T]: T[P] } : T;
-
 export const buildStepper = <Steps extends readonly Step[], Validator extends ZodType, InitialData>(
   options: BuildStepperOptions<Steps, Validator, InitialData>,
 ) => {

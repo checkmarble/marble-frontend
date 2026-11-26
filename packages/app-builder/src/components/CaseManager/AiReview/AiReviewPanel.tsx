@@ -1,8 +1,8 @@
 import { type AiCaseReviewListItem, type AiCaseReviewStatus } from '@app-builder/models/cases';
-import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
-import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
-import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
-import { useCaseReviewQuery } from '@app-builder/queries/get-case-review';
+import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/cases/add-review-to-case-comments';
+import { useEnqueueCaseReviewMutation } from '@app-builder/queries/cases/ask-case-review';
+import { useCaseReviewFeedbackMutation } from '@app-builder/queries/cases/case-review-feedback';
+import { useCaseReviewQuery } from '@app-builder/queries/cases/get-case-review';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -22,12 +22,16 @@ type AiReviewPanelProps = {
 export function AiReviewPanel({ caseId, canManuallyReview, open, onOpenChange, reviews }: AiReviewPanelProps) {
   return (
     <Panel.Root open={open} onOpenChange={onOpenChange}>
-      <AiReviewPanelContent {...{ caseId, canManuallyReview, open, onOpenChange, reviews }} />
+      <AiReviewPanelContent {...{ caseId, canManuallyReview, reviews }} />
     </Panel.Root>
   );
 }
 
-function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews }: AiReviewPanelProps) {
+function AiReviewPanelContent({
+  caseId,
+  canManuallyReview,
+  reviews,
+}: Omit<AiReviewPanelProps, 'open' | 'onOpenChange'>) {
   const { t } = useTranslation(['cases', 'common']);
   const formatDateTime = useFormatDateTime();
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();

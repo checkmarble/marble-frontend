@@ -4,11 +4,7 @@ import { getScoringRulesetFn } from '@app-builder/server-fns/scoring';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export const useGetScoringRulesetQuery = (
-  recordType: string,
-  version?: string | number,
-  options?: { enabled?: boolean },
-) => {
+const useGetScoringRulesetQuery = (recordType: string, version?: string | number, options?: { enabled?: boolean }) => {
   const getScoringRuleset = useServerFn(getScoringRulesetFn);
   const resolvedVersion = version ?? 'committed';
 

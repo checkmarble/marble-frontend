@@ -27,13 +27,13 @@ export type GraphRecordRef = {
 
 export const GRAPH_DEGREE_OPTIONS = [1, 2, 3, 4, 5] as const;
 export type GraphDegree = (typeof GRAPH_DEGREE_OPTIONS)[number];
-export const DEFAULT_GRAPH_DEGREES: GraphDegree = 2;
+const DEFAULT_GRAPH_DEGREES: GraphDegree = 2;
 
 export function isGraphDegree(value: number): value is GraphDegree {
   return (GRAPH_DEGREE_OPTIONS as readonly number[]).includes(value);
 }
 
-export type GraphSessionContextValue = {
+type GraphSessionContextValue = {
   recordType: string;
   setRecordType: (value: string) => void;
   recordId: string;

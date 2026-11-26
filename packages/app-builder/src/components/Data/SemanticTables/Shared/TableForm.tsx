@@ -2,8 +2,7 @@ import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEdi
 import { ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Input, SelectV2, Typo } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Input, SelectV2, Typo } from 'ui-design-system';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { DrawerContext } from './DrawerContext';
 import { FieldDetailPanel } from './FieldDetailPanel';
@@ -185,99 +184,6 @@ export function FormTable({
           />
         ) : null}
       </FieldsEditorContext.Provider>
-    </div>
-  );
-}
-
-export function SummaryView() {
-  const { tableIds } = DrawerContext.useValue();
-  const { t } = useTranslation(['data']);
-
-  return (
-    <div className="flex flex-col gap-md">
-      <Typo variant="subtitle2">{t('data:upload_data.tables_label')}</Typo>
-      <div className="flex flex-col gap-md">
-        {tableIds.map((tableId) => (
-          <SummaryTableRow key={tableId} tableId={tableId} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SummaryTableRow({ tableId }: { tableId: string }) {
-  const { tablesState, updateTableState } = DrawerContext.useValue();
-  const { t } = useTranslation(['data']);
-  const tableState = tablesState[tableId]!;
-
-  const ftmEntityOptions = useMemo(
-    () =>
-      ftmEntities.map((entity) => ({
-        label: t(`data:upload_data.ftm_entity.${entity}`),
-        value: entity,
-      })),
-    [t],
-  );
-
-  const hasSubEntity = tableState.entityType === 'person';
-
-  const subEntityOptions = useMemo(() => {
-    if (hasSubEntity) {
-      return ftmEntityPersonOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_person.${sub}`),
-        value: sub,
-      }));
-    }
-    return [];
-  }, [hasSubEntity, t]);
-
-  return (
-    <div className="flex items-center gap-md">
-      <div
-        className={cn(
-          'grid grid-cols-3 w-full items-center gap-md rounded-lg border border-grey-border p-md',
-          tableState.isCanceled && 'opacity-50',
-        )}
-      >
-        <Input
-          value={tableState.alias}
-          onChange={(e) => updateTableState(tableId, { alias: e.currentTarget.value })}
-          placeholder={t('data:upload_data.name_placeholder')}
-          className={cn(tableState.isCanceled && 'line-through')}
-          disabled={tableState.isCanceled}
-        />
-        <SelectV2
-          value={tableState.entityType}
-          placeholder={t('data:upload_data.object_placeholder')}
-          onChange={(value) => {
-            const nextEntityType = value;
-            updateTableState(tableId, {
-              entityType: nextEntityType,
-              subEntity: nextEntityType === 'person' ? 'moral' : 'unset',
-            });
-          }}
-          options={ftmEntityOptions}
-          disabled={tableState.isCanceled}
-          className={cn(!hasSubEntity && 'col-span-2')}
-        />
-        {hasSubEntity ? (
-          <SelectV2
-            value={tableState.subEntity}
-            placeholder={t('data:upload_data.sub_object_placeholder')}
-            onChange={(value) => updateTableState(tableId, { subEntity: value as typeof tableState.subEntity })}
-            options={subEntityOptions}
-            disabled={tableState.isCanceled}
-          />
-        ) : null}
-      </div>
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={() => updateTableState(tableId, { isCanceled: !tableState.isCanceled })}
-        title={tableState.isCanceled ? t('data:upload_data.button_restore') : t('data:upload_data.button_cancel')}
-      >
-        <Icon icon={tableState.isCanceled ? 'restart-alt' : 'delete'} className="size-4" />
-      </Button>
     </div>
   );
 }

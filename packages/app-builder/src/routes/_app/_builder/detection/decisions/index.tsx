@@ -73,10 +73,7 @@ function hasOtherDecisionFilters(params: DecisionsListQueryParams) {
   );
 }
 
-export const buildQueryParams = (
-  filters: DecisionFilters,
-  paginationParams?: PaginationParams,
-): DecisionsListQueryParams => {
+const buildQueryParams = (filters: DecisionFilters, paginationParams?: PaginationParams): DecisionsListQueryParams => {
   return {
     ...getDecisionFilters(filters),
     offsetId: paginationParams?.offsetId,
@@ -428,11 +425,9 @@ function SearchById() {
       onSubmit: searchFormSchema,
       onMount: searchFormSchema,
     },
-    onSubmit: ({ formApi, value }) => {
-      if (formApi.state.isValid) {
-        const decisionId = decisionIdToParams(value.decisionId);
-        navigate({ to: '/detection/decisions/$decisionId', params: { decisionId } });
-      }
+    onSubmit: ({ value }) => {
+      const decisionId = decisionIdToParams(value.decisionId);
+      navigate({ to: '/detection/decisions/$decisionId', params: { decisionId } });
     },
   });
 

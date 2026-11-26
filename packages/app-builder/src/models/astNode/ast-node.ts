@@ -13,7 +13,7 @@ export type ConstantType =
   | Array<ConstantType>
   | { [key: string]: ConstantType };
 
-export const constantTypeSchema: z.ZodType<ConstantType> = baseConstantTypeSchema.or(
+const constantTypeSchema: z.ZodType<ConstantType> = baseConstantTypeSchema.or(
   z.union([
     z.lazy(() => protectArray(z.array(constantTypeSchema))),
     z.lazy(() => z.record(z.string(), constantTypeSchema)),
@@ -53,7 +53,7 @@ export type CheckNodeId<T extends AstNode, N> = N extends AstNode
     ? IdLessAstNode<T>
     : never;
 
-export const astNodeSchema: z.ZodType<AstNode> = baseAstNodeSchema.extend({
+const astNodeSchema: z.ZodType<AstNode> = baseAstNodeSchema.extend({
   children: z.lazy(() => protectArray(z.array(astNodeSchema))),
   namedChildren: z.lazy(() => z.record(z.string(), astNodeSchema)),
 });

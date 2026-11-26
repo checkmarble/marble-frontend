@@ -57,7 +57,7 @@ const InboxDiff = ({
   updatedConfig: PrevalidationCreateContinuousScreeningConfig;
   baseConfig: ContinuousScreeningConfig;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['continuousScreening', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const hasInboxChanged = updatedConfig.inboxId !== baseConfig.inboxId;
 

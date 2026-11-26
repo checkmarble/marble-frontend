@@ -1,7 +1,6 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { isAdmin } from '@app-builder/models';
 import { CaseDetail } from '@app-builder/models/cases';
 import { ContinuousScreening } from '@app-builder/models/continuous-screening';
@@ -36,11 +35,10 @@ type ContinuousScreeningPageProps = {
 };
 
 export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: ContinuousScreeningPageProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'cases']);
   const { currentUser } = useOrganizationDetails();
   const { orgTags } = useOrganizationTags();
   const isUserAdmin = isAdmin(currentUser);
-  const revalidate = useLoaderRevalidator();
   const rootRef = useRef<HTMLDivElement>(null);
 
   const hasRemainingMatchesToExamine = screening.matches.some((match) => match.status === 'pending');
@@ -57,14 +55,14 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
   const handleCloseCase = () => {
     closeCaseMutation
       .mutateAsync({ caseId: caseDetail.id, comment: '' })
-      .then(() => revalidate())
+      .then(() => router.invalidate())
       .catch(() => toast.error(t('common:errors.unknown')));
   };
 
   const handleReopenCase = () => {
     reopenCaseMutation
       .mutateAsync({ caseId: caseDetail.id, comment: '' })
-      .then(() => revalidate())
+      .then(() => router.invalidate())
       .catch(() => toast.error(t('common:errors.unknown')));
   };
 

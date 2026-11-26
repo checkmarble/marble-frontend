@@ -113,6 +113,7 @@ function TenantsContent({ tenants }: { tenants: Tenant[] }) {
       <div className="flex flex-wrap items-center gap-md">
         <div className="w-100 max-w-full">
           <Input
+            autoFocus
             startAdornment="search"
             endAdornment={search ? 'cross' : undefined}
             onEndAdornmentClick={() => setSearch('')}

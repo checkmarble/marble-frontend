@@ -1,7 +1,7 @@
 import { i18nConfig, supportedLngs } from '@app-builder/services/i18n/i18n-config';
 import { useLngSession } from '@app-builder/services/i18n/lng-session.server';
 import { resources } from '@app-builder/services/i18n/resources/resources';
-import { createInstance, type FlatNamespace, type InitOptions, type i18n } from 'i18next';
+import { createInstance, type FlatNamespace, type i18n, type TFunction } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { ALL_NAMESPACES } from './all-namespaces';
 
@@ -64,15 +64,12 @@ export function makeI18nextServerService() {
     getFixedT: async <N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]]>(
       request: Request,
       namespaces: N,
-      options?: Omit<InitOptions, 'react'>,
-    ) => {
+    ): Promise<TFunction<N>> => {
       const locale = await getLocale(request);
       const instance = makeI18nextServerInstance(locale);
-      return instance.getFixedT(locale, namespaces as string | string[], options);
+      return instance.getFixedT(locale, namespaces);
     },
     makeI18nextServerInstance,
     setLanguage,
   };
 }
-
-export type I18nextServerService = ReturnType<typeof makeI18nextServerService>;

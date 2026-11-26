@@ -3,17 +3,16 @@
   "version": "0.0.0",
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "@vitejs/plugin-react": "6.1.2",
+    "@vitejs/plugin-react": "6.2.1",
     "@vitest/coverage-v8": "5.0.5",
     "@vitest/ui": "5.0.5",
-    "lefthook": "^2.1.14",
-    "react-refresh": "^0.19.0",
+    "lefthook": "^2.2.2",
     "typescript": "7.0.2"
   },
   "license": "MIT",
   "overrides": {
     "srvx": "0.11.22",
-    "vite": "8.3.5",
+    "vite": "8.3.6",
     "cookie": "^0.7.2",
     "cross-spawn": "^7.0.5",
     "minimatch": "9.0.7",

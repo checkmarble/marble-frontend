@@ -51,8 +51,6 @@ import { getRequest } from '@tanstack/react-start/server';
 import * as R from 'remeda';
 import { z } from 'zod/v4';
 
-// ---- Types moved from validate-ast route ----
-
 export type AstValidationPayload = {
   node: AstNode;
   expectedReturnType?: ReturnValueType;
@@ -168,10 +166,6 @@ export function generateFlatEvaluation(
 
   return [currentNodeEvaluation, ...childrenEvaluations, ...namedChildrenEvaluations];
 }
-
-export type AstValidationFunction = (node: AstNode, expectedReturnType?: ReturnValueType) => Promise<NodeEvaluation>;
-
-// ---- Type moved from builder-options route ----
 
 export type BuilderOptionsResource = {
   customLists: CustomList[];
@@ -485,7 +479,7 @@ export const createDraftIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
+    return context.authInfo.scenario.createDraftFromScenarioIteration(data.iterationId);
   });
 
 export const deactivateIterationFn = createServerFn({ method: 'POST' })
@@ -686,4 +680,45 @@ export const getIterationRuleFn = createServerFn({ method: 'GET' })
   .validator(z.object({ ruleId: z.string() }))
   .handler(async ({ context, data }) => {
     return { rule: await context.authInfo.scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }) };
+  });
+
+export const triggerManualExecutionFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      iterationId: z.string(),
+      forceRescore: z.boolean().optional(),
+    }),
+  )
+  .handler(async ({ data, context }) => {
+    await context.authInfo.scenario.scheduleScenarioExecution({
+      iterationId: data.iterationId,
+      deduplicateObjects: data.forceRescore ? false : undefined,
+    });
+    return { status: 'success' as const };
+  });
+
+const MAX_SCORE_THRESHOLD = 10000;
+
+const saveScenarioDecisionPayloadSchema = z
+  .object({
+    iterationId: z.string(),
+    scoreReviewThreshold: z.number().int().min(-MAX_SCORE_THRESHOLD).max(MAX_SCORE_THRESHOLD),
+    scoreBlockAndReviewThreshold: z.number().int().min(-MAX_SCORE_THRESHOLD).max(MAX_SCORE_THRESHOLD),
+    scoreDeclineThreshold: z.number().int().min(-MAX_SCORE_THRESHOLD).max(MAX_SCORE_THRESHOLD),
+  })
+  .refine((v) => v.scoreBlockAndReviewThreshold >= v.scoreReviewThreshold)
+  .refine((v) => v.scoreDeclineThreshold >= v.scoreBlockAndReviewThreshold);
+
+export const saveScenarioDecisionFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(saveScenarioDecisionPayloadSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      const { iterationId, ...thresholds } = data;
+      await context.authInfo.scenario.updateScenarioIteration(iterationId, thresholds);
+      return { status: 'success' as const };
+    } catch {
+      return { status: 'error' as const };
+    }
   });

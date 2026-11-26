@@ -1,14 +1,14 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
+  getScoringLevelLabel,
   isMaxRiskLevelInRange,
   MAX_RISK_LEVELS,
   type MaxRiskLevel,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   type ScoringSettings as ScoringSettingsModel,
   scoringLevelEntries,
 } from '@app-builder/models/scoring';
 import { useUpdateScoringSettingsMutation } from '@app-builder/queries/scoring/update-settings';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -51,13 +51,13 @@ function ScoringSettingsForm() {
   const { t } = useTranslation(['user-scoring', 'common']);
   const [maxRiskLevel, setMaxRiskLevel] = useState(3);
   const updateScoringSettingsMutation = useUpdateScoringSettingsMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleValidateScale = () => {
     updateScoringSettingsMutation
       .mutateAsync({ maxRiskLevel })
       .then(() => {
-        revalidate();
+        router.invalidate();
       })
       .catch(() => {
         toast.error(t('common:errors.unknown'));
@@ -113,14 +113,13 @@ function ScoringLevels({ maxLevel, className }: { maxLevel: number; className?: 
   }
 
   const colorEntries = scoringLevelEntries(SCORING_LEVELS_COLORS[maxLevel]);
-  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxLevel];
 
   return (
     <div className={cn(className)}>
       {colorEntries.map(([level, color]) => (
         <div key={level} className="flex gap-sm items-center">
           <div className="size-4 rounded-full" style={{ backgroundColor: color }} />
-          <span>{t(labelKeys[level] ?? '')}</span>
+          <span>{getScoringLevelLabel(t, maxLevel, level)}</span>
         </div>
       ))}
     </div>

@@ -3,7 +3,7 @@ import { MarbleToaster } from '@app-builder/components/MarbleToaster';
 import { TimezoneDetector } from '@app-builder/components/TimezoneDetector';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { FormatContext } from '@app-builder/contexts/FormatContext';
-import { ThemeProvider } from '@app-builder/contexts/ThemeContext';
+import { SYSTEM_THEME_SCRIPT, ThemedHtml, ThemeProvider } from '@app-builder/contexts/ThemeContext';
 import { getRootLoaderDataFn } from '@app-builder/server-fns/root';
 import { ProboCookieBanner } from '@app-builder/services/consent/ProboCookieBanner';
 import { getSSRInstance } from '@app-builder/services/i18n/i18n-instance-store';
@@ -18,7 +18,6 @@ import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
 import { ClientOnly, createRootRouteWithContext, HeadContent, Scripts, useMatch } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-import clsx from 'clsx';
 import { type i18n } from 'i18next';
 import { ReactNode, useEffect, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -78,7 +77,7 @@ function RootShell({ children }: { children: ReactNode }) {
   const loaderData = useRootLoaderData();
 
   const locale = loaderData?.locale ?? 'en';
-  const theme = loaderData?.theme ?? 'light';
+  const themePreference = loaderData?.theme ?? 'light';
   const timezone = loaderData?.timezone ?? 'UTC';
   const nonce = loaderData?.nonce ?? '';
   const csrf = loaderData?.csrf ?? '';
@@ -101,21 +100,24 @@ function RootShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <html lang={locale} dir={i18n.dir()} className={clsx('overscroll-y-none', theme === 'dark' && 'dark')}>
-      <head>
-        <HeadContent />
-        {segmentScript ? <SegmentScript nonce={nonce} script={segmentScript} /> : null}
-      </head>
-      <body
-        data-hydrated={hydrated || undefined}
-        className="bg-surface-page selection:text-grey-white selection:bg-purple-primary min-h-screen w-full antialiased text-grey-primary"
-      >
-        <I18nextProvider i18n={i18n}>
-          <I18nProvider>
-            <NonceProvider value={nonce}>
-              <FormatContext.Provider value={{ locale, timezone }}>
-                <CsrfContext.Provider value={csrf}>
-                  <ThemeProvider defaultTheme={theme}>
+    <ThemeProvider preference={themePreference}>
+      <ThemedHtml lang={locale} dir={i18n.dir()} className="overscroll-y-none">
+        <head>
+          {themePreference === 'system' ? (
+            <script suppressHydrationWarning nonce={nonce} dangerouslySetInnerHTML={{ __html: SYSTEM_THEME_SCRIPT }} />
+          ) : null}
+          <HeadContent />
+          {segmentScript ? <SegmentScript nonce={nonce} script={segmentScript} /> : null}
+        </head>
+        <body
+          data-hydrated={hydrated || undefined}
+          className="bg-surface-page selection:text-grey-white selection:bg-purple-primary min-h-screen w-full antialiased text-grey-primary"
+        >
+          <I18nextProvider i18n={i18n}>
+            <I18nProvider>
+              <NonceProvider value={nonce}>
+                <FormatContext.Provider value={{ locale, timezone }}>
+                  <CsrfContext.Provider value={csrf}>
                     {appConfig ? (
                       <AppConfigContext.Provider value={appConfig}>{children}</AppConfigContext.Provider>
                     ) : (
@@ -124,34 +126,34 @@ function RootShell({ children }: { children: ReactNode }) {
                     <ClientOnly>
                       <ProboCookieBanner />
                     </ClientOnly>
-                  </ThemeProvider>
-                </CsrfContext.Provider>
-              </FormatContext.Provider>
-            </NonceProvider>
-          </I18nProvider>
-        </I18nextProvider>
-        <script
-          suppressHydrationWarning
-          nonce={nonce}
-          dangerouslySetInnerHTML={{
-            // Escape `<` for an HTML script context, not just a JavaScript string context.
-            __html: `window.ENV = ${JSON.stringify(env).replace(/</g, '\\u003c')}`,
-          }}
-        />
-        <Scripts />
-        <ClientOnly>
-          <TimezoneDetector />
-          <MarbleToaster toastMessage={toastMessage} />
-          <TanStackDevtools
-            plugins={[
-              { name: 'TanStack Router', render: <TanStackRouterDevtoolsPanel /> },
-              { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> },
-              formDevtoolsPlugin(),
-            ]}
+                  </CsrfContext.Provider>
+                </FormatContext.Provider>
+              </NonceProvider>
+            </I18nProvider>
+          </I18nextProvider>
+          <script
+            suppressHydrationWarning
+            nonce={nonce}
+            dangerouslySetInnerHTML={{
+              // Escape `<` for an HTML script context, not just a JavaScript string context.
+              __html: `window.ENV = ${JSON.stringify(env).replace(/</g, '\\u003c')}`,
+            }}
           />
-        </ClientOnly>
-      </body>
-    </html>
+          <Scripts />
+          <ClientOnly>
+            <TimezoneDetector />
+            <MarbleToaster toastMessage={toastMessage} />
+            <TanStackDevtools
+              plugins={[
+                { name: 'TanStack Router', render: <TanStackRouterDevtoolsPanel /> },
+                { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> },
+                formDevtoolsPlugin(),
+              ]}
+            />
+          </ClientOnly>
+        </body>
+      </ThemedHtml>
+    </ThemeProvider>
   );
 }
 

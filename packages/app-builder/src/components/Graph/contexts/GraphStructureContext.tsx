@@ -6,14 +6,14 @@ import { type ReactNode, useCallback, useMemo, useState } from 'react';
  * change re-runs clustering and positioning anyway — a broad re-render is
  * honest work rather than waste.
  */
-export type GraphStructure = {
+type GraphStructure = {
   /** Manually hidden node ids. Orphans cascade out via the reachability sweep. */
   hiddenNodeIds: Set<string>;
   /** Branch roots the user drilled into; their cluster chips are suppressed. */
   expandedRootIds: Set<string>;
 };
 
-export type GraphStructureActions = {
+type GraphStructureActions = {
   hideNodes: (ids: string[]) => void;
   restoreHiddenNodes: () => void;
   toggleClusterExpanded: (rootId: string) => void;

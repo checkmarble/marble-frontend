@@ -10,7 +10,6 @@ import { ScenarioDescriptionEditable, ScenarioHeader } from '@app-builder/compon
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { Spinner } from '@app-builder/components/Spinner';
 import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { hasInProgressScheduledExecution, type ScheduledExecution } from '@app-builder/models/decision';
@@ -18,14 +17,15 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { useToggleScenarioDeduplicationMutation } from '@app-builder/queries/scenarios/toggle-deduplication';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
+import { triggerManualExecutionFn } from '@app-builder/server-fns/scenarios';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { isEditScenarioAvailable, isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
 import { formatSchedule } from '@app-builder/utils/format';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
+import { createServerFn, useServerFn } from '@tanstack/react-start';
 import { type ParseKeys } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
@@ -34,7 +34,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Checkbox, CtaV2ClassName, cn, Separator, Switch, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod/v4';
 
 const homeLoader = createServerFn()
   .middleware([authMiddleware])
@@ -65,23 +64,6 @@ const homeLoader = createServerFn()
       testRuns,
       liveIterationSchedule: liveIteration?.schedule,
     };
-  });
-
-const triggerManualExecutionPayloadSchema = z.object({
-  params: z.object({ iterationId: z.string() }),
-  forceRescore: z.boolean().optional(),
-});
-
-const triggerManualExecutionAction = createServerFn()
-  .middleware([authMiddleware])
-  .validator(triggerManualExecutionPayloadSchema)
-  .handler(async function triggerManualExecutionAction({ data, context }) {
-    const { scenario } = context.authInfo;
-    await scenario.scheduleScenarioExecution({
-      iterationId: data.params.iterationId,
-      deduplicateObjects: data.forceRescore ? false : undefined,
-    });
-    return { status: 'success' as const };
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/home')({
@@ -204,7 +186,7 @@ function ScenarioHome() {
 }
 
 function TestRunSection({ scenarioId, access }: { scenarioId: string; access: FeatureAccessLevelDto }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['scenarios']);
   const { currentScenario, scenarioIterations } = useDetectionScenarioData();
   const { testRuns } = Route.useLoaderData();
 
@@ -351,7 +333,7 @@ function BatchSection({
     t,
     i18n: { language },
   } = useTranslation(['common', 'scenarios']);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const toggleDeduplicationMutation = useToggleScenarioDeduplicationMutation();
 
   const isLive = !!liveIterationId;
@@ -377,7 +359,7 @@ function BatchSection({
       {
         onSuccess: () => {
           toast.success(t('common:success.save'));
-          revalidate();
+          router.invalidate();
         },
         onError: () => {
           toast.error(t('common:errors.unknown'));
@@ -471,24 +453,23 @@ function ManualTriggerScenarioExecutionForm({
   disabled: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
+  const triggerManualExecution = useServerFn(triggerManualExecutionFn);
 
   const mutation = useMutation({
     mutationFn: async (value: { iterationId: string; forceRescore?: boolean }) => {
-      return triggerManualExecutionAction({
-        data: { params: { iterationId: value.iterationId }, forceRescore: value.forceRescore },
+      return triggerManualExecution({
+        data: { iterationId: value.iterationId, forceRescore: value.forceRescore },
       });
     },
     onSuccess: () => {
-      revalidate();
+      router.invalidate();
     },
   });
 
   const form = useForm({
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        mutation.mutate(value);
-      }
+    onSubmit: ({ value }) => {
+      mutation.mutate(value);
     },
     defaultValues: { iterationId, forceRescore: false },
   });

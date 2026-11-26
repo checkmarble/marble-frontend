@@ -1,9 +1,8 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Collapsible } from 'ui-design-system';
+import { Collapsible, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function RuleSnoozeDetail({
@@ -50,7 +49,7 @@ export function RuleSnoozeDetail({
               return (
                 <li key={rule.id} className="flex flex-row">
                   <Icon
-                    className={clsx(
+                    className={cn(
                       'size-5 shrink-0',
                       hasSnoozesActive === true && 'text-green-primary',
                       hasSnoozesActive === false && 'text-red-primary',

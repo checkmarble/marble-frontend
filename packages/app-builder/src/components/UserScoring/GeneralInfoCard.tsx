@@ -1,9 +1,8 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
+  getScoringLevelLabel,
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABEL_KEYS,
   type ScoringDryRun,
   type ScoringRulesetWithRules,
   type ScoringSettings,
@@ -51,7 +50,10 @@ interface GeneralInfoCardProps {
   canUpdateScoringRulesets: boolean;
 }
 
-function formatDuration(seconds: number, t: (key: string) => string): string | null {
+function formatDuration(
+  seconds: number,
+  t: (key: `common:duration_unit.${NonNullable<ReturnType<typeof secondsToDisplay>['unit']>}`) => string,
+): string | null {
   const { value, unit } = secondsToDisplay(seconds);
   if (!unit) return null;
   return `${value} ${t(`common:duration_unit.${unit}`)}`;
@@ -67,7 +69,7 @@ export function GeneralInfoCard({
 }: GeneralInfoCardProps) {
   const { t } = useTranslation(['user-scoring', 'common']);
   const [viewBatchTest, setViewBatchTest] = useState(false);
-  const navigate = useAgnosticNavigation();
+  const navigate = useNavigate();
   const formatDateTime = useFormatDateTime();
   const prepareMutation = usePrepareScoringRulesetMutation();
   const commitMutation = useCommitScoringRulesetMutation();
@@ -85,7 +87,10 @@ export function GeneralInfoCard({
   });
 
   const handleVersionChange = (version: string) => {
-    navigate(`/user-scoring/${ruleset.recordType}/${version}`);
+    navigate({
+      to: '/user-scoring/$recordType/$version',
+      params: { recordType: ruleset.recordType, version },
+    });
   };
 
   const onLaunchTests = () => {
@@ -256,24 +261,22 @@ function EditGeneralSettingsPanel({
     validators: {
       onChange: updateScoringRulesetPayloadSchema,
     },
-    onSubmit: async ({ formApi, value }) => {
-      if (formApi.state.isValid) {
-        try {
-          const updated = await updateMutation.mutateAsync(value);
-          if (updated && 'error' in updated) {
-            toast.error(updated.error);
-            return;
-          }
-          toast.success(t('common:success.save'));
-          panelSharp.actions.close();
-          await router.invalidate();
-          navigate({
-            to: '/user-scoring/$recordType/$version',
-            params: { recordType: ruleset.recordType, version: 'draft' },
-          });
-        } catch {
-          toast.error(t('common:errors.unknown'));
+    onSubmit: async ({ value }) => {
+      try {
+        const updated = await updateMutation.mutateAsync(value);
+        if (updated && 'error' in updated) {
+          toast.error(updated.error);
+          return;
         }
+        toast.success(t('common:success.save'));
+        panelSharp.actions.close();
+        await router.invalidate();
+        navigate({
+          to: '/user-scoring/$recordType/$version',
+          params: { recordType: ruleset.recordType, version: 'draft' },
+        });
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
   });
@@ -347,7 +350,6 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
   }
 
   const colorEntries = scoringLevelEntries(SCORING_LEVELS_COLORS[maxRiskLevel]);
-  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="flex flex-col gap-sm">
@@ -359,7 +361,7 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
             <Fragment key={level}>
               <div className="flex items-center gap-xs h-6 px-xs rounded-full border" style={{ borderColor: color }}>
                 <div className="size-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <span className="text-xs text-grey-primary">{t(labelKeys[level] ?? '')}</span>
+                <span className="text-xs text-grey-primary">{getScoringLevelLabel(t, maxRiskLevel, level)}</span>
               </div>
               {!isLast ? (
                 <span className="text-xs font-medium text-grey-placeholder">{`≤ ${thresholds[i]} <`}</span>

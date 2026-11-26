@@ -20,7 +20,7 @@ import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import type { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useMatches, useParams, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
@@ -274,8 +274,8 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
     },
   });
 
-  const reportFile = useStore(form.store, (state) => state.values.file);
-  const newStatus = useStore(form.store, (state) => state.values.status);
+  const reportFile = useSelector(form.store, (state) => state.values.file);
+  const newStatus = useSelector(form.store, (state) => state.values.status);
 
   return (
     <Modal.Root open={open} onOpenChange={onOpenChange}>

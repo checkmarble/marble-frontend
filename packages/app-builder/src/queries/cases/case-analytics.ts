@@ -3,7 +3,7 @@ import { getCaseAnalyticsFn } from '@app-builder/server-fns/analytics';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export const caseAnalyticsQueryKey = (filters: CaseAnalyticsFilters) => ['case-analytics', filters];
+const caseAnalyticsQueryKey = (filters: CaseAnalyticsFilters) => ['case-analytics', filters];
 
 export const useCaseAnalytics = (filters: CaseAnalyticsFilters) => {
   const getCaseAnalytics = useServerFn(getCaseAnalyticsFn);

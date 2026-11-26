@@ -11,7 +11,7 @@ export const CARTO_BASEMAP = {
 
 export const MAP_HEIGHT = 200;
 
-export function isValidCoords(latitude: number, longitude: number) {
+function isValidCoords(latitude: number, longitude: number) {
   return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
 }
 

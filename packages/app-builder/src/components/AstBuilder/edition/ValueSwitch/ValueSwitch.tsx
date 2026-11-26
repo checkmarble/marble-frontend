@@ -32,7 +32,7 @@ import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, scoringLevelEntries } fro
 import { getDataAccessorDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { useCallbackRef } from '@app-builder/utils/hooks';
+import { useCallbackRef } from '@marble/shared';
 import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -273,7 +273,6 @@ function EditValueSwitch({ onDraftChange, ...props }: EditValueSwitchProps) {
           onValuesChange={setDimensionValues}
           onValueChange={replaceDimensionValue}
           onThresholdChange={setThreshold}
-          onFallbackChange={(fallback) => updateModel((current) => ({ ...current, fallback }))}
         />
       )}
 
@@ -696,7 +695,6 @@ type TwoDimensionEditorProps = {
   onValuesChange: (index: number, values: Array<string | number>) => void;
   onValueChange: (dimensionIndex: number, valueIndex: number, value: string | number) => void;
   onThresholdChange: (values: Array<string | number>, threshold: number) => void;
-  onFallbackChange: (fallback: number) => void;
 };
 
 function TwoDimensionEditor({
@@ -707,7 +705,6 @@ function TwoDimensionEditor({
   onValuesChange,
   onValueChange,
   onThresholdChange,
-  onFallbackChange,
 }: TwoDimensionEditorProps) {
   const { t, i18n } = useTranslation(['scenarios']);
   const [rowDimension, columnDimension] = model.dimensions;

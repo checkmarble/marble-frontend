@@ -146,9 +146,7 @@ export function PanelAddCsv({
                 />
               ) : null}
             </div>
-            {selectedObjectType ? (
-              <PastUploads objectType={selectedObjectType} configsPerObjectType={configsPerObjectType} />
-            ) : null}
+            {selectedObjectType ? <PastUploads objectType={selectedObjectType} /> : null}
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
@@ -340,14 +338,8 @@ function RemovableConfigTag({ label, onRemove }: { label: string; onRemove: () =
   );
 }
 
-function PastUploads({
-  objectType,
-  configsPerObjectType,
-}: {
-  objectType: string;
-  configsPerObjectType: Map<string, ContinuousScreeningConfiguration[]>;
-}) {
-  const { t } = useTranslation('upload');
+function PastUploads({ objectType }: { objectType: string }) {
+  const { t } = useTranslation(['upload']);
   const formatDateTime = useFormatDateTime();
 
   const uploadLogsQuery = useUploadTableQuery(objectType, true, {
@@ -380,22 +372,19 @@ function PastUploads({
               </div>
               <TagStatus status={uploadLog.status} />
             </div>
-            {/* TODO: uncomment when the back send relevant data
-            configsPerObjectType.has(objectType) && (
-              <div className="flex gap-sm flex-wrap items-center">
-                <p className="text-sm text-grey-secondary">{t('upload:active_screenings')}</p>
-                {Array.from(configsPerObjectType.get(objectType)!).map((config) => (
-                  <Tag key={config.id} color="white" size="medium">
-                    {config.name}
-                  </Tag>
-                ))}
-              </div>
-            )*/}
+            {/* TODO: list the configurations screening this object type once the backend sends them */}
           </Card>
         ))}
     </div>
   );
 }
+
+const uploadStatusTKeys = {
+  pending: 'upload:status_pending',
+  progressing: 'upload:status_processing',
+  success: 'upload:status_success',
+  failure: 'upload:status_failure',
+} as const;
 
 function TagStatus({ status }: { status: UploadLog['status'] }) {
   const { t } = useTranslation(['upload']);
@@ -404,7 +393,7 @@ function TagStatus({ status }: { status: UploadLog['status'] }) {
     .with('success', () => 'green' as TagProps['color'])
     .with('failure', () => 'red' as TagProps['color'])
     .otherwise(() => 'grey' as TagProps['color']);
-  const text = t(`upload:status_${status}`);
+  const text = t(uploadStatusTKeys[status]);
   return <Tag color={color}>{text}</Tag>;
 }
 

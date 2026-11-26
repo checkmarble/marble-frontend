@@ -11,7 +11,6 @@ export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
       const { tableId, semanticType, captionField, alias } = data;
       const { dataModelRepository } = context.authInfo;
 
-      // Fetch data model to find the caption field id
       const dataModel = await dataModelRepository.getDataModel();
       const table = dataModel.find((t) => t.id === tableId);
       const field = table?.fields.find((f) => f.name === captionField);

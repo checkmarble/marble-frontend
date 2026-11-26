@@ -1,7 +1,6 @@
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { cva, type VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +27,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'flex flex-1 flex-col items-center justify-center gap-sm rounded-lg border border-transparent p-sm',
         {
           'bg-green-background-light dark:bg-transparent dark:border-green-primary': color === 'green',
@@ -39,7 +38,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
       )}
     >
       <div
-        className={clsx('text-s', {
+        className={cn('text-s', {
           'text-green-secondary': color === 'green',
           'text-yellow-secondary': color === 'yellow',
           'text-orange-secondary': color === 'orange',
@@ -49,7 +48,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
         {t('decisions:outcome')}
       </div>
       <div
-        className={clsx('text-l text-center font-semibold first-letter:capitalize', {
+        className={cn('text-l text-center font-semibold first-letter:capitalize', {
           'text-green-primary': color === 'green',
           'text-yellow-primary': color === 'yellow',
           'text-orange-primary': color === 'orange',
@@ -62,7 +61,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   );
 }
 
-export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
+const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
       sm: 'gap-xs rounded-full px-xs py-2xs text-xs font-normal',
@@ -110,7 +109,7 @@ export const OutcomeBadge = ({
               .with('block_and_review', () =>
                 match(reviewStatus)
                   .with('approve', () => 'bg-green-background-light dark:bg-transparent dark:border-green-primary')
-                  .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-primary')
+                  .with('decline', () => 'bg-red-background dark:bg-transparent dark:border-red-primary')
                   .otherwise(() => 'bg-orange-background-light dark:bg-transparent dark:border-orange-border'),
               )
               .exhaustive(),

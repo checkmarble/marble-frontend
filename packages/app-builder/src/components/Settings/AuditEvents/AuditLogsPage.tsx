@@ -51,9 +51,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
     const hasApiKeyId = parsedQuery.data?.apiKeyId !== undefined;
 
     return auditEventsFilterNames.filter((name): name is AuditEventsFilterName => {
-      // Hide apiKeyId if userId is selected
       if (name === 'apiKeyId' && hasUserId) return false;
-      // Hide userId if apiKeyId is selected
       if (name === 'userId' && hasApiKeyId) return false;
       return true;
     });

@@ -41,7 +41,6 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
   }, [isOpen, filter.selectedValue]);
 
   const onOperatorChange = (operator: string) => {
-    // Check if operator is a valid NumberOperator value
     if (!NUMBER_OPERATORS.has(operator as NumberOperator)) throw new Error(`Invalid operator: ${operator}`);
 
     setLocalValue({ op: operator as NumberOperator, value: localValue.value });
@@ -89,7 +88,7 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
         })()}
         {filter.unavailable ? (
           <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-            <Icon icon="error" className="text-red-base size-4" />
+            <Icon icon="error" className="text-red-primary size-4" />
           </Tooltip.Default>
         ) : null}
       </FilterTrigger>

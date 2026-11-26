@@ -4,10 +4,9 @@ import { type FlatAstValidation } from '@app-builder/server-fns/scenarios';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { type AstBuilderRootProps } from '@ast-builder/types';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, type TagProps } from 'ui-design-system';
+import { cn, Tag, type TagProps } from 'ui-design-system';
 
 import { adaptBooleanOrNullReturnValue } from './helpers';
 import { ViewingEvaluationErrors } from './ViewingEvaluationErrors';
@@ -117,7 +116,7 @@ function ViewingRootOrWithAndLine({ isFirst, path, node, validation }: ViewingRo
     <>
       <LogicalOperatorLabel operator={isFirst ? 'if' : 'and'} type="text" />
 
-      <div className={clsx('flex flex-col gap-sm', rightComponent === null && 'col-span-2')}>
+      <div className={cn('flex flex-col gap-sm', rightComponent === null && 'col-span-2')}>
         <ViewingAstBuilderNode root path={path} node={node} validation={validation} />
         <ViewingEvaluationErrors id={node.id} evaluation={validation.evaluation} />
       </div>

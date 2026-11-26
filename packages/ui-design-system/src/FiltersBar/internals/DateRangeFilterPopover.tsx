@@ -100,7 +100,6 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
         <DateRangeFilter.Root
           dateRangeFilter={localDateRangeFilter as any}
           setDateRangeFilter={(value) => setLocalDateRangeFilter(value as any)}
-          locale={dateFnsLocale}
         >
           <div className="flex flex-col md:flex-row gap-sm">
             <DateRangeFilter.FromNowPicker

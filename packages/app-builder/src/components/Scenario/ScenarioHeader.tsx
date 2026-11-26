@@ -1,6 +1,5 @@
 import { BackButton } from '@app-builder/components/Breadcrumbs';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { Scenario } from '@app-builder/models/scenario';
 import {
   type UpdateScenarioPayload,
@@ -9,19 +8,13 @@ import {
 } from '@app-builder/queries/scenarios/update-scenario';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import { useHydrated } from '@tanstack/react-router';
-import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import { useHydrated, useRouter } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { TriggerObjectTag } from './TriggerObjectTag';
-
-export const handle = {
-  i18n: ['common', 'scenarios'] satisfies Namespace,
-};
 
 type ScenarioHeaderProps = {
   isEditScenarioAvailable: boolean;
@@ -30,7 +23,7 @@ type ScenarioHeaderProps = {
 
 export function ScenarioHeader({ isEditScenarioAvailable, scenario }: ScenarioHeaderProps) {
   const hydrated = useHydrated();
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   return (
     <div className="flex flex-row items-center gap-md">
@@ -59,7 +52,7 @@ export function ScenarioDescriptionEditable({
   scenario: Scenario;
 }) {
   const hydrated = useHydrated();
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   return (
     <EditableScenarioField
@@ -79,7 +72,7 @@ export function ScenarioDescriptionEditable({
   );
 }
 
-export function EditableScenarioField({
+function EditableScenarioField({
   scenarioId,
   name,
   description,
@@ -109,7 +102,7 @@ export function EditableScenarioField({
   const [isEditing, setIsEditing] = useState(false);
   const { t } = useTranslation(['common']);
   const updateScenarioMutation = useUpdateScenarioMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
   const fieldSchema =
     fieldName === 'name' ? updateScenarioPayloadSchema.shape.name : updateScenarioPayloadSchema.shape.description;
 
@@ -119,17 +112,13 @@ export function EditableScenarioField({
       name,
       description,
     } satisfies UpdateScenarioPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        updateScenarioMutation
-          .mutateAsync(value)
-          .then(() => {
-            setIsEditing(false);
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await updateScenarioMutation.mutateAsync(value);
+        setIsEditing(false);
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -146,7 +135,7 @@ export function EditableScenarioField({
   }, [description, form, name, scenarioId]);
 
   return (
-    <form onSubmit={handleSubmit(form)} className={clsx('min-w-0', formClassName)}>
+    <form onSubmit={handleSubmit(form)} className={cn('min-w-0', formClassName)}>
       <form.Field
         name={fieldName}
         validators={{
@@ -156,7 +145,7 @@ export function EditableScenarioField({
       >
         {(field) => (
           <div className="flex min-w-0 flex-col gap-xs">
-            <div className={clsx('flex min-w-0 items-center gap-sm', containerClassName)}>
+            <div className={cn('flex min-w-0 items-center gap-sm', containerClassName)}>
               {isEditing ? (
                 <input
                   type="text"
@@ -182,7 +171,7 @@ export function EditableScenarioField({
                 />
               ) : (
                 <>
-                  <p className={clsx(displayValueClassName, !field.state.value && emptyValueClassName)}>
+                  <p className={cn(displayValueClassName, !field.state.value && emptyValueClassName)}>
                     {field.state.value || placeholder}
                   </p>
                   <Button

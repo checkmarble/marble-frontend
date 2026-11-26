@@ -1,9 +1,7 @@
 import { type AstNode, type DataModel, type EnumValue, type IdLessAstNode, type TableModel } from '@app-builder/models';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
-import { isDataAccessorAstNode, isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
-import { isEnumField, resolveEnumValues } from '@app-builder/models/enum-values';
-import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import {
   type BuilderOptionsResource,
   type FlatAstValidation,
@@ -12,8 +10,6 @@ import {
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';
-import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
-import { type PathSegment } from '@app-builder/utils/tree';
 import { type AstNodeStringifierContext } from '@ast-builder/types';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
@@ -161,75 +157,6 @@ function createMapOption({ enumValues, customLists, language, t, ...modelData }:
 
 export function getOptionDisplayName(option: EnrichedMenuOption, context: AstNodeStringifierContext) {
   return option.displayName ?? getAstNodeDisplayName(option.astNode, context);
-}
-
-export function getEnumValuesFromNeighbour(
-  parentAstNode: AstNode,
-  childIndex: number,
-  context: {
-    triggerObjectTable: TableModel;
-    dataModel: DataModel;
-  },
-): EnumValue[] {
-  if (parentAstNode.name !== '=') {
-    return [];
-  }
-  const neighbourNodes = [
-    ...parentAstNode.children.slice(0, childIndex),
-    ...parentAstNode.children.slice(childIndex + 1),
-  ];
-  const enumValues = [];
-  for (const neighbourNode of neighbourNodes) {
-    if (isDataAccessorAstNode(neighbourNode)) {
-      const field = getDataAccessorAstNodeField(neighbourNode, context);
-      if (isEnumField(field)) {
-        enumValues.push(...resolveEnumValues(field).values);
-      }
-    }
-  }
-
-  return enumValues;
-}
-
-type DataContext = {
-  dataModel: DataModel;
-  triggerObjectTable: TableModel;
-};
-export function getEnumValues(
-  pathSegment: PathSegment,
-  { parentNode, context }: { parentNode: AstNode; context: DataContext },
-) {
-  if (pathSegment.type != 'children') return [];
-
-  return getEnumValuesFromNeighbour(parentNode, pathSegment.index, context);
-}
-
-export function applyEvaluation(currentEvaluation: NodeEvaluation, newEvaluation: NodeEvaluation) {
-  if (!R.isDeepEqual(currentEvaluation.errors, newEvaluation.errors)) {
-    currentEvaluation.errors = newEvaluation.errors;
-  }
-  if (currentEvaluation.children.length !== newEvaluation.children.length) {
-    currentEvaluation.children = newEvaluation.children;
-  } else {
-    for (let i = 0; i < currentEvaluation.children.length; ++i) {
-      applyEvaluation(currentEvaluation.children[i]!, newEvaluation.children[i]!);
-    }
-  }
-  for (const namedChildKey in currentEvaluation.namedChildren) {
-    const currentChild = currentEvaluation.namedChildren[namedChildKey];
-    const newChild = newEvaluation.namedChildren[namedChildKey];
-
-    if (currentChild === newChild) {
-      return;
-    }
-
-    if ((!currentChild || !newChild) && currentChild !== newChild) {
-      currentEvaluation.namedChildren[namedChildKey] = newEvaluation.namedChildren[namedChildKey]!;
-      continue;
-    }
-
-    applyEvaluation(currentChild!, newChild!);
-  }
 }
 
 export function getEvaluationForNode(evaluation: FlatNodeEvaluation, nodeId: string) {

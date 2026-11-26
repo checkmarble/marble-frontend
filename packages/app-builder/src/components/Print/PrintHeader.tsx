@@ -57,5 +57,3 @@ export const PrintHeader: FunctionComponent<PrintHeaderProps> = ({
     </div>
   );
 };
-
-export default PrintHeader;

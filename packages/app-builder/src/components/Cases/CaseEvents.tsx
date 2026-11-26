@@ -67,7 +67,6 @@ export function CaseEvents({
     const items = Array.from(container.children);
 
     let callback = () => {
-      // Reset counts
       let itemsBeforeVisible = 0;
       let itemsAfterVisible = 0;
 

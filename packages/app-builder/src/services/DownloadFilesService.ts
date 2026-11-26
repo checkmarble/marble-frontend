@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { z } from 'zod/v4';
 
 export class AlreadyDownloadingError extends Error {}
-export class FetchLinkError extends Error {}
+class FetchLinkError extends Error {}
 export class AuthRequestError extends Error {}
 type DownloadFileError = AlreadyDownloadingError | FetchLinkError | DownloadError | UnknownError | AuthRequestError;
 

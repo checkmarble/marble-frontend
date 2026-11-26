@@ -56,6 +56,7 @@ export interface ScenarioRepository {
   archiveScenario(args: { scenarioId: string }): Promise<Scenario>;
   unarchiveScenario(args: { scenarioId: string }): Promise<Scenario>;
   createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
+  createDraftFromScenarioIteration(iterationId: string): Promise<ScenarioIteration>;
   updateScenarioIteration(iterationId: string, input: UpdateScenarioIterationBody): Promise<ScenarioIteration>;
   getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
   getScenarioIterationWithoutRules(args: { iterationId: string }): Promise<ScenarioIterationWithoutRules>;
@@ -313,6 +314,10 @@ export function makeGetScenarioRepository() {
     setScenarioDeduplication: async ({ scenarioId, enabled }) => {
       const scenario = await marbleCoreApiClient.updateScenario(scenarioId, { deduplicate_batch_objects: enabled });
       return adaptScenario(scenario);
+    },
+    createDraftFromScenarioIteration: async (iterationId) => {
+      const iteration = await marbleCoreApiClient.createDraftFromScenarioIteration(iterationId);
+      return adaptScenarioIteration(iteration);
     },
   });
 }

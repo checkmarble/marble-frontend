@@ -6,6 +6,7 @@ import { getServerEnv } from '@app-builder/utils/environment';
 export interface AppConfigRepository {
   getAppConfig(): Promise<AppConfig>;
   getReleaseNotes(): Promise<ReleaseNotes>;
+  updateUsageTracking(body: { enabled: boolean }): Promise<void>;
 }
 
 export function makeGetAppConfigRepository() {
@@ -17,6 +18,9 @@ export function makeGetAppConfigRepository() {
     async getReleaseNotes() {
       const appVersion = getServerEnv('APP_VERSION') ?? 'dev';
       return adaptReleaseNotes(await marbleCoreApiClient.getAppConfig(), appVersion);
+    },
+    async updateUsageTracking(body) {
+      await marbleCoreApiClient.updateUsageTracking(body);
     },
   });
 }

@@ -13,8 +13,6 @@ export const isAnalyticsAvailable = ({ permissions }: CurrentUser, entitlements:
 
 export const isReadUserAvailable = (user: CurrentUser) => isAdmin(user) || isMarbleAdmin(user);
 
-export const isReadAllInboxesAvailable = (user: CurrentUser) => isAdmin(user) || isMarbleAdmin(user);
-
 export const isInboxAdmin = ({ actorIdentity: { userId } }: CurrentUser, inbox: Inbox) =>
   inbox.users.some((inboxUser) => inboxUser.userId === userId && inboxUser.role === 'admin');
 
@@ -28,12 +26,6 @@ export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) => permissio
 export const isReadWebhookAvailable = ({ permissions }: CurrentUser) => permissions.canManageWebhooks;
 
 export const isCreateInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
-
-export const isReadSnoozeAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
-  isAccessible(entitlements.ruleSnoozes) && permissions.canReadSnoozes;
-
-export const isCreateSnoozeAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
-  isAccessible(entitlements.ruleSnoozes) && permissions.canCreateSnoozes;
 
 export const isCreateDataModelTableAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;
 
@@ -80,8 +72,6 @@ export const isManualTriggerScenarioAvailable = ({ permissions }: CurrentUser) =
 
 export const isWorkflowsAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.workflows);
 
-export const isTestRunAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.testRun);
-
 export const isDeploymentActionsAvailable = ({ permissions }: CurrentUser) => permissions.canPublishScenario;
 
 export const isCreateDraftAvailable = ({ permissions }: CurrentUser) => permissions.canManageScenario;
@@ -97,15 +87,6 @@ export const isEditInboxAvailable = (user: CurrentUser, inbox: Inbox) =>
   user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
 
 export const isDeleteInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
-
-export const isCreateInboxUserAvailable = (user: CurrentUser, inbox: Inbox) =>
-  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
-
-export const isEditInboxUserAvailable = (user: CurrentUser, inbox: Inbox) =>
-  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
-
-export const isDeleteInboxUserAvailable = (user: CurrentUser, inbox: Inbox) =>
-  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
 
 export const isCreateTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 

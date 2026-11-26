@@ -10,11 +10,4 @@ describe('Kbd', () => {
     expect(kbd).toBeInTheDocument();
     expect(kbd.tagName).toBe('KBD');
   });
-
-  it('renders a compact outline for the small variant', () => {
-    render(<Kbd variant="small">H</Kbd>);
-    const kbd = screen.getByText('H');
-    expect(kbd).toHaveClass('h-4');
-    expect(kbd).toHaveClass('border-current/60');
-  });
 });

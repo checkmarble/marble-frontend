@@ -26,7 +26,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import type { MarbleTableFeatures } from 'ui-design-system';
-import { Button, Tag, useTable } from 'ui-design-system';
+import { Button, ExpandableGroupTagLine, Tag, useTable } from 'ui-design-system';
 
 const usersLoader = createServerFn()
   .middleware([authMiddleware])
@@ -100,11 +100,21 @@ function Users() {
         size: 150,
         cell: ({ getValue }) => <div className="overflow-hidden text-ellipsis">{getValue()}</div>,
       }),
-      columnHelper.accessor((row) => row.role, {
+      columnHelper.accessor((row) => row.roles, {
         id: 'role',
         header: t('settings:users.role'),
         size: 150,
-        cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
+        cell: ({ getValue }) => (
+          <ExpandableGroupTagLine
+            classname="gap-xs"
+            overflowBehavior="popover"
+            items={getValue().map(({ id, role }) => (
+              <Tag key={id ?? role} size="small" color="purple">
+                {t(tKeyForUserRole(role))}
+              </Tag>
+            ))}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row.userId, {
         id: 'tfa',

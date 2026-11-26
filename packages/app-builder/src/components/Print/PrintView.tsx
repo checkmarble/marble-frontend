@@ -64,7 +64,6 @@ function copyStylesToWindow(printWindow: Window): void {
     }
   });
 
-  // Add print-specific styles
   const printStyles = printWindow.document.createElement('style');
   printStyles.textContent = `
     @media print {
@@ -115,17 +114,14 @@ export const PrintView: FunctionComponent<PrintViewProps> = ({ children, trigger
   const handlePrint = useCallback(() => {
     onBeforePrint?.();
 
-    // Open new window
     const newWindow = window.open('', '_blank', 'width=800,height=600');
     if (!newWindow) {
       console.error('Failed to open print window. Check popup blocker settings.');
       return;
     }
 
-    // Set up the document structure using DOM manipulation
     newWindow.document.title = title;
 
-    // Add meta tags
     const charset = newWindow.document.createElement('meta');
     charset.setAttribute('charset', 'utf-8');
     newWindow.document.head.appendChild(charset);
@@ -138,7 +134,6 @@ export const PrintView: FunctionComponent<PrintViewProps> = ({ children, trigger
     // Copy styles
     copyStylesToWindow(newWindow);
 
-    // Create container
     const printRoot = newWindow.document.createElement('div');
     printRoot.id = 'print-root';
     printRoot.className = 'print-container';
@@ -150,7 +145,6 @@ export const PrintView: FunctionComponent<PrintViewProps> = ({ children, trigger
     isInitializedRef.current = true;
   }, [title, onBeforePrint]);
 
-  // Handle print after content is rendered
   useEffect(() => {
     if (printWindow && container && isInitializedRef.current) {
       // Wait for styles to load and content to render
@@ -186,5 +180,3 @@ export const PrintView: FunctionComponent<PrintViewProps> = ({ children, trigger
     </>
   );
 };
-
-export default PrintView;

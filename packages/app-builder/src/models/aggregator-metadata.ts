@@ -1,10 +1,11 @@
+import { type ParseKeys } from 'i18next';
 import { type AggregatorOperator } from './modale-operators';
 
 export type AggregatorDataTypeRequirement = 'any' | 'numeric' | 'numeric-or-timestamp';
 
 export interface AggregatorMetadata {
   /** Translation key for the detailed tooltip description */
-  tooltipKey: string;
+  tooltipKey: ParseKeys<['scenarios']>;
   /** What data types this aggregator accepts */
   dataTypeRequirement: AggregatorDataTypeRequirement;
 }

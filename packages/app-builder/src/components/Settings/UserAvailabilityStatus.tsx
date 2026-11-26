@@ -1,4 +1,4 @@
-import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { useUnavailabilitySettings } from '@app-builder/queries/settings/personal-settings';
 import { SetMyselfAvailable } from './SetMyselfAvailable';
 import { SetMyselfUnavailable } from './SetMyselfUnavailable';
 

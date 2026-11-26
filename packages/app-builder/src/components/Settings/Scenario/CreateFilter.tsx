@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { DataModel } from '@app-builder/models';
 import {
   type CreateExportedFieldPayload,
@@ -7,6 +6,7 @@ import {
 } from '@app-builder/queries/settings/scenarios/update-filter';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ export function CreateFilter({
   const [selectedTableId, setSelectedTableId] = useState<string>(dataModel[0]?.id ?? '');
   const createFilterMutation = useCreateFilterMutation();
   const selectedTable = dataModel.find((t) => t.id === selectedTableId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   function summaryLabel() {
     const v = form.state.values as CreateExportedFieldPayload;
@@ -58,18 +58,17 @@ export function CreateFilter({
 
   const form = useForm({
     defaultValues: {} as CreateExportedFieldPayload,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createFilterMutation
-          .mutateAsync({ tableId: selectedTableId, payload: value as CreateExportedFieldPayload })
-          .then(() => {
-            setOpen(false);
-            revalidate();
-            form.reset();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await createFilterMutation.mutateAsync({
+          tableId: selectedTableId,
+          payload: value as CreateExportedFieldPayload,
+        });
+        setOpen(false);
+        router.invalidate();
+        form.reset();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {

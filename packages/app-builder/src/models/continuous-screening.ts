@@ -161,7 +161,7 @@ function adaptJobErrorDetails(details: ContinuousScreeningJobErrorDto['details']
   return { error: JSON.stringify(details) };
 }
 
-export function adaptContinuousScreeningJobError(dto: ContinuousScreeningJobErrorDto): ContinuousScreeningJobError {
+function adaptContinuousScreeningJobError(dto: ContinuousScreeningJobErrorDto): ContinuousScreeningJobError {
   return {
     details: adaptJobErrorDetails(dto.details),
     createdAt: dto.created_at,
@@ -209,7 +209,7 @@ export type ListContinuousScreeningClientDataIndexingParams = {
   sorting?: string;
 };
 
-export function adaptContinuousScreeningClientDataIndexing(
+function adaptContinuousScreeningClientDataIndexing(
   dto: ContinuousScreeningClientDataIndexingDto,
 ): ContinuousScreeningClientDataIndexing {
   return {
@@ -423,7 +423,7 @@ export function adaptContinuousScreening(dto: ContinuousScreeningDto): Continuou
   };
 }
 
-export function adaptContinuousScreeningRequest(dto: ContinuousScreeningRequestDto): ContinuousScreeningRequest {
+function adaptContinuousScreeningRequest(dto: ContinuousScreeningRequestDto): ContinuousScreeningRequest {
   return {
     searchInput: {
       queries: dto.search_input.queries,
@@ -446,9 +446,7 @@ function adaptContinuousScreeningMatchBase(dto: ContinuousScreeningMatchBaseDto)
   };
 }
 
-export function adaptContinuousScreeningMatchMarble(
-  dto: ContinuousScreeningMatchMarbleDto,
-): ContinuousScreeningMatchMarble {
+function adaptContinuousScreeningMatchMarble(dto: ContinuousScreeningMatchMarbleDto): ContinuousScreeningMatchMarble {
   return {
     ...adaptContinuousScreeningMatchBase(dto),
     objectType: dto.object_type,
@@ -456,7 +454,7 @@ export function adaptContinuousScreeningMatchMarble(
   };
 }
 
-export function adaptContinuousScreeningMatchScreeningEntity(
+function adaptContinuousScreeningMatchScreeningEntity(
   dto: ContinuousScreeningMatchScreeningEntityDto,
 ): ContinuousScreeningMatchScreeningEntity {
   return {
@@ -465,7 +463,7 @@ export function adaptContinuousScreeningMatchScreeningEntity(
   };
 }
 
-export function adaptOpenSanctionsEntityPayload(dto: OpenSanctionsEntityDto): OpenSanctionEntityPayload {
+function adaptOpenSanctionsEntityPayload(dto: OpenSanctionsEntityDto): OpenSanctionEntityPayload {
   return {
     ...dto,
     schema: isKnownEntitySchema(dto.schema, matchEntitySchemas) ? dto.schema : 'Thing',

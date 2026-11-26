@@ -173,6 +173,7 @@ function LicensesList({ licenses, onEdit }: { licenses: LicenseDto[]; onEdit: (l
     <div className="flex flex-col gap-lg">
       <div className="max-w-100">
         <Input
+          autoFocus
           startAdornment="search"
           endAdornment={search ? 'cross' : undefined}
           onEndAdornmentClick={() => setSearch('')}
@@ -450,8 +451,7 @@ function LicensePanelBody({ state, onClose }: { state: NonNullable<PanelState>; 
       onChange: licenseFormSchema,
       onSubmit: licenseFormSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      if (!formApi.state.isValid) return;
+    onSubmit: async ({ value }) => {
       const payload = {
         ...value,
         expiration_date: new Date(value.expiration_date).toISOString(),

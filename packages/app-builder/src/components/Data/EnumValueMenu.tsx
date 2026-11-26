@@ -2,7 +2,7 @@ import type { EnumValue } from '@app-builder/models/data-model';
 import { type EnumField, resolveEnumDisplay, resolveEnumValues } from '@app-builder/models/enum-values';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExpandableGroupTagLine, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -13,6 +13,10 @@ type EnumValueMenuProps = {
   selectedValues: EnumValue[];
   currentValues?: EnumValue[];
   unavailableValues?: EnumValue[];
+  /** Offers the typed text as a value even when the catalog is closed (e.g. countries outside the ISO list). */
+  allowCustomValues?: boolean;
+  /** With `multiple`: once this many values are picked, the other values can no longer be picked. */
+  maxSelected?: number;
 } & (
   | { multiple: true; onChange: (values: EnumValue[]) => void }
   | { multiple?: false; onChange: (value: EnumValue) => void }
@@ -23,10 +27,20 @@ const ENUM_ITEM_HEIGHT = 40;
 
 /** Existing closed-list values stay removable, but never become options after removal. */
 export function EnumValueMenu(props: EnumValueMenuProps) {
+  return (
+    <MenuCommand.Menu persistOnSelect={props.multiple}>
+      <EnumValueMenuBody {...props} />
+    </MenuCommand.Menu>
+  );
+}
+
+// Rendered inside the Menu to use its search state, the one the Combobox input shows, instead of a local copy.
+function EnumValueMenuBody(props: EnumValueMenuProps) {
   const { field, selectedValues, currentValues = selectedValues, unavailableValues = [] } = props;
   const { t } = useTranslation(['scenarios']);
   const language = useFormatLanguage();
-  const [search, setSearch] = useState('');
+  const menuState = MenuCommand.State.useSharp();
+  const search = menuState.value.search;
   const resolved = resolveEnumValues(field, currentValues);
   const values = resolved.values;
   const searchValue = search.trim();
@@ -34,8 +48,10 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
   const parsedValue = numeric ? Number(searchValue) : searchValue;
   const validValue =
     !numeric || (Number.isFinite(parsedValue) && (field.dataType !== 'Int' || Number.isInteger(parsedValue)));
+  const full = props.multiple === true && props.maxSelected !== undefined && selectedValues.length >= props.maxSelected;
   const customValue =
-    !resolved.closed &&
+    (!resolved.closed || props.allowCustomValues) &&
+    !full &&
     searchValue &&
     validValue &&
     !values.includes(parsedValue) &&
@@ -53,19 +69,25 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
     : staleValues;
 
   function select(value: EnumValue) {
-    if (props.multiple)
+    if (props.multiple) {
+      // The menu stays open after a pick: show the full list again for the next one.
+      menuState.actions.setSearch('');
       props.onChange(
         selectedValues.includes(value)
           ? selectedValues.filter((current) => current !== value)
           : [...selectedValues, value],
       );
-    else props.onChange(value);
+    } else props.onChange(value);
   }
 
   return (
-    <MenuCommand.Menu persistOnSelect={props.multiple} onOpenChange={() => setSearch('')}>
+    <>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="h-auto min-h-10 w-full min-w-0 overflow-hidden py-sm">
+        <MenuCommand.SelectButton
+          className="h-auto min-h-10 w-full min-w-0 overflow-hidden py-sm"
+          // The menu state outlives a close: open on an empty search.
+          onClick={() => menuState.actions.setSearch('')}
+        >
           {selectedValues.length > 0 ? (
             <ExpandableGroupTagLine
               classname="gap-xs pe-lg"
@@ -80,7 +102,7 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4} sameWidth shouldFilter={!virtualize}>
-        <MenuCommand.Combobox placeholder={t('scenarios:value_switch.search_values')} onValueChange={setSearch} />
+        <MenuCommand.Combobox placeholder={t('scenarios:value_switch.search_values')} />
         <MenuCommand.List>
           {virtualize ? (
             <VirtualizedEnumItems
@@ -88,6 +110,7 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
               values={catalogValues}
               selectedValues={selectedValues}
               unavailableValues={unavailableValues}
+              full={full}
               language={language}
               onSelect={select}
             />
@@ -98,7 +121,7 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
                 field={field}
                 value={value}
                 language={language}
-                disabled={unavailableValues.includes(value)}
+                disabled={unavailableValues.includes(value) || (full && !selectedValues.includes(value))}
                 onSelect={select}
                 actionIcon={selectedValues.includes(value) ? 'tick' : undefined}
               />
@@ -122,7 +145,7 @@ export function EnumValueMenu(props: EnumValueMenuProps) {
           ) : null}
         </MenuCommand.List>
       </MenuCommand.Content>
-    </MenuCommand.Menu>
+    </>
   );
 }
 
@@ -164,6 +187,7 @@ function VirtualizedEnumItems({
   values,
   selectedValues,
   unavailableValues,
+  full,
   language,
   onSelect,
 }: {
@@ -171,6 +195,7 @@ function VirtualizedEnumItems({
   values: EnumValue[];
   selectedValues: EnumValue[];
   unavailableValues: EnumValue[];
+  full: boolean;
   language: string;
   onSelect: (value: EnumValue) => void;
 }) {
@@ -202,7 +227,7 @@ function VirtualizedEnumItems({
           field={field}
           value={value}
           language={language}
-          disabled={unavailableValues.includes(value)}
+          disabled={unavailableValues.includes(value) || (full && !selectedValues.includes(value))}
           onSelect={onSelect}
           actionIcon={selectedValues.includes(value) ? 'tick' : undefined}
         />

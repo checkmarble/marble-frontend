@@ -30,20 +30,18 @@ export const SearchForm = ({ table }: SearchFormProps) => {
       onChange: searchFormSchema,
       onMount: searchFormSchema,
     },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        const trimmedValue = value.value.trim();
-        if (z.uuid().safeParse(trimmedValue).success) {
-          navigate({
-            to: '/client-detail/$objectType/$objectId',
-            params: clientDetailLinkParams(table.name, trimmedValue),
-          });
-        } else {
-          navigate({
-            to: '/client-detail',
-            search: { table: table.name, terms: trimmedValue },
-          });
-        }
+    onSubmit: ({ value }) => {
+      const trimmedValue = value.value.trim();
+      if (z.uuid().safeParse(trimmedValue).success) {
+        navigate({
+          to: '/client-detail/$objectType/$objectId',
+          params: clientDetailLinkParams(table.name, trimmedValue),
+        });
+      } else {
+        navigate({
+          to: '/client-detail',
+          search: { table: table.name, terms: trimmedValue },
+        });
       }
     },
   });
@@ -55,7 +53,7 @@ export const SearchForm = ({ table }: SearchFormProps) => {
           {t('client360:client_detail.search_form.search_by', { name: tableName.toLowerCase() })}
         </span>
         {!table.ready ? (
-          <span className="text-grey-text text-small flex items-center gap-xs">
+          <span className="text-grey-primary text-small flex items-center gap-xs">
             <Icon icon="warning" className="size-4 text-yellow-primary" />
             &nbsp;
             {t('client360:client_detail.search_form.table_not_ready')}

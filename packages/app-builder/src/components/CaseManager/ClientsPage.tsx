@@ -49,7 +49,7 @@ export function CaseManagerClientsPage({
   client360Tables,
   userScoringAccess,
 }: CaseManagerClientsPageProps) {
-  const { t } = useTranslation(['common', 'cases']);
+  const { t } = useTranslation(['common', 'cases', 'client360']);
   const queryClient = useQueryClient();
   const { currentUser } = useOrganizationDetails();
   const dmfa = useDataModelFeatureAccess();

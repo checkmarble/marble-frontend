@@ -2,25 +2,17 @@ import { type DataModel, type NavigationOption, type PrimitiveTypes } from '@app
 import {
   type AggregationAstNode,
   type AggregationFilterAstNode,
-  type AggregationFilterOperator,
   aggregationFiltersWithTypes,
-  type BinaryAggregationFilterAstNode,
   type BinaryAggregationFilterOperator,
-  type FuzzyMatchFilterAstNode,
   isAggregation,
   isAggregationFilterOperator,
   isBinaryAggregationFilter,
-  isBinaryAggregationFilterOperator,
   isComplexAggregationFilter,
   isFuzzyMatchFilterOptionsAstNode,
   isTimestampExtractFilterOptionsAstNode,
   isUnaryAggregationFilter,
-  isUnaryAggregationFilterOperator,
   NewAggregatorAstNode,
   NewAggregatorFilterAstNode,
-  NewFuzzyMatchFilterOptionsAstNode,
-  NewTimestampExtractFilterOptionsAstNode,
-  type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import { type AstNode, adaptAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
 import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
@@ -35,7 +27,6 @@ import {
 import { isAggregatorOperator, supportedAggregatorsOperatorsTypes } from '@app-builder/models/modale-operators';
 import { type StringListValue } from '@app-builder/models/scoring';
 import { type CustomerAggregateDto } from 'marble-api';
-import { match } from 'ts-pattern';
 
 type CustomerKpiFilterValue = string | StringListValue;
 
@@ -202,86 +193,6 @@ export function setCustomerKpiNavigationOption(node: AggregationAstNode, navigat
       return filter;
     }),
   ];
-}
-
-export function addCustomerKpiFilter(node: AggregationAstNode) {
-  const tableName = node.namedChildren.tableName.constant;
-  if (typeof tableName !== 'string' || !tableName) return;
-
-  node.namedChildren.filters.children.push(
-    NewAggregatorFilterAstNode({
-      namedChildren: {
-        tableName: NewConstantAstNode({ constant: tableName }),
-        fieldName: NewConstantAstNode({ constant: '' }),
-        operator: NewConstantAstNode({ constant: null }),
-        value: NewUndefinedAstNode(),
-      },
-    }),
-  );
-}
-
-export function setCustomerKpiFilterField(node: AggregationAstNode, index: number, fieldName: string) {
-  const filter = node.namedChildren.filters.children[index + 3];
-  const tableName = filter?.namedChildren.tableName.constant;
-  if (typeof tableName !== 'string') return;
-
-  node.namedChildren.filters.children[index + 3] = NewAggregatorFilterAstNode({
-    namedChildren: {
-      tableName: NewConstantAstNode({ constant: tableName }),
-      fieldName: NewConstantAstNode({ constant: fieldName }),
-      operator: NewConstantAstNode({ constant: null }),
-      value: NewUndefinedAstNode(),
-    },
-  });
-}
-
-export function removeCustomerKpiFilter(node: AggregationAstNode, index: number) {
-  node.namedChildren.filters.children.splice(index + 3, 1);
-}
-
-export function setCustomerKpiFilterOperator(filter: AggregationFilterAstNode, operator: AggregationFilterOperator) {
-  const value = getFilterOperand(filter);
-
-  match(operator)
-    .when(isUnaryAggregationFilterOperator, (op) => {
-      filter.namedChildren = {
-        tableName: filter.namedChildren.tableName,
-        fieldName: filter.namedChildren.fieldName,
-        operator: NewConstantAstNode({ constant: op }),
-      } satisfies UnaryAggregationFilterAstNode['namedChildren'];
-    })
-    .when(isBinaryAggregationFilterOperator, (op) => {
-      filter.namedChildren = {
-        tableName: filter.namedChildren.tableName,
-        fieldName: filter.namedChildren.fieldName,
-        operator: NewConstantAstNode({ constant: op }),
-        value,
-      } satisfies BinaryAggregationFilterAstNode['namedChildren'];
-    })
-    .with('IsMultipleOf', () => {
-      filter.namedChildren = {
-        tableName: filter.namedChildren.tableName,
-        fieldName: filter.namedChildren.fieldName,
-        operator: NewConstantAstNode({ constant: 'IsMultipleOf' }),
-        value: NewConstantAstNode({ constant: 10 }),
-      };
-    })
-    .with('TimestampExtract', () => {
-      filter.namedChildren = {
-        tableName: filter.namedChildren.tableName,
-        fieldName: filter.namedChildren.fieldName,
-        operator: NewConstantAstNode({ constant: 'TimestampExtract' }),
-        value: NewTimestampExtractFilterOptionsAstNode({ part: 'month', ranges: [[1, 1]] }),
-      };
-    })
-    .otherwise((op) => {
-      (filter as FuzzyMatchFilterAstNode).namedChildren = {
-        tableName: filter.namedChildren.tableName,
-        fieldName: filter.namedChildren.fieldName,
-        operator: NewConstantAstNode({ constant: 'FuzzyMatch' }),
-        value: NewFuzzyMatchFilterOptionsAstNode({ value }),
-      };
-    });
 }
 
 export function setCustomerKpiFilterValue(filter: AggregationFilterAstNode, value: CustomerKpiFilterValue) {

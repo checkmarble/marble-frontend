@@ -420,7 +420,7 @@ const KeyboardNav = () => {
 };
 
 /**
- * `asChild` is intentionally kept (it used to be omitted): it lets a menu entry render as its
+ * `asChild` lets a menu entry render as its
  * single child element -- e.g. a router `Link` -- so navigation items stay real anchors and keep
  * cmd-click, middle-click and prefetch. MenuCommand.spec.tsx covers it.
  */

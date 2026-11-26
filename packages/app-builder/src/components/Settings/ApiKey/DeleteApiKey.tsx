@@ -1,6 +1,6 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type ApiKey } from '@app-builder/models/api-keys';
 import { useDeleteApiKeyMutation } from '@app-builder/queries/settings/api-keys/delete-api-key';
+import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -27,14 +27,14 @@ export function DeleteApiKey({ apiKey }: { apiKey: ApiKey }) {
 function DeleteApiKeyContent({ apiKey, onSuccess }: { apiKey: ApiKey; onSuccess: () => void }) {
   const { t } = useTranslation(['settings', 'common']);
   const deleteApiKeyMutation = useDeleteApiKeyMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleDeleteApiKey = () => {
     deleteApiKeyMutation.mutateAsync({ apiKeyId: apiKey.id }).then((res) => {
       if (!res) {
         onSuccess();
       }
-      revalidate();
+      router.invalidate();
     });
   };
 

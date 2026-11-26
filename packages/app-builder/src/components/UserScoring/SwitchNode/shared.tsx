@@ -30,7 +30,7 @@ export function FieldPill({ field, fieldType }: FieldPillProps) {
   );
 }
 
-export function getFieldLabel(field: PayloadAstNode | AggregationAstNode): string {
+function getFieldLabel(field: PayloadAstNode | AggregationAstNode): string {
   if (isPayload(field)) return field.children[0].constant;
   if (isAggregation(field)) return field.namedChildren['fieldName'].constant as string;
   return '…';
@@ -73,18 +73,6 @@ export function SwitchCaseRow({ impact, children, maxRiskLevel, matched = false 
         </div>
       </div>
     </li>
-  );
-}
-
-export function FieldPlaceholder() {
-  return (
-    <div className="flex h-10 flex-1 items-center gap-sm rounded border border-grey-border bg-white px-xs">
-      <div className="flex size-6 items-center justify-center rounded-xs bg-grey-light">
-        <Icon icon="field" className="size-4" />
-      </div>
-      <span className="flex-1 text-s text-grey-placeholder">—</span>
-      <Icon icon="caret-down" className="size-5 text-grey-placeholder" />
-    </div>
   );
 }
 

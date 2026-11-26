@@ -860,7 +860,7 @@ export type ClientDataListFilterDto = {
     field_name: string;
     /** 'contains' is a case-insensitive substring match (text fields). 'in' matches any of the values. The comparison operators apply to numbers and timestamps. */
     operator: "contains" | "in" | ">=" | "<=" | "<";
-    /** A single value for every operator except 'in'. Numbers for number fields, strings otherwise (RFC 3339 for timestamps). */
+    /** A single value for every operator except 'in'. Numbers for number fields, strings otherwise (RFC 3339 for timestamps, 'true' or 'false' for booleans). */
     values: (string | number)[];
 };
 export type ClientDataListRequestBody = {
@@ -1894,28 +1894,31 @@ export type CreateInitialOrgBody = {
      */
     password?: string;
 };
+export type RoleBinding = {
+    id?: string;
+    role: string;
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
     organization_id: string;
     /** 3 first characters of the API key */
     prefix: string;
-    role: string;
+    roles: RoleBinding[];
 };
 export type CreateApiKeyBody = {
     description: string;
-    role: string;
+    roles: RoleBinding[];
 };
 export type CreatedApiKeyDto = ApiKeyDto & {
     key: string;
 };
-export type Role = "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
 export type UserDto = {
     user_id: string;
     email: string;
     first_name: string;
     last_name: string;
-    role: string;
+    roles: RoleBinding[];
     organization_id: string;
     /** Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`. */
     tfa_enabled?: boolean;
@@ -1923,19 +1926,19 @@ export type UserDto = {
     grants?: {
         organization_id: string;
         tenant_id: string;
-        role: Role;
+        role: "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
     }[];
 };
 export type CreateUser = {
     email: string;
-    role: string;
+    roles: RoleBinding[];
     organization_id?: string;
     first_name: string;
     last_name: string;
 };
 export type UpdateUser = {
     email?: string;
-    role?: string;
+    roles?: RoleBinding[];
     organization_id?: string;
     first_name?: string;
     last_name?: string;
@@ -1943,7 +1946,7 @@ export type UpdateUser = {
 export type Items2 = {
     organization_id: string;
     tenant_id: string;
-    role: Role;
+    role: "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
 };
 export type TenantOidcConfiguration = {
     tenant_id: string;
@@ -6620,10 +6623,10 @@ export function deleteTenantOidcDomain(tenantId: string, domainId: string, opts?
     }));
 }
 /**
- * Grant a user a role on an organization of the tenant
+ * Grant a user roles on an organization of the tenant
  */
 export function replaceOrganizationGrant(tenantId: string, userId: string, body: {
-    role: "VIEWER" | "BUILDER" | "PUBLISHER" | "ADMIN" | "ANALYST";
+    roles: RoleBinding[];
 }, { organizationId }: {
     organizationId?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {

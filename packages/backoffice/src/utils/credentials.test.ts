@@ -3,7 +3,7 @@ import { isMarbleAdmin } from './credentials';
 
 describe('isMarbleAdmin', () => {
   it('reads multi-role credentials', () => {
-    expect(isMarbleAdmin({ roles: ['MARBLE_ADMIN'] })).toBe(true);
+    expect(isMarbleAdmin({ roles: ['ADMIN', 'MARBLE_ADMIN'] })).toBe(true);
     expect(isMarbleAdmin({ roles: ['ADMIN'] })).toBe(false);
   });
 

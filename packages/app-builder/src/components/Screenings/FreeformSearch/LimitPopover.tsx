@@ -8,7 +8,7 @@ import {
   syncSharpDatasets,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Popover, Switch, Tag, ThresholdRange } from 'ui-design-system';
@@ -41,7 +41,7 @@ export const LimitPopover = ({
   const [open, setOpen] = useState(false);
   const [draftLimit, setDraftLimit] = useState<number | undefined>(undefined);
   const form = useFormManuallSearch();
-  const committedLimit = useStore(form.store, (state) => state.values.limit);
+  const committedLimit = useSelector(form.store, (state) => state.values.limit);
   const value = draftLimit ?? committedLimit;
   const tagRef = useRef<HTMLDivElement>(null);
 
@@ -184,7 +184,7 @@ function GlobalTopicSwitch({ config }: { config: GlobalTopicConfig }) {
         }}
       />
       <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
-        {t(config.label)}
+        {t(config.label, { defaultValue: config.groupKey })}
       </label>
     </div>
   );

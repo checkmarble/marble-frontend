@@ -148,32 +148,30 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
     validators: {
       onChange: updateScoringRulesetPayloadSchema,
     },
-    onSubmit: async ({ formApi, value }) => {
-      if (formApi.state.isValid) {
-        try {
-          const ruleset = await updateScoringRulesetMutation.mutateAsync(value);
-          if (ruleset && 'error' in ruleset) {
-            toast.error(ruleset.error);
-            return;
-          }
-
-          toast.success(t('common:success.save'));
-
-          panelSharp.actions.close();
-          await router.invalidate();
-
-          if (ruleset) {
-            navigate({
-              to: '/user-scoring/$recordType/$version',
-              params: {
-                recordType: ruleset.recordType,
-                version: 'draft',
-              },
-            });
-          }
-        } catch {
-          toast.error(t('common:errors.unknown'));
+    onSubmit: async ({ value }) => {
+      try {
+        const ruleset = await updateScoringRulesetMutation.mutateAsync(value);
+        if (ruleset && 'error' in ruleset) {
+          toast.error(ruleset.error);
+          return;
         }
+
+        toast.success(t('common:success.save'));
+
+        panelSharp.actions.close();
+        await router.invalidate();
+
+        if (ruleset) {
+          navigate({
+            to: '/user-scoring/$recordType/$version',
+            params: {
+              recordType: ruleset.recordType,
+              version: 'draft',
+            },
+          });
+        }
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
   });

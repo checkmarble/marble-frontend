@@ -1,11 +1,12 @@
 import { Callout } from '@app-builder/components/Callout';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { useActivateIterationMutation } from '@app-builder/queries/scenarios/activate-iteration';
 import { useCommitIterationMutation } from '@app-builder/queries/scenarios/commit-iteration';
 import { usePrepareIterationMutation } from '@app-builder/queries/scenarios/prepare-iteration';
 import { usePublicationPreparationStatusQuery } from '@app-builder/queries/scenarios/publication-preparation-status';
 import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
+import { useRouter } from '@tanstack/react-router';
+import { type TFunction } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, StepProgressBar, Tooltip } from 'ui-design-system';
@@ -37,7 +38,7 @@ const PREPARATION_WAIT_CALLOUT_DELAY_MS = 1_000;
 function* generateDeploymentSteps(
   iteration: DeploymentIteration,
   includePreparationStep: boolean,
-  t: ReturnType<typeof useTranslation>['t'],
+  t: TFunction<['common', 'scenarios']>,
 ): Generator<DeploymentStepDefinition> {
   yield {
     key: 'draft',
@@ -75,7 +76,7 @@ export function ScenarioDeploymentModal({
   const [isPreparationPollingStarted, setIsPreparationPollingStarted] = useState(false);
   const [shouldPersistPreparationStep, setShouldPersistPreparationStep] = useState(false);
   const [showPreparationWaitCallout, setShowPreparationWaitCallout] = useState(false);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const commitMutation = useCommitIterationMutation(scenario.id, iteration.id);
   const prepareMutation = usePrepareIterationMutation(scenario.id, iteration.id);
@@ -98,7 +99,9 @@ export function ScenarioDeploymentModal({
   const steps = Array.from(
     generateDeploymentSteps(effectiveIteration, iteration.status === 'required' || shouldPersistPreparationStep, t),
   );
-  const currentStep = steps.find((step) => step.isCurrent)?.key ?? 'activate';
+  const currentStepKey = steps.find((step) => step.isCurrent)?.key;
+  const currentStep: Exclude<DeploymentStep, 'draft'> =
+    currentStepKey === 'commit' || currentStepKey === 'prepare' ? currentStepKey : 'activate';
   const hasActivationBecomeAvailable = effectiveIteration.status === 'ready_to_activate';
   const isWaitingForActivation = isPreparationPollingStarted && !hasActivationBecomeAvailable;
 
@@ -117,8 +120,8 @@ export function ScenarioDeploymentModal({
     if (!isPreparationPollingStarted || !hasActivationBecomeAvailable) return;
 
     setIsPreparationPollingStarted(false);
-    revalidate();
-  }, [hasActivationBecomeAvailable, isPreparationPollingStarted, revalidate]);
+    router.invalidate();
+  }, [hasActivationBecomeAvailable, isPreparationPollingStarted, router]);
 
   useEffect(() => {
     if (!isWaitingForActivation) {
@@ -231,7 +234,7 @@ export function ScenarioDeploymentModal({
           return;
         }
       }
-      revalidate();
+      router.invalidate();
     } catch {
       setErrorMessage(t('common:errors.unknown'));
     }
@@ -328,7 +331,7 @@ export function ScenarioDeploymentModal({
 
 function getActivateErrorMessage(
   error: 'validation_error' | 'preparation_is_required' | 'preparation_service_occupied' | 'is_draft' | 'unknown',
-  t: ReturnType<typeof useTranslation>['t'],
+  t: TFunction<['common', 'scenarios']>,
 ): string {
   switch (error) {
     case 'validation_error':

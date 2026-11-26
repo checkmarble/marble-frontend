@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import * as React from 'react';
 import { cn } from 'ui-design-system';
 
@@ -36,7 +35,7 @@ export const FormErrorOrDescription = function FormErrorOrDescription({
     return typeof props.description === 'string' ? (
       <p
         ref={ref}
-        className={clsx(
+        className={cn(
           'text-s text-grey-secondary font-medium transition-opacity duration-200 ease-in-out',
           descriptionClassName,
         )}

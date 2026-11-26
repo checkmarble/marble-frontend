@@ -8,7 +8,6 @@ export function uniqueBy<T extends z.ZodArray<z.ZodType<any>>>(schema: T, keyOf:
 
     array.forEach((item, index) => {
       const key = keyOf(item);
-      // Add issue if the key has already been seen
       if (firstIndexByKey.has(key)) {
         ctx.addIssue({
           code: 'custom',

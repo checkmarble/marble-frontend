@@ -25,9 +25,6 @@ const createPasswordLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_auth/create-password')({
-  staticData: {
-    i18n: authI18n,
-  },
   loader: () => createPasswordLoader(),
   component: ForgotPassword,
 });

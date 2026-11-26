@@ -1,11 +1,11 @@
 import { Callout } from '@app-builder/components';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ContinuousScreeningMatch } from '@app-builder/models/continuous-screening';
 import { useReviewContinuousScreeningMatchMutation } from '@app-builder/queries/continuous-screening/review-match';
 import { ReviewScreeningMatchPayload } from '@app-builder/queries/screening/review-screening-match';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal, Radio, TextArea } from 'ui-design-system';
@@ -26,7 +26,7 @@ export const ReviewScreeningMatch = ({
 }: ReviewScreeningMatchProps) => {
   const { t } = useTranslation(['common', 'screenings']);
   const reviewScreeningMatchMutation = useReviewContinuousScreeningMatchMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -39,7 +39,7 @@ export const ReviewScreeningMatch = ({
         .mutateAsync(value)
         .then(() => {
           onOpenChange(false);
-          revalidate();
+          router.invalidate();
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
@@ -50,7 +50,7 @@ export const ReviewScreeningMatch = ({
     },
   });
 
-  const currentStatus = useStore(form.store, (state) => state.values.status);
+  const currentStatus = useSelector(form.store, (state) => state.values.status);
 
   return (
     <MenuCommand.Menu open={open} onOpenChange={onOpenChange} persistOnSelect>

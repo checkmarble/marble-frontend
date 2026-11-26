@@ -1,6 +1,6 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useSetLanguageMutation } from '@app-builder/queries/settings/set-language';
 import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import { useRouter } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ export function DevLanguageShortcut() {
     i18n: { language, changeLanguage },
   } = useTranslation(['common']);
   const setLanguageMutation = useSetLanguageMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,7 +30,7 @@ export function DevLanguageShortcut() {
           {
             onSuccess: () => {
               changeLanguage(nextLang);
-              revalidate();
+              router.invalidate();
             },
             onError: () => toast.error(t('common:errors.unknown')),
           },
@@ -39,7 +39,7 @@ export function DevLanguageShortcut() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [language, setLanguageMutation, revalidate]);
+  }, [language, setLanguageMutation, router]);
 
   return null;
 }

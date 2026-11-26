@@ -8,7 +8,7 @@ import { match, P } from 'ts-pattern';
 export type AstBuilderValidationFn = (node: AstNode) => Promise<FlatAstValidation>;
 export type AstBuilderUpdateFn = (node: AstNode) => void;
 
-export type AstBuilderNodeStoreValue = {
+type AstBuilderNodeStoreValue = {
   node: AstNode;
   validation: FlatAstValidation;
   copiedNode: IdLessAstNode | null;
@@ -64,7 +64,6 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
       const evaluation = await api.value.validationFn(api.value.node);
       api.batch(() => {
         // TODO: Manage diff to optimize render
-        // applyEvaluation(api.value.evaluation, evaluation);
         api.value.validation = evaluation;
       });
     } catch (err) {

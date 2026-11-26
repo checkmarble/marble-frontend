@@ -6,6 +6,8 @@ import {
   listOrganizationFeatures,
   listOrganizationsQueryOptions,
   listOrganizationUsersQueryOptions,
+  ORGANIZATION_ENVIRONMENT_LABELS,
+  ORGANIZATION_ENVIRONMENT_TAG_COLORS,
   updateOrganizationEnvironment,
 } from '@bo/data/organization';
 import { groupOrganizationsByTenant, listTenantsQueryOptions } from '@bo/data/tenants';
@@ -130,10 +132,10 @@ function NotSet() {
 
 /* ------------------------------ Configuration ------------------------------ */
 
-const ENVIRONMENT_LABELS: Record<OrganizationEnvironmentDto, string> = {
-  production: 'Production',
-  staging: 'Staging',
-  demo: 'Demo',
+const SELECTED_ENVIRONMENT_BACKGROUNDS: Record<OrganizationEnvironmentDto, string> = {
+  production: 'bg-green-background-light',
+  staging: 'bg-orange-background-light',
+  demo: 'bg-blue-96',
 };
 
 function EnvironmentPicker({ organization }: { organization: OrganizationDto }) {
@@ -154,7 +156,7 @@ function EnvironmentPicker({ organization }: { organization: OrganizationDto }) 
   return (
     <dd>
       <div role="group" aria-label="Environment" className="flex flex-wrap gap-xs">
-        {R.entries(ENVIRONMENT_LABELS).map(([environment, label]) => {
+        {R.entries(ORGANIZATION_ENVIRONMENT_LABELS).map(([environment, label]) => {
           const selected = environment === selectedEnvironment;
           return (
             <button
@@ -168,11 +170,14 @@ function EnvironmentPicker({ organization }: { organization: OrganizationDto }) 
                 }
               }}
               className={cn(
-                tagClassName({ color: selected ? 'purple' : 'grey', size: 'small' }),
+                tagClassName({
+                  color: selected ? ORGANIZATION_ENVIRONMENT_TAG_COLORS[environment] : 'grey',
+                  size: 'small',
+                }),
                 'transition-colors disabled:cursor-wait',
-                // Purple only marks the saved value: hovering another badge stays grey.
+                // Color only marks the saved value: hovering another badge stays grey.
                 selected
-                  ? 'bg-purple-background-light'
+                  ? SELECTED_ENVIRONMENT_BACKGROUNDS[environment]
                   : 'enabled:hover:border-grey-primary enabled:hover:text-grey-primary',
               )}
             >
@@ -364,7 +369,7 @@ type OrgUser = {
   first_name: string;
   last_name: string;
   email: string;
-  role: string;
+  roles: { role: string }[];
 };
 
 const ROSTER_PREVIEW = 5;
@@ -386,7 +391,7 @@ function People({ users, orgId }: { users: OrgUser[]; orgId: string }) {
   }
 
   const roleCounts = users.reduce<Record<string, number>>((acc, user) => {
-    acc[user.role] = (acc[user.role] ?? 0) + 1;
+    for (const { role } of user.roles) acc[role] = (acc[role] ?? 0) + 1;
     return acc;
   }, {});
 
@@ -423,7 +428,9 @@ function People({ users, orgId }: { users: OrgUser[]; orgId: string }) {
                 <span className="text-grey-primary truncate text-s font-medium">{fullName || user.email}</span>
                 <span className="text-grey-secondary truncate text-xs">{user.email}</span>
               </span>
-              <span className="text-grey-secondary shrink-0 text-xs">{humanizeRole(user.role)}</span>
+              <span className="text-grey-secondary shrink-0 text-xs">
+                {user.roles.map(({ role }) => humanizeRole(role)).join(', ')}
+              </span>
             </li>
           );
         })}

@@ -1,4 +1,4 @@
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import { getScoringLevelLabel, type MaxRiskLevel, SCORING_LEVELS_COLORS } from '@app-builder/models/scoring';
 import { useScoreLatestQuery } from '@app-builder/queries/scoring/get-score-latest';
 import { useGetScoringSettingsQuery } from '@app-builder/queries/scoring/get-scoring-settings';
 import { isAccessible } from '@app-builder/services/feature-access';
@@ -26,9 +26,9 @@ export function UserScoreBadge({ objectType, objectId, userScoringAccess }: User
   const score = scoreQuery.data?.score;
   if (!settings || !score) return null;
 
-  const maxRiskLevel = settings.maxRiskLevel as 3 | 4 | 5 | 6;
+  const maxRiskLevel = settings.maxRiskLevel as MaxRiskLevel;
   const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][score.risk_level] ?? 'inherit';
-  const scoreLabel = t(SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][score.risk_level] ?? score.risk_level.toString());
+  const scoreLabel = getScoringLevelLabel(t, maxRiskLevel, score.risk_level);
 
   return (
     <>

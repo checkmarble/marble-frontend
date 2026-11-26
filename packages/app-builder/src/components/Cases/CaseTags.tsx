@@ -33,7 +33,7 @@ export function CaseTags({ caseTagIds, orgTags }: { caseTagIds: string[]; orgTag
   );
 }
 
-export function CaseTag({ tag }: { tag?: Tag }) {
+function CaseTag({ tag }: { tag?: Tag }) {
   const { t } = useTranslation(casesI18n);
 
   return (

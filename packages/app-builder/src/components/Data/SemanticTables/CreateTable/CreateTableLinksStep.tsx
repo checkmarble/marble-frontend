@@ -3,7 +3,7 @@ import {
   LinksEditorContext,
 } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LinkForm } from '../Shared/LinkForm';
@@ -20,10 +20,10 @@ export function CreateTableLinksStep({
   const form = useCreateTableFormContext();
   const { t } = useTranslation(['data']);
   const dataModel = useDataModel();
-  const tableName = useStore(form.store, (s) => s.values.name);
-  const tableAlias = useStore(form.store, (s) => s.values.alias);
-  const fields = useStore(form.store, (s) => s.values.fields);
-  const links = useStore(form.store, (s) => s.values.links);
+  const tableName = useSelector(form.store, (s) => s.values.name);
+  const tableAlias = useSelector(form.store, (s) => s.values.alias);
+  const fields = useSelector(form.store, (s) => s.values.fields);
+  const links = useSelector(form.store, (s) => s.values.links);
 
   const initializedRef = useRef(false);
   useEffect(() => {

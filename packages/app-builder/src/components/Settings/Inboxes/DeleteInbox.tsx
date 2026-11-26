@@ -1,5 +1,5 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteInboxMutation } from '@app-builder/queries/settings/inboxes/delete-inbox';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
@@ -15,14 +15,14 @@ export const DeleteInboxContent = ({
 }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxMutation = useDeleteInboxMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const handleDeleteInbox = () => {
     deleteInboxMutation
       .mutateAsync({ inboxId })
       .then(() => {
         onDeleted();
-        revalidate();
+        router.invalidate();
       })
       .catch((error: Error) => toast.error(error.message))
       .finally(onSettled);

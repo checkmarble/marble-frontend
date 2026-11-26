@@ -1,7 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   UpdateScenarioPayload,
   updateScenarioPayloadSchema,
@@ -9,14 +6,14 @@ import {
 } from '@app-builder/queries/scenarios/update-scenario';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import { useHydrated } from '@tanstack/react-router';
+import { useHydrated, useRouter } from '@tanstack/react-router';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function UpdateScenario({
+function UpdateScenario({
   children,
   defaultValue,
 }: {
@@ -44,21 +41,17 @@ function UpdateScenarioContent({
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const updateScenarioMutation = useUpdateScenarioMutation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: defaultValue,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        updateScenarioMutation
-          .mutateAsync(value)
-          .then(() => {
-            onUpdateSuccess();
-            revalidate();
-          })
-          .catch(() => {
-            toast.error(t('common:errors.unknown'));
-          });
+    onSubmit: async ({ value }) => {
+      try {
+        await updateScenarioMutation.mutateAsync(value);
+        onUpdateSuccess();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
       }
     },
     validators: {
@@ -81,14 +74,16 @@ function UpdateScenarioContent({
         >
           {(field) => (
             <div className="group flex w-full flex-col gap-sm">
-              <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('scenarios:create_scenario.name')}</label>
+              <Input
+                id={field.name}
                 type="text"
                 name={field.name}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 placeholder={t('scenarios:create_scenario.name_placeholder')}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -104,14 +99,16 @@ function UpdateScenarioContent({
         >
           {(field) => (
             <div className="group flex w-full flex-col gap-sm">
-              <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>
-              <FormInput
+              <label htmlFor={field.name}>{t('scenarios:create_scenario.description')}</label>
+              <Input
+                id={field.name}
                 type="text"
                 name={field.name}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0}
+                aria-invalid={field.state.meta.errors.length > 0 || undefined}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 placeholder={t('scenarios:create_scenario.description_placeholder')}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

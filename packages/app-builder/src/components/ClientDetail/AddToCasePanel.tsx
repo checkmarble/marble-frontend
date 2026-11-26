@@ -15,7 +15,7 @@ import { subEntityIcon } from '../Graph/GraphComponents';
 import { createGraphTypeHelpers } from '../Graph/lib/data-model-map';
 import { Spinner } from '../Spinner';
 
-export interface CaseObjectRef {
+interface CaseObjectRef {
   objectType: string;
   objectId: string;
   label?: string;
@@ -73,7 +73,7 @@ export function ClientAddToCasePanel({ objects }: ClientAddToCasePanelProps) {
 }
 
 function CaseObjectsList({ objects }: { objects: CaseObjectRef[] }) {
-  const { t } = useTranslation('cases');
+  const { t } = useTranslation(['cases']);
   const hasRiskLevel = objects.some((object) => object.riskLevel != null);
   const settingsQuery = useGetScoringSettingsQuery(hasRiskLevel);
   const rawMaxRiskLevel = settingsQuery.data?.settings?.maxRiskLevel;

@@ -5,13 +5,6 @@ import { describe, expect, it } from 'vitest';
 import { TextArea } from './TextArea';
 
 describe('TextArea', () => {
-  it('should render successfully', () => {
-    render(<TextArea aria-label="textarea" />);
-
-    const textarea = screen.getByLabelText('textarea');
-    expect(textarea).toBeInTheDocument();
-  });
-
   it('should be editable', async () => {
     render(<TextArea placeholder="placeholder" />);
 

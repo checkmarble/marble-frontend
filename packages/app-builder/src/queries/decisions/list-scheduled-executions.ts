@@ -12,7 +12,7 @@ type ListScheduledExecutionsQuery = Query<
   (string | { scenarioId?: string })[]
 >;
 
-export const SCHEDULED_EXECUTIONS_REFETCH_INTERVAL_MS = 1_000;
+const SCHEDULED_EXECUTIONS_REFETCH_INTERVAL_MS = 1_000;
 
 export function getScheduledExecutionsRefetchInterval(executions: readonly Pick<ScheduledExecution, 'status'>[]) {
   return hasInProgressScheduledExecution(executions) ? SCHEDULED_EXECUTIONS_REFETCH_INTERVAL_MS : false;

@@ -3,7 +3,7 @@ import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import { getOperationType, isCompleteRule, transformAstNodeToModel } from '@app-builder/models/scoring';
-import { SCREENING_CATEGORY_I18N_KEY_MAP, topicsToCategories } from '@app-builder/models/screening';
+import { SCREENING_HIT_TYPE_T_KEYS, topicsToCategories } from '@app-builder/models/screening';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { useTranslation } from 'react-i18next';
@@ -122,9 +122,7 @@ export function SwitchNodeView({
               getTagLabel={(value) => {
                 const cats = topicsToCategories([value]);
                 const cat = cats[0];
-                return cat
-                  ? t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[cat]}`)
-                  : value;
+                return cat ? t(SCREENING_HIT_TYPE_T_KEYS[cat]) : value;
               }}
             />
           ))

@@ -376,7 +376,7 @@ function StringLink() {
   return StringLinkComponent({ value });
 }
 
-export function StringLinkComponent({ value }: { value: string }) {
+function StringLinkComponent({ value }: { value: string }) {
   const result = tryCatch(() => new URL(value));
   if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <span>{value}</span>;
   return (

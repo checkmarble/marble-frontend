@@ -12,7 +12,7 @@ const screeningSearchLayoutLoader = createServerFn()
     const { entitlements } = context.authInfo;
 
     if (!isScreeningSearchAvailable(entitlements)) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: '/app-router' });
     }
 
     return null;

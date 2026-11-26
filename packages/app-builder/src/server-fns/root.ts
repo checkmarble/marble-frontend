@@ -113,8 +113,8 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     });
 
     // Publish the CSP to `securityHeadersMiddleware` (see start.ts), which sets it on
-    // the document response. We cannot set it here directly: this server fn runs in its
-    // own H3 event scope, so `setResponseHeaders` never reaches the streamed document.
+    // the document response. Setting it here would only reach 2xx documents loaded
+    // through this loader, and every document needs the CSP.
     setContentSecurityPolicy(csp);
 
     return { ENV, locale, timezone, theme, csrf: csrfToken, toastMessage, segmentScript, appConfig, nonce };
