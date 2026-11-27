@@ -1,7 +1,6 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
-import { isAdmin } from '@app-builder/models';
 import { CaseDetail } from '@app-builder/models/cases';
 import { ContinuousScreening } from '@app-builder/models/continuous-screening';
 import { Inbox } from '@app-builder/models/inbox';
@@ -38,7 +37,6 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
   const { t } = useTranslation(['common', 'cases']);
   const { currentUser } = useOrganizationDetails();
   const { orgTags } = useOrganizationTags();
-  const isUserAdmin = isAdmin(currentUser);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const hasRemainingMatchesToExamine = screening.matches.some((match) => match.status === 'pending');
@@ -165,7 +163,7 @@ export function ContinuousScreeningPage({ caseDetail, inboxes, screening }: Cont
                 />
               </Card>
             </div>
-            <ScreeningMatchList screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />
+            <ScreeningMatchList screening={screening} caseDetail={caseDetail} />
             <CaseInvestigation
               root={rootRef}
               caseId={caseDetail.id}

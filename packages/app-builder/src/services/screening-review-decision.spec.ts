@@ -4,6 +4,7 @@ import type { ContinuousScreeningRepository } from '@app-builder/repositories/Co
 import { describe, expect, it, vi } from 'vitest';
 import {
   closeScreeningReviewCase,
+  markPendingMatchesAsNoHit,
   reviewScreeningReviewMatch,
   reviewScreeningReviewMatches,
   type ScreeningReviewDecisionInput,
@@ -305,5 +306,98 @@ describe('closure recovery on load', () => {
       caseId: 'case',
       body: { status: 'closed', outcome: 'false_positive' },
     });
+  });
+});
+
+describe('mark all pending matches as No hit', () => {
+  const markInput = { caseId: 'case', screeningId: 'screening-1', comment: '  Same name, different person  ' };
+  function markRepositories(before = reviewCase('case'), after = finished('no_hit')) {
+    return {
+      cases: {
+        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
+      },
+      continuousScreening: {
+        reviewMatches: vi
+          .fn<ContinuousScreeningRepository['reviewMatches']>()
+          .mockImplementation(async (matches) => matches.map(({ matchId }) => ({ matchId, statusCode: 200 }))),
+      },
+    };
+  }
+
+  it('reviews every pending match as No hit in one request, then closes the case as a false positive', async () => {
+    const repos = markRepositories();
+    expect(await markPendingMatchesAsNoHit(repos, markInput)).toEqual({
+      ok: true,
+      written: 2,
+      failed: 0,
+      caseClosed: true,
+    });
+    expect(repos.continuousScreening.reviewMatches).toHaveBeenCalledExactlyOnceWith([
+      { matchId: 'screening-1-high', status: 'no_hit', comment: 'Same name, different person' },
+      { matchId: 'screening-1-low', status: 'no_hit', comment: 'Same name, different person' },
+    ]);
+    expect(repos.cases.updateCase).toHaveBeenCalledExactlyOnceWith({
+      caseId: 'case',
+      body: { status: 'closed', outcome: 'false_positive' },
+    });
+  });
+
+  it('lets a user who is not the assignee act, as anyone with access to the inbox can', async () => {
+    const repos = markRepositories(reviewCase('case', undefined, { assignedTo: 'colleague' }));
+    expect(await markPendingMatchesAsNoHit(repos, markInput)).toMatchObject({ ok: true, written: 2 });
+  });
+
+  const decided = objectReviewScreening();
+  decided.matches = decided.matches.map((match) => ({ ...match, status: 'no_hit' as const }));
+  it.each([
+    ['unavailable', reviewCase('case', undefined, { status: 'closed' })],
+    ['unavailable', reviewCase('case', [objectReviewScreening('other-screening')])],
+    ['not_in_review', reviewCase('case', [{ ...objectReviewScreening(), status: 'confirmed_hit' }])],
+    ['already_reviewed', reviewCase('case', [decided])],
+  ] as const)('refuses before writing: %s', async (reason, before) => {
+    const repos = markRepositories(before);
+    expect(await markPendingMatchesAsNoHit(repos, markInput)).toEqual({ ok: false, reason });
+    expect(repos.continuousScreening.reviewMatches).not.toHaveBeenCalled();
+  });
+
+  it('counts the matches the API refused, and leaves the case open while the screening is in review', async () => {
+    const repos = markRepositories(reviewCase('case'), reviewCase('case'));
+    repos.continuousScreening.reviewMatches.mockResolvedValue([
+      { matchId: 'screening-1-high', statusCode: 200 },
+      { matchId: 'screening-1-low', statusCode: 422, message: 'continuous screening match is not pending review' },
+    ]);
+    expect(await markPendingMatchesAsNoHit(repos, { ...markInput, comment: ' ' })).toEqual({
+      ok: true,
+      written: 1,
+      failed: 1,
+      caseClosed: false,
+    });
+    expect(repos.continuousScreening.reviewMatches.mock.calls[0]?.[0][0]).not.toHaveProperty('comment');
+    expect(repos.cases.updateCase).not.toHaveBeenCalled();
+  });
+
+  it('does not read the case back when nothing was written', async () => {
+    const repos = markRepositories();
+    repos.continuousScreening.reviewMatches.mockResolvedValue([
+      { matchId: 'screening-1-high', statusCode: 500 },
+      { matchId: 'screening-1-low', statusCode: 500 },
+    ]);
+    expect(await markPendingMatchesAsNoHit(repos, markInput)).toEqual({
+      ok: true,
+      written: 0,
+      failed: 2,
+      caseClosed: false,
+    });
+    expect(repos.cases.getCase).toHaveBeenCalledOnce();
+  });
+
+  it('maps a forbidden request and rethrows unexpected failures', async () => {
+    const forbidden = markRepositories();
+    forbidden.continuousScreening.reviewMatches.mockRejectedValue(httpError(403));
+    expect(await markPendingMatchesAsNoHit(forbidden, markInput)).toEqual({ ok: false, reason: 'forbidden' });
+    const failing = markRepositories();
+    failing.continuousScreening.reviewMatches.mockRejectedValue(new Error('network'));
+    await expect(markPendingMatchesAsNoHit(failing, markInput)).rejects.toThrow('network');
   });
 });
