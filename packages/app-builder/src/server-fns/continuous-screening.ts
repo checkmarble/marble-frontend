@@ -3,8 +3,12 @@ import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConf
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin, marbleApiErrorMessage } from '@app-builder/models';
 import { type ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
-import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
+import {
+  markPendingMatchesAsNoHitPayloadSchema,
+  reviewMatchPayloadSchema,
+} from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import { markPendingMatchesAsNoHit } from '@app-builder/services/screening-review-decision';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
@@ -200,15 +204,13 @@ export const createContinuousScreeningConfigurationFn = createServerFn({ method:
     }
   });
 
-export const dismissContinuousScreeningFn = createServerFn({ method: 'POST' })
+export const markPendingMatchesAsNoHitFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .validator(z.object({ screeningId: z.string() }))
+  .validator(markPendingMatchesAsNoHitPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.continuousScreening.dismiss(data.screeningId);
-    } catch {
-      throw new Error('Failed to dismiss screening');
-    }
+    const { cases, continuousScreening, entitlements } = context.authInfo;
+    if (!isContinuousScreeningAvailable(entitlements)) throw redirect({ to: '/cases' });
+    return markPendingMatchesAsNoHit({ cases, continuousScreening }, data);
   });
 
 export const loadMoreContinuousScreeningMatchesFn = createServerFn({ method: 'POST' })

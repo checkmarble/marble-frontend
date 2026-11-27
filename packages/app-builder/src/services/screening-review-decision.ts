@@ -4,6 +4,7 @@ import { isHttpError, marbleApiErrorMessage } from '@app-builder/models/http-err
 import { needsFalsePositiveClosure, type ScreeningReviewDecision } from '@app-builder/models/screening-review';
 import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
 import type { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
+import type { MarkPendingMatchesAsNoHitPayload } from '@app-builder/schemas/continuous-screenings';
 import { FORBIDDEN, NOT_FOUND, OK, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
 
 export interface ScreeningReviewDecisionInput {
@@ -235,6 +236,55 @@ export async function reviewScreeningReviewMatches(
       caseClosed: after?.caseClosed ?? false,
     };
   });
+}
+
+export type MarkPendingMatchesAsNoHitResult =
+  | {
+      ok: true;
+      /** Matches now at `no_hit`. */
+      written: number;
+      /** Matches the API refused or failed to write, e.g. reviewed elsewhere in the meantime. */
+      failed: number;
+      caseClosed: boolean;
+    }
+  | { ok: false; reason: ScreeningReviewRejection };
+
+/**
+ * Reviews every pending match of a screening as `no_hit` in one request, then closes the case as a
+ * false positive when its screenings all ended at `no_hit`. Unlike the screening review page, the
+ * case page lets anyone with access to the case's inbox act, assignee or not.
+ */
+export async function markPendingMatchesAsNoHit(
+  repositories: BatchRepositories,
+  { caseId, screeningId, comment }: MarkPendingMatchesAsNoHitPayload,
+): Promise<MarkPendingMatchesAsNoHitResult> {
+  const trimmedComment = comment?.trim();
+  let written = 0;
+  let failed = 0;
+  try {
+    const before = await repositories.cases.getCase({ caseId });
+    const screening = before.continuousScreenings.find(({ id }) => id === screeningId);
+    if (before.status === 'closed' || !screening) return { ok: false, reason: 'unavailable' };
+    if (screening.status !== 'in_review') return { ok: false, reason: 'not_in_review' };
+    const pendingIds = screening.matches.filter(({ status }) => status === 'pending').map(({ id }) => id);
+    if (!pendingIds.length) return { ok: false, reason: 'already_reviewed' };
+    const results = await repositories.continuousScreening.reviewMatches(
+      pendingIds.map((matchId) => ({
+        matchId,
+        status: 'no_hit' as const,
+        ...(trimmedComment ? { comment: trimmedComment } : {}),
+      })),
+    );
+    written = results.filter(({ statusCode }) => statusCode === OK).length;
+    failed = pendingIds.length - written;
+  } catch (error) {
+    const reason = rejectionFromError(error);
+    if (reason) return { ok: false, reason };
+    throw error;
+  }
+
+  const after = written ? await readBack(repositories.cases, caseId) : undefined;
+  return { ok: true, written, failed, caseClosed: after?.caseClosed ?? false };
 }
 
 /**
