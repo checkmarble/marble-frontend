@@ -3,6 +3,7 @@ import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/
 import { GraphSessionProvider } from '@app-builder/components/Graph/contexts/GraphSessionContext';
 import { GraphAccessPlaceholder } from '@app-builder/components/Graph/GraphAccessPlaceholder';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { getDataModel } from '@app-builder/server/data-model';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { getGraphExplorationDisplay } from '@app-builder/services/feature-access';
@@ -12,10 +13,10 @@ import { createServerFn } from '@tanstack/react-start';
 const testGraphLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function testGraphLayoutLoader({ context }) {
-    const { user, dataModelRepository, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
     const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
 
-    const dataModel = await dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(api);
     return {
       dataModel,
       dataModelFeatureAccess,

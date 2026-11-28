@@ -1,9 +1,24 @@
 import { createContinuousScreeningConfigSchema } from '@app-builder/components/ContinuousScreening/context/CreationStepper';
 import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin, marbleApiErrorMessage } from '@app-builder/models';
-import { type ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
+import { adaptContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
+import {
+  createConfiguration,
+  createObject,
+  deleteObject,
+  dismiss,
+  listClientDataIndexing,
+  listConfigurations,
+  listDatasetUpdates,
+  listObjects,
+  listUpdateJobs,
+  updateConfiguration,
+  updateMatchStatus,
+} from '@app-builder/server/continuous-screening';
+import { createInbox, listInboxes } from '@app-builder/server/inboxes';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -13,19 +28,17 @@ export const getContinuousScreeningConfigurationFn = createServerFn({ method: 'G
   .middleware([authMiddleware])
   .validator(z.object({ stableId: z.string() }))
   .handler(async ({ context, data }) => {
-    const config = await context.authInfo.continuousScreening.getConfiguration(data.stableId);
+    const config = adaptContinuousScreeningConfig(await context.api.getContinuousScreeningConfig(data.stableId));
     return { config };
   });
 
 export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { continuousScreening, entitlements, inbox } = context.authInfo;
+    const { api, entitlements } = context;
 
-    const configurations = isContinuousScreeningAvailable(entitlements)
-      ? await continuousScreening.listConfigurations()
-      : [];
-    const inboxes = await inbox.listInboxes();
+    const configurations = isContinuousScreeningAvailable(entitlements) ? await listConfigurations(api) : [];
+    const inboxes = await listInboxes(api);
 
     const configurationsWithInbox = configurations.map((config) => {
       const inboxItem = inboxes.find((inbox) => inbox.id === config.inboxId);
@@ -46,7 +59,7 @@ export const listContinuousScreeningDatasetUpdatesFn = createServerFn({ method: 
     }),
   )
   .handler(async ({ context, data }) => {
-    return context.authInfo.continuousScreening.listDatasetUpdates(data);
+    return listDatasetUpdates(context.api, data);
   });
 
 export const listContinuousScreeningUpdateJobsFn = createServerFn({ method: 'GET' })
@@ -60,7 +73,7 @@ export const listContinuousScreeningUpdateJobsFn = createServerFn({ method: 'GET
     }),
   )
   .handler(async ({ context, data }) => {
-    return context.authInfo.continuousScreening.listUpdateJobs(data);
+    return listUpdateJobs(context.api, data);
   });
 
 export const listContinuousScreeningClientDataIndexingFn = createServerFn({ method: 'GET' })
@@ -74,17 +87,13 @@ export const listContinuousScreeningClientDataIndexingFn = createServerFn({ meth
     }),
   )
   .handler(async ({ context, data }) => {
-    return context.authInfo.continuousScreening.listClientDataIndexing(data);
+    return listClientDataIndexing(context.api, data);
   });
 
-async function getActiveConfigurations(
-  continuousScreening: ContinuousScreeningRepository,
-  objectType: string,
-  objectId: string,
-) {
+async function getActiveConfigurations(api: MarbleCoreApi, objectType: string, objectId: string) {
   const [objects, configurations] = await Promise.all([
-    continuousScreening.listObjects({ objectType, objectId }),
-    continuousScreening.listConfigurations(),
+    listObjects(api, { objectType, objectId }),
+    listConfigurations(api),
   ]);
 
   const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
@@ -95,13 +104,13 @@ export const listActiveConfigsForObjectFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
-    const { continuousScreening, entitlements } = context.authInfo;
+    const { api, entitlements } = context;
 
     if (!isContinuousScreeningAvailable(entitlements)) {
       return { configurations: [] };
     }
 
-    const activeConfigurations = await getActiveConfigurations(continuousScreening, data.objectType, data.objectId);
+    const activeConfigurations = await getActiveConfigurations(api, data.objectType, data.objectId);
 
     return { configurations: activeConfigurations };
   });
@@ -117,7 +126,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    const { continuousScreening, entitlements, user } = context.authInfo;
+    const { api, entitlements, user } = context;
 
     if (!isContinuousScreeningAvailable(entitlements)) {
       return { configurations: [] };
@@ -127,7 +136,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
       throw new Response(null, { status: 403, statusText: 'Forbidden' });
     }
 
-    const currentObjects = await continuousScreening.listObjects({
+    const currentObjects = await listObjects(api, {
       objectType: data.objectType,
       objectId: data.objectId,
     });
@@ -144,14 +153,14 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
     // a retry naturally re-applies only the operations that did not succeed.
     const results = await Promise.allSettled([
       ...toDelete.map((configStableId) =>
-        continuousScreening.deleteObject({
+        deleteObject(api, {
           objectType: data.objectType,
           objectId: data.objectId,
           configStableId,
         }),
       ),
       ...toCreate.map((configStableId) =>
-        continuousScreening.createObject({
+        createObject(api, {
           objectType: data.objectType,
           objectId: data.objectId,
           configStableId,
@@ -164,7 +173,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
       throw new Error('Failed to update object monitoring');
     }
 
-    const activeConfigurations = await getActiveConfigurations(continuousScreening, data.objectType, data.objectId);
+    const activeConfigurations = await getActiveConfigurations(api, data.objectType, data.objectId);
 
     return { configurations: activeConfigurations };
   });
@@ -181,13 +190,13 @@ export const createContinuousScreeningConfigurationFn = createServerFn({ method:
         if (!inboxName) {
           throw new Error('Inbox name is required when no inbox is selected');
         }
-        const newInbox = await context.authInfo.inbox.createInbox({ name: inboxName });
+        const newInbox = await createInbox(context.api, { name: inboxName });
         inboxId = newInbox.id;
       } else {
         inboxId = payload.inboxId;
       }
 
-      await context.authInfo.continuousScreening.createConfiguration({
+      await createConfiguration(context.api, {
         ...payload,
         inboxId,
         datasets: sanitizeTruthyDatasets(payload.datasets),
@@ -205,7 +214,7 @@ export const dismissContinuousScreeningFn = createServerFn({ method: 'POST' })
   .validator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.continuousScreening.dismiss(data.screeningId);
+      await dismiss(context.api, data.screeningId);
     } catch {
       throw new Error('Failed to dismiss screening');
     }
@@ -216,7 +225,7 @@ export const loadMoreContinuousScreeningMatchesFn = createServerFn({ method: 'PO
   .validator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.continuousScreening.loadMoreMatches(data.screeningId);
+      await context.api.loadMoreContinuousScreeningMatches(data.screeningId);
     } catch {
       throw new Error('Failed to load more matches');
     }
@@ -227,7 +236,7 @@ export const reviewContinuousScreeningMatchFn = createServerFn({ method: 'POST' 
   .validator(reviewMatchPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.continuousScreening.updateMatchStatus(data);
+      await updateMatchStatus(context.api, data);
     } catch {
       throw new Error('Failed to review match');
     }
@@ -244,14 +253,14 @@ export const updateContinuousScreeningConfigurationFn = createServerFn({ method:
       if (!inboxName) {
         throw new Error('Inbox name is required when no inbox is selected');
       }
-      const newInbox = await context.authInfo.inbox.createInbox({ name: inboxName });
+      const newInbox = await createInbox(context.api, { name: inboxName });
       inboxId = newInbox.id;
     } else {
       inboxId = payload.inboxId;
     }
 
     try {
-      await context.authInfo.continuousScreening.updateConfiguration(configStableId, {
+      await updateConfiguration(context.api, configStableId, {
         ...payload,
         inboxId,
         datasets: sanitizeTruthyDatasets(payload.datasets),

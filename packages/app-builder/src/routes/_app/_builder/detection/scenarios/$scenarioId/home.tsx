@@ -17,6 +17,9 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { useToggleScenarioDeduplicationMutation } from '@app-builder/queries/scenarios/toggle-deduplication';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
+import { listScheduledExecutions } from '@app-builder/server/decisions';
+import { getScenario, getScenarioIterationWithoutRules } from '@app-builder/server/scenarios';
+import { listTestRuns } from '@app-builder/server/test-runs';
 import { triggerManualExecutionFn } from '@app-builder/server-fns/scenarios';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { isEditScenarioAvailable, isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
@@ -39,17 +42,17 @@ const homeLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function homeLoader({ data, context }) {
-    const { user, entitlements, decision, testRun: testRunRepository, scenario } = context.authInfo;
+    const { api, user, entitlements } = context;
 
     const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
 
-    const currentScenario = await scenario.getScenario({ scenarioId });
+    const currentScenario = await getScenario(api, { scenarioId });
 
     const [scheduledExecutions, testRuns, liveIteration] = await Promise.all([
-      decision.listScheduledExecutions({ scenarioId }),
-      testRunRepository.listTestRuns({ scenarioId }),
+      listScheduledExecutions(api, { scenarioId }),
+      listTestRuns(api, { scenarioId }),
       currentScenario.liveVersionId
-        ? scenario.getScenarioIterationWithoutRules({ iterationId: currentScenario.liveVersionId })
+        ? getScenarioIterationWithoutRules(api, { iterationId: currentScenario.liveVersionId })
         : Promise.resolve(null),
     ]);
 

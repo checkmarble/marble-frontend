@@ -8,6 +8,9 @@ import {
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
+import { adaptScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
+import { adaptScenarioValidation } from '@app-builder/models/scenario/validation';
+import { getScenarioIterationWithoutRules } from '@app-builder/server/scenarios';
 import { EditorMode, EditorModeContextProvider } from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
@@ -24,14 +27,18 @@ const iterationLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function iterationLayoutLoader({ data, context }) {
-    const { scenarioIterationRuleRepository, scenario, user } = context.authInfo;
+    const { api, user } = context;
 
     const iterationId = fromParams(data?.params ?? {}, 'iterationId');
 
     const [scenarioIteration, scenarioValidation, rulesMetadata] = await Promise.all([
-      scenario.getScenarioIterationWithoutRules({ iterationId }),
-      scenario.validate({ iterationId }),
-      scenarioIterationRuleRepository.listRulesMetadata({ scenarioIterationId: iterationId }),
+      getScenarioIterationWithoutRules(api, { iterationId }),
+      api
+        .validateScenarioIteration(iterationId, undefined)
+        .then(({ scenario_validation }) => adaptScenarioValidation(scenario_validation)),
+      api
+        .listScenarioIterationRulesMetadata({ scenarioIterationId: iterationId })
+        .then((rules) => rules.map(adaptScenarioIterationRuleMetadata)),
     ]);
 
     const editorMode: EditorMode =

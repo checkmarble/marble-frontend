@@ -14,8 +14,10 @@ import type {
 } from '@app-builder/models/analytics';
 import { type AnalyticsFiltersQuery, analyticsFiltersQuery, FilterSource } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
+import { adaptScenarioIteration } from '@app-builder/models/scenario/iteration';
 import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
 import { useAnalyticsDataQuery } from '@app-builder/queries/analytics/get-data';
+import { listScenarios } from '@app-builder/server/scenarios';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -52,11 +54,11 @@ const analyticsLoader = createServerFn()
   .middleware([authMiddleware])
   .validator(paramsSchema)
   .handler(async function analyticsLoader({ data, context }) {
-    const { scenario, user, entitlements } = context.authInfo;
+    const { api, user, entitlements } = context;
 
     const [scenarios, scenarioIterations] = await Promise.all([
-      scenario.listScenarios(),
-      scenario.listScenarioIterations({ scenarioId: data.scenarioId }),
+      listScenarios(api),
+      api.listScenarioIterations(data.scenarioId).then((dtos) => dtos.map(adaptScenarioIteration)),
     ]);
 
     return {

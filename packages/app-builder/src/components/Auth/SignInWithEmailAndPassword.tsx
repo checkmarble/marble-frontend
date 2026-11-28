@@ -1,4 +1,4 @@
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import { type AuthPayload } from '@app-builder/server/auth';
 import {
   EmailUnverified,
   InvalidLoginCredentials,
@@ -6,7 +6,6 @@ import {
   useEmailAndPasswordSignIn,
   WrongPasswordError,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { sleep } from '@app-builder/utils/sleep';
 import * as Sentry from '@sentry/tanstackstart-react';
@@ -43,13 +42,12 @@ export function SignInWithEmailAndPassword({
   prefilledEmail?: string | null;
 }) {
   const { t } = useTranslation(['auth', 'common']);
-  const clientServices = useClientServices();
   const navigate = useNavigate();
   const hydrated = useHydrated();
 
   const [mfaResolver, setMfaResolver] = useState<MultiFactorResolver | null>(null);
 
-  const emailAndPasswordSignIn = useEmailAndPasswordSignIn(clientServices.authenticationClientService);
+  const emailAndPasswordSignIn = useEmailAndPasswordSignIn();
 
   const form = useForm({
     defaultValues: {

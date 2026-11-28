@@ -4,7 +4,7 @@ import {
   TooManyRequest,
   useResendEmailVerification,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
+import { useFirebaseAuthClient } from '@app-builder/services/auth/firebase-auth-client';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { ClientOnly, useHydrated } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
@@ -23,10 +23,9 @@ function SendEmailVerificationButton({ onClick, children }: { onClick?: () => vo
 
 function ClientSendEmailVerificationButton() {
   const { t } = useTranslation(['common', 'auth']);
-  const clientServices = useClientServices();
 
-  const { isFirebaseEmulator } = clientServices.authenticationClientService.authenticationClientRepository;
-  const resendEmailVerification = useResendEmailVerification(clientServices.authenticationClientService);
+  const { isFirebaseEmulator } = useFirebaseAuthClient();
+  const resendEmailVerification = useResendEmailVerification();
 
   async function onSendClick() {
     try {

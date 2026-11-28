@@ -7,7 +7,7 @@ import { createServerFn } from '@tanstack/react-start';
 const continuousScreeningLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function continuousScreeningLayout({ context }) {
-    const { user, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
     if (isAnalyst(user)) {
       throw redirect({ to: '/cases' });

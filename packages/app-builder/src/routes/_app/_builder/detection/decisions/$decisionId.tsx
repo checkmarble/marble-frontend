@@ -14,10 +14,15 @@ import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModel, isNotFoundHttpError } from '@app-builder/models';
+import { adaptScenarioIteration } from '@app-builder/models/scenario/iteration';
 import { Screening } from '@app-builder/models/screening';
-import { ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
+import { getDataModel, getIngestedObject, listPivots } from '@app-builder/server/data-model';
+import { getDecisionById } from '@app-builder/server/decisions';
+import { listDatasets, listScreenings } from '@app-builder/server/screenings';
+import { getFixedT } from '@app-builder/services/i18n/i18next.server';
 import { setToast } from '@app-builder/services/toast.server';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
@@ -53,12 +58,12 @@ function decisionsListRedirectFromReferer(referer: string | null) {
   return '/detection/decisions';
 }
 
-const handleScreenings = async (screenings: Screening[], screeningRepository: ScreeningRepository) => {
+const handleScreenings = async (screenings: Screening[], api: MarbleCoreApi) => {
   if (screenings.length === 0) {
     return [];
   }
 
-  const { sections } = await screeningRepository.listDatasets();
+  const { sections } = await listDatasets(api);
 
   const datasets: Map<string, string> = new Map(
     sections?.flatMap(({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? []) ?? [],
@@ -87,10 +92,7 @@ const decisionLoader = createServerFn()
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function decisionLoader({ context, data }) {
     const request = getRequest();
-    const {
-      i18nextService: { getFixedT },
-    } = context.services;
-    const { decision, scenario, dataModelRepository, screening } = context.authInfo;
+    const { api } = context;
 
     const parsedParam = await parseParamsSafe(data?.params ?? {}, z.object({ decisionId: shortUUIDSchema }));
     if (!parsedParam.success) {
@@ -99,7 +101,7 @@ const decisionLoader = createServerFn()
 
     const t = await getFixedT(request, ['decisions']);
 
-    const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId).catch(async (error) => {
+    const currentDecision = await getDecisionById(api, parsedParam.data.decisionId).catch(async (error) => {
       if (isNotFoundHttpError(error)) {
         await setToast({
           type: 'error',
@@ -114,14 +116,14 @@ const decisionLoader = createServerFn()
     });
 
     const independentOperations = Promise.all([
-      dataModelRepository.getDataModel().catch(() => [] as DataModel),
-      dataModelRepository.listPivots({}),
-      screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
+      getDataModel(api).catch(() => [] as DataModel),
+      listPivots(api, {}),
+      listScreenings(api, { decisionId: parsedParam.data.decisionId }),
     ]);
 
-    const scenarioIteration = await scenario.getScenarioIteration({
-      iterationId: currentDecision.scenario.scenarioIterationId,
-    });
+    const scenarioIteration = adaptScenarioIteration(
+      await api.getScenarioIteration(currentDecision.scenario.scenarioIterationId),
+    );
     const scenarioRules = scenarioIteration.rules;
 
     const [dataModel, pivots, screeningResult] = await independentOperations;
@@ -131,7 +133,7 @@ const decisionLoader = createServerFn()
         if (!id || !value) return null;
         const pivot = pivots.find((p) => p.id === id);
         if (!pivot || pivot.type === 'field') return null;
-        const object = await dataModelRepository.getIngestedObject(pivot.pivotTable, value).catch(() => null);
+        const object = await getIngestedObject(api, pivot.pivotTable, value).catch(() => null);
         if (!object) return null;
         return { pivotId: id, value, object };
       }),
@@ -143,7 +145,7 @@ const decisionLoader = createServerFn()
       dataModel,
       pivots,
       pivotObjects,
-      screening: await handleScreenings(screeningResult, screening),
+      screening: await handleScreenings(screeningResult, api),
       isIterationArchived: scenarioIteration.archived,
     };
   });

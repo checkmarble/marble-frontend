@@ -28,3 +28,20 @@ export function adaptCreateScenarioPublicationBodyDto(
     scenario_iteration_id: body.scenarioIterationId,
   };
 }
+
+/**
+ * The error thrown when a scenario iteration validation fails.
+ */
+export class ValidationError extends Error {}
+/**
+ * The error thrown when a scenario iteration to be activated requires preparation.
+ */
+export class PreparationIsRequiredError extends Error {}
+/**
+ * The error thrown when a scenario iteration to be activated is a draft.
+ */
+export class IsDraftError extends Error {}
+/**
+ * The error thrown when the preparation service is occupied.
+ */
+export class PreparationServiceOccupied extends Error {}

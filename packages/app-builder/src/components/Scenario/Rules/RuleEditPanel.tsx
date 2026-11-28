@@ -7,6 +7,7 @@ import { Scenario } from '@app-builder/models/scenario';
 import { ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useScenarioIterationRule } from '@app-builder/queries/scenarios/scenario-iteration-rule';
+import { updateRule } from '@app-builder/server/scenario-iteration-rules';
 import {
   collectRuleValidationMessages,
   findRuleValidation,
@@ -77,9 +78,7 @@ const editRuleAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editRuleConfigurationSchema)
   .handler(async function editRuleAction({ context, data: { params, payload } }) {
-    const { scenarioIterationRuleRepository } = context.authInfo;
-
-    return await scenarioIterationRuleRepository.updateRule({
+    return await updateRule(context.api, {
       ruleId: params.ruleId,
       ...payload,
     });

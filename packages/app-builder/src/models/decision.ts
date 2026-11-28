@@ -1,3 +1,4 @@
+import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import {
   type DecisionDetailDto,
   type DecisionDto,
@@ -13,6 +14,7 @@ import { adaptCase, type Case } from './cases';
 import { DataModelObjectValue } from './data-model';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 import { type Outcome } from './outcome';
+import { type FiltersWithPagination } from './pagination';
 
 export const nonPendingReviewStatuses = ['approve', 'decline'] as const;
 export const reviewStatuses = ['pending', ...nonPendingReviewStatuses] as const;
@@ -266,3 +268,19 @@ export function adaptDecisionDetail(dto: DecisionDetailDto, includeRuleEvaluatio
     rules: dto.rules.map((r) => adaptRuleExecutionDto(r, includeRuleEvaluation)),
   };
 }
+
+export type DecisionFilters = {
+  caseId?: string[];
+  dateRange?: DateRangeFilter;
+  hasCase?: boolean;
+  outcome?: Outcome[];
+  pivotValue?: string;
+  scenarioId?: string[];
+  caseInboxId?: string[];
+  reviewStatus?: ReviewStatus[];
+  scheduledExecutionId?: string[];
+  triggerObject?: string[];
+  triggerObjectId?: string;
+};
+
+export type DecisionFiltersWithPagination = FiltersWithPagination<DecisionFilters>;

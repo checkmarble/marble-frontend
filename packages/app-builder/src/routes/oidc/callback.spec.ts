@@ -7,13 +7,9 @@ const authenticateOidc = vi.fn();
 const exchangeTenantOidcCode = vi.fn();
 let cookie: Record<string, string | boolean | undefined> = {};
 
-vi.mock('@app-builder/services/init.server', () => ({
-  initServerServices: () => ({
-    appConfigRepository: { getAppConfig: vi.fn() },
-    authService: { authenticateOidc },
-    i18nextService: { getFixedT: async () => (key: string) => key },
-  }),
-}));
+vi.mock('@app-builder/server/auth', () => ({ authenticateOidc }));
+vi.mock('@app-builder/server/app-config', () => ({ getAppConfig: vi.fn() }));
+vi.mock('@app-builder/services/i18n/i18next.server', () => ({ getFixedT: async () => (key: string) => key }));
 const updateAuthSession = vi.fn();
 vi.mock('@app-builder/services/auth/auth-session.server', () => ({
   useAuthSession: async () => ({ update: updateAuthSession }),
@@ -38,7 +34,7 @@ describe('/oidc/callback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     exchangeTenantOidcCode.mockResolvedValue(tokens);
-    authenticateOidc.mockRejectedValue(new Response(null, { status: 302, headers: { Location: '/app-router' } }));
+    authenticateOidc.mockResolvedValue({ redirectTo: '/app-router' });
   });
 
   it('signs in against the tenant that started the sign-in', async () => {

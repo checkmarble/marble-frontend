@@ -6,7 +6,10 @@ import { CommentContext } from '@app-builder/components/CaseManager/hooks/commen
 import { CaseManagerPageLayout } from '@app-builder/components/CaseManager/PageLayout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
-import { getCaseClients } from '@app-builder/models/cases';
+import { adaptPivotObject, getCaseClients } from '@app-builder/models/cases';
+import { getCase } from '@app-builder/server/cases';
+import { getClient360Tables } from '@app-builder/server/client-360';
+import { getDataModel } from '@app-builder/server/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
@@ -19,16 +22,16 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
   .validator(z.object({ caseId: z.string().transform((shortuuid) => fromSUUIDtoUUID(shortuuid)) }))
   .handler(async ({ context, data }) => {
     const [caseDetail, dataModel, pivotObjects, client360Tables] = await Promise.all([
-      await context.authInfo.cases.getCase({ caseId: data.caseId }),
-      await context.authInfo.dataModelRepository.getDataModel(),
-      await context.authInfo.cases.listPivotObjects({ caseId: data.caseId }),
-      await context.authInfo.client360.getClient360Tables(),
+      getCase(context.api, { caseId: data.caseId }),
+      getDataModel(context.api),
+      context.api
+        .getPivotObjectsForCase(data.caseId)
+        .then(({ pivot_objects }) => pivot_objects?.map(adaptPivotObject) ?? null),
+      getClient360Tables(context.api),
     ]);
 
-    const dataModelFeatureAccess = dataModelFeatureAccessLoader(context.authInfo.user, context.authInfo.entitlements);
-    const userScoringAccess = isAnalyst(context.authInfo.user)
-      ? ('restricted' as const)
-      : context.authInfo.entitlements.userScoring;
+    const dataModelFeatureAccess = dataModelFeatureAccessLoader(context.user, context.entitlements);
+    const userScoringAccess = isAnalyst(context.user) ? ('restricted' as const) : context.entitlements.userScoring;
 
     return {
       caseDetail,
@@ -37,7 +40,7 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
       pivotObjects: pivotObjects ?? [],
       client360Tables,
       userScoringAccess,
-      entitlements: context.authInfo.entitlements,
+      entitlements: context.entitlements,
     };
   });
 

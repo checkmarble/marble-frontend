@@ -1,6 +1,6 @@
 import { useRefreshTokenMutation } from '@app-builder/queries/auth/refresh-token';
 import { logoutFn } from '@app-builder/server-fns/auth';
-import { useClientServices } from '@app-builder/services/init-client';
+import { useFirebaseAuthClient } from '@app-builder/services/auth/firebase-auth-client';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
 import { withOrganizationChangeLock } from '@app-builder/utils/organization-change-lock';
@@ -13,11 +13,11 @@ export function useRefreshToken() {
   const refreshTokenMutation = useRefreshTokenMutation();
   const csrf = useCsrfToken();
   const visibilityState = useVisibilityChange();
-  const clientServices = useClientServices();
+  const authClient = useFirebaseAuthClient();
 
   useInterval(
     () => {
-      const { firebaseIdToken } = clientServices.authenticationClientService.authenticationClientRepository;
+      const { firebaseIdToken } = authClient;
 
       firebaseIdToken().then(
         (idToken: string) => {

@@ -6,6 +6,10 @@ import { ScreeningStatusTag } from '@app-builder/components/Screenings/Screening
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { useUploadScreeningFile } from '@app-builder/queries/screening/upload-screening-file';
+import { getCase } from '@app-builder/server/cases';
+import { getDataModel, listPivots } from '@app-builder/server/data-model';
+import { getInbox } from '@app-builder/server/inboxes';
+import { listScreenings } from '@app-builder/server/screenings';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -17,17 +21,17 @@ const screeningLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function screeningLayoutLoader({ context, data }) {
-    const { user, entitlements, cases, dataModelRepository, inbox, screening: screeningRepository } = context.authInfo;
+    const { api, user, entitlements } = context;
 
     const caseId = fromParams(data?.params ?? {}, 'caseId');
     const decisionId = fromParams(data?.params ?? {}, 'decisionId');
     const screeningId = fromParams(data?.params ?? {}, 'screeningId');
 
     try {
-      const caseDetail = await cases.getCase({ caseId });
+      const caseDetail = await getCase(api, { caseId });
       const decision = caseDetail.decisions.find((d) => d.id === decisionId);
-      const screenings = await screeningRepository.listScreenings({ decisionId });
-      const currentInbox = await inbox.getInbox(caseDetail.inboxId);
+      const screenings = await listScreenings(api, { decisionId });
+      const currentInbox = await getInbox(api, caseDetail.inboxId);
       const screening = screenings.find((s) => s.id === screeningId);
 
       if (!decision || !screening) {
@@ -41,8 +45,8 @@ const screeningLayoutLoader = createServerFn()
         user,
         entitlements,
         screening,
-        dataModel: await dataModelRepository.getDataModel(),
-        pivots: await dataModelRepository.listPivots({}),
+        dataModel: await getDataModel(api),
+        pivots: await listPivots(api, {}),
       };
     } catch (error) {
       // On purpose catch 403 errors to display a 404 page

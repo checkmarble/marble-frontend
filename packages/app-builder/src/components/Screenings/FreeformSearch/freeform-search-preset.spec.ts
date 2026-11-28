@@ -4,7 +4,12 @@ import {
   freeformSearchPresetSchema,
 } from '@app-builder/models/freeform-search-preset';
 import { createScreeningFilters } from '@app-builder/models/screening-config';
-import { makeGetScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
+import {
+  deleteFreeformSearchPreset,
+  freeformSearch,
+  listFreeformSearchPresets,
+  saveFreeformSearchPreset,
+} from '@app-builder/server/screenings';
 import { marblecoreApi } from 'marble-api';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -104,18 +109,17 @@ describe('backend screening presets', () => {
       deleteScreeningSavedSearch: vi.fn().mockResolvedValue(undefined),
       freeformSearch: vi.fn().mockResolvedValue({ id: 'search-id', matches: [] }),
     };
-    const repository = makeGetScreeningRepository()(api);
-    const [listed] = await repository.listFreeformSearchPresets();
+    const [listed] = await listFreeformSearchPresets(api);
     expect(listed).toEqual({
       id: metadata.id,
       name: metadata.name,
       config: { datasets, threshold: 80 },
     });
-    await repository.saveFreeformSearchPreset({
+    await saveFreeformSearchPreset(api, {
       name: metadata.name,
       value: { datasets, threshold: 80 },
     });
-    await repository.freeformSearch({
+    await freeformSearch(api, {
       entityType: 'Person',
       fields: { name: 'Alice', nationality: 'FR' },
       datasets,
@@ -127,7 +131,7 @@ describe('backend screening presets', () => {
       { ...config, query: { Person: { name: 'Alice', nationality: 'FR' } } },
       { limit: 30 },
     );
-    await repository.deleteFreeformSearchPreset({ id: metadata.id });
+    await deleteFreeformSearchPreset(api, { id: metadata.id });
     expect(api.deleteScreeningSavedSearch).toHaveBeenCalledWith(metadata.id);
     expect(api.listScreeningSavedSearches).toHaveBeenCalledOnce();
   });

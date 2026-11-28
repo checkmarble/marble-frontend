@@ -1,5 +1,7 @@
+import { getAppConfig } from '@app-builder/server/app-config';
+import { authenticateOidc } from '@app-builder/server/auth';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
-import { initServerServices } from '@app-builder/services/init.server';
+import { getFixedT } from '@app-builder/services/i18n/i18next.server';
 import { setToast } from '@app-builder/services/toast.server';
 import { preserveSignedOut } from '@app-builder/utils/cross-tab-session';
 import { getServerEnv } from '@app-builder/utils/environment';
@@ -39,8 +41,6 @@ export const Route = createFileRoute('/oidc/callback')({
         const rawCookie = await oauth2Cookie.parse(request.headers.get('cookie'));
         const cookieData = parseOauth2CookieData(rawCookie);
 
-        const { appConfigRepository, authService, i18nextService } = initServerServices(request);
-
         const clearOauth2Cookie = await oauth2Cookie.serialize('', { maxAge: 0 });
         // A failed organization switch leaves the user signed in, and the sign-in page would send them straight back.
         const isOrganizationSwitch = !!cookieData?.organizationId;
@@ -48,7 +48,7 @@ export const Route = createFileRoute('/oidc/callback')({
           ? '/app-router'
           : preserveSignedOut('/sign-in', !!cookieData?.signedOut);
         const organizationSwitchError = async () => {
-          const t = await i18nextService.getFixedT(request, ['navigation']);
+          const t = await getFixedT(request, ['navigation']);
           return t('navigation:organization_change.switch_error');
         };
         const redirectToSignIn = () =>
@@ -107,7 +107,7 @@ export const Route = createFileRoute('/oidc/callback')({
           if (tenantId) {
             tokens = await exchangeTenantOidcCode(tenantId, code, codeVerifier);
           } else {
-            const appConfig = await appConfigRepository.getAppConfig();
+            const appConfig = await getAppConfig(request);
             const oidc = await makeOidcService(appConfig.auth.oidc);
             tokens = await oidc.exchangeCode(code, codeVerifier);
           }
@@ -121,27 +121,21 @@ export const Route = createFileRoute('/oidc/callback')({
           return redirectToSignIn();
         }
 
-        try {
-          await authService.authenticateOidc(request, tokens, {
-            successRedirect: safeRedirect(cookieData.redirectTo, '/app-router'),
-            failureRedirect: failurePath,
-            failureToast: isOrganizationSwitch ? await organizationSwitchError() : undefined,
-            // Without it, the backend verifies the tenant's ID token against the deployment-wide provider.
-            tenantId,
-            organizationId: cookieData.organizationId,
-          });
-          // authenticateOidc always throws a redirect, but TypeScript doesn't know that
-          /* istanbul ignore next */
-          return new Response(null, { status: 302, headers: { Location: '/sign-in' } });
-        } catch (err) {
-          if (err instanceof Response && err.status >= 300 && err.status < 400) {
-            // Propagate the redirect, appending cookie-clear header
-            const headers = new Headers(err.headers);
-            headers.append('Set-Cookie', clearOauth2Cookie);
-            return new Response(null, { status: err.status, headers });
-          }
-          throw err;
-        }
+        const { redirectTo } = await authenticateOidc(request, tokens, {
+          successRedirect: safeRedirect(cookieData.redirectTo, '/app-router'),
+          failureRedirect: failurePath,
+          failureToast: isOrganizationSwitch ? await organizationSwitchError() : undefined,
+          // Without it, the backend verifies the tenant's ID token against the deployment-wide provider.
+          tenantId,
+          organizationId: cookieData.organizationId,
+        });
+        return new Response(null, {
+          status: 302,
+          headers: [
+            ['Location', redirectTo],
+            ['Set-Cookie', clearOauth2Cookie],
+          ],
+        });
       },
     },
   },

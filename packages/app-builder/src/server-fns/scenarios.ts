@@ -17,15 +17,17 @@ import {
   type ReturnValue,
   type ReturnValueType,
 } from '@app-builder/models/node-evaluation';
-import { type RuleSnoozeInformation } from '@app-builder/models/rule-snooze';
+import { adaptSnoozesOfIteration, type RuleSnoozeInformation } from '@app-builder/models/rule-snooze';
+import { adaptScenario } from '@app-builder/models/scenario';
+import { adaptScenarioIteration } from '@app-builder/models/scenario/iteration';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
-import { type ScoringSettings } from '@app-builder/models/scoring';
 import {
   IsDraftError,
   PreparationIsRequiredError,
   PreparationServiceOccupied,
   ValidationError,
-} from '@app-builder/repositories/ScenarioRepository';
+} from '@app-builder/models/scenario/publication';
+import { type ScoringSettings } from '@app-builder/models/scoring';
 import {
   activateIterationPayloadSchema,
   archiveScenarioPayloadSchema,
@@ -42,7 +44,37 @@ import {
   unarchiveScenarioPayloadSchema,
   updateScenarioPayloadSchema,
 } from '@app-builder/schemas/scenarios';
+import { listConfigurations } from '@app-builder/server/continuous-screening';
+import { listCustomLists } from '@app-builder/server/custom-lists';
+import { getDataModel } from '@app-builder/server/data-model';
+import {
+  createRule,
+  generateRuleAst,
+  getRule,
+  getRuleDescription,
+  listRules,
+} from '@app-builder/server/scenario-iteration-rules';
+import { createScreeningConfig } from '@app-builder/server/scenario-iteration-screenings';
+import {
+  archiveScenario,
+  createScenario,
+  createScenarioIteration,
+  createScenarioPublication,
+  getPublicationPreparationStatus,
+  getScenario,
+  getScenarioIterationWithoutRules,
+  scheduleScenarioExecution,
+  setScenarioDeduplication,
+  startPublicationPreparation,
+  unarchiveScenario,
+  updateScenario,
+  updateScenarioIteration,
+  validateAst,
+} from '@app-builder/server/scenarios';
+import { launchTestRun } from '@app-builder/server/test-runs';
+import { getSettings, listRulesets } from '@app-builder/server/user-scoring';
 import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import { getFixedT } from '@app-builder/services/i18n/i18next.server';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { redirect } from '@tanstack/react-router';
@@ -229,7 +261,7 @@ export const archiveScenarioFn = createServerFn({ method: 'POST' })
   .validator(archiveScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.archiveScenario({ scenarioId: data.scenarioId });
+      await archiveScenario(context.api, { scenarioId: data.scenarioId });
       throw redirect({ to: '/detection/scenarios' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
@@ -241,10 +273,8 @@ export const copyScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(copyScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
-    return context.authInfo.scenario.copyScenario({
-      scenarioId: data.scenarioId,
-      name: data.name || undefined,
-    });
+    const scenario = await context.api.copyScenario(data.scenarioId, { name: data.name || undefined });
+    return adaptScenario(scenario);
   });
 
 export const createScenarioFn = createServerFn({ method: 'POST' })
@@ -252,8 +282,8 @@ export const createScenarioFn = createServerFn({ method: 'POST' })
   .validator(createScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const createdScenario = await context.authInfo.scenario.createScenario(data);
-      const scenarioIteration = await context.authInfo.scenario.createScenarioIteration({
+      const createdScenario = await createScenario(context.api, data);
+      const scenarioIteration = await createScenarioIteration(context.api, {
         scenarioId: createdScenario.id,
       });
       throw redirect({
@@ -270,7 +300,7 @@ export const unarchiveScenarioFn = createServerFn({ method: 'POST' })
   .validator(unarchiveScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.unarchiveScenario({ scenarioId: data.scenarioId });
+      await unarchiveScenario(context.api, { scenarioId: data.scenarioId });
     } catch {
       throw new Error('Failed to unarchive scenario');
     }
@@ -281,7 +311,7 @@ export const updateScenarioFn = createServerFn({ method: 'POST' })
   .validator(updateScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.updateScenario(data);
+      await updateScenario(context.api, data);
     } catch {
       throw new Error('Failed to update scenario');
     }
@@ -292,7 +322,7 @@ export const toggleScenarioDeduplicationFn = createServerFn({ method: 'POST' })
   .validator(toggleScenarioDeduplicationPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.setScenarioDeduplication({
+      await setScenarioDeduplication(context.api, {
         scenarioId: data.scenarioId,
         enabled: data.enabled,
       });
@@ -312,7 +342,7 @@ export const getRuleDescriptionFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    const { description, isRuleValid } = await context.authInfo.scenarioIterationRuleRepository.getRuleDescription({
+    const { description, isRuleValid } = await getRuleDescription(context.api, {
       scenarioId: data.scenarioId,
       astNode: data.astNode as AstNode,
     });
@@ -325,17 +355,16 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }): Promise<BuilderOptionsResource> => {
-    const { scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements, userScoring } =
-      context.authInfo;
+    const { api, entitlements } = context;
 
     const [currentScenario, customLists, dataModel, screeningConfigs, scoringRulesets, scoringSettings] =
       await Promise.all([
-        scenario.getScenario({ scenarioId: data.scenarioId }),
-        customListsRepository.listCustomLists(),
-        dataModelRepository.getDataModel(),
-        isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
-        userScoring.listRulesets(),
-        userScoring.getSettings(),
+        getScenario(api, { scenarioId: data.scenarioId }),
+        listCustomLists(api),
+        getDataModel(api),
+        isContinuousScreeningAvailable(entitlements) ? listConfigurations(api) : Promise.resolve([]),
+        listRulesets(api),
+        getSettings(api),
       ]);
 
     return {
@@ -365,7 +394,7 @@ export const validateAstFn = createServerFn({ method: 'POST' })
   )
   .handler(async ({ context, data }): Promise<AstValidationReturnType> => {
     try {
-      const res = await context.authInfo.scenario.validateAst(data.scenarioId, {
+      const res = await validateAst(context.api, data.scenarioId, {
         node: data.node as AstNode,
         expectedReturnType: data.expectedReturnType as ReturnValueType | undefined,
       });
@@ -388,7 +417,7 @@ export const generateAstFn = createServerFn({ method: 'POST' })
   .validator(generateRuleInputSchema)
   .handler(async ({ context, data }) => {
     try {
-      const result = await context.authInfo.scenarioIterationRuleRepository.generateRuleAst({
+      const result = await generateRuleAst(context.api, {
         scenarioId: data.scenarioId,
         ruleId: data.ruleId,
         instruction: data.instruction,
@@ -404,7 +433,7 @@ export const generateAstFn = createServerFn({ method: 'POST' })
 export const getRuleCatalogFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    return context.authInfo.scenarioIterationRuleRepository.getRuleCatalog();
+    return context.api.getRuleCatalog();
   });
 
 // ---- Scenario iteration: activate, commit, create-draft, deactivate, prepare ----
@@ -421,9 +450,7 @@ export const saveTriggerFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(saveTriggerPayloadSchema)
   .handler(async function saveTriggerAction({ context, data: { iterationId, schedule, astNode } }) {
-    const { scenario } = context.authInfo;
-
-    await scenario.updateScenarioIteration(iterationId, {
+    await updateScenarioIteration(context.api, iterationId, {
       triggerConditionAstExpression: astNode,
       schedule,
     });
@@ -434,7 +461,7 @@ export const activateIterationFn = createServerFn({ method: 'POST' })
   .validator(activateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.createScenarioPublication({
+      await createScenarioPublication(context.api, {
         publicationAction: 'publish',
         scenarioIterationId: data.iterationId,
       });
@@ -460,7 +487,7 @@ export const commitIterationFn = createServerFn({ method: 'POST' })
   .validator(commitIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.commitScenarioIteration({ iterationId: data.iterationId });
+      await context.api.commitScenarioIteration(data.iterationId);
       throw redirect({
         to: '/detection/scenarios/$scenarioId/i/$iterationId',
         params: {
@@ -479,7 +506,8 @@ export const createDraftIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.scenario.createDraftFromScenarioIteration(data.iterationId);
+    const iteration = await context.api.createDraftFromScenarioIteration(data.iterationId);
+    return adaptScenarioIteration(iteration);
   });
 
 export const deactivateIterationFn = createServerFn({ method: 'POST' })
@@ -487,7 +515,7 @@ export const deactivateIterationFn = createServerFn({ method: 'POST' })
   .validator(deactivateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.createScenarioPublication({
+      await createScenarioPublication(context.api, {
         publicationAction: 'unpublish',
         scenarioIterationId: data.iterationId,
       });
@@ -509,7 +537,7 @@ export const prepareIterationFn = createServerFn({ method: 'POST' })
   .validator(prepareIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.scenario.startPublicationPreparation({ iterationId: data.iterationId });
+      await startPublicationPreparation(context.api, { iterationId: data.iterationId });
       throw redirect({
         to: '/detection/scenarios/$scenarioId/i/$iterationId',
         params: {
@@ -528,14 +556,15 @@ export const getPublicationPreparationStatusFn = createServerFn({ method: 'GET' 
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.scenario.getPublicationPreparationStatus({ iterationId: data.iterationId });
+    return getPublicationPreparationStatus(context.api, { iterationId: data.iterationId });
   });
 
 export const getRuleSnoozeFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ iterationId: z.string() }))
   .handler(async ({ context, data }): Promise<{ ruleSnoozes: RuleSnoozeInformation[] }> => {
-    const { ruleSnoozes } = await context.authInfo.scenario.getScenarioIterationActiveSnoozes(data.iterationId);
+    const { snoozes } = await context.api.getScenarioIterationActiveSnoozes(data.iterationId);
+    const { ruleSnoozes } = adaptSnoozesOfIteration(snoozes);
     return { ruleSnoozes };
   });
 
@@ -545,7 +574,7 @@ export const createRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.scenarioIterationRuleRepository.createRule({
+    return createRule(context.api, {
       scenarioIterationId: data.iterationId,
       displayOrder: 1,
       formula: null,
@@ -560,7 +589,7 @@ export const deleteRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(deleteRulePayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
-    await context.authInfo.scenarioIterationRuleRepository.deleteRule({ ruleId: data.ruleId });
+    await context.api.deleteScenarioIterationRule(data.ruleId);
     throw redirect({
       to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
       params: {
@@ -575,14 +604,10 @@ export const duplicateRuleFn = createServerFn({ method: 'POST' })
   .validator(duplicateRulePayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['scenarios']);
-    const {
-      createdAt: _,
-      name,
-      ...rest
-    } = await context.authInfo.scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId });
+    const t = await getFixedT(request, ['scenarios']);
+    const { createdAt: _, name, ...rest } = await getRule(context.api, { ruleId: data.ruleId });
 
-    return await context.authInfo.scenarioIterationRuleRepository.createRule({
+    return await createRule(context.api, {
       name: t('scenarios:clone_rule.default_name', { name }),
       ...rest,
     });
@@ -594,7 +619,7 @@ export const createScreeningRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const config = await context.authInfo.scenarioIterationScreeningRepository.createScreeningConfig({
+    const config = await createScreeningConfig(context.api, {
       iterationId: data.iterationId,
       changes: {
         name: '',
@@ -614,10 +639,7 @@ export const deleteScreeningRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string(), screeningId: z.string() }))
   .handler(async ({ context, data }) => {
-    await context.authInfo.scenarioIterationScreeningRepository.deleteScreeningConfig({
-      iterationId: data.iterationId,
-      screeningId: data.screeningId,
-    });
+    await context.api.deleteScreeningConfig(data.iterationId, data.screeningId);
     throw redirect({
       to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
       params: {
@@ -634,7 +656,7 @@ export const cancelTestRunFn = createServerFn({ method: 'POST' })
   .validator(z.object({ scenarioId: z.string(), testRunId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.testRun.cancelTestRun({ testRunId: data.testRunId });
+      await context.api.cancelTestRun(data.testRunId);
       throw redirect({
         to: '/detection/scenarios/$scenarioId/test-run',
         params: { scenarioId: fromUUIDtoSUUID(data.scenarioId) },
@@ -651,7 +673,7 @@ export const createTestRunFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     const { scenarioId, ...payload } = data;
     try {
-      await context.authInfo.testRun.launchTestRun({ ...payload, scenarioId });
+      await launchTestRun(context.api, { ...payload, scenarioId });
       throw redirect({
         href: `/detection/scenarios/${fromUUIDtoSUUID(scenarioId)}/test-run`,
       });
@@ -669,8 +691,8 @@ export const getIterationRulesFn = createServerFn({ method: 'GET' })
   .validator(z.object({ iterationId: z.string() }))
   .handler(async ({ context, data }): Promise<{ rules: ScenarioIterationRule[]; archived: boolean }> => {
     const [rules, scenarioIteration] = await Promise.all([
-      context.authInfo.scenarioIterationRuleRepository.listRules({ scenarioIterationId: data.iterationId }),
-      context.authInfo.scenario.getScenarioIterationWithoutRules({ iterationId: data.iterationId }),
+      listRules(context.api, { scenarioIterationId: data.iterationId }),
+      getScenarioIterationWithoutRules(context.api, { iterationId: data.iterationId }),
     ]);
     return { rules, archived: scenarioIteration.archived };
   });
@@ -679,7 +701,7 @@ export const getIterationRuleFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ ruleId: z.string() }))
   .handler(async ({ context, data }) => {
-    return { rule: await context.authInfo.scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }) };
+    return { rule: await getRule(context.api, { ruleId: data.ruleId }) };
   });
 
 export const triggerManualExecutionFn = createServerFn({ method: 'POST' })
@@ -691,7 +713,7 @@ export const triggerManualExecutionFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ data, context }) => {
-    await context.authInfo.scenario.scheduleScenarioExecution({
+    await scheduleScenarioExecution(context.api, {
       iterationId: data.iterationId,
       deduplicateObjects: data.forceRescore ? false : undefined,
     });
@@ -716,7 +738,7 @@ export const saveScenarioDecisionFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       const { iterationId, ...thresholds } = data;
-      await context.authInfo.scenario.updateScenarioIteration(iterationId, thresholds);
+      await updateScenarioIteration(context.api, iterationId, thresholds);
       return { status: 'success' as const };
     } catch {
       return { status: 'error' as const };

@@ -5,6 +5,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TableModel } from '@app-builder/models';
 import { useUploadIngestionData } from '@app-builder/queries/data/upload-ingestion-data';
 import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
+import { getDataModel } from '@app-builder/server/data-model';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -31,7 +32,7 @@ const uploadLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function uploadLoader({ data, context }) {
-    const { user, apiClient, dataModelRepository } = context.authInfo;
+    const { api, user } = context;
 
     if (!isIngestDataAvailable(user)) {
       throw redirect({ to: '/data' });
@@ -42,13 +43,13 @@ const uploadLoader = createServerFn()
       throw redirect({ to: '/data' });
     }
 
-    const dataModel = await dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(api);
     const table = dataModel.find((t) => t.name === objectType);
     if (!table) {
       throw redirect({ to: '/data' });
     }
 
-    const uploadLogs = await apiClient.getIngestionUploadLogs(objectType);
+    const uploadLogs = await api.getIngestionUploadLogs(objectType);
 
     return { objectType, table, uploadLogs };
   });

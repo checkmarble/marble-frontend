@@ -9,6 +9,7 @@ import { getFormattedVersion } from '@app-builder/components/Scenario/Iteration/
 import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Scenario } from '@app-builder/models/scenario';
+import { listScenarios } from '@app-builder/server/scenarios';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -26,10 +27,10 @@ import { Icon } from 'ui-icons';
 const scenariosLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function scenariosLoader({ context }) {
-    const scenarios = await context.authInfo.scenario.listScenarios();
+    const scenarios = await listScenarios(context.api);
 
     return {
-      isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
+      isEditScenarioAvailable: isEditScenarioAvailable(context.user),
       scenarios,
     };
   });

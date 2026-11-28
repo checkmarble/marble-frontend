@@ -1,18 +1,14 @@
-import { initServerServices } from '@app-builder/services/init.server';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/ressources/lists/download-csv-file/$listId')({
   server: {
+    middleware: [authMiddleware],
     handlers: {
-      GET: async ({ request, params }) => {
-        const { authService } = initServerServices(request);
-        const { customListsRepository } = await authService.isAuthenticated(request, {
-          failureRedirect: '/sign-in',
-        });
-
+      GET: async ({ context: { api }, params }) => {
         const listId = fromParams(params, 'listId');
-        const fileContents = await customListsRepository.downloadValues(listId);
+        const fileContents = await api.downloadListValuesAsCsvFile(listId);
 
         return new Response(fileContents, {
           headers: {

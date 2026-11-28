@@ -1,4 +1,4 @@
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import { type AuthPayload } from '@app-builder/server/auth';
 import {
   AccountExistsWithDifferentCredential,
   InvalidLoginCredentials,
@@ -6,7 +6,6 @@ import {
   PopupBlockedByClient,
   useGoogleSignIn,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { ClientOnly } from '@tanstack/react-router';
@@ -48,9 +47,8 @@ function ClientSignInWithGoogle({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
-  const clientServices = useClientServices();
 
-  const googleSignIn = useGoogleSignIn(clientServices.authenticationClientService);
+  const googleSignIn = useGoogleSignIn();
 
   const [handleGoogleSignIn, _state] = useAsync(async () => {
     try {

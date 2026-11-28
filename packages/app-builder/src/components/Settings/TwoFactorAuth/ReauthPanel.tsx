@@ -6,7 +6,6 @@ import {
   useReauthenticateWithPassword,
   useResolveMfaTotpSignIn,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
@@ -21,12 +20,11 @@ import { Icon, Logo } from 'ui-icons';
 // challenge, which is resolved here before the caller's operation is retried.
 export function ReauthPanel({ onReauthenticated }: { onReauthenticated: () => void }) {
   const { t } = useTranslation(['account', 'common', 'auth']);
-  const { authenticationClientService } = useClientServices();
 
-  const getCurrentUserProviderIds = useGetCurrentUserProviderIds(authenticationClientService);
-  const reauthenticateWithPassword = useReauthenticateWithPassword(authenticationClientService);
-  const reauthenticateWithOAuth = useReauthenticateWithOAuth(authenticationClientService);
-  const resolveMfaTotpSignIn = useResolveMfaTotpSignIn(authenticationClientService);
+  const getCurrentUserProviderIds = useGetCurrentUserProviderIds();
+  const reauthenticateWithPassword = useReauthenticateWithPassword();
+  const reauthenticateWithOAuth = useReauthenticateWithOAuth();
+  const resolveMfaTotpSignIn = useResolveMfaTotpSignIn();
 
   const providersQuery = useQuery({
     queryKey: ['mfa', 'reauth', 'provider-ids'],

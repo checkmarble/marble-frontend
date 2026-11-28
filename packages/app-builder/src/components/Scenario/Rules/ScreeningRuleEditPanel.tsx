@@ -10,6 +10,7 @@ import { isKnownOperandListAstNode } from '@app-builder/models/astNode/list';
 import { knownOutcomes, ScreeningOutcome } from '@app-builder/models/outcome';
 import { Scenario } from '@app-builder/models/scenario';
 import { normalizeScreeningQueryLists, ScreeningConfig } from '@app-builder/models/screening-config';
+import { updateScreeningConfig } from '@app-builder/server/scenario-iteration-screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import {
   collectScreeningValidationIssues,
@@ -97,9 +98,7 @@ const editScreeningAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editScreeningConfigurationSchema)
   .handler(async function editScreeningAction({ context, data: { params, payload } }) {
-    const { scenarioIterationScreeningRepository } = context.authInfo;
-
-    return scenarioIterationScreeningRepository.updateScreeningConfig({
+    return updateScreeningConfig(context.api, {
       iterationId: params.iterationId,
       screeningId: params.screeningId,
       changes: {

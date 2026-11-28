@@ -1,10 +1,10 @@
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 
 const authRedirectLoader = createServerFn()
-  .middleware([servicesMiddleware])
+  .middleware([appConfigMiddleware])
   .handler(async function authRedirectLoader({ context }) {
     const request = getRequest();
     if (!context.appConfig.auth.providers.includes('firebase')) {

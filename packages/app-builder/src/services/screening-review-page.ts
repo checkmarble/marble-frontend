@@ -1,4 +1,5 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import type { CaseStatus } from '@app-builder/models/cases';
 import {
   buildScreeningReviewItems,
@@ -7,7 +8,7 @@ import {
   type ScreeningReviewFilter,
   type ScreeningReviewItem,
 } from '@app-builder/models/screening-review';
-import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
+import { getCase, listCases } from '@app-builder/server/cases';
 import { closeFalsePositiveCase } from './screening-review-decision';
 
 export interface ScreeningReviewPage {
@@ -39,7 +40,7 @@ const OPEN_CASE_STATUSES: CaseStatus[] = ['pending', 'investigating', 'waiting_f
  * page can count the other filters from what it loaded.
  */
 export async function readScreeningReviewPage(
-  repository: Pick<CaseRepository, 'listCases' | 'getCase' | 'updateCase'>,
+  api: MarbleCoreApi,
   userId: string,
   limit: number,
   cursor: string | null,
@@ -55,7 +56,7 @@ export async function readScreeningReviewPage(
   while (true) {
     let page;
     try {
-      page = await repository.listCases({
+      page = await listCases(api, {
         assigneeId: userId,
         ...(inboxId !== MY_INBOX_ID ? { inboxIds: [inboxId] } : {}),
         statuses: includeClosed ? [...OPEN_CASE_STATUSES, 'closed'] : OPEN_CASE_STATUSES,
@@ -80,7 +81,7 @@ export async function readScreeningReviewPage(
         batch.map(async (summary) => {
           // Backends that predate the `type[]` filter ignore it and still return other case types.
           if (summary.type !== 'continuous_screening') return [];
-          const detail = await repository.getCase({ caseId: summary.id });
+          const detail = await getCase(api, { caseId: summary.id });
           if (
             detail.assignedTo !== userId ||
             (inboxId !== MY_INBOX_ID && detail.inboxId !== inboxId) ||
@@ -91,7 +92,7 @@ export async function readScreeningReviewPage(
             return [];
           // A closure that failed after the last review is retried here; its hits are done either way.
           if (needsFalsePositiveClosure(detail)) {
-            const closed = await closeFalsePositiveCase(repository, detail);
+            const closed = await closeFalsePositiveCase(api, detail);
             if (closed) closedCaseIds.push(detail.id);
             return includeClosed ? buildScreeningReviewItems([closed ? { ...detail, status: 'closed' } : detail]) : [];
           }

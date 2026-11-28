@@ -76,6 +76,8 @@ export type ScoringRulesetWithRules = ScoringRuleset & {
   rules: ScoringRule[];
 };
 
+export type ScoreDistributionItem = { risk_level: number; count: number };
+
 export type UpdateScoringRuleset = {
   name: string;
   description?: string;

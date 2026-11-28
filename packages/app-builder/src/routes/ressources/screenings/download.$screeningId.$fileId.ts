@@ -1,22 +1,18 @@
-import { initServerServices } from '@app-builder/services/init.server';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { createFileRoute } from '@tanstack/react-router';
 import invariant from 'tiny-invariant';
 
 export const Route = createFileRoute('/ressources/screenings/download/$screeningId/$fileId')({
   server: {
+    middleware: [authMiddleware],
     handlers: {
-      GET: async ({ request, params }) => {
-        const { authService } = initServerServices(request);
-        const { apiClient } = await authService.isAuthenticated(request, {
-          failureRedirect: '/sign-in',
-        });
-
+      GET: async ({ context: { api }, params }) => {
         const screeningId = params['screeningId'];
         invariant(screeningId, 'screeningId is required');
         const fileId = params['fileId'];
         invariant(fileId, 'fileId is required');
 
-        return Response.json(await apiClient.downloadScreeningFile(screeningId, fileId));
+        return Response.json(await api.downloadScreeningFile(screeningId, fileId));
       },
     },
   },

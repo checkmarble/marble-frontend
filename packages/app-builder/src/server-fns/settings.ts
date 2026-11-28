@@ -9,7 +9,17 @@ import {
   isStatusConflictHttpError,
 } from '@app-builder/models';
 import { type ExportedFields } from '@app-builder/models/data-model';
-import { type PersonalSettings } from '@app-builder/models/personal-settings';
+import { adaptInboxUserCreateBody } from '@app-builder/models/inbox';
+import {
+  adaptUnavailability,
+  type PersonalSettings,
+  transformUnavailability,
+} from '@app-builder/models/personal-settings';
+import {
+  adaptWebhookRegisterBodyDto,
+  adaptWebhookUpdateBodyDto,
+  adaptWebhookWithSecret,
+} from '@app-builder/models/webhook';
 import {
   auditEventsFiltersSchema,
   auditEventsPaginationSchema,
@@ -40,6 +50,18 @@ import {
   updateTagPayloadSchema,
   updateWebhookPayloadSchema,
 } from '@app-builder/schemas/settings';
+import { createApiKey } from '@app-builder/server/api-keys';
+import { listAuditEvents } from '@app-builder/server/audit-events';
+import { getDataModelTableExportedFields, updateDataModelTableExportedFields } from '@app-builder/server/data-model';
+import { createInbox, deleteInbox, updateInbox, updateInboxUser } from '@app-builder/server/inboxes';
+import {
+  getCurrentOrganization,
+  grantAccess,
+  listTenantUsersWithoutAccess,
+  listUsers,
+  revokeAccess,
+  updateOrganization,
+} from '@app-builder/server/organization';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { isReadUserAvailable } from '@app-builder/services/feature-access';
 
@@ -60,7 +82,7 @@ export const createApiKeyFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       const authSession = await useAuthSession();
-      await authSession.update({ createdApiKey: await context.authInfo.apiKey.createApiKey(data) });
+      await authSession.update({ createdApiKey: await createApiKey(context.api, data) });
       throw redirect({ to: '/settings/api-keys' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
@@ -73,7 +95,7 @@ export const deleteApiKeyFn = createServerFn({ method: 'POST' })
   .validator(deleteApiKeyPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.apiKey.deleteApiKey(data);
+      await context.api.deleteApiKey(data.apiKeyId);
       throw redirect({ to: '/settings/api-keys' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
@@ -87,7 +109,7 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(auditEventsFiltersSchema.and(auditEventsPaginationSchema))
   .handler(async ({ context, data }) => {
-    const { user, auditEvents } = context.authInfo;
+    const { user } = context;
 
     if (!isAdmin(user)) {
       throw redirect({ to: '/' });
@@ -107,7 +129,7 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
       }
     }
 
-    return auditEvents.listAuditEvents({
+    return listAuditEvents(context.api, {
       from,
       to,
       userId: data.userId,
@@ -126,13 +148,13 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
 export const getOrganizationUsersWithTfaFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { user, organization } = context.authInfo;
+    const { user } = context;
 
     if (!isReadUserAvailable(user)) {
       throw redirect({ to: '/' });
     }
 
-    const users = await organization.listUsers({ withTfa: true });
+    const users = await listUsers(context.api, user.organizationId, { withTfa: true });
     return { users };
   });
 
@@ -144,13 +166,13 @@ export const deleteExportedFieldFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }): Promise<ExportedFields> => {
     try {
       const { tableId, ...field } = data;
-      const current = await context.authInfo.dataModelRepository.getDataModelTableExportedFields(tableId);
+      const current = await getDataModelTableExportedFields(context.api, tableId);
 
       if ('triggerObjectField' in field) {
         if (!current.triggerObjectFields.includes(field.triggerObjectField)) {
           throw new Error('Field not exported');
         }
-        return context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+        return updateDataModelTableExportedFields(context.api, tableId, {
           triggerObjectFields: current.triggerObjectFields.filter((f) => f !== field.triggerObjectField),
           ingestedDataFields: current.ingestedDataFields,
         });
@@ -160,7 +182,7 @@ export const deleteExportedFieldFn = createServerFn({ method: 'POST' })
         if (!current.ingestedDataFields.some((f) => R.isDeepEqual(f, field.ingestedDataField))) {
           throw new Error('Field not exported');
         }
-        return context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+        return updateDataModelTableExportedFields(context.api, tableId, {
           triggerObjectFields: current.triggerObjectFields,
           ingestedDataFields: current.ingestedDataFields.filter((f) => !R.isDeepEqual(f, field.ingestedDataField)),
         });
@@ -178,13 +200,13 @@ export const updateExportedFieldFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }): Promise<ExportedFields> => {
     try {
       const { tableId, ...field } = data;
-      const current = await context.authInfo.dataModelRepository.getDataModelTableExportedFields(tableId);
+      const current = await getDataModelTableExportedFields(context.api, tableId);
 
       if ('triggerObjectField' in field) {
         if (current.triggerObjectFields.includes(field.triggerObjectField)) {
           throw new Error('Field already exported');
         }
-        return context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+        return updateDataModelTableExportedFields(context.api, tableId, {
           triggerObjectFields: [...current.triggerObjectFields, field.triggerObjectField],
           ingestedDataFields: current.ingestedDataFields,
         });
@@ -199,7 +221,7 @@ export const updateExportedFieldFn = createServerFn({ method: 'POST' })
         if (exists) {
           throw new Error('Field already exported');
         }
-        return context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+        return updateDataModelTableExportedFields(context.api, tableId, {
           triggerObjectFields: current.triggerObjectFields,
           ingestedDataFields: [...(current.ingestedDataFields ?? []), field.ingestedDataField],
         });
@@ -218,16 +240,17 @@ export const createInboxFn = createServerFn({ method: 'POST' })
   .validator(createInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const createdInbox = await context.authInfo.inbox.createInbox({ name: data.name });
+      const createdInbox = await createInbox(context.api, { name: data.name });
 
       if (data.escalationInboxId || data.autoAssignEnabled) {
         try {
-          await context.authInfo.inbox.updateInbox(
+          await updateInbox(
+            context.api,
             createdInbox.id,
             pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
           );
         } catch (error) {
-          await context.authInfo.inbox.deleteInbox(createdInbox.id).catch(() => undefined);
+          await deleteInbox(context.api, createdInbox.id).catch(() => undefined);
           throw error;
         }
       }
@@ -243,7 +266,7 @@ export const deleteInboxFn = createServerFn({ method: 'POST' })
   .validator(deleteInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.inbox.deleteInbox(data.inboxId);
+      await deleteInbox(context.api, data.inboxId);
     } catch {
       throw new Error('Failed to delete inbox');
     }
@@ -254,7 +277,8 @@ export const updateInboxFn = createServerFn({ method: 'POST' })
   .validator(updateInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const updatedInbox = await context.authInfo.inbox.updateInbox(
+      const updatedInbox = await updateInbox(
+        context.api,
         data.id,
         pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
       );
@@ -269,7 +293,7 @@ export const createInboxUserFn = createServerFn({ method: 'POST' })
   .validator(createInboxUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.inbox.createInboxUser(data.inboxId, R.omit(data, ['inboxId']));
+      await context.api.addInboxUser(data.inboxId, adaptInboxUserCreateBody(R.omit(data, ['inboxId'])));
     } catch {
       throw new Error('Failed to create inbox user');
     }
@@ -280,7 +304,7 @@ export const deleteInboxUserFn = createServerFn({ method: 'POST' })
   .validator(deleteInboxUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.inbox.deleteInboxUser(data.inboxUserId);
+      await context.api.deleteInboxUser(data.inboxUserId);
     } catch {
       throw new Error('Failed to delete inbox user');
     }
@@ -290,7 +314,7 @@ export const editInboxUserAutoAssignFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(editInboxUserAutoAssignPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.inbox.updateInboxUser(data.id, { autoAssignable: data.autoAssignable });
+    await updateInboxUser(context.api, data.id, { autoAssignable: data.autoAssignable });
   });
 
 export const updateInboxUserFn = createServerFn({ method: 'POST' })
@@ -298,7 +322,7 @@ export const updateInboxUserFn = createServerFn({ method: 'POST' })
   .validator(updateInboxUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.inbox.updateInboxUser(data.id, pick(data, ['role', 'autoAssignable']));
+      await updateInboxUser(context.api, data.id, pick(data, ['role', 'autoAssignable']));
     } catch {
       throw new Error('Failed to update inbox user');
     }
@@ -311,10 +335,9 @@ export const updateAllowedNetworksFn = createServerFn({ method: 'POST' })
   .validator(updateAllowedNetworksPayloadSchema.and(z.object({ organizationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
-      const subnets = await context.authInfo.organization.updateAllowedNetworks(
-        data.organizationId,
-        data.allowedNetworks,
-      );
+      const subnets = await context.api.updateOrganizationSubnets(data.organizationId, {
+        subnets: data.allowedNetworks,
+      });
       return { subnets };
     } catch (error) {
       if (isHttpError(error) && error.status === UNPROCESSABLE_ENTITY) {
@@ -328,21 +351,19 @@ export const updateOrganizationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(updateOrganizationPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { organizationId, autoAssignQueueLimit } = data;
-    await context.authInfo.organization.updateOrganization({ organizationId, changes: { autoAssignQueueLimit } });
+    await updateOrganization(context.api, context.user.organizationId, {
+      autoAssignQueueLimit: data.autoAssignQueueLimit,
+    });
   });
 
 export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(updateOrganizationScenariosPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.organization.updateOrganization({
-      organizationId: data.organizationId,
-      changes: {
-        defaultScenarioTimezone: data.defaultScenarioTimezone,
-        sanctionThreshold: data.sanctionThreshold,
-        sanctionLimit: data.sanctionLimit,
-      },
+    await updateOrganization(context.api, context.user.organizationId, {
+      defaultScenarioTimezone: data.defaultScenarioTimezone,
+      sanctionThreshold: data.sanctionThreshold,
+      sanctionLimit: data.sanctionLimit,
     });
   });
 
@@ -351,14 +372,11 @@ export const updateScreeningProvidersFn = createServerFn({ method: 'POST' })
   .validator(updateScreeningProvidersPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.organization.updateOrganization({
-        organizationId: data.organizationId,
-        changes: {
-          screeningProviders: {
-            manualSearch: data.manualSearch,
-            transactionMonitoring: data.transactionMonitoring,
-            continuousMonitoring: data.continuousMonitoring,
-          },
+      await updateOrganization(context.api, context.user.organizationId, {
+        screeningProviders: {
+          manualSearch: data.manualSearch,
+          transactionMonitoring: data.transactionMonitoring,
+          continuousMonitoring: data.continuousMonitoring,
         },
       });
     } catch (error) {
@@ -389,7 +407,7 @@ export const getUnavailabilityFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<PersonalSettings> => {
     try {
-      return await context.authInfo.personalSettings.getUnavailability();
+      return adaptUnavailability(await context.api.getUnavailability());
     } catch (error) {
       if (isNotFoundHttpError(error)) {
         return { until: null };
@@ -403,9 +421,11 @@ export const setUnavailabilityFn = createServerFn({ method: 'POST' })
   .validator(z.object({ until: z.string().nullable() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.personalSettings.setUnavailability({
-        until: data.until ? new Date(data.until) : null,
-      });
+      await context.api.setUnavailability(
+        transformUnavailability({
+          until: data.until ? new Date(data.until) : null,
+        }),
+      );
     } catch (error) {
       if (isMarbleError(error as Parameters<typeof isMarbleError>[0])) {
         throw new Error((error as { data?: { message?: string } }).data?.message ?? 'Failed to set unavailability');
@@ -418,7 +438,7 @@ export const cancelUnavailabilityFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
     try {
-      await context.authInfo.personalSettings.cancelUnavailability();
+      await context.api.cancelUnavailability();
     } catch (error) {
       if (isMarbleError(error as Parameters<typeof isMarbleError>[0])) {
         throw new Error((error as { data?: { message?: string } }).data?.message ?? 'Failed to cancel unavailability');
@@ -433,7 +453,7 @@ export const createTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createTagPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.apiClient.createTag(data);
+    await context.api.createTag(data);
   });
 
 export const deleteTagFn = createServerFn({ method: 'POST' })
@@ -441,7 +461,7 @@ export const deleteTagFn = createServerFn({ method: 'POST' })
   .validator(deleteTagPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.apiClient.deleteTag(data.tagId);
+      await context.api.deleteTag(data.tagId);
     } catch {
       throw new Error('Failed to delete tag');
     }
@@ -451,7 +471,7 @@ export const updateTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(updateTagPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.apiClient.updateTag(data.id, data);
+    await context.api.updateTag(data.id, data);
   });
 
 // ---- Users ----
@@ -461,7 +481,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
   .validator(createUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.apiClient.createUser({
+      await context.api.createUser({
         first_name: data.firstName,
         last_name: data.lastName,
         email: data.email,
@@ -487,13 +507,13 @@ function assertNotOwnAccess(user: CurrentUser, userId: string) {
 export const getTenantUsersWithoutAccessFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { user, organization } = context.authInfo;
+    const { user } = context;
 
     if (!isReadUserAvailable(user)) {
       throw redirect({ to: '/' });
     }
 
-    const users = await organization.listTenantUsersWithoutAccess();
+    const users = await listTenantUsersWithoutAccess(context.api, user.organizationId);
     return { users };
   });
 
@@ -502,11 +522,11 @@ export const grantOrganizationAccessFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(grantOrganizationAccessPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { user, organization } = context.authInfo;
+    const { api, user } = context;
     assertNotOwnAccess(user, data.userId);
-    const { tenantId } = await organization.getCurrentOrganization();
+    const { tenantId } = await getCurrentOrganization(api, user.organizationId);
 
-    await organization.grantAccess({ tenantId, userId: data.userId, roles: data.roles });
+    await grantAccess(api, user.organizationId, { tenantId, userId: data.userId, roles: data.roles });
   });
 
 // Updates the user's name and the role they hold on the current organization.
@@ -515,10 +535,10 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(updateOrganizationUserPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { user, organization } = context.authInfo;
+    const { api, user } = context;
     if (data.roles) {
       assertNotOwnAccess(user, data.userId);
-      const users = await organization.listUsers();
+      const users = await listUsers(api, user.organizationId);
       const target = users.find((candidate) => candidate.userId.toLowerCase() === data.userId.toLowerCase());
       if (!target || target.roles.length !== 1) {
         throw new Error('Cannot replace multiple or missing role bindings');
@@ -527,7 +547,7 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
 
     if (data.firstName !== undefined || data.lastName !== undefined) {
       try {
-        await organization.updateUserName({ userId: data.userId, firstName: data.firstName, lastName: data.lastName });
+        await api.updateUser(data.userId, { first_name: data.firstName, last_name: data.lastName });
       } catch (error) {
         if (isForbiddenHttpError(error)) return { error: 'name_forbidden' as const };
         throw error;
@@ -535,8 +555,8 @@ export const updateOrganizationUserFn = createServerFn({ method: 'POST' })
     }
 
     if (data.roles) {
-      const { tenantId } = await organization.getCurrentOrganization();
-      await organization.grantAccess({ tenantId, userId: data.userId, roles: data.roles });
+      const { tenantId } = await getCurrentOrganization(api, user.organizationId);
+      await grantAccess(api, user.organizationId, { tenantId, userId: data.userId, roles: data.roles });
     }
   });
 
@@ -545,11 +565,11 @@ export const revokeOrganizationAccessFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(revokeOrganizationAccessPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { user, organization } = context.authInfo;
+    const { api, user } = context;
     assertNotOwnAccess(user, data.userId);
-    const { tenantId } = await organization.getCurrentOrganization();
+    const { tenantId } = await getCurrentOrganization(api, user.organizationId);
 
-    await organization.revokeAccess({ tenantId, userId: data.userId });
+    await revokeAccess(api, user.organizationId, { tenantId, userId: data.userId });
   });
 
 // ---- Webhooks ----
@@ -559,7 +579,8 @@ export const createWebhookFn = createServerFn({ method: 'POST' })
   .validator(createWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const webhook = await context.authInfo.webhookRepository.createWebhook({ webhookCreateBody: data });
+      const { webhook: webhookDto } = await context.api.createWebhook(adaptWebhookRegisterBodyDto(data));
+      const webhook = adaptWebhookWithSecret(webhookDto);
       throw redirect({ to: '/settings/webhooks/$webhookId', params: { webhookId: webhook.id } });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
@@ -571,9 +592,8 @@ export const createWebhookSecretFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createWebhookSecretPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.webhookRepository.createWebhookSecret({
-      webhookId: data.webhookId,
-      createSecretBody: { expireExistingInDays: data.expireExistingInDays },
+    await context.api.createWebhookSecret(data.webhookId, {
+      expire_existing_in_days: data.expireExistingInDays,
     });
   });
 
@@ -582,7 +602,7 @@ export const deleteWebhookFn = createServerFn({ method: 'POST' })
   .validator(deleteWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.webhookRepository.deleteWebhook({ webhookId: data.webhookId });
+      await context.api.deleteWebhook(data.webhookId);
       throw redirect({ to: '/settings/webhooks' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
@@ -594,18 +614,12 @@ export const revokeWebhookSecretFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(revokeWebhookSecretPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.webhookRepository.revokeWebhookSecret({
-      webhookId: data.webhookId,
-      secretId: data.secretId,
-    });
+    await context.api.revokeWebhookSecret(data.webhookId, data.secretId);
   });
 
 export const updateWebhookFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(updateWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
-    await context.authInfo.webhookRepository.updateWebhook({
-      webhookId: data.id,
-      webhookUpdateBody: data,
-    });
+    await context.api.updateWebhook(data.id, adaptWebhookUpdateBodyDto(data));
   });

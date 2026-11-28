@@ -1,6 +1,6 @@
 # Routing Guide
 
-File routes in `packages/app-builder/src/routes/`. File name → URL and route ID, `createFileRoute`, loader shapes and breadcrumb typing: `.claude/rules/page-routes.md`. Loader → server fn → repository flow: [data-fetching.md](data-fetching.md).
+File routes in `packages/app-builder/src/routes/`. File name → URL and route ID, `createFileRoute`, loader shapes and breadcrumb typing: `.claude/rules/page-routes.md`. Loader → server fn → `context.api` flow: [data-fetching.md](data-fetching.md).
 
 ## Route tree facts
 

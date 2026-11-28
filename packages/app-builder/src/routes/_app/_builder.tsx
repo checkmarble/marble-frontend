@@ -6,8 +6,11 @@ import { OrganizationChangeProvider } from '@app-builder/components/Organization
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpdate';
 import { useRefreshToken } from '@app-builder/hooks/useRefreshToken';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
+import { listInboxes } from '@app-builder/server/inboxes';
+import { getCurrentOrganization, listMyOrganizations, listTags, listUsers } from '@app-builder/server/organization';
 import {
   isAnalyticsAvailable,
   isAutoAssignmentAvailable,
@@ -30,16 +33,16 @@ import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const appBuilderLayoutLoader = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
+  .middleware([authMiddleware, appConfigMiddleware])
   .handler(async function appBuilderLayout({ context }) {
-    const { user, inbox, organization, entitlements, provider } = context.authInfo;
+    const { api, user, entitlements, provider } = context;
     const [organizationDetail, organizations, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
-      organization.getCurrentOrganization(),
-      organization.listMyOrganizations(),
-      organization.listUsers(),
-      organization.listTags(),
-      organization.listTags({ target: 'object' }),
-      inbox.listInboxes(),
+      getCurrentOrganization(api, user.organizationId),
+      listMyOrganizations(api),
+      listUsers(api, user.organizationId),
+      listTags(api),
+      listTags(api, { target: 'object' }),
+      listInboxes(api),
     ]);
 
     const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);

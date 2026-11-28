@@ -1,6 +1,7 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
+import { listInboxes } from '@app-builder/server/inboxes';
 import { isInboxAdmin } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -8,9 +9,9 @@ import { createServerFn } from '@tanstack/react-start';
 const casesIndexLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function casesIndexLoader({ context }) {
-    const { user, inbox: inboxRepository } = context.authInfo;
+    const { user } = context;
 
-    const inboxes = await inboxRepository.listInboxes();
+    const inboxes = await listInboxes(context.api);
     if (isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
       throw redirect({ to: '/cases/overview' });
     }

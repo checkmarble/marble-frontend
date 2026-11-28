@@ -3,6 +3,7 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import { SCREENING_REVIEW_FILTERS, SCREENING_REVIEW_SEARCH_MAX } from '@app-builder/models/screening-review';
+import { listInboxes } from '@app-builder/server/inboxes';
 import { isAccessible, isContinuousScreeningAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect, useLoaderData } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -21,9 +22,9 @@ const searchSchema = z.object({
 const loader = createServerFn()
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { user, entitlements, inbox } = context.authInfo;
+    const { user, entitlements } = context;
     if (!isContinuousScreeningAvailable(entitlements)) throw redirect({ to: '/cases' });
-    const inboxes = await inbox.listInboxes();
+    const inboxes = await listInboxes(context.api);
     return {
       canViewAdminSections: isAdmin(user) || inboxes.some((item) => isInboxAdmin(user, item)),
       // The backend gives the dismiss permission to admins only.

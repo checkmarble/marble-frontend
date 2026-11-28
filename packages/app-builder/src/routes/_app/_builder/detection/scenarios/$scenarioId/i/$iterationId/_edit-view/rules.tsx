@@ -13,7 +13,7 @@ import { createServerFn } from '@tanstack/react-start';
 const rulesLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function rulesLoader({ context }) {
-    const { entitlements } = context.authInfo;
+    const { entitlements } = context;
 
     return {
       isSanctionAvailable: entitlements.sanctions,

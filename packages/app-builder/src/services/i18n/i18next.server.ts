@@ -49,27 +49,15 @@ export function makeI18nextServerInstance(locale: string): i18n {
   return instance;
 }
 
-/**
- * Factory for the i18n server service.
- * Used by middlewares (e.g. caseDetailMiddleware) that call context.services.i18nextService.getFixedT().
- */
-export function makeI18nextServerService() {
-  async function setLanguage(language: string) {
-    const session = await useLngSession();
-    await session.update({ lng: language });
-  }
+export async function getFixedT<N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]]>(
+  request: Request,
+  namespaces: N,
+): Promise<TFunction<N>> {
+  const locale = await getLocale(request);
+  return makeI18nextServerInstance(locale).getFixedT(locale, namespaces);
+}
 
-  return {
-    getLocale,
-    getFixedT: async <N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]]>(
-      request: Request,
-      namespaces: N,
-    ): Promise<TFunction<N>> => {
-      const locale = await getLocale(request);
-      const instance = makeI18nextServerInstance(locale);
-      return instance.getFixedT(locale, namespaces);
-    },
-    makeI18nextServerInstance,
-    setLanguage,
-  };
+export async function setLanguage(language: string) {
+  const session = await useLngSession();
+  await session.update({ lng: language });
 }

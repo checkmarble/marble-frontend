@@ -1,6 +1,5 @@
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import { type AuthPayload } from '@app-builder/server/auth';
 import { InvalidVerificationCode, useResolveMfaTotpSignIn } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
@@ -45,8 +44,7 @@ function MfaTotpChallenge({
   enrollmentId,
 }: MfaChallengeProps & { enrollmentId: string }) {
   const { t } = useTranslation(['auth', 'common']);
-  const { authenticationClientService } = useClientServices();
-  const resolveMfaTotpSignIn = useResolveMfaTotpSignIn(authenticationClientService);
+  const resolveMfaTotpSignIn = useResolveMfaTotpSignIn();
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);

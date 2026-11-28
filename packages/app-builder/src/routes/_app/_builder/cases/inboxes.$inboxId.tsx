@@ -2,7 +2,8 @@ import { InboxPage } from '@app-builder/components/Cases/InboxPage';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
-import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
+import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/models/cases';
+import { listInboxesWithCaseCount } from '@app-builder/server/inboxes';
 import { isContinuousScreeningAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -29,8 +30,8 @@ const casesInboxesLoader = createServerFn()
   .validator(casesInboxesLoaderSchema)
   .handler(async function casesInboxesLoader({ context, data: { params, query } }) {
     const request = getRequest();
-    const { user, entitlements, inbox: inboxRepository } = context.authInfo;
-    const inboxes = await inboxRepository.listInboxesWithCaseCount();
+    const { user, entitlements } = context;
+    const inboxes = await listInboxesWithCaseCount(context.api);
     const canViewNavigationTabs = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
     let inboxUsersIds: string[] = [];

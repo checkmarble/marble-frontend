@@ -2,6 +2,9 @@ import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Br
 import { ConfigurationsPage } from '@app-builder/components/ContinuousScreening/ConfigurationsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
+import { listConfigurations } from '@app-builder/server/continuous-screening';
+import { listInboxes } from '@app-builder/server/inboxes';
+import { getAvailableFilters } from '@app-builder/server/screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -10,16 +13,16 @@ import { useTranslation } from 'react-i18next';
 const configurationsLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function continuousScreeningConfigurationsLoader({ context }) {
-    const { continuousScreening, entitlements, inbox, screening, user } = context.authInfo;
+    const { api, entitlements, user } = context;
 
     const configurationsPromise = isContinuousScreeningAvailable(entitlements)
-      ? continuousScreening.listConfigurations()
+      ? listConfigurations(api)
       : Promise.resolve([]);
 
     const [configurationItems, datasets, inboxes] = await Promise.all([
       configurationsPromise,
-      screening.getAvailableFilters({ feature: 'continuous_monitoring' }),
-      inbox.listInboxes(),
+      getAvailableFilters(api, { feature: 'continuous_monitoring' }),
+      listInboxes(api),
     ]);
 
     const configurations = configurationItems.map((config) => {

@@ -29,3 +29,8 @@ export const adaptScoringDryRun = (dto: ScoringDryRunDto): ScoringDryRun => ({
   })),
   createdAt: dto.created_at,
 });
+
+export type ScoringDryRunResult = {
+  dryRun: ScoringDryRun | null;
+  error: string | null;
+};

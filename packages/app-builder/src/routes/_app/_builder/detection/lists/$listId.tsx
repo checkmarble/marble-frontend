@@ -6,6 +6,7 @@ import { DeleteListValueModal } from '@app-builder/components/Lists/DeleteListVa
 import { EditListModal } from '@app-builder/components/Lists/EditListModal';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { adaptCustomListWithValues } from '@app-builder/models/custom-list';
 import { useUploadListDataFile } from '@app-builder/queries/lists/upload-list-data';
 import {
   isCreateListValueAvailable,
@@ -34,13 +35,14 @@ const listLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function listLoader({ context, data }) {
-    const { user, customListsRepository } = context.authInfo;
+    const { api, user } = context;
 
     const parsedParams = await parseIdParamSafe(data?.params ?? {}, 'listId');
     if (!parsedParams.success) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
     }
-    const customList = await customListsRepository.getCustomList(parsedParams.data.listId);
+    const { custom_list } = await api.getCustomList(parsedParams.data.listId);
+    const customList = adaptCustomListWithValues(custom_list);
 
     return {
       customList: customList,

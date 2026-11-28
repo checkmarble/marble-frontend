@@ -1,4 +1,4 @@
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { registerSSRInstance } from '@app-builder/services/i18n/i18n-instance-store';
 import { getLocale, makeI18nextServerInstance } from '@app-builder/services/i18n/i18next.server';
 import { getSegmentScript } from '@app-builder/services/segment/segment.server';
@@ -12,7 +12,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 
 export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
-  .middleware([servicesMiddleware])
+  .middleware([appConfigMiddleware])
   .handler(async ({ context }) => {
     const request = getRequest();
     const appConfig = context.appConfig;

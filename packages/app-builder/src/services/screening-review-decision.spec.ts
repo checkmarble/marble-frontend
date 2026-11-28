@@ -1,6 +1,7 @@
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { objectReviewScreening, reviewCase } from '@app-builder/models/screening-review.test-helpers';
-import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
-import type { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
+import { getCase, listCases, updateCase } from '@app-builder/server/cases';
+import { dismiss, reviewMatches, updateMatchStatus } from '@app-builder/server/continuous-screening';
 import { describe, expect, it, vi } from 'vitest';
 import {
   closeScreeningReviewCase,
@@ -9,6 +10,51 @@ import {
   type ScreeningReviewDecisionInput,
 } from './screening-review-decision';
 import { readScreeningReviewPage } from './screening-review-page';
+
+vi.mock('@app-builder/server/cases', () => ({ listCases: vi.fn(), getCase: vi.fn(), updateCase: vi.fn() }));
+vi.mock('@app-builder/server/continuous-screening', () => ({
+  updateMatchStatus: vi.fn(),
+  reviewMatches: vi.fn(),
+  dismiss: vi.fn(),
+}));
+
+type WithoutApi<F> = F extends (api: MarbleCoreApi, ...args: infer A) => infer R ? (...args: A) => R : never;
+type CaseHelpers = {
+  listCases: WithoutApi<typeof listCases>;
+  getCase: WithoutApi<typeof getCase>;
+  updateCase: WithoutApi<typeof updateCase>;
+};
+type ContinuousScreeningHelpers = {
+  updateMatchStatus: WithoutApi<typeof updateMatchStatus>;
+  reviewMatches: WithoutApi<typeof reviewMatches>;
+  dismiss: WithoutApi<typeof dismiss>;
+};
+
+const api = {} as MarbleCoreApi;
+
+/** Routes the helpers to these fakes, so the tests read each call without its `api` argument. */
+function apiFor({
+  cases,
+  continuousScreening = {},
+}: {
+  cases: Partial<CaseHelpers>;
+  continuousScreening?: Partial<ContinuousScreeningHelpers>;
+}): MarbleCoreApi {
+  vi.mocked(listCases).mockReset();
+  vi.mocked(getCase).mockReset();
+  vi.mocked(updateCase).mockReset();
+  vi.mocked(updateMatchStatus).mockReset();
+  vi.mocked(reviewMatches).mockReset();
+  vi.mocked(dismiss).mockReset();
+  if (cases.listCases) vi.mocked(listCases).mockImplementation((_api, filters) => cases.listCases!(filters));
+  if (cases.getCase) vi.mocked(getCase).mockImplementation((_api, args) => cases.getCase!(args));
+  if (cases.updateCase) vi.mocked(updateCase).mockImplementation((_api, args) => cases.updateCase!(args));
+  const { updateMatchStatus: update, reviewMatches: review, dismiss: dismissScreening } = continuousScreening;
+  if (update) vi.mocked(updateMatchStatus).mockImplementation((_api, args) => update(args));
+  if (review) vi.mocked(reviewMatches).mockImplementation((_api, matches) => review(matches));
+  if (dismissScreening) vi.mocked(dismiss).mockImplementation((_api, id) => dismissScreening(id));
+  return api;
+}
 
 const input: ScreeningReviewDecisionInput = {
   caseId: 'case',
@@ -25,11 +71,11 @@ function httpError(status: number, message = 'error') {
 function repositories(before = reviewCase('case'), after = before) {
   return {
     cases: {
-      getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
-      updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
+      getCase: vi.fn<CaseHelpers['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+      updateCase: vi.fn<CaseHelpers['updateCase']>().mockResolvedValue(after),
     },
     continuousScreening: {
-      updateMatchStatus: vi.fn<ContinuousScreeningRepository['updateMatchStatus']>().mockResolvedValue(undefined),
+      updateMatchStatus: vi.fn<ContinuousScreeningHelpers['updateMatchStatus']>().mockResolvedValue(undefined),
     },
   };
 }
@@ -41,7 +87,7 @@ function finished(status: 'no_hit' | 'confirmed_hit') {
 describe('screening review decision', () => {
   it('writes the decision with a trimmed comment, then closes the case as a false positive at no_hit', async () => {
     const repos = repositories(reviewCase('case'), finished('no_hit'));
-    expect(await reviewScreeningReviewMatch(repos, 'analyst', input)).toEqual({
+    expect(await reviewScreeningReviewMatch(apiFor(repos), 'analyst', input)).toEqual({
       ok: true,
       screeningStatus: 'no_hit',
       caseClosed: true,
@@ -62,7 +108,7 @@ describe('screening review decision', () => {
     ['confirmed_hit', finished('confirmed_hit')],
   ] as const)('leaves the case open when the screening is %s', async (screeningStatus, after) => {
     const repos = repositories(reviewCase('case'), after);
-    expect(await reviewScreeningReviewMatch(repos, 'analyst', { ...input, comment: ' ' })).toEqual({
+    expect(await reviewScreeningReviewMatch(apiFor(repos), 'analyst', { ...input, comment: ' ' })).toEqual({
       ok: true,
       screeningStatus,
       caseClosed: false,
@@ -74,7 +120,7 @@ describe('screening review decision', () => {
   it('reports a failed closure as an open case, so the next load retries it', async () => {
     const repos = repositories(reviewCase('case'), finished('no_hit'));
     repos.cases.updateCase.mockRejectedValue(new Error('network'));
-    expect(await reviewScreeningReviewMatch(repos, 'analyst', input)).toEqual({
+    expect(await reviewScreeningReviewMatch(apiFor(repos), 'analyst', input)).toEqual({
       ok: true,
       screeningStatus: 'no_hit',
       caseClosed: false,
@@ -84,7 +130,7 @@ describe('screening review decision', () => {
   it('keeps a successful write when the screening cannot be read back', async () => {
     const repos = repositories();
     repos.cases.getCase.mockReset().mockResolvedValueOnce(reviewCase('case')).mockRejectedValueOnce(new Error('x'));
-    expect(await reviewScreeningReviewMatch(repos, 'analyst', input)).toEqual({
+    expect(await reviewScreeningReviewMatch(apiFor(repos), 'analyst', input)).toEqual({
       ok: true,
       screeningStatus: null,
       caseClosed: false,
@@ -101,7 +147,7 @@ describe('screening review decision', () => {
     ['already_reviewed', reviewCase('case', [reviewed])],
   ] as const)('refuses before writing: %s', async (reason, before) => {
     const repos = repositories(before);
-    expect(await reviewScreeningReviewMatch(repos, 'analyst', input)).toEqual({ ok: false, reason });
+    expect(await reviewScreeningReviewMatch(apiFor(repos), 'analyst', input)).toEqual({ ok: false, reason });
     expect(repos.continuousScreening.updateMatchStatus).not.toHaveBeenCalled();
   });
 
@@ -113,17 +159,20 @@ describe('screening review decision', () => {
   ] as const)('maps a refused write to %s', async (reason, error) => {
     const repos = repositories();
     repos.continuousScreening.updateMatchStatus.mockRejectedValue(error);
-    expect(await reviewScreeningReviewMatch(repos, 'analyst', input)).toEqual({ ok: false, reason });
+    expect(await reviewScreeningReviewMatch(apiFor(repos), 'analyst', input)).toEqual({ ok: false, reason });
     expect(repos.cases.updateCase).not.toHaveBeenCalled();
   });
 
   it('maps a forbidden case read and rethrows unexpected failures', async () => {
     const forbidden = repositories();
     forbidden.cases.getCase.mockReset().mockRejectedValue(httpError(403));
-    expect(await reviewScreeningReviewMatch(forbidden, 'analyst', input)).toEqual({ ok: false, reason: 'forbidden' });
+    expect(await reviewScreeningReviewMatch(apiFor(forbidden), 'analyst', input)).toEqual({
+      ok: false,
+      reason: 'forbidden',
+    });
     const failing = repositories();
     failing.continuousScreening.updateMatchStatus.mockRejectedValue(new Error('network'));
-    await expect(reviewScreeningReviewMatch(failing, 'analyst', input)).rejects.toThrow('network');
+    await expect(reviewScreeningReviewMatch(apiFor(failing), 'analyst', input)).rejects.toThrow('network');
   });
 });
 
@@ -137,12 +186,12 @@ describe('screening review batch decision', () => {
   function batchRepositories(before = reviewCase('case'), after = finished('no_hit')) {
     return {
       cases: {
-        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
-        updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
+        getCase: vi.fn<CaseHelpers['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        updateCase: vi.fn<CaseHelpers['updateCase']>().mockResolvedValue(after),
       },
       continuousScreening: {
         reviewMatches: vi
-          .fn<ContinuousScreeningRepository['reviewMatches']>()
+          .fn<ContinuousScreeningHelpers['reviewMatches']>()
           .mockImplementation(async (matches) => matches.map(({ matchId }) => ({ matchId, statusCode: 200 }))),
       },
     };
@@ -152,7 +201,7 @@ describe('screening review batch decision', () => {
     const repos = batchRepositories();
     const [high, low] = objectReviewScreening().matches;
     expect(
-      await reviewScreeningReviewMatches(repos, 'analyst', {
+      await reviewScreeningReviewMatches(apiFor(repos), 'analyst', {
         caseId: 'case',
         decisions: [decision(high!.id, '  Different birth date  '), decision(low!.id, ' ')],
       }),
@@ -177,7 +226,7 @@ describe('screening review batch decision', () => {
       { matchId: second!.id, statusCode: 422, message: 'continuous screening is not in review' },
     ]);
     expect(
-      await reviewScreeningReviewMatches(repos, 'analyst', {
+      await reviewScreeningReviewMatches(apiFor(repos), 'analyst', {
         caseId: 'case',
         decisions: [decision(first!.id), decision(second!.id)],
       }),
@@ -194,7 +243,7 @@ describe('screening review batch decision', () => {
       { matchId: second!.id, statusCode: 500, message: 'database' },
     ]);
     expect(
-      await reviewScreeningReviewMatches(failing, 'analyst', {
+      await reviewScreeningReviewMatches(apiFor(failing), 'analyst', {
         caseId: 'case',
         decisions: [decision(first!.id), decision(second!.id)],
       }),
@@ -205,15 +254,15 @@ describe('screening review batch decision', () => {
     const forbidden = batchRepositories();
     forbidden.cases.getCase.mockReset().mockRejectedValue(httpError(403));
     const decisions = [decision('screening-1-high'), decision('screening-1-low')];
-    expect(await reviewScreeningReviewMatches(forbidden, 'analyst', { caseId: 'case', decisions })).toEqual([
+    expect(await reviewScreeningReviewMatches(apiFor(forbidden), 'analyst', { caseId: 'case', decisions })).toEqual([
       { ok: false, reason: 'forbidden' },
       { ok: false, reason: 'forbidden' },
     ]);
     const failing = batchRepositories();
     failing.continuousScreening.reviewMatches.mockRejectedValue(new Error('network'));
-    await expect(reviewScreeningReviewMatches(failing, 'analyst', { caseId: 'case', decisions })).rejects.toThrow(
-      'network',
-    );
+    await expect(
+      reviewScreeningReviewMatches(apiFor(failing), 'analyst', { caseId: 'case', decisions }),
+    ).rejects.toThrow('network');
   });
 });
 
@@ -229,16 +278,16 @@ describe('screening review case closure', () => {
   function closeRepositories(before = reviewCase('case', [decidedPartial()]), after = finished('no_hit')) {
     return {
       cases: {
-        getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
-        updateCase: vi.fn<CaseRepository['updateCase']>().mockResolvedValue(after),
+        getCase: vi.fn<CaseHelpers['getCase']>().mockResolvedValueOnce(before).mockResolvedValueOnce(after),
+        updateCase: vi.fn<CaseHelpers['updateCase']>().mockResolvedValue(after),
       },
-      continuousScreening: { dismiss: vi.fn<ContinuousScreeningRepository['dismiss']>().mockResolvedValue(undefined) },
+      continuousScreening: { dismiss: vi.fn<ContinuousScreeningHelpers['dismiss']>().mockResolvedValue(undefined) },
     };
   }
 
   it('dismisses the screening without loading its other matches, then closes the case as a false positive', async () => {
     const repos = closeRepositories();
-    expect(await closeScreeningReviewCase(repos, 'analyst', closeInput)).toEqual({
+    expect(await closeScreeningReviewCase(apiFor(repos), 'analyst', closeInput)).toEqual({
       ok: true,
       screeningStatus: 'no_hit',
       caseClosed: true,
@@ -271,7 +320,7 @@ describe('screening review case closure', () => {
     ],
   ] as const)('refuses before dismissing: %s', async (reason, before) => {
     const repos = closeRepositories(before);
-    expect(await closeScreeningReviewCase(repos, 'analyst', closeInput)).toEqual({ ok: false, reason });
+    expect(await closeScreeningReviewCase(apiFor(repos), 'analyst', closeInput)).toEqual({ ok: false, reason });
     expect(repos.continuousScreening.dismiss).not.toHaveBeenCalled();
   });
 
@@ -281,7 +330,7 @@ describe('screening review case closure', () => {
   ] as const)('maps a refused dismiss to %s', async (reason, error) => {
     const repos = closeRepositories();
     repos.continuousScreening.dismiss.mockRejectedValue(error);
-    expect(await closeScreeningReviewCase(repos, 'analyst', closeInput)).toEqual({ ok: false, reason });
+    expect(await closeScreeningReviewCase(apiFor(repos), 'analyst', closeInput)).toEqual({ ok: false, reason });
     expect(repos.cases.updateCase).not.toHaveBeenCalled();
   });
 });
@@ -290,11 +339,11 @@ describe('closure recovery on load', () => {
   it('closes a no_hit case left open by a failed closure and lists none of its hits', async () => {
     const leftOpen = finished('no_hit');
     const repository = {
-      listCases: vi.fn<CaseRepository['listCases']>().mockResolvedValue({ items: [leftOpen], hasNextPage: false }),
-      getCase: vi.fn<CaseRepository['getCase']>().mockResolvedValue(leftOpen),
-      updateCase: vi.fn<CaseRepository['updateCase']>().mockRejectedValue(new Error('still failing')),
+      listCases: vi.fn<CaseHelpers['listCases']>().mockResolvedValue({ items: [leftOpen], hasNextPage: false }),
+      getCase: vi.fn<CaseHelpers['getCase']>().mockResolvedValue(leftOpen),
+      updateCase: vi.fn<CaseHelpers['updateCase']>().mockRejectedValue(new Error('still failing')),
     };
-    expect(await readScreeningReviewPage(repository, 'analyst', 50, null)).toEqual({
+    expect(await readScreeningReviewPage(apiFor({ cases: repository }), 'analyst', 50, null)).toEqual({
       items: [],
       nextCursor: null,
       failed: false,

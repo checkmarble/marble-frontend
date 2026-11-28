@@ -1,6 +1,6 @@
 import type { AppConfig } from '@app-builder/models/app-config';
 import { isNotFoundHttpError } from '@app-builder/models/http-errors';
-import { createSignedCookie, sign } from '@app-builder/repositories/SessionStorageRepositories/signed-cookie';
+import { createSignedCookie, sign } from '@app-builder/server/signed-cookie';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { setCookie } from '@tanstack/react-start/server';
 import { CodeChallengeMethod, generateCodeVerifier, generateState, OAuth2Client, OAuth2Tokens } from 'arctic';

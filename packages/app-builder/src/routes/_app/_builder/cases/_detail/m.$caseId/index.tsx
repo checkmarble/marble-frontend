@@ -4,6 +4,7 @@ import {
   caseDetailBreadcrumbs,
 } from '@app-builder/components/CaseManager/case-detail-breadcrumbs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { getCase } from '@app-builder/server/cases';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -13,7 +14,7 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ caseId: z.string().transform((shortuuid) => fromSUUIDtoUUID(shortuuid)) }))
   .handler(async ({ context, data }) => {
-    const caseDetail = await context.authInfo.cases.getCase({ caseId: data.caseId });
+    const caseDetail = await getCase(context.api, { caseId: data.caseId });
     const screening = caseDetail.continuousScreenings[0];
 
     if (!screening) {

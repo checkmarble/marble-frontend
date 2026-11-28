@@ -5,6 +5,7 @@ import { useWorkflow, WorkflowProvider } from '@app-builder/components/Workflows
 import { WorkflowScrollHandler } from '@app-builder/components/Workflows/WorkflowScrollHandler';
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { getDataModel } from '@app-builder/server/data-model';
 import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
@@ -20,7 +21,7 @@ const workflowLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function workflowLoader({ data, context }) {
-    const { dataModelRepository, entitlements, user } = context.authInfo;
+    const { api, entitlements, user } = context;
 
     if (!isWorkflowsAvailable(entitlements)) {
       throw redirect({
@@ -29,7 +30,7 @@ const workflowLoader = createServerFn()
       });
     }
 
-    const [dataModel] = await Promise.all([dataModelRepository.getDataModel()]);
+    const [dataModel] = await Promise.all([getDataModel(api)]);
 
     return {
       scenarioId: fromParams(data?.params ?? {}, 'scenarioId'),

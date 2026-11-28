@@ -31,6 +31,10 @@ import { type Decision } from '@app-builder/models/decision';
 import { RequestTimeoutError } from '@app-builder/models/http-errors';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { DecisionFilters, decisionFiltersSchema, isUnboundedDateRange } from '@app-builder/schemas/decisions';
+import { listPivots } from '@app-builder/server/data-model';
+import { listDecisions } from '@app-builder/server/decisions';
+import { listInboxes } from '@app-builder/server/inboxes';
+import { listScenarios } from '@app-builder/server/scenarios';
 import { handleSubmit } from '@app-builder/utils/form';
 import { DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -89,12 +93,8 @@ const decisionsPageLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(decisionsListQueryParamsSchema)
   .handler(async function decisionsPageLoader({ context, data }) {
-    const { scenario, dataModelRepository, inbox } = context.authInfo;
-    const [scenarios, pivots, inboxes] = await Promise.all([
-      scenario.listScenarios(),
-      dataModelRepository.listPivots({}),
-      inbox.listInboxes(),
-    ]);
+    const { api } = context;
+    const [scenarios, pivots, inboxes] = await Promise.all([listScenarios(api), listPivots(api, {}), listInboxes(api)]);
 
     return {
       scenarios,
@@ -108,12 +108,11 @@ const listDecisionsLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(decisionsListQueryParamsSchema)
   .handler(async function listDecisionsLoader({ context, data }) {
-    const { decision } = context.authInfo;
     const { outcomeAndReviewStatus, dateRange, ...filters } = data;
     const listDateRange = isUnboundedDateRange(dateRange) ? undefined : dateRange;
 
     try {
-      const decisionsData = await decision.listDecisions({
+      const decisionsData = await listDecisions(context.api, {
         outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
         reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
         ...filters,

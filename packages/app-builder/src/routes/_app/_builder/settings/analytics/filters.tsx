@@ -7,6 +7,7 @@ import {
   type DeleteExportedFieldPayload,
   useDeleteFilterMutation,
 } from '@app-builder/queries/settings/scenarios/delete-filter';
+import { getDataModel, getDataModelTableExportedFields, listPivots } from '@app-builder/server/data-model';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -128,13 +129,13 @@ const getLinkedFieldItems = (pivots: Pivot[], allowedTables: string[], dataModel
 const filtersLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function filtersLoader({ context }) {
-    const { dataModelRepository } = context.authInfo;
+    const { api } = context;
 
-    const dataModel = await dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(api);
 
     const exportedEntries: [string, ExportedFields][] = await Promise.all(
       dataModel.map(async (table) => {
-        const exported = await dataModelRepository.getDataModelTableExportedFields(table.id);
+        const exported = await getDataModelTableExportedFields(api, table.id);
         return [table.id, exported] as const;
       }),
     );
@@ -142,7 +143,7 @@ const filtersLoader = createServerFn()
     const filters = getFilters(exportedEntries, dataModel);
     const allowedTables = getAllowedTables(filters, dataModel);
     const triggerFieldItems = getTriggerFieldItems(filters, allowedTables, dataModel);
-    const pivots = await dataModelRepository.listPivots({});
+    const pivots = await listPivots(api, {});
     const linkedFieldItems = getLinkedFieldItems(pivots, allowedTables, dataModel);
 
     return {

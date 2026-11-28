@@ -7,6 +7,7 @@ import { ArchivedIterationView } from '@app-builder/components/Scenario/Iteratio
 import { ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
 import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { getPublicationPreparationStatus } from '@app-builder/server/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import {
   isCreateDraftAvailable,
@@ -33,7 +34,7 @@ const editViewLoader = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function editViewLoader({ data, context }) {
-    const { scenario, user } = context.authInfo;
+    const { api, user } = context;
 
     const iterationId = fromParams(data?.params ?? {}, 'iterationId');
 
@@ -45,7 +46,7 @@ const editViewLoader = createServerFn()
       };
     }
 
-    const publicationPreparationStatus = await scenario.getPublicationPreparationStatus({ iterationId });
+    const publicationPreparationStatus = await getPublicationPreparationStatus(api, { iterationId });
 
     return {
       isEditScenarioAvailable: isEditScenarioAvailable(user),

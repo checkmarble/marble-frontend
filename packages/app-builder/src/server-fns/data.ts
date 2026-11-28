@@ -1,4 +1,5 @@
 import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import {
   isNotFoundHttpError,
@@ -6,7 +7,7 @@ import {
   isStatusConflictHttpError,
   REQUEST_TIMEOUT_ERROR_MESSAGE,
 } from '@app-builder/models';
-import { type Case } from '@app-builder/models/cases';
+import { adaptCase, type Case } from '@app-builder/models/cases';
 import { type ClientDataListResponse, type DataModel, type DataModelObjectValue } from '@app-builder/models/data-model';
 import { createAnnotationPayloadSchema } from '@app-builder/schemas/annotations';
 import {
@@ -17,8 +18,22 @@ import {
   editSemanticTablePayloadSchema,
   listObjectsInputSchema,
 } from '@app-builder/schemas/data';
+import {
+  applyArchetype,
+  createAnnotation,
+  createNavigationOption,
+  createTable,
+  deleteAnnotation,
+  deleteTable,
+  getAnnotationsByTableNameAndObjectId,
+  getDataModel,
+  getIngestedObject,
+  listClientObjects,
+  patchDataModelTable,
+} from '@app-builder/server/data-model';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { getTableMutationError } from '@app-builder/services/data/table-mutation-errors';
+import { getFixedT } from '@app-builder/services/i18n/i18next.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getClientAnnotationFileUploadEndpoint, getIngestionDataBatchUploadEndpoint } from '@app-builder/utils/files';
 import { omitUndefined } from '@app-builder/utils/omit-undefined';
@@ -57,7 +72,7 @@ export type HierarchyTreeBase = HierarchyNode & {
 export const getDataModelFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const dataModel = await context.authInfo.dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(context.api);
     return { dataModel } as { dataModel: DataModel };
   });
 
@@ -65,14 +80,14 @@ export const getObjectDetailsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.dataModelRepository.getIngestedObject(data.objectType, data.objectId);
+    return getIngestedObject(context.api, data.objectType, data.objectId);
   });
 
 export const getObjectCasesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
-    const cases = await context.authInfo.dataModelRepository.getCasesForObject(data.objectType, data.objectId);
+    const cases = (await context.api.getCasesForObject(data.objectType, data.objectId)).map(adaptCase);
     return { cases } as { cases: Case[] };
   });
 
@@ -80,7 +95,8 @@ export const getAnnotationsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string(), loadThumbnails: z.boolean().optional() }))
   .handler(async ({ context, data }) => {
-    const annotations = await context.authInfo.dataModelRepository.getAnnotationsByTableNameAndObjectId(
+    const annotations = await getAnnotationsByTableNameAndObjectId(
+      context.api,
       data.objectType,
       data.objectId,
       data.loadThumbnails ?? false,
@@ -92,11 +108,11 @@ export const getHierarchyFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string(), showAll: z.boolean().optional() }))
   .handler(async ({ context, data }) => {
-    const { dataModelRepository } = context.authInfo;
+    const { api } = context;
     const { objectType, objectId } = data;
 
-    const dataModel = await dataModelRepository.getDataModel();
-    const baseObject = await dataModelRepository.getIngestedObject(objectType, objectId);
+    const dataModel = await getDataModel(api);
+    const baseObject = await getIngestedObject(api, objectType, objectId);
     const baseObjectTable = dataModel.find((table) => table.name === objectType);
 
     if (!baseObjectTable) {
@@ -115,13 +131,7 @@ export const getHierarchyFn = createServerFn({ method: 'GET' })
       .flatMap((table) => table.linksToSingle)
       .filter((link) => link.childTableName === objectType);
 
-    await retrieveChildren(
-      objectType,
-      baseObject,
-      baseObjectTable.navigationOptions,
-      dataModelRepository,
-      baseObjectHierarchyNode,
-    );
+    await retrieveChildren(objectType, baseObject, baseObjectTable.navigationOptions, api, baseObjectHierarchyNode);
 
     for (const link of baseObjectParentsTables) {
       if (link.parentFieldName !== 'object_id') continue;
@@ -133,7 +143,8 @@ export const getHierarchyFn = createServerFn({ method: 'GET' })
       if (!parentObjectTable) continue;
 
       try {
-        const parentObject = await dataModelRepository.getIngestedObject(
+        const parentObject = await getIngestedObject(
+          api,
           parentTableName,
           baseObject.data[link.childFieldName] as string,
         );
@@ -150,7 +161,7 @@ export const getHierarchyFn = createServerFn({ method: 'GET' })
             link.parentTableName,
             parentObject,
             parentObjectTable.navigationOptions,
-            dataModelRepository,
+            api,
             parentObjectHierarchyNode,
           );
         }
@@ -172,7 +183,7 @@ export const listObjectsFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     const { tableName, limit, offsetId, ...explorationOptions } = data;
     try {
-      const clientDataListResponse = await context.authInfo.dataModelRepository.listClientObjects({
+      const clientDataListResponse = await listClientObjects(context.api, {
         tableName,
         body: {
           explorationOptions,
@@ -191,7 +202,8 @@ export const listObjectsFn = createServerFn({ method: 'POST' })
 export const listArchetypesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    return context.authInfo.dataModelRepository.listArchetypes();
+    const { archetypes } = await context.api.listArchetypes();
+    return archetypes;
   });
 
 export const createTableFn = createServerFn({ method: 'POST' })
@@ -199,10 +211,10 @@ export const createTableFn = createServerFn({ method: 'POST' })
   .validator(createTableValueSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
+    const t = await getFixedT(request, ['common', 'data']);
 
     try {
-      return await context.authInfo.dataModelRepository.createTable(data);
+      return await createTable(context.api, data);
     } catch (error) {
       const mutError = getTableMutationError(error, t, {
         conflictMessage: isStatusConflictHttpError(error) ? t('common:errors.data.duplicate_table_name') : undefined,
@@ -217,10 +229,10 @@ export const deleteTableFn = createServerFn({ method: 'POST' })
   .validator(deleteTablePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
+    const t = await getFixedT(request, ['common']);
 
     try {
-      return context.authInfo.dataModelRepository.deleteTable(data.tableId, { perform: data.perform });
+      return deleteTable(context.api, data.tableId, { perform: data.perform });
     } catch (error) {
       const mutError = getTableMutationError(error, t);
       throw mutError;
@@ -233,7 +245,7 @@ export const createNavigationOptionFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     const { tableId, ...options } = data;
     try {
-      await context.authInfo.dataModelRepository.createNavigationOption(tableId, options);
+      await createNavigationOption(context.api, tableId, options);
       return { success: true };
     } catch (err) {
       if (isStatusConflictHttpError(err)) {
@@ -248,7 +260,7 @@ export const applyArchetypeFn = createServerFn({ method: 'POST' })
   .validator(applyArchetypePayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.dataModelRepository.applyArchetype(data.name);
+      await applyArchetype(context.api, data.name);
       return { success: true };
     } catch {
       return { success: false };
@@ -260,7 +272,7 @@ export const editSemanticTableFn = createServerFn({ method: 'POST' })
   .validator(editSemanticTablePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
+    const t = await getFixedT(request, ['common', 'data']);
 
     try {
       const patchBody = omitUndefined({
@@ -275,7 +287,7 @@ export const editSemanticTableFn = createServerFn({ method: 'POST' })
         metadata: data.metadata,
       } satisfies UpdateTableBodyDto);
 
-      await context.authInfo.dataModelRepository.patchDataModelTable(data.tableId, patchBody);
+      await patchDataModelTable(context.api, data.tableId, patchBody);
     } catch (error) {
       const mutError = getTableMutationError(error, t);
       throw mutError;
@@ -326,7 +338,7 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
     try {
       return await match(parsedData)
         .with({ type: 'comment' }, async ({ payload: { text }, ...d }) => {
-          await context.authInfo.dataModelRepository.createAnnotation(d.tableName, d.objectId, {
+          await createAnnotation(context.api, d.tableName, d.objectId, {
             type: 'comment',
             caseId: d.caseId,
             payload: { text },
@@ -336,30 +348,26 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
         .with({ type: 'tag' }, async ({ payload: { addedTags = [], removedAnnotations = [] }, ...d }) => {
           await Promise.all([
             ...addedTags.map((tagAdded) =>
-              context.authInfo.dataModelRepository.createAnnotation(d.tableName, d.objectId, {
+              createAnnotation(context.api, d.tableName, d.objectId, {
                 type: 'tag',
                 caseId: d.caseId,
                 payload: { tagId: tagAdded },
               }),
             ),
-            ...removedAnnotations.map((annotationId) =>
-              context.authInfo.dataModelRepository.deleteAnnotation(annotationId),
-            ),
+            ...removedAnnotations.map((annotationId) => deleteAnnotation(context.api, annotationId)),
           ]);
           return { success: true };
         })
         .with({ type: 'risk_tag' }, async ({ payload: { addedCategories = [], removedAnnotations = [] }, ...d }) => {
           await Promise.all([
             ...addedCategories.map((categoryAdded) =>
-              context.authInfo.dataModelRepository.createAnnotation(d.tableName, d.objectId, {
+              createAnnotation(context.api, d.tableName, d.objectId, {
                 type: 'risk_tag',
                 caseId: d.caseId,
                 payload: { tag: categoryAdded },
               }),
             ),
-            ...removedAnnotations.map((annotationId) =>
-              context.authInfo.dataModelRepository.deleteAnnotation(annotationId),
-            ),
+            ...removedAnnotations.map((annotationId) => deleteAnnotation(context.api, annotationId)),
           ]);
           return { success: true };
         })
@@ -391,7 +399,7 @@ export const deleteAnnotationFn = createServerFn({ method: 'POST' })
   .validator(z.object({ annotationId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.dataModelRepository.deleteAnnotation(data.annotationId);
+      await deleteAnnotation(context.api, data.annotationId);
       return { success: true };
     } catch {
       return { success: false, errors: [] };
@@ -412,7 +420,7 @@ export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
     const objectType = data.get('objectType') as string | null;
     if (!objectType) return new Response(null, { status: 400 });
 
-    const token = await context.authInfo.tokenService.getToken();
+    const token = await context.tokenService.getToken();
 
     const backendData = new FormData();
     const searchParams = new URLSearchParams();
@@ -450,7 +458,7 @@ export const getUploadLogsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string() }))
   .handler(async ({ context, data: { objectType } }) => {
-    return context.authInfo.dataModelRepository.getIngestionUploadLogs(objectType);
+    return context.api.getIngestionUploadLogs(objectType);
   });
 
 // ---- Org import ----
@@ -460,7 +468,7 @@ export const importOrgFn = createServerFn({ method: 'POST' })
   .validator(z.object({ body: z.unknown() }))
   .handler(async ({ context, data }) => {
     try {
-      await context.authInfo.organization.importOrganization(data.body);
+      await context.api.importOrganization(data.body);
       return { success: true, message: 'Import successful' };
     } catch (error: any) {
       console.error('[import-org] Import failed:', error);
@@ -481,7 +489,7 @@ export const importOrgFileFn = createServerFn({ method: 'POST' })
     }
 
     try {
-      await context.authInfo.organization.importOrganizationFromFile(file);
+      await context.api.importOrganizationFromFile({ file });
       return { success: true, message: 'Import successful' };
     } catch (error: any) {
       console.error('[import-org-file] Import failed:', error);
@@ -503,20 +511,7 @@ async function retrieveChildren(
         targetTableName: string;
       }[]
     | undefined,
-  dataModelRepository: {
-    listClientObjects(args: {
-      tableName: string;
-      body: {
-        explorationOptions: {
-          sourceTableName: string;
-          filterFieldName: string;
-          filterFieldValue: string | number;
-          orderingFieldName: string;
-        };
-        limit: number;
-      };
-    }): Promise<{ data: { data: Record<string, DataModelObjectValue> }[] }>;
-  },
+  api: MarbleCoreApi,
   hierarchyNode: HierarchyNode,
 ) {
   if (!navigationOptions) return;
@@ -532,7 +527,7 @@ async function retrieveChildren(
       limit: 5,
     };
 
-    const data = await dataModelRepository.listClientObjects({
+    const data = await listClientObjects(api, {
       tableName: navigationOption.targetTableName,
       body: requestBody,
     });

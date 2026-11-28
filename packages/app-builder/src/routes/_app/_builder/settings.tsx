@@ -2,8 +2,10 @@ import { Page } from '@app-builder/components';
 import { type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models/user';
+import { listInboxes } from '@app-builder/server/inboxes';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { createFileRoute, Link, Outlet, redirect, useMatches } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -11,16 +13,16 @@ import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';
 
 const settingsLoader = createServerFn()
-  .middleware([authMiddleware])
+  .middleware([authMiddleware, appConfigMiddleware])
   .handler(async function settingsLoader({ context }) {
-    const { user, entitlements, inbox } = context.authInfo;
+    const { user, entitlements } = context;
     const appConfig = context.appConfig;
 
     if (isAnalyst(user)) {
       throw redirect({ to: '/cases' });
     }
 
-    const inboxes = await inbox.listInboxes();
+    const inboxes = await listInboxes(context.api);
     const sections = getSettingsAccess(user, appConfig, inboxes);
     if (appConfig.isManagedMarble) sections.screening_providers.settings = []; // not in SaaS
 

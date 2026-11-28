@@ -1,5 +1,6 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type AstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
+import { createCustomerAggregate, updateCustomerAggregate } from '@app-builder/server/customer-aggregates';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
 
@@ -7,10 +8,7 @@ export const getCustomerAggregatesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.authInfo.customerAggregates.listCustomerAggregates({
-      recordType: data.objectType,
-      customerId: data.objectId,
-    });
+    return context.api.listCustomerAggregates(data.objectType, data.objectId);
   });
 
 const createCustomerAggregatePayloadSchema = z.object({
@@ -27,7 +25,7 @@ export const createCustomerAggregateFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createCustomerAggregatePayloadSchema)
   .handler(async ({ context, data }) => {
-    return context.authInfo.customerAggregates.createCustomerAggregate({
+    return createCustomerAggregate(context.api, {
       recordType: data.recordType,
       body: {
         name: data.name,
@@ -52,7 +50,7 @@ export const updateCustomerAggregateFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    return context.authInfo.customerAggregates.updateCustomerAggregate({
+    return updateCustomerAggregate(context.api, {
       recordType: data.recordType,
       aggregateId: data.aggregateId,
       body: {

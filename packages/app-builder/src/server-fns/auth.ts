@@ -1,6 +1,7 @@
+import { appConfigMiddleware } from '@app-builder/middlewares/app-config-middleware';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { rateLimitIpFunctionMiddleware } from '@app-builder/middlewares/rate-limit';
-import { servicesMiddleware } from '@app-builder/middlewares/services-middleware';
+import { authenticate, changeOrganization, logout, refresh } from '@app-builder/server/auth';
 import {
   discoverTenantOidc,
   makeOidcService,
@@ -23,12 +24,11 @@ const signInPayload = z.object({
 });
 
 export const signInFn = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
   .validator(signInPayload)
-  .handler(async ({ context, data }) => {
+  .handler(async ({ data }) => {
     const request = getRequest();
     const successRedirect = safeRedirect(data.redirectTo ?? null, '/app-router');
-    return context.services.authService.authenticate(
+    return authenticate(
       request,
       { idToken: data.idToken, refreshToken: data.refreshToken, csrf: data.csrf },
       { successRedirect, failureRedirect: '/sign-in' },
@@ -36,12 +36,11 @@ export const signInFn = createServerFn({ method: 'POST' })
   });
 
 export const signInEmailFn = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
   .validator(signInPayload)
-  .handler(async ({ context, data }) => {
+  .handler(async ({ data }) => {
     const request = getRequest();
     const successRedirect = safeRedirect(data.redirectTo ?? null, '/app-router');
-    return context.services.authService.authenticate(
+    return authenticate(
       request,
       { idToken: data.idToken, refreshToken: data.refreshToken, csrf: data.csrf },
       { successRedirect, failureRedirect: '/sign-in-email' },
@@ -56,7 +55,7 @@ export type DiscoverSignInResult =
 // Not in `discoverTenantOidc`, which the organization switch of a signed-in user also calls.
 // SignInWithEmailDiscovery retries after 1s, 2s and 4s: keep the window at most 1s.
 export const discoverSignInFn = createServerFn({ method: 'POST' })
-  .middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 }), servicesMiddleware])
+  .middleware([rateLimitIpFunctionMiddleware({ max: 1, windowMs: 1000 }), appConfigMiddleware])
   .validator(z.object({ email: z.email(), redirectTo: z.string().optional(), signedOut: z.boolean() }))
   .handler(async ({ context, data }): Promise<DiscoverSignInResult> => {
     const request = getRequest();
@@ -91,52 +90,31 @@ export const discoverSignInFn = createServerFn({ method: 'POST' })
   });
 
 export const logoutFn = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
   .validator(z.object({ redirectTo: z.string().optional() }))
-  .handler(async ({ context, data }) => {
+  .handler(async ({ data }) => {
     const request = getRequest();
     const redirectTo = data.redirectTo ? `/sign-in?redirectTo=${encodeURIComponent(data.redirectTo)}` : '/sign-in';
-    await context.services.authService.logout(request, { redirectTo });
+    await logout(request, { redirectTo });
     throw redirect({ href: redirectTo });
   });
 
 export const refreshTokenFn = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
   .validator(z.object({ idToken: z.string(), csrf: z.string() }))
-  .handler(async ({ context, data }) => {
+  .handler(async ({ data }) => {
     const request = getRequest();
-    try {
-      await context.services.authService.refresh(
-        request,
-        { idToken: data.idToken, csrf: data.csrf },
-        { failureRedirect: '/sign-in' },
-      );
-    } catch (err) {
-      if (err instanceof Response && err.status >= 300 && err.status < 400) {
-        throw redirect({ href: err.headers.get('Location')!, statusCode: err.status });
-      }
-      throw err;
-    }
+    await refresh(request, { idToken: data.idToken, csrf: data.csrf }, { failureRedirect: '/sign-in' });
   });
 
 export const getSessionIdentityFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => ({
-    organizationId: context.authInfo.user.organizationId,
-    email: context.authInfo.user.actorIdentity.email ?? null,
+    organizationId: context.user.organizationId,
+    email: context.user.actorIdentity.email ?? null,
   }));
 
 export const changeOrganizationId = createServerFn({ method: 'POST' })
-  .middleware([servicesMiddleware])
   .validator(z.object({ idToken: z.string().optional(), csrf: z.string(), newOrganizationId: z.uuid() }))
-  .handler(async ({ context, data }) => {
+  .handler(async ({ data }) => {
     const request = getRequest();
-    try {
-      return await context.services.authService.changeOrganization(request, data);
-    } catch (err) {
-      if (err instanceof Response && err.status >= 300 && err.status < 400) {
-        throw redirect({ href: err.headers.get('Location')!, statusCode: err.status });
-      }
-      throw err;
-    }
+    return changeOrganization(request, data);
   });

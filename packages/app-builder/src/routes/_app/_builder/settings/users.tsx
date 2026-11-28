@@ -7,6 +7,7 @@ import { RevokeAccess } from '@app-builder/components/Settings/Users/RevokeAcces
 import { Spinner } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TenantUser, type User } from '@app-builder/models';
+import { adaptInboxUser } from '@app-builder/models/inbox';
 import { tKeyForUserRole } from '@app-builder/models/user';
 import { useTenantUsersWithoutAccessQuery } from '@app-builder/queries/settings/users/get-tenant-users-without-access';
 import { useOrganizationUsersTfaQuery } from '@app-builder/queries/settings/users/get-users-tfa';
@@ -31,11 +32,12 @@ import { Button, ExpandableGroupTagLine, Tag, useTable } from 'ui-design-system'
 const usersLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function usersLoader({ context }) {
-    const { user, inbox, entitlements } = context.authInfo;
+    const { user, entitlements } = context;
 
     if (!isReadUserAvailable(user)) throw redirect({ to: '/' });
 
-    const inboxUsers = await inbox.listAllInboxUsers();
+    const { inbox_users } = await context.api.listAllInboxUsers();
+    const inboxUsers = inbox_users.map(adaptInboxUser);
 
     const inboxUsersByUserId = R.pipe(
       inboxUsers,

@@ -3,7 +3,6 @@ import {
   TooManyRequest,
   useSendPasswordResetEmail,
 } from '@app-builder/services/auth/auth-client';
-import { useClientServices } from '@app-builder/services/init-client';
 import { getFieldErrors } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm } from '@tanstack/react-form';
@@ -22,9 +21,8 @@ type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
 
 export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | null }) {
   const { t } = useTranslation(['auth', 'common']);
-  const clientServices = useClientServices();
 
-  const sendPasswordResetEmail = useSendPasswordResetEmail(clientServices.authenticationClientService);
+  const sendPasswordResetEmail = useSendPasswordResetEmail();
 
   const form = useForm({
     defaultValues: { email: prefilledEmail ?? '' } as ResetPasswordForm,

@@ -1,6 +1,8 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { marbleApiErrorMessage } from '@app-builder/models/http-errors';
 import { addConfigurationPayloadSchema, client360SearchPayloadSchema } from '@app-builder/schemas/client360';
+import { searchClient360 } from '@app-builder/server/client-360';
+import { getDataModel, patchDataModelTable } from '@app-builder/server/data-model';
 import { createServerFn } from '@tanstack/react-start';
 
 export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
@@ -9,13 +11,11 @@ export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       const { tableId, semanticType, captionField, alias } = data;
-      const { dataModelRepository } = context.authInfo;
-
-      const dataModel = await dataModelRepository.getDataModel();
+      const dataModel = await getDataModel(context.api);
       const table = dataModel.find((t) => t.id === tableId);
       const field = table?.fields.find((f) => f.name === captionField);
 
-      await dataModelRepository.patchDataModelTable(tableId, {
+      await patchDataModelTable(context.api, tableId, {
         semantic_type: semanticType,
         caption_field: captionField,
         alias,
@@ -36,5 +36,5 @@ export const searchClient360Fn = createServerFn({ method: 'POST' })
   .validator(client360SearchPayloadSchema)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   .handler(async ({ context, data }): Promise<any> => {
-    return context.authInfo.client360.searchClient360(data);
+    return searchClient360(context.api, data);
   });

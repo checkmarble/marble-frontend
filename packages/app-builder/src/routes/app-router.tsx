@@ -1,6 +1,7 @@
 import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { isAnalyst } from '@app-builder/models';
+import { getDataModel } from '@app-builder/server/data-model';
 import { logoutFn } from '@app-builder/server-fns/auth';
 import { segment } from '@app-builder/services/segment';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
@@ -15,11 +16,11 @@ import { authMiddleware } from '../middlewares/auth-middleware';
 const appRouterLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function appRouterLoader({ context }) {
-    if (isAnalyst(context.authInfo.user)) {
+    if (isAnalyst(context.user)) {
       throw redirect({ to: '/cases' });
     }
 
-    const dataModel = await context.authInfo.dataModelRepository.getDataModel();
+    const dataModel = await getDataModel(context.api);
     if (dataModel.length === 0) {
       throw redirect({ to: '/data/list' });
     }

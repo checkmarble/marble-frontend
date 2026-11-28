@@ -3,7 +3,7 @@ import { OrganizationChangeContext } from '@app-builder/contexts/OrganizationCha
 import type { Organization, UserOrganization } from '@app-builder/models/organization';
 import { useChangeOrganizationIdMutation } from '@app-builder/queries/auth/new-organization-id';
 import { getSessionIdentityFn } from '@app-builder/server-fns/auth';
-import { initializeClientServices } from '@app-builder/services/init-client';
+import { getFirebaseAuthClient } from '@app-builder/services/auth/firebase-auth-client';
 import {
   ORGANIZATION_CHANGE_CHANNEL,
   resolveCrossTabSession,
@@ -319,11 +319,7 @@ export function OrganizationChangeProvider({
       // OIDC authenticates on the server. Only initialize Firebase on demand
       // for a Firebase switch, never while rendering this shared provider.
       const idToken =
-        authProvider === 'firebase'
-          ? await initializeClientServices(
-              appConfig,
-            ).authenticationClientService.authenticationClientRepository.firebaseIdToken()
-          : undefined;
+        authProvider === 'firebase' ? await getFirebaseAuthClient(appConfig).firebaseIdToken() : undefined;
       const result = await changeOrganizationIdMutation.mutateAsync({
         idToken,
         csrf,
